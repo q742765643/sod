@@ -1,7 +1,10 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.dm.rpc.api.CloudDatabaseApplyService;
 import com.piesat.dm.rpc.dto.CloudDatabaseApplyDto;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -33,6 +36,9 @@ import java.util.List;
 public class CloudDatabaseApplyController {
     @Autowired
     private CloudDatabaseApplyService cloudDatabaseApplyService;
+
+    @GrpcHthtClient
+    private DictDataService dictDataService;
 
     @Value("${serverfile.filePath}")
     private String fileAddress;
@@ -149,5 +155,12 @@ public class CloudDatabaseApplyController {
         ResultT<String> resultT=new ResultT<>();
         this.cloudDatabaseApplyService.deleteById(id);
         return resultT;
+    }
+
+    @ApiOperation(value = "根据字典类型查询")
+    @GetMapping("/getDictDataByType/{type}")
+    public ResultT getDictDataByType(@PathVariable String type){
+        List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType(type);
+        return  ResultT.success(dictDataDtos);
     }
 }
