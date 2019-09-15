@@ -334,7 +334,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Override
     public List<DatabaseSpecialDto> getByExamineStatus(String examineStatus) {
-        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByExamineStatusAndOrderBySortNoAscCreateTimeDesc(examineStatus);
+        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByExamineStatusOrderBySortNoAscCreateTimeDesc(examineStatus);
         return this.databaseSpecialMapper.toDto(databaseSpecialEntities);
     }
 

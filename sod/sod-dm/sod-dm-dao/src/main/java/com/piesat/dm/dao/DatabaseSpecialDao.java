@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface DatabaseSpecialDao extends BaseDao<DatabaseSpecialEntity> {
 
-    List<DatabaseSpecialEntity>  findByExamineStatusAndOrderBySortNoAscCreateTimeDesc(String examineStatus);
+    List<DatabaseSpecialEntity>  findByExamineStatusOrderBySortNoAscCreateTimeDesc(String examineStatus);
 
 }
