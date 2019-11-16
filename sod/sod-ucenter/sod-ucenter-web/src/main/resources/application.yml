@@ -1,0 +1,22 @@
+server:
+  port: 1234
+  servlet:
+      context-path: /a
+tomcat:
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 10
+    background-processor-delay: 30
+    basedir: ${user.home}/tomcat/
+
+grpc:
+  server:
+    port: 6000
+spring:
+  application:
+    name: local-grpc-server
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true

@@ -1,0 +1,17 @@
+server:
+  port: 1236
+  #servlet:
+     # context-path: /generator
+tomcat:
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 10
+    background-processor-delay: 30
+    basedir: ${user.home}/tomcat/
+grpc:
+  client:
+    local-grpc-server:
+      address: static://localhost:6000
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
