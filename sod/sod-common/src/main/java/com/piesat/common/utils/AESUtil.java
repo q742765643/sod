@@ -1,5 +1,7 @@
 package com.piesat.common.utils;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.util.StringUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -7,6 +9,7 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -17,128 +20,138 @@ import java.security.SecureRandom;
  * @创建时间 2019/11/12 16:12
  */
 public class AESUtil {
-    private static final String ENCODE_RULES = "sod";
+    private static final String ENCODE_RULES = "bWFsbHB3ZA==WNST";
+
+    private static final String ALGORITHMSTR = "AES/ECB/PKCS5Padding";
 
     /**
-     * 加密
-     * 1.构造密钥生成器
-     * 2.根据ecnodeRules规则初始化密钥生成器
-     * 3.产生密钥
-     * 4.创建和初始化密码器
-     * 5.内容加密
-     * 6.返回字符串
+     * aes解密
+     * @param encrypt   内容
+     * @return
+     * @throws Exception
      */
-    public static String aesEncode(String content) {
+    public static String aesDecrypt(String encrypt) {
         try {
-            //1.构造密钥生成器，指定为AES算法,不区分大小写
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            //2.根据ecnodeRules规则初始化密钥生成器
-            //生成一个128位的随机源,根据传入的字节数组
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-            random.setSeed(ENCODE_RULES.getBytes());
-            keyGenerator.init(128, random);
-            //3.产生原始对称密钥
-            SecretKey originalKey = keyGenerator.generateKey();
-            //4.获得原始对称密钥的字节数组
-            byte[] raw = originalKey.getEncoded();
-            //5.根据字节数组生成AES密钥
-            SecretKey key = new SecretKeySpec(raw, "AES");
-            //6.根据指定算法AES自成密码器
-            Cipher cipher = Cipher.getInstance("AES");
-            //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密解密(Decrypt_mode)操作，第二个参数为使用的KEY
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            //8.获取加密内容的字节数组(这里要设置为utf-8)不然内容中如果有中文和英文混合中文就会解密为乱码
-            byte[] byteEncode = content.getBytes("utf-8");
-            //9.根据密码器的初始化方式--加密：将数据加密
-            byte[] byteAES = cipher.doFinal(byteEncode);
-            //10.将加密后的数据转换为字符串
-            //这里用Base64Encoder中会找不到包
-            //解决办法：
-            //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
-            String aesEncode = new String(new BASE64Encoder().encode(byteAES));
-            //11.将字符串返回
-            return aesEncode;
-        } catch (NoSuchAlgorithmException e) {
+            return aesDecrypt(encrypt, ENCODE_RULES);
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            return "";
         }
-        //如果有错就返加nulll
-        return null;
     }
 
     /**
-     * 解密
-     * 解密过程：
-     * 1.同加密1-4步
-     * 2.将加密后的字符串反纺成byte[]数组
-     * 3.将加密内容解密
+     * aes加密
+     * @param content
+     * @return
+     * @throws Exception
      */
-    public static String aesDecode(String content) {
+    public static String aesEncrypt(String content) {
         try {
-            //1.构造密钥生成器，指定为AES算法,不区分大小写
-            KeyGenerator keygen = KeyGenerator.getInstance("AES");
-            //2.根据ecnodeRules规则初始化密钥生成器
-            //生成一个128位的随机源,根据传入的字节数组
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-            random.setSeed(ENCODE_RULES.getBytes());
-            keygen.init(128, random);
-            //3.产生原始对称密钥
-            SecretKey originalKey = keygen.generateKey();
-            //4.获得原始对称密钥的字节数组
-            byte[] raw = originalKey.getEncoded();
-            //5.根据字节数组生成AES密钥
-            SecretKey key = new SecretKeySpec(raw, "AES");
-            //6.根据指定算法AES自成密码器
-            Cipher cipher = Cipher.getInstance("AES");
-            //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密(Decrypt_mode)操作，第二个参数为使用的KEY
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            //8.将加密并编码后的内容解码成字节数组
-            byte[] byteContent = new BASE64Decoder().decodeBuffer(content);
-            /*
-             * 解密
-             */
-            byte[] byteDecode = cipher.doFinal(byteContent);
-            String aesDecode = new String(byteDecode, "utf-8");
-            return aesDecode;
-        } catch (NoSuchAlgorithmException e) {
+            return aesEncrypt(content, ENCODE_RULES);
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            throw new RuntimeException("兄弟，配置文件中的密码需要使用AES加密，请使用com.zheng.common.util.AESUtil工具类修改这些值！");
-            //e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
+            return "";
         }
-        //如果有错就返加nulll
-        return null;
     }
 
-    public static void main(String[] args) {
-        String[] keys = {
-                "", "123456"
-        };
-        System.out.println("key | AESEncode | AESDecode");
-        for (String key : keys) {
-            System.out.print(key + " | ");
-            String encryptString = aesEncode(key);
-            System.out.print(encryptString + " | ");
-            String decryptString = aesDecode(encryptString);
-            System.out.println(decryptString);
-        }
+    /**
+     * 将byte[]转为各种进制的字符串
+     * @param bytes byte[]
+     * @param radix 可以转换进制的范围，从Character.MIN_RADIX到Character.MAX_RADIX，超出范围后变为10进制
+     * @return 转换后的字符串
+     */
+    public static String binary(byte[] bytes, int radix){
+        return new BigInteger(1, bytes).toString(radix);// 这里的1代表正数
+    }
+
+    /**
+     * base 64 encode
+     * @param bytes 待编码的byte[]
+     * @return 编码后的base 64 code
+     */
+    public static String base64Encode(byte[] bytes){
+        return Base64.encodeBase64String(bytes);
+    }
+
+    /**
+     * base 64 decode
+     * @param base64Code 待解码的base 64 code
+     * @return 解码后的byte[]
+     * @throws Exception
+     */
+    public static byte[] base64Decode(String base64Code) throws Exception{
+        return StringUtils.isEmpty(base64Code) ? null : new BASE64Decoder().decodeBuffer(base64Code);
+    }
+
+
+    /**
+     * AES加密
+     * @param content 待加密的内容
+     * @param encryptKey 加密密钥
+     * @return 加密后的byte[]
+     * @throws Exception
+     */
+    public static byte[] aesEncryptToBytes(String content, String encryptKey) throws Exception {
+        KeyGenerator kgen = KeyGenerator.getInstance("AES");
+        kgen.init(128);
+        Cipher cipher = Cipher.getInstance(ALGORITHMSTR);
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptKey.getBytes(), "AES"));
+
+        return cipher.doFinal(content.getBytes("utf-8"));
+    }
+
+
+    /**
+     * AES加密为base 64 code
+     * @param content 待加密的内容
+     * @param encryptKey 加密密钥
+     * @return 加密后的base 64 code
+     * @throws Exception
+     */
+    public static String aesEncrypt(String content, String encryptKey) throws Exception {
+        return base64Encode(aesEncryptToBytes(content, encryptKey));
+    }
+
+    /**
+     * AES解密
+     * @param encryptBytes 待解密的byte[]
+     * @param decryptKey 解密密钥
+     * @return 解密后的String
+     * @throws Exception
+     */
+    public static String aesDecryptByBytes(byte[] encryptBytes, String decryptKey) throws Exception {
+        KeyGenerator kgen = KeyGenerator.getInstance("AES");
+        kgen.init(128);
+
+        Cipher cipher = Cipher.getInstance(ALGORITHMSTR);
+        cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(decryptKey.getBytes(), "AES"));
+        byte[] decryptBytes = cipher.doFinal(encryptBytes);
+        return new String(decryptBytes);
+    }
+
+
+    /**
+     * 将base 64 code AES解密
+     * @param encryptStr 待解密的base 64 code
+     * @param decryptKey 解密密钥
+     * @return 解密后的string
+     * @throws Exception
+     */
+    public static String aesDecrypt(String encryptStr, String decryptKey) throws Exception {
+        return StringUtils.isEmpty(encryptStr) ? null : aesDecryptByBytes(base64Decode(encryptStr), decryptKey);
+    }
+
+    /**
+     * 测试
+     */
+    public static void main(String[] args) throws Exception {
+        String content = "123";
+        System.out.println("加密前：" + content);
+        System.out.println("加密密钥和解密密钥：" + ENCODE_RULES);
+        String encrypt = aesEncrypt(content, ENCODE_RULES);
+        System.out.println("加密后：" + encrypt);
+        String decrypt = aesDecrypt(encrypt, ENCODE_RULES);
+        System.out.println("解密后：" + decrypt);
     }
 
 }

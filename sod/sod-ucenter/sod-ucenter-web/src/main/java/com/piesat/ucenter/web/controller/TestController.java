@@ -73,8 +73,9 @@ public class TestController {
        user.setList(strings);
        String ss="age=1&name=map";
 
-       //String aa=AESUtil.aesEncode(JSON.toJSONString(user));
-       String aa=AESUtil.aesEncode(ss);
+       String aa=AESUtil.aesEncrypt(JSON.toJSONString(user));
+       System.out.println(aa);
+       //String aa=AESUtil.aesEncode(ss);
        HttpReq httpReq=new HttpReq();
        httpReq.setData(aa);
        System.out.println(JSON.toJSONString(httpReq));

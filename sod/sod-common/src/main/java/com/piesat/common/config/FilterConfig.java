@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @创建人 zzj
  * @创建时间 2019/11/14 9:11
  */
-@Configuration
+//@Configuration
 public class FilterConfig {
     @Bean
     public FilterRegistrationBean<DataFilter> registerDataFilter(ObjectMapper objectMapper) {

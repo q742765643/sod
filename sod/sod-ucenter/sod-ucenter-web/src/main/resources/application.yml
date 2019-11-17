@@ -20,3 +20,17 @@ spring:
       force: true
       charset: utf-8
       enabled: true
+  datasource:
+      driver-class-name:
+      url: jdbc:mysql://39.105.167.131:3306/smile_boot?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&useSSL=true
+      username: root
+      password: Nrblwbb7$
+
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: create
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+    show-sql: true

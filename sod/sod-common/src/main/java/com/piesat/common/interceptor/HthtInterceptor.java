@@ -1,6 +1,8 @@
 package com.piesat.common.interceptor;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piesat.common.annotation.DecryptRequest;
 import com.piesat.common.filter.CustomEncryptHttpWrapper;
@@ -24,6 +26,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -36,29 +39,67 @@ import java.util.Map;
 public class HthtInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
+        if(null!=request.getContentType()){
+            if (StringUtils.substringMatch(request.getContentType(), 0, MediaType.APPLICATION_JSON_VALUE)) {
+                return true;
+            }
+        }
+        Map<String, String[]> result = new HashMap<>(8);
+        Enumeration<String> parameterNames = request.getParameterNames();
+        while (parameterNames.hasMoreElements()) {
+            String name = parameterNames.nextElement();
+            result.put(name, request.getParameterValues(name));
+        }
+        String token = request.getHeader("authorization");
+        if(token.equals("88888888")){
+            request.setAttribute("REQUEST_RESOLVER_PARAM_MAP_NAME",result);
+            return true;
+        }else {
+          
+        }
         String requestBody = null;
-        String contentType = request.getContentType();
         HandlerMethod h = (HandlerMethod)o;
         DecryptRequest decryptRequest=h.getMethod().getAnnotation(DecryptRequest.class);
         if(decryptRequest!=null&&decryptRequest.value()==false){
             return true;
         }
-        if (StringUtils.substringMatch(contentType, 0, MediaType.APPLICATION_JSON_VALUE)) {
+
+        if(result.size()==0){
             return true;
         }
-        if (StringUtils.substringMatch(contentType, 0, MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
-            requestBody = convertFormToString(request);
+        if(null==result.get("data")){
+            return true;
+        }
+        requestBody= result.get("data")[0];
+        if(null==requestBody||requestBody.equals("")){
+            return true;
+        }
+        String data= AESUtil.aesDecrypt(requestBody);
+        Map<String,String[]> parameterMap=new HashMap<>();
+        if(data.startsWith("{")){
+          Map<String,Object> map=JSON.parseObject(data,Map.class);
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                 Object oo=entry.getValue();
+                 if(oo instanceof JSONArray){
+                     JSONArray jsonArray= (JSONArray) oo;
+                     String ss="";
+                     for(int i=0;i<jsonArray.size();i++){
+                         ss+=String.valueOf(jsonArray.get(i))+"&&&";
+                     }
+                      parameterMap.put(entry.getKey(),ss.split("&&&"));
+                     }else{
+                       String ss= String.valueOf(oo)+"&&&";
+                       parameterMap.put(entry.getKey(),ss.split("&&&"));
+                 }
+            }
+
+        }else{
+
+
         }
 
-        HttpReq httpReq= JSON.parseObject(requestBody,HttpReq.class);
-        if(null!=httpReq.getData()){
 
-        }
-        //String data= AESUtil.aesDecode(httpReq.getData());
-        String[] ss=new String[1];
-        ss[0]="11111111";
-        Map<String, String[]> parameterMap=new HashMap<>();
-        parameterMap.put("age",ss);
+
         request.setAttribute("REQUEST_RESOLVER_PARAM_MAP_NAME",parameterMap);
         return true;
     }

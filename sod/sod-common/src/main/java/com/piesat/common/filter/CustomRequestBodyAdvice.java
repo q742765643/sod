@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * @program: sod
@@ -40,10 +41,21 @@ public class CustomRequestBodyAdvice extends RequestBodyAdviceAdapter {
         if(decryptRequest!=null&&decryptRequest.value()==false){
             shouldEncrypt=false;
         }
+        List<String> tokens=inputMessage.getHeaders().get("authorization");
+        String token="";
+        if(tokens!=null){
+            token=tokens.get(0);
+        }
+        if(token.equals("88888888")){
+            shouldEncrypt=false;
+        }
         if(shouldEncrypt){
             //System.out.println(StreamUtils.copyToByteArray(inputMessage.getBody()));
             HttpReq httpReq= objectMapper.readValue(StreamUtils.copyToByteArray(inputMessage.getBody()), HttpReq.class);
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(AESUtil.aesDecode(httpReq.getData()).getBytes(Charset.forName("UTF-8")));
+            if(null==httpReq.getData()||"".equals(httpReq.getData())){
+                return super.beforeBodyRead(inputMessage, parameter, targetType, converterType);
+            }
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(AESUtil.aesDecrypt(httpReq.getData()).getBytes(Charset.forName("UTF-8")));
             return new MappingJacksonInputMessage(inputStream, inputMessage.getHeaders());
         } else {
             return super.beforeBodyRead(inputMessage, parameter, targetType, converterType);

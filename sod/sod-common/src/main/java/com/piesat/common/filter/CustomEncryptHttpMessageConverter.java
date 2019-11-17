@@ -40,7 +40,7 @@ public class CustomEncryptHttpMessageConverter extends MappingJackson2HttpMessag
         JavaType javaType = this.getJavaType(type, contextClass);
         HttpReq httpReq= objectMapper.readValue(StreamUtils.copyToByteArray(inputMessage.getBody()), HttpReq.class);
 
-        return objectMapper.readValue(AESUtil.aesDecode(httpReq.getData()), javaType);
+        return objectMapper.readValue(AESUtil.aesDecrypt(httpReq.getData()), javaType);
     }
     @Override
     protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage) throws IOException {

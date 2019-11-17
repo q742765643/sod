@@ -35,8 +35,11 @@ public class CurrentUserArgumentResolver  implements HandlerMethodArgumentResolv
         }
         // 解析器中的自定义逻辑
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        Map<String, String> paramMap = (Map<String, String>) request
+        Map<String, String[]> paramMap = (Map<String, String[]>) request
                 .getAttribute("REQUEST_RESOLVER_PARAM_MAP_NAME");
+        if(null==paramMap||paramMap.size()==0){
+            return null;
+        }
         Object arg = paramMap.get(parameter.getParameterName());
         if (arg != null) {
             // 生成参数绑定器，第一个参数为request请求对象，第二个参数为需要绑定的目标对象，第三个参数为需要绑定的目标对象名

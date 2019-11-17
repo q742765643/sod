@@ -18,7 +18,7 @@ import java.util.Map;
 public class User implements Serializable {
     String name;
     int age;
-    List<String> list=new ArrayList<>();
+    List<String> list;
     Map<String,String> map;
     Date date=new Date();
 

@@ -81,7 +81,7 @@ public class ModifyParametersWrapper  extends HttpServletRequestWrapper {
      * @return 修改之后的值
      */
     private String modify(String string) {
-        String result = new String(AESUtil.aesDecode(string));
+        String result = new String(AESUtil.aesDecrypt(string));
         return result;
     }
 
