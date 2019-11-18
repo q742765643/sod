@@ -13,9 +13,9 @@ import javax.persistence.Table;
  * @创建人 zzj
  * @创建时间 2019/11/18 11:36
  */
-@Entity
-@Table(name = "T_SOD_USER")
 @Data
+@Table(name = "T_SOD_USER")
+@Entity
 public class UserEntity extends BaseEntity {
     //字段,不能为空,没有写默认可以为空
     @Column(name="name", length=255, nullable=false)
