@@ -16,11 +16,6 @@
             <artifactId>sod-ucenter-common</artifactId>
             <version>${parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.htht</groupId>
-            <artifactId>sod-ucenter-rpc-api</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
     </dependencies>
 
     <build>

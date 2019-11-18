@@ -2,25 +2,15 @@ package com.piesat.ucenter.web.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.piesat.common.annotation.DecryptRequest;
-import com.piesat.common.grpc.annotation.GrpcHthtService;
-import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.vo.HttpReq;
-import com.piesat.ucenter.rpc.api.UserService;
-import com.piesat.ucenter.rpc.entity.User;
-import io.protostuff.Response;
+import com.piesat.ucenter.rpc.api.TestService;
+import com.piesat.ucenter.rpc.dto.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.*;
 
@@ -34,7 +24,7 @@ import java.util.*;
 @Api(value="用户controller",tags={"用户操作接口"})
 public class TestController {
     @Autowired
-    private UserService userService;
+    private TestService testService;
     @Autowired
     WebApplicationContext applicationContext;
     @PostMapping(value = "/api/test")
@@ -43,7 +33,7 @@ public class TestController {
         user1.setDate(new Date());
         User user=new User();
         System.out.println("11");
-        userService.test();
+        testService.test();
         return user1;
    }
     @GetMapping(value = "/api/test1/{name}")
@@ -57,7 +47,7 @@ public class TestController {
     public User test2( User user1){
         User user=new User();
         System.out.println("11");
-        userService.test();
+        testService.test();
         return user1;
     }
    public static void main(String[] args){

@@ -22,7 +22,7 @@ public class UUIDEntity implements Serializable
     @Id
     @Column(length = 32)
     @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "com.piesat.common.jpa.generator")
+    @GenericGenerator(name = "uuid", strategy = "com.piesat.common.jpa.generator.UUIDGenerator")
     private String id;
 
 }

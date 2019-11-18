@@ -1,18 +1,19 @@
 package com.piesat.ucenter.rpc.service;
 
+import com.piesat.common.jpa.BaseDao;
+import com.piesat.common.jpa.BaseService;
+import com.piesat.ucenter.entity.UserEntity;
 import com.piesat.ucenter.rpc.api.UserService;
-import org.springframework.stereotype.Service;
 
 /**
  * @program: sod
  * @描述
  * @创建人 zzj
- * @创建时间 2019/11/12 17:24
+ * @创建时间 2019/11/18 11:45
  */
-@Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseService<UserEntity> implements UserService {
     @Override
-    public String test() {
-        return "sddddd";
+    public BaseDao<UserEntity> getBaseDao() {
+        return null;
     }
 }
