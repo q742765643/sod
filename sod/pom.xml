@@ -40,10 +40,20 @@
             <url>https://repo.spring.io/milestone</url>
         </repository>
         <repository>
+            <id>nexus-pentaho</id>
+            <name>Nexus pentaho</name>
+            <url>https://nexus.pentaho.org/content/repositories/omni/</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-
+        <!-- cimiss2的私有仓库 -->
+        <repository>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>http://60.205.204.230:8081/nexus/content/repositories/releases/</url>
+        </repository>
     </repositories>
 
 </project>
