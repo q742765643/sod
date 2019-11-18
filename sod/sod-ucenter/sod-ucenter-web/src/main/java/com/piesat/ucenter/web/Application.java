@@ -18,6 +18,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class,args);
-		log.info("项目启动启动成功！访问地址: http://localhost:1234");
 	}
 }

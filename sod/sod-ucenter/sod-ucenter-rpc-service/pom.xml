@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <skip>true</skip>
                     <compilerId>javac</compilerId>
@@ -51,6 +51,13 @@
                     <compilerVersion>1.8</compilerVersion>
                     <verbose>true</verbose>
                     <optimize>true</optimize>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.2.0.Final</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
                 <dependencies>
                     <dependency>

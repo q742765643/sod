@@ -12,8 +12,6 @@ import java.util.List;
  * @创建人 zzj
  * @创建时间 2019/11/18 11:31
  */
-@Service
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BaseMapper <D, E> {
 
     /**

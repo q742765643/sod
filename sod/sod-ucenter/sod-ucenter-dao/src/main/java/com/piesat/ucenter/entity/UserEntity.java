@@ -21,7 +21,7 @@ public class UserEntity extends BaseEntity {
     @Column(name="name", length=255, nullable=false)
     private String name;
 
-    @Column(name="user_name", unique=true, length=255, nullable=false)
+    @Column(name="user_name", length=255, nullable=false)
     private String userName;
 
     @Column(name="password", length=255)
@@ -51,7 +51,7 @@ public class UserEntity extends BaseEntity {
     @Column(name="last_update_user_id", length=36)
     private String lastUpdateUserId;
 
-    @Column(name="status", length=1, nullable=false)
+    @Column(name="status", length=36, nullable=false)
     private String status;
 
     @Column(name="certificates", length=255, nullable=false)

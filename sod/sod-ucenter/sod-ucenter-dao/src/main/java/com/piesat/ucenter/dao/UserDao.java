@@ -2,6 +2,7 @@ package com.piesat.ucenter.dao;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.ucenter.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,5 +12,5 @@ import org.springframework.stereotype.Repository;
  * @创建时间 2019/11/18 11:03
  */
 @Repository
-public interface UserDao extends BaseDao<BaseEntity> {
+public interface UserDao extends BaseDao<UserEntity> {
 }

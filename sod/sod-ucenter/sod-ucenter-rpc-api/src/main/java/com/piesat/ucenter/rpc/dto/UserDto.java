@@ -3,6 +3,7 @@ package com.piesat.ucenter.rpc.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @program: sod
@@ -12,6 +13,14 @@ import java.io.Serializable;
  */
 @Data
 public class UserDto implements Serializable {
+    private String id;
+
+    private Integer version;
+
+    private Date updateTime;
+
+    private Date createTime;
+
     private String name;
 
     private String userName;

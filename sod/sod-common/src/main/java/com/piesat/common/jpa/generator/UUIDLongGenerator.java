@@ -1,6 +1,7 @@
 package com.piesat.common.jpa.generator;
 
 import com.piesat.common.jpa.entity.UUIDEntity;
+import lombok.NoArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -14,8 +15,10 @@ import java.io.Serializable;
  * @author: zzj
  * @create: 2019-11-17 18:15
  **/
-public class UUIDGenerator implements IdentifierGenerator
+@NoArgsConstructor
+public class UUIDLongGenerator implements IdentifierGenerator
 {
+
     private boolean isBlank(final String str) {
         return str == null || str.trim().length() == 0;
     }
@@ -26,6 +29,7 @@ public class UUIDGenerator implements IdentifierGenerator
         final String uuid = serializable.toString().replaceAll("-", "");
         if (o != null && o instanceof UUIDEntity) {
             final UUIDEntity entity = (UUIDEntity)o;
+            System.out.println(this.isBlank(entity.getId()) ? uuid : entity.getId());
             return this.isBlank(entity.getId()) ? uuid : entity.getId();
         }
         return uuid;

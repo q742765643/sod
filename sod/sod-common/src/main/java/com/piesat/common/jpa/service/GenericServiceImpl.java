@@ -22,7 +22,7 @@ import java.util.List;
  * @author: zzj
  * @create: 2019-11-17 18:46
  **/
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public abstract class GenericServiceImpl<T, ID extends Serializable> implements GenericService<T, ID>
 {
     protected Logger logger;

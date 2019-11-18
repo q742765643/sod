@@ -15,14 +15,14 @@ import java.io.Serializable;
  * @author: zzj
  * @create: 2019-11-17 18:18
  **/
-@MappedSuperclass
 @Data
+@MappedSuperclass
 public class UUIDEntity implements Serializable
 {
     @Id
     @Column(length = 32)
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "com.piesat.common.jpa.generator.UUIDGenerator")
+    @GeneratedValue(generator = "htht.uuid")
+    @GenericGenerator(name = "htht.uuid", strategy = "com.piesat.common.jpa.generator.UUIDStringGenerator")
     private String id;
 
 }
