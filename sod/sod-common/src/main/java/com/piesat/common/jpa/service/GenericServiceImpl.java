@@ -4,6 +4,7 @@ import com.piesat.common.jpa.dao.GenericDao;
 import com.piesat.common.jpa.page.PageBean;
 import com.piesat.common.jpa.page.PageForm;
 import org.hibernate.SQLQuery;
+import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.query.internal.QueryImpl;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import javax.persistence.Query;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -89,12 +91,12 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
 
     @Override
     public List<T> getAll() {
-        return (List<T>)this.getGenericDao().findAll();
+        return this.getGenericDao().findAll();
     }
 
     @Override
     public List<T> getAll(final Specification<T> specification) {
-        return (List<T>)this.getGenericDao().findAll(specification);
+        return this.getGenericDao().findAll(specification);
     }
 
     @Override
@@ -226,8 +228,8 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
 
     @Override
     public PageBean queryByNativeSQLPageList(String sql, Class entityClass, Map<String,Object> params, PageForm pageForm){
-        String newSql="select * from ("+sql+") limit "+pageForm.getPageSize()+","+pageForm.getCurrentPage();
-        Query query=em.createNativeQuery(newSql,entityClass);
+        PageRequest pageRequest=pageForm.buildPageRequest();
+        String newSql="select * from ("+sql+") limit "+pageRequest.getOffset()+","+pageRequest.getPageSize();        Query query=em.createNativeQuery(newSql,entityClass);
         if(params!=null&&params.size()>0){
             for(String param:params.keySet() ){
                 query.setParameter(param,params.get(param));
@@ -242,7 +244,8 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     }
     @Override
     public PageBean queryByNativeSQLPageMap(String sql, Map<String,Object> params, PageForm pageForm){
-        String newSql="select * from ("+sql+") limit "+pageForm.getPageSize()+","+pageForm.getCurrentPage();
+        PageRequest pageRequest=pageForm.buildPageRequest();
+        String newSql="select * from ("+sql+") limit "+pageRequest.getOffset()+","+pageRequest.getPageSize();
         Query query=em.createNativeQuery(newSql);
         if(params!=null&&params.size()>0){
             for(String param:params.keySet() ){
@@ -265,7 +268,8 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
                 query.setParameter(param,params.get(param));
             }
         }
-        return (long) query.getSingleResult();
+        BigDecimal bigDecimal= (BigDecimal) query.getSingleResult();
+        return bigDecimal.longValue();
     }
 
 }

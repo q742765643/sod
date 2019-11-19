@@ -23,7 +23,7 @@ public class PageForm {
      */
     private int pageSize = 10;
 
-    private Sort sort;
+    private Sort sort = Sort.unsorted();
 
     public PageRequest buildPageRequest() {
         return PageRequest.of(currentPage - 1, pageSize,sort);
