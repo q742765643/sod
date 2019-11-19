@@ -20,12 +20,6 @@ import java.util.Map;
 @NoRepositoryBean
 public interface GenericDao<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T>
 {
-    public EntityManager getEm();
-    public List<Map<String,Object>> queryByNativeSQL(String sql, Map<String,Object> params);
-    public List<Map<String,Object>> queryByNativeSQL(String sql, Object... params);
-    public List<?> queryByNativeSQL(String sql,Class entityClass,Map<String,Object> params);
-    public PageBean queryByNativeSQLPageMap(String sql, Map<String,Object> params, PageForm pageForm);
-    public PageBean queryByNativeSQLPageList(String sql, Class entityClass, Map<String,Object> params, PageForm pageForm);
 
 }
 

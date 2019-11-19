@@ -4,7 +4,7 @@ import com.piesat.common.jpa.dao.GenericDao;
 import com.piesat.common.jpa.page.PageBean;
 import com.piesat.common.jpa.page.PageForm;
 import org.hibernate.SQLQuery;
-import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.query.internal.QueryImpl;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -30,10 +33,12 @@ import java.util.Map;
  * @create: 2019-11-17 18:46
  **/
 //@Transactional(readOnly = true)
+@Service
 public abstract class GenericServiceImpl<T, ID extends Serializable> implements GenericService<T, ID>
 {
     protected Logger logger;
-
+    @PersistenceContext
+    private EntityManager em;
     public GenericServiceImpl() {
         this.logger = LoggerFactory.getLogger((Class)this.getClass());
     }
@@ -175,8 +180,14 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
      */
     @Override
     public List<Map<String,Object>> queryByNativeSQL(String sql, Map<String,Object> params){
-
-        return this.getGenericDao().queryByNativeSQL(sql,params);
+        Query query=em.createNativeQuery(sql);
+        if(params!=null&&params.size()>0){
+            for(String param:params.keySet() ){
+                query.setParameter(param,params.get(param));
+            }
+        }
+        query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return query.getResultList();
     }
     /**
      * 执行原生SQL查询
@@ -186,8 +197,14 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
      */
     @Override
     public List<Map<String,Object>> queryByNativeSQL(String sql, Object... params){
-        return this.getGenericDao().queryByNativeSQL(sql,params);
-
+        Query query=em.createNativeQuery(sql);
+        if(params!=null&&params.length>0){
+            for(int i=0;i< params.length;i++){
+                query.setParameter(i,params[i]);
+            }
+        }
+        query.unwrap(QueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return query.getResultList();
     }
     /**
      * 执行原生SQL查询
@@ -198,30 +215,57 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
      */
     @Override
     public List<?> queryByNativeSQL(String sql, Class entityClass, Map<String,Object> params){
-        return this.getGenericDao().queryByNativeSQL(sql,entityClass,params);
+        Query query=em.createNativeQuery(sql,entityClass);
+        if(params!=null&&params.size()>0){
+            for(String param:params.keySet() ){
+                query.setParameter(param,params.get(param));
+            }
+        }
+        return query.getResultList();
+    }
 
-    }
-    /** 
-    * @Description: 分页sql 
-    * @Param: [sql, params, pageForm] 
-    * @return: com.piesat.common.jpa.page.PageBean 
-    * @Author: zzj
-    * @Date: 2019/11/18 
-    */ 
-    @Override
-    public PageBean queryByNativeSQLPageMap(String sql, Map<String,Object> params, PageForm pageForm){
-        return this.getGenericDao().queryByNativeSQLPageMap(sql,params,pageForm);
-    }
-    /** 
-    * @Description: 分页sql 
-    * @Param: [sql, entityClass, params, pageForm] 
-    * @return: com.piesat.common.jpa.page.PageBean 
-    * @Author: zzj
-    * @Date: 2019/11/18 
-    */ 
     @Override
     public PageBean queryByNativeSQLPageList(String sql, Class entityClass, Map<String,Object> params, PageForm pageForm){
-        return this.getGenericDao().queryByNativeSQLPageList(sql,entityClass,params,pageForm);
+        String newSql="select * from ("+sql+") limit "+pageForm.getPageSize()+","+pageForm.getCurrentPage();
+        Query query=em.createNativeQuery(newSql,entityClass);
+        if(params!=null&&params.size()>0){
+            for(String param:params.keySet() ){
+                query.setParameter(param,params.get(param));
+            }
+        }
+        List<T> list=query.getResultList();
+        long total=this.queryByNativeSQLCount(sql,params);
+        PageBean pageBean=new PageBean();
+        pageBean.setTotalCount(total);
+        pageBean.setPageData(list);
+        return pageBean;
+    }
+    @Override
+    public PageBean queryByNativeSQLPageMap(String sql, Map<String,Object> params, PageForm pageForm){
+        String newSql="select * from ("+sql+") limit "+pageForm.getPageSize()+","+pageForm.getCurrentPage();
+        Query query=em.createNativeQuery(newSql);
+        if(params!=null&&params.size()>0){
+            for(String param:params.keySet() ){
+                query.setParameter(param,params.get(param));
+            }
+        }
+        List<Map<String,Object>> list=query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+        long total=this.queryByNativeSQLCount(sql,params);
+        PageBean pageBean=new PageBean();
+        pageBean.setTotalCount(total);
+        pageBean.setPageData(list);
+        return pageBean;
+    }
+
+    public long queryByNativeSQLCount(String sql, Map<String,Object> params){
+        String newSql="select count(*) from ("+sql+")";
+        Query query=em.createNativeQuery(newSql);
+        if(params!=null&&params.size()>0){
+            for(String param:params.keySet() ){
+                query.setParameter(param,params.get(param));
+            }
+        }
+        return (long) query.getSingleResult();
     }
 
 }

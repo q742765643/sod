@@ -12,6 +12,10 @@ import com.piesat.ucenter.rpc.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @program: sod
  * @描述
@@ -32,6 +36,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public UserDto save(UserDto userDto){
         UserEntity userEntity= userMapper.toEntity(userDto);
         userEntity=this.save(userEntity);
+        List<Map<String,Object>> list= this.queryByNativeSQL("select * from T_SOD_USER",new HashMap<>());
+        //List<UserEntity> list= (List<UserEntity>) this.queryByNativeSQL("select * from T_SOD_USER",UserEntity.class,new HashMap<>());
+
         return userMapper.toDto(userEntity);
     }
 }
