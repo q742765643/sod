@@ -203,7 +203,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
                 query.setParameter(i,params[i]);
             }
         }
-        query.unwrap(QueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         return query.getResultList();
     }
     /**
