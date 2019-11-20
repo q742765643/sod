@@ -1,3 +1,4 @@
+/*
 package com.piesat.common.grpc.config;
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
@@ -10,12 +11,14 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
+*/
 /**
  * @program: sod
  * @描述
  * @创建人 zzj
  * @创建时间 2019/11/13 16:10
- */
+ *//*
+
 @Component
 public class ServiceInjectProcessor implements BeanPostProcessor {
     @Autowired
@@ -51,3 +54,4 @@ public class ServiceInjectProcessor implements BeanPostProcessor {
     }
 
 }
+*/

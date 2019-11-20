@@ -2,8 +2,12 @@ import com.piesat.common.grpc.annotation.GrpcServiceScan;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
 
+@EnableEurekaClient
+@EnableDiscoveryClient
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.piesat.*"})
 @GrpcServiceScan(packages = {"com.piesat"})

@@ -8,6 +8,7 @@ import com.piesat.common.grpc.service.GrpcClientService;
 import com.piesat.common.grpc.service.SerializeService;
 import com.piesat.common.grpc.service.impl.SofaHessianSerializeService;
 import com.piesat.common.grpc.util.ClassNameUtils;
+import io.grpc.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -126,8 +127,11 @@ public class GrpcAutoConfiguration {
 
     }
 
-    protected static class ProxyUtil {
+    public static class ProxyUtil {
         public static ConcurrentHashMap<String,Object> grpcServices=new ConcurrentHashMap<>();
+        public static ConcurrentHashMap<String, Channel> grpcChannel=new ConcurrentHashMap<>();
+        public static ConcurrentHashMap<String, String> grpcServerName=new ConcurrentHashMap<>();
+
         static void registerBeans(BeanFactory beanFactory, Set<BeanDefinition> beanDefinitions) {
             for (BeanDefinition beanDefinition : beanDefinitions) {
                 String className = beanDefinition.getBeanClassName();

@@ -44,7 +44,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public UserDto save(UserDto userDto){
         UserEntity userEntity= userMapper.toEntity(userDto);
-        userEntity=this.save(userEntity);
+        //userEntity=this.save(userEntity);
         List<Map<String,Object>> list= this.queryByNativeSQL("select * from T_SOD_USER",new HashMap<>());
         List<UserEntity> list1= (List<UserEntity>) this.queryByNativeSQL("select * from T_SOD_USER",UserEntity.class,new HashMap<>());
         PageBean pageBean=this.queryByNativeSQLPageList("select * from T_SOD_USER",UserEntity.class,new HashMap<>(),new PageForm());

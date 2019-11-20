@@ -14,7 +14,10 @@ grpc:
     port: 6000
 spring:
   application:
-    name: local-grpc-server
+    name: cloud-grpc-server
+  sleuth:
+    sampler:
+      probability: 1
   http:
     encoding:
       force: true
@@ -55,3 +58,12 @@ spring:
     show-sql: true
     #database: mysql
     open-in-view: false
+eureka:
+  instance:
+    prefer-ip-address: true
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

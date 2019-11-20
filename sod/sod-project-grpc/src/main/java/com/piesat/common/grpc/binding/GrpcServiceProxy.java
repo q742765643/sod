@@ -1,6 +1,7 @@
 package com.piesat.common.grpc.binding;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
+import com.piesat.common.grpc.config.GrpcAutoConfiguration;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.grpc.constant.GrpcResponseStatus;
 import com.piesat.common.grpc.constant.SerializeType;
@@ -8,11 +9,13 @@ import com.piesat.common.grpc.exception.GrpcException;
 import com.piesat.common.grpc.service.GrpcClientService;
 import com.piesat.common.grpc.service.GrpcRequest;
 import com.piesat.common.grpc.service.GrpcResponse;
+import io.grpc.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.proxy.InvocationHandler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-
+@Slf4j
 public class GrpcServiceProxy<T> implements InvocationHandler {
 
     private Class<T> grpcService;
@@ -47,8 +50,13 @@ public class GrpcServiceProxy<T> implements InvocationHandler {
         if (serializeTypeArray.length > 0) {
             serializeType = serializeTypeArray[0];
         }
+
         GrpcClientService grpcClientService= SpringUtil.getBean(GrpcClientService.class);
-        GrpcResponse response = grpcClientService.handle(serializeType, request);
+        String serverName=GrpcAutoConfiguration.ProxyUtil.grpcServerName.get(className);
+        Channel channel= GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(serverName);
+        GrpcResponse response = grpcClientService.handle(serializeType, request,channel);
+        log.info("grpc{}.{},返回码{}",request.getClazz(),request.getMethod(),response.getStatus());
+
         if (GrpcResponseStatus.ERROR.getCode() == response.getStatus()) {
             Throwable throwable = response.getException();
             GrpcException exception = new GrpcException(throwable.getClass().getName() + ": " + throwable.getMessage());

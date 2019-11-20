@@ -15,7 +15,14 @@
             <groupId>com.htht</groupId>
             <artifactId>sod-project-grpc</artifactId>
             <version>${parent.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
     </dependencies>
     <build>
         <!--解决idea打包没有xml-->

@@ -20,11 +20,14 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class GrpcClientService {
-    @GrpcClient("local-grpc-server")
-    private Channel serverChannel;
+
     @Autowired
     private SerializeService defaultSerializeService;
-    public GrpcResponse handle(SerializeType serializeType, GrpcRequest grpcRequest) {
+    public GrpcResponse handle(SerializeType serializeType, GrpcRequest grpcRequest,Channel serverChannel) {
+        if(serverChannel==null){
+            log.error("通道为null{},{}",grpcRequest.getClazz(),grpcRequest.getMethod());
+        }
+        log.info("grpc调用{}.{}",grpcRequest.getClazz(),grpcRequest.getMethod());
         CommonServiceGrpc.CommonServiceBlockingStub blockingStub=CommonServiceGrpc.newBlockingStub(serverChannel);
         SerializeService serializeService = SerializeUtils.getSerializeService(serializeType, this.defaultSerializeService);
         ByteString bytes = serializeService.serialize(grpcRequest);

@@ -8,10 +8,31 @@ tomcat:
     max-threads: 10
     background-processor-delay: 30
     basedir: ${user.home}/tomcat/
+spring:
+  application:
+    name: local-grpc-cl
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  sleuth:
+    sampler:
+      probability: 1
+eureka:
+  instance:
+    prefer-ip-address: true
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 grpc:
   client:
-    local-grpc-server:
-      address: static://localhost:6000
+    cloud-grpc-server:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
