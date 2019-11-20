@@ -20,6 +20,7 @@
         <module>sod-ucenter</module>
         <module>sod-tstructure-center</module>
         <module>sod-project-grpc</module>
+        <module>sod-dm</module>
     </modules>
     <repositories>
         <repository>
