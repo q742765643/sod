@@ -53,7 +53,7 @@ spring:
       hibernate:
         hbm2ddl:
           auto: update
-        dialect: com.piesat.common.jpa.dialect.XuguDialect
+        dialect: com.xugu.dialect.XuguDialect5
         format_sql: true
     show-sql: true
     #database: mysql

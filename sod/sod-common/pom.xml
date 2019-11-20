@@ -74,6 +74,11 @@
             <artifactId>druid</artifactId>
             <version>1.1.20</version>
         </dependency>
+        <dependency>
+            <groupId>com.htht</groupId>
+            <artifactId>XuGuDialect5</artifactId>
+            <version>5.0</version>
+        </dependency>
    <!--     <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
