@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.piesat.common.jpa.page.PageBean;
 import com.piesat.common.jpa.page.PageForm;
@@ -57,6 +59,29 @@ public class DbFileController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 *  上传文件
+	 * @description 
+	 * @author wlg
+	 * @date 2019年11月21日上午11:12:41
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value="数据库文档上传文件接口",notes="数据库文档上传文件接口")
+	@PostMapping(value="/api/dbfile/upload")
+	public Map<String,Object> uploadFile(MultipartHttpServletRequest request) {
+		Map<String,Object> result = new HashMap<>();
+		try {
+			dbFileService.save(request);
+			result.put("success", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("success", false);
+			result.put("msg", e.getMessage());
+		}
+		return result;
 	}
 
 }
