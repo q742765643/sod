@@ -13,6 +13,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface UserMapper {
     UserEntity selectByPrimaryKey(String id);
-    PageInfo<UserEntity> findAll();
 
 }
