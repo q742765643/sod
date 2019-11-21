@@ -2,7 +2,6 @@ package com.piesat.controller;
 
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
-import com.piesat.ucenter.rpc.api.TestService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class TestController {
-    @GrpcHthtClient
+  /*  @GrpcHthtClient
     private TestService testService;
     @RequestMapping("/test1")
    public void test(){
         testService.test();
 
-   }
+   }*/
 }

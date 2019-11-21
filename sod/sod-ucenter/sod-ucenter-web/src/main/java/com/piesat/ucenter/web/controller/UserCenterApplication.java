@@ -1,6 +1,7 @@
-package com.piesat.ucenter.web;
+package com.piesat.ucenter.web.controller;
 import com.piesat.common.grpc.annotation.GrpcServiceScan;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -18,9 +19,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ServletComponentScan(basePackages={"com.piesat.*"})
 @EnableJpaRepositories(basePackages = { "com.piesat" })
 @EntityScan(basePackages = { "com.piesat" })
+@MapperScan("com.piesat.*.mapper")
 @Slf4j
-public class Application {
+public class UserCenterApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class,args);
+		SpringApplication.run(UserCenterApplication.class,args);
 	}
 }
