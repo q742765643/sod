@@ -1,5 +1,6 @@
 package com.piesat.ucenter.mapper.system;
 
+import com.github.pagehelper.PageInfo;
 import com.piesat.ucenter.entity.system.UserEntity;
 import org.springframework.stereotype.Component;
 
@@ -12,5 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface UserMapper {
     UserEntity selectByPrimaryKey(String id);
+    PageInfo<UserEntity> findAll();
 
 }

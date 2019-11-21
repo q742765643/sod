@@ -64,6 +64,12 @@ mybatis:
   callSettersOnNulls:  true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
 eureka:
   instance:
     prefer-ip-address: true
