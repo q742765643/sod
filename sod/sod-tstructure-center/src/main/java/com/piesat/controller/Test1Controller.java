@@ -2,10 +2,6 @@ package com.piesat.controller;
 
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
-import com.piesat.common.grpc.interceptor.LogClientGrpcInterceptor;
-import com.piesat.ucenter.rpc.api.TestService;
-import com.piesat.ucenter.rpc.api.UserService;
-import com.piesat.ucenter.rpc.dto.UserDto;
 import io.grpc.Channel;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +17,7 @@ import java.util.Date;
  */
 @RestController
 public class Test1Controller {
-    @GrpcClient(value = "cloud-grpc-server",interceptors = {LogClientGrpcInterceptor.class})
+   /* @GrpcClient(value = "cloud-grpc-server",interceptors = {LogClientGrpcInterceptor.class})
     private TestService testService;
     @GrpcClient("cloud-grpc-server")
     private UserService userService;
@@ -33,5 +29,5 @@ public class Test1Controller {
         userService.save(userDto);
         System.out.println( testService.test());
 
-   }
+   }*/
 }

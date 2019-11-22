@@ -1,9 +1,18 @@
 package com.piesat.sod.system.rpc.service;
 
+import java.io.File;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.alibaba.druid.util.StringUtils;
 import com.piesat.common.jpa.BaseDao;
@@ -13,7 +22,6 @@ import com.piesat.common.jpa.page.PageForm;
 import com.piesat.sod.system.dao.DbFileDao;
 import com.piesat.sod.system.entity.DbFileEntity;
 import com.piesat.sod.system.rpc.api.DbFileService;
-import com.piesat.sod.system.rpc.mapper.DbFileMapper;
 
 
 /** 数据库文件 业务处理
@@ -28,8 +36,11 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	@Autowired
 	private DbFileDao dbFileDao;
 	
-	@Autowired
-	private DbFileMapper dbFileMapper;
+//	@Autowired
+//	private DbFileMapper dbFileMapper;
+	
+	@Value("${serverfile.dbfile}")
+	private String fileArr;
 
 	/**
 	 *  获取分页数据
@@ -83,6 +94,41 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	@Override
 	public BaseDao<DbFileEntity> getBaseDao() {
 		return dbFileDao;
+	}
+
+	/**
+	 * 保存上传文件
+	 * @description 
+	 * @author wlg
+	 * @date 2019-11-21 10:05
+	 * @param request
+	 * @throws Exception
+	 */
+	@Override
+	public void save(MultipartHttpServletRequest request) throws Exception {
+		// 获取文件存储路径 , 如果没有 , 创建
+		if(!Paths.get(fileArr).toFile().exists())
+			Paths.get(fileArr).toFile().mkdirs();
+		
+		List<MultipartFile> fileList = request.getFiles("file");
+		Date now = new Date();
+		for(MultipartFile mf:fileList) {
+			DbFileEntity dfe = new DbFileEntity();
+			//文件路径
+			String filePath = fileArr + mf.getOriginalFilename();
+			String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
+			String fileType = request.getParameter("fileType");
+			dfe.setFileName(mf.getOriginalFilename());
+			dfe.setFileSuffix(fileSuffix);
+			dfe.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now));
+			dfe.setFileType(fileType);
+			dfe.setFileStorName(mf.getOriginalFilename());
+			dfe.setFileStorPath(filePath);
+			dfe.setFilePictrue("文档");
+			//上传文件到服务器指定路径
+			FileCopyUtils.copy(mf.getBytes(), new File(filePath));
+			dbFileDao.save(dfe);
+		}
 	}
 
 }
