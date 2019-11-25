@@ -1,5 +1,6 @@
 package com.piesat.ucenter.rpc.service.system;
 
+import com.github.pagehelper.PageHelper;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.ucenter.dao.system.UserDao;
@@ -34,6 +35,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         UserEntity userEntity= userMapstruct.toEntity(userDto);
         userEntity=this.save(userEntity);
         userEntity= userMapper.selectByPrimaryKey("1");
+        PageHelper.startPage(1,10);
+        userMapper.selectByPrimaryKey("1");
         return userMapstruct.toDto(userEntity);
 
     }

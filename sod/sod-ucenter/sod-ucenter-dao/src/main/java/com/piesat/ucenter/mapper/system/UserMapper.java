@@ -1,5 +1,6 @@
 package com.piesat.ucenter.mapper.system;
 
+import com.github.pagehelper.PageInfo;
 import com.piesat.ucenter.entity.system.UserEntity;
 import org.springframework.stereotype.Component;
 
