@@ -40,7 +40,7 @@
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <table tableName="T_SOD_USER" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+        <table tableName="T_SOD_GRPC_SERVER" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
 
     </context>

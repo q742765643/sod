@@ -12,7 +12,9 @@ import org.springframework.data.domain.Sort;
  * @create: 2019-11-18 22:27
  **/
 @Data
-public class PageForm {
+public class PageForm<T> {
+    //查询条件
+    private T t;
     /**
      * 当前页
      */
