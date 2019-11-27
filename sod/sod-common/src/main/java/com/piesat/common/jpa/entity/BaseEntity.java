@@ -31,6 +31,19 @@ public class BaseEntity extends UUIDEntity {
     @LastModifiedDate
     private Date updateTime;
 
+
+    /**
+     * 创建者
+     */
+    @Column(name="create_by",columnDefinition = "varchar(64) default ''")
+    private String createBy;
+
+    /**
+     * 更新者
+     */
+    @Column(name="update_by",columnDefinition = "varchar(64) default ''")
+    private String updateBy;
+
     /**
      * 删除标志（0代表存在 2代表删除）
      */
@@ -39,6 +52,8 @@ public class BaseEntity extends UUIDEntity {
 
     @Version
     private Integer version;
+
+
 
 
 }

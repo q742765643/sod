@@ -16,10 +16,11 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
+        <module>sod-project-grpc</module>
+        <module>sod-util</module>
         <module>sod-common</module>
         <module>sod-ucenter</module>
         <module>sod-tstructure-center</module>
-        <module>sod-project-grpc</module>
         <module>sod-project-eureka</module>
         <module>sod-dm</module>
         <module>sod-system</module>

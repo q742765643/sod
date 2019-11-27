@@ -90,17 +90,6 @@ public class UserEntity extends BaseEntity {
     @Column(name="login_date")
     private Date loginDate;
 
-    /**
-     * 创建者
-     */
-    @Column(name="create_by",columnDefinition = "varchar(64) default ''")
-    private String createBy;
-
-    /**
-     * 更新者
-     */
-    @Column(name="update_by",columnDefinition = "varchar(64) default ''")
-    private String updateBy;
 
     /**
      * 备注

@@ -27,7 +27,7 @@ public class GrpcServerEntity {
 
     private String serverName;
 
-    private int serverStatus;
+    private String serverStatus;
 
 
     @Column(nullable = false)

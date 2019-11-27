@@ -1,10 +1,8 @@
 package com.piesat.common.jpa.service;
 
-import com.piesat.common.jpa.page.PageBean;
-import com.piesat.common.jpa.page.PageForm;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -17,7 +15,7 @@ import java.util.Map;
  */
 public interface GenericService<T, ID extends Serializable>{
     public Class<T> getEntityClass();
-    public PageBean getPage(final Specification<T> specification, PageForm pageForm);
+    public PageBean getPage(final Specification<T> specification, PageForm pageForm, Sort sort);
     public T getById(final ID id);
     public T getBySpecification(final Specification<T> specification);
     public boolean exists(final ID id);
@@ -25,7 +23,7 @@ public interface GenericService<T, ID extends Serializable>{
     public long count(final Specification<T> specification);
     public List<T> getAll();
     public List<T> getAll(final Specification<T> specification);
-    public PageBean getAll(final  PageForm pageForm);
+    public PageBean getAll(final  PageForm pageForm,Sort sort);
     public List<T> getAll(final Sort sort);
     public List<T> getAll(final Specification<T> specification, final Sort sort);
     public T save(final T entity);

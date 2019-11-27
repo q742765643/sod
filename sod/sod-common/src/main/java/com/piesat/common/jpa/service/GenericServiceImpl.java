@@ -1,8 +1,8 @@
 package com.piesat.common.jpa.service;
 
 import com.piesat.common.jpa.dao.GenericDao;
-import com.piesat.common.jpa.page.PageBean;
-import com.piesat.common.jpa.page.PageForm;
+import com.piesat.util.page.PageForm;
+import com.piesat.util.page.PageBean;
 import org.hibernate.SQLQuery;
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.query.internal.QueryImpl;
@@ -55,9 +55,9 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     }
 
     @Override
-    public PageBean getPage(final Specification<T> specification, PageForm pageForm) {
+    public PageBean getPage(final Specification<T> specification, PageForm pageForm, Sort sort) {
         PageBean pageBean=new PageBean();
-        Page<T> page=this.getGenericDao().findAll(specification,pageForm.buildPageRequest());
+        Page<T> page=this.getGenericDao().findAll(specification,this.buildPageRequest(pageForm,sort));
         pageBean.setPageData(page.getContent());
         pageBean.setTotalPage(page.getTotalPages());
         pageBean.setTotalCount(page.getTotalElements());
@@ -100,9 +100,9 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     }
 
     @Override
-    public PageBean getAll(final PageForm pageForm) {
+    public PageBean getAll(final PageForm pageForm,Sort sort) {
         PageBean pageBean=new PageBean();
-        Page<T> page=this.getGenericDao().findAll(pageForm.buildPageRequest());
+        Page<T> page=this.getGenericDao().findAll(this.buildPageRequest(pageForm,sort));
         pageBean.setPageData(page.getContent());
         pageBean.setTotalPage(page.getTotalPages());
         pageBean.setTotalCount(page.getTotalElements());
@@ -228,7 +228,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
 
     @Override
     public PageBean queryByNativeSQLPageList(String sql, Class entityClass, Map<String,Object> params, PageForm pageForm){
-        PageRequest pageRequest=pageForm.buildPageRequest();
+        PageRequest pageRequest=this.buildPageRequest(pageForm,null);
         String newSql="select * from ("+sql+") limit "+pageRequest.getOffset()+","+pageRequest.getPageSize();        Query query=em.createNativeQuery(newSql,entityClass);
         if(params!=null&&params.size()>0){
             for(String param:params.keySet() ){
@@ -244,7 +244,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     }
     @Override
     public PageBean queryByNativeSQLPageMap(String sql, Map<String,Object> params, PageForm pageForm){
-        PageRequest pageRequest=pageForm.buildPageRequest();
+        PageRequest pageRequest=this.buildPageRequest(pageForm,null);
         String newSql="select * from ("+sql+") limit "+pageRequest.getOffset()+","+pageRequest.getPageSize();
         Query query=em.createNativeQuery(newSql);
         if(params!=null&&params.size()>0){
@@ -270,6 +270,12 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
         }
         BigDecimal bigDecimal= (BigDecimal) query.getSingleResult();
         return bigDecimal.longValue();
+    }
+    public PageRequest buildPageRequest(PageForm pageForm,Sort sort) {
+        if(sort==null){
+            sort=Sort.unsorted();
+        }
+        return PageRequest.of(pageForm.getCurrentPage() - 1, pageForm.getPageSize(),sort);
     }
 
 }
