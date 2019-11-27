@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * @program: sod
@@ -53,4 +54,6 @@ public class DeptEntity extends BaseEntity {
     /** 父部门名称 */
     @Transient
     private String parentName;
+
+    private List<DeptEntity> children;
 }
