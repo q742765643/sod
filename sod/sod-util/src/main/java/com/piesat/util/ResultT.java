@@ -12,7 +12,7 @@ public class ResultT<T> implements Serializable {
 
     private int code = ReturnCodeEnum.SUCCESS.getKey();
     private String message;
-    private T result;
+    private T data;
     private int eiCode;
 
 
@@ -52,16 +52,17 @@ public class ResultT<T> implements Serializable {
         this.message = message;
     }
 
-    public T getResult() {
-        return result;
+    public T getData() {
+        return data;
     }
 
-    public void setResult(T result) {
-        this.result = result;
+    public void setData(T data) {
+        this.data = data;
     }
+
     @Override
     public String toString() {
-        return "ReturnT [code=" + code + ", msg=" + message + ", result=" + result + "]";
+        return "ReturnT [code=" + code + ", msg=" + message + ", result=" + data + "]";
     }
 
     public int getEiCode() {

@@ -36,7 +36,7 @@ import java.util.*;
  * @创建时间 2019/11/13 17:57
  */
 
-//@WebFilter(urlPatterns = { "/api/*" }, filterName = "DataFilter")
+//@WebFilter(urlPatterns = { "/*" }, filterName = "DataFilter")
 @Slf4j
 @RequiredArgsConstructor
 public class DataFilter extends OncePerRequestFilter {
@@ -44,7 +44,9 @@ public class DataFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest  request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String contentType = request.getContentType();
+
+
+        /*  String contentType = request.getContentType();
         String requestBody = null;
         boolean shouldEncrypt = false;
         if (StringUtils.substringMatch(contentType, 0, MediaType.APPLICATION_JSON_VALUE)) {
@@ -60,7 +62,7 @@ public class DataFilter extends OncePerRequestFilter {
             //wrapper.putHeader("content-type", MediaType.APPLICATION_PROBLEM_JSON_UTF8_VALUE);
             CustomEncryptHttpWrapper wrapRequest = new CustomEncryptHttpWrapper(request,requestBody);
             filterChain.doFilter(wrapRequest, response);
-        }
+        }*/
         //} else {
             //HttpReq httpReq= objectMapper.readValue(requestBody, HttpReq.class);
             //CustomEncryptHttpWrapper wrapper = new CustomEncryptHttpWrapper(request, requestBody);

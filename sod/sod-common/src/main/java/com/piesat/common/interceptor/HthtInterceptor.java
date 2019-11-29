@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piesat.common.annotation.DecryptRequest;
 import com.piesat.common.filter.CustomEncryptHttpWrapper;
 import com.piesat.common.utils.AESUtil;
+import com.piesat.common.utils.DecryptUtil;
 import com.piesat.common.vo.HttpReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanMap;
@@ -44,63 +45,7 @@ public class HthtInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        Map<String, String[]> result = new HashMap<>(8);
-        Enumeration<String> parameterNames = request.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String name = parameterNames.nextElement();
-            result.put(name, request.getParameterValues(name));
-        }
-        String token = request.getHeader("authorization");
-        if(token.equals("88888888")){
-            request.setAttribute("REQUEST_RESOLVER_PARAM_MAP_NAME",result);
-            return true;
-        }else {
-          
-        }
-        String requestBody = null;
-        HandlerMethod h = (HandlerMethod)o;
-        DecryptRequest decryptRequest=h.getMethod().getAnnotation(DecryptRequest.class);
-        if(decryptRequest!=null&&decryptRequest.value()==false){
-            return true;
-        }
-
-        if(result.size()==0){
-            return true;
-        }
-        if(null==result.get("data")){
-            return true;
-        }
-        requestBody= result.get("data")[0];
-        if(null==requestBody||requestBody.equals("")){
-            return true;
-        }
-        String data= AESUtil.aesDecrypt(requestBody);
-        Map<String,String[]> parameterMap=new HashMap<>();
-        if(data.startsWith("{")){
-          Map<String,Object> map=JSON.parseObject(data,Map.class);
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                 Object oo=entry.getValue();
-                 if(oo instanceof JSONArray){
-                     JSONArray jsonArray= (JSONArray) oo;
-                     String ss="";
-                     for(int i=0;i<jsonArray.size();i++){
-                         ss+=String.valueOf(jsonArray.get(i))+"&&&";
-                     }
-                      parameterMap.put(entry.getKey(),ss.split("&&&"));
-                     }else{
-                       String ss= String.valueOf(oo)+"&&&";
-                       parameterMap.put(entry.getKey(),ss.split("&&&"));
-                 }
-            }
-
-        }else{
-
-
-        }
-
-
-
-        request.setAttribute("REQUEST_RESOLVER_PARAM_MAP_NAME",parameterMap);
+        DecryptUtil.decrypt(request,response,o);
         return true;
     }
     @Override
@@ -113,27 +58,4 @@ public class HthtInterceptor implements HandlerInterceptor {
 
     }
 
-    private String convertInputStreamToString(InputStream inputStream) throws IOException {
-        return StreamUtils.copyToString(inputStream, Charset.forName("UTF-8"));
-    }
-    private String convertFormToString(HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>(8);
-        Enumeration<String> parameterNames = request.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String name = parameterNames.nextElement();
-            result.put(name, request.getParameter(name));
-        }
-        try {
-            HttpReq httpReq= mapToBean(result,HttpReq.class);
-            return httpReq.toString();
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-    public static <T> T mapToBean(Map<String, Object> map,Class<T> clazz) throws Exception {
-        T bean = clazz.newInstance();
-        BeanMap beanMap = BeanMap.create(bean);
-        beanMap.putAll(map);
-        return bean;
-    }
 }

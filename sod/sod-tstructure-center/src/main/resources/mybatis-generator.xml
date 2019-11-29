@@ -40,7 +40,7 @@
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <table tableName="T_SOD_DEPT" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+        <table tableName="T_SOD_MEMU" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
 
     </context>

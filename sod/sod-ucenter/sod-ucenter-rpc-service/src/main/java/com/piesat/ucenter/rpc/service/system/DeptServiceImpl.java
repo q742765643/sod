@@ -5,6 +5,9 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.ucenter.dao.system.DeptDao;
 import com.piesat.ucenter.entity.system.DeptEntity;
 import com.piesat.ucenter.mapper.system.DeptMapper;
+import com.piesat.ucenter.rpc.dto.system.DeptDto;
+import com.piesat.ucenter.rpc.mapstruct.system.DeptMapstruct;
+import com.piesat.ucenter.rpc.util.TreeSelect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,8 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
     private DeptDao deptDao;
     @Autowired
     private DeptMapper deptMapper;
+    @Autowired
+    private DeptMapstruct deptMapstruct;
     @Override
     public BaseDao<DeptEntity> getBaseDao() {
         return deptDao;
@@ -32,12 +37,14 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
     /**
      * 查询部门管理数据
      *
-     * @param dept 部门信息
+     * @param deptDto 部门信息
      * @return 部门信息集合
      */
-    public List<DeptEntity> selectDeptList(DeptEntity dept)
+    public List<DeptDto> selectDeptList(DeptDto deptDto)
     {
-        return deptMapper.selectDeptList(dept);
+        DeptEntity dept=deptMapstruct.toEntity(deptDto);
+        List<DeptEntity> deptEntities=deptMapper.selectDeptList(dept);
+        return deptMapstruct.toDto(deptEntities);
     }
     /**
      * 构建前端所需要树结构
@@ -45,12 +52,12 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param depts 部门列表
      * @return 树结构列表
      */
-    public List<DeptEntity> buildDeptTree(List<DeptEntity> depts)
+    public List<DeptDto> buildDeptTree(List<DeptDto> depts)
     {
-        List<DeptEntity> returnList = new ArrayList<DeptEntity>();
-        for (Iterator<DeptEntity> iterator = depts.iterator(); iterator.hasNext();)
+        List<DeptDto> returnList = new ArrayList<DeptDto>();
+        for (Iterator<DeptDto> iterator = depts.iterator(); iterator.hasNext();)
         {
-            DeptEntity t = (DeptEntity) iterator.next();
+            DeptDto t = (DeptDto) iterator.next();
             // 根据传入的某个父节点ID,遍历该父节点的所有子节点
             if (t.getParentId().equals("0"))
             {
@@ -67,16 +74,16 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
     /**
      * 递归列表
      */
-    private void recursionFn(List<DeptEntity> list, DeptEntity t) {
+    private void recursionFn(List<DeptDto> list, DeptDto t) {
         // 得到子节点列表
-        List<DeptEntity> childList = getChildList(list, t);
+        List<DeptDto> childList = getChildList(list, t);
         t.setChildren(childList);
-        for (DeptEntity tChild : childList) {
+        for (DeptDto tChild : childList) {
             if (hasChild(list, tChild)) {
                 // 判断是否有子节点
-                Iterator<DeptEntity> it = childList.iterator();
+                Iterator<DeptDto> it = childList.iterator();
                 while (it.hasNext()) {
-                    DeptEntity n = (DeptEntity) it.next();
+                    DeptDto n = (DeptDto) it.next();
                     recursionFn(list, n);
                 }
             }
@@ -85,13 +92,13 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
     /**
      * 得到子节点列表
      */
-    private List<DeptEntity> getChildList(List<DeptEntity> list, DeptEntity t)
+    private List<DeptDto> getChildList(List<DeptDto> list, DeptDto t)
     {
-        List<DeptEntity> tlist = new ArrayList<DeptEntity>();
-        Iterator<DeptEntity> it = list.iterator();
+        List<DeptDto> tlist = new ArrayList<DeptDto>();
+        Iterator<DeptDto> it = list.iterator();
         while (it.hasNext())
         {
-            DeptEntity n = (DeptEntity) it.next();
+            DeptDto n = (DeptDto) it.next();
             if (n.getParentId().equals( t.getId()))
             {
                 tlist.add(n);
@@ -106,13 +113,13 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param depts 部门列表
      * @return 下拉树结构列表
      */
-    public List<TreeSelect> buildDeptTreeSelect(List<DeptEntity> depts)
+    public List<TreeSelect> buildDeptTreeSelect(List<DeptDto> depts)
     {
-        List<DeptEntity> deptTrees = buildDeptTree(depts);
+        List<DeptDto> deptTrees = buildDeptTree(depts);
         return deptTrees.stream().map(TreeSelect::new).collect(Collectors.toList());
     }
 
-    private boolean hasChild(List<DeptEntity> list, DeptEntity t)
+    private boolean hasChild(List<DeptDto> list, DeptDto t)
     {
         return getChildList(list, t).size() > 0 ? true : false;
     }
@@ -134,9 +141,10 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param deptId 部门ID
      * @return 部门信息
      */
-    public DeptEntity selectDeptById(String deptId)
+    public DeptDto selectDeptById(String deptId)
     {
-        return deptDao.getOne(deptId);
+        DeptEntity deptEntity=this.getById(deptId);
+        return deptMapstruct.toDto(deptEntity);
     }
     /**
      * 新增保存部门信息
@@ -144,8 +152,42 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param dept 部门信息
      * @return 结果
      */
-    public DeptEntity insertDept(DeptEntity dept)
+    public DeptDto insertDept(DeptDto dept)
     {
-        return deptDao.save(dept);
+        DeptEntity deptEntity=deptMapstruct.toEntity(dept);
+        return deptMapstruct.toDto(this.save(deptEntity));
+    }
+    /**
+     * 删除部门管理信息
+     *
+     * @param deptId 部门ID
+     * @return 结果
+     */
+    public void deleteDeptById(String deptId){
+        this.delete(deptId);
+    }
+
+    /**
+     * 是否存在子节点
+     *
+     * @param deptId 部门ID
+     * @return 结果
+     */
+    public boolean hasChildByDeptId(String deptId)
+    {
+        int result = deptDao.countByIdAndDelFlag(deptId,"0");
+        return result > 0 ? true : false;
+    }
+
+    /**
+     * 查询部门是否存在用户
+     *
+     * @param deptId 部门ID
+     * @return 结果 true 存在 false 不存在
+     */
+    public boolean checkDeptExistUser(String deptId)
+    {
+        int result = deptDao.countByIdAndDelFlag(deptId,"0");
+        return result > 0 ? true : false;
     }
 }

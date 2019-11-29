@@ -12,4 +12,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DeptDao extends BaseDao<DeptEntity> {
+
+     int countByIdAndDelFlag(String id,String delFlag);
+     int countByParentIdAndDelFlag(String id,String delFlag);
+
 }

@@ -1,7 +1,8 @@
-package com.piesat.ucenter.rpc.service.system;
+package com.piesat.ucenter.rpc.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.piesat.ucenter.entity.system.DeptEntity;
+import com.piesat.ucenter.rpc.dto.system.DeptDto;
+import com.piesat.ucenter.rpc.dto.system.MenuDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -33,11 +34,17 @@ public class TreeSelect implements Serializable
 
     }
 
-    public TreeSelect(DeptEntity dept)
+    public TreeSelect(DeptDto dept)
     {
         this.id = dept.getId();
         this.label = dept.getDeptName();
         this.children = dept.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
+    }
+    public TreeSelect(MenuDto menuDto)
+    {
+        this.id = menuDto.getId();
+        this.label = menuDto.getMenuName();
+        this.children = menuDto.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
     }
 
 }

@@ -10,4 +10,13 @@ import com.piesat.ucenter.rpc.dto.system.UserDto;
  */
 public interface UserService {
     public UserDto saveUserDto(UserDto userDto);
+
+
+    /**
+     * 通过用户名查询用户
+     *
+     * @param userName 用户名
+     * @return 用户对象信息
+     */
+    public UserDto selectUserByUserName(String userName);
 }

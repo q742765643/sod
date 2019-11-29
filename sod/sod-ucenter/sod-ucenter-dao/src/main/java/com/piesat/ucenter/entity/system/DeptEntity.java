@@ -54,6 +54,6 @@ public class DeptEntity extends BaseEntity {
     /** 父部门名称 */
     @Transient
     private String parentName;
-
+    @Transient
     private List<DeptEntity> children;
 }

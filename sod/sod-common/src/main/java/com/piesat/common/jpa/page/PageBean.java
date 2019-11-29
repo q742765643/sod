@@ -1,3 +1,4 @@
+/*
 package com.piesat.common.jpa.page;
 
 import lombok.Data;
@@ -7,23 +8,29 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+*/
 /**
  * @program: sod
  * @description:
  * @author: zzj
  * @create: 2019-11-18 22:09
- **/
+ **//*
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class PageBean {
-    /**
+    */
+/**
      * 当前页
-     */
+     *//*
+
     private int currentPage = 1;
 
-    /**
+    */
+/**
      * 分页大小
-     */
+     *//*
+
     private int pageSize = 10;
 
     private List<?> pageData;
@@ -34,3 +41,4 @@ public class PageBean {
 
 }
 
+*/

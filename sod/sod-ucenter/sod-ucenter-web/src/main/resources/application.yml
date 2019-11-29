@@ -1,7 +1,7 @@
 server:
-  port: 1234
+  port: 8080
   servlet:
-      context-path: /a
+      context-path: /
 tomcat:
     remote-ip-header: x-forward-for
     uri-encoding: UTF-8
@@ -59,7 +59,7 @@ spring:
     #database: mysql
     open-in-view: false
 mybatis:
-  type-aliases-package: com.piesat
+  type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath:mapper/*.xml
   callSettersOnNulls:  true
   configuration:
