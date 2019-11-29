@@ -52,6 +52,19 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
         return this.buildMenuTree(menuMapstruct.toDto(menuList));
     }
     /**
+     *@描述 查询菜单select
+     *@参数 [menu]
+     *@返回值 java.util.List<com.piesat.ucenter.rpc.util.TreeSelect>
+     *@author zzj
+     *@创建时间 2019/11/29 15:51 
+     **/
+    @Override
+    public List<TreeSelect> treeSelect(MenuDto menu){
+        List<MenuEntity> menuList = menuMapper.selectMenuList(menuMapstruct.toEntity(menu));
+        return this.buildMenuTreeSelect(menuMapstruct.toDto(menuList));
+
+    }
+    /**
      * 构建前端所需要下拉树结构
      *
      * @param menus 菜单列表
@@ -271,5 +284,28 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
     public List<RouterVo> getRouters(String userId){
         List<MenuDto> menus = this.selectMenuTreeByUserId(userId);
         return this.buildMenus(menus);
+    }
+    /**
+     * 新增保存菜单信息
+     *
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    @Override
+    public MenuDto insertMenu(MenuDto menu)
+    {   MenuEntity menuEntity=menuMapstruct.toEntity(menu);
+        return menuMapstruct.toDto(this.save(menuEntity));
+    }
+    /**
+     * 根据菜单ID查询信息
+     *
+     * @param menuId 菜单ID
+     * @return 菜单信息
+     */
+    @Override
+    public MenuDto selectMenuById(String menuId)
+    {
+        MenuEntity menuEntity=this.getById(menuId);
+        return menuMapstruct.toDto(menuEntity);
     }
 }

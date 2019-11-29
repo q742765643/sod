@@ -3,6 +3,7 @@ package com.piesat.ucenter.rpc.api.system;
 import com.piesat.ucenter.rpc.dto.system.MenuDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.util.RouterVo;
+import com.piesat.ucenter.rpc.util.TreeSelect;
 
 import java.util.List;
 import java.util.Set;
@@ -43,4 +44,28 @@ public interface MenuService {
      * @return 获取路由
      */
    List<RouterVo> getRouters(String userId);
+    /**
+     *@描述 查询菜单select
+     *@参数 [menu]
+     *@返回值 java.util.List<com.piesat.ucenter.rpc.util.TreeSelect>
+     *@author zzj
+     *@创建时间 2019/11/29 15:51
+     **/
+   List<TreeSelect> treeSelect(MenuDto menu);
+
+    /**
+     * 新增保存菜单信息
+     *
+     * @param menu 菜单信息
+     * @return 结果
+     */
+    public MenuDto insertMenu(MenuDto menu);
+
+    /**
+     * 根据菜单ID查询信息
+     *
+     * @param menuId 菜单ID
+     * @return 菜单信息
+     */
+    public MenuDto selectMenuById(String menuId);
 }

@@ -8,7 +8,7 @@ package com.piesat.util;
  **/
 public enum ReturnCodeEnum {
     //成功
-    SUCCESS(0, "成功"),
+    SUCCESS(200, "成功"),
     //失败
     FIAL(1, " 失败"),
 

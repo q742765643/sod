@@ -66,12 +66,12 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
 
     @Override
     public T getById(final ID id) {
-        return (T)this.getGenericDao().findById(id);
+        return this.getGenericDao().findById(id).get();
     }
 
     @Override
     public T getBySpecification(final Specification<T> specification) {
-        return (T)this.getGenericDao().findOne(specification);
+        return this.getGenericDao().findOne(specification).get();
     }
 
     @Override

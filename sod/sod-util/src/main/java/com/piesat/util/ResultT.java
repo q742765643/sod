@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class ResultT<T> implements Serializable {
 
     private int code = ReturnCodeEnum.SUCCESS.getKey();
-    private String message;
+    private String msg;
     private T data;
     private int eiCode;
 
@@ -22,17 +22,17 @@ public class ResultT<T> implements Serializable {
 
     public void setErrorMessage(ReturnCodeEnum code) {
         this.code = code.getKey();
-        this.message = code.getValue();
+        this.msg = code.getValue();
     }
 
     public void setErrorMessage(String message) {
         this.code = ReturnCodeEnum.FIAL.getKey();
-        this.message = message;
+        this.msg = message;
     }
 
     public void setMessage(ReturnCodeEnum code, String message) {
         this.code = code.getKey();
-        this.message = message;
+        this.msg = message;
     }
 
 
@@ -44,12 +44,13 @@ public class ResultT<T> implements Serializable {
         this.code = code;
     }
 
-    public String getMessage() {
-        return message;
+
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public T getData() {
@@ -62,7 +63,7 @@ public class ResultT<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "ReturnT [code=" + code + ", msg=" + message + ", result=" + data + "]";
+        return "ReturnT [code=" + code + ", msg=" + msg + ", result=" + data + "]";
     }
 
     public int getEiCode() {

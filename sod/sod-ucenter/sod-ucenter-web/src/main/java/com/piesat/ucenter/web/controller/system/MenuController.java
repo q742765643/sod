@@ -1,13 +1,14 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.ucenter.entity.system.MenuEntity;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.dto.system.MenuDto;
+import com.piesat.ucenter.rpc.util.TreeSelect;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +32,48 @@ public class MenuController {
         resultT.setData(menuDtos);
         return resultT;
     }
+    @GetMapping("/treeselect")
+    public ResultT<List<TreeSelect>> treeselect(MenuDto menu)
+    {
+        ResultT< List<TreeSelect>> resultT=new ResultT<>();
+        List<TreeSelect> treeSelects = menuService.treeSelect(menu);
+        resultT.setData(treeSelects);
+        return resultT;
+    }
+    /**
+     * 新增菜单
+     */
+
+    @PostMapping
+    public ResultT<MenuDto> add(@RequestBody MenuDto menu)
+    {
+        ResultT<MenuDto> resultT=new ResultT<>();
+        MenuDto menuDto=menuService.insertMenu(menu);
+        resultT.setData(menuDto);
+        return resultT;
+    }
+    /**
+     * 修改菜单
+     */
+    @PutMapping
+    public ResultT<MenuDto> edit(@RequestBody MenuDto menu)
+    {
+        ResultT<MenuDto> resultT=new ResultT<>();
+        MenuDto menuDto=menuService.insertMenu(menu);
+        resultT.setData(menuDto);
+        return resultT;
+    }
+    /**
+     * 根据菜单编号获取详细信息
+     */
+    @GetMapping(value = "/{menuId}")
+    public ResultT<MenuDto> getInfo(@PathVariable String menuId)
+    {
+        ResultT<MenuDto> resultT=new ResultT<>();
+        MenuDto menuDto=menuService.selectMenuById(menuId);
+        resultT.setData(menuDto);
+        return resultT;
+    }
+
 
 }
