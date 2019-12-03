@@ -19,8 +19,19 @@ public class PageForm<T> {
     /**
      * 分页大小
      */
-    private int pageSize = 10;
+    public  PageForm(){
 
+    }
+    private int pageSize = 10;
+    public PageForm(int currentPage,int pageSize,T t){
+        this.currentPage=currentPage;
+        this.pageSize=pageSize;
+        this.t=t;
+    }
+    public PageForm(int currentPage,int pageSize){
+        this.currentPage=currentPage;
+        this.pageSize=pageSize;
+    }
     public T getT() {
         return t;
     }

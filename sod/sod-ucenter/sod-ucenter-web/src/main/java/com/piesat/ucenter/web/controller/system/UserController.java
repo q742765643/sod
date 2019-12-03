@@ -37,10 +37,7 @@ public class UserController {
     public ResultT<PageBean> list(UserDto user,int pageNum,int pageSize)
     {
         ResultT<PageBean> resultT=new ResultT<>();
-        PageForm<UserDto> pageForm=new PageForm<>();
-        pageForm.setCurrentPage(pageNum);
-        pageForm.setPageSize(pageSize);
-        pageForm.setT(user);
+        PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,user);
         PageBean pageBean=userService.selectUserList(pageForm);
         resultT.setData(pageBean);
         return resultT;
