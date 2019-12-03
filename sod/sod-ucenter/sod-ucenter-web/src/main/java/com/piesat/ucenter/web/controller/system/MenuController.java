@@ -75,5 +75,25 @@ public class MenuController {
         return resultT;
     }
 
+    /**
+     * 删除菜单
+     */
+
+    @DeleteMapping("/{menuId}")
+    public ResultT<String> remove(@PathVariable("menuId") String menuId)
+    {
+       /* if (menuService.hasChildByMenuId(menuId))
+        {
+            return AjaxResult.error("存在子菜单,不允许删除");
+        }
+        if (menuService.checkMenuExistRole(menuId))
+        {
+            return AjaxResult.error("菜单已分配,不允许删除");
+        }*/
+        ResultT<String> resultT=new ResultT<>();
+        menuService.deleteMenuById(menuId);
+        return resultT;
+    }
+
 
 }

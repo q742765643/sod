@@ -68,4 +68,13 @@ public interface MenuService {
      * @return 菜单信息
      */
     public MenuDto selectMenuById(String menuId);
+
+
+    /**
+     * 删除菜单管理信息
+     *
+     * @param menuId 菜单ID
+     * @return 结果
+     */
+    public void deleteMenuById(String menuId);
 }

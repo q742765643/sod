@@ -1,6 +1,10 @@
 package com.piesat.ucenter.rpc.api.system;
 
 import com.piesat.ucenter.rpc.dto.system.UserDto;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
+
+import java.util.List;
 
 /**
  * @program: sod
@@ -19,4 +23,12 @@ public interface UserService {
      * @return 用户对象信息
      */
     public UserDto selectUserByUserName(String userName);
+
+    /**
+     * 根据条件分页查询用户列表
+     *
+     * @param
+     * @return 用户信息集合信息
+     */
+    PageBean selectUserList(PageForm<UserDto> pageForm);
 }

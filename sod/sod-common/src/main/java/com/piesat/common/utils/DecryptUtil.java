@@ -77,11 +77,11 @@ public class DecryptUtil {
                     String parmFit="";
                     JSONArray jsonArray= (JSONArray) oo;
                     for(int i=0;i<jsonArray.size();i++){
-                        parmFit+=jsonArray.get(i)+"&&&";
+                        parmFit+=String.valueOf(jsonArray.get(i))+"&&&";
                     }
                     parameterMap.put(entry.getKey(),parmFit.split("&&&"));
                 }else{
-                    String parmFit= (String) oo;
+                    String parmFit=String.valueOf(oo) ;
                     parameterMap.put(entry.getKey(),parmFit.split("&&&"));
                 }
             }

@@ -308,4 +308,16 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
         MenuEntity menuEntity=this.getById(menuId);
         return menuMapstruct.toDto(menuEntity);
     }
+
+    /**
+     * 删除菜单管理信息
+     *
+     * @param menuId 菜单ID
+     * @return 结果
+     */
+    @Override
+    public void deleteMenuById(String menuId)
+    {
+       this.delete(menuId);
+    }
 }

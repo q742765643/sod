@@ -1,12 +1,17 @@
 package com.piesat.ucenter.entity.system;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -96,4 +101,16 @@ public class UserEntity extends BaseEntity {
      */
     @Column(name="remark",length = 500)
     private String remark;
+    @Transient
+    private String params;
+    @Transient
+    private Map<String,Object> paramt;
+    public Map<String, Object> getParamt()
+    {
+        if (params == null)
+        {
+            return new HashMap<>();
+        }
+        return JSON.parseObject(params, Map.class);
+    }
 }

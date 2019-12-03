@@ -4,6 +4,8 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.ucenter.entity.system.UserEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @描述
@@ -13,5 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface UserMapper {
     UserEntity selectByPrimaryKey(String id);
+
+    List<UserEntity> selectUserList(UserEntity userEntity);
 
 }
