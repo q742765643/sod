@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.ucenter.entity.system.DeptEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @描述
@@ -15,5 +17,6 @@ public interface DeptDao extends BaseDao<DeptEntity> {
 
      int countByIdAndDelFlag(String id,String delFlag);
      int countByParentIdAndDelFlag(String id,String delFlag);
+     List<DeptEntity> findByAncestorsLike(String ancestors);
 
 }

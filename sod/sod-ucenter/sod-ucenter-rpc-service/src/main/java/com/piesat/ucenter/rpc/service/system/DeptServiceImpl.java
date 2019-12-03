@@ -2,9 +2,12 @@ package com.piesat.ucenter.rpc.service.system;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.ucenter.dao.system.DeptDao;
 import com.piesat.ucenter.entity.system.DeptEntity;
+import com.piesat.ucenter.entity.system.MenuEntity;
 import com.piesat.ucenter.mapper.system.DeptMapper;
+import com.piesat.ucenter.rpc.api.system.DeptService;
 import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.mapstruct.system.DeptMapstruct;
 import com.piesat.ucenter.rpc.util.TreeSelect;
@@ -23,7 +26,7 @@ import java.util.stream.Collectors;
  * @创建时间 2019/11/27 19:40
  */
 @Service
-public class DeptServiceImpl extends BaseService<DeptEntity> {
+public class DeptServiceImpl extends BaseService<DeptEntity> implements DeptService {
     @Autowired
     private DeptDao deptDao;
     @Autowired
@@ -40,11 +43,13 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param deptDto 部门信息
      * @return 部门信息集合
      */
+    @Override
     public List<DeptDto> selectDeptList(DeptDto deptDto)
     {
         DeptEntity dept=deptMapstruct.toEntity(deptDto);
         List<DeptEntity> deptEntities=deptMapper.selectDeptList(dept);
-        return deptMapstruct.toDto(deptEntities);
+        List<DeptDto> deptDtos=this.buildDeptTree(deptMapstruct.toDto(deptEntities));
+        return deptDtos;
     }
     /**
      * 构建前端所需要树结构
@@ -106,7 +111,20 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
         }
         return tlist;
     }
-
+    /**
+     *@描述 获取部门下拉树列表
+     *@参数 [deptDto]
+     *@返回值 java.util.List<com.piesat.ucenter.rpc.util.TreeSelect>
+     *@author zzj
+     *@创建时间 2019/12/3 10:43 
+     **/
+    @Override
+    public List<TreeSelect> getTreeSelectDept(DeptDto deptDto){
+        DeptEntity dept=deptMapstruct.toEntity(deptDto);
+        List<DeptEntity> deptEntities=deptMapper.selectDeptList(dept);
+        List<TreeSelect> treeSelects=this.buildDeptTreeSelect(deptMapstruct.toDto(deptEntities));
+        return treeSelects;
+    }
     /**
      * 构建前端所需要下拉树结构
      *
@@ -141,6 +159,7 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param deptId 部门ID
      * @return 部门信息
      */
+    @Override
     public DeptDto selectDeptById(String deptId)
     {
         DeptEntity deptEntity=this.getById(deptId);
@@ -152,10 +171,55 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param dept 部门信息
      * @return 结果
      */
+    @Override
     public DeptDto insertDept(DeptDto dept)
     {
+        DeptEntity info=this.getById(dept.getParentId());
+        DeptEntity deptEntity=deptMapstruct.toEntity(dept);
+        if(null!=info){
+            deptEntity.setAncestors(info.getAncestors() + "," + dept.getParentId());
+        }
+        return deptMapstruct.toDto(this.save(deptEntity));
+    }
+    /**
+     * 新增保存部门信息
+     *
+     * @param dept 部门信息
+     * @return 结果
+     */
+    @Override
+    public DeptDto updateDept(DeptDto dept)
+    {
+        DeptEntity newParentDept = this.getById(dept.getParentId());
+        DeptEntity oldDept =  this.getById(dept.getId());
+        if (StringUtils.isNotNull(newParentDept) && StringUtils.isNotNull(oldDept))
+        {
+            String newAncestors = newParentDept.getAncestors() + "," + newParentDept.getId();
+            String oldAncestors = oldDept.getAncestors();
+            dept.setAncestors(newAncestors);
+            updateDeptChildren(dept.getId(), newAncestors, oldAncestors);
+        }
         DeptEntity deptEntity=deptMapstruct.toEntity(dept);
         return deptMapstruct.toDto(this.save(deptEntity));
+    }
+    /**
+     * 修改子元素关系
+     *
+     * @param deptId 被修改的部门ID
+     * @param newAncestors 新的父ID集合
+     * @param oldAncestors 旧的父ID集合
+     */
+    public void updateDeptChildren(String deptId, String newAncestors, String oldAncestors)
+    {
+        List<DeptEntity> children = deptDao.findByAncestorsLike(deptId);
+        for (DeptEntity child : children)
+        {
+            child.setAncestors(child.getAncestors().replace(oldAncestors, newAncestors));
+        }
+        if (children.size() > 0)
+        {
+            this.save(children);
+        }
     }
     /**
      * 删除部门管理信息
@@ -163,6 +227,7 @@ public class DeptServiceImpl extends BaseService<DeptEntity> {
      * @param deptId 部门ID
      * @return 结果
      */
+    @Override
     public void deleteDeptById(String deptId){
         this.delete(deptId);
     }

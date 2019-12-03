@@ -24,7 +24,7 @@ public class DeptEntity extends BaseEntity {
     private String parentId;
 
     /** 祖级列表 */
-    @Column(name="ancestors", length=50)
+    @Column(name="ancestors", columnDefinition="CLOB")
     private String ancestors;
 
     /** 部门名称 */
@@ -54,6 +54,5 @@ public class DeptEntity extends BaseEntity {
     /** 父部门名称 */
     @Transient
     private String parentName;
-    @Transient
-    private List<DeptEntity> children;
+
 }

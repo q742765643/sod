@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -66,12 +67,14 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
 
     @Override
     public T getById(final ID id) {
-        return this.getGenericDao().findById(id).get();
+        Optional<T> optionalT = this.getGenericDao().findById(id);
+        return optionalT.isPresent() ? optionalT.get(): null;
     }
 
     @Override
     public T getBySpecification(final Specification<T> specification) {
-        return this.getGenericDao().findOne(specification).get();
+        Optional<T> optionalT = this.getGenericDao().findOne(specification);
+        return optionalT.isPresent() ? optionalT.get(): null;
     }
 
     @Override

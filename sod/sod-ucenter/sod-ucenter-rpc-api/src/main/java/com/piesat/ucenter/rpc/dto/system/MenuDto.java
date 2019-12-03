@@ -1,6 +1,7 @@
 package com.piesat.ucenter.rpc.dto.system;
 
 import com.piesat.util.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -50,6 +51,6 @@ public class MenuDto extends BaseDto {
      * 备注
      */
     private String remark;
-
+    @ApiModelProperty(hidden = true)
     private List<MenuDto> children=new ArrayList<>();
 }

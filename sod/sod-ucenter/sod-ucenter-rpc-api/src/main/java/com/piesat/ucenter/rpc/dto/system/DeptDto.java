@@ -2,8 +2,10 @@ package com.piesat.ucenter.rpc.dto.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.piesat.util.BaseDto;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 
@@ -41,6 +43,6 @@ public class DeptDto extends BaseDto {
 
     /** 父部门名称 */
     private String parentName;
-    @JsonIgnore
-    private List<DeptDto> children;
+    @ApiModelProperty(hidden = true)
+    private List<DeptDto> children=new ArrayList<>();
 }

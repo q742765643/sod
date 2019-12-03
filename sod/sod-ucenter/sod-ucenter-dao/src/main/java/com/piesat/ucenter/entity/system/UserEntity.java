@@ -101,16 +101,5 @@ public class UserEntity extends BaseEntity {
      */
     @Column(name="remark",length = 500)
     private String remark;
-    @Transient
-    private String params;
-    @Transient
-    private Map<String,Object> paramt;
-    public Map<String, Object> getParamt()
-    {
-        if (params == null)
-        {
-            return new HashMap<>();
-        }
-        return JSON.parseObject(params, Map.class);
-    }
+
 }
