@@ -6,11 +6,11 @@ import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -53,6 +53,46 @@ public class DictDataController {
         ResultT<List<DictDataDto>> resultT=new ResultT<>();
         List<DictDataDto> dictDataDtoList=dictDataService.selectDictDataByType(dictType);
         resultT.setData(dictDataDtoList);
+        return resultT;
+    }
+    /**
+     * 新增字典类型
+     */
+    @PostMapping
+    public ResultT<DictDataDto> add(@RequestBody DictDataDto dict)
+    {
+        ResultT<DictDataDto> resultT=new ResultT<>();
+        DictDataDto dictDataDto=dictDataService.insertDictData(dict);
+        resultT.setData(dictDataDto);
+        return resultT;
+    }
+
+    /**
+     * 修改保存字典类型
+     */
+
+    @PutMapping
+    public ResultT<DictDataDto> edit(@RequestBody DictDataDto dict)
+    {
+        ResultT<DictDataDto> resultT=new ResultT<>();
+        DictDataDto dictDataDto=dictDataService.updateDictData(dict);
+        resultT.setData(dictDataDto);
+        return resultT;
+    }
+
+    /**
+     * 删除字典类型
+     */
+
+    @DeleteMapping("/{dictCodes}")
+    public  ResultT<String> remove(@PathVariable String[] dictCodes)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        List<String> list=new ArrayList();
+        if(dictCodes.length>0){
+            list= Arrays.asList(dictCodes);
+            dictDataService.deleteDictDataByIds(list);
+        }
         return resultT;
     }
 }

@@ -49,4 +49,7 @@
       </if>
     </where>
   </select>
+  <update id="updateDictDataType" parameterType="String">
+ 		update t_sod_dict_data set dict_type = #{newDictType} where dict_type = #{oldDictType}
+  </update>
 </mapper>

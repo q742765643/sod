@@ -22,4 +22,6 @@ public class DictTypeDto extends BaseDto {
     private String status;
 
     private String params;
+
+    private String remark;
 }

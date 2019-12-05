@@ -68,4 +68,12 @@ public interface DictTypeService {
      */
     public String checkDictTypeUnique(DictTypeDto dict);
 
+    /**
+     * 修改保存字典类型信息
+     *
+     * @param dictType 字典类型信息
+     * @return 结果
+     */
+    public DictTypeDto updateDictType(DictTypeDto dictType);
+
 }

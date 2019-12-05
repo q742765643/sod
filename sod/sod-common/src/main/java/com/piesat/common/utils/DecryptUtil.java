@@ -61,6 +61,8 @@ public class DecryptUtil {
              requestBody=param.get("data")[0];
              if(StringUtils.isNull(requestBody)||"".equals(requestBody)){
                  shouldDecrypt=false;
+                 request.setAttribute("REQUEST_RESOLVER_PARAM_MAP_NAME",null);
+                 return;
              }
         }
         /*****===========5.进行解密=================*****/

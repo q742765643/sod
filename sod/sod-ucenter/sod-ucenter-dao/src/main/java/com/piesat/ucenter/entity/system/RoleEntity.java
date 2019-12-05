@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @program: sod
@@ -43,4 +44,11 @@ public class RoleEntity extends BaseEntity {
     @Column(name="remark",length = 500)
     private String remark;
 
+    /** 菜单组 */
+    @Transient
+    private String[] menuIds;
+
+    /** 部门组（数据权限） */
+    @Transient
+    private String[] deptIds;
 }

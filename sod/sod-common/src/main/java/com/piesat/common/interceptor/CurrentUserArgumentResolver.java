@@ -41,6 +41,10 @@ public class CurrentUserArgumentResolver  implements HandlerMethodArgumentResolv
             return null;
         }
         Object arg = paramMap.get(parameter.getParameterName());
+        String typeName=parameter.getParameterType().getName();
+        if(typeName.toUpperCase().indexOf("DTO")!=-1||typeName.toUpperCase().indexOf("VO")!=-1){
+            arg=null;
+        }
         if (arg != null) {
             // 生成参数绑定器，第一个参数为request请求对象，第二个参数为需要绑定的目标对象，第三个参数为需要绑定的目标对象名
             WebDataBinder binder = binderFactory.createBinder(webRequest, null, parameter.getParameterName());

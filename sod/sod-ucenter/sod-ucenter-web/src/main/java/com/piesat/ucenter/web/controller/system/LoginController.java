@@ -57,7 +57,7 @@ public class LoginController {
     {
         ResultT<Map<String,Object>> resultT=new ResultT<>();
         Map<String,Object> map=new HashMap<>();
-        UserDto userDto=userService.selectUserByUserName("admin");
+        UserDto userDto=userService.selectUserByUserName("zzj");
         // 角色集合
         Set<String> roles = roleService.getRolePermission(userDto);
         Set<String> permissions = menuService.getMenuPermission(userDto);
@@ -72,7 +72,7 @@ public class LoginController {
     public ResultT<List<RouterVo>>  getRouters()
     {
         ResultT<List<RouterVo>> resultT=new ResultT<>();
-        List<RouterVo> routerVos=menuService.getRouters("1");
+        List<RouterVo> routerVos=menuService.getRouters("788d74efcb99498eba5fb89814070737");
         resultT.setData(routerVos);
         return resultT;
     }

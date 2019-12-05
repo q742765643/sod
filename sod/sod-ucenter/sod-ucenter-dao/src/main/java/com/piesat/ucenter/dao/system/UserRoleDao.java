@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserRoleDao extends BaseDao<UserRoleEntity> {
+    void deleteByUserId(String userId);
 }

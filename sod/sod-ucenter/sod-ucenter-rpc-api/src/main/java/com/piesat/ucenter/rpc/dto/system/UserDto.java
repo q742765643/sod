@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: sod
@@ -67,4 +68,13 @@ public class UserDto extends BaseDto {
 
     @JsonIgnore
     private String params;
+
+    private String[] roleIds;
+
+    private DeptDto dept;
+
+    /**
+     * 角色对象
+     */
+    private List<RoleDto> roles;
 }

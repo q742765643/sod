@@ -26,6 +26,25 @@
     <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
     <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
     <result column="USER_TYPE" jdbcType="VARCHAR" property="userType" />
+    <association property="dept"    column="dept_id" javaType="com.piesat.ucenter.entity.system.DeptEntity" resultMap="deptResult" />
+    <collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
+  </resultMap>
+  <resultMap id="deptResult" type="com.piesat.ucenter.entity.system.DeptEntity">
+    <id     property="id"   column="id"     />
+    <result property="parentId" column="parent_id"   />
+    <result property="deptName" column="dept_name"   />
+    <result property="orderNum" column="order_num"   />
+    <result property="leader"   column="leader"      />
+    <result property="status"   column="dept_status" />
+  </resultMap>
+
+  <resultMap id="RoleResult" type="com.piesat.ucenter.entity.system.RoleEntity">
+    <id     property="id"       column="id"        />
+    <result property="roleName"     column="role_name"      />
+    <result property="roleKey"      column="role_key"       />
+    <result property="roleSort"     column="role_sort"      />
+    <result property="dataScope"     column="data_scope"    />
+    <result property="status"       column="role_status"    />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -40,7 +59,7 @@
   <sql id="selectUserVo">
         select u.id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
        d.id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
-        r.id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
+        r.id as role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from t_sod_user u
 		    left join t_sod_dept d on u.dept_id =d.id
 		    left join t_sod_user_role ur on u.id = ur.user_id
@@ -69,4 +88,6 @@
     </if>
 
   </select>
+
+
 </mapper>

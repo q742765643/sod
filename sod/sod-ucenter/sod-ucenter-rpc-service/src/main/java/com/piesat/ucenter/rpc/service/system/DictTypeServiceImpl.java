@@ -9,6 +9,7 @@ import com.piesat.ucenter.common.constant.UserConstants;
 import com.piesat.ucenter.dao.system.DictTypeDao;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
+import com.piesat.ucenter.mapper.system.DictDataMapper;
 import com.piesat.ucenter.mapper.system.DictTypeMapper;
 import com.piesat.ucenter.rpc.api.system.DictTypeService;
 import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
@@ -36,6 +37,8 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
     private DictTypeMapper dictTypeMapper;
     @Autowired
     private DictTypeMapstruct dictTypeMapstruct;
+    @Autowired
+    private DictDataMapper dictDataMapper;
     @Override
     public BaseDao<DictTypeEntity> getBaseDao() {
         return dictTypeDao;
@@ -112,6 +115,7 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
      * @param dictIds 需要删除的字典ID
      * @return 结果
      */
+    @Override
     public void deleteDictTypeByIds(List<String> dictIds)
     {
         this.deleteByIds(dictIds);
@@ -136,14 +140,15 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
      * @param dictType 字典类型信息
      * @return 结果
      */
-/*    @Override
+    @Override
     @Transactional
-    public int updateDictType(SysDictType dictType)
+    public DictTypeDto updateDictType(DictTypeDto dictType)
     {
-        SysDictType oldDict = dictTypeMapper.selectDictTypeById(dictType.getDictId());
-        //dictDataMapper.updateDictDataType(oldDict.getDictType(), dictType.getDictType());
-        return dictTypeMapper.updateDictType(dictType);
-    }*/
+        DictTypeEntity oldDict = this.getById(dictType.getId());
+        dictDataMapper.updateDictDataType(oldDict.getDictType(), dictType.getDictType());
+        DictTypeEntity newDict=this.save(dictTypeMapstruct.toEntity(dictType));
+        return dictTypeMapstruct.toDto(newDict);
+    }
 
     /**
      * 校验字典类型称是否唯一

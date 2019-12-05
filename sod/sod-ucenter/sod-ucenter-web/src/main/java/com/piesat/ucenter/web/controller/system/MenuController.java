@@ -94,6 +94,16 @@ public class MenuController {
         menuService.deleteMenuById(menuId);
         return resultT;
     }
-
+    /**
+     * 加载对应角色菜单列表树
+     */
+    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
+    public ResultT<List<String>> roleMenuTreeselect(@PathVariable("roleId") String roleId)
+    {
+        ResultT<List<String>> resultT=new ResultT<>();
+        List<String> list=menuService.selectMenuListByRoleId(roleId);
+        resultT.setData(list);
+        return resultT;
+    }
 
 }

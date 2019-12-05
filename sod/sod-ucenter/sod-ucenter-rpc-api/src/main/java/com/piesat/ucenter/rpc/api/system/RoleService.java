@@ -1,7 +1,11 @@
 package com.piesat.ucenter.rpc.api.system;
 
+import com.piesat.ucenter.rpc.dto.system.RoleDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,4 +31,59 @@ public interface RoleService {
      * @return 角色权限信息
      */
     Set<String> getRolePermission(UserDto user);
+
+    /**
+     * 根据条件分页查询角色数据
+     *
+     * @param pageForm 角色信息
+     * @return 角色数据集合信息
+     */
+    public PageBean selectRoleList(PageForm<RoleDto> pageForm);
+
+    /**
+     * 通过角色ID查询角色
+     *
+     * @param roleId 角色ID
+     * @return 角色对象信息
+     */
+    public RoleDto selectRoleById(String roleId);
+
+    /**
+     * 新增保存角色信息
+     *
+     * @param role 角色信息
+     * @return 结果
+     */
+    public void insertRole(RoleDto role);
+
+    /**
+     * 修改数据权限信息
+     *
+     * @param role 角色信息
+     * @return 结果
+     */
+    public void authDataScope(RoleDto role);
+
+    /**
+     * 批量删除角色信息
+     *
+     * @param roleIds 需要删除的角色ID
+     * @return 结果
+     */
+    public void deleteRoleByIds(List<String> roleIds);
+
+    /**
+     * 修改角色状态
+     *
+     * @param role 角色信息
+     * @return 结果
+     */
+    public RoleDto updateRoleStatus(RoleDto role);
+
+    /**
+     * 查询所有角色
+     *
+     * @return 角色列表
+     */
+    public List<RoleDto> selectRoleAll();
 }

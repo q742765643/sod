@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,4 +103,14 @@ public class UserEntity extends BaseEntity {
     @Column(name="remark",length = 500)
     private String remark;
 
+
+    /** 角色组 */
+    @Transient
+    private String[] roleIds;
+    @Transient
+    private DeptEntity dept;
+
+    /** 角色对象 */
+    @Transient
+    private List<RoleEntity> roles;
 }

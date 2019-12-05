@@ -83,4 +83,56 @@ public class DictDataServiceImpl extends BaseService<DictDataEntity> implements 
     }
 
 
+    /**
+     * 通过字典ID删除字典数据信息
+     *
+     * @param dictCode 字典数据ID
+     * @return 结果
+     */
+    @Override
+    public void deleteDictDataById(String dictCode)
+    {
+        this.delete(dictCode);
+    }
+
+    /**
+     * 批量删除字典数据信息
+     *
+     * @param dictCodes 需要删除的字典数据ID
+     * @return 结果
+     */
+    @Override
+    public void deleteDictDataByIds(List<String> dictCodes)
+    {
+        this.deleteByIds(dictCodes);
+    }
+
+    /**
+     * 新增保存字典数据信息
+     *
+     * @param dictData 字典数据信息
+     * @return 结果
+     */
+    @Override
+    public DictDataDto insertDictData(DictDataDto dictData)
+    {
+        DictDataEntity dictDataEntity=dictDataMapstruct.toEntity(dictData);
+        dictDataEntity=this.save(dictDataEntity);
+        return dictDataMapstruct.toDto(dictDataEntity);
+    }
+
+    /**
+     * 修改保存字典数据信息
+     *
+     * @param dictData 字典数据信息
+     * @return 结果
+     */
+    @Override
+    public DictDataDto updateDictData(DictDataDto dictData)
+    {
+        DictDataEntity dictDataEntity=dictDataMapstruct.toEntity(dictData);
+        dictDataEntity=this.save(dictDataEntity);
+        return dictDataMapstruct.toDto(dictDataEntity);
+    }
+
 }

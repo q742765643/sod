@@ -31,4 +31,8 @@ public class RoleDto extends BaseDto {
      */
     private String remark;
 
+    private String[] menuIds;
+    private String[] deptIds;
+
+
 }

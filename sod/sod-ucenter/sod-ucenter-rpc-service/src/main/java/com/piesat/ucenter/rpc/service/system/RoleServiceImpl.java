@@ -1,22 +1,28 @@
 package com.piesat.ucenter.rpc.service.system;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.ucenter.dao.system.RoleDao;
+import com.piesat.ucenter.dao.system.RoleMenuDao;
+import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.ucenter.entity.system.RoleEntity;
+import com.piesat.ucenter.entity.system.RoleMenuEntity;
 import com.piesat.ucenter.mapper.system.RoleMapper;
 import com.piesat.ucenter.rpc.api.system.RoleService;
+import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
 import com.piesat.ucenter.rpc.dto.system.RoleDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.system.RoleMapstruct;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @program: sod
@@ -32,11 +38,96 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     private RoleMapper roleMapper;
     @Autowired
     private RoleMapstruct roleMapstruct;
+    @Autowired
+    private RoleMenuDao roleMenuDao;
     @Override
     public BaseDao<RoleEntity> getBaseDao() {
         return roleDao;
     }
 
+    /**
+     * 根据条件分页查询角色数据
+     *
+     * @param pageForm 角色信息
+     * @return 角色数据集合信息
+     */
+    @Override
+    public PageBean selectRoleList(PageForm<RoleDto> pageForm)
+    {
+        RoleEntity roleEntity=roleMapstruct.toEntity(pageForm.getT());
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<RoleEntity> roleEntities=roleMapper.selectRoleList(roleEntity);
+        PageInfo<RoleEntity> pageInfo = new PageInfo<>(roleEntities);
+        List<RoleDto> roleDtos= roleMapstruct.toDto(pageInfo.getList());
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),roleDtos);
+        return pageBean;
+    }
+    /**
+     * 通过角色ID查询角色
+     *
+     * @param roleId 角色ID
+     * @return 角色对象信息
+     */
+    @Override
+    public RoleDto selectRoleById(String roleId)
+    {
+        RoleEntity roleEntity=this.getById(roleId);
+        return roleMapstruct.toDto(roleEntity);
+    }
+
+    /**
+     * 新增保存角色信息
+     *
+     * @param role 角色信息
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public void insertRole(RoleDto role)
+    {
+        // 新增角色信息
+        RoleEntity roleEntity=roleMapstruct.toEntity(role);
+        roleEntity=this.save(roleEntity);
+        insertRoleMenu(roleEntity);
+    }
+    /**
+     * 新增角色菜单信息
+     *
+     * @param role 角色对象
+     */
+    public void insertRoleMenu(RoleEntity role)
+    {
+        int rows = 1;
+        // 新增用户与角色管理
+        List<RoleMenuEntity> list = new ArrayList<>();
+        for (String menuId : role.getMenuIds())
+        {
+            RoleMenuEntity rm = new RoleMenuEntity();
+            rm.setRoleId(role.getId());
+            rm.setMenuId(menuId);
+            list.add(rm);
+        }
+        if (list.size() > 0)
+        {
+            roleMenuDao.saveAll(list);
+        }
+    }
+    /**
+     * 修改数据权限信息
+     *
+     * @param role 角色信息
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public void authDataScope(RoleDto role)
+    {
+        // 修改角色信息
+        RoleEntity roleEntity=roleMapstruct.toEntity(role);
+        roleEntity=this.save(roleEntity);        // 删除角色与部门关联
+        roleMenuDao.deleteByRoleId(roleEntity.getId());
+        insertRoleMenu(roleEntity);
+    }
     /**
      * 根据用户ID查询权限
      *
@@ -79,4 +170,53 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
         return roles;
     }
 
+    /**
+     * 批量删除角色信息
+     *
+     * @param roleIds 需要删除的角色ID
+     * @return 结果
+     */
+    @Override
+    public void deleteRoleByIds(List<String> roleIds)
+    {
+       /* for (Long roleId : roleIds)
+        {
+            checkRoleAllowed(new SysRole(roleId));
+            SysRole role = selectRoleById(roleId);
+            if (countUserRoleByRoleId(roleId) > 0)
+            {
+                throw new CustomException(String.format("%1$s已分配,不能删除", role.getRoleName()));
+            }
+        }*/
+       for(String roleId:roleIds){
+           roleDao.deleteById(roleId);
+       }
+    }
+
+    /**
+     * 修改角色状态
+     *
+     * @param role 角色信息
+     * @return 结果
+     */
+    @Override
+    public RoleDto updateRoleStatus(RoleDto role)
+    {
+        RoleEntity roleEntity=this.getById(role.getId());
+        roleEntity.setStatus(role.getStatus());
+        roleEntity=this.save(roleEntity);
+        return roleMapstruct.toDto(roleEntity);
+    }
+
+    /**
+     * 查询所有角色
+     *
+     * @return 角色列表
+     */
+    @Override
+    public List<RoleDto> selectRoleAll()
+    {
+        List<RoleEntity> roleEntities=this.getAll();
+        return roleMapstruct.toDto(roleEntities);
+    }
 }

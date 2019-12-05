@@ -31,4 +31,44 @@ public interface UserService {
      * @return 用户信息集合信息
      */
     PageBean selectUserList(PageForm<UserDto> pageForm);
+
+    /**
+     * 新增保存用户信息
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    public void insertUser(UserDto user);
+
+    /**
+     * 修改保存用户信息
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    public void updateUser(UserDto user);
+
+    /**
+     * 修改用户状态
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    public void updateUserStatus(UserDto user);
+
+    /**
+     * 批量删除用户信息
+     *
+     * @param userIds 需要删除的用户ID
+     * @return 结果
+     */
+    public void deleteUserByIds(List<String> userIds);
+
+    /**
+     * 通过用户ID查询用户
+     *
+     * @param userId 用户ID
+     * @return 用户对象信息
+     */
+    public UserDto selectUserById(String userId);
 }

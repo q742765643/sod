@@ -12,8 +12,11 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,11 +31,7 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
-    @PostMapping(value = "/api/user/save")
-    @ApiOperation(value="添加用户接口", notes="添加用户接口")
-    public UserDto save (@RequestBody  UserDto userDto){
-       return userService.saveUserDto(userDto);
-    }
+
     @GetMapping("/list")
     public ResultT<PageBean> list(UserDto user,int pageNum,int pageSize)
     {
@@ -40,6 +39,91 @@ public class UserController {
         PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,user);
         PageBean pageBean=userService.selectUserList(pageForm);
         resultT.setData(pageBean);
+        return resultT;
+    }
+
+    /**
+     * 根据用户编号获取详细信息
+     */
+    @GetMapping(value = "/{userId}")
+    public ResultT<UserDto> getInfo(@PathVariable String userId)
+    {
+        ResultT<UserDto> resultT=new ResultT<>();
+        UserDto userDto= userService.selectUserById(userId);
+        resultT.setData(userDto);
+        return resultT;
+    }
+
+    /**
+     * 新增用户
+     */
+    @PostMapping
+    public ResultT<String> add(@RequestBody UserDto user)
+    {
+        /*if (UserConstants.NOT_UNIQUE.equals(userService.checkUserNameUnique(user.getUserName())))
+        {
+            return AjaxResult.error("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
+        }
+        else if (UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
+        {
+            return AjaxResult.error("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
+        }
+        else if (UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
+        {
+            return AjaxResult.error("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
+        }
+        user.setCreateBy(SecurityUtils.getUsername());
+        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));*/
+        ResultT<String> resultT=new ResultT<>();
+        userService.insertUser(user);
+        return resultT;
+    }
+    /**
+     * 修改用户
+     */
+    @PutMapping
+    public ResultT<String> edit(@RequestBody UserDto user)
+    {
+        /*userService.checkUserAllowed(user);
+        if (UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
+        {
+            return AjaxResult.error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
+        }
+        else if (UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
+        {
+            return AjaxResult.error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
+        }
+        user.setUpdateBy(SecurityUtils.getUsername());*/
+
+        ResultT<String> resultT=new ResultT<>();
+        userService.updateUser(user);
+        return resultT;
+    }
+    /**
+     * 删除用户
+     */
+
+    @DeleteMapping("/{userIds}")
+    public  ResultT<String> remove(@PathVariable String[] userIds)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        List<String> list=new ArrayList();
+        if(userIds.length>0){
+            list= Arrays.asList(userIds);
+            userService.deleteUserByIds(list);
+        }
+        return resultT;
+    }
+    /**
+     * 状态修改
+     */
+    @PutMapping("/changeStatus")
+    public ResultT<String> changeStatus(@RequestBody UserDto user)
+    {
+       /* userService.checkUserAllowed(user);
+        user.setUpdateBy(SecurityUtils.getUsername());*/
+        ResultT<String> resultT=new ResultT<>();
+        userService.updateUserStatus(user);
         return resultT;
     }
 }

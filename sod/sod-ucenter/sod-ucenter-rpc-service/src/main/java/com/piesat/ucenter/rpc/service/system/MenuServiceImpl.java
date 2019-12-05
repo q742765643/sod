@@ -320,4 +320,16 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
     {
        this.delete(menuId);
     }
+
+    /**
+     * 根据角色ID查询菜单树信息
+     *
+     * @param roleId 角色ID
+     * @return 选中菜单列表
+     */
+    @Override
+    public List<String> selectMenuListByRoleId(String roleId)
+    {
+        return menuMapper.selectMenuListByRoleId(roleId);
+    }
 }

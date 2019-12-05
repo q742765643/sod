@@ -5,8 +5,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.ucenter.dao.system.UserDao;
+import com.piesat.ucenter.dao.system.UserRoleDao;
 import com.piesat.ucenter.entity.system.UserEntity;
+import com.piesat.ucenter.entity.system.UserRoleEntity;
+import com.piesat.ucenter.mapper.system.RoleMapper;
 import com.piesat.ucenter.mapper.system.UserMapper;
 import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -15,7 +19,9 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +38,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     private UserMapper userMapper;
     @Autowired
     private UserMapstruct userMapstruct;
+    @Autowired
+    private UserRoleDao userRoleDao;
+    @Autowired
+    private RoleMapper roleMapper;
     @Override
     public BaseDao<UserEntity> getBaseDao() {
         return userDao;
@@ -75,5 +85,108 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         List<UserDto> userDtos= userMapstruct.toDto(pageInfo.getList());
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),userDtos);
         return pageBean;
+    }
+    /**
+     * 新增保存用户信息
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public void insertUser(UserDto user)
+    {
+        UserEntity userEntity=userMapstruct.toEntity(user);
+        userEntity=this.save(userEntity);
+        // 新增用户岗位关联
+        //insertUserPost(user);
+        // 新增用户与角色管理
+        insertUserRole(userEntity);
+    }
+    /**
+     * 新增用户角色信息
+     *
+     * @param user 用户对象
+     */
+    public void insertUserRole(UserEntity user)
+    {
+        String[] roles = user.getRoleIds();
+        if (StringUtils.isNotNull(roles))
+        {
+            // 新增用户与角色管理
+            List<UserRoleEntity> list = new ArrayList<>();
+            for (String roleId : roles)
+            {
+                UserRoleEntity ur = new UserRoleEntity();
+                ur.setUserId(user.getId());
+                ur.setRoleId(roleId);
+                list.add(ur);
+            }
+            if (list.size() > 0)
+            {
+                userRoleDao.saveAll(list);
+            }
+        }
+    }
+
+    /**
+     * 修改保存用户信息
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public void updateUser(UserDto user)
+    {
+        UserEntity userEntity=userMapstruct.toEntity(user);
+        userEntity=this.save(userEntity);
+        String userId = user.getId();
+        // 删除用户与角色关联
+        userRoleDao.deleteByUserId(userId);
+        // 新增用户与角色管理
+        insertUserRole(userEntity);
+    }
+    /**
+     * 修改用户状态
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    @Override
+    public void updateUserStatus(UserDto user)
+    {
+        UserEntity userEntity=this.getById(user.getId());
+        userEntity.setStatus(user.getStatus());
+        this.save(userEntity);
+    }
+    /**
+     * 批量删除用户信息
+     *
+     * @param userIds 需要删除的用户ID
+     * @return 结果
+     */
+    @Override
+    public void deleteUserByIds(List<String> userIds)
+    {
+     /*   for (Long userId : userIds)
+        {
+            checkUserAllowed(new SysUser(userId));
+        }*/
+        this.deleteByIds(userIds);
+    }
+    /**
+     * 通过用户ID查询用户
+     *
+     * @param userId 用户ID
+     * @return 用户对象信息
+     */
+    @Override
+    public UserDto selectUserById(String userId)
+    {
+        UserEntity userEntity=this.getById(userId);
+        List<String> roles=roleMapper.selectRoleListByUserId(userId);
+        userEntity.setRoleIds( roles.toArray(new String[roles.size()]));
+        return userMapstruct.toDto(userEntity);
     }
 }

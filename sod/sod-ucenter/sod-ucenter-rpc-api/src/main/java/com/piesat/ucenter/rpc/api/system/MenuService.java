@@ -77,4 +77,12 @@ public interface MenuService {
      * @return 结果
      */
     public void deleteMenuById(String menuId);
+
+    /**
+     * 根据角色ID查询菜单树信息
+     *
+     * @param roleId 角色ID
+     * @return 选中菜单列表
+     */
+    public List<String> selectMenuListByRoleId(String roleId);
 }
