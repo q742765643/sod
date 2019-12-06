@@ -34,6 +34,9 @@ public class ResultT<T> implements Serializable {
         this.code = code.getKey();
         this.msg = message;
     }
+    public void setMessage(String message) {
+        this.msg = message;
+    }
 
 
     public int getCode() {

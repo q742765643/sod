@@ -17,6 +17,7 @@ import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.system.UserMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +98,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public void insertUser(UserDto user)
     {
         UserEntity userEntity=userMapstruct.toEntity(user);
+        String password = new Md5Hash(userEntity.getPassword(),user.getUserName(),2).toString();
+        userEntity.setPassword(password);
         userEntity=this.save(userEntity);
         // 新增用户岗位关联
         //insertUserPost(user);

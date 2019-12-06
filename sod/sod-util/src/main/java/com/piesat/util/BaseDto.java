@@ -2,6 +2,7 @@ package com.piesat.util;
 
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  * @创建人 zzj
  * @创建时间 2019/11/27 16:29
  */
-public class BaseDto {
+public class BaseDto implements Serializable {
     private String id;
 
     private Date createTime;

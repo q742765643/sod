@@ -58,6 +58,11 @@ spring:
     show-sql: true
     #database: mysql
     open-in-view: false
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 5000
+    password:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath:mapper/*.xml
@@ -70,6 +75,7 @@ pagehelper:
   reasonable: true
   support-methods-arguments: true
   params: count=countSql
+
 eureka:
   instance:
     prefer-ip-address: true

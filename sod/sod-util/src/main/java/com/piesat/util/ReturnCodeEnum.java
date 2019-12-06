@@ -15,6 +15,14 @@ public enum ReturnCodeEnum {
     /**
      * ==========101 100===============
      **/
+    ReturnCodeEnum_401_ERROR(401, "未登陆"),
+    ReturnCodeEnum_402_ERROR(402, "账户被冻结"),
+    ReturnCodeEnum_403_ERROR(403, "无访问权限"),
+    ReturnCodeEnum_404_ERROR(403, "用户不存在"),
+    ReturnCodeEnum_405_ERROR(403, "账户密码错误"),
+
+
+
     ReturnCodeEnum_101_ERROR(101, "获取任务详情失败#1#1"),
 
     ReturnCodeEnum_12_ERROR(12, "删除分区异常#检查虚谷数据库是否产生异常#1.虚谷数据库产生错误");

@@ -25,7 +25,9 @@ public class DictDataController {
     @Autowired
     private DictDataService dictDataService;
     @GetMapping("/list")
-    public ResultT<PageBean> list(DictDataDto dictData,int pageNum,int pageSize)
+    public ResultT<PageBean> list(DictDataDto dictData,
+                                  @RequestParam(value="pageNum",defaultValue="0") int pageNum,
+                                  @RequestParam(value="pageSize",defaultValue="10") int pageSize)
     {
         ResultT<PageBean> resultT=new ResultT();
         PageForm<DictDataDto> pageForm=new PageForm<>(pageNum,pageSize,dictData);

@@ -26,9 +26,14 @@ public class DictTypeController {
     @Autowired
     private DictTypeService dictTypeService;
     @GetMapping("/list")
-    public ResultT<PageBean> list(DictTypeDto dictType,int pageNum,int pageSize)
+    public ResultT<PageBean> list(DictTypeDto dictType ,
+                                  @RequestParam(value="pageNum",defaultValue="0") int pageNum,
+                                  @RequestParam(value="pageSize",defaultValue="10") int pageSize)
     {
         ResultT<PageBean> resultT=new ResultT<>();
+        if(dictType==null){
+            dictType =  new DictTypeDto();
+        }
         PageForm<DictTypeDto> pageForm=new PageForm<>(pageNum,pageSize,dictType);
         PageBean pageBean=dictTypeService.selectDictTypeList(pageForm);
         resultT.setData(pageBean);
