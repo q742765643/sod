@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @Data
 @Table(name = "T_SOD_DATABASE_NODE")
 @Entity
+//@Proxy(lazy = false)
 public class DatabaseNodesEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +24,10 @@ public class DatabaseNodesEntity extends BaseEntity {
      * 数据库id
      * database_id
      */
-    @Column(name = "database_id", length = 36, nullable = false)
+//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "database_id1")
+//    private DatabaseDefineEntity databaseId;
+    @Column(name = "database_id")
     private String databaseId;
 
     /**

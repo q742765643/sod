@@ -3,10 +3,9 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.util.Date;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 数据用途定义
@@ -17,14 +16,15 @@ import java.util.Date;
 @Data
 @Table(name = "T_SOD_LOGIC_DEFINE")
 @Entity
+//@Proxy(lazy = false)
 public class LogicDefineEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
      * logic_id
      */
-    @Column(name = "logic_id", length = 255, nullable = false)
-    private String logicId;
+    @Column(name = "logic_flag", length = 255, nullable = false)
+    private String logicFlag;
 
     /**
      * logic_name
@@ -44,4 +44,7 @@ public class LogicDefineEntity extends BaseEntity {
     @Column(name = "logic_desc", length = 255)
     private String logicDesc;
 
+    @OneToMany(targetEntity=LogicStorageTypesEntity.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="logic_id")
+    private List<LogicStorageTypesEntity> logicStorageTypesEntityList = new ArrayList<>();
 }

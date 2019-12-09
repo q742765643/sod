@@ -2,20 +2,20 @@ package com.piesat.dm.rpc.api;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.TableIndexDto;
+import com.piesat.dm.rpc.dto.DatumTypeInfoDto;
 
 import java.util.List;
 
 /**
- * 表索引
+ * 公共元数据
  *
  * @author cwh
- * @date 2019年 11月22日 15:38:16
+ * @date 2019年 11月27日 16:20:43
  */
 @GrpcHthtService(server = "database",serialization = SerializeType.PROTOSTUFF)
-public interface TableIndexService {
-    TableIndexDto saveDto(TableIndexDto tableIndexDto);
-    TableIndexDto getDotById(String id);
+public interface DatumTypeInfoService {
+    DatumTypeInfoDto saveDto(DatumTypeInfoDto datumTypeInfoDto);
+    DatumTypeInfoDto getDotById(String id);
     void delete(String id);
-    List<TableIndexDto> all();
+    List<DatumTypeInfoDto> all();
 }

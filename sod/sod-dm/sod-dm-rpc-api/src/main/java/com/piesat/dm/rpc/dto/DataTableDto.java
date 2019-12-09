@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 表信息
  *
@@ -12,15 +14,12 @@ import lombok.Data;
 public class DataTableDto {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * table_id
-     */
-    private String tableId;
+    private String id;
 
     /**
      * class_logic_id
      */
-    private String classLogicId;
+    private DataLogicDto classLogicId;
 
     /**
      * data_service_id
@@ -63,5 +62,16 @@ public class DataTableDto {
      * user_id
      */
     private String userId;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
 
 }

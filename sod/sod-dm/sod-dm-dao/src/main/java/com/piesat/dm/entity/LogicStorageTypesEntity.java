@@ -3,9 +3,7 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 数据用途与存储类型对应关系
@@ -18,9 +16,11 @@ import javax.persistence.Table;
 @Entity
 public class LogicStorageTypesEntity extends BaseEntity {
 
-    @Column(name = "logic_id", length = 255, nullable = false)
-    private String logicId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "logic_id")
+    private LogicDefineEntity logic_id;
 
     @Column(name = "storage_type", length = 255, nullable = false)
     private String storageType;
+
 }

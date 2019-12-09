@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 数据库管理账户
  *
@@ -12,6 +14,7 @@ import lombok.Data;
 public class DatabaseAdministratorDto {
     private static final long serialVersionUID = 1L;
 
+    private String id;
     /**
      * 数据库id
      * database_id
@@ -25,6 +28,11 @@ public class DatabaseAdministratorDto {
     private String userName;
 
     /**
+     * 是否管理账户
+     * is_manager
+     */
+    private Boolean isManager;
+    /**
      * 密码
      * pass_word
      */
@@ -35,4 +43,16 @@ public class DatabaseAdministratorDto {
      * introduction
      */
     private String introduction;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
+
 }

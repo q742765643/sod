@@ -2,13 +2,13 @@ package com.piesat.dm.entity;
 
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
+import org.hibernate.annotations.Proxy;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
- * 数据库定义
+ * 数据库类型定义
  *
  * @author cwh
  * @date 2019年 11月21日 17:28:05
@@ -16,15 +16,9 @@ import javax.persistence.Table;
 @Data
 @Table(name = "T_SOD_DATABASE_DEFINE")
 @Entity
+@Proxy(lazy = false)
 public class DatabaseDefineEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 数据库标识
-     * database_id
-     */
-    @Column(name = "database_id", length = 36, nullable = false)
-    private String databaseId;
 
     /**
      * 数据库名称
@@ -124,4 +118,12 @@ public class DatabaseDefineEntity extends BaseEntity {
      */
     @Column(name = "up_url", length = 255)
     private String upUrl;
+
+    @OneToMany(targetEntity=DatabaseAdministratorEntity.class,cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
+    @JoinColumn(name="database_id")
+    private Set<DatabaseAdministratorEntity> databaseAdministratorList;
+
+    @OneToMany(targetEntity=DatabaseNodesEntity.class,cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
+    @JoinColumn(name="database_id")
+    private Set<DatabaseNodesEntity> databaseNodesList;
 }

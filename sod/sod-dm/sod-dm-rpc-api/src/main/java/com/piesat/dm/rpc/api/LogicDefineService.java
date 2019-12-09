@@ -2,6 +2,9 @@ package com.piesat.dm.rpc.api;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.rpc.dto.LogicDefineDto;
+
+import java.util.List;
 
 /**
  * 数据用途定义
@@ -11,4 +14,9 @@ import com.piesat.common.grpc.constant.SerializeType;
  */
 @GrpcHthtService(server = "database",serialization = SerializeType.PROTOSTUFF)
 public interface LogicDefineService {
+    List<LogicDefineDto> getAllLogicDefine();
+    LogicDefineDto saveDto(LogicDefineDto logicDefineDto);
+    LogicDefineDto getDotById(String id);
+    void delete(String id);
+    List<LogicDefineDto> all();
 }
