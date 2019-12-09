@@ -40,7 +40,6 @@ public class DatabaseNodesServiceImpl extends BaseService<DatabaseNodesEntity> i
     @Override
     public List<DatabaseNodesDto> all() {
         List<DatabaseNodesEntity> all = this.getAll();
-        this.delete();
         return this.databaseNodesMapper.toDto(all);
     }
 
