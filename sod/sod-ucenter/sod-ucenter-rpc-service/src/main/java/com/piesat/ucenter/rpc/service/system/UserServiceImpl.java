@@ -71,6 +71,19 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     }
 
     /**
+     *@描述 根据appId查找用户
+     *@参数 [appId]
+     *@返回值 com.piesat.ucenter.rpc.dto.system.UserDto
+     *@author zzj
+     *@创建时间 2019/11/28 16:38
+     **/
+    @Override
+    public UserDto selectUserByAppId(String appId){
+        UserEntity userEntity=userDao.findByAppId(appId);
+        return userMapstruct.toDto(userEntity);
+    }
+
+    /**
      * 根据条件分页查询用户列表
      *
      * @param

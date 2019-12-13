@@ -73,6 +73,11 @@ public class UserEntity extends BaseEntity {
     private String avatar;
 
     /**
+     * appId
+     */
+    @Column(name="app_id",columnDefinition = "varchar(100) default ''")
+    private String appId;
+    /**
      * 密码
      */
     @Column(name="password",columnDefinition = "varchar(100) default ''")

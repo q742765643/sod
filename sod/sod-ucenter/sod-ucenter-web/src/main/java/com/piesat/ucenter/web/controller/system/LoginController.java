@@ -1,12 +1,16 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.constant.Constants;
+import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.IdUtils;
+import com.piesat.common.utils.ServletUtils;
 import com.piesat.common.utils.VerifyCodeUtils;
 import com.piesat.common.utils.sign.Base64;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.api.system.RoleService;
 import com.piesat.ucenter.rpc.api.system.UserService;
+import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.util.RouterVo;
 import com.piesat.util.ResultT;
@@ -15,11 +19,10 @@ import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -62,6 +65,8 @@ public class LoginController {
         try {
             Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+            token.setLoginType("0");
+            token.setRequest(ServletUtils.getRequest());
             subject.login(token);
             map.put("token", subject.getSession().getId());
             resultT.setData(map);
@@ -76,12 +81,52 @@ public class LoginController {
         }
         return resultT;
     }
+
+    @PostMapping("/thirdLogin")
+    public ResultT<Map<String,Object>> thirdLogin(@RequestBody Map<String,String> userDto)
+    {
+        ResultT<Map<String,Object>> resultT=new ResultT<>();
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            String appId= userDto.get("appId");
+            UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
+            token.setLoginType("1");
+            token.setRequest(ServletUtils.getRequest());
+            token.setParam(JSON.toJSONString(userDto));
+            subject.login(token);
+            map.put("token", subject.getSession().getId());
+            resultT.setData(map);
+        } catch (LockedAccountException e) {
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_402_ERROR);
+        }catch (UnknownAccountException e){
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_404_ERROR);
+        }catch (IncorrectCredentialsException e){
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
+        }catch (AuthenticationException ex){
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
+        }
+        return resultT;
+    }
+    /**
+     * 校验token
+     */
+    @GetMapping(value = "checkToken/{token}")
+    public ResultT<Map<String,Object>> checkToken(@PathVariable String token)
+    {
+        ResultT<Map<String,Object>> resultT=new ResultT<>();
+        Map<String,Object> map=new HashMap<>();
+        map.put("token", token);
+        resultT.setData(map);
+        return resultT;
+    }
     @GetMapping("getInfo")
     public ResultT<Map<String,Object>> getInfo()
     {
         ResultT<Map<String,Object>> resultT=new ResultT<>();
         Map<String,Object> map=new HashMap<>();
-        UserDto userDto=userService.selectUserByUserName("zzj");
+
+        UserDto userDto = (UserDto)SecurityUtils.getSubject().getPrincipal();
         // 角色集合
         Set<String> roles = roleService.getRolePermission(userDto);
         Set<String> permissions = menuService.getMenuPermission(userDto);
@@ -96,7 +141,8 @@ public class LoginController {
     public ResultT<List<RouterVo>>  getRouters()
     {
         ResultT<List<RouterVo>> resultT=new ResultT<>();
-        List<RouterVo> routerVos=menuService.getRouters("788d74efcb99498eba5fb89814070737");
+        UserDto userDto = (UserDto)SecurityUtils.getSubject().getPrincipal();
+        List<RouterVo> routerVos=menuService.getRouters(userDto.getId());
         resultT.setData(routerVos);
         return resultT;
     }
@@ -166,8 +212,15 @@ public class LoginController {
         return resultT;
     }
     public  static void main(String[] args ){
-        String password = new Md5Hash("111111","zzj",2).toString();
-        System.out.println(password);
+        Map<String,String> map=new HashMap<>();
+        map.put("userId","11111111111");
+        map.put("userName","222");
+        try {
+           String aa= AESUtil.aesEncrypt(JSON.toJSONString(map));
+           System.out.println(aa);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

@@ -1,5 +1,7 @@
 package com.piesat.ucenter.rpc.api.system;
 
+import com.piesat.common.grpc.annotation.GrpcHthtService;
+import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.util.TreeSelect;
 
@@ -11,6 +13,7 @@ import java.util.List;
  * @创建人 zzj
  * @创建时间 2019/12/3 9:42
  */
+@GrpcHthtService(serialization = SerializeType.PROTOSTUFF)
 public interface DeptService {
     /**
      * 查询部门管理数据

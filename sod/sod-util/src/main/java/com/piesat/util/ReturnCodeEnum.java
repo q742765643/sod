@@ -15,7 +15,7 @@ public enum ReturnCodeEnum {
     /**
      * ==========101 100===============
      **/
-    ReturnCodeEnum_401_ERROR(401, "未登陆"),
+    ReturnCodeEnum_401_ERROR(401, "未登陆或者未授权"),
     ReturnCodeEnum_402_ERROR(402, "账户被冻结"),
     ReturnCodeEnum_403_ERROR(403, "无访问权限"),
     ReturnCodeEnum_404_ERROR(403, "用户不存在"),

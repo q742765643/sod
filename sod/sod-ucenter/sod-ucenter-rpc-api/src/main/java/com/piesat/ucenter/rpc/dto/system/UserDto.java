@@ -66,12 +66,22 @@ public class UserDto extends BaseDto {
     @ApiModelProperty("备注")
     private String remark;
 
-    @JsonIgnore
+    private String appId;
+
+    //@JsonIgnore
     private String params;
 
     private String[] roleIds;
 
     private DeptDto dept;
+
+    private String loginLocation;
+
+    private String browser;
+
+    private String os;
+
+    private String tokenId;
 
     /**
      * 角色对象

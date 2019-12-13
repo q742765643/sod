@@ -4,6 +4,7 @@ import com.piesat.ucenter.rpc.api.system.DeptService;
 import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.util.TreeSelect;
 import com.piesat.util.ResultT;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class DeptController {
     /**
      * 获取部门列表
      */
+    @RequiresPermissions("system:dept:list")
     @GetMapping("/list")
     public ResultT<List<DeptDto>> list(DeptDto dept)
     {

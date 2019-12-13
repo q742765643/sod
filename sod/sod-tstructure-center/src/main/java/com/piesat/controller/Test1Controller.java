@@ -2,8 +2,13 @@ package com.piesat.controller;
 
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.ucenter.rpc.api.system.UserService;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
+import com.piesat.util.constant.GrpcConstant;
 import io.grpc.Channel;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,11 +22,10 @@ import java.util.Date;
  */
 @RestController
 public class Test1Controller {
-   /* @GrpcClient(value = "cloud-grpc-server",interceptors = {LogClientGrpcInterceptor.class})
-    private TestService testService;
-    @GrpcClient("cloud-grpc-server")
+
+    @GrpcClient(GrpcConstant.UCENTER_SERVER)
     private UserService userService;
-    @RequestMapping("/test2")
+    /*@RequestMapping("/test2")
    public void test(){
         UserDto userDto=new UserDto();
         userDto.setCreateTime(new Date());
@@ -30,4 +34,10 @@ public class Test1Controller {
         System.out.println( testService.test());
 
    }*/
+    @RequiresPermissions("system:dept:list")
+    @RequestMapping("/test2")
+   public void test(){
+      UserDto userDto= (UserDto) SecurityUtils.getSubject().getPrincipal();
+      System.out.println(111);
+   }
 }

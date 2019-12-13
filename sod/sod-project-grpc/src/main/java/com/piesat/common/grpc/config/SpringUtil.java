@@ -62,7 +62,12 @@ public class SpringUtil implements ApplicationContextAware {
      *@创建时间 2019/5/8 10:56 
      **/
     public static <T> T getBean(Class<T> clazz){
-        return getApplicationContext().getBean(clazz);
+        try {
+            T t= getApplicationContext().getBean(clazz);
+            return t;
+        } catch (BeansException e) {
+          return null;
+        }
     }
     /**
      *@描述

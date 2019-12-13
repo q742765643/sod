@@ -1,8 +1,11 @@
 package com.piesat.ucenter.rpc.api.system;
 
+import com.piesat.common.grpc.annotation.GrpcHthtService;
+import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import net.devh.boot.grpc.server.service.GrpcService;
 
 import java.util.List;
 
@@ -12,6 +15,7 @@ import java.util.List;
  * @创建人 zzj
  * @创建时间 2019/11/21 17:10
  */
+@GrpcHthtService(serialization = SerializeType.PROTOSTUFF)
 public interface UserService {
     public UserDto saveUserDto(UserDto userDto);
 
@@ -23,6 +27,15 @@ public interface UserService {
      * @return 用户对象信息
      */
     public UserDto selectUserByUserName(String userName);
+
+    /**
+     *@描述 根据appId查找用户
+     *@参数 [appId]
+     *@返回值 com.piesat.ucenter.rpc.dto.system.UserDto
+     *@author zzj
+     *@创建时间 2019/11/28 16:38
+     **/
+    public UserDto selectUserByAppId(String appId);
 
     /**
      * 根据条件分页查询用户列表

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 1234
   servlet:
       context-path: /
 tomcat:
@@ -13,8 +13,11 @@ grpc:
   server:
     port: 6000
 spring:
+  #aop:
+  #auto: true
+  #proxy-target-class: true
   application:
-    name: cloud-grpc-server
+    name: ucenter-server
   sleuth:
     sampler:
       probability: 1
@@ -44,10 +47,10 @@ spring:
       #timeBetweenEvictionRunsMillis: 60000
       # 配置一个连接在池中最小生存的时间，单位是毫秒
       #minEvictableIdleTimeMillis: 30000
-      #validationQuery: select 'x'
-      #testWhileIdle: true
-      #testOnBorrow: false
-      #testOnReturn: false
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: true
   jpa:
     properties:
       hibernate:
@@ -59,7 +62,7 @@ spring:
     #database: mysql
     open-in-view: false
   redis:
-    host: localhost
+    host: 10.40.17.44
     port: 6379
     timeout: 5000
     password:
@@ -84,4 +87,4 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://10.40.17.44:8761/eureka/

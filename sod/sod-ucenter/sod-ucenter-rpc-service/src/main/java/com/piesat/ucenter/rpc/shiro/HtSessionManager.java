@@ -1,5 +1,7 @@
 package com.piesat.ucenter.rpc.shiro;
 
+import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.ucenter.common.redis.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
@@ -18,6 +20,10 @@ import java.io.Serializable;
  */
 public class HtSessionManager extends DefaultWebSessionManager {
     private static final String AUTHORIZATION = "Authorization";
+    private static final String APP_ID = "appId";
+    private static String THRID_LOGIN_APP_ID="THRID_LOGIN_APP_ID:";
+
+
 
     private static final String REFERENCED_SESSION_ID_SOURCE = "Stateless request";
 
@@ -34,6 +40,19 @@ public class HtSessionManager extends DefaultWebSessionManager {
             request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_IS_VALID, Boolean.TRUE);
             return id;
         } else {
+            String appId= WebUtils.toHttp(request).getHeader(APP_ID);
+            RedisUtil redisUtil= SpringUtil.getBean(RedisUtil.class);
+            boolean has=redisUtil.hasKey(THRID_LOGIN_APP_ID+appId);
+            if(has){
+                String appSessionId= (String) redisUtil.get(THRID_LOGIN_APP_ID+appId);
+                boolean checkSession=redisUtil.hasKey("shiro:session:"+appSessionId);
+                if(checkSession){
+                    request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, REFERENCED_SESSION_ID_SOURCE);
+                    request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID, appSessionId);
+                    request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_IS_VALID, Boolean.TRUE);
+                    return appSessionId;
+                }
+            }
             return super.getSessionId(request, response);
         }
     }

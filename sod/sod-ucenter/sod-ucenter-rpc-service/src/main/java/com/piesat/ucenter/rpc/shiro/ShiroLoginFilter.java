@@ -1,6 +1,7 @@
 package com.piesat.ucenter.rpc.shiro;
 
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -8,9 +9,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
+@Order(1)
 @Component
-@ServletComponentScan
 @WebFilter(urlPatterns = "/*",filterName = "shiroLoginFilter")
 public class ShiroLoginFilter  implements Filter {
 

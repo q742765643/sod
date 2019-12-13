@@ -45,11 +45,10 @@
         </dependency>
         <dependency>
             <groupId>com.htht</groupId>
-            <artifactId>sod-ucenter-rpc-api</artifactId>
+            <artifactId>sod-ucenter-sso-client</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-
         </dependency>
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
