@@ -6,6 +6,7 @@ import io.grpc.ClientInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.channelfactory.GrpcChannelFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Member;
 import java.util.ArrayList;
@@ -28,14 +29,14 @@ public class ChannelUtil {
     }
     private GrpcChannelFactory channelFactory = null;
 
-    public void getgrpcChannel(String className, GrpcHthtService annotation){
+    public void getgrpcChannel(String className, GrpcHthtService annotation,ApplicationContext applicationContext){
         String name=annotation.server();
         if("".equals(name)||null==name){
             return;
         }
         GrpcAutoConfiguration.ProxyUtil.grpcServerName.put(className,name);
         if(null==GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(name)){
-            Channel channel= processInjectionPoint(null, Channel.class, annotation);
+            Channel channel= processInjectionPoint(null, Channel.class, annotation,applicationContext);
             if(null!=channel){
                 GrpcAutoConfiguration.ProxyUtil.grpcChannel.put(name,channel);
             }else {
@@ -44,12 +45,12 @@ public class ChannelUtil {
         }
     }
     protected <T> T processInjectionPoint(final Member injectionTarget, final Class<T> injectionType,
-                                          final GrpcHthtService annotation) {
+                                          final GrpcHthtService annotation,ApplicationContext applicationContext) {
         final List<ClientInterceptor> interceptors =new ArrayList<>();
         final String name = annotation.server();
         final Channel channel;
         try {
-            channel = getChannelFactory().createChannel(name, interceptors, false);
+            channel = getChannelFactory(applicationContext).createChannel(name, interceptors,false);
             if (channel == null) {
                 throw new IllegalStateException("Channel factory created a null channel for " + name);
             }
@@ -66,9 +67,9 @@ public class ChannelUtil {
     }
 
 
-    private GrpcChannelFactory getChannelFactory() {
+    private GrpcChannelFactory getChannelFactory(ApplicationContext applicationContext) {
         if (this.channelFactory == null) {
-            final GrpcChannelFactory factory = SpringUtil.getBean(GrpcChannelFactory.class);
+            final GrpcChannelFactory factory = applicationContext.getBean(GrpcChannelFactory.class);
             this.channelFactory = factory;
             return factory;
         }

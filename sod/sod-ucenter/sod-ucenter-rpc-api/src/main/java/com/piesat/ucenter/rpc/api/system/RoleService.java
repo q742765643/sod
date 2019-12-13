@@ -4,6 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.ucenter.rpc.dto.system.RoleDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
+import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -17,7 +18,7 @@ import java.util.Set;
  * @创建人 zzj
  * @创建时间 2019/11/28 16:39
  */
-@GrpcHthtService(serialization = SerializeType.PROTOSTUFF)
+@GrpcHthtService(server = GrpcConstant.UCENTER_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface RoleService {
 
     /**

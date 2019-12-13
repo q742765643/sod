@@ -3,8 +3,10 @@ package com.piesat.sso.client.shiro;
 import com.piesat.common.grpc.config.SpringUtil;
 
 import com.piesat.common.utils.ip.IpUtils;
-import com.piesat.sso.client.service.SsoClientService;
 import com.piesat.sso.client.util.AddressUtils;
+import com.piesat.ucenter.rpc.api.system.MenuService;
+import com.piesat.ucenter.rpc.api.system.RoleService;
+import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.shiro.authc.*;
@@ -31,11 +33,13 @@ public class HtShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         UserDto userDto = (UserDto) principalCollection.getPrimaryPrincipal();
-        SsoClientService ssoClientService = SpringUtil.getBean(SsoClientService.class);
+        RoleService roleService = SpringUtil.getBean(RoleService.class);
+        MenuService menuService = SpringUtil.getBean(MenuService.class);
+
         // 角色集合
-        Set<String> roles = ssoClientService.getRolePermission(userDto);
+        Set<String> roles = roleService.getRolePermission(userDto);
         authorizationInfo.addRoles(roles);
-        Set<String> permissions = ssoClientService.getMenuPermission(userDto);
+        Set<String> permissions = menuService.getMenuPermission(userDto);
         authorizationInfo.addStringPermissions(permissions);
         return authorizationInfo;
     }
@@ -45,12 +49,12 @@ public class HtShiroRealm extends AuthorizingRealm {
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         UserDto userDto = null;
         String username = (String) authenticationToken.getPrincipal();
-        SsoClientService ssoClientService = SpringUtil.getBean(SsoClientService.class);
+        UserService userService = SpringUtil.getBean(UserService.class);
 
         if ("0".equals(token.getLoginType())) {
-            userDto = ssoClientService.selectUserByUserName(username);
+            userDto = userService.selectUserByUserName(username);
         } else {
-            userDto = ssoClientService.selectUserByAppId(username);
+            userDto = userService.selectUserByAppId(username);
         }
         if (userDto == null) {
             throw new UnknownAccountException();

@@ -9,6 +9,7 @@ import io.grpc.Channel;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +23,7 @@ import java.util.Date;
  */
 @RestController
 public class Test1Controller {
-
-    @GrpcClient(GrpcConstant.UCENTER_SERVER)
+    @GrpcClient("111")
     private UserService userService;
     /*@RequestMapping("/test2")
    public void test(){
@@ -37,6 +37,7 @@ public class Test1Controller {
     @RequiresPermissions("system:dept:list")
     @RequestMapping("/test2")
    public void test(){
+      //UserDto uu=userService.selectUserByUserName("admin");
       UserDto userDto= (UserDto) SecurityUtils.getSubject().getPrincipal();
       System.out.println(111);
    }

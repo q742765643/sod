@@ -3,6 +3,7 @@ package com.piesat.ucenter.rpc.api.system;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
+import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -15,7 +16,7 @@ import java.util.List;
  * @创建人 zzj
  * @创建时间 2019/12/3 17:57
  */
-@GrpcHthtService(serialization = SerializeType.PROTOSTUFF)
+@GrpcHthtService(server = GrpcConstant.UCENTER_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface DictDataService {
     /**
      * 根据条件分页查询字典数据

@@ -6,6 +6,7 @@ import com.piesat.ucenter.rpc.dto.system.MenuDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.util.RouterVo;
 import com.piesat.ucenter.rpc.util.TreeSelect;
+import com.piesat.util.constant.GrpcConstant;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Set;
  * @创建人 zzj
  * @创建时间 2019/11/28 17:07
  */
-@GrpcHthtService(serialization = SerializeType.PROTOSTUFF)
+@GrpcHthtService(server = GrpcConstant.UCENTER_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface MenuService {
     /**
      * 查询系统菜单列表
