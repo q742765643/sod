@@ -3,9 +3,7 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 表索引
@@ -23,8 +21,9 @@ public class TableIndexEntity extends BaseEntity {
      * 对应表id
      * table_id
      */
-    @Column(name = "table_id", length = 255, nullable = false)
-    private String tableId;
+    @ManyToOne(targetEntity = DataTableEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "table_id")
+    private DataTableEntity tableId;
 
     /**
      * 索引类型

@@ -3,9 +3,7 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -21,16 +19,11 @@ public class TableColumnEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * column_id
-     */
-    @Column(name = "column_id", length = 255, nullable = false)
-    private String columnId;
-
-    /**
      * table_id
      */
-    @Column(name = "table_id", length = 255, nullable = false)
-    private String tableId;
+    @ManyToOne(targetEntity = DataTableEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "table_id")
+    private DataTableEntity tableId;
 
     /**
      * db_ele_code

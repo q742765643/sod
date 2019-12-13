@@ -3,9 +3,9 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 资料用途分类
@@ -18,12 +18,6 @@ import javax.persistence.Table;
 @Entity
 public class DataLogicEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * class_logic_id
-     */
-    @Column(name = "class_logic_id", length = 255, nullable = false)
-    private String classLogicId;
 
     /**
      * data_class_id
@@ -48,4 +42,8 @@ public class DataLogicEntity extends BaseEntity {
      */
     @Column(name = "database_type", length = 255, nullable = false)
     private String databaseType;
+
+    @OneToMany(targetEntity=DataTableEntity.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="class_logic_id")
+    private List<DataTableEntity> dataTables = new ArrayList<>();
 }

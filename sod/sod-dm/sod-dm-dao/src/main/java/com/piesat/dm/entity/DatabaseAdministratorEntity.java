@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @Data
 @Table(name = "T_SOD_DATABASE_ADMINISTRATOR")
 @Entity
+//@Proxy(lazy = false)
 public class DatabaseAdministratorEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +24,11 @@ public class DatabaseAdministratorEntity extends BaseEntity {
      * 数据库id
      * database_id
      */
-    @Column(name = "database_id", length = 36, nullable = false)
+//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "database_id")
+//    private DatabaseDefineEntity databaseId;
+
+    @Column(name = "database_id")
     private String databaseId;
 
     /**
@@ -32,6 +37,13 @@ public class DatabaseAdministratorEntity extends BaseEntity {
      */
     @Column(name = "user_name", length = 36, nullable = false)
     private String userName;
+
+    /**
+     * 是否管理账户
+     * is_manager
+     */
+    @Column(name = "is_manager", columnDefinition = "Boolean")
+    private Boolean isManager;
 
     /**
      * 密码

@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 数据库基础库专题库
  *
@@ -12,6 +14,7 @@ import lombok.Data;
 public class DatabaseDto {
     private static final long serialVersionUID = 1L;
 
+    private String id;
     /**
      * 数据库名称
      * database_name
@@ -22,7 +25,7 @@ public class DatabaseDto {
      * 与数据库定义关联id
      * database_id
      */
-    private String databaseId;
+    private DatabaseDefineDto databaseId;
 
     /**
      * 数据库模式
@@ -41,4 +44,15 @@ public class DatabaseDto {
      * tdb_id
      */
     private String tdbId;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
 }

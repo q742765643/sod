@@ -2,8 +2,11 @@ package com.piesat.dm.rpc.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+import java.util.Set;
+
 /**
- * 数据库定义
+ * 数据库类型定义
  *
  * @author cwh
  * @date 2019年 11月21日 17:28:05
@@ -12,6 +15,7 @@ import lombok.Data;
 public class DatabaseDefineDto {
     private static final long serialVersionUID = 1L;
 
+    private String id;
     /**
      * 数据库标识
      * database_id
@@ -102,4 +106,19 @@ public class DatabaseDefineDto {
      * up_url
      */
     private String upUrl;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
+
+    private Set<DatabaseAdministratorDto> databaseAdministratorList;
+
+    private Set<DatabaseNodesDto> databaseNodesList;
 }

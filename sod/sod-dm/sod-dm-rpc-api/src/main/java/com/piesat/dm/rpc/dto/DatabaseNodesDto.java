@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 数据库节点信息
  *
@@ -12,6 +14,7 @@ import lombok.Data;
 public class DatabaseNodesDto {
     private static final long serialVersionUID = 1L;
 
+    private String id;
     /**
      * 数据库id
      * database_id
@@ -35,5 +38,16 @@ public class DatabaseNodesDto {
      * node_role
      */
     private String nodeRole;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
 
 }

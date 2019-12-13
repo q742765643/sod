@@ -1,17 +1,14 @@
 package com.piesat.common.jpa.service;
 
 import com.piesat.common.jpa.dao.GenericDao;
-import com.piesat.util.page.PageForm;
 import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.hibernate.SQLQuery;
-import org.hibernate.query.internal.NativeQueryImpl;
-import org.hibernate.query.internal.QueryImpl;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;

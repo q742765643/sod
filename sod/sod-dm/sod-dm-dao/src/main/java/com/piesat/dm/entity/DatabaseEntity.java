@@ -3,9 +3,7 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 数据库基础库专题库
@@ -30,8 +28,9 @@ public class DatabaseEntity extends BaseEntity {
      * 与数据库定义关联id
      * database_id
      */
-    @Column(name = "database_id", length = 36, nullable = false)
-    private String databaseId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "database_id")
+    private DatabaseDefineEntity databaseId;
 
     /**
      * 数据库模式

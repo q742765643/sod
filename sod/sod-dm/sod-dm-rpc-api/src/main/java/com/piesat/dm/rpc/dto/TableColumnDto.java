@@ -14,15 +14,12 @@ import java.util.Date;
 public class TableColumnDto {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * column_id
-     */
-    private String columnId;
+    private String id;
 
     /**
      * table_id
      */
-    private String tableId;
+    private DataTableDto tableId;
 
     /**
      * db_ele_code
@@ -114,4 +111,14 @@ public class TableColumnDto {
      */
     private String defaultValue;
 
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
 }
