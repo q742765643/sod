@@ -23,7 +23,7 @@ import java.util.Date;
  */
 @RestController
 public class Test1Controller {
-    @GrpcClient("111")
+    @GrpcHthtClient
     private UserService userService;
     /*@RequestMapping("/test2")
    public void test(){
@@ -34,10 +34,10 @@ public class Test1Controller {
         System.out.println( testService.test());
 
    }*/
-    @RequiresPermissions("system:dept:list")
+    @RequiresPermissions("xxxx")
     @RequestMapping("/test2")
    public void test(){
-      //UserDto uu=userService.selectUserByUserName("admin");
+      UserDto uu=userService.selectUserByUserName("admin");
       UserDto userDto= (UserDto) SecurityUtils.getSubject().getPrincipal();
       System.out.println(111);
    }

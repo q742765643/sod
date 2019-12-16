@@ -146,7 +146,7 @@ public class LoginController {
         resultT.setData(routerVos);
         return resultT;
     }
-    @GetMapping(value = "/unauth")
+ /*   @GetMapping(value = "/unauth")
     public ResultT<String> unauth() {
         ResultT<String> resultT=new ResultT<>();
         resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_401_ERROR);
@@ -157,7 +157,7 @@ public class LoginController {
         ResultT<String> resultT=new ResultT<>();
         resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_403_ERROR);
         return resultT;
-    }
+    }*/
 
     /**
      * 生成验证码

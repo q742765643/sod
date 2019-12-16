@@ -7,6 +7,7 @@ import com.piesat.sso.client.shiro.HtSessionManager;
 import com.piesat.sso.client.shiro.HtShiroRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -60,6 +61,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/thirdLogin", "anon");
         filterChainDefinitionMap.put("/checkToken/*", "anon");
         filterChainDefinitionMap.put("/captchaImage", "anon");
+        filterChainDefinitionMap.put("/unauth", "anon");
         filterChainDefinitionMap.put("/**", "authc");
         LinkedHashMap<String, Filter> filtsMap = new LinkedHashMap<>();
         // 这里使用自定义的filter
@@ -116,6 +118,7 @@ public class ShiroConfig {
      *
      * @return
      */
+    @Bean
     public RedisManager redisManager() {
         RedisManager redisManager = new RedisManager();
         redisManager.setHost(host+":"+port);
@@ -208,10 +211,10 @@ public class ShiroConfig {
         return authorizationAttributeSourceAdvisor;
     }
 
-   /* @Bean
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+    @Bean
+    public static LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
-    }*/
+    }
 
     @Bean(name = "exceptionHandler")
     public HtExceptionHandler handlerExceptionResolver(){

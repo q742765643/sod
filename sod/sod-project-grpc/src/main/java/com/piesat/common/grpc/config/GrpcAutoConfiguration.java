@@ -10,7 +10,6 @@ import com.piesat.common.grpc.service.impl.SofaHessianSerializeService;
 import com.piesat.common.grpc.util.ClassNameUtils;
 import io.grpc.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.reflections.Reflections;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -51,15 +50,12 @@ public class GrpcAutoConfiguration {
 
     private final GrpcProperties grpcProperties;
 
-    private static Set<BeanDefinition> beanDefinitions;
-
     private static BeanFactory beanFactory;
 
     public GrpcAutoConfiguration(ApplicationContext applicationContext, GrpcProperties grpcProperties) {
         this.applicationContext = applicationContext;
         this.grpcProperties = grpcProperties;
-        ProxyUtil.registerBeans(beanFactory, beanDefinitions,applicationContext);
-        GrpcAutoConfiguration.beanDefinitions=null;
+        ProxyUtil.registerBeans(beanFactory,applicationContext);
         GrpcAutoConfiguration.beanFactory=null;
         /*if(null==ProxyUtil.applicationContext){
             ProxyUtil.applicationContext=applicationContext;
@@ -106,7 +102,8 @@ public class GrpcAutoConfiguration {
             ClassPathBeanDefinitionScanner scanner = new ClassPathGrpcServiceScanner(registry);
             scanner.setResourceLoader(this.resourceLoader);
             scanner.addIncludeFilter(new AnnotationTypeFilter(GrpcHthtService.class));
-            GrpcAutoConfiguration.beanDefinitions = scanPackages(importingClassMetadata, scanner);
+            Set<BeanDefinition> beanDefinitions = scanPackages(importingClassMetadata, scanner);
+            ProxyUtil.registerMap(beanFactory,beanDefinitions);
         }
 
         /**
@@ -150,7 +147,7 @@ public class GrpcAutoConfiguration {
         public static ConcurrentHashMap<String, Channel> grpcChannel=new ConcurrentHashMap<>();
         public static ConcurrentHashMap<String, String> grpcServerName=new ConcurrentHashMap<>();
 
-        static void registerBeans(BeanFactory beanFactory, Set<BeanDefinition> beanDefinitions,ApplicationContext applicationContext) {
+        static void registerMap(BeanFactory beanFactory, Set<BeanDefinition> beanDefinitions) {
             for (BeanDefinition beanDefinition : beanDefinitions) {
                 String className = beanDefinition.getBeanClassName();
                 if (StringUtils.isEmpty(className)) {
@@ -164,17 +161,36 @@ public class GrpcAutoConfiguration {
                     Object proxy = Proxy.newProxyInstance(GrpcHthtService.class.getClassLoader(), new Class[]{target}, invocationHandler);
 
                     // 注册到 Spring 容器
-                    String beanName = ClassNameUtils.beanName(className);
                     grpcServices.put(className,proxy);
-                    int length=applicationContext.getBeanNamesForType(target).length;
-                    if(length==0){
-                        GrpcHthtService grpcHthtService=target.getAnnotation(GrpcHthtService.class);
-                        ChannelUtil.getInstance().getgrpcChannel(className,grpcHthtService,applicationContext);
-                        ((DefaultListableBeanFactory) beanFactory).registerSingleton(beanName, proxy);
-                    }
                 } catch (ClassNotFoundException e) {
                     log.warn("class not found : " + className);
                 }
+            }
+        }
+
+        static void registerBeans(BeanFactory beanFactory,ApplicationContext applicationContext) {
+            for(Map.Entry<String, Object> map:grpcServices.entrySet()){
+                String className=map.getKey();
+                if (StringUtils.isEmpty(className)) {
+                    continue;
+                }
+
+                try {
+                    Class<?> target = Class.forName(className);
+                    int length=applicationContext.getBeanNamesForType(target).length;
+                    if(length==0){
+                        String beanName = ClassNameUtils.beanName(className);
+                        GrpcHthtService grpcHthtService=target.getAnnotation(GrpcHthtService.class);
+                        ChannelUtil.getInstance().getgrpcChannel(className,grpcHthtService,applicationContext);
+                        ((DefaultListableBeanFactory) beanFactory).registerSingleton(beanName, map.getValue());
+                    }
+                } catch (ClassNotFoundException e) {
+                    log.warn("class not found : " + className);
+
+                }
+
+
+
             }
         }
 

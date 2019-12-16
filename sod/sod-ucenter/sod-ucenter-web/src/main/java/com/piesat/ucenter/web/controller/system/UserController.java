@@ -1,5 +1,6 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.ucenter.dao.system.UserDao;
