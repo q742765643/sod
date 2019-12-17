@@ -16,8 +16,8 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
-        <module>sod-project-grpc</module>
         <module>sod-util</module>
+        <module>sod-project-grpc</module>
         <module>sod-common</module>
         <module>sod-ucenter</module>
         <module>sod-tstructure-center</module>

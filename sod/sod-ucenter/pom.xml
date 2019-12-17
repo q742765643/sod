@@ -15,9 +15,9 @@
         <module>sod-ucenter-common</module>
         <module>sod-ucenter-dao</module>
         <module>sod-ucenter-rpc-api</module>
+        <module>sod-ucenter-sso-client</module>
         <module>sod-ucenter-rpc-service</module>
         <module>sod-ucenter-web</module>
-        <module>sod-ucenter-sso-client</module>
     </modules>
 
 

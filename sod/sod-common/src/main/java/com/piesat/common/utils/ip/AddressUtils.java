@@ -23,8 +23,7 @@ public class AddressUtils
         // 内网不查询
         if (IpUtils.internalIp(ip))
         {
-            //return "内网IP";
-            return ip;
+            return "内网IP";
         }
         String rspStr = HttpUtils.sendPost(IP_URL, "ip=" + ip);
         if (StringUtils.isEmpty(rspStr))

@@ -66,8 +66,8 @@ public class OnlineServiceImpl implements OnlineService {
         }
         Collections.reverse(userOnlineList);
         userOnlineList.removeAll(Collections.singleton(null));
-        int startIndex = pageNum * pageSize;
-        int endIndex = (pageNum * pageSize) + pageSize;
+        int startIndex = (pageNum -1)* pageSize;
+        int endIndex = ((pageNum -1) * pageSize) + pageSize;
         int size = userOnlineList.size();
         if (endIndex > size) {
             endIndex = size;
