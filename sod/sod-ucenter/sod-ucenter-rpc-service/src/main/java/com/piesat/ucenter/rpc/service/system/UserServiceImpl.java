@@ -172,7 +172,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public void updateUserStatus(UserDto user)
     {
-        UserEntity userEntity=this.getById(user.getId());
+        UserEntity userEntity=userMapstruct.toEntity(user);
         userEntity.setStatus(user.getStatus());
         this.save(userEntity);
     }

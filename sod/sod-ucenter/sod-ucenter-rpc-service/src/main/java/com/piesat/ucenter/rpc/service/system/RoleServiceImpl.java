@@ -202,7 +202,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     @Override
     public RoleDto updateRoleStatus(RoleDto role)
     {
-        RoleEntity roleEntity=this.getById(role.getId());
+        RoleEntity roleEntity=roleMapstruct.toEntity(role);
         roleEntity.setStatus(role.getStatus());
         roleEntity=this.save(roleEntity);
         return roleMapstruct.toDto(roleEntity);
