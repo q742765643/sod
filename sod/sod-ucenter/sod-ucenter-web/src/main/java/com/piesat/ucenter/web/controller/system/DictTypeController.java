@@ -1,5 +1,6 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.common.annotation.HtParam;
 import com.piesat.ucenter.rpc.api.system.DictTypeService;
 import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -27,8 +28,8 @@ public class DictTypeController {
     private DictTypeService dictTypeService;
     @GetMapping("/list")
     public ResultT<PageBean> list(DictTypeDto dictType ,
-                                  @RequestParam(value="pageNum",defaultValue="0") int pageNum,
-                                  @RequestParam(value="pageSize",defaultValue="10") int pageSize)
+                                  @HtParam(value="pageNum",defaultValue="1") int pageNum,
+                                  @HtParam(value="pageSize",defaultValue="10") int pageSize)
     {
         ResultT<PageBean> resultT=new ResultT<>();
         if(dictType==null){

@@ -67,7 +67,7 @@ public class DecryptUtil {
         }
         /*****===========5.进行解密=================*****/
         if(shouldDecrypt){
-            String data= AESUtil.aesDecrypt(requestBody);
+            String data= AESUtil.aesDecrypt(requestBody).replace(" ","");
             log.info(request.getRequestURI());
             Map<String,Object> map= JSON.parseObject(data,Map.class);
             Map<String,String[]> parameterMap=new HashMap<>();

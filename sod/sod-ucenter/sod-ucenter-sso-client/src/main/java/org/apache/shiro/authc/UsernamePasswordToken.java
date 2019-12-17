@@ -16,6 +16,7 @@ public class UsernamePasswordToken implements HostAuthenticationToken, RememberM
     private String loginType;
     private HttpServletRequest request;
     private String param;
+    private int operatorType;
     public UsernamePasswordToken() {
         this.rememberMe = false;
     }
@@ -146,5 +147,13 @@ public class UsernamePasswordToken implements HostAuthenticationToken, RememberM
 
     public void setParam(String param) {
         this.param = param;
+    }
+
+    public int getOperatorType() {
+        return operatorType;
+    }
+
+    public void setOperatorType(int operatorType) {
+        this.operatorType = operatorType;
     }
 }

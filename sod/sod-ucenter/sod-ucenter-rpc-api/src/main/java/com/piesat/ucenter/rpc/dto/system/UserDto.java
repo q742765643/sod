@@ -83,6 +83,8 @@ public class UserDto extends BaseDto {
 
     private String tokenId;
 
+    private int operatorType;
+
     /**
      * 角色对象
      */

@@ -275,7 +275,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
         if(sort==null){
             sort=Sort.unsorted();
         }
-        return PageRequest.of(pageForm.getCurrentPage() - 1, pageForm.getPageSize(),sort);
+        return PageRequest.of(pageForm.getCurrentPage()-1, pageForm.getPageSize(),sort);
     }
 
 }

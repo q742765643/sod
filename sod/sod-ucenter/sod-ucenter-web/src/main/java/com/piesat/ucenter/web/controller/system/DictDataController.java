@@ -1,5 +1,6 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.common.annotation.HtParam;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
@@ -26,8 +27,8 @@ public class DictDataController {
     private DictDataService dictDataService;
     @GetMapping("/list")
     public ResultT<PageBean> list(DictDataDto dictData,
-                                  @RequestParam(value="pageNum",defaultValue="0") int pageNum,
-                                  @RequestParam(value="pageSize",defaultValue="10") int pageSize)
+                                  @HtParam(value="pageNum",defaultValue="1") int pageNum,
+                                  @HtParam(value="pageSize",defaultValue="10") int pageSize)
     {
         ResultT<PageBean> resultT=new ResultT();
         PageForm<DictDataDto> pageForm=new PageForm<>(pageNum,pageSize,dictData);

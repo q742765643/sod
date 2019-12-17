@@ -2,6 +2,7 @@ package com.piesat.sso.client.shiro;
 
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
+import com.piesat.sso.client.enums.OperatorType;
 import com.piesat.sso.client.util.RedisUtil;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -38,6 +39,7 @@ public class HtAuthenticationFilter extends FormAuthenticationFilter {
                 UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
                 token.setLoginType("1");
                 token.setRequest(req);
+                token.setOperatorType(OperatorType.INTERFACE.ordinal());
                 subject.login(token);
                 redisUtil.set(THRID_LOGIN_APP_ID+appId,subject.getSession().getId(),18000);
                 return true;

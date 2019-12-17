@@ -5,7 +5,10 @@ import com.piesat.common.filter.CustomEncryptHttpMessageConverter;
 import com.piesat.common.filter.MyFormHttpMessageConverter;
 import com.piesat.common.interceptor.CurrentUserArgumentResolver;
 import com.piesat.common.interceptor.HthtInterceptor;
+import com.piesat.common.interceptor.RequestParamMethodArgumentResolver;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -36,11 +39,13 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     private  ObjectMapper objectMapper;
     @Resource
     private CurrentUserArgumentResolver currentUserArgumentResolver;
+    @Autowired
+    private ConfigurableBeanFactory beanFactory;
 
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new RequestParamMethodArgumentResolver(beanFactory,true));
         argumentResolvers.add(currentUserArgumentResolver);
-
         // 注册Spring data jpa pageable的参数分解器
        // argumentResolvers.add(new CurrentUserArgumentResolver());
     }

@@ -7,6 +7,7 @@ import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.ServletUtils;
 import com.piesat.common.utils.VerifyCodeUtils;
 import com.piesat.common.utils.sign.Base64;
+import com.piesat.sso.client.enums.OperatorType;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.api.system.RoleService;
 import com.piesat.ucenter.rpc.api.system.UserService;
@@ -67,6 +68,7 @@ public class LoginController {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             token.setLoginType("0");
             token.setRequest(ServletUtils.getRequest());
+            token.setOperatorType(OperatorType.MANAGE.ordinal());
             subject.login(token);
             map.put("token", subject.getSession().getId());
             resultT.setData(map);
@@ -93,6 +95,7 @@ public class LoginController {
             UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
             token.setLoginType("1");
             token.setRequest(ServletUtils.getRequest());
+            token.setOperatorType(OperatorType.THRID.ordinal());
             token.setParam(JSON.toJSONString(userDto));
             subject.login(token);
             map.put("token", subject.getSession().getId());

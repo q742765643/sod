@@ -68,13 +68,14 @@ public class HtShiroRealm extends AuthorizingRealm {
         ByteSource salt = ByteSource.Util.bytes(username);
         if (null != token.getRequest()) {
             UserAgent userAgent = UserAgent.parseUserAgentString(token.getRequest().getHeader("User-Agent"));
-            String ip = getIpAddr(token.getRequest());
+            String ip = IpUtils.getIpAddr(token.getRequest());
             userDto.setLoginIp(ip);
             userDto.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
             userDto.setBrowser(userAgent.getBrowser().getName());
             userDto.setOs(userAgent.getOperatingSystem().getName());
         }
         userDto.setParams(token.getParam());
+        userDto.setOperatorType(token.getOperatorType());
         userDto.setLoginDate(new Date());
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 userDto, //用户名
@@ -84,35 +85,5 @@ public class HtShiroRealm extends AuthorizingRealm {
         );
         return authenticationInfo;
     }
-    public static String getIpAddr(HttpServletRequest request)
-    {
-        if (request == null)
-        {
-            return "unknown";
-        }
-        String ip = request.getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
-        {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
-        {
-            ip = request.getHeader("X-Forwarded-For");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
-        {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
-        {
-            ip = request.getHeader("X-Real-IP");
-        }
 
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
-        {
-            ip = request.getRemoteAddr();
-        }
-
-        return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
-    }
 }

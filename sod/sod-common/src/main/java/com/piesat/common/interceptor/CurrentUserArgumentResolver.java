@@ -1,11 +1,13 @@
 package com.piesat.common.interceptor;
 
+import com.piesat.common.annotation.HtParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -24,7 +26,13 @@ import java.util.Map;
 public class CurrentUserArgumentResolver  implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
-        return true;
+        RequestParam ann = (RequestParam)methodParameter.getParameterAnnotation(RequestParam.class);
+        HtParam htParam = (HtParam)methodParameter.getParameterAnnotation(HtParam.class);
+        if(ann==null||htParam==null){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
