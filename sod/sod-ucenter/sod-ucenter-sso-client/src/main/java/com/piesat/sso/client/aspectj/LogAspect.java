@@ -22,6 +22,7 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,9 +51,8 @@ public class LogAspect
 {
     @GrpcHthtClient
     private OperLogService operLogService;
-    public static ExecutorService logThreadPool = new ThreadPoolExecutor(300, 300,
-            0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(5000), new ThreadFactoryBuilder().setNameFormat("insert-oper-log-%d").build(), new ThreadPoolExecutor.AbortPolicy());
+    @Autowired
+    private ExecutorService executorService;
     // 配置织入点
     @Pointcut("@annotation(com.piesat.sso.client.annotation.Log)")
     public void logPointCut()
@@ -125,7 +125,7 @@ public class LogAspect
             operLog.setOperatorType(loginUser.getOperatorType());
             // 处理设置注解上的参数
             getControllerMethodDescription(joinPoint, controllerLog, operLog);
-            logThreadPool.execute(()->{
+            executorService.execute(()->{
                 operLog.setOperLocation(AddressUtils.getRealAddressByIP(operLog.getOperIp()));
                 operLog.setOperTime(new Date());
                 operLogService.insertOperlog(operLog);

@@ -1,13 +1,18 @@
 package com.piesat.ucenter.rpc.service.monitor;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.ucenter.dao.monitor.OperLogDao;
 import com.piesat.ucenter.entity.monitor.OperLogEntity;
+import com.piesat.ucenter.entity.system.DictDataEntity;
+import com.piesat.ucenter.mapper.monitor.OperLogMapper;
 import com.piesat.ucenter.rpc.api.monitor.OperLogService;
 import com.piesat.ucenter.rpc.dto.monitor.OperLogDto;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.mapstruct.monitor.OperLogMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -15,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +39,8 @@ public class OperLogServiceImpl extends BaseService<OperLogEntity> implements Op
     private OperLogMapstruct operLogMapstruct;
     @Autowired
     private OperLogDao operLogDao;
+    @Autowired
+    private OperLogMapper operLogMapper;
     @Override
     public BaseDao<OperLogEntity> getBaseDao() {
         return operLogDao;
@@ -57,26 +66,12 @@ public class OperLogServiceImpl extends BaseService<OperLogEntity> implements Op
     @Override
     public PageBean selectOperLogList(PageForm<OperLogDto> pageForm)
     {
-        OperLogDto operLog=pageForm.getT();
-        SimpleSpecificationBuilder<OperLogEntity> specificationBuilder=new SimpleSpecificationBuilder<>();
-        if(null!=operLog.getTitle()&&!"".equals(operLog.getTitle())){
-            specificationBuilder.add("title", SpecificationOperator.Operator.likeAll.name(),operLog.getTitle());
-        }
-        if(null!=operLog.getBusinessType()){
-            specificationBuilder.add("businessType",SpecificationOperator.Operator.eq.name(),operLog.getBusinessTypes());
-        }
-        if(null!=operLog.getBusinessTypes()&&operLog.getBusinessTypes().length>0){
-            specificationBuilder.add("businessType",SpecificationOperator.Operator.in.name(),operLog.getBusinessTypes());
-        }
-        if(null!=operLog.getStatus()){
-            specificationBuilder.add("status",SpecificationOperator.Operator.eq.name(),operLog.getBusinessTypes());
-        }
-        if(null!=operLog.getOperName()&&!"".equals(operLog.getOperName())){
-            specificationBuilder.add("operName",SpecificationOperator.Operator.likeAll.name(),operLog.getBusinessTypes());
-        }
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
-        List<OperLogEntity> logEntities= (List<OperLogEntity>) pageBean.getPageData();
-        pageBean.setPageData(operLogMapstruct.toDto(logEntities));
+        OperLogEntity operLogEntity=operLogMapstruct.toEntity(pageForm.getT());
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<OperLogEntity> operLogEntities=operLogMapper.selectOperLogList(operLogEntity);
+        PageInfo<OperLogEntity> pageInfo = new PageInfo<>(operLogEntities);
+        List<OperLogDto> operLogDtos= operLogMapstruct.toDto(pageInfo.getList());
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),operLogDtos);
         return pageBean;
     }
 

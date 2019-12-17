@@ -6,16 +6,21 @@ import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.ServletUtils;
 import com.piesat.common.utils.VerifyCodeUtils;
+import com.piesat.common.utils.ip.AddressUtils;
+import com.piesat.common.utils.ip.IpUtils;
 import com.piesat.common.utils.sign.Base64;
 import com.piesat.sso.client.enums.OperatorType;
+import com.piesat.ucenter.rpc.api.monitor.LoginInfoService;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.api.system.RoleService;
 import com.piesat.ucenter.rpc.api.system.UserService;
+import com.piesat.ucenter.rpc.dto.monitor.LoginInfoDto;
 import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.util.RouterVo;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import eu.bitwalker.useragentutils.UserAgent;
 import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -25,13 +30,12 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,6 +53,10 @@ public class LoginController {
     private RoleService roleService;
     @Autowired
     private MenuService menuService;
+    @Autowired
+    private LoginInfoService loginInfoService;
+    @Autowired
+    private ExecutorService executorService;
     /**
      * 登录方法
      *
@@ -80,6 +88,8 @@ public class LoginController {
             resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
         }catch (AuthenticationException ex){
             resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
+        }finally {
+            this.recordLogininfor(ServletUtils.getRequest(),username,resultT);
         }
         return resultT;
     }
@@ -89,9 +99,9 @@ public class LoginController {
     {
         ResultT<Map<String,Object>> resultT=new ResultT<>();
         Map<String,Object> map=new HashMap<>();
+        String appId= userDto.get("appId");
         try {
             Subject subject = SecurityUtils.getSubject();
-            String appId= userDto.get("appId");
             UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
             token.setLoginType("1");
             token.setRequest(ServletUtils.getRequest());
@@ -108,6 +118,8 @@ public class LoginController {
             resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
         }catch (AuthenticationException ex){
             resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
+        }finally {
+            this.recordLogininfor(ServletUtils.getRequest(),appId,resultT);
         }
         return resultT;
     }
@@ -224,6 +236,39 @@ public class LoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void recordLogininfor(HttpServletRequest request,String userName,ResultT<Map<String,Object>> resultT){
+        try {
+            executorService.execute(
+                    ()->{
+                        final UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+                        final String ip = IpUtils.getIpAddr(request);
+                        String address = AddressUtils.getRealAddressByIP(ip);
+                        String os = userAgent.getOperatingSystem().getName();
+                        // 获取客户端浏览器
+                        String browser = userAgent.getBrowser().getName();
+                        LoginInfoDto logininfor=new LoginInfoDto();
+                        logininfor.setUserName(userName);
+                        logininfor.setIpaddr(ip);
+                        logininfor.setLoginLocation(address);
+                        logininfor.setBrowser(browser);
+                        logininfor.setOs(os);
+                        logininfor.setMsg(resultT.getMsg());
+                        if(resultT.isSuccess()){
+                            logininfor.setStatus("0");
+                        }else{
+                            logininfor.setStatus("1");
+                        }
+                        logininfor.setLoginTime(new Date());
+                        loginInfoService.insertLogininfor(logininfor);
+                    }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 }

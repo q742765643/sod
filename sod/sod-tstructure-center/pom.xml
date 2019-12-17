@@ -140,7 +140,7 @@
                 </configuration>
             </plugin>
             <!-- MyBatis Generator 插件 -->
-<!--
+
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -163,7 +163,7 @@
                         src/main/resources/mybatis-generator.xml</configurationFile>
                 </configuration>
             </plugin>
--->
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

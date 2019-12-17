@@ -36,6 +36,7 @@ public class OperLogController {
         return resultT;
     }
     @RequiresPermissions("monitor:operlog:remove")
+    @Log(title = "操作日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/{operIds}")
     public ResultT<String> remove(@PathVariable String[] operIds)
     {

@@ -5,7 +5,7 @@
 <generatorConfiguration>
 
     <!-- 本地数据库驱动程序jar包的全路径 -->
-    <classPathEntry location="D:\repro\cloudjdbc\cloudjdbc\1.3.8\cloudjdbc-1.3.8.jar"/>
+    <classPathEntry location="/zzj/repo/cloudjdbc/cloudjdbc/1.3.8/cloudjdbc-1.3.8.jar"/>
 
     <context id="context" targetRuntime="MyBatis3">
         <commentGenerator>
@@ -24,23 +24,23 @@
         </javaTypeResolver>
 
         <!-- 实体类生成的位置 -->
-        <javaModelGenerator targetPackage="com.piesat.model.mybatis" targetProject="src\main\java">
+        <javaModelGenerator targetPackage="com.piesat.model.mybatis" targetProject="src/main/java">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="false"/>
         </javaModelGenerator>
 
         <!-- *Mapper.xml 文件的位置 -->
-        <sqlMapGenerator targetPackage="mapper" targetProject="src\main\resources">
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
 
         <!-- Mapper 接口文件的位置 -->
-        <javaClientGenerator targetPackage="com.piesat.dao.mapper" targetProject="src\main\java" type="XMLMAPPER">
+        <javaClientGenerator targetPackage="com.piesat.dao.mapper" targetProject="src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <table tableName="T_SOD_ROLE" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+        <table tableName="T_SOD_LOGIN_INFO" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
 
     </context>

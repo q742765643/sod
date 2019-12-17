@@ -1,11 +1,14 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.entity.system.MenuEntity;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.dto.system.MenuDto;
 import com.piesat.ucenter.rpc.util.TreeSelect;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,7 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
+    @RequiresPermissions("system:menu:list")
     @GetMapping("/list")
     public ResultT<List<MenuDto>> list(MenuDto menu)
     {
@@ -43,7 +47,8 @@ public class MenuController {
     /**
      * 新增菜单
      */
-
+    @RequiresPermissions("system:menu:add")
+    @Log(title = "菜单管理", businessType = BusinessType.INSERT)
     @PostMapping
     public ResultT<MenuDto> add(@RequestBody MenuDto menu)
     {
@@ -55,6 +60,8 @@ public class MenuController {
     /**
      * 修改菜单
      */
+    @RequiresPermissions("system:menu:edit")
+    @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultT<MenuDto> edit(@RequestBody MenuDto menu)
     {
@@ -66,6 +73,7 @@ public class MenuController {
     /**
      * 根据菜单编号获取详细信息
      */
+    @RequiresPermissions("system:menu:query")
     @GetMapping(value = "/{menuId}")
     public ResultT<MenuDto> getInfo(@PathVariable String menuId)
     {
@@ -78,7 +86,8 @@ public class MenuController {
     /**
      * 删除菜单
      */
-
+    @RequiresPermissions("system:menu:remove")
+    @Log(title = "菜单管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{menuId}")
     public ResultT<String> remove(@PathVariable("menuId") String menuId)
     {

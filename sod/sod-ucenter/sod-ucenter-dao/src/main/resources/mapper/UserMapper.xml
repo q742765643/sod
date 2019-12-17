@@ -78,10 +78,10 @@
       AND u.phonenumber like concat('%', #{phonenumber}, '%')
     </if>
     <if test="paramt.beginTime != null and paramt.beginTime != ''"><!-- 开始时间检索 -->
-      AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{paramt.beginTime},'%y%m%d')
+      AND u.create_time &gt;= #{paramt.beginTime}
     </if>
     <if test="paramt.endTime != null and paramt.endTime != ''"><!-- 结束时间检索 -->
-      AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{paramt.endTime},'%y%m%d')
+      AND u.create_time &lt;= #{paramt.endTime}
     </if>
     <if test="deptId != null and deptId != ''">
       AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.id FROM t_sod_dept t WHERE ancestors like concat('%', #{deptId}, '%')  ))

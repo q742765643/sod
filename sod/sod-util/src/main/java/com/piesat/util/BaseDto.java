@@ -25,7 +25,7 @@ public class BaseDto implements Serializable {
     private String createBy;
 
     private String updateBy;
-
+    private String params;
 
     public String getId() {
         return id;
@@ -73,5 +73,13 @@ public class BaseDto implements Serializable {
 
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
     }
 }

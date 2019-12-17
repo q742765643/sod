@@ -1,12 +1,15 @@
 package com.piesat.ucenter.web.controller.system;
 
 import com.piesat.common.annotation.HtParam;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.api.system.DictTypeService;
 import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,7 @@ import java.util.List;
 public class DictTypeController {
     @Autowired
     private DictTypeService dictTypeService;
+    @RequiresPermissions("system:dict:list")
     @GetMapping("/list")
     public ResultT<PageBean> list(DictTypeDto dictType ,
                                   @HtParam(value="pageNum",defaultValue="1") int pageNum,
@@ -43,6 +47,7 @@ public class DictTypeController {
     /**
      * 查询字典类型详细
      */
+    @RequiresPermissions("system:dict:query")
     @GetMapping(value = "/{dictId}")
     public ResultT<DictTypeDto> getInfo(@PathVariable String dictId)
     {
@@ -54,6 +59,8 @@ public class DictTypeController {
     /**
      * 新增字典类型
      */
+    @RequiresPermissions("system:dict:add")
+    @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
     public ResultT<DictTypeDto> add(@RequestBody DictTypeDto dict)
     {
@@ -70,6 +77,8 @@ public class DictTypeController {
     /**
      * 修改字典类型
      */
+    @RequiresPermissions("system:dict:edit")
+    @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultT<DictTypeDto> edit(@RequestBody DictTypeDto dict)
     {
@@ -87,6 +96,8 @@ public class DictTypeController {
     /**
      * 删除字典类型
      */
+    @RequiresPermissions("system:dict:remove")
+    @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
     public ResultT<String> remove(@PathVariable String[] dictIds)
     {
