@@ -1,10 +1,7 @@
 package com.piesat.sso.client.config;
 
 
-import com.piesat.sso.client.shiro.HtAuthenticationFilter;
-import com.piesat.sso.client.shiro.HtExceptionHandler;
-import com.piesat.sso.client.shiro.HtSessionManager;
-import com.piesat.sso.client.shiro.HtShiroRealm;
+import com.piesat.sso.client.shiro.*;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -105,9 +102,10 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public RedisCacheManager cacheManager() {
-        RedisCacheManager redisCacheManager = new RedisCacheManager();
-        redisCacheManager.setRedisManager(redisManager());
+    public HtRedisCacheManager cacheManager() {
+        HtRedisCacheManager redisCacheManager = new HtRedisCacheManager();
+        redisCacheManager.setHtRedisManager(redisManager());
+        redisCacheManager.setExpire(1800000);
         return redisCacheManager;
     }
 
@@ -119,16 +117,8 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public RedisManager redisManager() {
-        RedisManager redisManager = new RedisManager();
-        redisManager.setHost(host+":"+port);
-        if(null!=password&&password.length()>1){
-            redisManager.setPassword(password);
-        }
-        //redisManager.setPort(port);
-        redisManager.setTimeout(timeout);
-        //redisManager.setPassword(password);
-        //redisManager.setExpire(18000);
+    public HtRedisManager redisManager() {
+        HtRedisManager redisManager=new HtRedisManager();
         return redisManager;
     }
     //自定义sessionManager
@@ -136,12 +126,21 @@ public class ShiroConfig {
     public DefaultWebSessionManager sessionManager() {
         HtSessionManager htSessionManager = new HtSessionManager();
         htSessionManager.setSessionDAO(redisSessionDAO());
-        //DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        //htSessionManager.setGlobalSessionTimeout(180000);    // 设置session超时
-        htSessionManager.setDeleteInvalidSessions(true);      // 删除无效session
+
         htSessionManager.setSessionIdCookie(cookie());            // 设置JSESSIONID
+        //全局会话超时时间（单位毫秒），默认30分钟  暂时设置为10秒钟 用来测试
+        htSessionManager.setGlobalSessionTimeout(1800000);
+        //是否开启删除无效的session对象  默认为true
+        htSessionManager.setDeleteInvalidSessions(true);
+        //是否开启定时调度器进行检测过期session 默认为true
+        htSessionManager.setSessionValidationSchedulerEnabled(true);
+        //设置session失效的扫描时间, 清理用户直接关闭浏览器造成的孤立会话 默认为 1个小时
+        //设置该属性 就不需要设置 ExecutorServiceSessionValidationScheduler 底层也是默认自动调用ExecutorServiceSessionValidationScheduler
+        //暂时设置为 5秒 用来测试
+        htSessionManager.setSessionValidationInterval(3600000);
+        //取消url 后面的 JSESSIONID
+        htSessionManager.setSessionIdUrlRewritingEnabled(false);
         return  htSessionManager;
-        //return htSessionManager;
     }
 
 
@@ -151,10 +150,10 @@ public class ShiroConfig {
      * 使用的是shiro-redis开源插件
      */
     @Bean
-    public RedisSessionDAO redisSessionDAO() {
-        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+    public HtRedisSessionDAO redisSessionDAO() {
+        HtRedisSessionDAO redisSessionDAO = new HtRedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
-        redisSessionDAO.setExpire(18000);
+        redisSessionDAO.setExpire(1800000);
         return redisSessionDAO;
     }
 
@@ -212,7 +211,7 @@ public class ShiroConfig {
     }
 
     @Bean
-    public static LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+    public  LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
 
