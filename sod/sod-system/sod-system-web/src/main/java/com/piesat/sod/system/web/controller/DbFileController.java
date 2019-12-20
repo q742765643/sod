@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.piesat.common.jpa.page.PageBean;
-import com.piesat.common.jpa.page.PageForm;
 import com.piesat.sod.system.rpc.api.DbFileService;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +41,7 @@ public class DbFileController {
 	 * @param pageForm
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	@ApiOperation(value="获取数据库文件分页数据接口",notes="获取数据库文件分页数据接口")
 	@GetMapping(value="/api/dbfile/getpage")
 	public PageBean getPageData(HttpServletRequest request,PageForm pageForm) {

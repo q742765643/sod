@@ -55,3 +55,5 @@ spring:
     show-sql: true
     #database: mysql
     open-in-view: false
+serverfile:
+  dbfile: D:/upload/

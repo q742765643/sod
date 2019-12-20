@@ -6,8 +6,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.common.jpa.page.PageBean;
-import com.piesat.common.jpa.page.PageForm;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 /** 
 *@description
@@ -27,6 +27,7 @@ public interface DbFileService {
 	 * @param pageForm
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	PageBean findPageData(Map<String,Object> params,PageForm pageForm) throws Exception;
 	
 	/**
