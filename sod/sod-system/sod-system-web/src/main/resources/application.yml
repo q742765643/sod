@@ -56,4 +56,4 @@ spring:
     #database: mysql
     open-in-view: false
 serverfile:
-  dbfile: D:\upload
+  dbfile: D:/upload/
