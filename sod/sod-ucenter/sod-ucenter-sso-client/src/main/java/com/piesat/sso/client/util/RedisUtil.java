@@ -2,9 +2,11 @@ package com.piesat.sso.client.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Tuple;
 
 import java.util.List;
 import java.util.Map;
@@ -516,6 +518,32 @@ public class RedisUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    public boolean zsetAdd(String key,String object,long time){
+        try {
+            redisTemplate.opsForZSet().add(key,object,time);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public void zsetRemove(String key,String object){
+        try {
+            redisTemplate.opsForZSet().remove(key,object);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public  Set<DefaultTypedTuple> rangeByScoreWithScores(String key,long time,int maxCount){
+        try {
+            Set<DefaultTypedTuple> triggerTuples = redisTemplate.opsForZSet().rangeByScoreWithScores(key, 0d, time, 0, maxCount);
+            return triggerTuples;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
