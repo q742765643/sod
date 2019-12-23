@@ -24,6 +24,7 @@
         <module>sod-project-eureka</module>
         <module>sod-dm</module>
         <module>sod-system</module>
+        <module>sod-schedule-center</module>
     </modules>
     <repositories>
         <repository>

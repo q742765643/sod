@@ -16,29 +16,6 @@
             <artifactId>sod-ucenter-dao</artifactId>
             <version>${parent.version}</version>
         </dependency>
-     <!--   <dependency>
-            <groupId>com.htht</groupId>
-            <artifactId>sod-ucenter-rpc-api</artifactId>
-            <version>${parent.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring-core</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-beans</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-aop</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-context</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
         <dependency>
             <groupId>com.htht</groupId>
             <artifactId>sod-ucenter-sso-client</artifactId>
