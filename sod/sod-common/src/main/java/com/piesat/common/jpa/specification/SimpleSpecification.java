@@ -59,6 +59,14 @@ public class SimpleSpecification<T> implements Specification<T> {
             return criteriaBuilder.gt(root.get(op.getKey()).as(Number.class), (Number) op.getValue());
         } else if (SpecificationOperator.Operator.lt.name().equalsIgnoreCase(op.getOper())) {
             return criteriaBuilder.lt(root.get(op.getKey()).as(Number.class), (Number) op.getValue());
+        } else if (SpecificationOperator.Operator.ges.name().equalsIgnoreCase(op.getOper())) {
+            return criteriaBuilder.greaterThanOrEqualTo(root.get(op.getKey()).as(String.class), String.valueOf(op.getValue()));
+        } else if (SpecificationOperator.Operator.les.name().equalsIgnoreCase(op.getOper())) {
+            return criteriaBuilder.lessThanOrEqualTo(root.get(op.getKey()).as(String.class),  String.valueOf(op.getValue()));
+        } else if (SpecificationOperator.Operator.gts.name().equalsIgnoreCase(op.getOper())) {
+            return criteriaBuilder.greaterThan(root.get(op.getKey()).as(String.class),String.valueOf(op.getValue()));
+        } else if (SpecificationOperator.Operator.lts.name().equalsIgnoreCase(op.getOper())) {
+            return criteriaBuilder.lessThan(root.get(op.getKey()).as(String.class), String.valueOf( op.getValue()));
         } else if (SpecificationOperator.Operator.likeAll.name().equalsIgnoreCase(op.getOper())) {
             return criteriaBuilder.like(root.get(op.getKey()).as(String.class), "%" + op.getValue() + "%");
         } else if (SpecificationOperator.Operator.likeL.name().equalsIgnoreCase(op.getOper())) {

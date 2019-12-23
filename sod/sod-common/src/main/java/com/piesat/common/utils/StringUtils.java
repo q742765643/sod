@@ -70,6 +70,13 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
     {
         return !isEmpty(objects);
     }
+    public static boolean isNotNullString(String objects)
+    {
+        if(objects!=null&&!"".equals(objects)){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * * 判断一个Map是否为空

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+
 /**
  * @program: sod
  * @description:
@@ -14,13 +15,11 @@ import javax.persistence.*;
  * @create: 2019-12-18 17:15
  **/
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name="T_SOD_JOB_INFO")
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy= InheritanceType.JOINED)
 @DiscriminatorColumn(name="type")
-@DiscriminatorValue("JOB")
 public class JobInfoEntity extends BaseEntity{
     @Column(name="job_group", length=50)
     private String jobGroup;		// 执行器主键ID

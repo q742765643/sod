@@ -2,6 +2,7 @@ package com.piesat.schedule.rpc.mapstruct.backup;
 
 import com.piesat.common.jpa.BaseMapper;
 import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -15,6 +16,6 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface BackupMapstruct extends BaseMapper<BackUpDto,BaseEntity>{
+public interface BackupMapstruct extends BaseMapper<BackUpDto,BackupEntity>{
 }
 

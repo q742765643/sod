@@ -46,13 +46,6 @@
                     <compilerVersion>1.8</compilerVersion>
                     <verbose>true</verbose>
                     <optimize>true</optimize>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>1.2.0.Final</version>
-                        </path>
-                    </annotationProcessorPaths>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -67,7 +60,6 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.1</version>
                 <configuration>
-                    <!--<failOnMissingWebXml>false</failOnMissingWebXml>-->
                     <includeEmptyDirs>true</includeEmptyDirs>
                 </configuration>
             </plugin>
@@ -80,7 +72,6 @@
                     <warSourceExcludes>upload/**</warSourceExcludes>
                 </configuration>
             </plugin>
-
         </plugins>
 
     </build>

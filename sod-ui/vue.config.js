@@ -45,7 +45,14 @@ module.exports = {
         pathRewrite: {
           ['^' + process.env.VUE_APP_UCENTER_API]: ''
         }
-      }
+      },
+      [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
+        target: `http://localhost:1237`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_SCHEDULE_CENTER_API]: ''
+        }
+      },
     },
     disableHostCheck: true
   },

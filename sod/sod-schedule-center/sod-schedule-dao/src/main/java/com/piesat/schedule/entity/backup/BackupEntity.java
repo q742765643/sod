@@ -16,8 +16,7 @@ import javax.persistence.Table;
  * @author: zzj
  * @create: 2019-12-20 15:14
  **/
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name="T_SOD_JOB_BACKUP_INFO")
 @DiscriminatorValue("BACKUP")

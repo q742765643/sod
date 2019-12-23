@@ -41,7 +41,6 @@ service.interceptors.request.use(
       }
       config.params=param
     }
-
     return config
   },
   error => {

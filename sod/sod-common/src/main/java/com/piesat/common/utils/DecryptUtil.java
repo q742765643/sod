@@ -31,11 +31,11 @@ import java.util.Map;
 public class DecryptUtil {
     public static void decrypt(HttpServletRequest request, HttpServletResponse response, Object o){
         boolean shouldDecrypt=true;
-        String token = request.getHeader("authorization");
         /*****===========1.判断token判断是否需要解密=================*****/
+       /* String token = request.getHeader("authorization");
         if(StringUtils.isNotNull(token)&&token.equals("88888888")){
             shouldDecrypt=false;
-        }
+        }*/
         /*****===========2.判断注解判断是否需要解密=================*****/
         HandlerMethod h = (HandlerMethod)o;
         DecryptRequest decryptRequest=h.getMethod().getAnnotation(DecryptRequest.class);
@@ -101,7 +101,7 @@ public class DecryptUtil {
     public static boolean decrypt(HttpInputMessage inputMessage, MethodParameter parameter,Map<String, ByteArrayInputStream> map){
         boolean shouldDecrypt=true;
         /*****===========1.判断token判断是否需要解密=================*****/
-        List<String> tokens=inputMessage.getHeaders().get("authorization");
+        /*List<String> tokens=inputMessage.getHeaders().get("authorization");
         if(null==tokens||tokens.size()==0){
             return shouldDecrypt;
         }
@@ -109,7 +109,7 @@ public class DecryptUtil {
         if(token.equals("88888888")){
             shouldDecrypt=false;
             return shouldDecrypt;
-        }
+        }*/
         DecryptRequest decryptRequest=parameter.getMethod().getAnnotation(DecryptRequest.class);
         if(decryptRequest!=null&&decryptRequest.value()==false){
             shouldDecrypt=false;
