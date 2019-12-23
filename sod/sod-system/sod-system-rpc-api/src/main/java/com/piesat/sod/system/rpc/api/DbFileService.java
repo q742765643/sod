@@ -39,4 +39,13 @@ public interface DbFileService {
 	 * @throws Exeption
 	 */
 	void save(MultipartHttpServletRequest request) throws Exception;
+	/**
+	 *  根据id批量删除记录
+	 * @description 
+	 * @author wlg
+	 * @date 2019年12月23日上午8:12:10
+	 * @param recordIds
+	 * @throws Exception
+	 */
+	void deleteByIds(String recordIds) throws Exception;
 }

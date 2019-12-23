@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.piesat.sod.system.rpc.api.DbFileService;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
@@ -41,10 +42,9 @@ public class DbFileController {
 	 * @param pageForm
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
 	@ApiOperation(value="获取数据库文件分页数据接口",notes="获取数据库文件分页数据接口")
 	@GetMapping(value="/api/dbfile/getpage")
-	public PageBean getPageData(HttpServletRequest request,PageForm pageForm) {
+	public ResultT getPageData(HttpServletRequest request,PageForm pageForm) {
 		try {
 			Map<String,Object> param = new HashMap<>();
 			param.put("fileType", request.getParameter("fileType"));
@@ -54,11 +54,12 @@ public class DbFileController {
 			param.put("fileEndDate", request.getParameter("fileEndDate"));
 			param.put("field", request.getParameter("field"));
 			param.put("order", request.getParameter("order"));
-			return dbFileService.findPageData(param, pageForm);
+			PageBean page = dbFileService.findPageData(param, pageForm);
+			return ResultT.success(page);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			return ResultT.failed(e.getMessage());
 		}
 	}
 	
@@ -72,17 +73,35 @@ public class DbFileController {
 	 */
 	@ApiOperation(value="数据库文档上传文件接口",notes="数据库文档上传文件接口")
 	@PostMapping(value="/api/dbfile/upload")
-	public Map<String,Object> uploadFile(MultipartHttpServletRequest request) {
-		Map<String,Object> result = new HashMap<>();
+	public ResultT uploadFile(MultipartHttpServletRequest request) {
 		try {
 			dbFileService.save(request);
-			result.put("success", true);
+			return ResultT.success();
 		} catch (Exception e) {
 			e.printStackTrace();
-			result.put("success", false);
-			result.put("msg", e.getMessage());
+			return ResultT.failed(e.getMessage());
 		}
-		return result;
+	}
+	/**
+	 *  数据库文档删除
+	 * @description 
+	 * @author wlg
+	 * @date 2019年12月23日上午8:28:15
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value="数据库文档删除接口",notes="数据库文档删除接口")
+	@GetMapping(value="/api/dbfile/deleteByIds")
+	public ResultT deleteByIds(HttpServletRequest request){
+		String ids = request.getParameter("ids");
+		try {
+			dbFileService.deleteByIds(ids);
+			return ResultT.success();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+		
 	}
 
 }
