@@ -134,4 +134,29 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 		}
 	}
 
+	/**
+	 *  根据id删除
+	 * @description 
+	 * @author wlg
+	 * @date 2019-12-23 08:20
+	 * @param recordIds
+	 * @throws Exception
+	 */
+	@Override
+	public void deleteByIds(String recordIds) throws Exception {
+		String[] ids = recordIds.split(",");
+		for(String id:ids) {
+			DbFileEntity df = dbFileDao.findById(id).orElse(null);
+			if(null != df) {
+				String filePath = df.getFileStorPath();
+				File file = new File(filePath);
+				if(file.exists()) {
+					file.delete();
+				}
+				dbFileDao.delete(df);
+			}
+		}
+		
+	}
+
 }
