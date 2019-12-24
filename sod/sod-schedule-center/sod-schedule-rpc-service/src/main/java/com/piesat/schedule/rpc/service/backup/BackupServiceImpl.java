@@ -44,9 +44,22 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         }
         if(StringUtils.isNotNullString(backupEntity.getDataClassId())){
             specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
+            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
         }
         if(StringUtils.isNotNullString(backupEntity.getProfileName())){
             specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),backupEntity.getProfileName());
+        }
+        if(null!=backupEntity.getTriggerStatus()){
+            specificationBuilder.add("triggerStatus",SpecificationOperator.Operator.eq.name(),backupEntity.getTriggerStatus());
+        }
+        if(StringUtils.isNotNullString(backupEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),backupEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) backupEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) backupEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) backupEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupEntity.getParamt().get("endTime"));
         }
         Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);

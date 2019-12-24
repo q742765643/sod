@@ -59,6 +59,10 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/checkToken/*", "anon");
         filterChainDefinitionMap.put("/captchaImage", "anon");
         filterChainDefinitionMap.put("/unauth", "anon");
+        filterChainDefinitionMap.put("/swagger-ui.html", "anon");
+        filterChainDefinitionMap.put("/webjars/**", "anon");
+        filterChainDefinitionMap.put("/v2/**", "anon");
+        filterChainDefinitionMap.put("/swagger-resources/**", "anon");
         filterChainDefinitionMap.put("/**", "authc");
         LinkedHashMap<String, Filter> filtsMap = new LinkedHashMap<>();
         // 这里使用自定义的filter

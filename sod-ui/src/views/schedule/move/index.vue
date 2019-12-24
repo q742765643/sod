@@ -5,7 +5,7 @@
         <el-input
           v-model="queryParams.profileName"
           placeholder="请输入物理库资料名称"
-          clearable
+          moveable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
@@ -15,7 +15,7 @@
         <el-input
           v-model="queryParams.dataClassId"
           placeholder="请输入存储编码或者四级编码"
-          clearable
+          moveable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
@@ -25,7 +25,7 @@
         <el-input
           v-model="queryParams.tableName"
           placeholder="请输入表名"
-          clearable
+          moveable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
@@ -35,7 +35,7 @@
         <el-select
           v-model="queryParams.triggerStatus"
           placeholder="运行状态"
-          clearable
+          moveable
           size="small"
           style="width: 240px"
         >
@@ -72,7 +72,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['schedule:backup:add']"
+          v-hasPermi="['schedule:move:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -82,7 +82,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['schedule:backup:edit']"
+          v-hasPermi="['schedule:move:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -92,7 +92,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['schedule:backup:remove']"
+          v-hasPermi="['schedule:move:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -106,7 +106,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="backupList" row-key="id" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="moveList" row-key="id" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true" />
       <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true" />
@@ -124,14 +124,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['schedule:backup:edit']"
+            v-hasPermi="['schedule:move:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['schedule:backup:remove']"
+            v-hasPermi="['schedule:move:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -145,7 +145,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改备份配置对话框 -->
+    <!-- 添加或修改迁移配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
@@ -160,20 +160,27 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="近时备份条件" prop="conditions">
-              <el-input v-model="form.conditions" placeholder="请输入近时备份条件" />
+            <el-form-item label="迁移条件" prop="conditions">
+              <el-input v-model="form.conditions" placeholder="请输入迁移条件" />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
-            <el-form-item label="远时备份条件" prop="secondConditions">
-              <el-input v-model="form.secondConditions" placeholder="请输入远时备份条件" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="存储目录" prop="storageDirectory">
-              <el-select v-model="form.storageDirectory" placeholder="请选择" style="width: 100%">
+          <el-col :span="12">
+            <el-form-item label="迁移源目录" prop="sourceDirectory">
+              <el-select v-model="form.sourceDirectory" placeholder="请选择" style="width: 100%">
                 <el-option
-                  v-for="dict in storageDirectoryOptions"
+                  v-for="dict in sourceDirectoryOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="迁移目标目录" prop="targetDirectory">
+              <el-select v-model="form.targetDirectory" placeholder="请选择" style="width: 100%">
+                <el-option
+                  v-for="dict in targetDirectoryOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -189,6 +196,11 @@
           <el-col :span="12">
             <el-form-item label="四级编码" prop="ddataId">
               <el-input v-model="form.ddataId" disabled/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="迁移限制条数" prop="moveLimit">
+              <el-input v-model="form.moveLimit" placeholder="请输入限制条数单位为万"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -213,13 +225,24 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="失败重试次数" prop="executorFailRetryCount">
-              <el-input v-model="form.executorFailRetryCount" placeholder="请输入失败重试次数" />
+            <el-form-item label="是否清除" prop="isClear">
+              <el-radio-group v-model="form.isClear">
+                <el-radio
+                  v-for="dict in isClearOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictValue"
+                >{{dict.dictLabel}}</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="重试间隔时间" prop="retryInterval">
-              <el-input v-model="form.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
+          <el-col :span="24">
+          <el-form-item v-if="form.isClear != '0'" label="二级nas清除条件"  prop="clearConditions">
+            <el-input v-model="form.clearConditions" placeholder="请输入二级nas清除条件" />
+          </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item v-if="form.isClear != '0'" label="归档清除条件"  prop="archiveConditions">
+              <el-input v-model="form.archiveConditions" placeholder="请输入归档清除条件" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -238,7 +261,7 @@
 </template>
 
 <script>
-  import { listBackup, getBackup, addBackup, updateBackup, delBackup } from "@/api/schedule/backup/backup";
+  import { listMove, getMove, addMove, updateMove, delMove } from "@/api/schedule/move/move";
 
   export default {
     data() {
@@ -253,8 +276,8 @@
         multiple: true,
         // 总条数
         total: 0,
-        // 备份表格数据
-        backupList: [],
+        // 迁移表格数据
+        moveList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -264,7 +287,11 @@
 
         alarmOptions: [],
 
-        storageDirectoryOptions: [],
+        isClearOptions: [],
+
+        sourceDirectoryOptions: [],
+
+        targetDirectoryOptions: [],
 
         // 日期范围
         dateRange: [],
@@ -287,20 +314,20 @@
           dataClassId: [
             { required: true, message: "资料名称不能为空", trigger: "blur" }
           ],
-          storageDirectory: [
-            { required: true, message: "存储目录不能为空", trigger: "blur" }
-          ],
           jobCron: [
             { required: true, message: "执行策略不能为空", trigger: "blur" }
           ],
           executorTimeout: [
             { required: true, message: "超时时间不能为空", trigger: "blur" }
           ],
-          executorFailRetryCount: [
-            { required: true, message: "重试次数不能为空", trigger: "blur" }
+          moveLimit: [
+            { required: true, message: "限制条数不能为空", trigger: "blur" }
           ],
-          retryInterval: [
-            { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
+          sourceDirectory: [
+            { required: true, message: "迁移源目录不能为空", trigger: "blur" }
+          ],
+          targetDirectory: [
+            { required: true, message: "迁移目标目录不能为空", trigger: "blur" }
           ]
         }
       };
@@ -314,8 +341,14 @@
       this.getDicts("job_is_alarm").then(response => {
         this.alarmOptions = response.data;
       });
-      this.getDicts("backup_storage_directory").then(response => {
-        this.storageDirectoryOptions = response.data;
+      this.getDicts("move_is_clear").then(response => {
+        this.isClearOptions = response.data;
+      });
+      this.getDicts("move_source_directory").then(response => {
+        this.sourceDirectoryOptions = response.data;
+      });
+      this.getDicts("move_target_directory").then(response => {
+        this.targetDirectoryOptions = response.data;
       });
 
     },
@@ -323,8 +356,8 @@
       /** 查询字典类型列表 */
       getList() {
         this.loading = true;
-        listBackup(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.backupList = response.data.pageData;
+        listMove(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+            this.moveList = response.data.pageData;
             this.total = response.data.totalCount;
             this.loading = false;
           }
@@ -347,6 +380,7 @@
           dataClassId: undefined,
           triggerStatus: undefined,
           isAlarm:"1",
+          isClear:"1",
 
         };
         this.resetForm("form");
@@ -366,7 +400,7 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加数据备份配置信息";
+        this.title = "添加数据迁移配置信息";
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
@@ -378,10 +412,10 @@
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids
-        getBackup(id).then(response => {
+        getMove(id).then(response => {
           this.form = response.data;
           this.open = true;
-          this.title = "修改数据备份配置信息";
+          this.title = "修改数据迁移配置信息";
         });
       },
       /** 提交按钮 */
@@ -389,7 +423,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateBackup(this.form).then(response => {
+              updateMove(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -399,7 +433,7 @@
                 }
               });
             } else {
-              addBackup(this.form).then(response => {
+              addMove(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -420,7 +454,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delBackup(ids);
+          return delMove(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");

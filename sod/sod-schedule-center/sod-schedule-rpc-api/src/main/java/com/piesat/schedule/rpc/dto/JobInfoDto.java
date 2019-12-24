@@ -18,12 +18,12 @@ public class JobInfoDto extends BaseDto {
     private String executorHandler;		    // 执行器，任务Handler名称
     private String executorParam;		    // 执行器，任务参数
     private String executorBlockStrategy;	// 阻塞处理策略
-    private int executorTimeout;     		// 任务执行超时时间，单位秒
-    private int executorFailRetryCount;		// 失败重试次数
-    private int retryInterval;
-    private int triggerStatus;		// 调度状态：0-停止，1-运行
+    private Integer executorTimeout;     		// 任务执行超时时间，单位秒
+    private Integer executorFailRetryCount;		// 失败重试次数
+    private Integer retryInterval;
+    private Integer triggerStatus;		// 调度状态：0-停止，1-运行
     private long triggerLastTime;	// 上次调度时间
     private long triggerNextTime;	// 下次调度时间
-    private int isAlarm;
+    private String isAlarm;
 }
 

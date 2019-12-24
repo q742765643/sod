@@ -72,7 +72,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['schedule:backup:add']"
+          v-hasPermi="['schedule:clear:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -82,7 +82,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['schedule:backup:edit']"
+          v-hasPermi="['schedule:clear:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -92,7 +92,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['schedule:backup:remove']"
+          v-hasPermi="['schedule:clear:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -106,7 +106,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="backupList" row-key="id" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="clearList" row-key="id" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true" />
       <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true" />
@@ -124,14 +124,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['schedule:backup:edit']"
+            v-hasPermi="['schedule:clear:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['schedule:backup:remove']"
+            v-hasPermi="['schedule:clear:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -145,7 +145,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改备份配置对话框 -->
+    <!-- 添加或修改清除配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
@@ -160,25 +160,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="近时备份条件" prop="conditions">
-              <el-input v-model="form.conditions" placeholder="请输入近时备份条件" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="远时备份条件" prop="secondConditions">
-              <el-input v-model="form.secondConditions" placeholder="请输入远时备份条件" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="存储目录" prop="storageDirectory">
-              <el-select v-model="form.storageDirectory" placeholder="请选择" style="width: 100%">
-                <el-option
-                  v-for="dict in storageDirectoryOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                ></el-option>
-              </el-select>
+            <el-form-item label="清除条件" prop="conditions">
+              <el-input v-model="form.conditions" placeholder="请输入清除条件" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -189,6 +172,11 @@
           <el-col :span="12">
             <el-form-item label="四级编码" prop="ddataId">
               <el-input v-model="form.ddataId" disabled/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="清除限制条数" prop="clearLimit">
+              <el-input v-model="form.clearLimit" placeholder="请输入限制条数单位为万"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -212,16 +200,6 @@
               <el-input v-model="form.executorTimeout" placeholder="请输入超时时间单位为分钟" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="失败重试次数" prop="executorFailRetryCount">
-              <el-input v-model="form.executorFailRetryCount" placeholder="请输入失败重试次数" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="重试间隔时间" prop="retryInterval">
-              <el-input v-model="form.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
-            </el-form-item>
-          </el-col>
           <el-col :span="24">
             <el-form-item label="备注">
               <el-input v-model="form.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
@@ -238,7 +216,7 @@
 </template>
 
 <script>
-  import { listBackup, getBackup, addBackup, updateBackup, delBackup } from "@/api/schedule/backup/backup";
+  import { listClear, getClear, addClear, updateClear, delClear } from "@/api/schedule/clear/clear";
 
   export default {
     data() {
@@ -253,8 +231,8 @@
         multiple: true,
         // 总条数
         total: 0,
-        // 备份表格数据
-        backupList: [],
+        // 清除表格数据
+        clearList: [],
         // 弹出层标题
         title: "",
         // 是否显示弹出层
@@ -263,9 +241,6 @@
         statusOptions: [],
 
         alarmOptions: [],
-
-        storageDirectoryOptions: [],
-
         // 日期范围
         dateRange: [],
         // 查询参数
@@ -287,20 +262,14 @@
           dataClassId: [
             { required: true, message: "资料名称不能为空", trigger: "blur" }
           ],
-          storageDirectory: [
-            { required: true, message: "存储目录不能为空", trigger: "blur" }
-          ],
           jobCron: [
             { required: true, message: "执行策略不能为空", trigger: "blur" }
           ],
           executorTimeout: [
             { required: true, message: "超时时间不能为空", trigger: "blur" }
           ],
-          executorFailRetryCount: [
-            { required: true, message: "重试次数不能为空", trigger: "blur" }
-          ],
-          retryInterval: [
-            { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
+          clearLimit: [
+            { required: true, message: "限制条数不能为空", trigger: "blur" }
           ]
         }
       };
@@ -314,17 +283,14 @@
       this.getDicts("job_is_alarm").then(response => {
         this.alarmOptions = response.data;
       });
-      this.getDicts("backup_storage_directory").then(response => {
-        this.storageDirectoryOptions = response.data;
-      });
 
     },
     methods: {
       /** 查询字典类型列表 */
       getList() {
         this.loading = true;
-        listBackup(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.backupList = response.data.pageData;
+        listClear(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+            this.clearList = response.data.pageData;
             this.total = response.data.totalCount;
             this.loading = false;
           }
@@ -366,7 +332,7 @@
       handleAdd() {
         this.reset();
         this.open = true;
-        this.title = "添加数据备份配置信息";
+        this.title = "添加数据清除配置信息";
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
@@ -378,10 +344,10 @@
       handleUpdate(row) {
         this.reset();
         const id = row.id || this.ids
-        getBackup(id).then(response => {
+        getClear(id).then(response => {
           this.form = response.data;
           this.open = true;
-          this.title = "修改数据备份配置信息";
+          this.title = "修改数据清除配置信息";
         });
       },
       /** 提交按钮 */
@@ -389,7 +355,7 @@
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
-              updateBackup(this.form).then(response => {
+              updateClear(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.open = false;
@@ -399,7 +365,7 @@
                 }
               });
             } else {
-              addBackup(this.form).then(response => {
+              addClear(this.form).then(response => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.open = false;
@@ -420,7 +386,7 @@
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delBackup(ids);
+          return delClear(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");

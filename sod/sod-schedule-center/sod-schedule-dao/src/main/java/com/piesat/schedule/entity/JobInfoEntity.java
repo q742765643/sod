@@ -36,19 +36,19 @@ public class JobInfoEntity extends BaseEntity{
     @Column(name="executor_block_strategy", length=50)
     private String executorBlockStrategy;	// 阻塞处理策略
     @Column(name="executor_timeout", length=50)
-    private int executorTimeout;     		// 任务执行超时时间，单位秒
+    private Integer executorTimeout;     		// 任务执行超时时间，单位秒
     @Column(name="executor_fail_retry_count", length=50)
-    private int executorFailRetryCount;		// 失败重试次数
+    private Integer executorFailRetryCount;		// 失败重试次数
     @Column(name="retry_interval", length=50)
-    private int retryInterval;
+    private Integer retryInterval;
     @Column(name="trigger_status", length=50)
-    private int triggerStatus;		// 调度状态：0-停止，1-运行
+    private Integer triggerStatus;		// 调度状态：0-停止，1-运行
     @Column(name="trigger_las_time", length=50)
     private long triggerLastTime;	// 上次调度时间
     @Column(name="trigger_next_time", length=50)
     private long triggerNextTime;	// 下次调度时间
     @Column(name="is_alarm", length=1)
-    private int isAlarm;		// 是否告警
+    private String isAlarm;		// 是否告警
 
 }
 
