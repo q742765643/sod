@@ -2,13 +2,14 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.LogicStorageTypesService;
 import com.piesat.dm.rpc.dto.LogicStorageTypesDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,14 +19,17 @@ import java.util.List;
  * @author cwh
  * @date 2019年 11月29日 10:21:15
  */
+@Api(tags = "数据用途与存储类型")
+@RequestMapping("/dm/logicStorage")
 @RestController
-@Api(value = "数据用途与存储类型对应controller", tags = {"数据用途与存储类型对应操作接口"})
 public class LogicStorageTypesController {
     @Autowired
     private LogicStorageTypesService logicStorageTypesService;
 
-    @PostMapping(value = "/api/logicStorage/save")
-    @ApiOperation(value = "添加数据用途与存储类型对应接口", notes = "添加数据用途与存储类型对应接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:logicStorage:add")
+    @Log(title = "数据用途与存储类型", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody LogicStorageTypesDto logicStorageTypesDto) {
         try {
             logicStorageTypesDto = this.logicStorageTypesService.saveDto(logicStorageTypesDto);
@@ -36,8 +40,9 @@ public class LogicStorageTypesController {
         }
     }
 
-    @PostMapping(value = "/api/logicStorage/get")
-    @ApiOperation(value = "获取数据用途与存储类型对应接口", notes = "获取数据用途与存储类型对应接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:logicStorage:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             LogicStorageTypesDto logicStorageTypesDto = this.logicStorageTypesService.getDotById(id);
@@ -48,8 +53,10 @@ public class LogicStorageTypesController {
         }
     }
 
-    @PostMapping(value = "/api/logicStorage/del")
-    @ApiOperation(value = "删除数据用途与存储类型对应接口", notes = "删除数据用途与存储类型对应接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:logicStorage:del")
+    @Log(title = "数据用途与存储类型", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.logicStorageTypesService.delete(id);
@@ -60,8 +67,9 @@ public class LogicStorageTypesController {
         }
     }
 
-    @PostMapping(value = "/api/logicStorage/all")
-    @ApiOperation(value = "获取所有数据用途与存储类型对应接口", notes = "获取所有数据用途与存储类型对应接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:logicStorage:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<LogicStorageTypesDto> all = this.logicStorageTypesService.all();

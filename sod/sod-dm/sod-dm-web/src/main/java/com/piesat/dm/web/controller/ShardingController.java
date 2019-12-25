@@ -2,13 +2,14 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.ShardingService;
 import com.piesat.dm.rpc.dto.ShardingDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,14 +19,17 @@ import java.util.List;
  * @author cwh
  * @date 2019年 12月09日 14:14:12
  */
+@Api(tags = "表分库分表键")
+@RequestMapping("/dm/sharding")
 @RestController
-@Api(value="表分库分表键controller",tags={"表分库分表键接口"})
 public class ShardingController {
     @Autowired
     private ShardingService shardingService;
 
-    @PostMapping(value = "/api/Sharding/save")
-    @ApiOperation(value = "添加分库分表键接口", notes = "添加分库分表键接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:sharding:add")
+    @Log(title = "表分库分表键", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody ShardingDto shardingDto) {
         try {
             ShardingDto save = this.shardingService.saveDto(shardingDto);
@@ -36,8 +40,9 @@ public class ShardingController {
         }
     }
 
-    @PostMapping(value = "/api/Sharding/get")
-    @ApiOperation(value = "获取分库分表键接口", notes = "获取分库分表键接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:sharding:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             ShardingDto shardingDto = this.shardingService.getDotById(id);
@@ -48,8 +53,10 @@ public class ShardingController {
         }
     }
 
-    @PostMapping(value = "/api/Sharding/del")
-    @ApiOperation(value = "删除分库分表键接口", notes = "删除分库分表键接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:sharding:del")
+    @Log(title = "表分库分表键", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.shardingService.delete(id);
@@ -60,8 +67,9 @@ public class ShardingController {
         }
     }
 
-    @PostMapping(value = "/api/Sharding/all")
-    @ApiOperation(value = "获取所有分库分表键接口", notes = "获取所有分库分表键接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:sharding:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<ShardingDto> all = this.shardingService.all();
@@ -72,8 +80,9 @@ public class ShardingController {
         }
     }
 
-    @PostMapping(value = "/api/Sharding/getByTableId")
-    @ApiOperation(value = "根据表id查询分库分表键接口", notes = "根据表id查询分库分表键接口")
+    @ApiOperation(value = "根据表id查询分库分表键")
+    @RequiresPermissions("dm:sharding:tableId")
+    @GetMapping(value = "/api/Sharding/getByTableId")
     public ResultT getDotByTableId(String id) {
         try {
             List<ShardingDto> shardingDtos = this.shardingService.getDotByTableId(id);

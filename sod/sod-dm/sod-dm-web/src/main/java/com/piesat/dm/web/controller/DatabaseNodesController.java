@@ -2,13 +2,14 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.DatabaseNodesService;
 import com.piesat.dm.rpc.dto.DatabaseNodesDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,14 +19,17 @@ import java.util.List;
  * @author cwh
  * @date 2019年 11月29日 09:45:11
  */
+@Api(tags = "数据库节点管理")
+@RequestMapping("/dm/databaseNodes")
 @RestController
-@Api(value = "数据库节点controller", tags = {"数据库节点操作接口"})
 public class DatabaseNodesController {
     @Autowired
     private DatabaseNodesService databaseNodesService;
 
-    @PostMapping(value = "/api/databaseNodes/save")
-    @ApiOperation(value = "添加数据库节点接口", notes = "添加数据库节点接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:databaseNodes:add")
+    @Log(title = "数据库节点管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody DatabaseNodesDto databaseNodesDto) {
         try {
             DatabaseNodesDto save = this.databaseNodesService.saveDto(databaseNodesDto);
@@ -36,8 +40,9 @@ public class DatabaseNodesController {
         }
     }
 
-    @PostMapping(value = "/api/databaseNodes/get")
-    @ApiOperation(value = "获取数据库节点接口", notes = "获取数据库节点接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:databaseNodes:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             DatabaseNodesDto databaseNodesDto = this.databaseNodesService.getDotById(id);
@@ -48,8 +53,10 @@ public class DatabaseNodesController {
         }
     }
 
-    @PostMapping(value = "/api/databaseNodes/del")
-    @ApiOperation(value = "删除数据库节点接口", notes = "删除数据库节点接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:databaseNodes:del")
+    @Log(title = "数据库节点管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.databaseNodesService.delete(id);
@@ -60,8 +67,9 @@ public class DatabaseNodesController {
         }
     }
 
-    @PostMapping(value = "/api/databaseNodes/all")
-    @ApiOperation(value = "获取所有数据库节点接口", notes = "获取所有数据库节点接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:databaseNodes:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<DatabaseNodesDto> all = this.databaseNodesService.all();

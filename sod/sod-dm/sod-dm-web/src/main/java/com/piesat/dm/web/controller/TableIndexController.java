@@ -3,13 +3,14 @@ package com.piesat.dm.web.controller;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.api.TableIndexService;
 import com.piesat.dm.rpc.dto.TableIndexDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,16 +20,19 @@ import java.util.List;
  * @author cwh
  * @date 2019年 11月29日 10:30:01
  */
+@Api(tags = "表索引")
+@RequestMapping("/dm/tableIndex")
 @RestController
-@Api(value="表索引信息controller",tags={"表索引信息接口"})
 public class TableIndexController {
     @Autowired
     private TableIndexService tableIndexService;
     @Autowired
     private DataTableService dataTableService;
 
-    @PostMapping(value = "/api/tableIndex/save")
-    @ApiOperation(value = "添加表索引信息接口", notes = "添加表索引信息接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:tableIndex:add")
+    @Log(title = "表索引", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableIndexDto tableIndexDto) {
         try {
             TableIndexDto save = this.tableIndexService.saveDto(tableIndexDto);
@@ -39,8 +43,9 @@ public class TableIndexController {
         }
     }
 
-    @PostMapping(value = "/api/tableIndex/get")
-    @ApiOperation(value = "获取表索引信息接口", notes = "获取表索引信息接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:tableIndex:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             TableIndexDto tableIndexDto = this.tableIndexService.getDotById(id);
@@ -51,8 +56,10 @@ public class TableIndexController {
         }
     }
 
-    @PostMapping(value = "/api/tableIndex/del")
-    @ApiOperation(value = "删除表索引信息接口", notes = "删除表索引信息接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:tableIndex:del")
+    @Log(title = "表索引", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.tableIndexService.delete(id);
@@ -63,8 +70,9 @@ public class TableIndexController {
         }
     }
 
-    @PostMapping(value = "/api/tableIndex/all")
-    @ApiOperation(value = "获取所有表索引信息接口", notes = "获取所有表索引信息接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:tableIndex:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<TableIndexDto> all = this.tableIndexService.all();

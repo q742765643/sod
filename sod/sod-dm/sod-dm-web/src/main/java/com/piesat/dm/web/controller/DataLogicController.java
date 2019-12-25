@@ -2,13 +2,14 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.dto.DataLogicDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,13 +19,17 @@ import java.util.List;
  * @author cwh
  * @date 2019年 11月25日 14:18:09
  */
+@Api(tags = "数据用途管理")
+@RequestMapping("/dm/dataLogic")
 @RestController
-@Api(value="数据用途controller",tags={"数据用途操作接口"})
 public class DataLogicController {
     @Autowired
     private DataLogicService dataLogicService;
-    @PostMapping(value = "/api/dataLogic/save")
-    @ApiOperation(value="添加数据用途接口", notes="添加数据用途接口")
+
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:dataLogic:add")
+    @Log(title = "数据用途管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save (@RequestBody DataLogicDto dataLogicDto){
         try {
             dataLogicDto = this.dataLogicService.saveDto(dataLogicDto);
@@ -34,8 +39,10 @@ public class DataLogicController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @PostMapping(value = "/api/dataLogic/get")
-    @ApiOperation(value = "获取数据用途接口", notes = "获取数据用途接口")
+
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:dataLogic:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             DataLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
@@ -46,8 +53,10 @@ public class DataLogicController {
         }
     }
 
-    @PostMapping(value = "/api/dataLogic/del")
-    @ApiOperation(value = "删除数据用途接口", notes = "删除数据用途接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:dataLogic:del")
+    @Log(title = "数据用途管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.dataLogicService.delete(id);
@@ -58,8 +67,9 @@ public class DataLogicController {
         }
     }
 
-    @PostMapping(value = "/api/dataLogic/all")
-    @ApiOperation(value = "获取所有数据用途接口", notes = "获取所有数据用途接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:dataLogic:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<DataLogicDto> all = this.dataLogicService.all();

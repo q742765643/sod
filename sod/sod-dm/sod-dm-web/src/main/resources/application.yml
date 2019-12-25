@@ -11,7 +11,7 @@ tomcat:
 
 grpc:
   server:
-    port: 6000
+    port: 6001
 spring:
   application:
     name: dm-server
@@ -56,6 +56,11 @@ spring:
     show-sql: true
     #database: mysql
     open-in-view: false
+  redis:
+    host: 10.40.17.44
+    port: 6379
+    timeout: 5000
+    password:
 eureka:
   instance:
     prefer-ip-address: true

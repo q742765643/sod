@@ -4,13 +4,14 @@ import com.piesat.dm.rpc.api.DatabaseDefineService;
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.dto.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,16 +21,19 @@ import java.util.List;
  * @author cwh
  * @date 2019年 11月29日 09:48:31
  */
+@Api(tags = "数据库管理")
+@RequestMapping("/dm/database")
 @RestController
-@Api(value = "数据库controller", tags = {"数据库操作接口"})
 public class DatabaseController {
     @Autowired
     private DatabaseService databaseService;
     @Autowired
     private DatabaseDefineService databaseDefineService;
 
-    @PostMapping(value = "/api/database/save")
-    @ApiOperation(value = "添加数据库接口", notes = "添加数据库接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:database:add")
+    @Log(title = "数据库管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody DatabaseDto databaseDto) {
         try {
             DatabaseDefineDto databaseDefine = databaseDefineService.getDotById(databaseDto.getDatabaseDefine().getId());
@@ -42,8 +46,9 @@ public class DatabaseController {
         }
     }
 
-    @PostMapping(value = "/api/database/get")
-    @ApiOperation(value = "获取数据库接口", notes = "获取数据库接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:database:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             DatabaseDto databaseDto = this.databaseService.getDotById(id);
@@ -54,8 +59,10 @@ public class DatabaseController {
         }
     }
 
-    @PostMapping(value = "/api/database/del")
-    @ApiOperation(value = "删除数据库接口", notes = "删除数据库接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:database:del")
+    @Log(title = "数据库管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.databaseService.delete(id);
@@ -66,8 +73,9 @@ public class DatabaseController {
         }
     }
 
-    @PostMapping(value = "/api/database/all")
-    @ApiOperation(value = "获取所有数据库接口", notes = "获取所有数据库接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:database:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<DatabaseDto> all = this.databaseService.all();

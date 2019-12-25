@@ -2,13 +2,14 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.TableForeignKeyService;
 import com.piesat.dm.rpc.dto.TableForeignKeyDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,14 +19,17 @@ import java.util.List;
  * @author cwh
  * @date 2019年 12月09日 14:14:12
  */
+@Api(tags = "外键关联")
+@RequestMapping("/dm/foreignKey")
 @RestController
-@Api(value="数据库外键关联controller",tags={"数据库外键关联接口"})
 public class TableForeignKeyController {
     @Autowired
     private TableForeignKeyService tableForeignKeyService;
 
-    @PostMapping(value = "/api/tableForeignKey/save")
-    @ApiOperation(value = "添加数据库外键关联接口", notes = "添加数据库外键关联接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:foreignKey:add")
+    @Log(title = "外键关联", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableForeignKeyDto TableForeignKeyDto) {
         try {
             TableForeignKeyDto save = this.tableForeignKeyService.saveDto(TableForeignKeyDto);
@@ -36,8 +40,9 @@ public class TableForeignKeyController {
         }
     }
 
-    @PostMapping(value = "/api/tableForeignKey/get")
-    @ApiOperation(value = "获取数据库外键关联接口", notes = "获取数据库外键关联接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:foreignKey:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             TableForeignKeyDto TableForeignKeyDto = this.tableForeignKeyService.getDotById(id);
@@ -48,8 +53,10 @@ public class TableForeignKeyController {
         }
     }
 
-    @PostMapping(value = "/api/tableForeignKey/del")
-    @ApiOperation(value = "删除数据库外键关联接口", notes = "删除数据库外键关联接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:foreignKey:del")
+    @Log(title = "外键关联", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.tableForeignKeyService.delete(id);
@@ -60,8 +67,9 @@ public class TableForeignKeyController {
         }
     }
 
-    @PostMapping(value = "/api/tableForeignKey/all")
-    @ApiOperation(value = "获取所有数据库外键关联接口", notes = "获取所有数据库外键关联接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:foreignKey:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<TableForeignKeyDto> all = this.tableForeignKeyService.all();

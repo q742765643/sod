@@ -2,13 +2,14 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.DatabaseDefineService;
 import com.piesat.dm.rpc.dto.DatabaseDefineDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,14 +19,17 @@ import java.util.List;
  * @author cwh
  * @date 2019年 11月29日 09:41:21
  */
+@Api(tags = "数据库类型管理")
+@RequestMapping("/dm/databaseDefine")
 @RestController
-@Api(value = "数据库类型controller", tags = {"数据库类型操作接口"})
 public class DatabaseDefineController {
     @Autowired
     private DatabaseDefineService databaseDefineService;
 
-    @PostMapping(value = "/api/databaseDefine/save")
-    @ApiOperation(value = "添加数据库类型接口", notes = "添加数据库类型接口")
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:databaseDefine:add")
+    @Log(title = "数据库类型管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/save")
     public ResultT save(@RequestBody DatabaseDefineDto databaseDefineDto) {
         try {
             DatabaseDefineDto save = this.databaseDefineService.saveDto(databaseDefineDto);
@@ -36,8 +40,9 @@ public class DatabaseDefineController {
         }
     }
 
-    @PostMapping(value = "/api/databaseDefine/get")
-    @ApiOperation(value = "获取数据库类型接口", notes = "获取数据库类型接口")
+    @ApiOperation(value = "根据id查询")
+    @RequiresPermissions("dm:databaseDefine:get")
+    @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
             DatabaseDefineDto DatabaseDefineDto = this.databaseDefineService.getDotById(id);
@@ -48,8 +53,10 @@ public class DatabaseDefineController {
         }
     }
 
-    @PostMapping(value = "/api/databaseDefine/del")
-    @ApiOperation(value = "删除数据库类型接口", notes = "删除数据库类型接口")
+    @ApiOperation(value = "根据id删除")
+    @RequiresPermissions("dm:databaseDefine:del")
+    @Log(title = "数据库类型管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
             this.databaseDefineService.delete(id);
@@ -60,8 +67,9 @@ public class DatabaseDefineController {
         }
     }
 
-    @PostMapping(value = "/api/databaseDefine/all")
-    @ApiOperation(value = "获取所有数据库类型接口", notes = "获取所有数据库类型接口")
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dm:databaseDefine:all")
+    @GetMapping(value = "/all")
     public ResultT all() {
         try {
             List<DatabaseDefineDto> all = this.databaseDefineService.all();
