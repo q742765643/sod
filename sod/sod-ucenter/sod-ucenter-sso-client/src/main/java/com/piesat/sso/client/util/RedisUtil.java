@@ -520,7 +520,13 @@ public class RedisUtil {
             return 0;
         }
     }
-
+    /** 
+    * @Description: 向有序sort添加key 
+    * @Param: [key, object, time] 
+    * @return: boolean 
+    * @Author: zzj
+    * @Date: 2019/12/25 
+    */ 
     public boolean zsetAdd(String key,String object,long time){
         try {
             redisTemplate.opsForZSet().add(key,object,time);
@@ -530,6 +536,13 @@ public class RedisUtil {
             return false;
         }
     }
+    /** 
+    * @Description: 移除有序集合指定key 
+    * @Param: [key, object] 
+    * @return: void 
+    * @Author: zzj
+    * @Date: 2019/12/25 
+    */ 
     public void zsetRemove(String key,String object){
         try {
             redisTemplate.opsForZSet().remove(key,object);
@@ -537,6 +550,13 @@ public class RedisUtil {
             e.printStackTrace();
         }
     }
+    /** 
+    * @Description: 获取指定分数范围集合 
+    * @Param: [key, time, maxCount] 
+    * @return: java.util.Set<org.springframework.data.redis.core.DefaultTypedTuple> 
+    * @Author: zzj
+    * @Date: 2019/12/25 
+    */ 
     public  Set<DefaultTypedTuple> rangeByScoreWithScores(String key,long time,int maxCount){
         try {
             Set<DefaultTypedTuple> triggerTuples = redisTemplate.opsForZSet().rangeByScoreWithScores(key, 0d, time, 0, maxCount);
@@ -545,6 +565,22 @@ public class RedisUtil {
             e.printStackTrace();
             return null;
         }
+    }
+    /** 
+    * @Description: 获取指定key分数 
+    * @Param: [key, object] 
+    * @return: double 
+    * @Author: zzj
+    * @Date: 2019/12/25 
+    */ 
+    public double zScore(String key,String object){
+        double zScore= 0;
+        try {
+            zScore = redisTemplate.opsForZSet().score(key,object);
+        } catch (Exception e) {
+
+        }
+        return zScore;
     }
 
     public static void main(String[] args) {

@@ -43,12 +43,14 @@ public class JobInfoEntity extends BaseEntity{
     private Integer retryInterval;
     @Column(name="trigger_status", length=50)
     private Integer triggerStatus;		// 调度状态：0-停止，1-运行
-    @Column(name="trigger_las_time", length=50)
+    @Column(name="trigger_last_time", length=50)
     private long triggerLastTime;	// 上次调度时间
     @Column(name="trigger_next_time", length=50)
     private long triggerNextTime;	// 下次调度时间
     @Column(name="is_alarm", length=1)
     private String isAlarm;		// 是否告警
+    private String type;		// 执行器主键ID
+
 
 }
 

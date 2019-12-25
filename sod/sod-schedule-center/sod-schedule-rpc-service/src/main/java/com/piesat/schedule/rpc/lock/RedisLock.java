@@ -16,7 +16,7 @@ import java.util.Objects;
  **/
 @Component
 public class RedisLock {
-    public static final String LOCK_PREFIX = "lock:redis_lock";
+    public static final String LOCK_PREFIX = "lock:";
     public static final int LOCK_EXPIRE = 5000; // ms
 
     @Autowired
