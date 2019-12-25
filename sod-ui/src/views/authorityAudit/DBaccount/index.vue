@@ -1,32 +1,180 @@
 <template>
-  <div class="DB-container">
-   数据库访问账户
+  <div class="app-container">
+    <!-- 数据库访问账户 -->
+    <el-form :model="queryParams" ref="queryForm" :inline="true">
+     <el-form-item label="审核状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="审核状态"
+          clearable
+          size="small"
+          style="width: 240px"
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="(item,index) in examineStatus"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button size="small" type="primary" @click="addCell" icon="el-icon-plus"  v-hasPermi="['DBaccount:role:add']">新增</el-button>
+        <el-button size="small"
+          type="success"
+          icon="el-icon-download"
+          @click="downloadTable"
+        >导出</el-button>
+        
+      </el-form-item>
+    </el-form>
+
+    <el-table v-loading="loading" :data="tableData" row-key="id">
+      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column  align="center"
+        prop="databaseup_id"
+        label="账户ID"
+        width="120px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column  align="center" prop="userRealname" label="关联用户" width="100px"></el-table-column>
+      <el-table-column  align="center" prop="department" label="机构" width="140px"></el-table-column>
+      <el-table-column  align="center" prop="userPhone" label="联系方式" width="120px"></el-table-column>
+      <el-table-column  align="center" prop="create_time" label="创建时间" width="160px">
+        <!-- <template slot-scope="scope">{{scope.row.create_time.split('.')[0]}}</template> -->
+      </el-table-column>
+      <el-table-column  align="center" prop="database_name" label="可用数据库"></el-table-column>
+      <el-table-column  align="center" prop="examine_status" label="状态" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.examine_status=='0'">待审核</span>
+          <span v-if="scope.row.examine_status=='1'">审核通过</span>
+          <el-link v-if="scope.row.examine_status=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column  align="center" label="操作" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.examine_status=='0'"
+            type="text"
+            size="mini"
+            icon="el-icon-coordinate"
+            @click="viewCell(scope.row)"
+          >审核</el-button>
+          <el-button
+            v-else
+            type="text"
+            size="mini"
+            icon="el-icon-view"
+            @click="viewCell(scope.row)"
+          >查看</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="90%" max-width="1100px" top="5vh">
+      <handleAccount
+        v-if="handleDialog"
+        :handleObj="handleObj"
+        @handleDialogClose="handleDialogClose"
+        ref="myHandleServer"
+      />
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, exportUser, resetUserPwd, changeUserStatus } from "@/api/system/user";
-import { treeselect } from "@/api/system/dept";
-import { listPost } from "@/api/system/post";
-import { optionselect } from "@/api/system/role";
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
+import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
+import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
-  components: { Treeselect },
+  components: {
+    handleAccount
+  },
   data() {
     return {
-     
+     // 遮罩层
+      loading: true,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        examineStatus: 0
+      },
+      examineStatus: [
+        {
+          value: "0",
+          label: "待审核"
+        },
+        {
+          value: "2",
+          label: "审核未通过"
+        },
+        {
+          value: "1",
+          label: "审核通过"
+        }
+      ],
+      total: 0,
+      tableData: [],
+      dialogTitle: "",
+      handleDialog: false
     };
   },
-  watch: {
-    
-  },
   created() {
-    
+    this.getList();
   },
   methods: {
-   
+     // table自增定义方法
+    table_index(index) {
+      return (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1;
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 查询角色列表 */
+    getList() {
+      this.loading = true;
+      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
+        response => {
+          this.tableData = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
+        }
+      );
+    },
+    addCell(){
+      this.dialogTitle = "新增数据库账户审核";
+      this.handleObj = {};
+      this.handleDialog = true;
+    },
+    downloadTable(){},
+    //查看原因
+    viewReason(row) {
+      this.$alert(row.failure_reason, "拒绝原因", {
+        confirmButtonText: "确定"
+      });
+    },
+    viewCell(row) {
+      this.dialogTitle = "数据库账户审核";
+      this.handleObj = row;
+      this.handleDialog = true;
+    },
+    deleteCell(row) {},
+    handleDialogClose() {
+      this.handleDialog = false;
+      this.handleObj = {};
+    }
+    
   }
 };
 </script>

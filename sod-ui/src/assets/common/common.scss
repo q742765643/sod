@@ -1,0 +1,13 @@
+/* 主色调 */
+// $themeColor: #409eff;
+// $boderColor: #ebebeb;
+
+// 没有labelwidth的formitem
+.unitFormItem {
+  .el-form-item__content {
+    margin-left: 2px !important;
+  }
+}
+.dialog-footer{
+  text-align: right;
+}
