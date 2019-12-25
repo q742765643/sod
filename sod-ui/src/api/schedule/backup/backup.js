@@ -38,5 +38,17 @@ export function delBackup(backupIds) {
     method: 'delete'
   })
 }
+export function findAllDataBase() {
+  return request({
+    url: baseUrl+'/schedule/job/findAllDataBase',
+    method: 'get'
+  })
+}
+export function getByDatabaseId(databaseId) {
+  return request({
+    url: baseUrl+'/schedule/job/getByDatabaseId/'+databaseId,
+    method: 'get'
+  })
+}
 
 

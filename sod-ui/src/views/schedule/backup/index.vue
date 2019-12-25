@@ -151,12 +151,26 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="物理库" prop="databaseId">
-              <el-input v-model="form.databaseId" placeholder="请选择物理库" />
+              <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')" placeholder="请选择物理库" style="width:100%">
+                <el-option
+                  v-for="database in databaseOptions"
+                  :key="database.id"
+                  :label="database.databaseName+'_'+database.databaseClassify"
+                  :value="database.id"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="资料名称" prop="dataClassId">
-              <el-input v-model="form.dataClassId" placeholder="请选择资料名称" />
+              <el-select v-model="form.dataClassId" filterable  placeholder="请选择资料" style="width:100%">
+                <el-option
+                  v-for="dataClass in dataClassIdOptions"
+                  :key="dataClass.classLogicId.dataClassId"
+                  :label="dataClass.nameCn"
+                  :value="dataClass.classLogicId.dataClassId"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -171,7 +185,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="存储目录" prop="storageDirectory">
-              <el-select v-model="form.storageDirectory" placeholder="请选择" style="width: 100%">
+              <el-select v-model="form.storageDirectory" placeholder="请选择" filterable  style="width: 100%" >
                 <el-option
                   v-for="dict in storageDirectoryOptions"
                   :key="dict.dictValue"
@@ -238,7 +252,7 @@
 </template>
 
 <script>
-  import { listBackup, getBackup, addBackup, updateBackup, delBackup } from "@/api/schedule/backup/backup";
+  import { listBackup, getBackup, addBackup, updateBackup, delBackup,findAllDataBase,getByDatabaseId } from "@/api/schedule/backup/backup";
 
   export default {
     data() {
@@ -265,6 +279,10 @@
         alarmOptions: [],
 
         storageDirectoryOptions: [],
+
+        databaseOptions: [],
+
+        dataClassIdOptions: [],
 
         // 日期范围
         dateRange: [],
@@ -317,6 +335,9 @@
       this.getDicts("backup_storage_directory").then(response => {
         this.storageDirectoryOptions = response.data;
       });
+      findAllDataBase().then(response => {
+        this.databaseOptions = response.data;
+      });
 
     },
     methods: {
@@ -349,6 +370,7 @@
           isAlarm:"1",
 
         };
+        this.dataClassIdOptions=[];
         this.resetForm("form");
       },
       /** 搜索按钮操作 */
@@ -379,6 +401,7 @@
         this.reset();
         const id = row.id || this.ids
         getBackup(id).then(response => {
+          this.selectByDatabaseIds(response.data.databaseId,response.data.dataClassId);
           this.form = response.data;
           this.open = true;
           this.title = "修改数据备份配置信息";
@@ -438,6 +461,12 @@
         }).then(response => {
           this.download(response.msg);
         }).catch(function() {});
+      },
+      selectByDatabaseIds(databaseId,dataClassId) {
+        getByDatabaseId(databaseId).then(response => {
+          this.dataClassIdOptions = response.data;
+          this.form.dataClassId=dataClassId;
+        });
       }
     }
   };
