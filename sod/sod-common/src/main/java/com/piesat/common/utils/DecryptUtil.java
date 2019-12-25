@@ -2,7 +2,6 @@ package com.piesat.common.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piesat.common.annotation.DecryptRequest;
 import com.piesat.common.vo.HttpReq;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,12 +114,15 @@ public class DecryptUtil {
             return shouldDecrypt;
         }
         try {
-            HttpReq httpReq= JSON.parseObject(StreamUtils.copyToByteArray(inputMessage.getBody()), HttpReq.class);
+            String data = StreamUtils.copyToString(inputMessage.getBody(), Charset.forName("UTF-8"));
+            HttpReq httpReq= JSON.parseObject(data, HttpReq.class);
+            ByteArrayInputStream inputStream=null;
             if(null==httpReq.getData()||"".equals(httpReq.getData())){
                 shouldDecrypt=false;
-                return shouldDecrypt;
+                inputStream= new ByteArrayInputStream(data.getBytes(Charset.forName("UTF-8")));
+            }else{
+                inputStream = new ByteArrayInputStream(AESUtil.aesDecrypt(httpReq.getData()).getBytes(Charset.forName("UTF-8")));
             }
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(AESUtil.aesDecrypt(httpReq.getData()).getBytes(Charset.forName("UTF-8")));
             map.put("REQUEST_RESOLVER_PARAM_MAP_NAME",inputStream);
         } catch (IOException e) {
             e.printStackTrace();

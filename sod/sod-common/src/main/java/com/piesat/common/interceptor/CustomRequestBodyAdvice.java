@@ -1,25 +1,19 @@
 package com.piesat.common.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.piesat.common.annotation.DecryptRequest;
-import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DecryptUtil;
-import com.piesat.common.vo.HttpReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonInputMessage;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,10 +35,10 @@ public class CustomRequestBodyAdvice extends RequestBodyAdviceAdapter {
                                            Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
         Map<String,ByteArrayInputStream> map=new HashMap<>();
         boolean shouldDecrypt= DecryptUtil.decrypt(inputMessage,parameter,map);
-        if(shouldDecrypt){
-            return new MappingJacksonInputMessage(map.get("REQUEST_RESOLVER_PARAM_MAP_NAME"), inputMessage.getHeaders());
-        } else {
-            return super.beforeBodyRead(inputMessage, parameter, targetType, converterType);
-        }
+       // if(shouldDecrypt){
+        return new MappingJacksonInputMessage(map.get("REQUEST_RESOLVER_PARAM_MAP_NAME"), inputMessage.getHeaders());
+       // } else {
+            //return super.beforeBodyRead(inputMessage, parameter, targetType, converterType);
+        //}
     }
 }
