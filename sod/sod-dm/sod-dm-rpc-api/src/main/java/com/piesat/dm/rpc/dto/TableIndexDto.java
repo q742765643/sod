@@ -19,7 +19,7 @@ public class TableIndexDto {
      * 对应表id
      * table_id
      */
-    private DataTableDto tableId;
+    private String tableId;
 
     /**
      * 索引类型

@@ -4,8 +4,8 @@ import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 数据用途定义
@@ -44,7 +44,7 @@ public class LogicDefineEntity extends BaseEntity {
     @Column(name = "logic_desc", length = 255)
     private String logicDesc;
 
-    @OneToMany(targetEntity=LogicStorageTypesEntity.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="logic_id")
-    private List<LogicStorageTypesEntity> logicStorageTypesEntityList = new ArrayList<>();
+    private Set<LogicStorageTypesEntity> logicStorageTypesEntityList = new HashSet<>();
 }

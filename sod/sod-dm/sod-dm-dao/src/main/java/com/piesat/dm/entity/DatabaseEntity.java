@@ -28,9 +28,9 @@ public class DatabaseEntity extends BaseEntity {
      * 与数据库定义关联id
      * database_id
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "database_id")
-    private DatabaseDefineEntity databaseId;
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "database_define_id")
+    private DatabaseDefineEntity databaseDefine;
 
     /**
      * 数据库模式
@@ -40,7 +40,7 @@ public class DatabaseEntity extends BaseEntity {
     private String schemaName;
 
     /**
-     * 数据库分类（物理库，专题库）
+     * 数据库分类（基础库，专题库）
      * database_classify
      */
     @Column(name = "database_classify", length = 36, nullable = false)
@@ -52,4 +52,11 @@ public class DatabaseEntity extends BaseEntity {
      */
     @Column(name = "tdb_id", length = 36)
     private String tdbId;
+
+    /**
+     * 是否管理账户
+     * is_manager
+     */
+    @Column(name = "stop_use", columnDefinition = "Boolean default false")
+    private Boolean stopUse;
 }

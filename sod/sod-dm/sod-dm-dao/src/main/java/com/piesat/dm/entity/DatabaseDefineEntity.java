@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -119,11 +120,11 @@ public class DatabaseDefineEntity extends BaseEntity {
     @Column(name = "up_url", length = 255)
     private String upUrl;
 
-    @OneToMany(targetEntity=DatabaseAdministratorEntity.class,cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
     @JoinColumn(name="database_id")
-    private Set<DatabaseAdministratorEntity> databaseAdministratorList;
+    private Set<DatabaseAdministratorEntity> databaseAdministratorList = new HashSet<>();
 
-    @OneToMany(targetEntity=DatabaseNodesEntity.class,cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
     @JoinColumn(name="database_id")
-    private Set<DatabaseNodesEntity> databaseNodesList;
+    private Set<DatabaseNodesEntity> databaseNodesList = new HashSet<>();
 }

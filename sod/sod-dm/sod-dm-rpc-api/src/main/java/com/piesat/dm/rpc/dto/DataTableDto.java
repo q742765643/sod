@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * 表信息
@@ -62,6 +63,11 @@ public class DataTableDto {
      * user_id
      */
     private String userId;
+
+
+    private Set<TableColumnDto> columns;
+
+    private Set<TableIndexDto> tableIndexList;
 
     private Date createTime;
 

@@ -16,9 +16,8 @@ import javax.persistence.*;
 @Entity
 public class LogicStorageTypesEntity extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "logic_id")
-    private LogicDefineEntity logic_id;
+    @Column(name = "logic_id")
+    private String logicId;
 
     @Column(name = "storage_type", length = 255, nullable = false)
     private String storageType;

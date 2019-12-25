@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 资料用途分类
@@ -43,6 +44,12 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     public List<DataLogicDto> all() {
         List<DataLogicEntity> all = this.getAll();
         return this.dataLogicMapper.toDto(all);
+    }
+
+    @Override
+    public List<Map<String, Object>> getByDataClassIds(List<String> ids) {
+
+        return null;
     }
 
     @Override

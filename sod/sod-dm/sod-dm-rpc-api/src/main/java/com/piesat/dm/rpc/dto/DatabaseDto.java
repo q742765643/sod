@@ -25,7 +25,7 @@ public class DatabaseDto {
      * 与数据库定义关联id
      * database_id
      */
-    private DatabaseDefineDto databaseId;
+    private DatabaseDefineDto databaseDefine;
 
     /**
      * 数据库模式
@@ -44,6 +44,8 @@ public class DatabaseDto {
      * tdb_id
      */
     private String tdbId;
+
+    private Boolean stopUse;
 
     private Date createTime;
 

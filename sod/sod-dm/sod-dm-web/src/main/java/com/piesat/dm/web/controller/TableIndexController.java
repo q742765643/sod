@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.api.TableIndexService;
 import com.piesat.dm.rpc.dto.TableIndexDto;
 import com.piesat.util.ResultT;
@@ -23,6 +24,8 @@ import java.util.List;
 public class TableIndexController {
     @Autowired
     private TableIndexService tableIndexService;
+    @Autowired
+    private DataTableService dataTableService;
 
     @PostMapping(value = "/api/tableIndex/save")
     @ApiOperation(value = "添加表索引信息接口", notes = "添加表索引信息接口")

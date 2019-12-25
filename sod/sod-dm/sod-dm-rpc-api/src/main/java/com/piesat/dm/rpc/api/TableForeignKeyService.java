@@ -2,24 +2,24 @@ package com.piesat.dm.rpc.api;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.TableForeignKeyDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
 
 /**
- * 数据库类型定义
+ * 数据库外键关联
  *
  * @author cwh
- * @date 2019年 11月22日 15:30:47
+ * @date 2019年 12月09日 14:04:10
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
-public interface DatabaseDefineService {
-    DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto);
+public interface TableForeignKeyService {
+    TableForeignKeyDto saveDto(TableForeignKeyDto tableForeignKeyDto);
 
-    DatabaseDefineDto getDotById(String id);
+    TableForeignKeyDto getDotById(String id);
 
     void delete(String id);
 
-    List<DatabaseDefineDto> all();
+    List<TableForeignKeyDto> all();
 }

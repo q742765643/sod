@@ -19,7 +19,7 @@ public class TableColumnDto {
     /**
      * table_id
      */
-    private DataTableDto tableId;
+    private String tableId;
 
     /**
      * db_ele_code

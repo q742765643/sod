@@ -1,6 +1,10 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.dm.rpc.api.DataLogicService;
+import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.api.TableColumnService;
+import com.piesat.dm.rpc.dto.DataLogicDto;
+import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
@@ -23,12 +27,22 @@ import java.util.List;
 public class TableColumnController {
     @Autowired
     private TableColumnService tableColumnService;
+    @Autowired
+    private DataTableService dataTableService;
+    @Autowired
+    private DataLogicService dataLogicService;
 
     @PostMapping(value = "/api/tableColumn/save")
     @ApiOperation(value = "添加表字段信息接口", notes = "添加表字段信息接口")
     public ResultT save(@RequestBody TableColumnDto tableColumnDto) {
         try {
             TableColumnDto save = this.tableColumnService.saveDto(tableColumnDto);
+            DataTableDto dataTable = dataTableService.getDotById(save.getTableId());
+            DataLogicDto dataLogic = dataTable.getClassLogicId();
+            if (dataLogic.getIsComplete()==null||!dataLogic.getIsComplete()){
+                dataLogic.setIsComplete(true);
+                dataLogicService.saveDto(dataLogic);
+            }
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

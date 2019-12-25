@@ -20,14 +20,6 @@ import javax.persistence.Table;
 public class DatabaseAdministratorEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 数据库id
-     * database_id
-     */
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinColumn(name = "database_id")
-//    private DatabaseDefineEntity databaseId;
-
     @Column(name = "database_id")
     private String databaseId;
 

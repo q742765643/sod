@@ -15,10 +15,6 @@ public class DataLogicDto {
     private static final long serialVersionUID = 1L;
 
     private String id;
-    /**
-     * class_logic_id
-     */
-    private String classLogicId;
 
     /**
      * data_class_id
@@ -28,7 +24,7 @@ public class DataLogicDto {
     /**
      * logic_id
      */
-    private String logicId;
+    private String logicFlag;
 
     /**
      * storage_type
@@ -38,7 +34,9 @@ public class DataLogicDto {
     /**
      * database_type
      */
-    private String databaseType;
+    private String databaseId;
+
+    private Boolean isComplete;
 
     private Date createTime;
 

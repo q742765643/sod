@@ -16,11 +16,6 @@ public class DatabaseDefineDto {
     private static final long serialVersionUID = 1L;
 
     private String id;
-    /**
-     * 数据库标识
-     * database_id
-     */
-    private String databaseId;
 
     /**
      * 数据库名称

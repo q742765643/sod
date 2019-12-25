@@ -3,9 +3,9 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * 资料用途分类
@@ -28,8 +28,8 @@ public class DataLogicEntity extends BaseEntity {
     /**
      * logic_id
      */
-    @Column(name = "logic_id", length = 255, nullable = false)
-    private String logicId;
+    @Column(name = "logic_flag", length = 255, nullable = false)
+    private String logicFlag;
 
     /**
      * storage_type
@@ -40,10 +40,9 @@ public class DataLogicEntity extends BaseEntity {
     /**
      * database_type
      */
-    @Column(name = "database_type", length = 255, nullable = false)
-    private String databaseType;
+    @Column(name = "database_id", length = 255, nullable = false)
+    private String databaseId;
 
-    @OneToMany(targetEntity=DataTableEntity.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="class_logic_id")
-    private List<DataTableEntity> dataTables = new ArrayList<>();
+    @Column(name = "is_complete", columnDefinition = "Boolean default false COMMENT '是否存在表结构'")
+    private Boolean isComplete;
 }

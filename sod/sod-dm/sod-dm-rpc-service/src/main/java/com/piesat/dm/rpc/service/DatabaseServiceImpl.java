@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.DatabaseDao;
+import com.piesat.dm.entity.DataTableEntity;
 import com.piesat.dm.entity.DatabaseEntity;
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.dto.DatabaseDto;

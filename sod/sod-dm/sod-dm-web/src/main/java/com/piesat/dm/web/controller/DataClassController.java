@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 资料分类
@@ -65,6 +66,30 @@ public class DataClassController {
     public ResultT all() {
         try {
             List<DataClassDto> all = this.dataClassService.all();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/api/dataClass/logicClass")
+    @ApiOperation(value = "按数据用途查询资料分类接口", notes = "按数据用途查询资料分类接口")
+    public ResultT getLogicClass() {
+        try {
+            List<Map<String, Object>> all = this.dataClassService.getLogicClass();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/api/dataClass/databaseClass")
+    @ApiOperation(value = "按数据库查询资料分类接口", notes = "按数据库查询资料分类接口")
+    public ResultT getDatabaseClass() {
+        try {
+            List<Map<String, Object>> all = this.dataClassService.getDatabaseClass();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

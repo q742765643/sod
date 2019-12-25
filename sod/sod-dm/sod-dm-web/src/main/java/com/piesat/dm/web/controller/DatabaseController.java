@@ -1,6 +1,8 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.dm.rpc.api.DatabaseDefineService;
 import com.piesat.dm.rpc.api.DatabaseService;
+import com.piesat.dm.rpc.dto.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
@@ -23,11 +25,15 @@ import java.util.List;
 public class DatabaseController {
     @Autowired
     private DatabaseService databaseService;
+    @Autowired
+    private DatabaseDefineService databaseDefineService;
 
     @PostMapping(value = "/api/database/save")
     @ApiOperation(value = "添加数据库接口", notes = "添加数据库接口")
     public ResultT save(@RequestBody DatabaseDto databaseDto) {
         try {
+            DatabaseDefineDto databaseDefine = databaseDefineService.getDotById(databaseDto.getDatabaseDefine().getId());
+            databaseDto.setDatabaseDefine(databaseDefine);
             DatabaseDto save = this.databaseService.saveDto(databaseDto);
             return ResultT.success(save);
         } catch (Exception e) {

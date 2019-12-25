@@ -1,6 +1,8 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.DataTableService;
+import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
@@ -23,11 +25,15 @@ import java.util.List;
 public class DataTableController {
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private DataLogicService dataLogicService;
 
     @PostMapping(value = "/api/dataTable/save")
     @ApiOperation(value = "添加表信息接口", notes = "添加表信息接口")
     public ResultT save(@RequestBody DataTableDto dataTableDto) {
         try {
+            DataLogicDto dataLogicDto = dataLogicService.getDotById(dataTableDto.getClassLogicId().getId());
+            dataTableDto.setClassLogicId(dataLogicDto);
             DataTableDto save = this.dataTableService.saveDto(dataTableDto);
             return ResultT.success(save);
         } catch (Exception e) {
@@ -71,4 +77,18 @@ public class DataTableController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @PostMapping(value = "/api/dataTable/getByDatabaseId")
+    @ApiOperation(value = "根据物理库id获取所有表信息接口", notes = "根据物理库id获取所有表信息接口")
+    public ResultT getByDatabaseId(String databaseId){
+        try {
+            List<DataTableDto> all = this.dataTableService.getByDatabaseId(databaseId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
 }

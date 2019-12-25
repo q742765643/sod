@@ -59,7 +59,7 @@ public class DataClassDto {
     /**
      * if_stop_use
      */
-    private Integer ifStopUse;
+    private Boolean ifStopUse;
 
     /**
      * frequency_type
