@@ -245,7 +245,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="12">
+         <!-- <el-col :span="12">
             <el-form-item label="岗位">
               <el-select v-model="form.postIds" multiple placeholder="请选择">
                 <el-option
@@ -257,7 +257,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col>-->
           <el-col :span="12">
             <el-form-item label="角色">
               <el-select v-model="form.roleIds" multiple placeholder="请选择">
@@ -493,7 +493,7 @@ export default {
     handleAdd() {
       this.reset();
       this.getTreeselect();
-      this.getPosts();
+      //this.getPosts();
       this.getRoles();
       this.open = true;
       this.title = "添加用户";
@@ -503,7 +503,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.getTreeselect();
-      this.getPosts();
+      //this.getPosts();
       this.getRoles();
       const id = row.id || this.ids
       getUser(id).then(response => {
