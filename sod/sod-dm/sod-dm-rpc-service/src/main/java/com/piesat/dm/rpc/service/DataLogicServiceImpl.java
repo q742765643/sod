@@ -54,7 +54,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
 
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
-        String sql = "SELECT * FROM T_SOD_DATA_LOGIC A LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID AND A.DATABASEID = '" + databaseId + "'";
+        String sql = "SELECT * FROM T_SOD_DATA_LOGIC A LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID AND A.DATABASE_ID = '" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }
