@@ -2,9 +2,6 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
-import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
-import com.piesat.common.jpa.specification.SpecificationOperator;
-import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.DataLogicDao;
 import com.piesat.dm.entity.DataLogicEntity;
 import com.piesat.dm.rpc.api.DataLogicService;
@@ -56,13 +53,10 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
-    public List<DataLogicDto> getByDatabaseId(String databaseId) {
-        SimpleSpecificationBuilder<DataLogicEntity> ssb=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotNullString(databaseId)){
-            ssb.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
-        }
-        List<DataLogicEntity> all = this.dataLogicDao.findAll(ssb.generateSpecification());
-        return this.dataLogicMapper.toDto(all);
+    public List<Map<String, Object>> getByDatabaseId(String databaseId) {
+        String sql = "SELECT * FROM T_SOD_DATA_LOGIC A LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID AND A.DATABASEID = '" + databaseId + "'";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
     }
 
     @Override
