@@ -1,0 +1,131 @@
+<template>
+  <div class="app-container">
+    <!-- 存储字段检索 -->
+    <el-form :model="queryParams" ref="queryForm" :inline="true">
+     <el-form-item label="表名称:">
+          <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
+        </el-form-item>
+        <el-form-item label="中文简称:">
+          <el-input size="small" v-model="queryParams.ele_name" placeholder="请输入中文简称" />
+        </el-form-item>
+        <el-form-item label="字段名称:">
+          <el-input size="small" v-model="queryParams.c_element_code" placeholder="请输入字段名称" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+          <el-button type="text" @click="superClick">
+            <i class="el-icon-share"></i>高级搜索
+          </el-button>
+        </el-form-item>
+    </el-form>
+
+    <el-table v-loading="loading" :data="tableData" row-key="id">
+       <el-table-column align="center"
+          prop="db_ele_code"
+          label="公共元数据字段"
+          width="140px"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column align="center" prop="db_ele_code" label="字段名称" width="120px"></el-table-column>
+        <el-table-column align="center" prop="user_ele_code" label="服务名称" width="120px"></el-table-column>
+        <el-table-column align="center" prop="ele_name" label="中文简称" width="170px"></el-table-column>
+
+        <el-table-column align="center" prop="type" label="数据类型" width="80px"></el-table-column>
+        <el-table-column align="center" prop="accuracy" label="数据精度" width="80px"></el-table-column>
+        <el-table-column align="center" prop="class_name" label="资料名称">
+          <template slot-scope="scope">
+            <el-link
+              :underline="false"
+              type="primary"
+              @click="viewCell(scope.row)"
+            >{{scope.row.class_name}}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="table_name" label="表名称" width="160px"></el-table-column>
+        <el-table-column align="center" prop="logic_name" label="数据用途" width="100px"></el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+    <!-- 高级搜索 -->
+    <el-dialog title="筛选" :visible.sync="dialogSuperSearch" :before-close="handleClose">
+      <super-search
+        v-if="dialogSuperSearch"
+        :superObj="superObj"
+        @searchFun="handleQuery"
+        ref="supersearchinfo"
+      />
+    </el-dialog>
+
+  </div>
+</template>
+
+<script>
+import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
+// 高级搜索
+import SuperSearch from "@/components/superSearch";
+export default {
+  components: {
+    SuperSearch,
+  },
+  data() {
+    return {
+     // 遮罩层
+      loading: true,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        table_name: "",
+        ele_name: "",
+        c_element_code: ""
+      },
+      total: 0,
+      tableData: [],
+       // 高级搜索
+      dialogSuperSearch:false,
+      superObj:{},
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+     
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 查询列表 */
+    getList() {
+      this.loading = true;
+      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
+        response => {
+          this.tableData = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
+        }
+      );
+    },
+     // 关闭高级搜索
+    closeSuperSearch() {
+      this.dialogSuperSearch = false;
+    },
+    superClick(){
+      this.superObj = this.queryParams;
+      this.superObj.pageName = "存储字段检索";
+      this.dialogSuperSearch = true;
+    },
+    // 弹框取消
+    handleClose() {
+      this.dialogSuperSearch = false;
+    }
+    
+  }
+};
+</script>

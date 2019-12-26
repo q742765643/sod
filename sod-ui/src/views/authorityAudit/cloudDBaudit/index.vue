@@ -184,7 +184,7 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 查询角色列表 */
+    /** 查询列表 */
     getList() {
       this.loading = true;
       listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
