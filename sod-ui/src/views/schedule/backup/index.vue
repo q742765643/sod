@@ -163,7 +163,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="资料名称" prop="dataClassId">
-              <el-select v-model="form.dataClassId" filterable  placeholder="请选择资料" style="width:100%">
+              <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
                 <el-option
                   v-for="dataClass in dataClassIdOptions"
                   :key="dataClass.classLogicId.dataClassId"
@@ -368,6 +368,7 @@
           dataClassId: undefined,
           triggerStatus: undefined,
           isAlarm:"1",
+          triggerStatus:1,
 
         };
         this.dataClassIdOptions=[];
@@ -467,6 +468,19 @@
           this.dataClassIdOptions = response.data;
           this.form.dataClassId=dataClassId;
         });
+      },
+      selectTable(dataClassId){
+        let databaseObj={};
+        databaseObj=this.databaseOptions.find((item)=>{
+          return item.id === this.form.databaseId;
+        });
+        let obj = {};
+        obj = this.dataClassIdOptions.find((item)=>{
+          return item.classLogicId.dataClassId === dataClassId;
+        });
+        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.nameCn
+        this.form.tableName=obj.tableName;
+        this.form.ddataId="2222";
       }
     }
   };

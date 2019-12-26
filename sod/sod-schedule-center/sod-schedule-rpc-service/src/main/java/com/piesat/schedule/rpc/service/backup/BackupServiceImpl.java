@@ -7,6 +7,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
+import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
@@ -31,6 +32,8 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     private BackupDao backupDao;
     @Autowired
     private BackupMapstruct backupMapstruct;
+    @Autowired
+    private JobInfoService jobInfoService;
     @Override
     public BaseDao<BackupEntity> getBaseDao() {
         return backupDao;
@@ -78,15 +81,19 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     public void saveBackup(BackUpDto backUpDto){
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
         this.save(backupEntity);
+        jobInfoService.start(backUpDto);
+
     }
     @Override
     public void updateBackup(BackUpDto backUpDto){
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
         this.save(backupEntity);
+        jobInfoService.start(backUpDto);
     }
     @Override
     public void deleteBackupByIds(String[] backupIds){
         this.deleteByIds(Arrays.asList(backupIds));
+        jobInfoService.stopByIds(Arrays.asList(backupIds));
     }
 }
 

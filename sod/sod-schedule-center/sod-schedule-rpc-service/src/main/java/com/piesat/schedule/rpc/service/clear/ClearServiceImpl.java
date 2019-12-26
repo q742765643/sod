@@ -7,6 +7,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
+import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
@@ -31,7 +32,8 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     private ClearMapstruct clearMapstruct;
     @Autowired
     private ClearDao clearDao;
-
+    @Autowired
+    private JobInfoService jobInfoService;
     @Override
     public BaseDao<ClearEntity> getBaseDao() {
         return clearDao;
@@ -79,15 +81,20 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.save(clearEntity);
+        jobInfoService.start(clearDto);
     }
     @Override
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.save(clearEntity);
+        jobInfoService.start(clearDto);
+
     }
     @Override
     public void deleteClearByIds(String[] clearIds){
         this.deleteByIds(Arrays.asList(clearIds));
+        jobInfoService.stopByIds(Arrays.asList(clearIds));
+
     }
 }
 

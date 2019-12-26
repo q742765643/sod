@@ -34,6 +34,8 @@ public class ClearEntity extends JobInfoEntity{
     private String conditions;
     @Column(name="clear_limit", length=50)
     private long clearLimit;
+    @Column(name="v_table_name", length=50)
+    private String vTableName;
 
 
 }

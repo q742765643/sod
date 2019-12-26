@@ -7,6 +7,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.move.MoveEntity;
+import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
@@ -31,6 +32,8 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     private MoveDao moveDao;
     @Autowired
     private MoveMapstruct moveMapstruct;
+    @Autowired
+    private JobInfoService jobInfoService;
     @Override
     public BaseDao<MoveEntity> getBaseDao() {
         return moveDao;
@@ -78,15 +81,18 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     public void saveMove(MoveDto moveDto){
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
         this.save(moveEntity);
+        jobInfoService.start(moveDto);
     }
     @Override
     public void updateMove(MoveDto moveDto){
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
         this.save(moveEntity);
+        jobInfoService.start(moveDto);
     }
     @Override
     public void deleteMoveByIds(String[] moveIds){
         this.deleteByIds(Arrays.asList(moveIds));
+        jobInfoService.stopByIds(Arrays.asList(moveIds));
     }
 }
 

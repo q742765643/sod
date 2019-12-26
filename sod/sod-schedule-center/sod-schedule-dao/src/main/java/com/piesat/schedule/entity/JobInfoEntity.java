@@ -49,6 +49,7 @@ public class JobInfoEntity extends BaseEntity{
     private long triggerNextTime;	// 下次调度时间
     @Column(name="is_alarm", length=1)
     private String isAlarm;		// 是否告警
+    @Transient
     private String type;		// 执行器主键ID
 
 

@@ -23,6 +23,7 @@ public class MoveDto extends JobInfoDto{
     private String targetDirectory;
     private String isClear;
     private long moveLimit;
+    private String vTableName;
 
 }
 
