@@ -47,7 +47,7 @@ public class LevelServiceImpl extends BaseService<LevelEntity> implements LevelS
         PageInfo<LevelEntity> pageInfo = new PageInfo<>(levelEntities);
         //获取当前页数据
         List<LevelDto> levelDtos= levelMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),levelDtos);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),levelDtos);
         return pageBean;
     }
 
