@@ -43,6 +43,7 @@
     "@riophae/vue-treeselect": "0.4.0",
     "axios": "0.18.1",
     "echarts": "4.2.1",
+    "el-tree-transfer": "^2.2.6",
     "element-ui": "2.11.1",
     "fuse.js": "3.4.4",
     "js-cookie": "2.2.0",

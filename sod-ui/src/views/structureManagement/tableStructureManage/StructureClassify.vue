@@ -1,0 +1,440 @@
+<template>
+  <el-aside class="asideTreeStructure">
+    <el-tabs :tab-position="tabPosition" @tab-click="handleTabClick">
+      <el-tab-pane label="资料分类树"></el-tab-pane>
+      <el-tab-pane label="数据用途分类树"></el-tab-pane>
+      <el-tab-pane label="数据库分类树"></el-tab-pane>
+      <el-tab-pane label="公共元数据结构"></el-tab-pane>
+    </el-tabs>
+    <div class="classifyTree">
+      <!-- 资料分类树操作 -->
+      <el-button-group class="sourceTreeTopOp" v-show="sourceTreeOp">
+        <el-button type="primary" size="mini" icon="el-icon-plus" @click="showSourceDialog()"></el-button>
+        <el-button type="primary" size="mini" icon="el-icon-edit" @click="showSourceDialog('edit')"></el-button>
+        <el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteSourceNode"></el-button>
+        <el-button
+          class="sourceBtn"
+          type="primary"
+          size="mini"
+          icon="el-icon-search"
+          @click="sourceTopSearch"
+        ></el-button>
+      </el-button-group>
+      <!-- 资料分类树/数据库用途分类树/数据库分类树/公共元数据库结构树 查询 -->
+      <div class="usedTreeOp">
+        <el-input
+          placeholder="请输入"
+          size="small"
+          v-model="sourceTreeText"
+          v-show="publicTreeTextActive"
+        ></el-input>
+        <el-button
+          type="primary"
+          size="small"
+          icon="el-icon-back"
+          v-show="backBtn"
+          @click="backTop"
+        ></el-button>
+      </div>
+
+      <!-- 公共元数据结构 -->
+      <div class="publicTreeOp" v-show="publicActive">
+        <el-button-group>
+          <el-button :type="showAll" size="small" @click="handleShowTree('all')">显示全部</el-button>
+          <el-button :type="showNoCreat" size="small" @click="handleShowTree('noCreat')">显示未创建</el-button>
+          <el-button type="primary" icon="el-icon-search" size="small" @click="sourceTopSearch"></el-button>
+        </el-button-group>
+      </div>
+      <div class="treeBox selScrollBar">
+        <el-tree
+          class="el-tree"
+          :data="treeData"
+          :props="defaultProps"
+          node-key="id"
+          :highlight-current="highlight"
+          :default-expanded-keys="expandedKeys"
+          :filter-node-method="filterNode"
+          @node-click="sourceNodeClick"
+          ref="elTree"
+        >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <span class="el-tree-node__label">
+              <i :class="data.icon"></i>
+              {{ node.label }}
+            </span>
+          </span>
+        </el-tree>
+      </div>
+    </div>
+  </el-aside>
+</template>
+
+<script>
+// import { interfaceObj } from "@/urlConfig";
+export default {
+  props: { treeIdOfDR: String },
+  data() {
+    return {
+      //格式化tree数据
+      defaultProps: {
+        children: "children",
+        label: "label"
+      },
+      highlight: true,
+      tabPosition: "left",
+      treeData: [], //tree数据
+      checkNode: {}, //选中高亮的节点id
+      expandedKeys: [], //展开的节点
+      sourceActive: true, //资料树选中状态
+      sourceTreeOp: true, //资料树头部显示与否状态
+      sourceTreeText: "",
+      publicTreeTextActive: false,
+      backBtn: false,
+      publicActive: false,
+      /***              资料树操作数据                     */
+      operateNodeObj: {
+        totle: "",
+        editNodeId: ""
+      },
+      checkedNodeArr: {}, //选中的资料树id集合
+      editNodeId: "", //编辑资料树的id
+      showNoCreat: "primary",
+      showAll: "",
+      myTreedata: [],
+      // initTreeUlr: interfaceObj.TableStructure_dataTypeTree
+      initTreeUlr:''
+    };
+  },
+
+  watch: {
+    // 监控资料分类树
+    sourceTreeText(val) {
+      this.$refs.elTree.filter(val);
+    }
+  },
+  created() {
+    //初始化资料分类树
+    // this.initMethodsTree(interfaceObj.TableStructure_dataTypeTree);
+  },
+  methods: {
+    // 树的搜索方法
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    //左侧分类点击
+    handleTabClick(tab, event) {
+      this.sourceTreeText = "";
+      this.sourceTreeOp = false;
+      this.publicTreeTextActive = false;
+      this.backBtn = false;
+      this.publicActive = false;
+      if (tab.label === "资料分类树") {
+        this.sourceTreeOp = true;
+        this.initTreeUlr = interfaceObj.TableStructure_dataTypeTree;
+      } else if (tab.label === "数据用途分类树") {
+        this.publicTreeTextActive = true;
+        this.initTreeUlr = interfaceObj.TableStructure_DBLogicTypeTree;
+      } else if (tab.label === "数据库分类树") {
+        this.publicTreeTextActive = true;
+        this.initTreeUlr = interfaceObj.TableStructure_DBPhysicalTypeTree;
+      } else if (tab.label === "公共元数据结构") {
+        this.publicActive = true;
+        this.initTreeUlr = interfaceObj.TableStructure_publicDatumTree;
+      }
+      this.$emit("getTreeUrlOfTab", this.initTreeUlr);
+      this.initMethodsTree(this.initTreeUlr);
+    },
+    //获取默认选中的节点
+    getDefaultNode(nodeArr) {
+      if (this.publicActive == true) {
+        if (nodeArr.children) {
+          let newNodeArr = nodeArr.children[0];
+          this.getDefaultNode(newNodeArr);
+        } else {
+          this.checkNode = nodeArr;
+        }
+      } else {
+        this.checkNode = nodeArr;
+      }
+      if (this.treeIdOfDR) {
+        // 默认展开从数据注册审核页面过来的节点
+        this.expandedKeys.push(this.treeIdOfDR);
+      } else {
+        this.expandedKeys.push(nodeArr.id);
+      }
+      // console.log(this.treeIdOfDR);
+    },
+
+    //查询分类树
+    sourceTopSearch() {
+      this.sourceTreeOp = false;
+      this.publicActive = false;
+      this.publicTreeTextActive = true;
+      this.backBtn = true;
+    },
+    // 返回
+    backTop() {
+      this.sourceTreeOp = true;
+      this.publicActive = false;
+      this.publicTreeTextActive = false;
+      this.backBtn = false;
+    },
+    //资料树
+    showSourceDialog(operateType) {
+      this.operateNodeObj.url = this.initTreeUlr;
+      if (!operateType) {
+        this.operateNodeObj.title = "新增资料树节点";
+        this.operateNodeObj.editNodeId = "";
+        this.$emit("showMaterialSingle", this.operateNodeObj);
+      } else {
+        this.operateNodeObj.title = "编辑资料树节点";
+        this.operateNodeObj.editNodeId = this.editNodeId;
+        this.$emit("showMaterialSingle", this.operateNodeObj);
+      }
+    },
+    // 删除资料分类
+    deleteSourceNode() {
+      // 等待测试库  测试
+      this.axios
+        .post(interfaceObj.TableStructure_deleteData, {
+          data_class_id_str: this.editNodeId
+        })
+        .then(res => {
+          if (res.data.returnCode === "0") {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            //刷新资料树
+            this.initMethodsTree(this.initTreeUlr);
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.returnMessage
+            });
+          }
+        })
+        .catch(error => {
+          console.log("出错了，错误信息：" + error);
+        });
+    },
+    //初始化资料分类树/数据用途分类树/数据库分类树/公共元数据结构
+    async initMethodsTree(initTreeUlr, treeRefreshData) {
+      await this.axios
+        .get(initTreeUlr)
+        .then(res => {
+          if (res.data.returnCode == "0") {
+            if (this.publicActive) {
+              // 公共元数据结构
+              if (this.showNoCreat == "primary") {
+                this.treeData = res.data.data;
+              } else if (this.showAll == "primary") {
+                // 显示未创建
+                let noCreatList = [];
+                res.data.data.forEach(single => {
+                  if (single.classid) {
+                  } else {
+                    noCreatList.push(single);
+                  }
+                });
+                this.treeData = noCreatList;
+              }
+            } else {
+              this.treeData = res.data.data;
+            }
+            // this.reseatParentArry(this.treeData);
+          } else {
+            this.$message({
+              type: "error",
+              message: res.data.returnMessage
+            });
+          }
+        })
+        .catch(error => {
+          console.log("出错了，错误信息：" + error);
+        });
+      this.defaultStyle(treeRefreshData);
+    },
+    // tree数据格式化
+
+    // 显示未创建、显示全部
+    handleShowTree(type) {
+      if (this.showAll == "primary" && type == "all") {
+        this.showNoCreat = "primary";
+        this.showAll = "";
+      } else if (this.showNoCreat == "primary" && type == "noCreat") {
+        this.showNoCreat = "";
+        this.showAll = "primary";
+      }
+      let initTreeUlr = interfaceObj.TableStructure_publicDatumTree;
+      this.initMethodsTree(initTreeUlr);
+    },
+    // 节点默认展开
+    defaultStyle(treeRefreshData) {
+      if (this.treeData.length !== 0) {
+        if (treeRefreshData) {
+          this.getDefaultNode(treeRefreshData);
+          // this.checkNode = treeRefreshData;
+        } else {
+          this.getDefaultNode(this.treeData[0]);
+        }
+      }
+
+      this.$refs.elTree.setCurrentKey(this.checkNode.id);
+      this.sourceNodeClick(this.checkNode);
+    },
+    //节点点击
+    sourceNodeClick(data) {
+      this.myTreedata = [];
+      this.checkedNodeArr = {};
+      this.resetData(data);
+      this.editNodeId = data.id;
+
+      let treeIds = [];
+      this.myTreedata.forEach(single => {
+        if (single.disabled) {
+          treeIds.push(single.id);
+        }
+      });
+      if (this.publicActive == true) {
+        this.checkedNodeArr.style = "showPublicMain";
+        this.checkedNodeArr.id = data.id;
+        this.checkedNodeArr.name = data.label;
+        this.checkedNodeArr.icon = data.icon;
+        this.$emit("searchFun", this.checkedNodeArr, data);
+      } else {
+        this.checkedNodeArr.style = undefined;
+        this.$emit("searchFun", treeIds.join(","), data);
+      }
+    },
+    //获取父节点下的子节点
+    resetData(dataArr) {
+      var that = this;
+      that.myTreedata.push({
+        label: dataArr.label,
+        id: dataArr.id,
+        disabled: dataArr.disabled
+      });
+      if (dataArr.children) {
+        var child = dataArr.children;
+        for (var i = 0; i < child.length; i++) {
+          that.resetData(child[i]);
+        }
+      }
+    },
+
+    topback() {
+      this.publicTreeTextActive = false;
+      this.sourceTreeOp = true;
+    }
+  }
+};
+</script>
+
+<style scope lang='scss'>
+.asideTreeStructure {
+  padding: 0;
+  max-width: 250px;
+  background: #fff;
+  margin: 0 10px;
+  border: 1px solid #ebeef5;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+
+  //分类
+  .el-tabs__item {
+    white-space: normal;
+    width: 32px;
+    padding: 8px 10px;
+    line-height: 16px;
+    font-size: 14px;
+    height: auto;
+  }
+
+  .el-tree--highlight-current
+    .el-tree-node.is-current
+    > .el-tree-node__content {
+    background-color: #c6e2ff;
+  }
+  //树
+  .classifyTree {
+    width: 216px;
+    overflow: hidden;
+    // 资料分类操作
+    .sourceTreeTopOp {
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      padding: 10px 0;
+      padding-bottom: 0;
+      margin-left: 10px;
+      cursor: pointer;
+      .el-button {
+        margin-left: 0px;
+        border-radius: 0px;
+        border-left: 1px solid #9dd5f6;
+        padding: 8px 15px;
+
+        i {
+          font-weight: bold;
+        }
+      }
+      .el-button:first-child {
+        border-left: 1px solid #409eff;
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+      }
+      .el-button:last-child {
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+      }
+    }
+    //逻辑库分类树
+    .usedTreeOp {
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      .el-input {
+        width: 140px;
+        margin-right: 2px;
+        margin-top:10px;
+      }
+    }
+    // 公共元数据结构
+    .publicTreeOp {
+      width: 98%;
+      text-align: center;
+      box-sizing: border-box;
+      padding: 10px 0;
+      margin: auto;
+      .el-button--small,
+      .el-button--small.is-round {
+        padding: 9px 10px;
+      }
+    }
+    .treeBox {
+      width: 216px;
+      height: calc(100vh - 263px);
+      overflow: auto;
+      .el-tree {
+        min-width: 100%;
+        display: inline-block !important;
+      }
+      i {
+        color: #409eff;
+      }
+    }
+    // 树的第四级要隐藏
+    .el-tree-node[aria-disabled="true"] {
+      display: none;
+    }
+    .el-tree-node[aria-disabled="false"] {
+      color: #409eff;
+    }
+  }
+}
+</style>

@@ -1,0 +1,270 @@
+
+<template>
+  <el-form :model="superSearchForm" label-width="100px" class="superSearchDialog">
+    <el-form-item v-for="domain in superSearchForm.domains" :key="domain.key">
+      <el-select v-model="domain.select" placeholder="请选择">
+        <el-option
+          v-for="(item,index) in superChose"
+          :key="index"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+      <el-input v-model="domain.value" class="elInput"></el-input>
+      <i class="el-icon-plus" @click="addDomain"></i>
+      <i class="el-icon-minus" @click.prevent="removeDomain(domain)"></i>
+    </el-form-item>
+    <el-form-item>
+      <el-button class="submit" type="primary" @click="submitSuperSearch('superSearchForm')">查询</el-button>
+    </el-form-item>
+  </el-form>
+</template>
+
+<script>
+export default {
+  name: "superSearchDialog",
+  props: {
+    superObj: {
+      type: Object
+    }
+  },
+  data() {
+    return {
+      superDialogObj: {},
+      superChose: [],
+      superSearchForm: {
+        domains: [
+          {
+            value: "",
+            select: ""
+          }
+        ]
+      }
+    };
+  },
+  created() {
+    this.superDialogObj = this.superObj;
+    this.getSuperChose();
+  },
+  methods: {
+    getSuperChose() {
+      if (this.superDialogObj.pageName == "存储结构概览") {
+        this.superChose = [
+          {
+            label: "资料用途",
+            value: "logic_name"
+          },
+          {
+            label: "数据库",
+            value: "database_name"
+          },
+          {
+            label: "资料名称",
+            value: "class_name"
+          },
+          {
+            label: "表名称",
+            value: "table_name"
+          },
+          {
+            label: "存储编码",
+            value: "data_class_id"
+          },
+          {
+            label: "四级编码",
+            value: "d_data_id"
+          },
+          {
+            label: "专题库名称",
+            value: "special_database_name"
+          }
+        ];
+      } else if (this.superDialogObj.pageName == "存储字段检索") {
+        this.superChose = [
+          {
+            label: "公共元数据库字段",
+            value: "db_ele_code"
+          },
+          {
+            label: "字段名称",
+            value: "c_element_code"
+          },
+          {
+            label: "服务名称",
+            value: "user_ele_code"
+          },
+          {
+            label: "中文简称",
+            value: "ele_name"
+          },
+          {
+            label: "数据类型",
+            value: "type"
+          },
+          {
+            label: "数据精度",
+            value: "accuracy"
+          },
+          {
+            label: "资料名称",
+            value: "class_name"
+          },
+          {
+            label: "表名称",
+            value: "table_name"
+          },
+          {
+            label: "数据用途",
+            value: "logic_name"
+          }
+        ];
+      } else if (this.superDialogObj.pageName == "非结构化数据迁移配置") {
+        this.superChose = [
+          {
+            label: "用途描述",
+            value: "logic_name"
+          },
+          {
+            label: "数据库名",
+            value: "physics_dbname"
+          },
+          {
+            label: "专题名",
+            value: "special_database_name"
+          },
+          {
+            label: "资料名称",
+            value: "data_service_name"
+          },
+          {
+            label: "IP",
+            value: "exec_ip"
+          },
+          {
+            label: "端口号",
+            value: "exec_port"
+          },
+          {
+            label: "执行策略",
+            value: "cron"
+          }
+        ];
+      } else if (this.superDialogObj.pageName == "数据备份") {
+        this.superChose = [
+          {
+            label: "数据用途",
+            value: "logicName"
+          },
+          {
+            label: "数据库名称",
+            value: "databaseName"
+          },
+          {
+            label: "专题名",
+            value: "specialDatabaseName"
+          },
+          {
+            label: "资料名称",
+            value: "dataServiceName"
+          },
+          {
+            label: "IP",
+            value: "execIp"
+          },
+          {
+            label: "端口",
+            value: "execPort"
+          }
+        ];
+      } else if (this.superDialogObj.pageName == "GRIB参数定义") {
+        this.superChose = [
+          {
+            label: "代码简写",
+            value: "ele_code_short"
+          },
+          {
+            label: "学科",
+            value: "subject_id"
+          },
+          {
+            label: "参数种类",
+            value: "classify"
+          },
+          {
+            label: "参数编码",
+            value: "parameter_id"
+          },
+          {
+            label: "GRIB格式",
+            value: "grib_version"
+          },
+          {
+            label: "中文描述",
+            value: "order"
+          },
+          {
+            label: "是否为公共",
+            value: "public_config"
+          },
+          {
+            label: "模板ID",
+            value: "template_id"
+          },
+          {
+            label: "模板说明",
+            value: "template_desc"
+          }
+        ];
+      }
+    },
+
+    removeDomain(item) {
+      var index = this.superSearchForm.domains.indexOf(item);
+      if (index !== 0) {
+        this.superSearchForm.domains.splice(index, 1);
+      }
+    },
+    addDomain() {
+      this.superSearchForm.domains.push({
+        value: "",
+        key: Date.now()
+      });
+    },
+    submitSuperSearch(formName) {
+      this.$emit("getList", this.superSearchForm);
+    }
+  }
+};
+</script>
+<style lang="scss">
+.superSearchDialog {
+  .el-form-item__content {
+    display: flex;
+    margin-left: 0 !important;
+    align-items: center;
+  }
+  .elInput {
+    margin: 0 12px;
+  }
+  .el-icon-plus,
+  .el-icon-minus {
+    width: 16px;
+    height: 16px;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .el-icon-plus {
+    background: #409eff;
+  }
+  .el-icon-minus {
+    background: #f56c6c;
+    margin-left: 8px;
+  }
+  .submit {
+    margin: auto;
+    margin-bottom: 20px;
+  }
+}
+</style>
+
