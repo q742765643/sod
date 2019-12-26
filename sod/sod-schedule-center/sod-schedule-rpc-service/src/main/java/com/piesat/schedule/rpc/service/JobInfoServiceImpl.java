@@ -71,12 +71,12 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         return databaseDtos;
     }
     @Override
-    public List<DataLogicDto> getByDatabaseId(String databaseId){
-        List<DataLogicDto> dataTableDtos=dataLogicService.getByDatabaseId(databaseId);
-        return dataTableDtos;
+    public List<Map<String, Object>> getByDatabaseId(String databaseId){
+        List<Map<String, Object>> mapList=dataLogicService.getByDatabaseId(databaseId);
+        return mapList;
     }
-
-    public void getByDatabaseIdAndClassId(String databaseId,String dataClassId){
+    @Override
+    public Map<String,String> getByDatabaseIdAndClassId(String databaseId,String dataClassId){
         List<DataTableDto>  dataTableDtos=dataTableService.getByDatabaseIdAndClassId(databaseId,dataClassId);
         Map<String,String> map=new HashMap<>();
         if(dataTableDtos.size()>1){
@@ -93,6 +93,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
             map.put("tableName",dataTableDtos.get(0).getTableName());
             map.put("vTableName","");
         }
+        return map;
 
     }
     @Override

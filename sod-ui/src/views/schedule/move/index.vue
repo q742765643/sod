@@ -151,12 +151,26 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="物理库" prop="databaseId">
-              <el-input v-model="form.databaseId" placeholder="请选择物理库" />
+              <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')" placeholder="请选择物理库" style="width:100%">
+                <el-option
+                  v-for="database in databaseOptions"
+                  :key="database.id"
+                  :label="database.databaseName+'_'+database.databaseClassify"
+                  :value="database.id"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="资料名称" prop="dataClassId">
-              <el-input v-model="form.dataClassId" placeholder="请选择资料名称" />
+              <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
+                <el-option
+                  v-for="dataClass in dataClassIdOptions"
+                  :key="dataClass.DATA_CLASS_ID"
+                  :label="dataClass.CLASS_NAME"
+                  :value="dataClass.DATA_CLASS_ID"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -261,7 +275,7 @@
 </template>
 
 <script>
-  import { listMove, getMove, addMove, updateMove, delMove } from "@/api/schedule/move/move";
+  import { listMove, getMove, addMove, updateMove, delMove,findAllDataBase,getByDatabaseId,getByDatabaseIdAndClassId  } from "@/api/schedule/move/move";
 
   export default {
     data() {
@@ -292,6 +306,10 @@
         sourceDirectoryOptions: [],
 
         targetDirectoryOptions: [],
+
+        databaseOptions: [],
+
+        dataClassIdOptions: [],
 
         // 日期范围
         dateRange: [],
@@ -350,6 +368,9 @@
       this.getDicts("move_target_directory").then(response => {
         this.targetDirectoryOptions = response.data;
       });
+      findAllDataBase().then(response => {
+        this.databaseOptions = response.data;
+      });
 
     },
     methods: {
@@ -381,6 +402,10 @@
           triggerStatus: undefined,
           isAlarm:"1",
           isClear:"1",
+          triggerStatus:1,
+          tableName:undefined,
+          vtableName:undefined,
+          ddataId:undefined,
 
         };
         this.resetForm("form");
@@ -413,6 +438,7 @@
         this.reset();
         const id = row.id || this.ids
         getMove(id).then(response => {
+          this.selectByDatabaseIds(response.data.databaseId,response.data.dataClassId);
           this.form = response.data;
           this.open = true;
           this.title = "修改数据迁移配置信息";
@@ -472,6 +498,33 @@
         }).then(response => {
           this.download(response.msg);
         }).catch(function() {});
+      },
+      selectByDatabaseIds(databaseId,dataClassId) {
+        getByDatabaseId(databaseId).then(response => {
+          this.dataClassIdOptions = response.data;
+          this.form.dataClassId=dataClassId;
+        });
+      },
+      selectTable(dataClassId){
+        let databaseObj={};
+        databaseObj=this.databaseOptions.find((item)=>{
+          return item.id === this.form.databaseId;
+        });
+        let obj = {};
+        obj = this.dataClassIdOptions.find((item)=>{
+          return item.DATA_CLASS_ID === dataClassId;
+        });
+        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.CLASS_NAME
+        this.form.ddataId=obj.D_DATA_ID;
+        this.form.tableName="";
+        this.findTable(databaseObj.id,obj.DATA_CLASS_ID)
+
+      },
+      findTable(databaseId,dataClassId){
+        getByDatabaseIdAndClassId(databaseId,dataClassId).then(response => {
+          this.form.tableName=response.data.tableName;
+          this.form.vTableName=response.data.vTableName;
+        });
       }
     }
   };

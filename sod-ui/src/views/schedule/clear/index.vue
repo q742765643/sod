@@ -151,12 +151,26 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="物理库" prop="databaseId">
-              <el-input v-model="form.databaseId" placeholder="请选择物理库" />
+              <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')" placeholder="请选择物理库" style="width:100%">
+                <el-option
+                  v-for="database in databaseOptions"
+                  :key="database.id"
+                  :label="database.databaseName+'_'+database.databaseClassify"
+                  :value="database.id"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="资料名称" prop="dataClassId">
-              <el-input v-model="form.dataClassId" placeholder="请选择资料名称" />
+              <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
+                <el-option
+                  v-for="dataClass in dataClassIdOptions"
+                  :key="dataClass.DATA_CLASS_ID"
+                  :label="dataClass.CLASS_NAME"
+                  :value="dataClass.DATA_CLASS_ID"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -216,7 +230,7 @@
 </template>
 
 <script>
-  import { listClear, getClear, addClear, updateClear, delClear } from "@/api/schedule/clear/clear";
+  import { listClear, getClear, addClear, updateClear, delClear,findAllDataBase,getByDatabaseId,getByDatabaseIdAndClassId } from "@/api/schedule/clear/clear";
 
   export default {
     data() {
@@ -241,6 +255,10 @@
         statusOptions: [],
 
         alarmOptions: [],
+
+        databaseOptions: [],
+
+        dataClassIdOptions: [],
         // 日期范围
         dateRange: [],
         // 查询参数
@@ -284,6 +302,10 @@
         this.alarmOptions = response.data;
       });
 
+      findAllDataBase().then(response => {
+        this.databaseOptions = response.data;
+      });
+
     },
     methods: {
       /** 查询字典类型列表 */
@@ -313,8 +335,13 @@
           dataClassId: undefined,
           triggerStatus: undefined,
           isAlarm:"1",
+          triggerStatus:1,
+          tableName:undefined,
+          vtableName:undefined,
+          ddataId:undefined,
 
         };
+        this.dataClassIdOptions=[];
         this.resetForm("form");
       },
       /** 搜索按钮操作 */
@@ -345,6 +372,7 @@
         this.reset();
         const id = row.id || this.ids
         getClear(id).then(response => {
+          this.selectByDatabaseIds(response.data.databaseId,response.data.dataClassId);
           this.form = response.data;
           this.open = true;
           this.title = "修改数据清除配置信息";
@@ -404,6 +432,33 @@
         }).then(response => {
           this.download(response.msg);
         }).catch(function() {});
+      },
+      selectByDatabaseIds(databaseId,dataClassId) {
+        getByDatabaseId(databaseId).then(response => {
+          this.dataClassIdOptions = response.data;
+          this.form.dataClassId=dataClassId;
+        });
+      },
+      selectTable(dataClassId){
+        let databaseObj={};
+        databaseObj=this.databaseOptions.find((item)=>{
+          return item.id === this.form.databaseId;
+        });
+        let obj = {};
+        obj = this.dataClassIdOptions.find((item)=>{
+          return item.DATA_CLASS_ID === dataClassId;
+        });
+        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.CLASS_NAME
+        this.form.ddataId=obj.D_DATA_ID;
+        this.form.tableName="";
+        this.findTable(databaseObj.id,obj.DATA_CLASS_ID)
+
+      },
+      findTable(databaseId,dataClassId){
+        getByDatabaseIdAndClassId(databaseId,dataClassId).then(response => {
+          this.form.tableName=response.data.tableName;
+          this.form.vTableName=response.data.vTableName;
+        });
       }
     }
   };
