@@ -43,6 +43,8 @@ public class MoveEntity extends JobInfoEntity {
     private String isClear;
     @Column(name="move_limit", length=50)
     private long moveLimit;
+    @Column(name="v_table_name", length=50)
+    private String vTableName;
 
 }
 

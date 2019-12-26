@@ -1,5 +1,6 @@
 package com.piesat.schedule.rpc.api;
 
+import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
@@ -14,5 +15,13 @@ public interface JobInfoService {
 
     public List<DatabaseDto> findAllDataBase();
 
-    public List<DataTableDto> getByDatabaseId(String databaseId);
+    public  List<DataLogicDto> getByDatabaseId(String databaseId);
+
+    public void init();
+
+    public void start(JobInfoDto jobInfoDto);
+
+    public void stop(String id);
+
+    public void stopByIds(List<String> ids);
 }

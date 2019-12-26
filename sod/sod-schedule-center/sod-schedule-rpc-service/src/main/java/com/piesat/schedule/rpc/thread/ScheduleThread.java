@@ -33,10 +33,9 @@ public class ScheduleThread {
     private volatile boolean scheduleThreadToStop = false;
     private volatile boolean ringThreadToStop = false;
     public static final long PRE_READ_MS = 5000;
+    private static final String HTHT_LOCK="htht_lock";
     private static final String QUARTZ_HTHT_JOB="QUARTZ:HTHT:JOB";
     private static final String QUARTZ_HTHT_CRON="QUARTZ:HTHT:CRON:";
-    private static final String HTHT_LOCK="htht_lock";
-
     private Thread scheduleThread;
     private Thread reserveThread;
     private volatile static Map<Integer, List<JobInfoEntity>> ringData = new ConcurrentHashMap<>();
@@ -47,24 +46,7 @@ public class ScheduleThread {
     @Autowired
     private JobInfoService jobInfoService;
     public void start(){
-        List<JobInfoDto> jobInfoDtos=jobInfoService.findJobList();
-        for(JobInfoDto jobInfoDto:jobInfoDtos){
-            redisUtil.set(QUARTZ_HTHT_CRON+jobInfoDto.getId(),jobInfoDto.getJobCron(),-1);
-            double score=0;
-            if(!redisUtil.hasKey(QUARTZ_HTHT_JOB)){
-                score=0;
-            }else{
-                score=redisUtil.zScore(QUARTZ_HTHT_JOB,jobInfoDto.getId());
-            }
-            if(score<=0){
-                try {
-                    Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
-                    redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        jobInfoService.init();
 
         scheduleThread=new Thread(
                 ()->{
