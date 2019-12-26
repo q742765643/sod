@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -35,8 +36,15 @@ public class JobInfoController {
     @GetMapping(value = "/getByDatabaseId/{databaseId}")
     public ResultT getByDatabaseId(@PathVariable String databaseId){
         ResultT resultT=new ResultT();
-        List<DataLogicDto> dataLogicDtos=jobInfoService.getByDatabaseId(databaseId);
-        resultT.setData(dataLogicDtos);
+        List<Map<String, Object>> mapList=jobInfoService.getByDatabaseId(databaseId);
+        resultT.setData(mapList);
+        return resultT;
+    }
+    @GetMapping(value = "/getByDatabaseIdAndClassId")
+    public ResultT getByDatabaseIdAndClassId(String databaseId,String dataClassId){
+        ResultT resultT=new ResultT();
+        Map<String,String> map=jobInfoService.getByDatabaseIdAndClassId(databaseId,dataClassId);
+        resultT.setData(map);
         return resultT;
     }
 }

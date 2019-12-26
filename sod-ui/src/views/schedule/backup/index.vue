@@ -166,9 +166,9 @@
               <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
                 <el-option
                   v-for="dataClass in dataClassIdOptions"
-                  :key="dataClass.classLogicId.dataClassId"
-                  :label="dataClass.nameCn"
-                  :value="dataClass.classLogicId.dataClassId"
+                  :key="dataClass.DATA_CLASS_ID"
+                  :label="dataClass.CLASS_NAME"
+                  :value="dataClass.DATA_CLASS_ID"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -252,7 +252,7 @@
 </template>
 
 <script>
-  import { listBackup, getBackup, addBackup, updateBackup, delBackup,findAllDataBase,getByDatabaseId } from "@/api/schedule/backup/backup";
+  import { listBackup, getBackup, addBackup, updateBackup, delBackup,findAllDataBase,getByDatabaseId,getByDatabaseIdAndClassId } from "@/api/schedule/backup/backup";
 
   export default {
     data() {
@@ -369,6 +369,9 @@
           triggerStatus: undefined,
           isAlarm:"1",
           triggerStatus:1,
+          tableName:undefined,
+          vtableName:undefined,
+          ddataId:undefined,
 
         };
         this.dataClassIdOptions=[];
@@ -476,11 +479,19 @@
         });
         let obj = {};
         obj = this.dataClassIdOptions.find((item)=>{
-          return item.classLogicId.dataClassId === dataClassId;
+          return item.DATA_CLASS_ID === dataClassId;
         });
-        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.nameCn
-        this.form.tableName=obj.tableName;
-        this.form.ddataId="2222";
+        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.CLASS_NAME
+        this.form.ddataId=obj.D_DATA_ID;
+        this.form.tableName="";
+        this.findTable(databaseObj.id,obj.DATA_CLASS_ID)
+
+      },
+      findTable(databaseId,dataClassId){
+        getByDatabaseIdAndClassId(databaseId,dataClassId).then(response => {
+           this.form.tableName=response.data.tableName;
+           this.form.vTableName=response.data.vTableName;
+        });
       }
     }
   };

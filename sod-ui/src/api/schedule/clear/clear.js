@@ -39,4 +39,28 @@ export function delClear(clearIds) {
   })
 }
 
+export function findAllDataBase() {
+  return request({
+    url: baseUrl+'/schedule/job/findAllDataBase',
+    method: 'get'
+  })
+}
+export function getByDatabaseId(databaseId) {
+  return request({
+    url: baseUrl+'/schedule/job/getByDatabaseId/'+databaseId,
+    method: 'get'
+  })
+}
+export function getByDatabaseIdAndClassId(databaseId,dataClassId) {
+  return request({
+    url: baseUrl+'/schedule/job/getByDatabaseIdAndClassId',
+    method: 'get',
+    async: true,
+    params: {
+      "databaseId":databaseId,
+      "dataClassId":dataClassId
+    }
+  })
+}
+
 

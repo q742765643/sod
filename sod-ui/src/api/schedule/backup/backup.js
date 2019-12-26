@@ -50,5 +50,16 @@ export function getByDatabaseId(databaseId) {
     method: 'get'
   })
 }
+export function getByDatabaseIdAndClassId(databaseId,dataClassId) {
+  return request({
+    url: baseUrl+'/schedule/job/getByDatabaseIdAndClassId',
+    method: 'get',
+    async: true,
+    params: {
+      "databaseId":databaseId,
+      "dataClassId":dataClassId
+    }
+  })
+}
 
 
