@@ -1,7 +1,12 @@
 package com.piesat.schedule.rpc.service;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.rpc.api.DataTableService;
+import com.piesat.dm.rpc.api.DatabaseService;
+import com.piesat.dm.rpc.dto.DataTableDto;
+import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.dao.JobInfoDao;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
@@ -27,6 +32,10 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     private JobInfoMapstruct jobInfoMapstruct;
     @Autowired
     private JobInfoMapper jobInfoMapper;
+    @GrpcHthtClient
+    private DatabaseService databaseService;
+    @GrpcHthtClient
+    private DataTableService dataTableService;
     @Override
     public BaseDao<JobInfoEntity> getBaseDao() {
         return jobInfoDao;
@@ -35,6 +44,16 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     public List<JobInfoDto> findJobList(){
         List<JobInfoEntity> jobInfoEntities=jobInfoMapper.findJobList();
         return jobInfoMapstruct.toDto(jobInfoEntities);
+    }
+    @Override
+    public List<DatabaseDto> findAllDataBase(){
+        List<DatabaseDto> databaseDtos=databaseService.all();
+        return databaseDtos;
+    }
+    @Override
+    public List<DataTableDto> getByDatabaseId(String databaseId){
+        List<DataTableDto> dataTableDtos=dataTableService.getByDatabaseId(databaseId);
+        return dataTableDtos;
     }
 }
 
