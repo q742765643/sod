@@ -25,4 +25,6 @@ public interface DataLogicService {
     List<DataLogicDto> all();
 
     List<Map<String, Object>> getByDataClassIds(List<String> ids);
+
+    List<DataLogicDto> getByDatabaseId(String databaseId);
 }

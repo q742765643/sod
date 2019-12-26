@@ -9,6 +9,7 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,12 @@ public class DataTableController {
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataTableDto dataTableDto) {
         try {
+            String id = dataTableDto.getId();
+            if (StringUtils.isNotBlank(id)){
+                DataTableDto dot = this.dataTableService.getDotById(id);
+                dataTableDto.setColumns(dot.getColumns());
+                dataTableDto.setTableIndexList(dot.getTableIndexList());
+            }
             DataLogicDto dataLogicDto = dataLogicService.getDotById(dataTableDto.getClassLogicId().getId());
             dataTableDto.setClassLogicId(dataLogicDto);
             DataTableDto save = this.dataTableService.saveDto(dataTableDto);
@@ -79,19 +86,6 @@ public class DataTableController {
     public ResultT all() {
         try {
             List<DataTableDto> all = this.dataTableService.all();
-            return ResultT.success(all);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
-    @ApiOperation(value = "根据物理库id获取所有表信息")
-    @RequiresPermissions("dm:dataTable:databaseId")
-    @GetMapping(value = "/getByDatabaseId")
-    public ResultT getByDatabaseId(String databaseId){
-        try {
-            List<DataTableDto> all = this.dataTableService.getByDatabaseId(databaseId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

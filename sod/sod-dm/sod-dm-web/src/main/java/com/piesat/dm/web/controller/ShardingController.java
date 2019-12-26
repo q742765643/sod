@@ -82,7 +82,7 @@ public class ShardingController {
 
     @ApiOperation(value = "根据表id查询分库分表键")
     @RequiresPermissions("dm:sharding:tableId")
-    @GetMapping(value = "/api/Sharding/getByTableId")
+    @GetMapping(value = "/getByTableId")
     public ResultT getDotByTableId(String id) {
         try {
             List<ShardingDto> shardingDtos = this.shardingService.getDotByTableId(id);

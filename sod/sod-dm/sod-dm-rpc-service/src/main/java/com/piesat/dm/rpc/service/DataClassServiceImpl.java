@@ -9,9 +9,11 @@ import com.piesat.dm.entity.DatabaseEntity;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.dto.DataClassDto;
 import com.piesat.dm.rpc.mapper.DataClassMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -92,5 +94,37 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public DataClassDto getDotById(String id) {
         DataClassEntity dataClassEntity = this.getById(id);
         return this.dataClassMapper.toDto(dataClassEntity);
+    }
+
+    public void importData(){
+        String sql = "select * from DMIN_DATA_CLASS_TABLE";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        for (Map<String, Object> m :  list) {
+            DataClassEntity dc = new DataClassEntity();
+            dc.setClassName(m.get("CLASS_NAME").toString());
+            dc.setDataClassId(m.get("DATA_CLASS_ID").toString());
+            dc.setDDataId(m.get("D_DATA_ID").toString());
+            dc.setFrequencyType(0);
+            dc.setIfStopUse(false);
+            dc.setIsAccess(1);
+            dc.setIsAllLine(1);
+            dc.setMetaDataName(m.get("META_DATA_NAME").toString());
+            dc.setParentId(m.get("PARENT_CLASS_ID").toString());
+            Object serial_no = m.get("SERIAL_NO");
+            int n = 0;
+            if (serial_no!=null){
+                if (StringUtils.isNotEmpty(serial_no.toString())){
+                n =     Integer.parseInt(serial_no.toString());
+                };
+            }
+            dc.setSerialNo(n);
+            String meta_data_stor_type = m.get("META_DATA_STOR_TYPE").toString();
+            if ("目录".equals(meta_data_stor_type))dc.setType(1);
+            else dc.setType(2);
+            dc.setUseBaseInfo(1);
+            dc.setDelFlag("0");
+            dc.setCreateTime(new Date());
+            save(dc);
+        }
     }
 }

@@ -33,7 +33,7 @@ public class DataClassDto {
     /**
      * serial_no
      */
-    private String serialNo;
+    private Integer serialNo;
 
     /**
      * type
@@ -69,12 +69,12 @@ public class DataClassDto {
     /**
      * is_all_line
      */
-    private Integer IsAllLine;
+    private Integer isAllLine;
 
     /**
      * use_base_info
      */
-    private Integer UseBaseInfo;
+    private Integer useBaseInfo;
 
     private Date createTime;
 

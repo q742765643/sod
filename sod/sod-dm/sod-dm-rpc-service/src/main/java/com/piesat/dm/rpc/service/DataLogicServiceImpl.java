@@ -2,6 +2,9 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.DataLogicDao;
 import com.piesat.dm.entity.DataLogicEntity;
 import com.piesat.dm.rpc.api.DataLogicService;
@@ -50,6 +53,16 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     public List<Map<String, Object>> getByDataClassIds(List<String> ids) {
 
         return null;
+    }
+
+    @Override
+    public List<DataLogicDto> getByDatabaseId(String databaseId) {
+        SimpleSpecificationBuilder<DataLogicEntity> ssb=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(databaseId)){
+            ssb.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
+        }
+        List<DataLogicEntity> all = this.dataLogicDao.findAll(ssb.generateSpecification());
+        return this.dataLogicMapper.toDto(all);
     }
 
     @Override

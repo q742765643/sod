@@ -45,7 +45,7 @@ public class DataClassEntity extends BaseEntity {
      * serial_no
      */
     @Column(name = "serial_no", length = 36)
-    private String serialNo;
+    private Integer serialNo;
 
     /**
      * type
@@ -91,13 +91,13 @@ public class DataClassEntity extends BaseEntity {
      * is_all_line
      */
     @Column(name = "is_all_line", columnDefinition="integer DEFAULT 1 COMMENT '是否在线（1、在线，2、不在线）'")
-    private Integer IsAllLine;
+    private Integer isAllLine;
 
     /**
      * use_base_info
      */
     @Column(name = "use_base_info", columnDefinition="integer DEFAULT 1 COMMENT '是否使用基础信息配置（1、使用，2、不使用）'")
-    private Integer UseBaseInfo;
+    private Integer useBaseInfo;
 
 
 }
