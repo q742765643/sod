@@ -50,8 +50,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
-    public List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId) {
-        List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId,dataClassId);
+    public List<DataTableDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
+        List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         return this.dataTableMapper.toDto(tableEntities);
     }
+
+
+
 }

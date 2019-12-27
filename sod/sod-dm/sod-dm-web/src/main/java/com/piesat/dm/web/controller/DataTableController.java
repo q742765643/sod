@@ -14,8 +14,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * 表信息
  *
@@ -80,13 +78,13 @@ public class DataTableController {
         }
     }
 
-    @ApiOperation(value = "查询所有")
+    @ApiOperation(value = "查询所有(禁用)")
     @RequiresPermissions("dm:dataTable:all")
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
-            List<DataTableDto> all = this.dataTableService.all();
-            return ResultT.success(all);
+//            List<DataTableDto> all = this.dataTableService.all();
+            return ResultT.success(null);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

@@ -84,7 +84,7 @@ public class TableColumnDto {
     /**
      * is_update
      */
-    private Date isUpdate;
+    private Boolean isUpdate;
 
     /**
      * is_show
@@ -105,6 +105,8 @@ public class TableColumnDto {
      * serial_number
      */
     private Integer serialNumber;
+
+    private Boolean isPrimaryKey;
 
     /**
      * default_value

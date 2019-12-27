@@ -22,7 +22,7 @@ public class DataTableEntity extends BaseEntity {
     /**
      * class_logic_id
      */
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "class_logic_id")
     private DataLogicEntity classLogicId;
 
@@ -76,11 +76,11 @@ public class DataTableEntity extends BaseEntity {
     @Column(name = "user_id", length = 255)
     private String userId;
 
-    @OneToMany(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinColumn(name="table_id")
     private Set<TableColumnEntity> columns = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinColumn(name="table_id")
     private Set<TableIndexEntity> tableIndexList = new HashSet<>();
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据用途
@@ -73,6 +74,19 @@ public class DataLogicController {
     public ResultT all() {
         try {
             List<DataLogicDto> all = this.dataLogicService.all();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据物理库查询（MAP）")
+    @RequiresPermissions("dm:dataLogic:databaseId")
+    @GetMapping(value = "/databaseId")
+    public ResultT getByDatabaseId(String databaseId) {
+        try {
+            List<Map<String, Object>> all = this.dataLogicService.getByDatabaseId(databaseId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

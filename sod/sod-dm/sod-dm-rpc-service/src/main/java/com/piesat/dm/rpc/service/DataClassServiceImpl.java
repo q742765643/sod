@@ -76,12 +76,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         for (DatabaseEntity db : databaseList) {
             if (!db.getStopUse()) {
-                sql = "SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, '"+db.getId()+"') END id,CLASS_NAME name," +
-                        "CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, '"+db.getId()+"') pId," +
+                sql = "SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, '" + db.getId() + "') END id,CLASS_NAME name," +
+                        "CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, '" + db.getId() + "') pId," +
                         "DATA_CLASS_ID,CASE TYPE WHEN 2 THEN TRUE ELSE FALSE END isHidden, " +
                         "CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent " +
                         "FROM T_SOD_DATA_CLASS " +
-                        "START WITH DATA_CLASS_ID IN (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATA_LOGIC WHERE DATABASE_ID = '"+db.getId()+"') " +
+                        "START WITH DATA_CLASS_ID IN (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATA_LOGIC WHERE DATABASE_ID = '" + db.getId() + "') " +
                         "CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id ";
                 List<Map<String, Object>> dataList = this.queryByNativeSQL(sql);
                 list.addAll(dataList);
@@ -96,10 +96,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         return this.dataClassMapper.toDto(dataClassEntity);
     }
 
-    public void importData(){
+    public void importData() {
         String sql = "select * from DMIN_DATA_CLASS_TABLE";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        for (Map<String, Object> m :  list) {
+        for (Map<String, Object> m : list) {
             DataClassEntity dc = new DataClassEntity();
             dc.setClassName(m.get("CLASS_NAME").toString());
             dc.setDataClassId(m.get("DATA_CLASS_ID").toString());
@@ -112,14 +112,15 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             dc.setParentId(m.get("PARENT_CLASS_ID").toString());
             Object serial_no = m.get("SERIAL_NO");
             int n = 0;
-            if (serial_no!=null){
-                if (StringUtils.isNotEmpty(serial_no.toString())){
-                n =     Integer.parseInt(serial_no.toString());
-                };
+            if (serial_no != null) {
+                if (StringUtils.isNotEmpty(serial_no.toString())) {
+                    n = Integer.parseInt(serial_no.toString());
+                }
+                ;
             }
             dc.setSerialNo(n);
             String meta_data_stor_type = m.get("META_DATA_STOR_TYPE").toString();
-            if ("目录".equals(meta_data_stor_type))dc.setType(1);
+            if ("目录".equals(meta_data_stor_type)) dc.setType(1);
             else dc.setType(2);
             dc.setUseBaseInfo(1);
             dc.setDelFlag("0");

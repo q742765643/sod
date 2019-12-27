@@ -12,6 +12,15 @@ tomcat:
 grpc:
   server:
     port: 6001
+  client:
+    ucenter-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    dm-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 spring:
   application:
     name: dm-server
@@ -51,7 +60,7 @@ spring:
         hbm2ddl:
 #          auto: update
           auto: validate
-        dialect: com.piesat.common.jpa.dialect.XuguDialect
+        dialect: com.xugu.dialect.XuguDialect5
         format_sql: true
     show-sql: true
     #database: mysql
@@ -61,6 +70,20 @@ spring:
     port: 6379
     timeout: 5000
     password:
+mybatis:
+  type-aliases-package: com.piesat.*.entity
+  mapper-locations: classpath:mapper/*.xml
+  callSettersOnNulls:  true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
 eureka:
   instance:
     prefer-ip-address: true

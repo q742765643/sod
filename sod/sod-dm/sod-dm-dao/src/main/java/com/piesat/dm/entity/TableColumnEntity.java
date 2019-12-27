@@ -3,8 +3,9 @@ package com.piesat.dm.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * 表字段信息
@@ -112,8 +113,8 @@ public class TableColumnEntity extends BaseEntity {
      *是否可更新
      * is_update
      */
-    @Column(name = "is_update")
-    private Date isUpdate;
+    @Column(name = "is_update", columnDefinition = "Boolean")
+    private Boolean isUpdate;
 
     /**
      * 是否可显示
@@ -143,6 +144,14 @@ public class TableColumnEntity extends BaseEntity {
     @Column(name = "serial_number")
     private Integer serialNumber;
 
+
+
+    /**
+     * 序号
+     * is_primary_key
+     */
+    @Column(name = "is_primary_key", columnDefinition = "Boolean")
+    private Boolean isPrimaryKey;
     /**
      * 默认值
      * default_value
