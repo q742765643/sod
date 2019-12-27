@@ -59,8 +59,8 @@ spring:
       hibernate:
         hbm2ddl:
 #          auto: update
-          auto: validate
-        dialect: com.xugu.dialect.XuguDialect5
+          auto: update
+        dialect: com.piesat.common.jpa.dialect.XuguDialect
         format_sql: true
     show-sql: true
     #database: mysql
