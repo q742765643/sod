@@ -51,7 +51,8 @@ public class JobInfoEntity extends BaseEntity{
     private String isAlarm;		// 是否告警
     @Transient
     private String type;		// 执行器主键ID
-
+    @Column(name="is_redo", length=1)
+    private String isRedo; //1为补做
 
 }
 

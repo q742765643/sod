@@ -57,7 +57,7 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
         List<DictTypeEntity> dictTypeEntities=dictTypeMapper.selectDictTypeList(dictType);
         PageInfo<DictTypeEntity> pageInfo = new PageInfo<>(dictTypeEntities);
         List<DictTypeDto> dictTypeDtos= dictTypeMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),dictTypeDtos);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dictTypeDtos);
         return pageBean;
     }
 

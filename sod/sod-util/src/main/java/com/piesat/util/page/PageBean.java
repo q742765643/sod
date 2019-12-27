@@ -13,12 +13,12 @@ public class PageBean {
     /**
      * 当前页
      */
-    private int currentPage = 1;
+    //private int currentPage = 1;
 
     /**
      * 分页大小
      */
-    private int pageSize = 10;
+    //private int pageSize = 10;
 
     private List<?> pageData;
 
@@ -34,7 +34,7 @@ public class PageBean {
 
     }
 
-    public int getCurrentPage() {
+ /*   public int getCurrentPage() {
         return currentPage;
     }
 
@@ -48,7 +48,7 @@ public class PageBean {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
-    }
+    }*/
 
     public List<?> getPageData() {
         return pageData;

@@ -80,8 +80,8 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     @Override
     public void saveMove(MoveDto moveDto){
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
-        this.save(moveEntity);
-        jobInfoService.start(moveDto);
+        moveEntity=this.save(moveEntity);
+        jobInfoService.start(moveMapstruct.toDto(moveEntity));
     }
     @Override
     public void updateMove(MoveDto moveDto){

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Tuple;
@@ -527,7 +528,7 @@ public class RedisUtil {
     * @Author: zzj
     * @Date: 2019/12/25 
     */ 
-    public boolean zsetAdd(String key,String object,long time){
+    public boolean zsetAdd(String key,Object object,long time){
         try {
             redisTemplate.opsForZSet().add(key,object,time);
             return true;
@@ -543,7 +544,7 @@ public class RedisUtil {
     * @Author: zzj
     * @Date: 2019/12/25 
     */ 
-    public void zsetRemove(String key,String object){
+    public void zsetRemove(String key,Object object){
         try {
             redisTemplate.opsForZSet().remove(key,object);
         } catch (Exception e) {
@@ -573,7 +574,7 @@ public class RedisUtil {
     * @Author: zzj
     * @Date: 2019/12/25 
     */ 
-    public double zScore(String key,String object){
+    public double zScore(String key,Object object){
         double zScore= 0;
         try {
             zScore = redisTemplate.opsForZSet().score(key,object);
@@ -582,7 +583,18 @@ public class RedisUtil {
         }
         return zScore;
     }
-
+    public Object reverseRange(String key, int scoure, int scoure1) {
+        ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
+        Set<Object> objects = zset.reverseRange(key, scoure, scoure1);
+        Object o = null;
+        if(objects.size()>0) {
+            for (Object t : objects) {
+               o=t;
+               break;
+            }
+        }
+        return o;
+    }
     public static void main(String[] args) {
 		/*JedisPool jedisPool = new JedisPool(null,"localhost",6379,100,"123456");
 		Jedis jedis = jedisPool.getResource();

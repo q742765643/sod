@@ -14,6 +14,8 @@ import java.util.Map;
 public interface JobInfoService {
     public List<JobInfoDto> findJobList();
 
+    public Object getJobById(String id);
+
     public List<DatabaseDto> findAllDataBase();
 
     public List<Map<String, Object>>  getByDatabaseId(String databaseId);

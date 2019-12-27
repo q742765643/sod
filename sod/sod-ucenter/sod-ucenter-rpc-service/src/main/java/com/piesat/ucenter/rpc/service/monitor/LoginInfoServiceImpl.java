@@ -65,7 +65,7 @@ public class LoginInfoServiceImpl extends BaseService<LoginInfoEntity> implement
         List<LoginInfoEntity> loginInfoEntities=loginInfoMapper.selectLogininforList(loginInfoEntity);
         PageInfo<LoginInfoEntity> pageInfo = new PageInfo<>(loginInfoEntities);
         List<LoginInfoDto> loginInfoDtos= loginInfoMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),loginInfoDtos);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),loginInfoDtos);
         return pageBean;
     }
 

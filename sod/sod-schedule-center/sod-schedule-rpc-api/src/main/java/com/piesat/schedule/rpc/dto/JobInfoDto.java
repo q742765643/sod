@@ -26,5 +26,6 @@ public class JobInfoDto extends BaseDto {
     private long triggerNextTime;	// 下次调度时间
     private String isAlarm;
     private String type;
+    private String isRedo;
 }
 
