@@ -28,6 +28,8 @@ public interface GenericService<T, ID extends Serializable>{
     public List<T> getAll(final Specification<T> specification, final Sort sort);
     public T save(final T entity);
     public List<T> save(final Iterable<T> entities);
+    public T saveNotNull(final T entity);
+    public List<T> saveNotNull(final Iterable<T> entities);
     public void delete(final ID id);
     public void delete(final T entity);
     public void delete(final Iterable<T> entities);

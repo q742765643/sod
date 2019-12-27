@@ -131,7 +131,7 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
     public DictTypeDto insertDictType(DictTypeDto dictType)
     {
         DictTypeEntity dictTypeEntity=dictTypeMapstruct.toEntity(dictType);
-        return dictTypeMapstruct.toDto(this.save(dictTypeEntity));
+        return dictTypeMapstruct.toDto(this.saveNotNull(dictTypeEntity));
     }
 
     /**
@@ -146,7 +146,7 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
     {
         DictTypeEntity oldDict = this.getById(dictType.getId());
         dictDataMapper.updateDictDataType(oldDict.getDictType(), dictType.getDictType());
-        DictTypeEntity newDict=this.save(dictTypeMapstruct.toEntity(dictType));
+        DictTypeEntity newDict=this.saveNotNull(dictTypeMapstruct.toEntity(dictType));
         return dictTypeMapstruct.toDto(newDict);
     }
 

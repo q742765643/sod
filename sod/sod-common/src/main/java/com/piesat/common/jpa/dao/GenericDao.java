@@ -19,6 +19,8 @@ import java.util.Map;
 @NoRepositoryBean
 public interface GenericDao<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T>
 {
+    public T saveNotNull(T entity);
 
+    public  List<T> saveNotNullAll(Iterable<T> entities);
 }
 

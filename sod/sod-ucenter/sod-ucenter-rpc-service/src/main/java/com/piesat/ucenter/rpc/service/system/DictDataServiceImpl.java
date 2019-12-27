@@ -117,7 +117,7 @@ public class DictDataServiceImpl extends BaseService<DictDataEntity> implements 
     public DictDataDto insertDictData(DictDataDto dictData)
     {
         DictDataEntity dictDataEntity=dictDataMapstruct.toEntity(dictData);
-        dictDataEntity=this.save(dictDataEntity);
+        dictDataEntity=this.saveNotNull(dictDataEntity);
         return dictDataMapstruct.toDto(dictDataEntity);
     }
 
@@ -131,7 +131,7 @@ public class DictDataServiceImpl extends BaseService<DictDataEntity> implements 
     public DictDataDto updateDictData(DictDataDto dictData)
     {
         DictDataEntity dictDataEntity=dictDataMapstruct.toEntity(dictData);
-        dictDataEntity=this.save(dictDataEntity);
+        dictDataEntity=this.saveNotNull(dictDataEntity);
         return dictDataMapstruct.toDto(dictDataEntity);
     }
 

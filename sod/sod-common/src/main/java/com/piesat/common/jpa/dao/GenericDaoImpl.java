@@ -12,16 +12,14 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @program: sod
@@ -30,7 +28,6 @@ import java.util.Set;
  * @create: 2019-11-17 18:43
  **/
 @NoRepositoryBean
-@Data
 public class GenericDaoImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements GenericDao<T, ID>
 {
     protected static final Logger logger;
@@ -66,7 +63,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends SimpleJpaReposit
     /** 通用save方法 ：新增/选择性更新 */
     @Override
     @Transactional
-    public <S extends T> S save(S entity) {
+    public T saveNotNull(T entity) {
 
         // 获取ID
         ID entityId = (ID) this.entityInformation.getId(entity);
@@ -87,6 +84,20 @@ public class GenericDaoImpl<T, ID extends Serializable> extends SimpleJpaReposit
             }
         }
         return entity;
+    }
+    @Override
+    @Transactional
+    public  List<T> saveNotNullAll(Iterable<T> entities) {
+        Assert.notNull(entities, "The given Iterable of entities not be null!");
+        List<T> result = new ArrayList();
+        Iterator var3 = entities.iterator();
+
+        while(var3.hasNext()) {
+            T entity = (T) var3.next();
+            result.add(this.saveNotNull(entity));
+        }
+
+        return result;
     }
 
     /** 获取对象的空属性 */

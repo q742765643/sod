@@ -52,7 +52,7 @@ public class DefineServiceImpl extends BaseService<DefineEntity> implements Defi
     @Override
     public DefineDto saveDto(DefineDto defineDto) {
         DefineEntity defineEntity = this.defineMapstruct.toEntity(defineDto);
-        defineEntity = this.save(defineEntity);
+        defineEntity = this.saveNotNull(defineEntity);
         return this.defineMapstruct.toDto(defineEntity);
     }
 
@@ -64,7 +64,7 @@ public class DefineServiceImpl extends BaseService<DefineEntity> implements Defi
     @Override
     public DefineDto updateDefine(DefineDto defineDto) {
         DefineEntity defineEntity = this.defineMapstruct.toEntity(defineDto);
-        defineEntity = this.save(defineEntity);
+        defineEntity = this.saveNotNull(defineEntity);
         return this.defineMapstruct.toDto(defineEntity);
     }
 

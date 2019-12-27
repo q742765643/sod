@@ -179,7 +179,7 @@ public class DeptServiceImpl extends BaseService<DeptEntity> implements DeptServ
         if(null!=info){
             deptEntity.setAncestors(info.getAncestors() + "," + dept.getParentId());
         }
-        return deptMapstruct.toDto(this.save(deptEntity));
+        return deptMapstruct.toDto(this.saveNotNull(deptEntity));
     }
     /**
      * 新增保存部门信息
@@ -200,7 +200,7 @@ public class DeptServiceImpl extends BaseService<DeptEntity> implements DeptServ
             updateDeptChildren(dept.getId(), newAncestors, oldAncestors);
         }
         DeptEntity deptEntity=deptMapstruct.toEntity(dept);
-        return deptMapstruct.toDto(this.save(deptEntity));
+        return deptMapstruct.toDto(this.saveNotNull(deptEntity));
     }
     /**
      * 修改子元素关系
@@ -218,7 +218,7 @@ public class DeptServiceImpl extends BaseService<DeptEntity> implements DeptServ
         }
         if (children.size() > 0)
         {
-            this.save(children);
+            this.saveNotNull(children);
         }
     }
     /**

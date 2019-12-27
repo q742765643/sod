@@ -133,6 +133,18 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
 
     @Transactional(readOnly = false)
     @Override
+    public T saveNotNull(final T entity) {
+        return this.getGenericDao().saveNotNull(entity);
+    }
+
+    @Transactional(readOnly = false)
+    @Override
+    public List<T> saveNotNull(final Iterable<T> entities) {
+        return this.getGenericDao().saveNotNullAll(entities);
+    }
+
+    @Transactional(readOnly = false)
+    @Override
     public void delete(final ID id) {
         this.getGenericDao().deleteById( id);
     }

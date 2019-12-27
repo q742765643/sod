@@ -294,7 +294,7 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
     @Override
     public MenuDto insertMenu(MenuDto menu)
     {   MenuEntity menuEntity=menuMapstruct.toEntity(menu);
-        return menuMapstruct.toDto(this.save(menuEntity));
+        return menuMapstruct.toDto(this.saveNotNull(menuEntity));
     }
     /**
      * 根据菜单ID查询信息

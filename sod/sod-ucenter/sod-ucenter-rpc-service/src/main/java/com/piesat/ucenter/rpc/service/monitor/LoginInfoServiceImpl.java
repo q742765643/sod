@@ -47,7 +47,7 @@ public class LoginInfoServiceImpl extends BaseService<LoginInfoEntity> implement
     public void insertLogininfor(LoginInfoDto logininfor)
     {
         LoginInfoEntity loginInfoEntity=loginInfoMapstruct.toEntity(logininfor);
-        this.save(loginInfoEntity);
+        this.saveNotNull(loginInfoEntity);
 
     }
 

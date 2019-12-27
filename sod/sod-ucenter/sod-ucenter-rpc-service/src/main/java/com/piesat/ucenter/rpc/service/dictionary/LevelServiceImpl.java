@@ -56,7 +56,7 @@ public class LevelServiceImpl extends BaseService<LevelEntity> implements LevelS
         LevelEntity levelEntity = this.levelMapstruct.toEntity(levelDto);
         List<LevelEntity> deptEntities=levelMapper.selectLevelList(levelEntity);
         if(deptEntities.isEmpty()){
-            levelEntity = this.save(levelEntity);
+            levelEntity = this.saveNotNull(levelEntity);
         }
         return this.levelMapstruct.toDto(levelEntity);
     }
@@ -69,7 +69,7 @@ public class LevelServiceImpl extends BaseService<LevelEntity> implements LevelS
     @Override
     public LevelDto updateLevel(LevelDto levelDto) {
         LevelEntity levelEntity = this.levelMapstruct.toEntity(levelDto);
-        levelEntity = this.save(levelEntity);
+        levelEntity = this.saveNotNull(levelEntity);
         return this.levelMapstruct.toDto(levelEntity);
     }
 

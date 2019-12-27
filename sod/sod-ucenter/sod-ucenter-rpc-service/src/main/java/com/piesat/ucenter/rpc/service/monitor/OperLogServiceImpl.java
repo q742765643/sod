@@ -54,7 +54,7 @@ public class OperLogServiceImpl extends BaseService<OperLogEntity> implements Op
     public void insertOperlog(OperLogDto operLog)
     {
         OperLogEntity operLogEntity=operLogMapstruct.toEntity(operLog);
-        this.save(operLogEntity);
+        this.saveNotNull(operLogEntity);
     }
 
     /**

@@ -87,7 +87,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     {
         // 新增角色信息
         RoleEntity roleEntity=roleMapstruct.toEntity(role);
-        roleEntity=this.save(roleEntity);
+        roleEntity=this.saveNotNull(roleEntity);
         insertRoleMenu(roleEntity);
     }
     /**
@@ -109,7 +109,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
         }
         if (list.size() > 0)
         {
-            roleMenuDao.saveAll(list);
+            roleMenuDao.saveNotNullAll(list);
         }
     }
     /**
@@ -124,7 +124,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     {
         // 修改角色信息
         RoleEntity roleEntity=roleMapstruct.toEntity(role);
-        roleEntity=this.save(roleEntity);        // 删除角色与部门关联
+        roleEntity=this.saveNotNull(roleEntity);        // 删除角色与部门关联
         roleMenuDao.deleteByRoleId(roleEntity.getId());
         insertRoleMenu(roleEntity);
     }
@@ -204,7 +204,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     {
         RoleEntity roleEntity=roleMapstruct.toEntity(role);
         roleEntity.setStatus(role.getStatus());
-        roleEntity=this.save(roleEntity);
+        roleEntity=this.saveNotNull(roleEntity);
         return roleMapstruct.toDto(roleEntity);
     }
 

@@ -50,7 +50,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public UserDto saveUserDto(UserDto userDto){
         UserEntity userEntity= userMapstruct.toEntity(userDto);
-        userEntity=this.save(userEntity);
+        userEntity=this.saveNotNull(userEntity);
         userEntity= userMapper.selectByPrimaryKey("1");
         PageHelper.startPage(1,10);
         userMapper.selectByPrimaryKey("1");
@@ -113,7 +113,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         UserEntity userEntity=userMapstruct.toEntity(user);
         String password = new Md5Hash(userEntity.getPassword(),user.getUserName(),2).toString();
         userEntity.setPassword(password);
-        userEntity=this.save(userEntity);
+        userEntity=this.saveNotNull(userEntity);
         // 新增用户岗位关联
         //insertUserPost(user);
         // 新增用户与角色管理
@@ -140,7 +140,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             }
             if (list.size() > 0)
             {
-                userRoleDao.saveAll(list);
+                userRoleDao.saveNotNullAll(list);
             }
         }
     }
@@ -156,7 +156,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public void updateUser(UserDto user)
     {
         UserEntity userEntity=userMapstruct.toEntity(user);
-        userEntity=this.save(userEntity);
+        userEntity=this.saveNotNull(userEntity);
         String userId = user.getId();
         // 删除用户与角色关联
         userRoleDao.deleteByUserId(userId);
@@ -174,7 +174,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     {
         UserEntity userEntity=userMapstruct.toEntity(user);
         userEntity.setStatus(user.getStatus());
-        this.save(userEntity);
+        this.saveNotNull(userEntity);
     }
     /**
      * 批量删除用户信息
