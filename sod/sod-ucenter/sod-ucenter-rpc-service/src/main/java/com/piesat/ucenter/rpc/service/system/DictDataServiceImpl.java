@@ -53,7 +53,7 @@ public class DictDataServiceImpl extends BaseService<DictDataEntity> implements 
         List<DictDataEntity> dictDataEntities=dictDataMapper.selectDictDataList(dictDataEntity);
         PageInfo<DictDataEntity> pageInfo = new PageInfo<>(dictDataEntities);
         List<DictDataDto> userDtos= dictDataMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),userDtos);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),userDtos);
         return pageBean;
     }
     /**

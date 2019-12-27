@@ -66,6 +66,10 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         return jobInfoMapstruct.toDto(jobInfoEntities);
     }
     @Override
+    public Object getJobById(String id){
+        return this.getById(id);
+    }
+    @Override
     public List<DatabaseDto> findAllDataBase(){
         List<DatabaseDto> databaseDtos=databaseService.all();
         return databaseDtos;

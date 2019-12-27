@@ -1,5 +1,9 @@
 package com.piesat.schedule.rpc.thread;
 
+import com.alibaba.fastjson.JSON;
+import com.netflix.loadbalancer.ILoadBalancer;
+import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.Server;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
@@ -11,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
 
 /**
  * @program: sod
@@ -36,6 +43,7 @@ public class ScheduleThread {
     private static final String HTHT_LOCK="htht_lock";
     private static final String QUARTZ_HTHT_JOB="QUARTZ:HTHT:JOB";
     private static final String QUARTZ_HTHT_CRON="QUARTZ:HTHT:CRON:";
+    private static final String QUARTZ_HTHT_WAIT="QUARTZ:HTHT:WAIT";
     private Thread scheduleThread;
     private Thread reserveThread;
     private volatile static Map<Integer, List<JobInfoEntity>> ringData = new ConcurrentHashMap<>();
@@ -45,6 +53,8 @@ public class ScheduleThread {
     private RedisLock redisLock;
     @Autowired
     private JobInfoService jobInfoService;
+    @Autowired
+    private SpringClientFactory factory;
     public void start(){
         jobInfoService.init();
 
@@ -198,6 +208,16 @@ public class ScheduleThread {
         }
     }
     private void trigger(JobInfoEntity jobInfo){
+       /* ILoadBalancer lb =  factory.getLoadBalancer("dm-server"); //指定服务名
+        List<Server> allServers = lb.getAllServers();
+        List<Server> upServers = lb.getReachableServers();*/
+        JobInfoEntity newJob= (JobInfoEntity) jobInfoService.getJobById(jobInfo.getId());
+        newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
+        newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
+        redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,2);
+
+        /*Object objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, 0, 0);
+        JobInfoEntity job= (JobInfoEntity) objects;*/
         log.info("执行成功:"+jobInfo.getId());
 
     }

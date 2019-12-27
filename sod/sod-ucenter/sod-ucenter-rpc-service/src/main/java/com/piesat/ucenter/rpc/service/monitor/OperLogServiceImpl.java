@@ -71,7 +71,7 @@ public class OperLogServiceImpl extends BaseService<OperLogEntity> implements Op
         List<OperLogEntity> operLogEntities=operLogMapper.selectOperLogList(operLogEntity);
         PageInfo<OperLogEntity> pageInfo = new PageInfo<>(operLogEntities);
         List<OperLogDto> operLogDtos= operLogMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),operLogDtos);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),operLogDtos);
         return pageBean;
     }
 

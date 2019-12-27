@@ -59,7 +59,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
         List<RoleEntity> roleEntities=roleMapper.selectRoleList(roleEntity);
         PageInfo<RoleEntity> pageInfo = new PageInfo<>(roleEntities);
         List<RoleDto> roleDtos= roleMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPageSize(),roleDtos);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),roleDtos);
         return pageBean;
     }
     /**

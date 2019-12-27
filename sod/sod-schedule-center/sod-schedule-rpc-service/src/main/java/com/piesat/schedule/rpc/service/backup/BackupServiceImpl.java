@@ -80,8 +80,8 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     @Override
     public void saveBackup(BackUpDto backUpDto){
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
-        this.save(backupEntity);
-        jobInfoService.start(backUpDto);
+        backupEntity=this.save(backupEntity);
+        jobInfoService.start(backupMapstruct.toDto(backupEntity));
 
     }
     @Override
