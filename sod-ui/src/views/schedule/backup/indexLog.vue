@@ -115,7 +115,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['schedule:backupLog:query']"
-          >修改</el-button>
+          >查看</el-button>
           <el-button
             size="mini"
             type="text"
@@ -182,12 +182,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="应触发时间" prop="triggerTime" >
-              <el-input v-model="form.triggerTime" :formatter="statusFormat" />
+              <el-input v-model="form.triggerTime"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="实际触发时间" prop="handleTime" >
-              <el-input v-model="form.handleTime" :formatter="statusFormat" />
+              <el-input v-model="form.handleTime"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -206,6 +206,7 @@
 
 <script>
   import { listBackupLog, getBackupLog, delBackupLog } from "@/api/schedule/backup/backupLog";
+  import { formatDate } from "@/utils/index";
 
   export default {
     data() {
@@ -270,7 +271,7 @@
       },
       // 字典状态字典翻译
       statusFormat(row, column) {
-        return this.selectDictLabel(this.statusOptions, row.triggerStatus);
+        return this.selectDictLabel(this.statusOptions, row.handleCode);
       },
       // 取消按钮
       cancel() {
@@ -308,8 +309,10 @@
         const id = row.id || this.ids
         getBackupLog(id).then(response => {
           this.form = response.data;
+          this.form.triggerTime=formatDate(this.form.triggerTime)
+          this.form.handleTime=formatDate(this.form.handleTime)
           this.open = true;
-          this.title = "修改数据备份配置信息";
+          this.title = "查看数据备份日志信息";
         });
       },
       /** 删除按钮操作 */

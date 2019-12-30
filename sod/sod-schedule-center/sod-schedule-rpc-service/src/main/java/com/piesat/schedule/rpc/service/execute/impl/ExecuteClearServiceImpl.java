@@ -11,6 +11,8 @@ import com.piesat.schedule.rpc.service.execute.ExecuteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * @program: sod
  * @description:
@@ -31,6 +33,11 @@ public class ExecuteClearServiceImpl implements ExecuteService {
         ClearLogEntity clearLogEntity=clearToLogMapstruct.toEntity(clearEntity);
         clearLogEntity.setJobId(clearEntity.getId());
         clearLogEntity.setId(null);
+        clearLogEntity.setExecutorAddress("192.168.0.12:6000");
+        clearLogEntity.setHandleCode("0");
+        clearLogEntity.setTriggerTime(clearEntity.getTriggerLastTime());
+        clearLogEntity.setHandleTime(new Date());
+        clearLogEntity.setElapsedTime(10000);
         jobInfoLogService.saveNotNull(clearLogEntity);
     }
 

@@ -10,6 +10,8 @@ import com.piesat.schedule.rpc.service.execute.ExecuteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * @program: sod
  * @description:
@@ -31,6 +33,11 @@ public class ExecuteBackupServiceImpl implements ExecuteService {
         BackupLogEntity backupLogEntity=backupToLogMapstruct.toEntity(backupEntity);
         backupLogEntity.setJobId(backupEntity.getId());
         backupLogEntity.setId(null);
+        backupLogEntity.setExecutorAddress("192.168.0.12:6000");
+        backupLogEntity.setHandleCode("0");
+        backupLogEntity.setTriggerTime(backupEntity.getTriggerLastTime());
+        backupLogEntity.setHandleTime(new Date());
+        backupLogEntity.setElapsedTime(10000);
         jobInfoLogService.saveNotNull(backupLogEntity);
     }
 

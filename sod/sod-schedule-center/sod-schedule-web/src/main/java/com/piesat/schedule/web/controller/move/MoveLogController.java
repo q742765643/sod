@@ -50,7 +50,7 @@ public class MoveLogController {
 
     @RequiresPermissions("schedule:moveLog:remove")
     @Log(title = "迁移任务日志管理", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{moveIds}")
+    @DeleteMapping("/{moveLogIds}")
     public  ResultT<String> remove(@PathVariable String[] moveLogIds)
     {
         ResultT<String> resultT=new ResultT<>();

@@ -16,9 +16,9 @@
     <result column="VERSION" jdbcType="INTEGER" property="version" />
     <result column="ELAPSED_TIME" jdbcType="BIGINT" property="elapsedTime" />
     <result column="EXECUTOR_ADDRESS" jdbcType="VARCHAR" property="executorAddress" />
-    <result column="HANDLE_MSG" jdbcType="INTEGER" property="handleMsg" />
+    <result column="HANDLE_MSG" jdbcType="VARCHAR" property="handleMsg" />
     <result column="HANDLE_TIME" jdbcType="TIMESTAMP" property="handleTime" />
-    <result column="HANDLE_CODE" jdbcType="INTEGER" property="handleCode" />
+    <result column="HANDLE_CODE" jdbcType="VARCHAR" property="handleCode" />
     <result column="JOB_ID" jdbcType="VARCHAR" property="jobId" />
     <result column="TRIGGER_CODE" jdbcType="INTEGER" property="triggerCode" />
     <result column="TRIGGER_TIME" jdbcType="BIGINT" property="triggerTime" />

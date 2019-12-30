@@ -28,10 +28,10 @@ public class JobInfoLogEntity extends BaseEntity{
     private Integer triggerCode;
     @Column(name="handle_time")
     private Date handleTime;
-    @Column(name="handle_code")
-    private Integer handleCode;
-    @Column(name="handle_msg")
-    private Integer handleMsg;
+    @Column(name="handle_code",length = 1)
+    private String handleCode;
+    @Column(name="handle_msg", columnDefinition="CLOB")
+    private String handleMsg;
     @Column(name="elapsed_time")
     private long elapsedTime;
     @Transient

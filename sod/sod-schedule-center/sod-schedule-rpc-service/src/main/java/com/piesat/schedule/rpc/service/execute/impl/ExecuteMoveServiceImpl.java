@@ -10,6 +10,8 @@ import com.piesat.schedule.rpc.service.execute.ExecuteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * @program: sod
  * @description:
@@ -30,6 +32,11 @@ public class ExecuteMoveServiceImpl implements ExecuteService{
         MoveLogEntity moveLogEntity=moveToLogMapstruct.toEntity(moveEntity);
         moveLogEntity.setJobId(jobInfo.getId());
         moveLogEntity.setId(null);
+        moveLogEntity.setExecutorAddress("192.168.0.12:6000");
+        moveLogEntity.setHandleCode("0");
+        moveLogEntity.setTriggerTime(moveEntity.getTriggerLastTime());
+        moveLogEntity.setHandleTime(new Date());
+        moveLogEntity.setElapsedTime(10000);
         jobInfoLogService.saveNotNull(moveLogEntity);
     }
 

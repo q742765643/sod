@@ -230,22 +230,19 @@ public class ScheduleThread {
                 return;
             }
             newJob.setType(type);
-            if("1".equals(newJob.getIsRedo())){
-                JobInfoLogEntity jobInfoLogEntity=jobInfoLogService.selectMaxTriggerTimeByJobId(newJob.getId());
-                if(null!=jobInfoLogEntity){
-                    newJob.setTriggerLastTime(jobInfoLogEntity.getTriggerTime());
-                    if(1!=jobInfoLogEntity.getHandleCode()){
-                        //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-newJob.getTriggerLastTime());
-                        this.pushRedis(newJob);
-                    }
-                    while (newJob.getTriggerLastTime()<jobInfo.getTriggerLastTime()){
-                        //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-newJob.getTriggerLastTime());
-                        this.pushRedis(newJob);
-                    }
-
+       /*     JobInfoLogEntity jobInfoLogEntity=jobInfoLogService.selectMaxTriggerTimeByJobId(newJob.getId());
+            if(null!=jobInfoLogEntity){
+                newJob.setTriggerLastTime(jobInfoLogEntity.getTriggerTime());
+                if(!"1".equals(jobInfoLogEntity.getHandleCode())){
+                    //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-newJob.getTriggerLastTime());
+                    this.pushRedis(newJob);
+                }
+                while (newJob.getTriggerLastTime()<jobInfo.getTriggerLastTime()){
+                    //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-newJob.getTriggerLastTime());
+                    this.pushRedis(newJob);
                 }
 
-            }
+            }*/
             newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
             newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
             //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-jobInfo.getTriggerLastTime());

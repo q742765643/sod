@@ -46,7 +46,7 @@ public class SendThread {
                     j=0;
                     continue;
                 }
-                //this.execute(jobInfo);
+                this.execute(jobInfo);
                 i++;
                 j++;
             }else {

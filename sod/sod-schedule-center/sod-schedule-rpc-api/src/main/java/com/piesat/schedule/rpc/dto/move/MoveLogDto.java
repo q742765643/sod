@@ -24,6 +24,7 @@ public class MoveLogDto extends JobInfoLogDto{
     private String isClear;
     private long moveLimit;
     private String vTableName;
+    private long moveCount;
 
 }
 

@@ -36,6 +36,8 @@ public class ClearLogEntity extends JobInfoLogEntity {
     private long clearLimit;
     @Column(name="v_table_name", length=50)
     private String vTableName;
+    @Column(name="clear_count", length=50)
+    private long clearCount;
 
 
 }

@@ -46,6 +46,8 @@ public class MoveLogEntity extends JobInfoLogEntity {
     private long moveLimit;
     @Column(name="v_table_name", length=50)
     private String vTableName;
+    @Column(name="move_count", length=50)
+    private long moveCount;
 
 }
 

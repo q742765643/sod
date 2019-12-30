@@ -19,5 +19,7 @@ public class ClearLogDto extends JobInfoLogDto{
     private String conditions;
     private long clearLimit;
     private String vTableName;
+    private long clearCount;
+
 }
 

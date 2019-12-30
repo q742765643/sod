@@ -18,8 +18,8 @@ public class JobInfoLogDto extends BaseDto{
     private long triggerTime;
     private Integer triggerCode;
     private Date handleTime;
-    private Integer handleCode;
-    private Integer handleMsg;
+    private String handleCode;
+    private String handleMsg;
     private long elapsedTime;
 }
 
