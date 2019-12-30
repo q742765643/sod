@@ -1,5 +1,5 @@
 server:
-  port: 1237
+  port: 1238
   servlet:
       context-path: /
 tomcat:
@@ -11,26 +11,13 @@ tomcat:
 
 grpc:
   server:
-    port: 6000
-  client:
-    ucenter-server:
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-    dm-server:
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-    schedule-client-server:
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
+    port: 6005
 spring:
   #aop:
   #auto: true
   #proxy-target-class: true
   application:
-    name: schedule-server
+    name: schedule-client-server
   sleuth:
     sampler:
       probability: 1

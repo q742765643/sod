@@ -1,5 +1,7 @@
 package com.piesat.schedule.rpc.service.execute.impl;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
@@ -27,9 +29,12 @@ public class ExecuteClearServiceImpl implements ExecuteService {
     private ClearToLogMapstruct clearToLogMapstruct;
     @Autowired
     private JobInfoLogService jobInfoLogService;
+    @GrpcHthtClient
+    private ExecutorBiz executorBiz;
     @Override
     public void insertLog(JobInfoEntity jobInfo) {
-        ClearEntity clearEntity= (ClearEntity) jobInfo;
+        executorBiz.execute(jobInfo);
+        /*ClearEntity clearEntity= (ClearEntity) jobInfo;
         ClearLogEntity clearLogEntity=clearToLogMapstruct.toEntity(clearEntity);
         clearLogEntity.setJobId(clearEntity.getId());
         clearLogEntity.setId(null);
@@ -38,7 +43,7 @@ public class ExecuteClearServiceImpl implements ExecuteService {
         clearLogEntity.setTriggerTime(clearEntity.getTriggerLastTime());
         clearLogEntity.setHandleTime(new Date());
         clearLogEntity.setElapsedTime(10000);
-        jobInfoLogService.saveNotNull(clearLogEntity);
+        jobInfoLogService.saveNotNull(clearLogEntity);*/
     }
 
     @Override

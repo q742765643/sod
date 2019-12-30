@@ -1,5 +1,7 @@
 package com.piesat.schedule.rpc.service.execute.impl;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
@@ -26,9 +28,12 @@ public class ExecuteMoveServiceImpl implements ExecuteService{
     private MoveToLogMapstruct moveToLogMapstruct;
     @Autowired
     private JobInfoLogService jobInfoLogService;
+    @GrpcHthtClient
+    private ExecutorBiz executorBiz;
     @Override
     public void insertLog(JobInfoEntity jobInfo) {
-        MoveEntity moveEntity= (MoveEntity) jobInfo;
+        executorBiz.execute(jobInfo);
+       /* MoveEntity moveEntity= (MoveEntity) jobInfo;
         MoveLogEntity moveLogEntity=moveToLogMapstruct.toEntity(moveEntity);
         moveLogEntity.setJobId(jobInfo.getId());
         moveLogEntity.setId(null);
@@ -37,7 +42,7 @@ public class ExecuteMoveServiceImpl implements ExecuteService{
         moveLogEntity.setTriggerTime(moveEntity.getTriggerLastTime());
         moveLogEntity.setHandleTime(new Date());
         moveLogEntity.setElapsedTime(10000);
-        jobInfoLogService.saveNotNull(moveLogEntity);
+        jobInfoLogService.saveNotNull(moveLogEntity);*/
     }
 
     @Override
