@@ -1,7 +1,7 @@
 package com.piesat.schedule.entity.clear;
 
-import com.piesat.common.jpa.entity.BaseEntity;
 import com.piesat.schedule.entity.JobInfoEntity;
+import com.piesat.schedule.entity.JobInfoLogEntity;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,13 +13,13 @@ import javax.persistence.Table;
  * @program: sod
  * @description:
  * @author: zzj
- * @create: 2019-12-24 09:38
+ * @create: 2019-12-27 18:16
  **/
 @Data
 @Entity
-@Table(name="T_SOD_JOB_ClEAR_INFO")
+@Table(name="T_SOD_JOB_CLEAR_INFO_LOG")
 @DiscriminatorValue("CLEAR")
-public class ClearEntity extends JobInfoEntity{
+public class ClearLogEntity extends JobInfoLogEntity {
     @Column(name="database_id", length=50)
     private String databaseId;
     @Column(name="data_class_id", length=50)

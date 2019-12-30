@@ -69,7 +69,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends SimpleJpaReposit
         ID entityId = (ID) this.entityInformation.getId(entity);
         T managedEntity;
         T mergedEntity;
-        if (entityId == null) {
+        if (entityId == null||"".equals(entityId)) {
             em.persist(entity);
             mergedEntity = entity;
         } else {

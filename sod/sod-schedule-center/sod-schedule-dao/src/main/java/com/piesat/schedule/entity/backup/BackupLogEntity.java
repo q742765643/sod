@@ -1,7 +1,7 @@
-package com.piesat.schedule.entity.clear;
+package com.piesat.schedule.entity.backup;
 
-import com.piesat.common.jpa.entity.BaseEntity;
 import com.piesat.schedule.entity.JobInfoEntity;
+import com.piesat.schedule.entity.JobInfoLogEntity;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,13 +13,13 @@ import javax.persistence.Table;
  * @program: sod
  * @description:
  * @author: zzj
- * @create: 2019-12-24 09:38
+ * @create: 2019-12-27 15:00
  **/
 @Data
 @Entity
-@Table(name="T_SOD_JOB_ClEAR_INFO")
-@DiscriminatorValue("CLEAR")
-public class ClearEntity extends JobInfoEntity{
+@Table(name="T_SOD_JOB_BACKUP_INFO_LOG")
+@DiscriminatorValue("BACKUP")
+public class BackupLogEntity extends JobInfoLogEntity{
     @Column(name="database_id", length=50)
     private String databaseId;
     @Column(name="data_class_id", length=50)
@@ -28,15 +28,15 @@ public class ClearEntity extends JobInfoEntity{
     private String profileName;
     @Column(name="d_data_id", length=50)
     private String ddataId;
-    @Column(name="table_name", length=50)
-    private String tableName;
     @Column(name="conditions", length=255)
     private String conditions;
-    @Column(name="clear_limit", length=50)
-    private long clearLimit;
+    @Column(name="second_conditions", length=255)
+    private String secondConditions;
+    @Column(name="storage_directory", length=255)
+    private String storageDirectory;
+    @Column(name="table_name", length=50)
+    private String tableName;
     @Column(name="v_table_name", length=50)
     private String vTableName;
-
-
 }
 

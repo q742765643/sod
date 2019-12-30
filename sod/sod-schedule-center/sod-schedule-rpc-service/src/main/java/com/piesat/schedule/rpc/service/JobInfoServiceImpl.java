@@ -104,7 +104,10 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     public void init(){
         List<JobInfoDto> jobInfoDtos=this.findJobList();
         for(JobInfoDto jobInfoDto:jobInfoDtos){
-            redisUtil.set(QUARTZ_HTHT_CRON+jobInfoDto.getId(),jobInfoDto.getJobCron(),-1);
+            Map<String,Object> map=new HashMap<>();
+            map.put("type",jobInfoDto.getType());
+            map.put("cron",jobInfoDto.getJobCron());
+            redisUtil.hmset(QUARTZ_HTHT_CRON+jobInfoDto.getId(),map,-1);
             double score=0;
             if(!redisUtil.hasKey(QUARTZ_HTHT_JOB)){
                 score=0;
@@ -124,8 +127,10 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     @Override
     public void start(JobInfoDto jobInfoDto){
         if(jobInfoDto.getTriggerStatus()==1){
-            redisUtil.set(QUARTZ_HTHT_CRON+jobInfoDto.getId(),jobInfoDto.getJobCron(),-1);
-            double score=0;
+            Map<String,Object> map=new HashMap<>();
+            map.put("type",jobInfoDto.getType());
+            map.put("cron",jobInfoDto.getJobCron());
+            redisUtil.hmset(QUARTZ_HTHT_CRON+jobInfoDto.getId(),map,-1);            double score=0;
             if(!redisUtil.hasKey(QUARTZ_HTHT_JOB)){
                 score=0;
             }else{

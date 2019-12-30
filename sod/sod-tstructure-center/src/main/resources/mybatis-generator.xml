@@ -40,7 +40,7 @@
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <table tableName="T_SOD_JOB_INFO" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+        <table tableName="T_SOD_JOB_INFO_LOG" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
 
     </context>

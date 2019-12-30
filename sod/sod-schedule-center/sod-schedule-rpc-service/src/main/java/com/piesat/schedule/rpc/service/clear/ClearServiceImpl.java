@@ -80,13 +80,13 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     @Override
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
-        clearEntity=this.save(clearEntity);
+        clearEntity=this.saveNotNull(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
     }
     @Override
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
-        this.save(clearEntity);
+        this.saveNotNull(clearEntity);
         jobInfoService.start(clearDto);
 
     }

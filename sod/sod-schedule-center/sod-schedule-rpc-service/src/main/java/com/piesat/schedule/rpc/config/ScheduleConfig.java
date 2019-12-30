@@ -1,6 +1,7 @@
 package com.piesat.schedule.rpc.config;
 
 import com.piesat.schedule.rpc.thread.ScheduleThread;
+import com.piesat.schedule.rpc.thread.SendThread;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ScheduleConfig implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        scheduleThread.start();
+        //scheduleThread.start();
     }
 }
 
