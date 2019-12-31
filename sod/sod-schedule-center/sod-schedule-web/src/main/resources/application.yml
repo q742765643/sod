@@ -11,7 +11,7 @@ tomcat:
 
 grpc:
   server:
-    port: 6000
+    port: 6004
   client:
     ucenter-server:
       enableKeepAlive: true
