@@ -1,98 +1,1218 @@
 <template>
-  <div class="dashboard-editor-container">
+  <div class="home">
+    <section>
+      <!-- <div style="height:420px;"></div> -->
+      <el-carousel height="420px" trigger="click">
+        <el-carousel-item :key="index" v-for="(item, index) in bannerList">
+          <img :src="item.src" />
+        </el-carousel-item>
+      </el-carousel>
+    </section>
+    <section>
+      <el-row class="row-bg" justify="space-between" type="flex">
+        <el-col :span="16" class="leftCol elcol">
+          <span class="homeTitle">资料分类统计</span>
+          <div class="handleChart">
+            <el-button :type="classType" @click="classBarInit" size="small">按资料分类</el-button>
+            <el-button :type="DBType" @click="DBBarInit" size="small">按数据库分类</el-button>
+          </div>
+          <div class="chartsBox" id="dataCLassfication"></div>
+        </el-col>
+        <el-col :span="8" class="rightCol elcol">
+          <span class="homeTitle">待办提醒</span>
+          <div class="eventBox">
+            <div
+              :key="index"
+              @click="goPageUrl(item.name)"
+              class="eventList"
+              v-for="(item, index) in eventList"
+            >
+              <i class="el-icon-price-tag"></i>
+              <span class="name">{{ item.name }}</span>，待办
+              <span class="todoNum">{{ item.notDone }}</span>条，已办理
+              <span class="haveTodoNum">{{ item.alreadyDone }}</span>条
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </section>
+    <section style="background:#fff;padding-bottom:20px;">
+      <span class="homeTitle">存储管理</span>
+      <!-- v-for="r in 5" :key="r" -->
+      <el-row :gutter="20" class="storageRow">
+        <el-col :key="index" :span="8" v-for="(item, index) in pieBox">
+          <el-card class="box-card">
+            <div class="clearfix" slot="header">
+              <span>{{ item.logic_name }}</span>
+            </div>
+            <div class="cardBody">
+              <div :id="pieId(index)" class="pieBox"></div>
+              <div class="progressBox">
+                <span class="name">{{ item.database_name }}</span>
+                <el-progress
+                  :percentage="
+                    item.used_capacity == undefined
+                      ? 0
+                      : Number(
+                          (
+                            (Number(item.used_capacity) /
+                              Number(item.total_capacity)) *
+                            100
+                          ).toFixed(2)
+                        )
+                  "
+                  :stroke-width="16"
+                  :text-inside="true"
+                  color="#ffc739"
+                ></el-progress>
+                <br />
+                <span class="name name2" v-if="item.database_name2">
+                  {{
+                  item.database_name2
+                  }}
+                </span>
+                <el-progress
+                  :percentage="
+                    item.used_capacity2 == undefined
+                      ? 0
+                      : Number(
+                          (
+                            (Number(item.used_capacity2) /
+                              Number(item.total_capacity2)) *
+                            100
+                          ).toFixed(2)
+                        )
+                  "
+                  :stroke-width="16"
+                  :text-inside="true"
+                  color="#22bfcb"
+                  v-if="item.database_name2"
+                ></el-progress>
+              </div>
+            </div>
+            <div class="cardFooter">
+              <div class="storageInfo">
+                <i class="el-icon-receiving"></i>
+                <p class="name">总容量</p>
+                <span class="num" v-if="item.database_name2">
+                  {{
+                  item.total_capacity == undefined
+                  ? "0"
+                  : Number(item.total_capacity) +
+                  Number(item.total_capacity2)
+                  }}TB
+                </span>
+                <span class="num" v-else>
+                  {{
+                  item.total_capacity == undefined
+                  ? "0"
+                  : item.total_capacity
+                  }}TB
+                </span>
+              </div>
+              <div class="storageInfo">
+                <i class="el-icon-bangzhu"></i>
+                <p class="name">已使用</p>
+                <span class="num" v-if="item.database_name2">
+                  {{
+                  item.used_capacity == undefined
+                  ? "0"
+                  : Number(item.used_capacity) +
+                  Number(item.used_capacity2)
+                  }}TB
+                </span>
+                <span class="num" v-else>
+                  {{
+                  item.used_capacity == undefined ? "0" : item.used_capacity
+                  }}TB
+                </span>
+              </div>
+              <div class="storageInfo">
+                <i class="el-icon-odometer"></i>
+                <p class="name">剩余</p>
+                <span class="num" v-if="item.database_name2">
+                  {{
+                  item.total_capacity == undefined
+                  ? "0"
+                  : Number(item.total_capacity) +
+                  Number(item.total_capacity2) -
+                  (Number(item.used_capacity) +
+                  Number(item.used_capacity2))
+                  }}TB
+                </span>
+                <span class="num" v-else>
+                  {{
+                  item.total_capacity == undefined
+                  ? "0"
+                  : item.total_capacity - item.used_capacity
+                  }}TB
+                </span>
+              </div>
+              <div class="storageInfo">
+                <i class="el-icon-tickets"></i>
+                <p class="name">存储资料</p>
+                <span class="num" v-if="item.database_name2">
+                  {{
+                  item.NUM == undefined
+                  ? "0"
+                  : Number(item.NUM) + Number(item.NUM2)
+                  }}种
+                </span>
+                <span class="num" v-else>{{ item.NUM == undefined ? "0" : item.NUM }}种</span>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </section>
+    <section style="background:#fff;">
+      <span class="homeTitle">专题库</span>
 
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+      <el-row :gutter="20" class="projiectRow">
+        <el-col :key="index" :span="6" v-for="(item, index) in projectLibraryList">
+          <div :class="'project' + index">
+            <span>{{ "信息中心" }}</span>
+            <p>{{ item.tdb_name }}</p>
+          </div>
+        </el-col>
+      </el-row>
+    </section>
 
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
-    </el-row>
+    <section>
+      <el-row class="row-bg">
+        <el-col :span="24" class="leftCol elcol">
+          <span class="homeTitle">资料种类统计</span>
 
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
-        </div>
-      </el-col>
-    </el-row>
-
-    
+          <div class="chartsBox" id="lineChart"></div>
+        </el-col>
+        <!-- <el-col :span="8" class="rightCol elcol">
+          <span class="homeTitle">帮助文档</span>
+          <div class="documentBox">
+            <div class="documentList" v-for="(item,index) in documentList" :key="index">
+              <span class="round"></span>
+              <span
+                class="name"
+                :title="item.file_name"
+              >{{item.file_type == 'dev'?'[开发文档] ':'[运维文档] '}}{{item.file_name}}</span>
+              <el-link
+                type="primary"
+                @click="downloadWord(item.file_stor_path+'/'+item.file_stor_name)"
+              >[下载]</el-link>
+            </div>
+          </div>
+        </el-col>-->
+      </el-row>
+    </section>
+    <section>
+      <el-row class="row-bg">
+        <el-col :span="24" class="leftCol elcol">
+          <span class="homeTitle">接口统计</span>
+          <div class="charTooles">
+            <span>
+              时间：
+              <el-date-picker
+                :picker-options="pickerOptions"
+                @change="interfaceClassify"
+                end-placeholder="结束日期"
+                range-separator="至"
+                start-placeholder="开始日期"
+                type="datetimerange"
+                v-model="selectData"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              ></el-date-picker>
+            </span>
+            <span>资料分类 :</span>
+            <span class="sourceClassifyClass">
+              <el-select @change="interfaceClassify" placeholder="请选择" v-model="selectClassify">
+                <el-option
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.key"
+                  v-for="item in sourceClassify"
+                ></el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="chartsBox" id="interfaceChart"></div>
+        </el-col>
+      </el-row>
+    </section>
+    <div class="footer">
+      <p>
+        <span style="font-weight: bold;">相关链接：</span>
+        <a href="http://www.cma.gov.cn/" target="_blank">中国气象局政府网</a> |
+        <a href="http://10.1.65.66/pub/cmahead/nmsy/index.html" target="_blank">综合管理信息系统</a>
+        |
+        <a href="http://data.cma.cn/" target="_blank">中国气象数据网</a> |
+        <a href="http://www.weather.com.cn/" target="_blank">中国天气网</a> |
+        <a href="http://www.cmastd.cn/" target="_blank">中国气象标准化网</a>
+      </p>
+      <p>版权所有 © 2018-2020 国家气象局信息中心</p>
+    </div>
+    <!-- <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop> -->
   </div>
 </template>
 
 <script>
-import PanelGroup from './dashboard/PanelGroup'
-import LineChart from './dashboard/LineChart'
-import RaddarChart from './dashboard/RaddarChart'
-import PieChart from './dashboard/PieChart'
-import BarChart from './dashboard/BarChart'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
-
+// import { interfaceObj } from "@/urlConfig.js";
+import { testExport } from "@/components/commonVaildate.js";
+var echarts = require("echarts");
 export default {
-  name: 'Index',
-  components: {
-    PanelGroup,
-    LineChart,
-    RaddarChart,
-    PieChart,
-    BarChart
-  },
+  name: "home",
+  components: {},
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      classType: "primary",
+      DBType: "",
+      bannerList: [
+        {
+          index: 1,
+          src: require("../assets/home/images/banner1.gif")
+        },
+        {
+          index: 2,
+          src: require("../assets/home/images/banner2.gif")
+        },
+        {
+          index: 3,
+          src: require("../assets/home/images/banner3.gif")
+        },
+        {
+          index: 4,
+          src: require("../assets/home/images/banner4.gif")
+        }
+      ],
+      // 代办提醒
+      eventList: [
+        { name: "新增资料审核", alreadyDone: 0, notDone: 0 },
+        // { name: '数据授权审核', alreadyDone: 0, notDone: 0 },
+        { name: "数据库账户审核", alreadyDone: 0, notDone: 0 },
+        { name: "业务专题库审核", alreadyDone: 0, notDone: 0 },
+        { name: "云数据库审核", alreadyDone: 0, notDone: 0 }
+      ],
+      // 饼图
+      pieBox: [],
+      // 专题库
+      projectLibraryList: [],
+      // 帮助文档
+      documentList: [],
+      selectData: [], //选中的时间
+      selectClassify: "SURF", //选中的分类
+      sourceClassify: [
+        { key: "SURF", name: "地面资料" },
+        { key: "UPAR", name: "高空资料" },
+        { key: "OCEN", name: "海洋资料" },
+        { key: "RADI", name: "辐射资料" },
+        { key: "AGME", name: "农气资料" },
+        { key: "NAFP", name: "数值模式" },
+        { key: "CAWN", name: "大气成分" },
+        { key: "DISA", name: "气象灾害" },
+        { key: "RADA", name: "雷达资料" },
+        { key: "SATE", name: "卫星资料" },
+        { key: "SEVP", name: "服务产品" },
+        { key: "OTHER", name: "其他资料" }
+      ], //资料分类
+      pickerOptions: {
+        //不可选择当天以后的时间
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
+      interfaceData: [] //获取到的接口数据
+    };
+  },
+  mounted() {
+    /*//资料分类
+    this.drawBarChartClass();
+    // 资料种类统计
+    this.drawLineChart();
+    //接口统计
+    this.interfaceClassify();*/
+  },
+  created() {
+    this.getEventList();
+    // this.getHelpDocument();
+    this.getPieBox();
+    this.queryCheckList();
+  },
+  watch: {
+    pieBox: function() {
+      this.$nextTick(function() {
+        /*现在数据已经渲染完毕*/
+        this.drawPies();
+      });
     }
   },
   methods: {
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+    // 代办提醒
+    getEventList() {
+      this.axios.get(interfaceObj.getUpcomingDataJson).then(res => {
+        let data = res.data.data;
+        this.eventList[0].alreadyDone = data.xzzl.alreadyDone;
+        this.eventList[0].notDone = data.xzzl.notDone;
+
+        // this.eventList[1].alreadyDone = data.sjsq.alreadyDone;
+        // this.eventList[1].notDone = data.sjsq.notAgency;
+
+        this.eventList[1].alreadyDone = data.sjzh.alreadyDone;
+        this.eventList[1].notDone = data.sjzh.notDone;
+
+        this.eventList[2].alreadyDone = data.ywzt.alreadyDone;
+        this.eventList[2].notDone = data.ywzt.notAgency;
+
+        this.eventList[3].alreadyDone = data.ysjk.alreadyDone;
+        this.eventList[3].notDone = data.ysjk.notDone;
+      });
+    },
+    // 代办跳页
+    goPageUrl(name) {
+      if (name == "新增资料审核") {
+        this.$router.push("/DRegistrationAudit");
+      } else if (name == "数据授权审核") {
+        this.$router.push({
+          name: "资料访问权限审核",
+          params: { status: "01" }
+        });
+      } else if (name == "数据库账户审核") {
+        this.$router.push({ name: "数据库访问账户", params: { status: "0" } });
+      } else if (name == "业务专题库审核") {
+        this.$router.push({
+          name: "专题库审核",
+          params: { status: "1" }
+        });
+      } else if (name == "云数据库审核") {
+        this.$router.push({ name: "云数据库审核", params: { status: "01" } });
+      }
+    },
+    // 按资料分类的chart
+    drawBarChartClass() {
+      this.axios.get(interfaceObj.getCountDataJson).then(res => {
+        let dataNumChart = res.data.data.dataNum;
+        let dataTypeChart = res.data.data.dataType;
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(
+          document.getElementById("dataCLassfication")
+        );
+        // 绘制图表
+        myChart.setOption({
+          title: {
+            text: "气象资料种类统计",
+            left: "center",
+            textStyle: {
+              fontSize: 14,
+              fontWeight: "normal"
+            }
+          },
+          tooltip: {
+            trigger: "axis"
+          },
+          color: ["#058ae5"],
+          calculable: true,
+          yAxis: [
+            {
+              name: "单位: 种",
+              nameRotate: 90,
+              nameGap: 50,
+              nameLocation: "middle",
+              type: "value",
+              axisLabel: {
+                formatter: "{value}"
+              },
+              boundaryGap: [0, 0.01]
+            }
+          ],
+          xAxis: [
+            {
+              type: "category",
+              data: dataTypeChart,
+              axisLabel: {
+                interval: 0,
+                rotate: 40
+              }
+            }
+          ],
+          series: [
+            {
+              name: "总计",
+              type: "bar",
+              barWidth: 20,
+              data: dataNumChart,
+              itemStyle: {
+                normal: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "#21bd69"
+                    },
+                    {
+                      offset: 1,
+                      color: "#1561d1"
+                    }
+                  ])
+                }
+              },
+              label: {
+                normal: {
+                  show: false
+                }
+              }
+            }
+          ]
+        });
+      });
+    },
+    // 数据库分类
+    drawDBchart() {
+      this.axios.get(interfaceObj.getDatabaseGroup).then(res => {
+        let data = res.data.data;
+        var myChart = echarts.init(
+          document.getElementById("dataCLassfication")
+        );
+        myChart.setOption({
+          title: {
+            text: "数据库资料种数统计",
+            left: "center",
+            textStyle: {
+              fontSize: 14,
+              fontWeight: "normal"
+            }
+          },
+          tooltip: {
+            trigger: "axis"
+          },
+          color: ["#1fbf86"],
+          calculable: true,
+          yAxis: [
+            {
+              name: "单位: 种",
+              nameRotate: 90,
+              nameLocation: "middle",
+              nameGap: 50,
+              type: "value",
+              axisLabel: {
+                formatter: "{value}"
+              },
+              boundaryGap: [0, 0.01]
+            }
+          ],
+          xAxis: [
+            {
+              type: "category",
+              data: data["physicsName"],
+              nameRotate: 90,
+              axisLabel: {
+                interval: 0,
+                rotate: 40,
+                textStyle: { fontSize: 10 }
+              }
+            }
+          ],
+          series: [
+            {
+              type: "bar",
+              barWidth: 20,
+              data: data["physicsNum"],
+              itemStyle: {
+                normal: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "#21bd69"
+                    },
+                    {
+                      offset: 1,
+                      color: "#1561d1"
+                    }
+                  ])
+                }
+              },
+              label: {
+                normal: {
+                  show: false
+                }
+              }
+            }
+          ]
+        });
+      });
+    },
+    // chart切换
+    classBarInit() {
+      if (this.classType != "primary") {
+        this.classType = "primary";
+        this.DBType = "";
+        this.drawBarChartClass();
+      }
+    },
+    DBBarInit() {
+      if (this.DBType != "primary") {
+        this.classType = "";
+        this.DBType = "primary";
+        this.drawDBchart();
+      }
+    },
+    // 动态绑定ID
+    pieId: function(index) {
+      return "pieId" + index;
+    },
+    // 饼图box
+    getPieBox() {
+      this.axios.get(interfaceObj.queryLogicPhysicsInfos).then(res => {
+        let piedata = res.data.data;
+        let RepeatArry = [];
+        for (var i = 0; i < piedata.length; i++) {
+          for (var j = i + 1; j < piedata.length; j++) {
+            if (piedata[i].logic_name == piedata[j].logic_name) {
+              RepeatArry.push(piedata[j]);
+              // 名称
+              piedata[i].database_name2 = piedata[j].database_name;
+              // 总量
+              piedata[i].total_capacity2 = Number(
+                piedata[j].total_capacity == undefined
+                  ? 0
+                  : piedata[j].total_capacity
+              );
+              piedata[i].used_capacity2 = Number(
+                piedata[j].used_capacity == undefined
+                  ? 0
+                  : piedata[j].used_capacity
+              );
+              piedata[i].NUM2 = Number(
+                piedata[j].NUM == undefined ? 0 : piedata[j].NUM
+              );
+
+              piedata.splice(j, 1);
+              j--;
+            }
+          }
+        }
+        this.pieBox = piedata;
+      });
+    },
+    // 饼图
+    drawPies() {
+      var option = {
+        tooltip: {
+          trigger: "item",
+          // formatter: "{a} <br/>{b}: {c}TB ({d}%)",
+          formatter: function(msg) {
+            // debugger
+            var data = msg;
+            if ((data.name = "")) {
+              return (
+                "数值 <br/>非结构化数据库 : " +
+                data.value +
+                "TB(" +
+                data.percent +
+                "%)"
+              );
+            } else {
+              return (
+                "数值 <br/>结构化数据库 : " +
+                data.value +
+                "TB(" +
+                data.percent +
+                "%)"
+              );
+            }
+          },
+          position: function(point, params, dom, rect, size) {
+            //其中point为当前鼠标的位置，size中有两个属性：viewSize和contentSize，分别为外层div和tooltip提示框的大小
+            var x = point[0]; //
+            var y = point[1];
+            var viewWidth = size.viewSize[0];
+            var viewHeight = size.viewSize[1];
+            var boxWidth = size.contentSize[0];
+            var boxHeight = size.contentSize[1];
+            var posX = 0; //x坐标位置
+            var posY = 0; //y坐标位置
+
+            if (x < boxWidth) {
+              //左边放不开
+              posX = 5;
+            } else {
+              //左边放的下
+              posX = x - boxWidth;
+            }
+
+            if (y < boxHeight) {
+              //上边放不开
+              posY = 5;
+            } else {
+              //上边放得下
+              posY = y - boxHeight;
+            }
+            return [posX, posY];
+          }
+        },
+        grid: {
+          width: "auto",
+          height: "auto"
+        },
+        color: ["#ffc739", "#22bfcb", "#76da77"],
+        series: [
+          {
+            name: "数值",
+            type: "pie",
+            center: ["40%", "50%"],
+            radius: ["50%", "70%"],
+            data: [{ value: 310, name: "DRC" }, { value: 635, name: "NAS" }],
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            },
+            label: {
+              normal: {
+                show: false,
+                position: "inner", // 设置标签位置，默认在饼状图外 可选值：'outer' ¦ 'inner（饼状图上）'
+                // formatter: '{a} {b} : {c}个 ({d}%)'   设置标签显示内容 ，默认显示{b}
+                // {a}指series.name  {b}指series.data的name
+                // {c}指series.data的value  {d}%指这一部分占总数的百分比
+                formatter: "{b}"
+              }
+            }
+          }
+        ]
+      };
+
+      for (let i = 0; i < this.pieBox.length; i++) {
+        var pieDom = document.getElementById("pieId" + i);
+        var pieChart = echarts.init(pieDom);
+        var pieList = [];
+        if (this.pieBox[i].database_name2) {
+          pieList.push(
+            {
+              value: this.pieBox[i].total_capacity,
+              name: this.pieBox[i].logic_name
+            },
+            {
+              value: this.pieBox[i].total_capacity2,
+              name: this.pieBox[i].logic_name2
+            }
+          );
+        } else {
+          pieList.push({
+            value:
+              this.pieBox[i].total_capacity == undefined
+                ? 0
+                : this.pieBox[i].total_capacity,
+            name: this.pieBox[i].logic_name
+          });
+        }
+        option.series[0].data = pieList;
+        pieChart.setOption(option, true);
+      }
+    },
+    // 获取专题库
+    queryCheckList() {
+      this.axios.get(interfaceObj.queryCheckList).then(res => {
+        this.projectLibraryList = res.data.data;
+      });
+    },
+    // 资料种类统计
+    drawLineChart() {
+      this.axios.get(interfaceObj.getCountDataByMonth).then(res => {
+        let numData = res.data.data.numData;
+        let monthData = res.data.data.monthData;
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById("lineChart"));
+        // 绘制图表
+        myChart.setOption({
+          title: {
+            text: "存储管理资料总数月统计",
+            // subtext: date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + '-' + now.getFullYear() + '年' + (now.getMonth() + 1) + '月',
+            left: "center",
+            textStyle: {
+              fontSize: 14,
+              fontWeight: "normal"
+            }
+          },
+          tooltip: {
+            trigger: "axis"
+          },
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            //轴字体颜色
+            axisLabel: {
+              color: "#50697a"
+            },
+            //轴不显示
+            axisLine: {
+              show: false
+            },
+            //分隔线不显示
+            splitLine: {
+              show: false
+            },
+            //轴上的分隔线
+            axisTick: {
+              show: false
+            },
+            data: monthData
+          },
+          yAxis: {
+            name: "单位: 种",
+            nameRotate: 90,
+            nameLocation: "middle",
+            nameGap: 50,
+            axisLabel: {
+              color: "#50697a"
+            },
+            axisLine: {
+              show: false
+            },
+            //轴上的分隔线
+            axisTick: {
+              show: false
+            },
+            type: "value"
+          },
+          series: [
+            {
+              name: "总计",
+              type: "line",
+              color: "#21cecf",
+              data: numData,
+              label: {
+                normal: {
+                  show: false
+                }
+              },
+              lineStyle: {
+                color: "#21cecf"
+              },
+              smooth: true,
+              areaStyle: {
+                normal: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0,
+                      color: "#80e2e2"
+                    },
+                    {
+                      offset: 1,
+                      color: "#ffe"
+                    }
+                  ])
+                }
+              }
+            }
+          ]
+        });
+      });
+    },
+    // 帮助文档
+    getHelpDocument() {
+      this.axios.get(interfaceObj.getFileList).then(res => {
+        this.documentList = res.data.data;
+      });
+    },
+    // 下载
+    downloadWord(name) {
+      this.axios
+        .get(interfaceObj.download + "?filepath=" + name)
+        .then(data => {
+          testExport(interfaceObj.download + "?filepath=" + name);
+        })
+        .catch(function(error) {
+          testExport(interfaceObj.download + "?filepath=" + name);
+        });
+    },
+    //接口统计
+    interfaceClassify() {
+      let params = {};
+      if (this.selectData == null) {
+        params.dataclass = this.selectClassify;
+      } else {
+        params.starttime =
+          this.selectData.length == 0 ? "" : this.selectData[0];
+        params.endtime = this.selectData.length == 0 ? "" : this.selectData[1];
+        params.dataclass = this.selectClassify;
+      }
+      this.axios
+        .get(interfaceObj.interfaceStatistics, { params })
+        .then(({ data }) => {
+          if (data.returnCode == 0) {
+            const resData = data.data;
+            this.interfaceData = resData;
+            let xAxisArr = [],
+              seriesDataArr = [];
+            resData.forEach(item => {
+              xAxisArr.push(item.interfaceid);
+              seriesDataArr.push(item.count);
+            });
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(
+              document.getElementById("interfaceChart")
+            );
+            // 绘制图表
+            myChart.setOption({
+              title: {
+                text: "接口访问数量统计",
+                left: "center",
+                textStyle: {
+                  fontSize: 14,
+                  fontWeight: "normal"
+                }
+              },
+              tooltip: {
+                trigger: "axis",
+                axisPointer: {
+                  // 坐标轴指示器，坐标轴触发有效
+                  type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+                },
+                padding: 10,
+                backgroundColor: "#222",
+                borderColor: "#777",
+                borderWidth: 1,
+                formatter: obj => {
+                  let interfaceInfo = this.getInterfaceInfo(obj[0].name);
+                  return (
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
+                    obj[0].name +
+                    '</div>访问次数：<span style="font-weight:bold;color:#0db9dd;font-size:15px;">' +
+                    obj[0].value +
+                    '次</span><br>接口描述：<span style="font-weight:bold;color:#0db9dd;font-size:15px;">' +
+                    interfaceInfo +
+                    "</span>"
+                  );
+                }
+              },
+              color: ["#058ae5"],
+              calculable: true,
+              yAxis: [
+                {
+                  name: "单位: 次数",
+                  nameRotate: 90,
+                  nameGap: 50,
+                  nameLocation: "middle",
+                  type: "value",
+                  axisLabel: {
+                    formatter: "{value}"
+                  },
+                  boundaryGap: [0, 0.01],
+                  minInterval: 1
+                }
+              ],
+              xAxis: [
+                {
+                  type: "category",
+                  data: xAxisArr,
+                  axisLabel: {
+                    interval: 0,
+                    rotate: 40
+                  },
+                  show: false
+                }
+              ],
+              series: [
+                {
+                  name: "访问次数",
+                  type: "bar",
+                  barWidth: "60%",
+                  data: seriesDataArr
+                }
+              ]
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: data.returnMessage
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    //获取接口详细信息
+    getInterfaceInfo(name) {
+      let interfacename = "";
+      this.interfaceData.find(item => {
+        if (item.interfaceid == name) {
+          interfacename = item.interfacename;
+        }
+      });
+      return interfacename;
+    }
+  }
+};
+</script>
+<style lang="scss" scoped>
+section {
+  width: 1200px;
+  margin: auto;
+  margin-top: 20px;
+}
+.home {
+  min-width: 1200px;
+  width: 100%;
+}
+.el-carousel--horizontal {
+  overflow: hidden;
+}
+.elcol {
+  background: #fff;
+  position: relative;
+}
+.leftCol {
+  margin-right: 20px;
+  padding-bottom: 20px;
+}
+.homeTitle {
+  color: #373d41;
+  line-height: 40px;
+  font-size: 15px;
+  font-weight: bold;
+  border-left: 3px solid #1ac3fb;
+  margin-left: 20px;
+  padding-left: 20px;
+}
+.eventBox {
+  width: 98%;
+  margin: auto;
+  border-top: solid 1px #ebebeb;
+}
+.eventList {
+  text-indent: 7px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  height: 40px;
+  line-height: 40px;
+  background: #f5f5f5;
+  margin-top: 10px;
+  i {
+    padding-right: 6px;
+  }
+}
+.todoNum,
+.haveTodoNum {
+  font-size: 14px;
+  padding: 2px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  border-radius: 50%;
+  display: inline-block;
+  text-indent: 0;
+}
+.todoNum {
+  color: #f79d29;
+  background: #fee4c1;
+}
+.haveTodoNum {
+  color: #ed7960;
+  background: #f8d1c9;
+}
+.chartsBox {
+  width: 100%;
+}
+#dataCLassfication,
+#DBChart,
+#lineChart,
+#interfaceChart {
+  height: 350px;
+}
+.handleChart {
+  float: right;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+.projiectRow {
+  padding: 0 10px;
+  .el-col {
+    div {
+      // background: url(~@/assets/home/images/topicInfo.png) no-repeat 10px center;
+      border-radius: 6px;
+      height: 72px;
+      background-color: #409eff;
+      margin-bottom: 12px;
+      padding-right: 4px;
+      span,
+      p {
+        display: block;
+        width: 100%;
+        text-align: right;
+        color: #fff;
+        font-size: 16px;
+        padding-top: 5px;
+      }
+      span {
+        padding-top: 12px;
+      }
     }
   }
 }
-</script>
 
-<style lang="scss" scoped>
-.dashboard-editor-container {
-  padding: 32px;
-  background-color: rgb(240, 242, 245);
+.project0 {
+  background-color: #fb6e52 !important;
+}
+.project1 {
+  background-color: #ffc655 !important;
+}
+.project2 {
+  background-color: #409eff !important;
+}
+.project3 {
+  background-color: #67c23a !important;
+}
+.project4 {
+  background-color: #37d6b7 !important;
+}
+.project5 {
+  background-color: #a8da28 !important;
+}
+.documentBox {
+  width: 89%;
+  margin: auto;
+  margin-top: 12px;
+}
+.documentList {
+  font-size: 14px;
+  cursor: pointer;
+  list-style: disc outside none;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  .name {
+    width: calc(100% - 100px);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    margin-right: 42px;
+  }
+}
+.round {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #333;
+  margin-right: 12px;
+}
+.footer {
+  width: 100%;
+  height: 120px;
+  background-color: #f2f2f2;
+  padding-top: 36px;
+  margin-top: 20px;
+  color: #333;
+  p {
+    font: 12px "宋体";
+    text-align: center;
+    padding-bottom: 10px;
+  }
+  a {
+    color: #4a4a4a;
+    font: 12px "宋体";
+  }
+}
+.storageRow {
+  padding: 10px 15px 0 15px;
+}
+.cardBody,
+.cardFooter {
+  display: flex;
   position: relative;
-
-  .chart-wrapper {
-    background: #fff;
-    padding: 16px 16px 0;
-    margin-bottom: 32px;
+}
+.cardFooter {
+  padding-top: 10px;
+}
+.cardFooter:before {
+  content: "";
+  position: absolute;
+  width: calc(100% + 40px);
+  height: 1px;
+  background: #ebeef5;
+  top: 0;
+  left: -20px;
+}
+.pieBox {
+  width: 56%;
+  height: 200px;
+}
+.progressBox {
+  width: 44%;
+  .name {
+    font-size: 13px;
+    position: relative;
+    padding-left: 18px;
+  }
+  .name:before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    display: inline-grid;
+    background: #ffc739;
+    left: 0px;
+    position: absolute;
+    top: 2px;
+  }
+  .name2:before {
+    background: #22bfcb;
+  }
+}
+.storageInfo {
+  width: 25%;
+  text-align: center;
+  border-right: 1px solid #ebeef5;
+  i {
+    font-size: 36px;
+  }
+  .name {
+    color: #323232;
+    font-size: 12px;
+    padding: 2px 0 2px 0;
+  }
+  .num {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+}
+.cardFooter .storageInfo:nth-child(1) {
+  color: #49a7f7;
+}
+.cardFooter .storageInfo:nth-child(2) {
+  color: #fac94e;
+}
+.cardFooter .storageInfo:nth-child(3) {
+  color: #82d983;
+}
+.cardFooter .storageInfo:nth-child(4) {
+  color: #b3a9f8;
+  border: none;
+}
+.el-progress-bar__innerText {
+  margin-top: 1px;
+  vertical-align: top;
+}
+.box-card {
+  margin-bottom: 22px;
+}
+.charTooles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  & > span {
+    margin-left: 10px;
+  }
+  .sourceClassifyClass {
+    margin: 10px;
+    //padding: 10px;
   }
 }
 
-@media (max-width:1024px) {
-  .chart-wrapper {
-    padding: 8px;
-  }
-}
+/* 系统banner */
+//  background: url("~@/assets/home/images/banner.png") no-repeat top center;
 </style>

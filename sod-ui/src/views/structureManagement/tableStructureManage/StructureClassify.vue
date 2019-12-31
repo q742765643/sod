@@ -374,24 +374,11 @@ export default {
       margin-left: 10px;
       cursor: pointer;
       .el-button {
-        margin-left: 0px;
-        border-radius: 0px;
-        border-left: 1px solid #9dd5f6;
-        padding: 8px 15px;
-
         i {
           font-weight: bold;
         }
       }
-      .el-button:first-child {
-        border-left: 1px solid #409eff;
-        border-top-left-radius: 2px;
-        border-bottom-left-radius: 2px;
-      }
-      .el-button:last-child {
-        border-top-right-radius: 2px;
-        border-bottom-right-radius: 2px;
-      }
+      
     }
     //逻辑库分类树
     .usedTreeOp {

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container sqlTemplateMangement">
     <!-- SQL模板管理 -->
     <el-row>
         <el-col :span="4" v-for="(item,index) in sqlData" :key="index" :offset="0" class="colClass">
@@ -15,7 +15,7 @@
         </el-col>
         <el-col :span="4" class="colClass">
           <el-card>
-            <div class="addBox" @click="saveSqlTemplate()">
+            <div class="addBox" @click="addSqlTemplate()">
               <i class="el-icon-plus"></i>
               <h4 style="text-align:center;">点击添加</h4>
             </div>
@@ -120,10 +120,10 @@
           <textarea v-model="handleSqlTemplate.template" class="textClass" id="addtextareaId"></textarea>
         </el-col>
       </el-row>
-      <el-footer>
+      <div class="dialog-footer" slot="footer">
         <el-button type="primary" class="funButton" @click="trueDialog()">确定</el-button>
         <el-button class="funButton" @click="closeDialog()">取消</el-button>
-      </el-footer>
+      </div>
     </el-dialog>
     
 
@@ -159,19 +159,24 @@ export default {
   methods: {
      editSqlTemplate(item){},
     deleteSqlTemplate(item){},
-    saveSqlTemplate(){},
+    addSqlTemplate(){
+      this.handleDailyVisible = true;
+    },
     autoFillIn(value){
       this.handleSqlTemplate.template+=value;
 
     },
     trueDialog(){},
-    closeDialog(){},
+    closeDialog(){
+       this.handleDailyVisible = false;
+    },
   }
 };
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .sqlTemplateMangement {
   .addBox{
+    cursor: pointer;
     i {
         text-align: center;
         display: block;
@@ -180,6 +185,39 @@ export default {
         color: #999;
         margin-top: 6px;
       } 
+  }
+   .clearfix {
+    position: relative;
+  }
+  .clearfix:before {
+    content: "";
+    left: -9px;
+    position: absolute;
+    height: 18px;
+    width: 2px;
+    background: #66b1ff;
+  }
+  .colClass {
+    padding: 5px;
+  }
+}
+.sqlTemDialog {
+  .rowBoxBtn {
+    padding: 0px 50px;
+    .el-col {
+      text-align: center;
+      margin-bottom: 12px;
+      .funButton {
+        width: 98px;
+      }
+    }
+  }
+  .textClass {
+    width: 100%;
+    height: 254px;
+    border: 1px solid #dcdfe6;
+    margin-bottom: 20px;
+    padding-right: 0;
   }
 }
 </style>
