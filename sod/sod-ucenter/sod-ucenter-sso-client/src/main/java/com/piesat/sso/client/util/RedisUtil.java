@@ -1,10 +1,10 @@
 package com.piesat.sso.client.util;
 
+import org.apache.shiro.dao.DataAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.DefaultTypedTuple;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Tuple;
@@ -594,6 +594,28 @@ public class RedisUtil {
             }
         }
         return o;
+    }
+    public long  zsetCount(String key){
+         long count=0;
+         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
+         count=zset.size(key);
+        return count;
+    }
+
+    public Long scanSize(String key){
+        long dbSize = (long) redisTemplate.execute(new RedisCallback<Long>() {
+            @Override
+            public Long doInRedis(RedisConnection connection) throws DataAccessException {
+                long count = 0L;
+                Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(key).count(1000).build());
+                while (cursor.hasNext()) {
+                    cursor.next();
+                    count++;
+                }
+                return count;
+            }
+        });
+        return dbSize;
     }
     public static void main(String[] args) {
 		/*JedisPool jedisPool = new JedisPool(null,"localhost",6379,100,"123456");

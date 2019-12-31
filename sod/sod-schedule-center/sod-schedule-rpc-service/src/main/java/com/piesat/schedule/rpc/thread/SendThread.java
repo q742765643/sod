@@ -5,8 +5,10 @@ import com.netflix.discovery.shared.Application;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.rpc.enums.ExecuteEnum;
+import com.piesat.schedule.rpc.lock.RedisLock;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
 import com.piesat.sso.client.util.RedisUtil;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +29,8 @@ public class SendThread {
 
     @Autowired
     private RedisUtil redisUtil;
-    //@Autowired
-    private DiscoveryClient discoveryClient;
+    @Autowired
+    private RedisLock redisLock;
     public void init(){
 
       new Thread(()->{
@@ -37,40 +39,56 @@ public class SendThread {
     }
     public void send(){
         while (!sendThreadToStop){
-            Object objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
+            Object objects = null;
+            try {
+                redisLock.lock("custom");
+                objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(null==objects){
+                redisLock.delete("custom");
+                i=0;
+                j=0;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
             if(null!=objects){
                 String key= (String) objects;
                 JobInfoEntity jobInfo= (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL+key);
                 if(jobInfo==null){
-                    i=0;
-                    j=0;
+                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT,objects);
                     continue;
                 }
-                this.execute(jobInfo);
-                i++;
-                j++;
-            }else {
-                i=0;
-                j=0;
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                ResultT<String> resultT=this.execute(jobInfo);
+                if(!resultT.isSuccess()){
+                    i++;
+                    j++;
                 }
+                if(resultT.isSuccess()){
+                    redisUtil.del(QUARTZ_HTHT_JOBDTEAIL+key);
+                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT,objects);
+                }
+
             }
         }
     }
 
-    public void execute(JobInfoEntity jobInfo){
-        DiscoveryClient discoveryClient=SpringUtil.getBean(DiscoveryClient.class);
-        Application a=discoveryClient.getApplication("dm-server");
-        String serviceName= ExecuteEnum.getService(jobInfo.getType());
+    public ResultT<String> execute(JobInfoEntity jobInfo){
+        ResultT<String> resultT=new ResultT<>();
         try {
+            String serviceName= ExecuteEnum.getService(jobInfo.getType());
             ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
-            executeService.insertLog(jobInfo);
+            executeService.executeBusiness(jobInfo,resultT);
         } catch (Exception e) {
+            resultT.setCode(301);
             e.printStackTrace();
         }
+        return resultT;
     }
 }
 

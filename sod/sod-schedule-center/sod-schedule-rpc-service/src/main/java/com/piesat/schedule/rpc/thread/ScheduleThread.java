@@ -1,6 +1,7 @@
 package com.piesat.schedule.rpc.thread;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
@@ -26,10 +27,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
 
@@ -63,6 +61,9 @@ public class ScheduleThread {
     private JobInfoLogService jobInfoLogService;
     @Autowired
     private SpringClientFactory factory;
+    public static ExecutorService threadPool = new ThreadPoolExecutor(10, 10,
+            0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(20000), new ThreadFactoryBuilder().setNameFormat("do-something-pool-%d").build(), new ThreadPoolExecutor.AbortPolicy());
     public void start(){
         jobInfoService.init();
 
@@ -216,44 +217,30 @@ public class ScheduleThread {
         }
     }
     private void trigger(JobInfoEntity jobInfo){
-        try {
-            ILoadBalancer lb =  factory.getLoadBalancer("dm-server"); //指定服务名
-            List<Server> allServers = lb.getAllServers();
-            List<Server> upServers = lb.getReachableServers();
-            String type= (String) redisUtil.hget(QUARTZ_HTHT_CRON+jobInfo.getId(),"type");
-            String serviceName= ExecuteEnum.getService(type);
-            ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
-
-            JobInfoEntity newJob= executeService.getById(jobInfo.getId());
-            if(1!=newJob.getTriggerStatus()){
-                jobInfoService.stop(newJob.getId());
-                return;
+        threadPool.execute(()->{
+            try {
+                long count=redisUtil.zsetCount(QUARTZ_HTHT_WAIT);
+                if(count>20000){
+                    log.info("积压条数超过2万,放弃调度");
+                }
+                String type= (String) redisUtil.hget(QUARTZ_HTHT_CRON+jobInfo.getId(),"type");
+                String serviceName= ExecuteEnum.getService(type);
+                ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
+                JobInfoEntity newJob= executeService.getById(jobInfo.getId());
+                if(1!=newJob.getTriggerStatus()){
+                    jobInfoService.stop(newJob.getId());
+                    return;
+                }
+                newJob.setType(type);
+                newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
+                newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
+                this.pushRedis(newJob);
+                log.info("执行成功:"+jobInfo.getId());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            newJob.setType(type);
-       /*     JobInfoLogEntity jobInfoLogEntity=jobInfoLogService.selectMaxTriggerTimeByJobId(newJob.getId());
-            if(null!=jobInfoLogEntity){
-                newJob.setTriggerLastTime(jobInfoLogEntity.getTriggerTime());
-                if(!"1".equals(jobInfoLogEntity.getHandleCode())){
-                    //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-newJob.getTriggerLastTime());
-                    this.pushRedis(newJob);
-                }
-                while (newJob.getTriggerLastTime()<jobInfo.getTriggerLastTime()){
-                    //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-newJob.getTriggerLastTime());
-                    this.pushRedis(newJob);
-                }
+        });
 
-            }*/
-            newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
-            newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
-            //redisUtil.zsetAdd(QUARTZ_HTHT_WAIT, newJob,-jobInfo.getTriggerLastTime());
-            this.pushRedis(newJob);
-
-        /*Object objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, 0, 0);
-        JobInfoEntity job= (JobInfoEntity) objects;*/
-            log.info("执行成功:"+jobInfo.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
     public void pushRedis(JobInfoEntity newJob){

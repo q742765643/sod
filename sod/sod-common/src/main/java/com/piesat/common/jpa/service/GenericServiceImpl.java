@@ -146,7 +146,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     @Transactional(readOnly = false)
     @Override
     public void delete(final ID id) {
-        this.getGenericDao().deleteById( id);
+        this.getGenericDao().deleteById(id);
     }
 
     @Transactional(readOnly = false)

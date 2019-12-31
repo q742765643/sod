@@ -10,10 +10,13 @@ import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.rpc.mapstruct.ClearToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
+import com.piesat.schedule.rpc.vo.Server;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: sod
@@ -22,18 +25,15 @@ import java.util.Date;
  * @create: 2019-12-27 17:45
  **/
 @Service("executeClearService")
-public class ExecuteClearServiceImpl implements ExecuteService {
+public class ExecuteClearServiceImpl extends ExecuteBaseService implements ExecuteService {
     @Autowired
     private ClearDao clearDao;
     @Autowired
     private ClearToLogMapstruct clearToLogMapstruct;
     @Autowired
     private JobInfoLogService jobInfoLogService;
-    @GrpcHthtClient
-    private ExecutorBiz executorBiz;
     @Override
     public void insertLog(JobInfoEntity jobInfo) {
-        executorBiz.execute(jobInfo);
         /*ClearEntity clearEntity= (ClearEntity) jobInfo;
         ClearLogEntity clearLogEntity=clearToLogMapstruct.toEntity(clearEntity);
         clearLogEntity.setJobId(clearEntity.getId());
@@ -49,6 +49,11 @@ public class ExecuteClearServiceImpl implements ExecuteService {
     @Override
     public JobInfoEntity getById(String id) {
         return clearDao.findById(id).get();
+    }
+
+    @Override
+    public Server operationalControl(JobInfoEntity jobInfoEntity, List<Server> servers, ResultT<String> resultT) {
+        return servers.get(0);
     }
 }
 

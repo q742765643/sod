@@ -9,10 +9,13 @@ import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.rpc.mapstruct.MoveToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
+import com.piesat.schedule.rpc.vo.Server;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: sod
@@ -21,18 +24,15 @@ import java.util.Date;
  * @create: 2019-12-27 17:45
  **/
 @Service("executeMoveService")
-public class ExecuteMoveServiceImpl implements ExecuteService{
+public class ExecuteMoveServiceImpl extends ExecuteBaseService implements ExecuteService{
     @Autowired
     private MoveDao moveDao;
     @Autowired
     private MoveToLogMapstruct moveToLogMapstruct;
     @Autowired
     private JobInfoLogService jobInfoLogService;
-    @GrpcHthtClient
-    private ExecutorBiz executorBiz;
     @Override
     public void insertLog(JobInfoEntity jobInfo) {
-        executorBiz.execute(jobInfo);
        /* MoveEntity moveEntity= (MoveEntity) jobInfo;
         MoveLogEntity moveLogEntity=moveToLogMapstruct.toEntity(moveEntity);
         moveLogEntity.setJobId(jobInfo.getId());
@@ -48,6 +48,11 @@ public class ExecuteMoveServiceImpl implements ExecuteService{
     @Override
     public JobInfoEntity getById(String id) {
         return moveDao.findById(id).get();
+    }
+
+    @Override
+    public Server operationalControl(JobInfoEntity jobInfoEntity, List<Server> servers, ResultT<String> resultT) {
+        return servers.get(0);
     }
 }
 
