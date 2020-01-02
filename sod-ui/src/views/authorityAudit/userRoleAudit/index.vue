@@ -43,7 +43,6 @@
         <el-table-column  align="center"  label="操作" width="260px">
           <template slot-scope="scope">
             <el-button
-              plain
               v-if="scope.row.examine_status=='04'"
               type="text"
               size="mini"
@@ -51,7 +50,6 @@
               @click="viewCell(scope.row)"
             >通过</el-button>
             <el-button
-              plain
               v-if="scope.row.examine_status!='01' && scope.row.examine_status!='04'"
               type="text"
               size="mini"
@@ -59,7 +57,6 @@
               @click="viewCell(scope.row)"
             >拒绝</el-button>
             <el-button
-              plain
               type="text"
               size="mini"
               icon="el-icon-delete"

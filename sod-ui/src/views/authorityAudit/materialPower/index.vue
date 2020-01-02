@@ -1,29 +1,26 @@
 <template>
   <div class="app-container">
-    <!-- 云数据库审核 -->
+    <!-- 资料访问权限审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
-      <el-form-item label="审核状态">
+      <el-form-item label="状态">
         <el-select
           v-model="queryParams.examine_status"
-          placeholder="审核状态"
+          placeholder="状态"
           clearable
           size="small"
           style="width: 240px"
         >
           <el-option label="全部" value></el-option>
           <el-option
-            v-for="(item,index) in auditStatus"
+            v-for="(item,index) in examineStatus"
             :key="index"
             :label="item.label"
             :value="item.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="申请用户">
-        <el-input size="small" v-model="queryParams.nameUser" placeholder="申请用户"></el-input>
-      </el-form-item>
-      <el-form-item label="数据库名">
-        <el-input size="small" v-model="queryParams.nameSourceDB" placeholder="数据库名"></el-input>
+      <el-form-item label="申请人">
+        <el-input size="small" v-model="queryParams.nameUser" placeholder="申请人"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
@@ -36,6 +33,7 @@
           value-format="yyyy-MM-dd HH:mm:ss"
         >></el-date-picker>
       </el-form-item>
+
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
@@ -48,71 +46,23 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['cloudDBaudit:role:add']"
-        >添加云数据库申请</el-button>
+          v-hasPermi="['authorityAudit:materialPower:add']"
+        >权限配置</el-button>
       </el-col>
     </el-row>
-
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="application_user"
-        label="申请用户"
-        width="120px"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column align="center" prop="application_unit" label="申请单位" width="120px"></el-table-column>
-      <el-table-column align="center" prop="application_time" label="申请时间" width="160px">
+      <el-table-column align="center" prop="application_unit" label="用户名"></el-table-column>
+      <el-table-column align="center" prop="db_name" label="机构"></el-table-column>
+      <el-table-column align="center" prop="db_name" label="联系方式"></el-table-column>
+      <el-table-column align="center" prop="application_time" label="申请时间">
         <!-- <template slot-scope="scope">{{scope.row.application_time.split('.')[0]}}</template> -->
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="examine_time"
-        label="审核时间"
-        width="160px"
-        :formatter="examineShow"
-      ></el-table-column>
-      <el-table-column align="center" prop="storage_logic" label="数据库类型" width="120px"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="数据库名"></el-table-column>
-      <el-table-column align="center" prop="db_use" label="用 途" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="examine_status"
-        label="审核状态"
-        width="80px"
-        :formatter="statusShow"
-      ></el-table-column>
+      <el-table-column align="center" prop="db_name" label="资料个数"></el-table-column>
+      <el-table-column align="center" prop="examine_status" label="状态"></el-table-column>
       <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="scope">
-          <el-button
-            v-if="scope.row.examine_status=='01'"
-            type="text"
-            size="mini"
-            icon="el-icon-coordinate"
-            @click="viewCell(scope.row)"
-          >审核</el-button>
-          <el-button
-            v-if="scope.row.examine_status=='04'"
-            type="text"
-            size="mini"
-            icon="el-icon-finished"
-            @click="viewCell(scope.row)"
-          >释放</el-button>
-          <el-button
-            v-if="scope.row.examine_status!='01' && scope.row.examine_status!='04'"
-            type="text"
-            size="mini"
-            icon="el-icon-view"
-            @click="viewCell(scope.row)"
-          >查看</el-button>
-          <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
-          <el-button
-            type="text"
-            size="mini"
-            icon="el-icon-s-marketing"
-            @click="analysisCell(scope.row)"
-          >资源分析</el-button>
+          <el-button type="text" size="mini" icon="el-icon-view" @click="viewCell(scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -124,19 +74,11 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog
-      :title="dialogTitle"
-      :visible.sync="handleDialog"
-      width="90%"
-      max-width="1100px"
-      top="5vh"
-    >
-      <handleAccount
-        v-if="handleDialog"
-        :handleObj="handleObj"
-        @handleDialogClose="handleDialogClose"
-        ref="myHandleServer"
-      />
+    <el-dialog title="数据授权查看" :visible.sync="handleDialog" width="90%" max-width="1100px" top="5vh">
+      <handleMaterial v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
+    </el-dialog>
+    <el-dialog title="权限配置" :visible.sync="handlepowerDialog" width="650px">
+      <handlePower v-if="handlepowerDialog" @cancelHandle="cancelHandle" ref="myHandleServer" />
     </el-dialog>
   </div>
 </template>
@@ -152,10 +94,12 @@ import {
   dataScope,
   changeRoleStatus
 } from "@/api/system/role";
-import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
+import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
+import handlePower from "@/views/authorityAudit/materialPower/handlePower";
 export default {
   components: {
-    handleAccount
+    handleMaterial,
+    handlePower
   },
   data() {
     return {
@@ -171,22 +115,19 @@ export default {
       },
       examineStatus: [
         {
-          value: "0",
+          value: "01",
           label: "待审核"
         },
         {
-          value: "2",
-          label: "审核未通过"
-        },
-        {
-          value: "1",
-          label: "审核通过"
+          value: "02",
+          label: "已审核"
         }
       ],
       total: 0,
       tableData: [],
       dialogTitle: "",
-      handleDialog: false
+      handleDialog: false,
+      handlepowerDialog: false
     };
   },
   created() {
@@ -227,9 +168,7 @@ export default {
       this.handleQuery();
     },
     handleAdd() {
-      this.dialogTitle = "新增数据库账户审核";
-      this.handleObj = {};
-      this.handleDialog = true;
+      this.handlepowerDialog = true;
     },
     downloadTable() {},
     //查看原因
@@ -239,8 +178,7 @@ export default {
       });
     },
     viewCell(row) {
-      this.dialogTitle = "数据库账户审核";
-      this.handleObj = row;
+      this.handleObj = {};
       this.handleDialog = true;
     },
     deleteCell(row) {},
