@@ -180,11 +180,11 @@ export default {
         this.superChose = [
           {
             label: "代码简写",
-            value: "ele_code_short"
+            value: "eleCodeShort"
           },
           {
             label: "学科",
-            value: "subject_id"
+            value: "subjectId"
           },
           {
             label: "参数种类",
@@ -192,27 +192,27 @@ export default {
           },
           {
             label: "参数编码",
-            value: "parameter_id"
+            value: "parameterId"
           },
           {
             label: "GRIB格式",
-            value: "grib_version"
+            value: "gribVersion"
           },
           {
             label: "中文描述",
-            value: "order"
+            value: "elementCn"
           },
           {
             label: "是否为公共",
-            value: "public_config"
+            value: "publicConfig"
           },
           {
             label: "模板ID",
-            value: "template_id"
+            value: "templateId"
           },
           {
             label: "模板说明",
-            value: "template_desc"
+            value: "templateDesc"
           }
         ];
       }
@@ -231,6 +231,7 @@ export default {
       });
     },
     submitSuperSearch(formName) {
+      debugger;
       this.$emit("getList", this.superSearchForm);
     }
   }

@@ -106,9 +106,19 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="backupList" row-key="id" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="backupList"
+      row-key="id"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true" />
+      <el-table-column
+        label="资料名称"
+        align="center"
+        prop="profileName"
+        :show-overflow-tooltip="true"
+      />
       <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true" />
       <el-table-column label="状态" align="center" prop="triggerStatus" :formatter="statusFormat" />
       <el-table-column label="任务描述" align="center" prop="jobDesc" :show-overflow-tooltip="true" />
@@ -151,7 +161,13 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="物理库" prop="databaseId">
-              <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')" placeholder="请选择物理库" style="width:100%">
+              <el-select
+                v-model="form.databaseId"
+                filterable
+                @change="selectByDatabaseIds($event,'')"
+                placeholder="请选择物理库"
+                style="width:100%"
+              >
                 <el-option
                   v-for="database in databaseOptions"
                   :key="database.id"
@@ -163,7 +179,13 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="资料名称" prop="dataClassId">
-              <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
+              <el-select
+                v-model="form.dataClassId"
+                filterable
+                @change="selectTable"
+                placeholder="请选择资料"
+                style="width:100%"
+              >
                 <el-option
                   v-for="dataClass in dataClassIdOptions"
                   :key="dataClass.DATA_CLASS_ID"
@@ -185,7 +207,12 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="存储目录" prop="storageDirectory">
-              <el-select v-model="form.storageDirectory" placeholder="请选择" filterable  style="width: 100%" >
+              <el-select
+                v-model="form.storageDirectory"
+                placeholder="请选择"
+                filterable
+                style="width: 100%"
+              >
                 <el-option
                   v-for="dict in storageDirectoryOptions"
                   :key="dict.dictValue"
@@ -197,12 +224,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="表名" prop="tableName">
-              <el-input v-model="form.tableName" disabled/>
+              <el-input v-model="form.tableName" disabled />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="四级编码" prop="ddataId">
-              <el-input v-model="form.ddataId" disabled/>
+              <el-input v-model="form.ddataId" disabled />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -252,247 +279,267 @@
 </template>
 
 <script>
-  import { listBackup, getBackup, addBackup, updateBackup, delBackup,findAllDataBase,getByDatabaseId,getByDatabaseIdAndClassId } from "@/api/schedule/backup/backup";
+import {
+  listBackup,
+  getBackup,
+  addBackup,
+  updateBackup,
+  delBackup,
+  findAllDataBase,
+  getByDatabaseId,
+  getByDatabaseIdAndClassId
+} from "@/api/schedule/backup/backup";
 
-  export default {
-    data() {
-      return {
-        // 遮罩层
-        loading: true,
-        // 选中数组
-        ids: [],
-        // 非单个禁用
-        single: true,
-        // 非多个禁用
-        multiple: true,
-        // 总条数
-        total: 0,
-        // 备份表格数据
-        backupList: [],
-        // 弹出层标题
-        title: "",
-        // 是否显示弹出层
-        open: false,
-        // 状态数据字典
-        statusOptions: [],
+export default {
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 总条数
+      total: 0,
+      // 备份表格数据
+      backupList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 状态数据字典
+      statusOptions: [],
 
-        alarmOptions: [],
+      alarmOptions: [],
 
-        storageDirectoryOptions: [],
+      storageDirectoryOptions: [],
 
-        databaseOptions: [],
+      databaseOptions: [],
 
-        dataClassIdOptions: [],
+      dataClassIdOptions: [],
 
-        // 日期范围
-        dateRange: [],
-        // 查询参数
-        queryParams: {
-          pageNum: 1,
-          pageSize: 10,
-          profileName: undefined,
-          dataClassId: undefined,
-          triggerStatus: undefined,
-          tableName: undefined
-        },
-        // 表单参数
-        form: {},
-        // 表单校验
-        rules: {
-          databaseId: [
-            { required: true, message: "物理库不能为空", trigger: "blur" }
-          ],
-          dataClassId: [
-            { required: true, message: "资料名称不能为空", trigger: "blur" }
-          ],
-          storageDirectory: [
-            { required: true, message: "存储目录不能为空", trigger: "blur" }
-          ],
-          jobCron: [
-            { required: true, message: "执行策略不能为空", trigger: "blur" }
-          ],
-          executorTimeout: [
-            { required: true, message: "超时时间不能为空", trigger: "blur" }
-          ],
-          executorFailRetryCount: [
-            { required: true, message: "重试次数不能为空", trigger: "blur" }
-          ],
-          retryInterval: [
-            { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
-          ]
+      // 日期范围
+      dateRange: [],
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        profileName: undefined,
+        dataClassId: undefined,
+        triggerStatus: undefined,
+        tableName: undefined
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+        databaseId: [
+          { required: true, message: "物理库不能为空", trigger: "blur" }
+        ],
+        dataClassId: [
+          { required: true, message: "资料名称不能为空", trigger: "blur" }
+        ],
+        storageDirectory: [
+          { required: true, message: "存储目录不能为空", trigger: "blur" }
+        ],
+        jobCron: [
+          { required: true, message: "执行策略不能为空", trigger: "blur" }
+        ],
+        executorTimeout: [
+          { required: true, message: "超时时间不能为空", trigger: "blur" }
+        ],
+        executorFailRetryCount: [
+          { required: true, message: "重试次数不能为空", trigger: "blur" }
+        ],
+        retryInterval: [
+          { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
+        ]
+      }
+    };
+  },
+  created() {
+    this.getList();
+    this.getDicts("job_trigger_status").then(response => {
+      this.statusOptions = response.data;
+    });
+    this.getDicts("job_is_alarm").then(response => {
+      this.alarmOptions = response.data;
+    });
+    this.getDicts("backup_storage_directory").then(response => {
+      this.storageDirectoryOptions = response.data;
+    });
+    findAllDataBase().then(response => {
+      this.databaseOptions = response.data;
+    });
+  },
+  methods: {
+    /** 查询字典类型列表 */
+    getList() {
+      this.loading = true;
+      listBackup(this.addDateRange(this.queryParams, this.dateRange)).then(
+        response => {
+          this.backupList = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
         }
+      );
+    },
+    // 字典状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.statusOptions, row.triggerStatus);
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: undefined,
+        profileName: undefined,
+        dataClassId: undefined,
+        triggerStatus: undefined,
+        isAlarm: "1",
+        triggerStatus: 1,
+        tableName: undefined,
+        vtableName: undefined,
+        ddataId: undefined
       };
+      this.dataClassIdOptions = [];
+      this.resetForm("form");
     },
-    created() {
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
-      this.getDicts("job_trigger_status").then(response => {
-        this.statusOptions = response.data;
-
-      });
-      this.getDicts("job_is_alarm").then(response => {
-        this.alarmOptions = response.data;
-      });
-      this.getDicts("backup_storage_directory").then(response => {
-        this.storageDirectoryOptions = response.data;
-      });
-      findAllDataBase().then(response => {
-        this.databaseOptions = response.data;
-      });
-
     },
-    methods: {
-      /** 查询字典类型列表 */
-      getList() {
-        this.loading = true;
-        listBackup(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.backupList = response.data.pageData;
-            this.total = response.data.totalCount;
-            this.loading = false;
-          }
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加数据备份配置信息";
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids;
+      getBackup(id).then(response => {
+        this.selectByDatabaseIds(
+          response.data.databaseId,
+          response.data.dataClassId
         );
-      },
-      // 字典状态字典翻译
-      statusFormat(row, column) {
-        return this.selectDictLabel(this.statusOptions, row.triggerStatus);
-      },
-      // 取消按钮
-      cancel() {
-        this.open = false;
-        this.reset();
-      },
-      // 表单重置
-      reset() {
-        this.form = {
-          id: undefined,
-          profileName: undefined,
-          dataClassId: undefined,
-          triggerStatus: undefined,
-          isAlarm:"1",
-          triggerStatus:1,
-          tableName:undefined,
-          vtableName:undefined,
-          ddataId:undefined,
-
-        };
-        this.dataClassIdOptions=[];
-        this.resetForm("form");
-      },
-      /** 搜索按钮操作 */
-      handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
-      },
-      /** 重置按钮操作 */
-      resetQuery() {
-        this.dateRange = [];
-        this.resetForm("queryForm");
-        this.handleQuery();
-      },
-      /** 新增按钮操作 */
-      handleAdd() {
-        this.reset();
+        this.form = response.data;
         this.open = true;
-        this.title = "添加数据备份配置信息";
-      },
-      // 多选框选中数据
-      handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
-        this.multiple = !selection.length
-      },
-      /** 修改按钮操作 */
-      handleUpdate(row) {
-        this.reset();
-        const id = row.id || this.ids
-        getBackup(id).then(response => {
-          this.selectByDatabaseIds(response.data.databaseId,response.data.dataClassId);
-          this.form = response.data;
-          this.open = true;
-          this.title = "修改数据备份配置信息";
-        });
-      },
-      /** 提交按钮 */
-      submitForm: function() {
-        this.$refs["form"].validate(valid => {
-          if (valid) {
-            if (this.form.id != undefined) {
-              updateBackup(this.form).then(response => {
-                if (response.code === 200) {
-                  this.msgSuccess("修改成功");
-                  this.open = false;
-                  this.getList();
-                } else {
-                  this.msgError(response.msg);
-                }
-              });
-            } else {
-              addBackup(this.form).then(response => {
-                if (response.code === 200) {
-                  this.msgSuccess("新增成功");
-                  this.open = false;
-                  this.getList();
-                } else {
-                  this.msgError(response.msg);
-                }
-              });
-            }
+        this.title = "修改数据备份配置信息";
+      });
+    },
+    /** 提交按钮 */
+    submitForm: function() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          if (this.form.id != undefined) {
+            updateBackup(this.form).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          } else {
+            addBackup(this.form).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+              } else {
+                this.msgError(response.msg);
+              }
+            });
           }
-        });
-      },
-      /** 删除按钮操作 */
-      handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$confirm('是否确认删除任务编号为"' + ids + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$confirm('是否确认删除任务编号为"' + ids + '"的数据项?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
           return delBackup(ids);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
-      },
-      /** 导出按钮操作 */
-      handleExport() {
-        const queryParams = this.queryParams;
-        this.$confirm('是否确认导出所有类型数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+        })
+        .catch(function() {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$confirm("是否确认导出所有类型数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
           return exportType(queryParams);
-        }).then(response => {
+        })
+        .then(response => {
           this.download(response.msg);
-        }).catch(function() {});
-      },
-      selectByDatabaseIds(databaseId,dataClassId) {
-        getByDatabaseId(databaseId).then(response => {
-          this.dataClassIdOptions = response.data;
-          this.form.dataClassId=dataClassId;
-        });
-      },
-      selectTable(dataClassId){
-        let databaseObj={};
-        databaseObj=this.databaseOptions.find((item)=>{
-          return item.id === this.form.databaseId;
-        });
-        let obj = {};
-        obj = this.dataClassIdOptions.find((item)=>{
-          return item.DATA_CLASS_ID === dataClassId;
-        });
-        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.CLASS_NAME
-        this.form.ddataId=obj.D_DATA_ID;
-        this.form.tableName="";
-        this.findTable(databaseObj.id,obj.DATA_CLASS_ID)
-
-      },
-      findTable(databaseId,dataClassId){
-        getByDatabaseIdAndClassId(databaseId,dataClassId).then(response => {
-           this.form.tableName=response.data.tableName;
-           this.form.vTableName=response.data.vTableName;
-        });
-      }
+        })
+        .catch(function() {});
+    },
+    selectByDatabaseIds(databaseId, dataClassId) {
+      getByDatabaseId(databaseId).then(response => {
+        this.dataClassIdOptions = response.data;
+        this.form.dataClassId = dataClassId;
+      });
+    },
+    selectTable(dataClassId) {
+      let databaseObj = {};
+      databaseObj = this.databaseOptions.find(item => {
+        return item.id === this.form.databaseId;
+      });
+      let obj = {};
+      obj = this.dataClassIdOptions.find(item => {
+        return item.DATA_CLASS_ID === dataClassId;
+      });
+      this.form.profileName =
+        databaseObj.databaseName +
+        "_" +
+        databaseObj.databaseClassify +
+        "_" +
+        obj.CLASS_NAME;
+      this.form.ddataId = obj.D_DATA_ID;
+      this.form.tableName = "";
+      this.findTable(databaseObj.id, obj.DATA_CLASS_ID);
+    },
+    findTable(databaseId, dataClassId) {
+      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+        this.form.tableName = response.data.tableName;
+        this.form.vTableName = response.data.vTableName;
+      });
     }
-  };
+  }
+};
 </script>

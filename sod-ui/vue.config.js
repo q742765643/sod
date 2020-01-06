@@ -53,6 +53,20 @@ module.exports = {
           ['^' + process.env.VUE_APP_SCHEDULE_CENTER_API]: ''
         }
       },
+      [process.env.VUE_APP_DM]: {
+        target: `http://10.40.17.36:1221`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_DM]: ''
+        }
+      },
+      [process.env.VUE_APP_SERVER_API]: {
+        target: `http://10.28.104.159:1111`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_SERVER_API]: ''
+        }
+      },
     },
     disableHostCheck: true
   },
@@ -109,7 +123,7 @@ module.exports = {
             .plugin('ScriptExtHtmlWebpackPlugin')
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
-            // `runtime` must same as runtimeChunk name. default is `runtime`
+              // `runtime` must same as runtimeChunk name. default is `runtime`
               inline: /runtime\..*\.js$/
             }])
             .end()

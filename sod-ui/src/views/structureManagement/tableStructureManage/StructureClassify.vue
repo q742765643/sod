@@ -45,7 +45,8 @@
           <el-button type="primary" icon="el-icon-search" size="small" @click="sourceTopSearch"></el-button>
         </el-button-group>
       </div>
-      <div class="treeBox selScrollBar">
+
+      <el-scrollbar wrap-class="scrollbar-wrapper">
         <el-tree
           class="el-tree"
           :data="treeData"
@@ -64,17 +65,19 @@
             </span>
           </span>
         </el-tree>
-      </div>
+      </el-scrollbar>
     </div>
   </el-aside>
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig";
+import { dataClassAll } from "@/api/structureManagement/tableStructureManage/StructureClassify";
+
 export default {
   props: { treeIdOfDR: String },
   data() {
     return {
+      loading: true,
       //格式化tree数据
       defaultProps: {
         children: "children",
@@ -102,7 +105,7 @@ export default {
       showAll: "",
       myTreedata: [],
       // initTreeUlr: interfaceObj.TableStructure_dataTypeTree
-      initTreeUlr:''
+      initTreeUlr: ""
     };
   },
 
@@ -114,9 +117,16 @@ export default {
   },
   created() {
     //初始化资料分类树
-    // this.initMethodsTree(interfaceObj.TableStructure_dataTypeTree);
+    this.initMethodsTree();
   },
   methods: {
+    // 初始化树
+    initMethodsTree() {
+      this.loading = true;
+      dataClassAll().then(response => {
+        this.treeData = response.data.data;
+      });
+    },
     // 树的搜索方法
     filterNode(value, data) {
       if (!value) return true;
@@ -220,7 +230,7 @@ export default {
         });
     },
     //初始化资料分类树/数据用途分类树/数据库分类树/公共元数据结构
-    async initMethodsTree(initTreeUlr, treeRefreshData) {
+    /*async initMethodsTree(initTreeUlr, treeRefreshData) {
       await this.axios
         .get(initTreeUlr)
         .then(res => {
@@ -255,7 +265,7 @@ export default {
           console.log("出错了，错误信息：" + error);
         });
       this.defaultStyle(treeRefreshData);
-    },
+    },*/
     // tree数据格式化
 
     // 显示未创建、显示全部
@@ -344,7 +354,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-
+  height: calc(100vh - 130px);
   //分类
   .el-tabs__item {
     white-space: normal;
@@ -378,7 +388,6 @@ export default {
           font-weight: bold;
         }
       }
-      
     }
     //逻辑库分类树
     .usedTreeOp {
@@ -388,7 +397,7 @@ export default {
       .el-input {
         width: 140px;
         margin-right: 2px;
-        margin-top:10px;
+        margin-top: 10px;
       }
     }
     // 公共元数据结构
@@ -403,18 +412,14 @@ export default {
         padding: 9px 10px;
       }
     }
-    .treeBox {
-      width: 216px;
-      height: calc(100vh - 263px);
-      overflow: auto;
-      .el-tree {
-        min-width: 100%;
-        display: inline-block !important;
-      }
+    .el-tree {
+      min-width: 100%;
+      display: inline-block !important;
       i {
         color: #409eff;
       }
     }
+
     // 树的第四级要隐藏
     .el-tree-node[aria-disabled="true"] {
       display: none;
