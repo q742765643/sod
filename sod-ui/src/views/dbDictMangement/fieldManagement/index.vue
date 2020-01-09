@@ -207,7 +207,7 @@ export default {
       font-size: 14px;
     }
     .el-scrollbar {
-      height: calc(100% - 120px);
+      height: calc(100% - 80px);
     }
     .el-scrollbar__wrap {
       overflow: auto;

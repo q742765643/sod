@@ -231,7 +231,6 @@ export default {
       });
     },
     submitSuperSearch(formName) {
-      debugger;
       this.$emit("getList", this.superSearchForm);
     }
   }

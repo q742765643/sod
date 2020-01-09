@@ -18,7 +18,7 @@ export function gridEleDecodeDefineAdd(data) {
 }
 export function gridEleDecodeDefineEdit(data) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/add',
+    url: baseUrl + '/system/api/gridEleDecodeDefine/edit',
     method: 'post',
     data: data
   })
@@ -26,19 +26,20 @@ export function gridEleDecodeDefineEdit(data) {
 // 删除
 export function gridEleDecodeDefineDelete(ids) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/deleteByIds/' + ids,
+    url: baseUrl + '/system/api/gridEleDecodeDefine/deleteByIds',
     method: 'get',
+    params: ids
   })
 }
 // 导出 
 export function exportJSON() {
   return request({
     url: baseUrl + '/system/api/gridEleDecodeDefine/exportJSON',
-    method: 'get',
+    method: 'post',
   })
 }
 // 导入
-export function importJSON(data) {
+export function importJSON() {
   return request({
     url: baseUrl + '/system/api/gridEleDecodeDefine/importJSON',
     method: 'post',

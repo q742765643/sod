@@ -139,11 +139,7 @@ import {
   exportJSON,
   importJSON
 } from "@/api/GridDataDictionaryManagement/GRIBdefine/index";
-import {
-  listClearLog,
-  getClearLog,
-  delClearLog
-} from "@/api/schedule/clear/clearLog";
+
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 export default {
@@ -154,8 +150,7 @@ export default {
       loading: true,
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
-        t: undefined
+        pageSize: 10
       },
       tableData: [],
       total: 0,
@@ -218,9 +213,7 @@ export default {
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        this.queryParams.t = superMsg;
-      } else {
-        this.queryParams.t = undefined;
+        Object.assign(this.queryParams, newSuperForm);
       }
       this.loading = true;
       gridEleDecodeDefineAll(this.queryParams).then(response => {
@@ -232,17 +225,29 @@ export default {
     showDialog(type) {
       if (type == "add") {
         this.dialogTitle = "添加";
+        this.msgFormDialog = true;
       } else {
-        this.dialogTitle = "编辑";
+        if (this.choserow.length == 1) {
+          this.dialogTitle = "编辑";
+          this.ruleForm = this.choserow[0];
+          this.msgFormDialog = true;
+        } else {
+          this.$message({
+            type: "error",
+            message: "请选择一条数据"
+          });
+          return;
+        }
       }
-      this.msgFormDialog = true;
     },
     handleTrue(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let msg = "";
-          let url = "";
           if (this.dialogTitle == "添加") {
+            this.ruleForm.classify = parseInt(this.ruleForm.classify);
+            this.ruleForm.gribVersion = parseInt(this.ruleForm.gribVersion);
+            this.ruleForm.parameterId = parseInt(this.ruleForm.parameterId);
+            this.ruleForm.subjectId = parseInt(this.ruleForm.subjectId);
             console.log(this.ruleForm);
             gridEleDecodeDefineAdd(this.ruleForm).then(response => {
               if (response.code === 200) {
@@ -312,18 +317,27 @@ export default {
       this.choserow.forEach(element => {
         ids.push(element.recordId);
       });
-      gridEleDecodeDefineDelete(ids.join(",")).then(response => {
-        this.getList();
+      gridEleDecodeDefineDelete({ ids: ids.join(",") }).then(response => {
+        if (response.code == 200) {
+          this.msgSuccess("删除成功");
+          this.getList();
+        }
       });
     },
-    tableExoprt() {},
+    tableExoprt() {
+      exportJSON().then(response => {});
+    },
     superClick() {
       this.superObj = {};
       this.superObj.pageName = "GRIB参数定义";
       this.dialogSuperSearch = true;
     },
     closeSuperSearch() {
-      this.superObj = {};
+      this.queryParams = {
+        gribVersion: "",
+        parameterId: "",
+        eleCodeShort: ""
+      };
       this.dialogSuperSearch = false;
     }
   }
