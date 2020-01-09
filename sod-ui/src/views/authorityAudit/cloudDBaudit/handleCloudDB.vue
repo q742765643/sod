@@ -129,37 +129,6 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row type="flex" class="row-bg" justify="center">
-          <el-col :span="8">
-            <el-form-item
-              label="挂载服务器"
-              prop="mount_server"
-              v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
-            >
-              <el-input
-                :disabled="isDetail"
-                size="small"
-                v-model="msgFormDialog.mount_server"
-                placeholder="挂载服务器"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item
-              label="挂载目录"
-              prop="mount_directory"
-              v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
-            >
-              <el-input
-                :disabled="isDetail"
-                size="small"
-                v-model="msgFormDialog.mount_directory"
-                placeholder="挂载目录"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8"></el-col>
-        </el-row>
       </el-card>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
@@ -254,6 +223,46 @@
         </div>
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="8">
+            <el-form-item
+              label="挂载服务器"
+              prop="mount_server"
+              v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
+            >
+              <el-input
+                :disabled="isDetail"
+                size="small"
+                v-model="msgFormDialog.mount_server"
+                placeholder="挂载服务器"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-row>
+              <el-col :span="20">
+                <el-form-item
+                  label="挂载目录"
+                  prop="mount_directory"
+                  v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
+                >
+                  <el-input
+                    :disabled="isDetail"
+                    size="small"
+                    v-model="msgFormDialog.mount_directory"
+                    placeholder="挂载目录"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4" class="spacialBtn">
+                <el-form-item>
+                  <el-button type="primary" size="small" @click="helpPassword">帮助</el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="8"></el-col>
+        </el-row>
+        <el-row type="flex" class="row-bg" justify="center">
+          <el-col :span="8">
             <el-form-item label="数据库IP" prop="db_ip">
               <el-input
                 :disabled="isDetailStatus"
@@ -324,11 +333,6 @@
                   @click="showPwd"
                 ></i>
               </el-col>
-              <el-col :span="4" class="spacialBtn">
-                <el-form-item>
-                  <el-button type="primary" size="small" @click="helpPassword">帮助</el-button>
-                </el-form-item>
-              </el-col>
             </el-row>
           </el-col>
           <el-col :span="8">
@@ -362,7 +366,6 @@
 </template>
 
 <script>
-
 export default {
   name: "handleCloudDialog",
   props: {
@@ -414,7 +417,7 @@ export default {
       isReason: false,
       isDetail: false,
       isDetailStatus: false,
-      upLoadUrl: '',
+      upLoadUrl: "",
       isDisabled: false,
       examineStatus: true,
       userBox: [], //获取所有用户

@@ -423,19 +423,15 @@ export default {
     getTableInfo() {
       //获取表信息
       this.tabs = this.storage[this.rowData.storage_type];
-      if (this.tabs.table.key) {
-        this.keyActive = "active";
-      } else if (this.tabs.table.el) {
-        this.elActive = "active";
-      }
+      // if (this.tabs.table.key) {
+      //   this.keyActive = "active";
+      // } else if (this.tabs.table.el) {
+      //   this.elActive = "active";
+      // }
       console.log(this.rowData);
-      gcl({ classLogic: this.rowData.logic_id }).then(response => {
+      gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
-          });
-          this.searchFun("search");
+          console.log(response.data);
         }
       });
       // this.axios

@@ -34,7 +34,12 @@
       <el-table-column align="center" prop="userFcstEle" label="要素服务代码"></el-table-column>
       <el-table-column align="center" prop="dbFcstEle" label="要素存储短名"></el-table-column>
       <el-table-column align="center" prop="eleName" label="中文名称"></el-table-column>
-      <el-table-column align="center" prop="elePropertyName" label="属性名(要素长名)"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="elePropertyName"
+        label="属性名(要素长名)"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
       <el-table-column align="center" prop="eleUnit" label="要素单位"></el-table-column>
     </el-table>
 

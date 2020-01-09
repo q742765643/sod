@@ -1,54 +1,63 @@
 <template>
   <div class="login">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">存储后台管理系统</h3>
-      <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="password">
-        <el-input
-          v-model="loginForm.password"
-          type="password"
-          auto-complete="off"
-          placeholder="密码"
-          @keyup.enter.native="handleLogin"
-        >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="code">
-        <el-input
-          v-model="loginForm.code"
-          auto-complete="off"
-          placeholder="验证码"
-          style="width: 63%"
-          @keyup.enter.native="handleLogin"
-        >
-          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
-        </el-input>
-        <div class="login-code">
-          <img :src="codeUrl" @click="getCode" />
-        </div>
-      </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
-      <el-form-item style="width:100%;">
-        <el-button
-          :loading="loading"
-          size="medium"
-          type="primary"
-          style="width:100%;"
-          @click.native.prevent="handleLogin"
-        >
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
-        </el-button>
-      </el-form-item>
-    </el-form>
+    <el-row class="wrap">
+      <el-col :span="13">
+        <span style="opacity:0;">1</span>
+      </el-col>
+      <el-col :span="11">
+        <img src="../assets/image/title.png" class="title" />
+        <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
+          <el-form-item prop="username">
+            <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
+              <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="loginForm.password"
+              type="password"
+              auto-complete="off"
+              placeholder="密码"
+              @keyup.enter.native="handleLogin"
+            >
+              <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="code">
+            <el-input
+              v-model="loginForm.code"
+              auto-complete="off"
+              placeholder="验证码"
+              style="width: 66%"
+              @keyup.enter.native="handleLogin"
+            >
+              <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+            </el-input>
+            <div class="login-code">
+              <img :src="codeUrl" @click="getCode" />
+            </div>
+          </el-form-item>
+          <!-- <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox> -->
+          <el-form-item>
+            <el-button
+              :loading="loading"
+              size="medium"
+              type="primary"
+              class="loginBtn"
+              @click.native.prevent="handleLogin"
+            >
+              <span v-if="!loading">登 录</span>
+              <span v-else>登 录 中...</span>
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2019 ruoyi.vip All Rights Reserved.</span>
+      <p>Copyright&nbsp;2018-2020&nbsp;&nbsp;国家气象信息中心</p>
+      <p>地址：北京海淀区中关村南大街46号 | 邮编：100081 | 电话 : 86-10-68407499</p>
     </div>
   </div>
 </template>
@@ -56,7 +65,7 @@
 <script>
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
-import { encrypt, decrypt } from '@/utils/jsencrypt'
+import { encrypt, decrypt } from "@/utils/jsencrypt";
 
 export default {
   name: "Login",
@@ -106,10 +115,11 @@ export default {
     getCookie() {
       const username = Cookies.get("username");
       const password = Cookies.get("password");
-      const rememberMe = Cookies.get('rememberMe')
+      const rememberMe = Cookies.get("rememberMe");
       this.loginForm = {
         username: username === undefined ? this.loginForm.username : username,
-        password: password === undefined ? this.loginForm.password : decrypt(password),
+        password:
+          password === undefined ? this.loginForm.password : decrypt(password),
         rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
       };
     },
@@ -119,12 +129,16 @@ export default {
           this.loading = true;
           if (this.loginForm.rememberMe) {
             Cookies.set("username", this.loginForm.username, { expires: 30 });
-            Cookies.set("password", encrypt(this.loginForm.password), { expires: 30 });
-            Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 30 });
+            Cookies.set("password", encrypt(this.loginForm.password), {
+              expires: 30
+            });
+            Cookies.set("rememberMe", this.loginForm.rememberMe, {
+              expires: 30
+            });
           } else {
             Cookies.remove("username");
             Cookies.remove("password");
-            Cookies.remove('rememberMe');
+            Cookies.remove("rememberMe");
           }
           this.$store
             .dispatch("Login", this.loginForm)
@@ -149,56 +163,66 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/image/login-background.jpg");
-  background-size: cover;
-}
-.title {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #707070;
-}
-
-.login-form {
-  border-radius: 6px;
-  background: #ffffff;
-  width: 400px;
-  padding: 25px 25px 5px 25px;
-  .el-input {
-    height: 38px;
-    input {
-      height: 38px;
+  background: linear-gradient(
+    25deg,
+    rgb(17, 139, 252) 38%,
+    rgb(24, 151, 253) 38%,
+    rgb(17, 139, 252) 45%,
+    rgb(24, 151, 253) 45%,
+    rgb(17, 139, 252) 70%,
+    rgb(25, 150, 253) 70%,
+    rgb(17, 139, 252) 85%,
+    rgb(25, 150, 253) 85%
+  );
+  .wrap {
+    width: 75%;
+    text-align: right;
+    background: url("../assets/image/login-bg.png") no-repeat;
+    background-size: 100% 100%;
+    .title {
+      width: 60%;
+      display: block;
+      margin: auto;
+      margin-top: 70px;
+      margin-bottom: 40px;
+    }
+    .el-form-item {
+      margin-bottom: 26px;
+    }
+    .el-input__inner {
+      height: 40px;
+      line-height: 40px;
+    }
+    .el-form {
+      padding: 0 15%;
+    }
+    .loginBtn {
+      padding: 12px 20px;
+      width: 100%;
+      margin-bottom: 80px;
+    }
+    .login-code {
+      width: 34%;
+      height: 40px;
+      float: right;
+      img {
+        cursor: pointer;
+        vertical-align: middle;
+      }
     }
   }
-  .input-icon {
-    height: 39px;
-    width: 14px;
-    margin-left: 2px;
+
+  .el-login-footer {
+    color: #99d5fb;
+    position: fixed;
+    width: 100%;
+    bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 24px;
+    p {
+      margin: 0;
+    }
   }
-}
-.login-tip {
-  font-size: 13px;
-  text-align: center;
-  color: #bfbfbf;
-}
-.login-code {
-  width: 33%;
-  height: 38px;
-  float: right;
-  img {
-    cursor: pointer;
-    vertical-align: middle;
-  }
-}
-.el-login-footer {
-  height: 40px;
-  line-height: 40px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-family: Arial;
-  font-size: 12px;
-  letter-spacing: 1px;
 }
 </style>

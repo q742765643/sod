@@ -989,7 +989,7 @@ export default {
     }
   },
   mounted() {
-    this.getOptionsData();
+    // this.getOptionsData();
   },
   computed: {
     dragOptions() {

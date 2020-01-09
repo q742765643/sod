@@ -203,40 +203,7 @@
         </el-col>-->
       </el-row>
     </section>
-    <section>
-      <el-row class="row-bg">
-        <el-col :span="24" class="leftCol elcol">
-          <span class="homeTitle">接口统计</span>
-          <div class="charTooles">
-            <span>
-              时间：
-              <el-date-picker
-                :picker-options="pickerOptions"
-                @change="interfaceClassify"
-                end-placeholder="结束日期"
-                range-separator="至"
-                start-placeholder="开始日期"
-                type="datetimerange"
-                v-model="selectData"
-                value-format="yyyy-MM-dd HH:mm:ss"
-              ></el-date-picker>
-            </span>
-            <span>资料分类 :</span>
-            <span class="sourceClassifyClass">
-              <el-select @change="interfaceClassify" placeholder="请选择" v-model="selectClassify">
-                <el-option
-                  :key="item.key"
-                  :label="item.name"
-                  :value="item.key"
-                  v-for="item in sourceClassify"
-                ></el-option>
-              </el-select>
-            </span>
-          </div>
-          <div class="chartsBox" id="interfaceChart"></div>
-        </el-col>
-      </el-row>
-    </section>
+
     <div class="footer">
       <p>
         <span style="font-weight: bold;">相关链接：</span>
@@ -285,7 +252,7 @@ export default {
       // 代办提醒
       eventList: [
         { name: "新增资料审核", alreadyDone: 0, notDone: 0 },
-        // { name: '数据授权审核', alreadyDone: 0, notDone: 0 },
+        { name: "数据授权审核", alreadyDone: 0, notDone: 0 },
         { name: "数据库账户审核", alreadyDone: 0, notDone: 0 },
         { name: "业务专题库审核", alreadyDone: 0, notDone: 0 },
         { name: "云数据库审核", alreadyDone: 0, notDone: 0 }
@@ -296,28 +263,7 @@ export default {
       projectLibraryList: [],
       // 帮助文档
       documentList: [],
-      selectData: [], //选中的时间
-      selectClassify: "SURF", //选中的分类
-      sourceClassify: [
-        { key: "SURF", name: "地面资料" },
-        { key: "UPAR", name: "高空资料" },
-        { key: "OCEN", name: "海洋资料" },
-        { key: "RADI", name: "辐射资料" },
-        { key: "AGME", name: "农气资料" },
-        { key: "NAFP", name: "数值模式" },
-        { key: "CAWN", name: "大气成分" },
-        { key: "DISA", name: "气象灾害" },
-        { key: "RADA", name: "雷达资料" },
-        { key: "SATE", name: "卫星资料" },
-        { key: "SEVP", name: "服务产品" },
-        { key: "OTHER", name: "其他资料" }
-      ], //资料分类
-      pickerOptions: {
-        //不可选择当天以后的时间
-        disabledDate(time) {
-          return time.getTime() > Date.now();
-        }
-      },
+
       interfaceData: [] //获取到的接口数据
     };
   },
@@ -326,8 +272,7 @@ export default {
     this.drawBarChartClass();
     // 资料种类统计
     this.drawLineChart();
-    //接口统计
-    this.interfaceClassify();*/
+    */
   },
   created() {
     this.getEventList();
@@ -823,113 +768,7 @@ export default {
           testExport(interfaceObj.download + "?filepath=" + name);
         });
     },
-    //接口统计
-    interfaceClassify() {
-      let params = {};
-      if (this.selectData == null) {
-        params.dataclass = this.selectClassify;
-      } else {
-        params.starttime =
-          this.selectData.length == 0 ? "" : this.selectData[0];
-        params.endtime = this.selectData.length == 0 ? "" : this.selectData[1];
-        params.dataclass = this.selectClassify;
-      }
-      this.axios
-        .get(interfaceObj.interfaceStatistics, { params })
-        .then(({ data }) => {
-          if (data.returnCode == 0) {
-            const resData = data.data;
-            this.interfaceData = resData;
-            let xAxisArr = [],
-              seriesDataArr = [];
-            resData.forEach(item => {
-              xAxisArr.push(item.interfaceid);
-              seriesDataArr.push(item.count);
-            });
-            // 基于准备好的dom，初始化echarts实例
-            var myChart = echarts.init(
-              document.getElementById("interfaceChart")
-            );
-            // 绘制图表
-            myChart.setOption({
-              title: {
-                text: "接口访问数量统计",
-                left: "center",
-                textStyle: {
-                  fontSize: 14,
-                  fontWeight: "normal"
-                }
-              },
-              tooltip: {
-                trigger: "axis",
-                axisPointer: {
-                  // 坐标轴指示器，坐标轴触发有效
-                  type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
-                },
-                padding: 10,
-                backgroundColor: "#222",
-                borderColor: "#777",
-                borderWidth: 1,
-                formatter: obj => {
-                  let interfaceInfo = this.getInterfaceInfo(obj[0].name);
-                  return (
-                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' +
-                    obj[0].name +
-                    '</div>访问次数：<span style="font-weight:bold;color:#0db9dd;font-size:15px;">' +
-                    obj[0].value +
-                    '次</span><br>接口描述：<span style="font-weight:bold;color:#0db9dd;font-size:15px;">' +
-                    interfaceInfo +
-                    "</span>"
-                  );
-                }
-              },
-              color: ["#058ae5"],
-              calculable: true,
-              yAxis: [
-                {
-                  name: "单位: 次数",
-                  nameRotate: 90,
-                  nameGap: 50,
-                  nameLocation: "middle",
-                  type: "value",
-                  axisLabel: {
-                    formatter: "{value}"
-                  },
-                  boundaryGap: [0, 0.01],
-                  minInterval: 1
-                }
-              ],
-              xAxis: [
-                {
-                  type: "category",
-                  data: xAxisArr,
-                  axisLabel: {
-                    interval: 0,
-                    rotate: 40
-                  },
-                  show: false
-                }
-              ],
-              series: [
-                {
-                  name: "访问次数",
-                  type: "bar",
-                  barWidth: "60%",
-                  data: seriesDataArr
-                }
-              ]
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: data.returnMessage
-            });
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
+
     //获取接口详细信息
     getInterfaceInfo(name) {
       let interfacename = "";
@@ -1109,7 +948,6 @@ section {
   p {
     font: 12px "宋体";
     text-align: center;
-    padding-bottom: 10px;
   }
   a {
     color: #4a4a4a;
@@ -1198,19 +1036,6 @@ section {
 }
 .box-card {
   margin-bottom: 22px;
-}
-.charTooles {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
-  & > span {
-    margin-left: 10px;
-  }
-  .sourceClassifyClass {
-    margin: 10px;
-    //padding: 10px;
-  }
 }
 
 /* 系统banner */

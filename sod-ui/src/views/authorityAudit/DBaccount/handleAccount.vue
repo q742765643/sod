@@ -34,15 +34,15 @@
           <el-form-item label="申请绑定IP" prop="databaseup_IP">
             <el-input
               size="small"
+              disabled
               v-model="msgFormDialog.databaseup_IP"
-              :disabled="ipDisabled"
               :placeholder="palceholderIp"
             ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="3">
           <el-form-item class="unitFormItem">
-            <el-select
+            <!-- <el-select
               size="small"
               v-model="msgFormDialog.databaseup_IP_SEGMENT"
               @change="ipChange"
@@ -50,7 +50,8 @@
             >
               <el-option label="指定IP" value="1"></el-option>
               <el-option label="IP段" value="2"></el-option>
-            </el-select>
+            </el-select>-->
+            <el-button size="small" type="primary" @click="showEditIp">编辑</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -171,16 +172,34 @@
     </el-form>
 
     <!-- 确定取消 -->
-    <div slot="footer" class="dialog-footer"  v-show="isHideAdd">
+    <div slot="footer" class="dialog-footer" v-show="isHideAdd">
       <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
     <!-- 审核 -->
-    <div slot="footer" class="dialog-footer"  v-show="isHide">
+    <div slot="footer" class="dialog-footer" v-show="isHide">
       <el-button type="primary" @click="trueDialog('ruleForm')">通 过</el-button>
       <el-button @click="cancelDialog('ruleForm')">不 通 过</el-button>
     </div>
-  
+    <el-dialog width="30%" title="信息" :visible.sync="innerVisible" append-to-body>
+      <div class="ipDialog">
+        <el-form :model="ipArryForm" label-width="30px" ref="ipform">
+          <el-form-item
+            v-for="(domain,index) in ipArryForm.domains"
+            :key="domain.key"
+            :label="index+1+''"
+          >
+            <el-input v-model="domain.value" class="elInput"></el-input>
+            <i class="el-icon-plus" @click="addDomain"></i>
+            <i class="el-icon-minus" @click.prevent="removeDomain(domain)"></i>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="iptrueDialog('ipform')">确 定</el-button>
+          <el-button @click="ipcancelDialog('ipform')">取 消</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -247,8 +266,17 @@ export default {
     };
 
     return {
+      ipArryForm: {
+        domains: [
+          {
+            value: "",
+            select: ""
+          }
+        ]
+      },
+      innerVisible: false,
       downUrl: "",
-      upLoadUrl: '',
+      upLoadUrl: "",
       isDisabled: false,
       userDiasbled: false,
       ipDisabled: false,
@@ -301,6 +329,30 @@ export default {
     // this.initServerDetail();
   },
   methods: {
+    removeDomain(item) {
+      var index = this.ipArryForm.domains.indexOf(item);
+      if (index !== 0) {
+        this.ipArryForm.domains.splice(index, 1);
+      }
+    },
+    addDomain() {
+      this.ipArryForm.domains.push({
+        value: "",
+        key: Date.now()
+      });
+    },
+    ipcancelDialog(formName) {
+      debugger;
+      this.$refs[formName].resetFields();
+      this.innerVisible = false;
+    },
+    iptrueDialog(formName) {
+      this.$refs[formName].resetFields();
+      this.innerVisible = false;
+    },
+    showEditIp() {
+      this.innerVisible = true;
+    },
     // 眼睛开关
     showPwd() {
       if (this.passwordType === "password") {
@@ -564,6 +616,28 @@ export default {
   }
   .el-icon-view {
     background: none;
+  }
+}
+.ipDialog {
+  .el-input {
+    width: 86%;
+  }
+  .el-icon-plus,
+  .el-icon-minus {
+    width: 16px;
+    height: 16px;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 16px;
+  }
+  .el-icon-plus {
+    background: #409eff;
+  }
+  .el-icon-minus {
+    background: #f56c6c;
+    margin-left: 8px;
   }
 }
 </style>

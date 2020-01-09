@@ -180,14 +180,14 @@ export default {
   },
 
   mounted() {
-    this.axios
-      .get(interfaceObj.TableStructure_getOptionsByType, {
-        params: { type: 6 }
-      })
-      .then(res => {
-        this.indexTypeOptions = res.data.data;
-      })
-      .catch(error => {});
+    // this.axios
+    //   .get(interfaceObj.TableStructure_getOptionsByType, {
+    //     params: { type: 6 }
+    //   })
+    //   .then(res => {
+    //     this.indexTypeOptions = res.data.data;
+    //   })
+    //   .catch(error => {});
   },
   watch: {
     tableInfo(val) {
