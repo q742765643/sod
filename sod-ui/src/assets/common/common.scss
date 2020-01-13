@@ -68,6 +68,10 @@ $blueSubMenuHover:rgba(22, 102, 197, 1);
             }
           }
 
+          .el-menu-item.is-active {
+            background-color: $blueMenuHover !important;
+          }
+
         }
 
       }
