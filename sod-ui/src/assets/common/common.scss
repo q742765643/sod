@@ -16,3 +16,67 @@
 .el-table td {
   padding: 10px 2px;
 }
+
+// 蓝色
+$blueMenuBg:rgba(43, 131, 233, 1);
+$blueMenuHover:rgba(22, 102, 197, 1);
+$blueSubMenuActiveText:#fff;
+$blueSubMenuBg:rgba(25, 76, 136, 1);
+$blueSubMenuHover:rgba(22, 102, 197, 1);
+
+// rgba(24, 102, 231, 0.5) !important
+#app {
+  #sidebar-menu.blueActive {
+    background: $blueMenuBg;
+
+    .sidebar-logo-container {
+      background: $blueSubMenuBg;
+    }
+
+    .el-menu {
+      background-color: $blueMenuBg !important;
+
+      .el-menu-item,
+      .el-submenu__title {
+        color: $blueSubMenuActiveText !important;
+        background-color: $blueMenuBg !important;
+
+        i {
+          color: $blueSubMenuActiveText;
+        }
+
+        &:hover {
+          background-color: $blueMenuHover !important;
+        }
+      }
+
+      .el-menu-item.is-active {
+
+        background-color: $blueMenuHover !important;
+      }
+
+      // 展开菜单
+      .el-submenu.is-opened {
+        .el-menu {
+
+          .el-menu-item,
+          .el-submenu__title {
+            background-color: $blueSubMenuBg !important;
+
+            &:hover {
+              background-color: $blueSubMenuHover !important;
+            }
+          }
+
+        }
+
+      }
+
+
+    }
+
+
+
+
+  }
+}

@@ -9,9 +9,9 @@ export function getListBYIn(query) {
   })
 }
 // 删除表格
-export function delContainerTableById(data) {
+export function delByClass(data) {
   return request({
-    url: baseUrl + '/dm/dataClass/del',
+    url: baseUrl + '/dm/dataClass/delByClass',
     method: 'delete',
     params: data
   })

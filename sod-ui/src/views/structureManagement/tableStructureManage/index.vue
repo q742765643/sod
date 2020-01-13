@@ -178,7 +178,7 @@ import {
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   getListBYIn,
-  delContainerTableById
+  delByClass
 } from "@/api/structureManagement/tableStructureManage/index";
 
 export default {
@@ -322,21 +322,17 @@ export default {
         });
       } else {
         console.log(this.currentRow);
-        delContainerTableById({ id: this.currentRow[0].DATA_CLASS_ID }).then(
-          response => {
-            if (response.code == 200) {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.searchFun("search");
-            }
+        delByClass({ id: this.currentRow[0].DATA_CLASS_ID }).then(response => {
+          if (response.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.searchFun("search");
           }
-        );
+        });
       }
     },
-    handleCurrentChange() {},
-
     composeValue() {},
     //显示表结构管理
     showStructureManage(row) {

@@ -20,7 +20,10 @@ module.exports = {
    * 是否显示logo
    */
   sidebarLogo: true,
-
+  /**
+   * 目录黑色或蓝色
+   */
+  sideMenuColor: true,
   /**
    * @type {string | array} 'production' | ['production', 'development']
    * @description Need show err logs component.
