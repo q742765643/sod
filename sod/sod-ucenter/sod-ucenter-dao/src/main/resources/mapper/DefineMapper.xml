@@ -24,7 +24,7 @@
     <select id="selectDefineList" parameterType="com.piesat.ucenter.entity.dictionary.DefineEntity" resultMap="BaseResultMap">
         <include refid="selectDefineVo"/>
         where 1=1
-        <if test="areaId != null">
+        <if test="areaId != null and areaId != ''">
             AND d.area_id = #{areaId}
         </if>
     </select>
