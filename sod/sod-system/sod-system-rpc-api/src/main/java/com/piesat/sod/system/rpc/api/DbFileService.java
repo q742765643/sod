@@ -9,7 +9,7 @@ import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
-/** 
+/** 数据库文档管理
 *@description
 *@author wlg
 *@date 2019年11月20日上午11:47:04
@@ -27,7 +27,6 @@ public interface DbFileService {
 	 * @param pageForm
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
 	PageBean findPageData(Map<String,Object> params,PageForm pageForm) throws Exception;
 	
 	/**

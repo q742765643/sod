@@ -51,7 +51,6 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	 * @param pageForm
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
 	public PageBean findPageData(Map<String, Object> params, PageForm pageForm) throws Exception{
 		if (null == pageForm) pageForm = new PageForm();
