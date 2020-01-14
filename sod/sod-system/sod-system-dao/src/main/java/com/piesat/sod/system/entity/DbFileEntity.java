@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -70,5 +71,27 @@ public class DbFileEntity implements Serializable{
 	 */
 	@Column(name="FILE_SUFFIX")
 	private String fileSuffix;
+	
+	/**
+	 * 开始时间
+	 */
+	@Transient
+	private String startDate;
+	/**
+	 *  结束时间
+	 */
+	@Transient
+	private String endDate;
+	
+	/**
+	 * 排序字段
+	 */
+	@Transient
+	private String field;
+	/**
+	 *  asc desc
+	 */
+	@Transient
+	private String order;
 
 }
