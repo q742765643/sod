@@ -170,10 +170,7 @@ export default {
         .post(interfaceObj.databaseBackup_add, msgFormDialog)
         .then(res => {
           if (res.data.returnCode == "0") {
-            this.$message({
-              type: "success",
-              message: "添加成功！"
-            });
+            this.msgSuccess("添加成功");
             this.handleBackupDialog = false;
             this.gotonext();
           } else {

@@ -102,11 +102,11 @@ export default {
       });
     },
     changMenuColor(val) {
-      let menuInfo = document.getElementById("sidebar-menu");
+      let bodyInfo = document.getElementsByTagName("body");
       if (val) {
-        menuInfo.classList.remove("blueActive");
+        bodyInfo[0].classList.remove("blueActive");
       } else {
-        menuInfo.classList.add("blueActive");
+        bodyInfo[0].classList.add("blueActive");
       }
     }
   }

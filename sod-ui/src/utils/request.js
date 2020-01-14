@@ -1,8 +1,16 @@
 import axios from 'axios'
-import { Notification, MessageBox,Message } from 'element-ui'
+import {
+  Notification,
+  MessageBox,
+  Message
+} from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
-import { Encrypt } from '@/utils/htencrypt'
+import {
+  getToken
+} from '@/utils/auth'
+import {
+  Encrypt
+} from '@/utils/htencrypt'
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
@@ -16,30 +24,30 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     if (getToken()) {
-      config.headers['Authorization'] =getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+      config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     }
-    let data=""
-    let ajax=config.headers['X-Requested-With']
-    if(typeof config.params!='undefined'){
-      data=Encrypt(JSON.stringify(config.params))
+    let data = ""
+    let ajax = config.headers['X-Requested-With'];
+    if (typeof config.params != 'undefined') {
+      data = Encrypt(JSON.stringify(config.params))
       const param = {
-        "sign":"111111",
-        "data":data
+        "sign": "111111",
+        "data": data
       }
-      config.params=param
-    }else if(typeof config.data!='undefined'){
-      data=Encrypt(JSON.stringify(config.data))
+      config.params = param
+    } else if (typeof config.data != 'undefined') {
+      data = Encrypt(JSON.stringify(config.data))
       const param = {
-        "sign":"111111",
-        "data":data
+        "sign": "111111",
+        "data": data
       }
-      config.data=param
-    }else{
+      config.data = param
+    } else {
       const param = {
-        "sign":"111111",
-        "data":""
+        "sign": "111111",
+        "data": ""
       }
-      config.params=param
+      config.params = param
     }
     return config
   },
@@ -55,8 +63,7 @@ service.interceptors.response.use(res => {
     if (code === 401) {
       MessageBox.confirm(
         '登录状态已过期，您可以继续留在该页面，或者重新登录',
-        '系统提示',
-        {
+        '系统提示', {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
           type: 'warning'

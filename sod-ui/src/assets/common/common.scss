@@ -24,63 +24,87 @@ $blueSubMenuActiveText:#fff;
 $blueSubMenuBg:rgba(25, 76, 136, 1);
 $blueSubMenuHover:rgba(22, 102, 197, 1);
 
-// rgba(24, 102, 231, 0.5) !important
-#app {
-  #sidebar-menu.blueActive {
-    background: $blueMenuBg;
+body.blueActive {
+  #app {
+    #sidebar-menu {
+      background: $blueMenuBg;
 
-    .sidebar-logo-container {
-      background: $blueSubMenuBg;
-    }
+      .sidebar-logo-container {
+        background: $blueSubMenuBg;
+      }
 
-    .el-menu {
-      background-color: $blueMenuBg !important;
-
-      .el-menu-item,
-      .el-submenu__title {
-        color: $blueSubMenuActiveText !important;
+      .el-menu {
         background-color: $blueMenuBg !important;
 
-        i {
-          color: $blueSubMenuActiveText;
-        }
+        .el-menu-item,
+        .el-submenu__title {
+          color: $blueSubMenuActiveText !important;
+          background-color: $blueMenuBg !important;
 
-        &:hover {
-          background-color: $blueMenuHover !important;
-        }
-      }
-
-      .el-menu-item.is-active {
-
-        background-color: $blueMenuHover !important;
-      }
-
-      // 展开菜单
-      .el-submenu.is-opened {
-        .el-menu {
-
-          .el-menu-item,
-          .el-submenu__title {
-            background-color: $blueSubMenuBg !important;
-
-            &:hover {
-              background-color: $blueSubMenuHover !important;
-            }
+          i {
+            color: $blueSubMenuActiveText;
           }
 
-          .el-menu-item.is-active {
+          &:hover {
             background-color: $blueMenuHover !important;
           }
+        }
+
+        .el-menu-item.is-active {
+
+          background-color: $blueMenuHover !important;
+        }
+
+        // 展开菜单
+        .el-submenu.is-opened {
+          .el-menu {
+
+            .el-menu-item,
+            .el-submenu__title {
+              background-color: $blueSubMenuBg !important;
+
+              &:hover {
+                background-color: $blueSubMenuHover !important;
+              }
+            }
+
+            .el-menu-item.is-active {
+              background-color: $blueMenuHover !important;
+            }
+
+          }
 
         }
 
-      }
 
+      }
 
     }
 
+    .navbar {
+      background: $blueSubMenuBg;
+    }
+  }
 
+  .el-menu--vertical {
 
+    .nest-menu .el-submenu>.el-submenu__title,
+    .el-menu-item {
+      &:hover {
+        // you can use $subMenuHover
+        background-color: $blueMenuHover !important;
+      }
+    }
 
+    .el-menu,
+    .el-menu-item,
+    .el-submenu__title {
+      color: $blueSubMenuActiveText !important;
+      background-color: $blueMenuBg !important;
+
+      i {
+        color: $blueSubMenuActiveText;
+      }
+    }
   }
 }

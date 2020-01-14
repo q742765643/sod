@@ -366,6 +366,24 @@
 </template>
 
 <script>
+import { addInfo, getYunDbLogic } from "@/api/authorityAudit/cloudDBaudit";
+import {
+  testExport,
+  chineseLengthTenValidation,
+  telphoneNumValidation,
+  portNumValidation,
+  ipUrlValidation
+} from "@/components/commonVaildate.js";
+import {
+  listBackup,
+  getBackup,
+  addBackup,
+  updateBackup,
+  delBackup,
+  findAllDataBase,
+  getByDatabaseId,
+  getByDatabaseIdAndClassId
+} from "@/api/schedule/backup/backup";
 export default {
   name: "handleCloudDialog",
   props: {
@@ -512,7 +530,12 @@ export default {
   },
   created() {
     this.searchObj = this.handleObj;
-    // this.getDBType();
+    getYunDbLogic().then(response => {
+      this.databaseOptions = response;
+    });
+    findAllDataBase().then(response => {
+      console.log(response.data);
+    });
     // this.getUserAll();
     // this.initServerDetail();
   },
@@ -595,12 +618,7 @@ export default {
         this.userBox = res.data.data;
       });
     },
-    // 数据库类型
-    getDBType() {
-      this.axios.get(interfaceObj.CloudDB_DBType).then(res => {
-        this.storageLogic = res.data.data;
-      });
-    },
+
     // 数据库改变
     storageChange(selectStorage) {
       console.log(selectStorage);

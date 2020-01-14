@@ -2,12 +2,12 @@
   <div class="app-container">
     <!-- 区域类别管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
-        <el-form-item label="区域标识:">
-          <el-input size="small" v-model="queryParams.user_fcst_ele" />
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        </el-form-item>
+      <el-form-item label="区域标识:">
+        <el-input size="small" v-model="queryParams.areaId" />
+      </el-form-item>
+      <el-form-item>
+        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+      </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -18,35 +18,40 @@
       </el-col>
       <el-col :span="1.5">
         <el-upload
-            class="upload-demo"
-            :action="actionUrl"
-            multiple
-            :limit="1"
-            :show-file-list="showFile"
-            :before-upload="beforeAvatarUpload"
-            :on-success="handleAvatarSuccess"
-            :header="importHeaders"
-            ref="upload"
-          >
-            <el-button size="small" type="warning" icon="el-icon-upload2">导入</el-button>
+          class="upload-demo"
+          :action="actionUrl"
+          multiple
+          :limit="1"
+          :show-file-list="showFile"
+          :before-upload="beforeAvatarUpload"
+          :on-success="handleAvatarSuccess"
+          :header="importHeaders"
+          ref="upload"
+        >
+          <el-button size="small" type="warning" icon="el-icon-upload2">导入</el-button>
         </el-upload>
       </el-col>
       <el-col :span="1.5">
-         <el-button size="small" type="success" @click="tableExoprt()" icon="el-icon-download">导出</el-button>
+        <el-button size="small" type="success" @click="tableExoprt()" icon="el-icon-download">导出</el-button>
       </el-col>
       <el-col :span="1.5">
-       <el-button size="small" type="warning" @click="deleteCell">删除</el-button>
+        <el-button size="small" type="danger" @click="deleteCell" icon="el-icon-delete">删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id" @selection-change="handleSelectionChange">
-       <el-table-column align="center" type="selection" width="50"></el-table-column>
-        <el-table-column align="center" prop="area_id" sortable label="区域标识"></el-table-column>
-        <el-table-column align="center" prop="start_lat" sortable label="开始纬度"></el-table-column>
-        <el-table-column align="center" prop="end_lat" label="结束纬度"></el-table-column>
-        <el-table-column align="center" prop="start_lon" label="开始经度"></el-table-column>
-        <el-table-column align="center" prop="end_lon" label="结束经度"></el-table-column>
-        <el-table-column align="center" prop="area_desc" label="备注"></el-table-column>
+    <el-table
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column align="center" type="selection" width="50"></el-table-column>
+      <el-table-column align="center" prop="areaId" label="区域标识"></el-table-column>
+      <el-table-column align="center" prop="startLat" label="开始纬度"></el-table-column>
+      <el-table-column align="center" prop="endLat" label="结束纬度"></el-table-column>
+      <el-table-column align="center" prop="startLon" label="开始经度"></el-table-column>
+      <el-table-column align="center" prop="endLon" label="结束经度"></el-table-column>
+      <el-table-column align="center" prop="areaDesc" label="备注"></el-table-column>
     </el-table>
 
     <pagination
@@ -57,26 +62,26 @@
       @pagination="getList"
     />
 
-     <!-- 弹窗-->
+    <!-- 弹窗-->
     <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="50%" highlight-current-row>
       <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
-         <el-form-item label="区域标识:" prop="area_id">
-          <el-input v-model="ruleForm.area_id" placeholder="请输入区域标识" />
+        <el-form-item label="区域标识:" prop="areaId">
+          <el-input v-model="ruleForm.areaId" placeholder="请输入区域标识" />
         </el-form-item>
-        <el-form-item label="开始纬度:" prop="start_lat">
-          <el-input v-model="ruleForm.start_lat" placeholder="请输入数字" />
+        <el-form-item label="开始纬度:" prop="startLat">
+          <el-input v-model.number="ruleForm.startLat" type="number" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="结束纬度:" prop="end_lat">
-          <el-input v-model="ruleForm.end_lat" placeholder="请输入数字" />
+        <el-form-item label="结束纬度:" prop="endLat">
+          <el-input v-model.number="ruleForm.endLat" type="number" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="开始经度:" prop="start_lon">
-          <el-input v-model="ruleForm.start_lon" placeholder="请输入数字" />
+        <el-form-item label="开始经度:" prop="startLon">
+          <el-input v-model.number="ruleForm.startLon" type="number" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="结束经度:" prop="end_lon">
-          <el-input v-model="ruleForm.end_lon" placeholder="请输入模板ID" />
+        <el-form-item label="结束经度:" prop="endLon">
+          <el-input v-model.number="ruleForm.endLon" placeholder="请输入结束经度" />
         </el-form-item>
-        <el-form-item label="备注:" prop="area_desc">
-          <el-input type="textarea" v-model="ruleForm.area_desc" />
+        <el-form-item label="备注:" prop="areaDesc">
+          <el-input type="textarea" v-model="ruleForm.areaDesc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -84,43 +89,68 @@
         <el-button @click="resetForm('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>
-    
-
   </div>
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
+import {
+  defineList,
+  defineSave,
+  defineEdit,
+  defineDelete
+} from "@/api/GridDataDictionaryManagement/areaType";
 export default {
   data() {
     return {
-     // 遮罩层
+      // 遮罩层
       loading: true,
       queryParams: {
-         pageNum: 1,
+        pageNum: 1,
         pageSize: 10,
-        user_fcst_ele:'',
+        areaId: ""
       },
+      tableData: [],
+      total: 0,
       // 导入
-      actionUrl:'',      
+      actionUrl: "",
       showFile: false,
       importHeaders: {
         enctype: "multipart/form-data"
       },
-      choserow:[],
+      choserow: [],
       // 弹窗
-      dialogTitle:'',
-      msgFormDialog:false,
-      ruleForm:{},
+      dialogTitle: "",
+      msgFormDialog: false,
+      ruleForm: {},
+      rules: {
+        areaId: [
+          { required: true, message: "请输入区域标识", trigger: "blur" }
+        ],
+        startLat: [
+          { required: true, message: "请输入开始纬度", trigger: "blur" }
+        ],
+        endLat: [
+          { required: true, message: "请输入结束纬度", trigger: "blur" }
+        ],
+        startLon: [
+          { required: true, message: "请输入开始经度", trigger: "blur" }
+        ],
+        endLon: [
+          { required: true, message: "请输入结束经度", trigger: "blur" }
+        ],
+        areaDesc: [{ required: true, message: "请输入备注", trigger: "blur" }]
+      }
     };
   },
   created() {
     this.getList();
   },
   methods: {
-     // table自增定义方法
+    // table自增定义方法
     table_index(index) {
-      return (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -130,23 +160,61 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      defineList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
-    showDialog(type){
+    showDialog(type) {
+      if (type == "add") {
+        this.dialogTitle = "添加";
+      } else {
+        if (this.choserow.length != 1) {
+          this.$message({
+            type: "error",
+            message: "请选择一条数据"
+          });
+          return;
+        } else {
+          this.ruleForm = this.choserow[0];
+        }
+        this.dialogTitle = "编辑";
+      }
       this.msgFormDialog = true;
     },
-    handleTrue(){
-
+    handleTrue(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.dialogTitle == "添加") {
+            defineSave(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("新增成功");
+                this.resetForm(formName);
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          } else if (this.dialogTitle == "编辑") {
+            defineEdit(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("编辑成功");
+                this.resetForm(formName);
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
-     resetForm(formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields();
       this.msgFormDialog = false;
+      this.getList();
     },
     beforeAvatarUpload(file) {
       const isJSON = file.type === "application/json";
@@ -172,9 +240,26 @@ export default {
     handleSelectionChange(val) {
       this.choserow = val;
     },
-    deleteCell(){},
-    tableExoprt(){},
-    
+    deleteCell() {
+      if (this.choserow.length == 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+        return;
+      }
+      let ids = [];
+      this.choserow.forEach(element => {
+        ids.push(element.id);
+      });
+      defineDelete(ids.join(",")).then(response => {
+        if (response.code === 200) {
+          this.msgSuccess("删除成功");
+          this.getList();
+        }
+      });
+    },
+    tableExoprt() {}
   }
 };
 </script>
