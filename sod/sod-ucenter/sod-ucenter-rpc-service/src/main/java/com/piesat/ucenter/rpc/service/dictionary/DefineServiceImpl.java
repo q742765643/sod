@@ -40,7 +40,7 @@ public class DefineServiceImpl extends BaseService<DefineEntity> implements Defi
     public PageBean selectDefineList(PageForm<DefineDto> pageForm) {
         DefineEntity defineEntity=defineMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        //根据条件查询所有
+        //根据条件查询当前分页所有
         List<DefineEntity> defineEntities=defineMapper.selectDefineList(defineEntity);
         PageInfo<DefineEntity> pageInfo = new PageInfo<>(defineEntities);
         //获取当前页数据
