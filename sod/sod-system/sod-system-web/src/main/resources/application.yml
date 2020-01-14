@@ -1,7 +1,7 @@
 server:
-  port: 1234
+  port: 2345
   servlet:
-      context-path: /system
+      context-path: /
 tomcat:
     remote-ip-header: x-forward-for
     uri-encoding: UTF-8
@@ -55,6 +55,24 @@ spring:
     show-sql: true
     #database: mysql
     open-in-view: false
+  redis:
+    host: 10.40.17.44
+    port: 6379
+    timeout: 5000
+    password:
+mybatis:
+  type-aliases-package: com.piesat.*.entity
+  mapper-locations: classpath:mapper/*.xml
+  callSettersOnNulls:  true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
 eureka:
   instance:
     prefer-ip-address: true

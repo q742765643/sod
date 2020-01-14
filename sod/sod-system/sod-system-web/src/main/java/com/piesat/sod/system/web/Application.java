@@ -27,7 +27,7 @@ import com.piesat.common.jpa.dao.GenericDaoImpl;
 @EnableJpaRepositories(basePackages = { "com.piesat" },repositoryBaseClass = GenericDaoImpl.class)
 @EnableJpaAuditing
 @EntityScan(basePackages = { "com.piesat" })
-@MapperScan("com.piesat.*.mapper")
+@MapperScan("com.piesat.sod.*.mapper")
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class,args);
