@@ -42,7 +42,7 @@ public class LevelServiceImpl extends BaseService<LevelEntity> implements LevelS
     public PageBean selectLevelList(PageForm<LevelDto> pageForm) {
         LevelEntity levelEntity=levelMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        //根据条件查询所有
+        //根据条件查询当前分页所有
         List<LevelEntity> levelEntities=levelMapper.selectLevelList(levelEntity);
         PageInfo<LevelEntity> pageInfo = new PageInfo<>(levelEntities);
         //获取当前页数据
