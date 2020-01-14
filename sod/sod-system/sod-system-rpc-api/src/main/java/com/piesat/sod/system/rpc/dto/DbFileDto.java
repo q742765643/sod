@@ -48,4 +48,21 @@ public class DbFileDto implements Serializable{
 	 * 文档后缀
 	 */
 	private String fileSuffix;
+	
+	/**
+	 *  开始时间
+	 */
+	private String startDate;
+	/**
+	 *  结束时间
+	 */
+	private String endDate;
+	/**
+	 *  排序字段
+	 */
+	private String field;
+	/**
+	 *  顺序
+	 */
+	private String order;
 }

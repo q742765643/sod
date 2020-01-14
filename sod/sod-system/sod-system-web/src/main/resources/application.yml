@@ -55,5 +55,14 @@ spring:
     show-sql: true
     #database: mysql
     open-in-view: false
+eureka:
+  instance:
+    prefer-ip-address: true
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://10.40.17.44:8761/eureka/
 serverfile:
   dbfile: D:/upload/
