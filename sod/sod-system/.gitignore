@@ -1,0 +1,9 @@
+/target/
+/src/test/
+.settings
+.project
+.classpath
+*.class
+.factorypath
+*/target/*
+target/classes/*
