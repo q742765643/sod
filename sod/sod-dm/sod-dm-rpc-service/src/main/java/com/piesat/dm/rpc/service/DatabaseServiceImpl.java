@@ -56,17 +56,10 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public List<DatabaseDto> getDatabaseName() {
-        String sql = "select t.id,concat(d.database_name,'_',t.database_name) database_name  from T_SOD_DATABASE t left join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id";
+    public List<Map<String,Object>> getDatabaseName() {
+        String sql = "select t.id ID,concat(d.database_name,'_',t.database_name) DATABASE_NAME  from T_SOD_DATABASE t left join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        List<DatabaseDto> databaseDtos = new ArrayList<DatabaseDto>();
-        for (Map<String, Object> m : list) {
-            DatabaseDto databaseDto = new DatabaseDto();
-            databaseDto.setId(toString(m.get("id")));
-            databaseDto.setDatabaseName(toString(m.get("database_name")));
-            databaseDtos.add(databaseDto);
-        }
-        return databaseDtos;
+        return list;
     }
 
     @Override
