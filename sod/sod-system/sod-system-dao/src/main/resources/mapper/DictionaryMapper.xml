@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.sod.system.mapper.DictionaryMapper">
+    <resultMap id="BaseResult" type="com.piesat.sod.system.entity.DictionaryEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="KEY_COL" jdbcType="VARCHAR" property="keyCol" />
+        <result column="TYPE" jdbcType="INTEGER" property="type" />
+        <result column="NAME_CN" jdbcType="VARCHAR" property="nameCn" />
+        <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+        <result column="FLAG" jdbcType="VARCHAR" property="flag" />
+        <result column="CAN_DELETE" jdbcType="VARCHAR" property="canDelete" />
+        <result column="MENU" jdbcType="INTEGER" property="menu" />
+        <result column="SERIAL_NUMBER" jdbcType="VARCHAR" property="serialNumber" />
+        <result column="DATA_TYPE" jdbcType="VARCHAR" property="dataType" />
+        
+    </resultMap>
+    <!-- 条件查询 -->
+    <select id="selectList" parameterType="com.piesat.sod.system.entity.DictionaryEntity" resultMap="BaseResult">
+		select
+			t1.id,t1.key_col,t1.type,t1.name_cn,t1.description,
+			t1.flag,t1.can_delete,t1.menu,t1.serial_number,t2.key_col as data_type
+		from 
+			dmin_system_dictionary t1 left join (select key_col,type from dmin_system_dictionary where flag = 'T') t2
+		on 
+			t1.type = t2.type
+		where
+			t1.flag = 'D'
+		<if test="keyCol != null and keyCol != ''">
+			and upper(key_col) like upper('%'||#{keyCol}||'%')
+		</if>
+		order by serial_number asc 
+    </select>
+
+</mapper>

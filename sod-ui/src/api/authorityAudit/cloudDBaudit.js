@@ -31,3 +31,31 @@ export function getYunDbLogic(data) {
     method: 'get',
   })
 }
+// 获取文件存储类型存储空间大小
+export function getFileLogic(data) {
+  return request({
+    url: baseUrl + '/system/api/cldbApplication/getFileLogic',
+    method: 'get',
+  })
+}
+// 获取mysql类型存储空间大小
+export function getMysqlLogic(data) {
+  return request({
+    url: baseUrl + '/system/api/cldbApplication/getMysqlLogic',
+    method: 'get',
+  })
+}
+//获取redis类型存储空间大小
+export function getRedisLogic(data) {
+  return request({
+    url: baseUrl + '/system/api/cldbApplication/getRedisLogic',
+    method: 'get',
+  })
+}
+// 获取cpu内存类型
+export function databaseLogic(data) {
+  return request({
+    url: baseUrl + '/system/api/cldbApplication/databaseLogic',
+    method: 'get',
+  })
+}
