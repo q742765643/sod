@@ -84,10 +84,7 @@
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig.js";
-//分页组件
-// import Pagination from "@/components/Pagination";
-
+import { defineList } from "@/api/dbDictMangement/dbServiceCodeManagement";
 export default {
   name: "filedSearchDeploy",
   data() {
@@ -115,7 +112,7 @@ export default {
       tableData: [],
       //当前选中列
       currentRow: null,
-      dataTotal: 0,
+      total: 0,
       //删除确认信息
       dialogVisible: false,
       rules: {
@@ -148,22 +145,28 @@ export default {
     table_index(index) {
       return (this.queryParams.page - 1) * this.queryParams.rows + index + 1;
     },
-    handleQuery(searchMsg) {
-      if (searchMsg == "") {
-        this.$refs.pagination.paginateObj.page = 1;
-      }
-      let paginateObj = this.$refs.pagination.paginateObj;
-      this.queryParams = { ...this.queryParams, ...paginateObj };
-      this.axios
-        .post(
-          interfaceObj.dbServiceCodeManagement_queryAllDataEle,
-          this.queryParams
-        )
-        .then(res => {
-          this.tableData = res.data.rows;
-          this.dataTotal = res.data.total;
-        });
+    handleQuery() {
+      this.loading = true;
+      console.log(this.queryParams);
+      defineList(this.queryParams).then(response => {
+        console.log(response);
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
+
+      // this.queryParams = { ...this.queryParams};
+      // this.axios
+      //   .post(
+      //     interfaceObj.dbServiceCodeManagement_queryAllDataEle,
+      //     this.queryParams
+      //   )
+      //   .then(res => {
+      //     this.tableData = res.data.rows;
+      //     this.dataTotal = res.data.total;
+      //   });
     },
+
     //添加
     showAddDialog() {
       this.DataDialog = true;
