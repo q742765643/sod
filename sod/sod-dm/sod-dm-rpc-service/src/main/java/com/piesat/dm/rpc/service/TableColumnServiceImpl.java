@@ -10,6 +10,7 @@ import com.piesat.dm.rpc.mapper.TableColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +36,17 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(tableColumnDto);
         tableColumnEntity = this.save(tableColumnEntity);
         return this.tableColumnMapper.toDto(tableColumnEntity);
+    }
+
+    @Override
+    public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
+        List<TableColumnDto> l = new ArrayList<>();
+        for (TableColumnDto t:tableColumnDtoList  ) {
+            TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(t);
+            tableColumnEntity = this.save(tableColumnEntity);
+            l.add(this.tableColumnMapper.toDto(tableColumnEntity));
+        }
+        return l;
     }
 
     @Override

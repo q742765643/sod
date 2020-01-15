@@ -14,6 +14,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 表信息
  *
@@ -41,8 +43,8 @@ public class DataTableController {
                 dataTableDto.setColumns(dot.getColumns());
                 dataTableDto.setTableIndexList(dot.getTableIndexList());
             }
-            DataLogicDto dataLogicDto = dataLogicService.getDotById(dataTableDto.getClassLogicId().getId());
-            dataTableDto.setClassLogicId(dataLogicDto);
+            DataLogicDto dataLogicDto = dataLogicService.getDotById(dataTableDto.getClassLogic().getId());
+            dataTableDto.setClassLogic(dataLogicDto);
             DataTableDto save = this.dataTableService.saveDto(dataTableDto);
             return ResultT.success(save);
         } catch (Exception e) {
@@ -91,5 +93,29 @@ public class DataTableController {
         }
     }
 
+    @ApiOperation(value = "根据物理库id和存储编码查询")
+    @RequiresPermissions("dm:dataTable:dc")
+    @GetMapping(value = "/dc")
+    public ResultT getByDatabaseIdAndClassId(String databaseId,String dataClassId){
+        try {
+            List<DataTableDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId,dataClassId);
+            return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
+    @ApiOperation(value = "根据数据用途id查询")
+    @RequiresPermissions("dm:dataTable:gcl")
+    @GetMapping(value = "/gcl")
+    public ResultT getByClassLogicId(String classLogic){
+        try {
+            List<DataTableDto> r = this.dataTableService.getByClassLogicId(classLogic);
+            return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

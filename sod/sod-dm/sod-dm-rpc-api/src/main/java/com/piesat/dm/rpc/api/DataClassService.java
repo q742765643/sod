@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.DataClassDto;
@@ -22,9 +23,17 @@ public interface DataClassService {
 
     void delete(String id);
 
+    void deleteByDataClassId(String dataClassId);
+
     List<DataClassDto> all();
 
-    List<Map<String, Object>> getLogicClass();
+    JSONArray getLogicClass();
 
-    List<Map<String, Object>> getDatabaseClass();
+    DataClassDto findByDataClassId(String dataClassId);
+
+    JSONArray getDatabaseClass();
+
+    JSONArray getTree();
+
+    List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId);
 }

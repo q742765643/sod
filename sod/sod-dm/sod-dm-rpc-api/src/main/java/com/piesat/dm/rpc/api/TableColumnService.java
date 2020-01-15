@@ -17,6 +17,8 @@ import java.util.List;
 public interface TableColumnService {
     TableColumnDto saveDto(TableColumnDto tableColumnDto);
 
+    List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList);
+
     TableColumnDto getDotById(String id);
 
     void delete(String id);

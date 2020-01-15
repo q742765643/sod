@@ -4,6 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.DatabaseDefineDto;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface DatabaseDefineService {
     void delete(String id);
 
     List<DatabaseDefineDto> all();
+
+    PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
 }

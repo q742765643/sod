@@ -9,6 +9,13 @@ import java.util.List;
 
 @Repository
 public interface DataTableDao extends BaseDao<DataTableEntity> {
-    @Query(value="select a from DataTableEntity a,DataLogicEntity b where a.classLogicId=b.id and b.databaseId =?1 and b.dataClassId = ?2")
+    @Query(value="select a from DataTableEntity a,DataLogicEntity b where a.classLogic=b.id and b.databaseId =?1 and (?2 is null or b.dataClassId = ?2) ")
     List<DataTableEntity> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+
+    @Query(value="select a from DataTableEntity a where a.classLogic.id = ?1")
+    List<DataTableEntity> getByClassLogicId(String classLogic);
+
+    void deleteByClassLogic_Id(String clId);
+
+    List<DataTableEntity> findByClassLogic_Id(String clId);
 }

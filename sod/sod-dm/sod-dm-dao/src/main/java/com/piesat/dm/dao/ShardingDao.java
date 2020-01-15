@@ -15,4 +15,5 @@ import java.util.List;
 @Repository
 public interface ShardingDao extends BaseDao<ShardingEntity> {
     List<ShardingEntity> findByTableId(String tableId);
+    void deleteByTableId(String tableId);
 }

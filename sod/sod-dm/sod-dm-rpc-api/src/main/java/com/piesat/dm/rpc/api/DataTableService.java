@@ -24,4 +24,6 @@ public interface DataTableService {
     List<DataTableDto> all();
 
     List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+
+    List<DataTableDto> getByClassLogicId(String classLogic);
 }

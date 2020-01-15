@@ -20,7 +20,7 @@ public class DataTableDto {
     /**
      * class_logic_id
      */
-    private DataLogicDto classLogicId;
+    private DataLogicDto classLogic;
 
     /**
      * data_service_id

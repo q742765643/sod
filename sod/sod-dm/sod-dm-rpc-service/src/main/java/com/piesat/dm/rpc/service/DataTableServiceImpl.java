@@ -55,6 +55,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         return this.dataTableMapper.toDto(tableEntities);
     }
 
+    @Override
+    public List<DataTableDto> getByClassLogicId(String classLogic) {
+        List<DataTableEntity> tableEntities = this.dataTableDao.getByClassLogicId(classLogic);
+        return this.dataTableMapper.toDto(tableEntities);
+    }
 
 
 }

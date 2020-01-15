@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.core.parser.ColumnSet;
 import com.piesat.dm.dao.DatabaseAdministratorDao;
 import com.piesat.dm.entity.DatabaseAdministratorEntity;
 import com.piesat.dm.rpc.api.DatabaseAdministratorService;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库管理账户
@@ -28,6 +30,8 @@ public class DatabaseAdministratorServiceImpl extends BaseService<DatabaseAdmini
     private DatabaseAdministratorMapper databaseAdministratorMapper;
     @Autowired
     private DatabaseDefineMapper databaseDefineMapper;
+    @Autowired
+    private ColumnSet columnSet;
 
     @Override
     public BaseDao<DatabaseAdministratorEntity> getBaseDao() {
@@ -55,6 +59,10 @@ public class DatabaseAdministratorServiceImpl extends BaseService<DatabaseAdmini
 
     @Override
     public List<DatabaseAdministratorDto> all() {
+        Map<String, Object> cassandra = columnSet.getCassandra();
+        Map<String, Object> gbase8a = columnSet.getGbase8a();
+        Map<String, Object> xugu = columnSet.getXugu();
+        System.out.println(xugu.size());
         List<DatabaseAdministratorEntity> all = this.getAll();
         return this.databaseAdministratorMapper.toDto(all);
     }

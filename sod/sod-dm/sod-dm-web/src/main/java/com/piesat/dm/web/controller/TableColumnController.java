@@ -42,7 +42,7 @@ public class TableColumnController {
         try {
             TableColumnDto save = this.tableColumnService.saveDto(tableColumnDto);
             DataTableDto dataTable = dataTableService.getDotById(save.getTableId());
-            DataLogicDto dataLogic = dataTable.getClassLogicId();
+            DataLogicDto dataLogic = dataTable.getClassLogic();
             if (dataLogic.getIsComplete()==null||!dataLogic.getIsComplete()){
                 dataLogic.setIsComplete(true);
                 dataLogicService.saveDto(dataLogic);
@@ -88,6 +88,25 @@ public class TableColumnController {
         try {
             List<TableColumnDto> all = this.tableColumnService.all();
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "批量添加")
+    @RequiresPermissions("dm:tableColumn:saveList")
+    @GetMapping(value = "/saveList")
+    public ResultT saveDtoList(@RequestBody List<TableColumnDto> tableColumnDtoList){
+        try {
+            List<TableColumnDto> save = this.tableColumnService.saveDtoList(tableColumnDtoList);
+            DataTableDto dataTable = dataTableService.getDotById(save.get(0).getTableId());
+            DataLogicDto dataLogic = dataTable.getClassLogic();
+            if (dataLogic.getIsComplete()==null||!dataLogic.getIsComplete()){
+                dataLogic.setIsComplete(true);
+                dataLogicService.saveDto(dataLogic);
+            }
+            return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

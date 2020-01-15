@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>sod-dm-common</module>
+        <module>sod-dm-core</module>
         <module>sod-dm-dao</module>
         <module>sod-dm-rpc-api</module>
         <module>sod-dm-rpc-service</module>

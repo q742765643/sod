@@ -5,6 +5,7 @@ import com.piesat.dm.rpc.dto.DatabaseDefineDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -76,6 +77,20 @@ public class DatabaseDefineController {
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "分页查询(支持id和databaseName查询)")
+    @RequiresPermissions("dm:databaseDefine:page")
+    @GetMapping(value = "/page")
+    public ResultT<PageBean> getPage(DatabaseDefineDto databaseDefineDto,
+                            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        try {
+            PageBean page = this.databaseDefineService.getPage(databaseDefineDto, pageNum, pageSize);
+            return ResultT.success(page);
+        }catch (Exception e){
             return ResultT.failed(e.getMessage());
         }
     }

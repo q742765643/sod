@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.dto.DataClassDto;
 import com.piesat.sso.client.annotation.Log;
@@ -68,6 +69,20 @@ public class DataClassController {
         }
     }
 
+    @ApiOperation(value = "根据dataClassId删除")
+    @RequiresPermissions("dm:dataClass:delByClass")
+    @Log(title = "资料分类管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/delByClass")
+    public ResultT deleteByClassName(String dataClassId){
+        try {
+            this.dataClassService.deleteByDataClassId(dataClassId);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "查询所有")
     @RequiresPermissions("dm:dataClass:all")
     @GetMapping(value = "/all")
@@ -86,7 +101,7 @@ public class DataClassController {
     @GetMapping(value = "/logicClass")
     public ResultT getLogicClass() {
         try {
-            List<Map<String, Object>> all = this.dataClassService.getLogicClass();
+            JSONArray all = this.dataClassService.getLogicClass();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,7 +114,33 @@ public class DataClassController {
     @GetMapping(value = "/databaseClass")
     public ResultT getDatabaseClass() {
         try {
-            List<Map<String, Object>> all = this.dataClassService.getDatabaseClass();
+            JSONArray all = this.dataClassService.getDatabaseClass();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "按数据库查询资料分类树")
+    @RequiresPermissions("dm:dataClass:getTree")
+    @GetMapping(value = "/getTree")
+    public ResultT getTree() {
+        try {
+            JSONArray tree = this.dataClassService.getTree();
+            return ResultT.success(tree);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据目录查询资料")
+    @RequiresPermissions("dm:dataClass:getListBYIn")
+    @GetMapping(value = "/getListBYIn")
+    public ResultT getListBYIn(List<String> classIds, String className, String dDataId){
+        try {
+            List<Map<String, Object>> all = this.dataClassService.getListBYIn(classIds,className,dDataId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

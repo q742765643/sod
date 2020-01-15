@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.dao.DataLogicDao;
 import com.piesat.dm.dao.DataTableDao;
 import com.piesat.dm.dao.ShardingDao;
@@ -12,6 +13,7 @@ import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.mapper.DataLogicMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -73,7 +75,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
 
     public void importData() {
         String sql = "select * from DMIN_DATA_CLASS_LOGIC a,DMIN_DATA_DL_PHYSICS b where a.CLASS_LOGIC_ID = b.DL_ID";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
             DataLogicEntity dc = new DataLogicEntity();
             String class_logic_id = toString(m.get("CLASS_LOGIC_ID"));
@@ -90,10 +92,10 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             importData(class_logic_id,save);
         }
     }
-
+    @Transactional
     public void importData(String oldId, DataLogicEntity newId) {
         String sql = "select * from DMIN_DATA_ID_TABLE where CLASS_LOGIC_ID = '"+oldId+"'";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
             DataTableEntity dt = new DataTableEntity();
             String table_id = toString(m.get("TABLE_ID"));
@@ -114,11 +116,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             String user_id = toString(m.get("USER_ID"));
             dt.setUserId(user_id);
             String class_logic_id = toString(m.get("CLASS_LOGIC_ID"));
-            dt.setClassLogicId(newId);
+            dt.setClassLogic(newId);
             dt.setCreateTime(new Date());
             dt = this.dataTableDao.save(dt);
             sql = "select * from DMIN_DATA_TABLE_FIELD where TABLE_ID ='" + table_id + "'";
-            List<Map<String, Object>> columns = this.queryByNativeSQL(sql);
+            List<Map> columns = CodeDOM.getList(sql);
             Set<TableColumnEntity> columnArr = new HashSet<>();
             for (Map<String, Object> columnMap : columns) {
                 TableColumnEntity tc = new TableColumnEntity();
@@ -166,7 +168,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             dt.setColumns(columnArr);
             dt = this.dataTableDao.save(dt);
             sql = "select * from DMIN_DB_TABLE_INDEX where TABLE_ID ='" + table_id + "'";
-            List<Map<String, Object>> indexs = this.queryByNativeSQL(sql);
+            List<Map> indexs = CodeDOM.getList(sql);
             Set<TableIndexEntity> indexArr = new HashSet<>();
             for (Map<String, Object> indexMap:indexs) {
                 TableIndexEntity ti = new TableIndexEntity();
@@ -185,7 +187,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             dt = this.dataTableDao.save(dt);
 
             sql = "select * from DMIN_SHARDING where TABLE_ID ='" + table_id + "'";
-            List<Map<String, Object>> shardings = this.queryByNativeSQL(sql);
+            List<Map> shardings = CodeDOM.getList(sql);
             for (Map<String, Object> sMap:shardings) {
             ShardingEntity se = new ShardingEntity();
                 se.setTableId(dt.getId());

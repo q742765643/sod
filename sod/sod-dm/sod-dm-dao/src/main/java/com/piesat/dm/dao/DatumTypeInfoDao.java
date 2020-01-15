@@ -2,7 +2,11 @@ package com.piesat.dm.dao;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.DatumTypeInfoEntity;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 公共元数据
@@ -12,5 +16,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DatumTypeInfoDao extends BaseDao<DatumTypeInfoEntity> {
-
+    @Query(value = "select * from T_SOD_DATA_DATUMTYPEINFO A left join T_SOD_DATA_CLASS B ON A.",nativeQuery = true)
+    List<Map<String, Object>> getMyAll();
 }

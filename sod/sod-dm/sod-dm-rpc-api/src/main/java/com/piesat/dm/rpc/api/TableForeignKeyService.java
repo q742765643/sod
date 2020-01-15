@@ -22,4 +22,6 @@ public interface TableForeignKeyService {
     void delete(String id);
 
     List<TableForeignKeyDto> all();
+
+    List<TableForeignKeyDto> findByTableId(String tableId);
 }

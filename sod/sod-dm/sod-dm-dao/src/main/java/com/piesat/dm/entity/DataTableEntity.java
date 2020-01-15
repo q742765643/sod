@@ -24,7 +24,7 @@ public class DataTableEntity extends BaseEntity {
      */
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "class_logic_id")
-    private DataLogicEntity classLogicId;
+    private DataLogicEntity classLogic;
 
     /**
      * data_service_id
