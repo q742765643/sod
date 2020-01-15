@@ -152,7 +152,7 @@ public class DictionaryController {
 	 * @return
 	 */
 	@ApiOperation(value="删除接口",notes="删除接口,id逗号拼接")
-	@DeleteMapping(value="/updateById")
+	@DeleteMapping(value="/deleteByIds")
 	public ResultT deleteByIds(String ids) {
 		try {
 			

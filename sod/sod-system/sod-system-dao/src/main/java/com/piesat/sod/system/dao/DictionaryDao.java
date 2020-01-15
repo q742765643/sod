@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.sod.system.entity.DictionaryEntity;
@@ -40,6 +41,7 @@ public interface DictionaryDao extends BaseDao<DictionaryEntity>{
 	 */
 	@Query(value="delete from DictionaryEntity where id in :ids")
 	@Modifying
+	@Transactional
 	void deleteByIds(@Param("ids") List<String> ids) throws Exception;
 
 }
