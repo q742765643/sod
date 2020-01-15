@@ -15,6 +15,7 @@ import com.piesat.dm.rpc.mapper.DatabaseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,20 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public List<DatabaseDto> all() {
         List<DatabaseEntity> all = this.getAll();
         return this.databaseMapper.toDto(all);
+    }
+
+    @Override
+    public List<DatabaseDto> getDatabaseName() {
+        String sql = "select t.id,concat(d.database_name,'_',t.database_name) database_name  from T_SOD_DATABASE t left join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        List<DatabaseDto> databaseDtos = new ArrayList<DatabaseDto>();
+        for (Map<String, Object> m : list) {
+            DatabaseDto databaseDto = new DatabaseDto();
+            databaseDto.setId(toString(m.get("id")));
+            databaseDto.setDatabaseName(toString(m.get("database_name")));
+            databaseDtos.add(databaseDto);
+        }
+        return databaseDtos;
     }
 
     @Override
