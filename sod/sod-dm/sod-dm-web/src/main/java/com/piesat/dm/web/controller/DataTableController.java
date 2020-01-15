@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表信息
@@ -112,6 +113,19 @@ public class DataTableController {
     public ResultT getByClassLogicId(String classLogic){
         try {
             List<DataTableDto> r = this.dataTableService.getByClassLogicId(classLogic);
+            return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据物理库id查询")
+    @RequiresPermissions("dm:dataTable:db")
+    @GetMapping(value = "/db")
+    public ResultT getByDatabaseId(String databaseId){
+        try {
+            List<Map<String, Object>> r = this.dataTableService.getByDatabaseId(databaseId);
             return ResultT.success(r);
         } catch (Exception e) {
             e.printStackTrace();
