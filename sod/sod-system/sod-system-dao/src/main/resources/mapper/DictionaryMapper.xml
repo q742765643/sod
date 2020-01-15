@@ -30,5 +30,9 @@
 		</if>
 		order by serial_number asc 
     </select>
+    <!-- 获取最大type -->
+    <select id="selectMaxType" resultType ="java.lang.Integer">
+    	select max(type) from dmin_system_dictionary
+    </select>
 
 </mapper>

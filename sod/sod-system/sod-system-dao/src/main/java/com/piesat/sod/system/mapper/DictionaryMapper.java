@@ -24,4 +24,13 @@ public interface DictionaryMapper {
 	 * @return
 	 */
 	public List<DictionaryEntity> selectList(DictionaryEntity dictionaryEntity);
+	
+	/**
+	 *  获得最大type
+	 * @description 
+	 * @author wlg
+	 * @date 2020年1月15日上午9:50:50
+	 * @return
+	 */
+	public Integer selectMaxType();
 }

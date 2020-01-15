@@ -1,10 +1,16 @@
 package com.piesat.sod.system.web.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.util.StringUtil;
 import com.piesat.sod.system.rpc.api.DictionaryService;
 import com.piesat.sod.system.rpc.dto.DictionaryDto;
 import com.piesat.util.ResultT;
@@ -50,5 +56,117 @@ public class DictionaryController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
+	
+	/**
+	 *  获取字典分组
+	 * @description 
+	 * @author wlg
+	 * @date 2020年1月15日上午8:53:02
+	 * @param menu
+	 * @return
+	 */
+	@ApiOperation(value="获取字典分组接口",notes="获取字典分组接口")
+	@GetMapping(value="/findMenu")
+	public ResultT findMenu(String menu) {
+		try {
+			if(StringUtil.isEmpty(menu)) return ResultT.failed("参数不能为空");
+			
+			List<DictionaryDto> data = dictionaryService.findMenu(menu);
+			return ResultT.success(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+	
+	/**
+	 *  新增字典分组
+	 * @description 
+	 * @author wlg
+	 * @date 2020年1月15日上午10:00:55
+	 * @param dictionaryDto
+	 * @return
+	 */
+	@ApiOperation(value="新增字典分组",notes="新增字典分组接口")
+	@PostMapping(value="/addType")
+	public ResultT addType(DictionaryDto dictionaryDto) {
+		try {
+			dictionaryService.addType(dictionaryDto);
+			return ResultT.success("操作成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+
+	/**
+	 *  主键查询
+	 * @description 
+	 * @author wlg
+	 * @date 2020年1月15日上午10:29:25
+	 * @param id
+	 * @return
+	 */
+	@ApiOperation(value="根据id查询接口",notes="根据id查询接口")
+	@GetMapping(value="/findById")
+	public ResultT findById(String id) {
+		try {
+			if(StringUtil.isEmpty(id)) return ResultT.failed("参数不能为空");
+			
+			DictionaryDto data = dictionaryService.findById(id);
+			return ResultT.success(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+	
+	/**
+	 * 根据id编辑数据
+	 * @description 
+	 * @author wlg
+	 * @date 2020年1月15日上午10:55:34
+	 * @param dictionaryDto
+	 * @return
+	 */
+	@ApiOperation(value="编辑接口",notes="编辑接口")
+	@PutMapping(value="/updateById")
+	public ResultT updateById(DictionaryDto dictionaryDto) {
+		try {
+			DictionaryDto old = dictionaryService.findById(dictionaryDto.getId());
+			if(null == old) return ResultT.failed("当前数据不存在或者已删除");
+			
+			dictionaryService.updateDictionary(dictionaryDto);
+			return ResultT.success("操作成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+	/**
+	 *  删除接口
+	 * @description 
+	 * @author wlg
+	 * @date 2020年1月15日上午11:47:35
+	 * @param ids
+	 * @return
+	 */
+	@ApiOperation(value="删除接口",notes="删除接口,id逗号拼接")
+	@DeleteMapping(value="/updateById")
+	public ResultT deleteByIds(String ids) {
+		try {
+			
+			if(StringUtil.isEmpty(ids)) return ResultT.failed("参数不能为空");
+			
+			dictionaryService.deleteByIds(ids);
+			return ResultT.success("操作成功");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+	
+	
 
 }
