@@ -22,4 +22,6 @@ public interface DatabaseService {
     void delete(String id);
 
     List<DatabaseDto> all();
+
+    List<DatabaseDto> getDatabaseName();
 }
