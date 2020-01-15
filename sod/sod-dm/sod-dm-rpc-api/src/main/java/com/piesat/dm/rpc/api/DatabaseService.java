@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库基础库专题库
@@ -23,5 +24,5 @@ public interface DatabaseService {
 
     List<DatabaseDto> all();
 
-    List<DatabaseDto> getDatabaseName();
+    List<Map<String,Object>> getDatabaseName();
 }
