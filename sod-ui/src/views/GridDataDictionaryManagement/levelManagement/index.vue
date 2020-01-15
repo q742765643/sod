@@ -2,15 +2,15 @@
   <div class="app-container">
     <!-- 层次属性 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
-       <el-form-item size="small"  label="GRIB格式:">
-          <el-input v-model="queryParams.grib_version" placeholder="请输入GRIB格式" />
-        </el-form-item>
-        <el-form-item size="small"  label="层次类型:">
-          <el-input v-model="queryParams.level_type" placeholder="请输入层次类型" />
-        </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        </el-form-item>
+      <el-form-item size="small" label="GRIB格式:">
+        <el-input v-model="queryParams.gribVersion" placeholder="请输入GRIB格式" />
+      </el-form-item>
+      <el-form-item size="small" label="层次类型:">
+        <el-input v-model="queryParams.levelType" placeholder="请输入层次类型" />
+      </el-form-item>
+      <el-form-item>
+        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+      </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -20,24 +20,30 @@
         <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-       <el-button size="small" type="warning" @click="deleteCell">删除</el-button>
+        <el-button size="small" type="danger" @click="deleteCell" icon="el-icon-delete">删除</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id" @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="50"></el-table-column>
-        <el-table-column align="center" prop="grib_version" label="GRIB版本" ></el-table-column>
-        <el-table-column align="center" prop="level_type"  label="层次类型"></el-table-column>
-        <el-table-column align="center" prop="level_code"  label="层次代码"></el-table-column>
-        <el-table-column align="center" prop="scale_divisor" label="比例因子"></el-table-column>
-        <el-table-column align="center"
-          prop="level_properity"
-          label="英文描述"
-          width="360"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column align="center" prop="level_name" label="中文描述" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column align="center" prop="unit" label="单位"></el-table-column>
+    <el-table
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column align="center" type="selection" width="50"></el-table-column>
+      <el-table-column align="center" prop="gribVersion" label="GRIB版本"></el-table-column>
+      <el-table-column align="center" prop="levelType" label="层次类型"></el-table-column>
+      <el-table-column align="center" prop="levelCode" label="层次代码"></el-table-column>
+      <el-table-column align="center" prop="scaleDivisor" label="比例因子"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="levelProperity"
+        label="英文描述"
+        width="360"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column align="center" prop="levelName" label="中文描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column align="center" prop="unit" label="单位"></el-table-column>
     </el-table>
 
     <pagination
@@ -48,26 +54,26 @@
       @pagination="getList"
     />
 
-     <!-- 弹窗-->
+    <!-- 弹窗-->
     <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="45%">
       <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
-        <el-form-item label="grib格式:" prop="grib_version">
-          <el-input v-model.number="ruleForm.grib_version" />
+        <el-form-item label="grib格式:" prop="gribVersion">
+          <el-input v-model.number="ruleForm.gribVersion" type="number" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="层次类型:" prop="level_type">
-          <el-input v-model.number="ruleForm.level_type" />
+        <el-form-item label="层次类型:" prop="levelType">
+          <el-input v-model.number="ruleForm.levelType" type="number" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="层次代码:" prop="level_code">
-          <el-input v-model="ruleForm.level_code" />
+        <el-form-item label="层次代码:" prop="levelCode">
+          <el-input v-model="ruleForm.levelCode" />
         </el-form-item>
-        <el-form-item label="比例因子:" prop="scale_divisor">
-          <el-input v-model.number="ruleForm.scale_divisor" />
+        <el-form-item label="比例因子:" prop="scaleDivisor">
+          <el-input v-model.number="ruleForm.scaleDivisor" type="number" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="英文描述:" prop="level_properity">
-          <el-input v-model="ruleForm.level_properity" />
+        <el-form-item label="英文描述:" prop="levelProperity">
+          <el-input v-model="ruleForm.levelProperity" />
         </el-form-item>
-        <el-form-item label="中文描述:" prop="level_name">
-          <el-input v-model="ruleForm.level_name" />
+        <el-form-item label="中文描述:" prop="levelName">
+          <el-input v-model="ruleForm.levelName" />
         </el-form-item>
         <el-form-item label="单位:" prop="unit">
           <el-input v-model="ruleForm.unit" />
@@ -78,43 +84,71 @@
         <el-button @click="resetForm('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>
-    
-
   </div>
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
+import {
+  levelList,
+  levelSave,
+  levelEdit,
+  levelDelete
+} from "@/api/GridDataDictionaryManagement/levelManagement";
 export default {
   data() {
     return {
-     // 遮罩层
+      // 遮罩层
       loading: true,
       queryParams: {
-         pageNum: 1,
+        pageNum: 1,
         pageSize: 10,
-        user_fcst_ele:'',
+        user_fcst_ele: ""
       },
+      tableData: [],
+      total: 0,
       // 导入
-      actionUrl:'',      
+      actionUrl: "",
       showFile: false,
       importHeaders: {
         enctype: "multipart/form-data"
       },
-      choserow:[],
+      choserow: [],
       // 弹窗
-      dialogTitle:'',
-      msgFormDialog:false,
-      ruleForm:{},
+      dialogTitle: "",
+      msgFormDialog: false,
+      ruleForm: {},
+      rules: {
+        gribVersion: [
+          { required: true, message: "请输入grib格式", trigger: "blur" }
+        ],
+        levelType: [
+          { required: true, message: "请输入层次类型", trigger: "blur" }
+        ],
+        levelCode: [
+          { required: true, message: "请输入层次代码", trigger: "blur" }
+        ],
+        scaleDivisor: [
+          { required: true, message: "请输入比例因子", trigger: "blur" }
+        ],
+        levelProperity: [
+          { required: true, message: "请输入英文描述", trigger: "blur" }
+        ],
+        levelName: [
+          { required: true, message: "请输入中文描述", trigger: "change" }
+        ],
+        unit: [{ required: true, message: "请输入单位", trigger: "change" }]
+      }
     };
   },
   created() {
     this.getList();
   },
   methods: {
-     // table自增定义方法
+    // table自增定义方法
     table_index(index) {
-      return (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -124,23 +158,62 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      levelList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
-    showDialog(type){
+    showDialog(type) {
+      if (type == "add") {
+        this.dialogTitle = "添加";
+      } else {
+        if (this.choserow.length != 1) {
+          this.$message({
+            type: "error",
+            message: "请选择一条数据"
+          });
+          return;
+        } else {
+          this.ruleForm = this.choserow[0];
+        }
+        this.dialogTitle = "编辑";
+      }
       this.msgFormDialog = true;
     },
-    handleTrue(){
-
+    handleTrue(formName) {
+      console.log(this.ruleForm);
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.dialogTitle == "添加") {
+            levelSave(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("新增成功");
+                this.resetForm(formName);
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          } else if (this.dialogTitle == "编辑") {
+            levelEdit(this.ruleForm).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("编辑成功");
+                this.resetForm(formName);
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
-     resetForm(formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields();
       this.msgFormDialog = false;
+      this.getList();
     },
     beforeAvatarUpload(file) {
       const isJSON = file.type === "application/json";
@@ -166,10 +239,27 @@ export default {
     handleSelectionChange(val) {
       this.choserow = val;
     },
-    deleteCell(){},
-    tableExoprt(){},
-    superClick(){}
-    
+    deleteCell() {
+      if (this.choserow.length == 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+        return;
+      }
+      let ids = [];
+      this.choserow.forEach(element => {
+        ids.push(element.id);
+      });
+      levelDelete(ids.join(",")).then(response => {
+        if (response.code === 200) {
+          this.msgSuccess("删除成功");
+          this.getList();
+        }
+      });
+    },
+    tableExoprt() {},
+    superClick() {}
   }
 };
 </script>

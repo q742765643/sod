@@ -12,7 +12,12 @@
       class="header-search-select"
       @change="change"
     >
-      <el-option v-for="item in options" :key="item.path" :value="item" :label="item.title.join(' > ')" />
+      <el-option
+        v-for="item in options"
+        :key="item.path"
+        :value="item"
+        :label="item.title.join(' > ')"
+      />
     </el-select>
   </div>
 </template>
@@ -20,62 +25,62 @@
 <script>
 // fuse is a lightweight fuzzy-search module
 // make search results more in line with expectations
-import Fuse from 'fuse.js'
-import path from 'path'
+import Fuse from "fuse.js";
+import path from "path";
 
 export default {
-  name: 'HeaderSearch',
+  name: "HeaderSearch",
   data() {
     return {
-      search: '',
+      search: "",
       options: [],
       searchPool: [],
       show: false,
       fuse: undefined
-    }
+    };
   },
   computed: {
     routes() {
-      return this.$store.getters.permission_routes
+      return this.$store.getters.permission_routes;
     }
   },
   watch: {
     routes() {
-      this.searchPool = this.generateRoutes(this.routes)
+      this.searchPool = this.generateRoutes(this.routes);
     },
     searchPool(list) {
-      this.initFuse(list)
+      this.initFuse(list);
     },
     show(value) {
       if (value) {
-        document.body.addEventListener('click', this.close)
+        document.body.addEventListener("click", this.close);
       } else {
-        document.body.removeEventListener('click', this.close)
+        document.body.removeEventListener("click", this.close);
       }
     }
   },
   mounted() {
-    this.searchPool = this.generateRoutes(this.routes)
+    this.searchPool = this.generateRoutes(this.routes);
   },
   methods: {
     click() {
-      this.show = !this.show
+      this.show = !this.show;
       if (this.show) {
-        this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus()
+        this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.focus();
       }
     },
     close() {
-      this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur()
-      this.options = []
-      this.show = false
+      this.$refs.headerSearchSelect && this.$refs.headerSearchSelect.blur();
+      this.options = [];
+      this.show = false;
     },
     change(val) {
-      this.$router.push(val.path)
-      this.search = ''
-      this.options = []
+      this.$router.push(val.path);
+      this.search = "";
+      this.options = [];
       this.$nextTick(() => {
-        this.show = false
-      })
+        this.show = false;
+      });
     },
     initFuse(list) {
       this.fuse = new Fuse(list, {
@@ -85,58 +90,67 @@ export default {
         distance: 100,
         maxPatternLength: 32,
         minMatchCharLength: 1,
-        keys: [{
-          name: 'title',
-          weight: 0.7
-        }, {
-          name: 'path',
-          weight: 0.3
-        }]
-      })
+        keys: [
+          {
+            name: "title",
+            weight: 0.7
+          },
+          {
+            name: "path",
+            weight: 0.3
+          }
+        ]
+      });
     },
     // Filter out the routes that can be displayed in the sidebar
     // And generate the internationalized title
-    generateRoutes(routes, basePath = '/', prefixTitle = []) {
-      let res = []
+    generateRoutes(routes, basePath = "/", prefixTitle = []) {
+      let res = [];
 
       for (const router of routes) {
         // skip hidden router
-        if (router.hidden) { continue }
+        if (router.hidden) {
+          continue;
+        }
 
         const data = {
           path: path.resolve(basePath, router.path),
           title: [...prefixTitle]
-        }
+        };
 
         if (router.meta && router.meta.title) {
-          data.title = [...data.title, router.meta.title]
+          data.title = [...data.title, router.meta.title];
 
-          if (router.redirect !== 'noRedirect') {
+          if (router.redirect !== "noRedirect") {
             // only push the routes with title
             // special case: need to exclude parent router without redirect
-            res.push(data)
+            res.push(data);
           }
         }
 
         // recursive child routes
         if (router.children) {
-          const tempRoutes = this.generateRoutes(router.children, data.path, data.title)
+          const tempRoutes = this.generateRoutes(
+            router.children,
+            data.path,
+            data.title
+          );
           if (tempRoutes.length >= 1) {
-            res = [...res, ...tempRoutes]
+            res = [...res, ...tempRoutes];
           }
         }
       }
-      return res
+      return res;
     },
     querySearch(query) {
-      if (query !== '') {
-        this.options = this.fuse.search(query)
+      if (query !== "") {
+        this.options = this.fuse.search(query);
       } else {
-        this.options = []
+        this.options = [];
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

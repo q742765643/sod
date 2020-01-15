@@ -3,10 +3,10 @@
     <!-- 数据库开发文档 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="文档名称">
-        <el-input size="small" v-model="queryParams.nameUser"></el-input>
+        <el-input size="small" v-model="queryParams.fileName"></el-input>
       </el-form-item>
       <el-form-item label="文档后缀">
-        <el-input size="small" v-model="queryParams.nameUser"></el-input>
+        <el-input size="small" v-model="queryParams.fileSuffix"></el-input>
       </el-form-item>
       <el-form-item label="上传时间">
         <el-date-picker
@@ -26,7 +26,16 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/">
+        <el-upload
+          class="upload-demo"
+          :action="uploadUrl"
+          multiple
+          :limit="1"
+          :show-file-list="showFile"
+          :before-upload="beforeUpload"
+          :on-success="handleAvatarSuccess"
+          ref="upload"
+        >
           <el-button size="small" type="primary" icon="el-icon-upload">上传</el-button>
         </el-upload>
       </el-col>
@@ -34,14 +43,18 @@
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
     </el-row>
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="application_unit" label="文档名称"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="文档后缀"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="文档类型"></el-table-column>
-      <el-table-column align="center" prop="application_time" label="上传时间">
-        <!-- <template slot-scope="scope">{{scope.row.application_time.split('.')[0]}}</template> -->
-      </el-table-column>
+      <el-table-column align="center" prop="fileName" label="文档名称"></el-table-column>
+      <el-table-column align="center" prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
+      <el-table-column align="center" prop="filePictrue" label="文档类型" width="100px"></el-table-column>
+      <el-table-column align="center" prop="updateTime" label="上传时间" width="180px"></el-table-column>
       <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="scope">
           <el-button
@@ -66,16 +79,8 @@
 </template>
 
 <script>
-import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
+const baseUrl = process.env.VUE_APP_DB_API;
 export default {
   data() {
     return {
@@ -84,13 +89,19 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        fileName: "",
+        fileSuffix: "",
+        endDate: "",
+        startDate: "",
+        time: ["", ""],
+        order: "desc",
+        fileType: "dev"
       },
       total: 0,
-      tableData: []
+      tableData: [],
+      currentRow: null,
+      uploadUrl: "",
+      showFile: false
     };
   },
   created() {
@@ -111,27 +122,83 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      if (this.queryParams.time && this.queryParams.time.length > 0) {
+        this.queryParams.startDate = this.queryParams.time[0];
+        this.queryParams.endDate = this.queryParams.time[1];
+      }
+      getpage(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     resetQuery() {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        fileName: "",
+        fileSuffix: "",
+        endDate: "",
+        startDate: "",
+        time: ["", ""],
+        order: "desc"
       };
       this.handleQuery();
     },
-
-    deleteCell(row) {},
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
+    deleteCell() {
+      if (this.currentRow) {
+        this.$confirm("数据删除后将无法恢复，确认删除?", "温馨提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            deleteByIds(this.currentRow.recordId).then(response => {
+              if (response.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功"
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  type: "error",
+                  message: response.msg
+                });
+              }
+            });
+          })
+          .catch(() => {});
+      } else {
+        this.$message({
+          type: "danger",
+          message: "请选择一条数据"
+        });
+      }
+    },
+    beforeUpload() {
+      upload().then(response => {
+        console.log(response);
+      });
+    },
+    handleAvatarSuccess(res, file) {
+      if (res.returnCode == 0) {
+        this.$message({
+          type: "success",
+          message: "导入成功"
+        });
+        this.getList();
+      } else {
+        this.$message({
+          type: "error",
+          message: "导入失败"
+        });
+      }
+      this.$refs.upload.clearFiles();
+    },
     downloadFile() {},
     viewFile() {}
   }

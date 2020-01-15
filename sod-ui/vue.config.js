@@ -67,6 +67,21 @@ module.exports = {
           ['^' + process.env.VUE_APP_SERVER_API]: ''
         }
       },
+      [process.env.VUE_APP_DICT]: {
+        target: `http://10.40.17.44:1234`,
+        // target: `http://10.28.104.199:1234`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_DICT]: ''
+        }
+      },
+      [process.env.VUE_APP_DB_API]: {
+        target: `http://10.28.104.152:2345`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_DB_API]: ''
+        }
+      },
     },
     disableHostCheck: true
   },

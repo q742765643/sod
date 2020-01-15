@@ -19,6 +19,7 @@
     left: 0;
     z-index: 1001;
     overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .5);
 
     // reset element-ui css
     .horizontal-collapse-transition {
@@ -89,6 +90,7 @@
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;
+
     }
 
     .main-container {

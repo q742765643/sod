@@ -98,8 +98,8 @@
                 <el-option
                   v-for="(item,index) in storageSpace"
                   :key="index"
-                  :label="item.label"
-                  :value="item.value"
+                  :label="item.key_col"
+                  :value="item.key_col"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -120,12 +120,14 @@
               prop="cpu_memory"
               v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='网络共享存储'"
             >
-              <el-input
-                :disabled="isDetail"
-                size="small"
-                v-model="msgFormDialog.cpu_memory"
-                placeholder="申请CPU/内存"
-              ></el-input>
+              <el-select :disabled="isDetail" size="small" v-model="msgFormDialog.cpu_memory">
+                <el-option
+                  v-for="(item,index) in cpuList"
+                  :key="index"
+                  :label="item.key_col"
+                  :value="item.key_col"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -217,17 +219,18 @@
           </el-col>
         </el-row>
       </el-card>
-      <el-card class="box-card" v-if="examineStatus">
+      <el-card class="box-card" v-if="examineStatus || msgFormDialog.storage_logic !='XUGU'">
         <div slot="header" class="clearfix">
           <span>分配信息</span>
         </div>
-        <el-row type="flex" class="row-bg" justify="center">
+        <el-row
+          type="flex"
+          class="row-bg"
+          justify="center"
+          v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
+        >
           <el-col :span="8">
-            <el-form-item
-              label="挂载服务器"
-              prop="mount_server"
-              v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
-            >
+            <el-form-item label="挂载服务器" prop="mount_server">
               <el-input
                 :disabled="isDetail"
                 size="small"
@@ -239,11 +242,7 @@
           <el-col :span="8">
             <el-row>
               <el-col :span="20">
-                <el-form-item
-                  label="挂载目录"
-                  prop="mount_directory"
-                  v-if="msgFormDialog.storage_logic !='Redis'&& msgFormDialog.storage_logic !='XUGU'"
-                >
+                <el-form-item label="挂载目录" prop="mount_directory">
                   <el-input
                     :disabled="isDetail"
                     size="small"
@@ -261,7 +260,12 @@
           </el-col>
           <el-col :span="8"></el-col>
         </el-row>
-        <el-row type="flex" class="row-bg" justify="center">
+        <el-row
+          type="flex"
+          class="row-bg"
+          justify="center"
+          v-if="msgFormDialog.storage_logic !='网络共享存储'"
+        >
           <el-col :span="8">
             <el-form-item label="数据库IP" prop="db_ip">
               <el-input
@@ -303,7 +307,12 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row type="flex" class="row-bg" justify="center">
+        <el-row
+          type="flex"
+          class="row-bg"
+          justify="center"
+          v-if="msgFormDialog.storage_logic !='网络共享存储'"
+        >
           <el-col :span="8">
             <el-form-item label="数据库用户名" prop="db_username">
               <el-input
@@ -366,6 +375,23 @@
 </template>
 
 <script>
+import {
+  addInfo,
+  getYunDbLogic,
+  getFileLogic,
+  getMysqlLogic,
+  getRedisLogic,
+  databaseLogic
+} from "@/api/authorityAudit/cloudDBaudit";
+
+import {
+  testExport,
+  chineseLengthTenValidation,
+  telphoneNumValidation,
+  portNumValidation,
+  ipUrlValidation
+} from "@/components/commonVaildate.js";
+
 export default {
   name: "handleCloudDialog",
   props: {
@@ -445,6 +471,7 @@ export default {
         db_username: "",
         db_password: ""
       },
+      cpuList: [],
       rules: {
         app_user: [
           { required: true, message: "请选择申请用户", trigger: "change" }
@@ -512,9 +539,12 @@ export default {
   },
   created() {
     this.searchObj = this.handleObj;
-    // this.getDBType();
-    // this.getUserAll();
-    // this.initServerDetail();
+    getYunDbLogic().then(response => {
+      this.storageLogic = response.data;
+    });
+    databaseLogic().then(response => {
+      this.cpuList = response.data;
+    });
   },
   methods: {
     // 眼睛开关
@@ -595,38 +625,23 @@ export default {
         this.userBox = res.data.data;
       });
     },
-    // 数据库类型
-    getDBType() {
-      this.axios.get(interfaceObj.CloudDB_DBType).then(res => {
-        this.storageLogic = res.data.data;
-      });
-    },
+
     // 数据库改变
     storageChange(selectStorage) {
       console.log(selectStorage);
       this.msgFormDialog.storage_space = "";
       if (selectStorage == "Redis") {
-        this.storageSpace = [
-          { label: "2GB", value: "2GB" },
-          { label: "8GB", value: "8GB" },
-          { label: "16GB", value: "16GB" },
-          { label: "32GB", value: "32GB" }
-        ];
+        getRedisLogic().then(response => {
+          this.storageSpace = response.data;
+        });
       } else if (selectStorage == "网络共享存储") {
-        this.storageSpace = [
-          { label: "500GB", value: "500GB" },
-          { label: "2TB", value: "2TB" },
-          { label: "4TB", value: "4TB" },
-          { label: "8TB", value: "8TB" }
-        ];
-      } else if (selectStorage == "XUGU") {
-        this.storageSpace = [
-          { label: "5GB", value: "5GB" },
-          { label: "10GB", value: "10GB" },
-          { label: "50GB", value: "50GB" },
-          { label: "100GB", value: "100GB" },
-          { label: "200GB", value: "200GB" }
-        ];
+        getFileLogic().then(response => {
+          this.storageSpace = response.data;
+        });
+      } else if (selectStorage == "MySQL") {
+        getMysqlLogic().then(response => {
+          this.storageSpace = response.data;
+        });
       }
     },
     // 获取服务器详情
@@ -717,6 +732,9 @@ export default {
 .handleCloudDialog {
   .el-card {
     margin-bottom: 20px;
+  }
+  .el-select {
+    width: 100%;
   }
   .el-checkbox + .el-checkbox {
     margin-left: 0;

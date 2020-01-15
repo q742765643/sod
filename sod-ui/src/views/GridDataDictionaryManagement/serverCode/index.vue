@@ -84,7 +84,7 @@ import {
   gridEleServiceDefineAdd,
   gridEleServiceDefineEdit,
   gridEleServiceDefineDelete
-} from "@/api/GridDataDictionaryManagement/serverCode/index";
+} from "@/api/GridDataDictionaryManagement/serverCode";
 
 export default {
   data() {

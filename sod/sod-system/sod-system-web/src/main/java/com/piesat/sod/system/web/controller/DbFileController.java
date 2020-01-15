@@ -1,17 +1,16 @@
 package com.piesat.sod.system.web.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.piesat.sod.system.rpc.api.DbFileService;
+import com.piesat.sod.system.rpc.dto.DbFileDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -44,17 +43,10 @@ public class DbFileController {
 	 */
 	@ApiOperation(value="获取数据库文件分页数据接口",notes="获取数据库文件分页数据接口")
 	@GetMapping(value="/api/dbfile/getpage")
-	public ResultT getPageData(HttpServletRequest request,PageForm pageForm) {
+	public ResultT getPageData(DbFileDto dbFileDto,int pageNum, int pageSize) {
 		try {
-			Map<String,Object> param = new HashMap<>();
-			param.put("fileType", request.getParameter("fileType"));
-			param.put("fileName", request.getParameter("fileName"));
-			param.put("fileSuffix", request.getParameter("fileSuffix"));
-			param.put("fileStartDate", request.getParameter("fileStartDate"));
-			param.put("fileEndDate", request.getParameter("fileEndDate"));
-			param.put("field", request.getParameter("field"));
-			param.put("order", request.getParameter("order"));
-			PageBean page = dbFileService.findPageData(param, pageForm);
+			PageForm<DbFileDto> pageForm = new PageForm<>(pageNum,pageSize,dbFileDto);
+			PageBean page = dbFileService.findPageData(pageForm);
 			return ResultT.success(page);
 			
 		} catch (Exception e) {
@@ -91,7 +83,7 @@ public class DbFileController {
 	 * @return
 	 */
 	@ApiOperation(value="数据库文档删除接口",notes="数据库文档删除接口")
-	@GetMapping(value="/api/dbfile/deleteByIds")
+	@DeleteMapping(value="/api/dbfile/deleteByIds")
 	public ResultT deleteByIds(HttpServletRequest request){
 		String ids = request.getParameter("ids");
 		try {

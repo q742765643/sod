@@ -86,16 +86,16 @@
           <el-input v-model="ruleForm.eleCodeShort" placeholder="请输入要素存储短名" />
         </el-form-item>
         <el-form-item label="学科:" prop="subjectId">
-          <el-input v-model="ruleForm.subjectId" type="number" placeholder="请输入数字" />
+          <el-input v-model.number="ruleForm.subjectId" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="参数种类:" prop="classify">
-          <el-input v-model="ruleForm.classify" type="number" placeholder="请输入数字" />
+          <el-input v-model.number="ruleForm.classify" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="参数编码:" prop="parameterId">
-          <el-input v-model="ruleForm.parameterId" type="number" placeholder="请输入数字" />
+          <el-input v-model.number="ruleForm.parameterId" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="GRIB版本:" prop="gribVersion">
-          <el-select v-model="ruleForm.gribVersion">
+          <el-select v-model.number="ruleForm.gribVersion">
             <el-option label="1" value="1"></el-option>
             <el-option label="2" value="2"></el-option>
           </el-select>
@@ -138,7 +138,7 @@ import {
   gridEleDecodeDefineDelete,
   exportJSON,
   importJSON
-} from "@/api/GridDataDictionaryManagement/GRIBdefine/index";
+} from "@/api/GridDataDictionaryManagement/GRIBdefine";
 
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
@@ -244,10 +244,6 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.dialogTitle == "添加") {
-            this.ruleForm.classify = parseInt(this.ruleForm.classify);
-            this.ruleForm.gribVersion = parseInt(this.ruleForm.gribVersion);
-            this.ruleForm.parameterId = parseInt(this.ruleForm.parameterId);
-            this.ruleForm.subjectId = parseInt(this.ruleForm.subjectId);
             console.log(this.ruleForm);
             gridEleDecodeDefineAdd(this.ruleForm).then(response => {
               if (response.code === 200) {

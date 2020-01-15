@@ -644,10 +644,7 @@ export default {
           .post(interfaceObj.databaseTransfer_add, dialogObj)
           .then(res => {
             if (res.data.returnCode == 0) {
-              this.$message({
-                type: "success",
-                message: "添加成功"
-              });
+              this.msgSuccess("添加成功");
               //debugger;
               this.$emit("handleClose");
             } else {
@@ -662,10 +659,7 @@ export default {
           .post(interfaceObj.databaseTransfer_update, dialogObj)
           .then(res => {
             if (res.data.returnCode == 0) {
-              this.$message({
-                type: "success",
-                message: "编辑成功"
-              });
+              this.msgSuccess("编辑成功");
               this.$emit("handleClose");
             } else {
               this.$message({

@@ -63,18 +63,10 @@
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column align="center" prop="application_unit" label="申请单位" width="120px"></el-table-column>
-      <el-table-column align="center" prop="application_time" label="申请时间" width="160px">
-        <!-- <template slot-scope="scope">{{scope.row.application_time.split('.')[0]}}</template> -->
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="examine_time"
-        label="审核时间"
-        width="160px"
-        :formatter="examineShow"
-      ></el-table-column>
+      <el-table-column align="center" prop="application_time" label="申请时间" width="160px"></el-table-column>
+      <el-table-column align="center" prop="examine_time" label="审核时间" width="160px"></el-table-column>
       <el-table-column align="center" prop="storage_logic" label="数据库类型" width="120px"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="数据库名"></el-table-column>
+      <el-table-column align="center" prop="db_name" label="数据库名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column align="center" prop="db_use" label="用 途" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column
         align="center"
@@ -143,15 +135,9 @@
 
 <script>
 import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+  cldbApplicationAll,
+  deleteExamine
+} from "@/api/authorityAudit/cloudDBaudit";
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
 export default {
   components: {
@@ -167,20 +153,30 @@ export default {
         examine_status: "",
         nameUser: "",
         nameSourceDB: "",
-        time: ["", ""]
+        time: ["", ""],
+        beginTime: "",
+        endTime: ""
       },
-      examineStatus: [
+      auditStatus: [
         {
-          value: "0",
-          label: "待审核"
+          value: "01",
+          label: "待审"
         },
         {
-          value: "2",
-          label: "审核未通过"
+          value: "02",
+          label: "已审"
         },
         {
-          value: "1",
-          label: "审核通过"
+          value: "03",
+          label: "拒绝"
+        },
+        {
+          value: "04",
+          label: "申请释放"
+        },
+        {
+          value: "05",
+          label: "已释放"
         }
       ],
       total: 0,
@@ -207,13 +203,17 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      if (this.queryParams.time && this.queryParams.time.length > 0) {
+        this.queryParams.beginTime = this.queryParams.time[0];
+        this.queryParams.endTime = this.queryParams.time[1];
+      }
+
+      console.log(this.queryParams);
+      cldbApplicationAll(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     resetQuery() {
       this.queryParams = {
@@ -225,6 +225,22 @@ export default {
         time: ["", ""]
       };
       this.handleQuery();
+    },
+    // 状态
+    statusShow: function(row) {
+      if (row.examine_status == "01") {
+        return "待审";
+      } else if (row.examine_status == "02") {
+        return "已审";
+      } else if (row.examine_status == "03") {
+        return "拒绝";
+      } else if (row.examine_status == "04") {
+        return "申请释放";
+      } else if (row.examine_status == "05") {
+        return "已释放";
+      } else {
+        return "-";
+      }
     },
     handleAdd() {
       this.dialogTitle = "新增数据库账户审核";
@@ -238,12 +254,42 @@ export default {
         confirmButtonText: "确定"
       });
     },
+    // 资源分析
+    analysisCell(row) {
+      this.$message({
+        type: "info",
+        message: "资源分析暂无数据"
+      });
+    },
     viewCell(row) {
       this.dialogTitle = "数据库账户审核";
       this.handleObj = row;
       this.handleDialog = true;
     },
-    deleteCell(row) {},
+    deleteCell(row) {
+      this.$confirm(
+        "确定要删除数据库名为" + row.db_name + "的这条数据吗?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(() => {
+          let cellObj = {};
+          cellObj.application_id = row.application_id;
+          cellObj.db_name = row.db_name;
+          console.log(cellObj);
+          deleteExamine(cellObj).then(response => {
+            if (response.code == 200) {
+              this.msgSuccess("删除成功");
+              this.getList();
+            }
+          });
+        })
+        .catch(() => {});
+    },
     analysisCell(row) {},
     handleDialogClose() {
       this.handleDialog = false;

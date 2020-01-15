@@ -1,11 +1,10 @@
 package com.piesat.sod.system.rpc.api;
 
-import java.util.Map;
-
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.sod.system.rpc.dto.DbFileDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
@@ -27,7 +26,7 @@ public interface DbFileService {
 	 * @param pageForm
 	 * @return
 	 */
-	PageBean findPageData(Map<String,Object> params,PageForm pageForm) throws Exception;
+	PageBean findPageData(PageForm<DbFileDto> pageForm) throws Exception;
 	
 	/**
 	 * 上传文件
