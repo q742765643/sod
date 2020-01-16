@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表信息
@@ -24,6 +25,7 @@ public interface DataTableService {
     List<DataTableDto> all();
 
     List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+    List<Map<String, Object>> getByDatabaseId(String databaseId);
 
     List<DataTableDto> getByClassLogicId(String classLogic);
 }

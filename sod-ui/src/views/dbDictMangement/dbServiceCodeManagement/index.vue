@@ -17,14 +17,14 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showAddDialog()" icon="el-icon-search">添加</el-button>
+        <el-button size="small" type="primary" @click="showAddDialog()" icon="el-icon-plus">添加</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showEditDialog()" icon="el-icon-edit">编辑</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button size="small" type="danger" @click="deleteAlert()" icon="el-icon-delete">删除</el-button>
-      </el-col>
+      </el-col>-->
     </el-row>
     <el-table
       :data="tableData"
@@ -34,17 +34,27 @@
       style="width: 100%;"
     >
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column width="40">
+      <!-- <el-table-column width="40">
         <template slot-scope="scope">
           <el-checkbox v-model="scope.row.checked"></el-checkbox>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column prop="user_ele_code" label="服务代码" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="db_ele_code" label="字段编码"></el-table-column>
       <el-table-column prop="ele_name" label="要素中文名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="ele_unit" label="单位" width="120"></el-table-column>
       <el-table-column prop="is_code_param" label="是否有标识代码表"></el-table-column>
       <el-table-column prop="code_table_id" label="标识代码表"></el-table-column>
+      <el-table-column prop="code_table_id" label="操作">
+        <template slot-scope="scope">
+          <el-button
+            icon="el-icon-delete"
+            type="text"
+            size="mini"
+            @click="deleteSingleCode(scope.row.user_ele_code)"
+          >删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -84,7 +94,10 @@
 </template>
 
 <script>
-import { defineList } from "@/api/dbDictMangement/dbServiceCodeManagement";
+import {
+  defineList,
+  deleteCode
+} from "@/api/dbDictMangement/dbServiceCodeManagement";
 export default {
   name: "filedSearchDeploy",
   data() {
@@ -138,33 +151,22 @@ export default {
     };
   },
   mounted() {
-    // this.handleQuery();
+    this.handleQuery();
   },
   methods: {
     // table自增定义方法
     table_index(index) {
-      return (this.queryParams.page - 1) * this.queryParams.rows + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     handleQuery() {
       this.loading = true;
-      console.log(this.queryParams);
       defineList(this.queryParams).then(response => {
-        console.log(response);
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
       });
-
-      // this.queryParams = { ...this.queryParams};
-      // this.axios
-      //   .post(
-      //     interfaceObj.dbServiceCodeManagement_queryAllDataEle,
-      //     this.queryParams
-      //   )
-      //   .then(res => {
-      //     this.tableData = res.data.rows;
-      //     this.dataTotal = res.data.total;
-      //   });
     },
 
     //添加
@@ -175,9 +177,36 @@ export default {
       this.editVisible = false;
       this.handleQuery();
     },
-    /**删除数据的提示框 */
+    /**删除数据*/
+    deleteSingleCode(id) {
+      this.$confirm("确定要删除吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteCode({ id: id }).then(res => {
+            res.success
+              ? (this.$message({
+                  type: "success",
+                  message: "删除成功!"
+                }),
+                this.handleQuery())
+              : this.$message({
+                  type: "error",
+                  message: "删除失败!"
+                });
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
     deleteAlert() {
-      debugger;
+      return;
       if (this.currentRow == null) {
         this.$message.error("请选择需要删除的记录！");
       } else {

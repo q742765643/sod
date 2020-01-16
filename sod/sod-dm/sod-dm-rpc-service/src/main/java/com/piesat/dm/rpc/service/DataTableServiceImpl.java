@@ -10,7 +10,9 @@ import com.piesat.dm.rpc.mapper.DataTableMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表信息
@@ -53,6 +55,14 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public List<DataTableDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         return this.dataTableMapper.toDto(tableEntities);
+    }
+
+    @Override
+    public List<Map<String, Object>> getByDatabaseId(String databaseId) {
+        //List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
+        String sql = "select A.* ,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='"+databaseId+"'";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
     }
 
     @Override

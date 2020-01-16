@@ -2,6 +2,7 @@ package com.piesat.sod.system.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.piesat.sod.system.rpc.api.DbFileService;
 import com.piesat.sod.system.rpc.dto.DbFileDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -43,6 +46,7 @@ public class DbFileController {
 	 */
 	@ApiOperation(value="获取数据库文件分页数据接口",notes="获取数据库文件分页数据接口")
 	@GetMapping(value="/api/dbfile/getpage")
+	@RequiresPermissions("api:dbfile:getpage")
 	public ResultT getPageData(DbFileDto dbFileDto,int pageNum, int pageSize) {
 		try {
 			PageForm<DbFileDto> pageForm = new PageForm<>(pageNum,pageSize,dbFileDto);
@@ -65,6 +69,8 @@ public class DbFileController {
 	 */
 	@ApiOperation(value="数据库文档上传文件接口",notes="数据库文档上传文件接口")
 	@PostMapping(value="/api/dbfile/upload")
+	@RequiresPermissions("api:dbfile:upload")
+    @Log(title = "数据库文档管理", businessType = BusinessType.INSERT)
 	public ResultT uploadFile(MultipartHttpServletRequest request) {
 		try {
 			dbFileService.save(request);
@@ -84,6 +90,8 @@ public class DbFileController {
 	 */
 	@ApiOperation(value="数据库文档删除接口",notes="数据库文档删除接口")
 	@DeleteMapping(value="/api/dbfile/deleteByIds")
+	@RequiresPermissions("api:dbfile:deleteByIds")
+    @Log(title = "数据库文档管理", businessType = BusinessType.DELETE)
 	public ResultT deleteByIds(HttpServletRequest request){
 		String ids = request.getParameter("ids");
 		try {
