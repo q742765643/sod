@@ -10,6 +10,7 @@ import com.piesat.dm.rpc.mapper.DataTableMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
-        return this.dataTableDao.getByDatabaseId(databaseId);
+        return new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
     }
 
     @Override
