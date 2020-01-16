@@ -56,6 +56,12 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    public List<TableColumnDto> findByTableId(String tableId) {
+        List<TableColumnEntity> tableColumns = this.tableColumnDao.findByTableId(tableId);
+        return tableColumnMapper.toDto(tableColumns);
+    }
+
+    @Override
     public TableColumnDto getDotById(String id) {
         TableColumnEntity tableColumnEntity = this.getById(id);
         return this.tableColumnMapper.toDto(tableColumnEntity);
