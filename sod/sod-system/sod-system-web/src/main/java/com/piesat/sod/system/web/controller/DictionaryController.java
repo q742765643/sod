@@ -2,6 +2,7 @@ package com.piesat.sod.system.web.controller;
 
 import java.util.List;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.pagehelper.util.StringUtil;
 import com.piesat.sod.system.rpc.api.DictionaryService;
 import com.piesat.sod.system.rpc.dto.DictionaryDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -27,8 +30,8 @@ import io.swagger.annotations.ApiOperation;
 *
 */
 @RestController
-@RequestMapping(value="/api/dictionary")
-@Api(value="字典表管理Controller",tags = {"字典表管理接口"})
+@RequestMapping(value="/restApi/dicmgn")
+@Api(value="字典表管理Controller",tags = {"字段与索引类型管理接口"})
 public class DictionaryController {
 	
 	@Autowired
@@ -44,6 +47,7 @@ public class DictionaryController {
 	 * @param pageSize
 	 * @return
 	 */
+	@RequiresPermissions("restApi:dicmgn:page")
 	@ApiOperation(value="字段与索引类型查询接口",notes="字段与索引类型查询接口")
 	@GetMapping(value="/page")
 	public ResultT getPage(DictionaryDto dictionaryDto,int pageNum,int pageSize) {
@@ -65,6 +69,7 @@ public class DictionaryController {
 	 * @param menu
 	 * @return
 	 */
+	@RequiresPermissions("restApi:dicmgn:findMenu")
 	@ApiOperation(value="获取字典分组接口",notes="获取字典分组接口")
 	@GetMapping(value="/findMenu")
 	public ResultT findMenu(String menu) {
@@ -89,6 +94,8 @@ public class DictionaryController {
 	 */
 	@ApiOperation(value="新增字典分组",notes="新增字典分组接口")
 	@PostMapping(value="/addType")
+	@RequiresPermissions("restApi:dicmgn:addType")
+    @Log(title = "字段与索引类型管理", businessType = BusinessType.INSERT)
 	public ResultT addType(DictionaryDto dictionaryDto) {
 		try {
 			dictionaryService.addType(dictionaryDto);
@@ -109,6 +116,7 @@ public class DictionaryController {
 	 */
 	@ApiOperation(value="根据id查询接口",notes="根据id查询接口")
 	@GetMapping(value="/findById")
+	@RequiresPermissions("restApi:dicmgn:findById")
 	public ResultT findById(String id) {
 		try {
 			if(StringUtil.isEmpty(id)) return ResultT.failed("参数不能为空");
@@ -131,6 +139,8 @@ public class DictionaryController {
 	 */
 	@ApiOperation(value="编辑接口",notes="编辑接口")
 	@PutMapping(value="/updateById")
+	@RequiresPermissions("restApi:dicmgn:updateById")
+    @Log(title = "字段与索引类型管理", businessType = BusinessType.UPDATE)
 	public ResultT updateById(DictionaryDto dictionaryDto) {
 		try {
 			DictionaryDto old = dictionaryService.findById(dictionaryDto.getId());
@@ -153,6 +163,8 @@ public class DictionaryController {
 	 */
 	@ApiOperation(value="删除接口",notes="删除接口,id逗号拼接")
 	@DeleteMapping(value="/deleteByIds")
+	@RequiresPermissions("restApi:dicmgn:deleteByIds")
+    @Log(title = "字段与索引类型管理", businessType = BusinessType.DELETE)
 	public ResultT deleteByIds(String ids) {
 		try {
 			

@@ -59,7 +59,10 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
-        return new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
+        //List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
+        String sql = "select A.* ,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='"+databaseId+"'";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
     }
 
     @Override
