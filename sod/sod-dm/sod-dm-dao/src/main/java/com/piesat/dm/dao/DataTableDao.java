@@ -13,7 +13,7 @@ public interface DataTableDao extends BaseDao<DataTableEntity> {
     @Query(value = "select a from DataTableEntity a,DataLogicEntity b where a.classLogic=b.id and b.databaseId =?1 and (?2 is null or b.dataClassId = ?2) ")
     List<DataTableEntity> getByDatabaseIdAndClassId(String databaseId, String dataClassId);
 
-    @Query(value = "select A.* from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id =?1 ", nativeQuery = true)
+    @Query(value = "select A.* ,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id =?1 ", nativeQuery = true)
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
     @Query(value = "select a from DataTableEntity a where a.classLogic.id = ?1")
