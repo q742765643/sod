@@ -6,7 +6,7 @@
           <el-container class="structureManageTable">
             <el-main id="box">
               <el-form
-                v-if="this.rowData.storage_type=='ME_table'||this.rowData.storage_type=='MK_table'||this.rowData.storage_type=='NF_table'"
+                v-if="this.rowData.STORAGE_TYPE=='ME_table'||this.rowData.STORAGE_TYPE=='MK_table'||this.rowData.STORAGE_TYPE=='NF_table'"
                 v-model="dirRule"
                 class="elementDir"
                 label-width="100px"
@@ -422,46 +422,35 @@ export default {
   methods: {
     getTableInfo() {
       //获取表信息
-      this.tabs = this.storage[this.rowData.storage_type];
-      // if (this.tabs.table.key) {
-      //   this.keyActive = "active";
-      // } else if (this.tabs.table.el) {
-      //   this.elActive = "active";
-      // }
+      this.tabs = this.storage[this.rowData.STORAGE_TYPE];
+      if (this.tabs.table.key) {
+        this.keyActive = "active";
+      } else if (this.tabs.table.el) {
+        this.elActive = "active";
+      }
       console.log(this.rowData);
       gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {
           console.log(response.data);
+          let data = response.data;
+          for (let i = 0; i < data.length; i++) {
+            let row = data[i];
+            if (row.dbTableType && "E" === row.dbTableType) {
+              this.elObj.tableInfo = row;
+            } else if (row.dbTableType && "K" === row.dbTableType) {
+              this.keyObj.tableInfo = row;
+            }
+          }
+          if (data.length == 0) {
+            let obj = {
+              nameCn: this.rowData.CLASS_NAME,
+              dataServiceId: this.rowData.DATA_CLASS_ID
+            };
+            this.elObj.tableInfo = obj;
+            this.keyObj.tableInfo = obj;
+          }
         }
       });
-      // this.axios
-      //   .get(interfaceObj.TableStructure_getTableInfo, {
-      //     params: {
-      //       data_class_id: this.rowData.data_class_id,
-      //       database_logic: this.rowData.logic_id,
-      //       storage_type: this.rowData.storage_type
-      //     }
-      //   })
-      //   .then(res => {
-      //     let data = res.data.data;
-      //     for (let i = 0; i < data.length; i++) {
-      //       let row = data[i];
-      //       if (row.db_table_type && "E" === row.db_table_type) {
-      //         this.elObj.tableInfo = row;
-      //       } else if (row.db_table_type && "K" === row.db_table_type) {
-      //         this.keyObj.tableInfo = row;
-      //       }
-      //     }
-      //     if (data.length == 0) {
-      //       let obj = {
-      //         name_cn: this.rowData.class_name,
-      //         data_service_id: this.rowData.d_data_id
-      //       };
-      //       this.elObj.tableInfo = obj;
-      //       this.keyObj.tableInfo = obj;
-      //     }
-      //   })
-      //   .catch(error => {});
     },
     getOptionsData() {
       //获取下拉选项数据
@@ -532,9 +521,9 @@ export default {
     },
     getDir() {
       if (
-        this.rowData.storage_type == "ME_table" ||
-        this.rowData.storage_type == "MK_table" ||
-        this.rowData.storage_type == "NF_table"
+        this.rowData.STORAGE_TYPE == "ME_table" ||
+        this.rowData.STORAGE_TYPE == "MK_table" ||
+        this.rowData.STORAGE_TYPE == "NF_table"
       ) {
         this.axios
           .get(interfaceObj.TableStructure_getDirRule, {

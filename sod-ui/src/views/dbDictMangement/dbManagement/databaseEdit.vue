@@ -1,84 +1,92 @@
 <template>
   <section class="filedSearchDeploy">
-    <el-tabs type="border-card" class="pageTas" v-model="activeName" @click="pageTasChange">
+    <el-tabs class="pageTas" v-model="activeName" @click="pageTasChange">
       <el-tab-pane label="基本信息" name="first">
-        <el-form
-          :model="editRow"
-          ref="editRow"
-          :rules="baseFormRules"
-          class="baseForm"
-          label-width="160px"
-        >
-          <el-form-item prop="database_id" label="数据库ID:">
-            <el-input
-              size="small"
-              :disabled="isDbIdDisable"
-              v-model="editRow.database_id"
-              placeholder="请输入数据库ID"
-            />
-          </el-form-item>
-          <el-form-item prop="database_name" label="数据库名称:">
-            <el-input size="small" v-model="editRow.database_name" placeholder="请输入数据库名称" />
-          </el-form-item>
-          <el-form-item prop="serial_number" label="显示序号:">
-            <el-input-number
-              class="number"
-              size="small"
-              v-model="editRow.serial_number"
-              placeholder="请输入显示序号"
-            />
-          </el-form-item>
-          <el-form-item prop="database_instance" label="数据库实例:">
-            <el-input size="small" v-model="editRow.database_instance" placeholder="请输入数据库实例" />
-          </el-form-item>
-          <el-form-item prop="database_type" label="数据库类型:">
-            <el-input size="small" v-model="editRow.database_type" placeholder="请输入数据库类型" />
-          </el-form-item>
-          <el-form-item prop="driver_class_name" label="数据库驱动:">
-            <el-input size="small" v-model="editRow.driver_class_name" placeholder="请输入数据库驱动" />
-          </el-form-item>
-          <el-form-item prop="database_ip" label="数据库IP:">
-            <el-input size="small" v-model="editRow.database_ip" placeholder="请输入数据库IP" />
-          </el-form-item>
-          <el-form-item prop="database_port" label="数据库端口:">
-            <el-input-number
-              class="number"
-              size="small"
-              v-model="editRow.database_port"
-              placeholder="请输入数据库端口"
-            />
-          </el-form-item>
-          <el-form-item prop="database_url" label="数据库访问地址:">
-            <el-input size="small" v-model="editRow.database_url" placeholder="请输入数据库访问地址" />
-            <el-button size="small" @click="checkParam()" type="primary" class="childBtn">测试连接</el-button>
-          </el-form-item>
-          <el-form-item prop="up_url" label="UP层访问地址:">
-            <el-input size="small" v-model="editRow.up_url" placeholder="请输入UP层访问地址" />
-          </el-form-item>
-          <el-form-item prop="display_control" label="显示控制:">
-            <el-select v-model="editRow.display_control" size="small">
-              <el-option
-                v-for="item in displayControl"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="主备类型:">
-            <el-select v-model="editRow.mainbak_type" size="small">
-              <el-option
-                v-for="item in mainbakType"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="应用场景:">
-            <el-input size="small" v-model="editRow.database_desc" placeholder="请输入应用场景" />
-          </el-form-item>
-        </el-form>
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+          <el-form
+            :model="editRow"
+            ref="editRow"
+            :rules="baseFormRules"
+            class="baseForm"
+            label-width="140px"
+          >
+            <el-form-item prop="database_id" label="数据库ID:">
+              <el-input
+                size="small"
+                :disabled="isDbIdDisable"
+                v-model="editRow.database_id"
+                placeholder="请输入数据库ID"
+              />
+            </el-form-item>
+            <el-form-item prop="database_name" label="数据库名称:">
+              <el-input size="small" v-model="editRow.database_name" placeholder="请输入数据库名称" />
+            </el-form-item>
+            <el-form-item prop="serial_number" label="显示序号:">
+              <el-input-number
+                class="number"
+                size="small"
+                v-model="editRow.serial_number"
+                placeholder="请输入显示序号"
+              />
+            </el-form-item>
+            <el-form-item prop="database_instance" label="数据库实例:">
+              <el-input size="small" v-model="editRow.database_instance" placeholder="请输入数据库实例" />
+            </el-form-item>
+            <el-form-item prop="database_type" label="数据库类型:">
+              <el-input size="small" v-model="editRow.database_type" placeholder="请输入数据库类型" />
+            </el-form-item>
+            <el-form-item prop="driver_class_name" label="数据库驱动:">
+              <el-input size="small" v-model="editRow.driver_class_name" placeholder="请输入数据库驱动" />
+            </el-form-item>
+            <el-form-item prop="database_ip" label="数据库IP:">
+              <el-input size="small" v-model="editRow.database_ip" placeholder="请输入数据库IP" />
+            </el-form-item>
+            <el-form-item prop="database_port" label="数据库端口:">
+              <el-input-number
+                class="number"
+                size="small"
+                v-model="editRow.database_port"
+                placeholder="请输入数据库端口"
+              />
+            </el-form-item>
+            <el-form-item prop="database_url" label="数据库访问地址:">
+              <el-row>
+                <el-col :span="20">
+                  <el-input size="small" v-model="editRow.database_url" placeholder="请输入数据库访问地址" />
+                </el-col>
+                <el-col :span="4" class="unitFormItem">
+                  <el-button size="small" @click="checkParam()" type="primary" class="childBtn">测试连接</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item prop="up_url" label="UP层访问地址:">
+              <el-input size="small" v-model="editRow.up_url" placeholder="请输入UP层访问地址" />
+            </el-form-item>
+            <el-form-item prop="display_control" label="显示控制:">
+              <el-select v-model="editRow.display_control" size="small">
+                <el-option
+                  v-for="item in displayControl"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="主备类型:">
+              <el-select v-model="editRow.mainbak_type" size="small">
+                <el-option
+                  v-for="item in mainbakType"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="应用场景:">
+              <el-input size="small" v-model="editRow.database_desc" placeholder="请输入应用场景" />
+            </el-form-item>
+          </el-form>
+        </el-scrollbar>
       </el-tab-pane>
       <el-tab-pane label="存储信息" name="second">
         <el-form :model="editRow" ref="storeForm" :rules="storeFormRules">
@@ -657,8 +665,8 @@ export default {
   .loadTable {
     margin: 10px;
   }
-  .el-input {
-    width: 90%;
+  .baseForm {
+    padding-right: 12px;
   }
   .number .el-input,
   .el-select {
@@ -667,20 +675,18 @@ export default {
   .selSearchCon .handleSearchBtn {
     float: none;
   }
-  .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px 0;
-  }
-  .selScrollBar {
-    float: none;
-  }
   .childBtn {
     margin-left: 2px;
   }
-  .el-tabs__content {
+  .el-tab-pane {
     height: 400px;
-    overflow: auto;
+    overflow: hidden;
+    .el-scrollbar {
+      height: 100%;
+      .el-scrollbar__wrap {
+        overflow-x: hidden;
+      }
+    }
   }
 }
 </style>

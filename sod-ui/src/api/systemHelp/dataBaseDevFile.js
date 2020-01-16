@@ -15,9 +15,10 @@ export function deleteByIds(ids) {
     method: 'delete',
   })
 }
-export function upload() {
+export function upload(data) {
   return request({
     url: baseUrl + '/api/dbfile/upload',
     method: 'post',
+    data: data,
   })
 }

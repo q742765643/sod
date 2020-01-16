@@ -80,7 +80,6 @@
 
 <script>
 import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
-const baseUrl = process.env.VUE_APP_DB_API;
 export default {
   data() {
     return {
@@ -97,6 +96,7 @@ export default {
         order: "desc",
         fileType: "dev"
       },
+      uoploaFile: "",
       total: 0,
       tableData: [],
       currentRow: null,
@@ -179,8 +179,12 @@ export default {
         });
       }
     },
-    beforeUpload() {
-      upload().then(response => {
+    beforeUpload(file) {
+      let fd = new FormData();
+      fd.append("file", file); //传文件
+      console.log(file);
+      console.log(fd);
+      upload(file).then(response => {
         console.log(response);
       });
     },
@@ -204,3 +208,12 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.fitBtn {
+  position: absolute;
+  font-size: 12px;
+  border-radius: 3px;
+  width: 72px;
+  left: 5px;
+}
+</style>

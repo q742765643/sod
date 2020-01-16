@@ -65,17 +65,13 @@ export default {
     countShow: function(row) {
       var str = parseFloat(row.record_count).toString();
       return str;
-    },
-    //分页事件
-    paginationChange() {
-      this.searchFun();
     }
   },
   watch: {
-    tableInfo(val) {
-      this.tableInfo = val;
-      this.searchFun();
-    }
+    // tableInfo(val) {
+    //   this.tableInfo = val;
+    //   this.searchFun();
+    // }
   }
 };
 </script>
