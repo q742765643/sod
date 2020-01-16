@@ -87,6 +87,9 @@
   </div>
 </template>
 <script>
+//接口
+import { getpage } from "@/api/dbDictMangement/fieldManagement/index";
+
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
 import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
 //分类树
@@ -98,7 +101,8 @@ export default {
   data() {
     return {
       highlight: true,
-      treeData: [],
+      treeData: [], //字典分组
+      menuType: "2", //字典类型
       // defaultProps: {
       //   children: "children",
       //   label: "key_col"
@@ -128,8 +132,24 @@ export default {
       handleDictObj: {}
     };
   },
-  created() {},
+  created() {
+    this.getTreeData();
+  },
   methods: {
+    //初始化字典分组数据
+    getTreeData() {
+      let param = { id: "0" };
+      // getpage(param).then(res => {
+      //   console.log(res);
+      // });
+      getpage(param).then(response => {
+        console.log(res);
+
+        // this.tableData = response.data.pageData;
+        // this.total = response.data.totalCount;
+        // this.loading = false;
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (
