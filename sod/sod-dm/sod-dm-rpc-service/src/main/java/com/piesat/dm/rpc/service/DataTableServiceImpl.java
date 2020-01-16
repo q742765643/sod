@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表信息
@@ -53,6 +54,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public List<DataTableDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         return this.dataTableMapper.toDto(tableEntities);
+    }
+
+    @Override
+    public List<Map<String, Object>> getByDatabaseId(String databaseId) {
+        return this.dataTableDao.getByDatabaseId(databaseId);
     }
 
     @Override
