@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表字段信息
@@ -53,6 +54,13 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     public List<TableColumnDto> all() {
         List<TableColumnEntity> all = this.getAll();
         return this.tableColumnMapper.toDto(all);
+    }
+
+    @Override
+    public List<Map<String, Object>> getByTableId(String tableId) {
+        String sql = "select * from T_SOD_DATA_TABLE_COLUMN where table_id='"+tableId+"'";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
     }
 
     @Override
