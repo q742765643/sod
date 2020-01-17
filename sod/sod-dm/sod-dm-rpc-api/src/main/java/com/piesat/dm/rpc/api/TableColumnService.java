@@ -6,7 +6,6 @@ import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 表字段信息
@@ -26,5 +25,7 @@ public interface TableColumnService {
 
     List<TableColumnDto> all();
 
-    List<Map<String, Object>> getByTableId(String tableId);
+    List<TableColumnDto> findByTableId(String tableId);
+
+    int deleteByIdIn(List<String> ids);
 }

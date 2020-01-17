@@ -83,10 +83,30 @@
                 prop="D_DATA_ID"
                 :show-overflow-tooltip="true"
               ></el-table-column>
-              <el-table-column align="center" label="数据用途类型" prop="logic_name"></el-table-column>
-              <el-table-column align="center" label="存储类型" prop="name_cn"></el-table-column>
-              <el-table-column align="center" label="数据库" prop="DATABASE_NAME"></el-table-column>
-              <el-table-column align="center" label="专题名" prop="special_database_name"></el-table-column>
+              <el-table-column
+                align="center"
+                label="数据用途类型"
+                prop="LOGIC_NAME"
+                :show-overflow-tooltip="true"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                label="存储类型"
+                prop="name_cn"
+                :show-overflow-tooltip="true"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                label="数据库"
+                prop="DATABASE_NAME"
+                :show-overflow-tooltip="true"
+              ></el-table-column>
+              <el-table-column
+                align="center"
+                label="专题名"
+                prop="special_database_name"
+                :show-overflow-tooltip="true"
+              ></el-table-column>
               <el-table-column align="center" label="操作" width="320px">
                 <template slot-scope="scope">
                   <el-button size="small" @click="showStructureManage(scope.row)">
@@ -257,7 +277,7 @@ export default {
           this.currentRow.forEach((item, index) => {
             let obj = {};
             obj.logic_id = item.logic_id;
-            obj.logic_name = item.logic_name;
+            obj.logic_name = item.LOGIC_NAME;
             obj.storage_name = item.name_cn;
             obj.storage_type = item.storage_type;
             obj.physicsName = item.database_name;
@@ -336,9 +356,8 @@ export default {
     composeValue() {},
     //显示表结构管理
     showStructureManage(row) {
-      debugger;
       this.rowData = row;
-      this.structureManageTitle = row.class_name;
+      this.structureManageTitle = row.CLASS_NAME;
       this.structureManageVisible = true;
     },
     // 关闭

@@ -9,10 +9,10 @@ import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.dm.rpc.mapper.TableColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 表字段信息
@@ -57,10 +57,15 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
-    public List<Map<String, Object>> getByTableId(String tableId) {
-        String sql = "select * from T_SOD_DATA_TABLE_COLUMN where table_id='"+tableId+"'";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        return list;
+    public List<TableColumnDto> findByTableId(String tableId) {
+        List<TableColumnEntity> tableColumns = this.tableColumnDao.findByTableId(tableId);
+        return tableColumnMapper.toDto(tableColumns);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public int deleteByIdIn(List<String> ids) {
+        return this.tableColumnDao.deleteByIdIn(ids);
     }
 
     @Override

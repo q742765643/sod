@@ -4,7 +4,7 @@
       <div class="el-row">
         <div :class="tableClass">
           <el-form-item label="表名称">
-            <el-input :disabled="!isEdit" placeholder="表名称" size="small" v-model="Info.table_name"></el-input>
+            <el-input :disabled="!isEdit" placeholder="表名称" size="small" v-model="Info.tableName"></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-3" v-if="isTableName">
@@ -14,7 +14,7 @@
         </div>
         <div class="el-col el-col-10">
           <el-form-item label="中文名称">
-            <el-input :disabled="!isEdit" placeholder="中文名称" size="small" v-model="Info.name_cn"></el-input>
+            <el-input :disabled="!isEdit" placeholder="中文名称" size="small" v-model="Info.nameCn"></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-4">
@@ -32,25 +32,25 @@
                   <li>
                     <p>
                       <span>{{'四级编码:'}}</span>
-                      <span>{{this.rowData.d_data_id}}</span>
+                      <span>{{this.rowData.D_DATA_ID}}</span>
                     </p>
                   </li>
                   <li>
                     <p>
                       <span>{{'用途描述:'}}</span>
-                      <span>{{this.rowData.logic_name}}</span>
+                      <span>{{this.rowData.LOGIC_NAME}}</span>
                     </p>
                   </li>
                   <li>
                     <p>
                       <span>{{'数据库名称:'}}</span>
-                      <span>{{this.rowData.database_name}}</span>
+                      <span>{{this.rowData.DATABASE_NAME}}</span>
                     </p>
                   </li>
                   <li>
                     <p>
                       <span>{{'表类型:'}}</span>
-                      <span>{{this.rowData.name_cn}}</span>
+                      <span>{{this.rowData.STORAGE_TYPE}}</span>
                     </p>
                   </li>
                 </ul>
@@ -71,17 +71,12 @@
       <div class="el-row">
         <div class="el-col el-col-10">
           <el-form-item label="服务编码">
-            <el-input
-              :disabled="true"
-              placeholder="服务编码"
-              size="small"
-              v-model="Info.data_service_id"
-            ></el-input>
+            <el-input :disabled="true" placeholder="服务编码" size="small" v-model="Info.dataServiceId"></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-10">
           <el-form-item label="备注">
-            <el-input :disabled="!isEdit" placeholder="备注" size="small" v-model="Info.table_desc"></el-input>
+            <el-input :disabled="!isEdit" placeholder="备注" size="small" v-model="Info.tableDesc"></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-4">
@@ -164,7 +159,7 @@ export default {
         table_name: "",
         name_cn: "",
         data_service_id: "",
-        table_desc: ""
+        tableDesc: ""
       },
       childTableType: this.tableType,
       namehelp: "",
@@ -267,13 +262,9 @@ export default {
   },
   methods: {
     isHelp() {
-      if (
-        this.Info.name_cn == "" ||
-        this.Info.name_cn == null ||
-        this.Info.name_cn == undefined
-      ) {
-        this.Info.name_cn = this.rowData.class_name;
-        this.Info.data_service_id = this.rowData.d_data_id;
+      if (!this.Info.nameCn) {
+        this.Info.nameCn = this.rowData.CLASS_NAME;
+        this.Info.dataServiceId = this.rowData.D_DATA_ID;
       }
     },
     reloadTableInfo() {
@@ -288,7 +279,7 @@ export default {
       let saveObj = {};
       saveObj = this.Info;
       if (saveObj.table_id == undefined) {
-        saveObj.d_data_id = this.rowData.d_data_id;
+        saveObj.D_DATA_ID = this.rowData.D_DATA_ID;
         saveObj.storage_type = this.rowData.storage_type;
         saveObj.data_class_id = this.rowData.data_class_id;
         saveObj.data_service_id = this.rowData.data_class_id;
@@ -349,6 +340,7 @@ export default {
   watch: {
     tableInfo(val) {
       this.Info = JSON.parse(JSON.stringify(val));
+      console.log(this.Info);
       if (this.tableType == "E-show") {
         this.childTableType = "E";
         this.namehelp = "show";

@@ -108,3 +108,21 @@ body.blueActive {
     }
   }
 }
+
+// 禁止全选的表格隐藏全选按钮
+.unChoseAll .el-table__header-wrapper .el-checkbox {
+  display: none;
+}
+
+li {
+  list-style: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.el-dialog__body {
+  padding-top: 0;
+}

@@ -7,11 +7,11 @@
     </el-button-group>
 
     <el-table :data="indexItem" border @selection-change="res=>indexItemSel=res">
-      <el-table-column type="index"></el-table-column>
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="索引名称" prop="index_name"></el-table-column>
-      <el-table-column label="索引列" prop="index_column"></el-table-column>
-      <el-table-column label="索引类型" prop="index_type"></el-table-column>
+      <el-table-column type="index" align="center"></el-table-column>
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
+      <el-table-column label="索引名称" prop="indexName" align="center"></el-table-column>
+      <el-table-column label="索引列" prop="indexColumn" align="center"></el-table-column>
+      <el-table-column label="索引类型" prop="indexType" align="center"></el-table-column>
     </el-table>
     <el-dialog
       width="65%"
@@ -22,11 +22,11 @@
       <div>
         <el-form :model="indexForm" label-width="120px" ref="indexForm">
           <el-form-item label="索引名称">
-            <el-input v-model="indexForm.index_name" size="small"></el-input>
+            <el-input v-model="indexForm.indexName" size="small"></el-input>
           </el-form-item>
           <el-form-item label="索引类型">
             <el-select
-              v-model="indexForm.index_type"
+              v-model="indexForm.indexType"
               size="small"
               placeholder="请选择索引类型"
               style="width: 100%;"
@@ -42,7 +42,7 @@
           <el-form-item label="索引字段">
             <el-select
               size="small"
-              v-model="indexForm.index_column"
+              v-model="indexForm.indexColumn"
               multiple
               placeholder="请选择索引字段"
               style="width: 100%;"
@@ -70,7 +70,7 @@ export default {
   props: { tableInfo: Object },
   data() {
     return {
-      indexForm: { index_name: "TRAF_WEA_CHN_REP_TAB_UK", index_column: [] },
+      indexForm: { indexName: "TRAF_WEA_CHN_REP_TAB_UK", indexColumn: [] },
       indexItem: [],
       indexItemSel: [],
       columnData: [],
@@ -103,13 +103,13 @@ export default {
         return;
       }
       this.indexTitle = "新增索引";
-      this.indexForm.index_column = [];
+      this.indexForm.indexColumn = [];
       // this.indexForm = {};
       this.dialogStatus.indexDialog = true;
     },
     trueIndex() {
       this.indexForm.table_id = this.tableInfo.table_id;
-      this.indexForm.index_column = this.indexForm.index_column.join(",");
+      this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
       let url = "";
       if (this.indexTitle == "新增索引") {
         url = interfaceObj.TableStructure_addTableIndex;
@@ -145,7 +145,7 @@ export default {
       } else {
         this.indexTitle = "编辑索引";
         this.indexForm = JSON.parse(JSON.stringify(this.indexItemSel[0]));
-        this.indexForm.index_column = this.indexForm.index_column.split(",");
+        this.indexForm.indexColumn = this.indexForm.indexColumn.split(",");
         this.dialogStatus.indexDialog = true;
       }
     },
@@ -191,16 +191,17 @@ export default {
   },
   watch: {
     tableInfo(val) {
-      this.axios
-        .get(interfaceObj.TableStructure_getColumnInfo, {
-          params: { table_id: val.table_id }
-        })
-        .then(res => {
-          this.columnData = res.data.data;
-          // console.log(this.columnData);
-        })
-        .catch(error => {});
-      this.getIndexTable();
+      this.indexItem = this.tableInfo.tableIndexList;
+      // this.axios
+      //   .get(interfaceObj.TableStructure_getColumnInfo, {
+      //     params: { table_id: val.table_id }
+      //   })
+      //   .then(res => {
+      //     this.columnData = res.data.data;
+      //     // console.log(this.columnData);
+      //   })
+      //   .catch(error => {});
+      // this.getIndexTable();
     }
   }
 };

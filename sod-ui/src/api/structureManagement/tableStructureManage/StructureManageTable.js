@@ -9,3 +9,11 @@ export function gcl(query) {
     params: query
   })
 }
+// 根据表格id查询字段列表
+export function findByTableId(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/findByTableId',
+    method: 'get',
+    params: query
+  })
+}

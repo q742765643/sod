@@ -638,7 +638,7 @@ export default {
         getFileLogic().then(response => {
           this.storageSpace = response.data;
         });
-      } else if (selectStorage == "MySQL") {
+      } else if (selectStorage == "XUGU") {
         getMysqlLogic().then(response => {
           this.storageSpace = response.data;
         });
