@@ -21,21 +21,21 @@
         <div class="treeTitle">字典分组</div>
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-tree
-            class="el-tree"
-            :highlight-current="highlight"
-            node-key="type"
+            class="el-tree elTree"
             :data="treeData"
             :props="defaultProps"
-            :default-expanded-keys="expandedKeys"
+            :highlight-current="true"
+            node-key="id"
             @node-click="handleNodeClick"
             ref="elTree"
+            :render-content="renderContent"
           ></el-tree>
         </el-scrollbar>
       </el-aside>
       <el-main class="elMain">
         <el-form :model="queryParams" ref="queryForm" :inline="true">
           <el-form-item label="关键字">
-            <el-input size="small" v-model="queryParams.key_col" placeholder="申请用户"></el-input>
+            <el-input size="small" v-model="queryParams.keyCol" placeholder="申请用户"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -52,7 +52,12 @@
             <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" highlight-current-row @current-change="handleSelectionChange">
+        <el-table
+          v-loading="loading"
+          :data="tableData"
+          highlight-current-row
+          @current-change="handleSelectionChange"
+        >
           <el-table-column type="index" width="50" :index="table_index"></el-table-column>
           <el-table-column width="50">
             <template slot-scope="scope">
@@ -60,11 +65,11 @@
               <el-checkbox v-model="scope.row.checked"></el-checkbox>
             </template>
           </el-table-column>
-          <el-table-column label="关键字" prop="key_col"></el-table-column>
-          <el-table-column label="中文名" prop="name_cn"></el-table-column>
-          <el-table-column label="字典类型" prop="typeName"></el-table-column>
+          <el-table-column label="关键字" prop="keyCol"></el-table-column>
+          <el-table-column label="中文名" prop="nameCn"></el-table-column>
+          <el-table-column label="字典类型" prop="dataType"></el-table-column>
           <el-table-column label="字典描述" prop="description"></el-table-column>
-          <el-table-column label="是否可删" prop="can_delete"></el-table-column>
+          <el-table-column label="是否可删" prop="canDelete"></el-table-column>
         </el-table>
         <pagination
           v-show="total>0"
@@ -82,13 +87,21 @@
 
     <!-- 弹窗 字典-->
     <el-dialog :title="dialogTitle" :visible.sync="DictDialog">
-      <handleDict v-if="DictDialog" :handleDictObj="handleDictObj" @cancelDialog="cancelDialog"></handleDict>
+      <handleDict
+        v-if="DictDialog"
+        :dictTypes="treeData"
+        :handleDictObj="handleDictObj"
+        @cancelDialog="cancelDialog"
+      ></handleDict>
     </el-dialog>
   </div>
 </template>
 <script>
 //接口
-import { getpage } from "@/api/dbDictMangement/fieldManagement/index";
+import {
+  findMenu,
+  getTableData
+} from "@/api/dbDictMangement/fieldManagement/index";
 
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
 import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
@@ -100,19 +113,15 @@ export default {
   },
   data() {
     return {
-      highlight: true,
       treeData: [], //字典分组
+      loading: true,
       menuType: "2", //字典类型
-      // defaultProps: {
-      //   children: "children",
-      //   label: "key_col"
-      // },
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "keyCol"
       },
+
       checkNode: {}, //选中高亮的节点
-      expandedKeys: [], //展开的节点
       // 弹窗 树
       dialogTitle: "",
       TreeDialog: false,
@@ -121,33 +130,62 @@ export default {
       tableData: [],
       total: 0,
       queryParams: {
-        key_col: "",
+        keyCol: "",
         pageNum: "",
         pageSize: "",
         pageNum: 1,
         pageSize: 10
       },
+      indexNodeId: "",
       // 弹窗 字典
       DictDialog: false,
       handleDictObj: {}
     };
   },
-  created() {
-    this.getTreeData();
+  async created() {
+    await this.getTreeData();
   },
   methods: {
     //初始化字典分组数据
-    getTreeData() {
-      let param = { id: "0" };
-      // getpage(param).then(res => {
-      //   console.log(res);
-      // });
-      getpage(param).then(response => {
-        console.log(res);
-
-        // this.tableData = response.data.pageData;
-        // this.total = response.data.totalCount;
-        // this.loading = false;
+    async getTreeData() {
+      await findMenu({ menu: this.menuType }).then(res => {
+        res.success
+          ? (this.treeData = res.data)
+          : this.$notify.error({
+              title: "错误",
+              message: res.msg
+            });
+      });
+      this.$refs.elTree.setCurrentKey(this.treeData[0].id);
+      this.queryParams.menu = this.treeData[0].menu;
+      this.queryParams.type = this.treeData[0].type;
+      this.indexNodeId = this.treeData[0].id;
+      this.handleQuery();
+    },
+    //格式化tree
+    renderContent(h, { node, data, store }) {
+      return (
+        <span class="custom-tree-node treeItem">
+          <i class="el-icon-menu"></i>
+          <span style="margin-left:5px;">{node.label}</span>
+        </span>
+      );
+    },
+    //字典树点击查询
+    handleNodeClick(node) {
+      this.queryParams.menu = node.menu;
+      this.queryParams.type = node.type;
+      this.indexNodeId = node.id;
+      this.handleQuery();
+    },
+    //查询表格数据
+    handleQuery() {
+      this.loading = true;
+      console.log(this.queryParams);
+      getTableData(this.queryParams).then(res => {
+        this.tableData = res.data.pageData;
+        this.total = res.data.totalCount;
+        this.loading = false;
       });
     },
     // table自增定义方法
@@ -178,14 +216,25 @@ export default {
         .catch(() => {}); //一定别忘了这个
     },
     showSearch() {},
-    handleNodeClick() {},
-    cancelDialog(msg) {
-      if (!msg) {
-        this.TreeDialog = false;
-        this.DictDialog = false;
+
+    async cancelDialog(msg) {
+      if (msg === "D") {
+        this.handleQuery();
       }
+      if (msg === "T") {
+        await findMenu({ menu: this.menuType }).then(res => {
+          res.success
+            ? (this.treeData = res.data)
+            : this.$notify.error({
+                title: "错误",
+                message: res.msg
+              });
+        });
+        this.$refs.elTree.setCurrentKey(this.indexNodeId);
+      }
+      this.TreeDialog = false;
+      this.DictDialog = false;
     },
-    handleQuery() {},
     addRow() {
       this.dialogTitle = "新增字典";
       this.DictDialog = true;
@@ -231,6 +280,14 @@ export default {
     }
     .el-scrollbar__wrap {
       overflow: auto;
+    }
+    .elTree {
+      .el-tree-node__content {
+        height: 33px;
+        .treeItem {
+          font-size: 14px;
+        }
+      }
     }
   }
   .elMain {
