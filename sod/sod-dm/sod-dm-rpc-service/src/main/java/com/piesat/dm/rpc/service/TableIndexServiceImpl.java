@@ -44,6 +44,12 @@ public class TableIndexServiceImpl extends BaseService<TableIndexEntity> impleme
     }
 
     @Override
+    public List<TableIndexDto> findByTableId(String tableId) {
+        List<TableIndexEntity> tableColumns = this.tableIndexDao.findByTableId(tableId);
+        return tableIndexMapper.toDto(tableColumns);
+    }
+
+    @Override
     public TableIndexDto getDotById(String id) {
         TableIndexEntity tableIndexEntity = this.getById(id);
         return this.tableIndexMapper.toDto(tableIndexEntity);
