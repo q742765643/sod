@@ -215,6 +215,30 @@ export default {
             value: "templateDesc"
           }
         ];
+      } else if (this.superDialogObj.pageName == "数据同步") {
+        this.superChose = [
+          {
+            value: "taskName",
+            label: "任务名称"
+          },
+
+          {
+            value: "dataSourceId",
+            label: "数据来源标识"
+          },
+          {
+            value: "flowDir",
+            label: "数据流向标识"
+          },
+          {
+            value: "sourceDBId",
+            label: "源库"
+          },
+          {
+            value: "sourceDBId",
+            label: "源库"
+          }
+        ];
       }
     },
 

@@ -428,7 +428,6 @@ export default {
       } else if (this.tabs.table.el) {
         this.elActive = "active";
       }
-      console.log(this.rowData);
       gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {
           console.log(response.data);

@@ -14,9 +14,9 @@
               <el-option value label="无"></el-option>
               <el-option
                 v-for="item in columnData"
-                :key="item.db_ele_code"
-                :label="item.db_ele_code+'['+item.ele_name+']'"
-                :value="item.db_ele_code"
+                :key="item.dbEleCode"
+                :label="item.dbEleCode+'['+item.eleName+']'"
+                :value="item.dbEleCode"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -32,9 +32,9 @@
               <el-option value label="无"></el-option>
               <el-option
                 v-for="item in columnData"
-                :key="item.db_ele_code"
-                :label="item.db_ele_code+'['+item.ele_name+']'"
-                :value="item.db_ele_code"
+                :key="item.dbEleCode"
+                :label="item.dbEleCode+'['+item.eleName+']'"
+                :value="item.dbEleCode"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -52,6 +52,11 @@
 </template>
 
 <script>
+import {
+  getByTableId,
+  findByTableId,
+  shardingSaves
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "partKeyManage",
   props: { rowData: Object, tableInfo: Object },
@@ -63,75 +68,65 @@ export default {
     };
   },
   methods: {
-    getColumnData() {
-      this.axios
-        .get(interfaceObj.TableStructure_getColumnInfo, {
-          params: { table_id: this.tableInfo.table_id }
-        })
-        .then(res => {
-          this.columnData = res.data.data;
-        })
-        .catch(error => {});
-    },
+    // 获取分库分表键的值
     getShared() {
-      this.axios
-        .get(interfaceObj.TableStructure_getShareding, {
-          params: { table_id: this.tableInfo.table_id }
-        })
-        .then(res => {
-          let data = res.data.data;
+      getByTableId({ id: this.tableInfo.id }).then(response => {
+        if (response.code == 200) {
+          let data = response.data;
           for (let i = 0; i < data.length; i++) {
-            if (data[i].sharding_type === "D")
-              this.editData.database_key = data[i].field;
-            else this.editData.table_key = data[i].field;
+            if (data[i].shardingType === 0)
+              //分库键
+              this.editData.database_key = data[i].columnName;
+            else this.editData.table_key = data[i].columnName;
           }
-        })
-        .catch(error => {});
+        }
+      });
     },
+    // 取消
     celFun() {
       this.getShared();
       this.isEdit = !this.isEdit;
     },
+    // 保存
     addKey() {
       let arry = [
+        // 分库
         {
-          database_id: this.rowData.database_id,
-          field: this.editData.database_key,
-          sharding_type: "D",
-          table_id: this.tableInfo.table_id
+          columnName: this.editData.database_key,
+          shardingType: "0",
+          tableId: this.tableInfo.id
         },
+        // 分表
         {
-          database_id: this.rowData.database_id,
-          field: this.editData.table_key,
-          sharding_type: "T",
-          table_id: this.tableInfo.table_id
+          columnName: this.editData.table_key,
+          shardingType: "1",
+          tableId: this.tableInfo.id
         }
       ];
-      this.axios
-        .post(interfaceObj.TableStructure_addShareding, { shardInfo: arry })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "操作成功"
-            });
-            this.isEdit = !this.isEdit;
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        })
-        .catch(error => {});
+
+      shardingSaves(arry).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "操作成功"
+          });
+          this.isEdit = !this.isEdit;
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
+      });
     }
   },
   mounted() {},
   watch: {
     tableInfo(val) {
-      // this.tableInfo = val;
-      // this.getColumnData();
-      // this.getShared();
+      this.tableInfo = val;
+      // 下拉框是字段的信息
+      this.columnData = val.columns;
+      this.getShared();
     }
   }
 };

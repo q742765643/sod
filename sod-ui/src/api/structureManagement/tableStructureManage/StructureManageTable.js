@@ -12,8 +12,55 @@ export function gcl(query) {
 // 根据表格id查询字段列表
 export function findByTableId(query) {
   return request({
-    url: baseUrl + '/dm/dataClass/findByTableId',
+    url: baseUrl + '/dm/tableColumn/findByTableId',
     method: 'get',
     params: query
   })
 }
+// 删除字段
+export function tableColumnDel(id) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/delIds?ids=' + id,
+    method: 'delete',
+  })
+}
+// 根据表id查询分库分表键
+
+export function getByTableId(query) {
+  return request({
+    url: baseUrl + '/dm/sharding/getByTableId',
+    method: 'get',
+    params: query
+  })
+}
+// 新增分库分表
+export function shardingSaves(data) {
+  return request({
+    url: baseUrl + '/dm/sharding/saves',
+    method: 'post',
+    data: data
+  })
+}
+// 根据logicid查询外键关联
+export function foreignKeyList(query) {
+  return request({
+    url: baseUrl + '/dm/foreignKey/findByClassLogicId',
+    method: 'get',
+    params: query
+  })
+}
+// 新增外键关联
+export function foreignKeySave(data) {
+  return request({
+    url: baseUrl + '/dm/foreignKey/save',
+    method: 'post',
+    data: data
+  })
+}
+// 删除外键关联
+// export function tableColumnDel(id) {
+//   return request({
+//     url: baseUrl + '/dm/tableColumn/delIds?ids=' + id,
+//     method: 'delete',
+//   })
+// }

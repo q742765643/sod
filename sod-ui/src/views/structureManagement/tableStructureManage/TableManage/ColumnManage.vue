@@ -430,7 +430,10 @@
 // 拖拽组件
 import draggable from "vuedraggable";
 
-import { findByTableId } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  findByTableId,
+  tableColumnDel
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object, tableType: String },
   components: {
@@ -519,6 +522,7 @@ export default {
         this.dialogStatus.columnDialog = true;
       }
     },
+    // 删除字段
     columnDelete() {
       if (this.selColumnData.length == 0) {
         this.$message({
@@ -528,26 +532,20 @@ export default {
       } else {
         let ids = [];
         this.selColumnData.forEach(element => {
-          ids.push(element.column_id);
+          ids.push(element.id);
         });
-        this.axios
-          .post(interfaceObj.TableStructure_deleteColumnList, {
-            id: this.tableInfo.id,
-            column_ids: ids.join(",")
-          })
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.$message({ message: "删除成功", type: "success" });
-              this.getCodeTable();
-            } else {
-              this.$message({
-                message: res.data.returnMessage,
-                type: "warning"
-              });
-              return;
-            }
-          })
-          .catch(error => {});
+        tableColumnDel(ids.join(",")).then(response => {
+          if (response.code == 200) {
+            this.$message({ message: "删除成功", type: "success" });
+            this.getCodeTable();
+          } else {
+            this.$message({
+              message: "删除失败",
+              type: "warning"
+            });
+            return;
+          }
+        });
       }
     },
     getOptionsData() {
@@ -663,7 +661,8 @@ export default {
       if (this.tableType == "E-show") {
         flag = "true";
       }
-      await findByTableId({ id: this.tableInfo.id }).then(response => {
+      console.log(this.tableInfo.id);
+      await findByTableId({ tableId: this.tableInfo.id }).then(response => {
         if (response.code == 200) {
           this.columnData = response.data;
           this.$emit("reloadTableInfo");

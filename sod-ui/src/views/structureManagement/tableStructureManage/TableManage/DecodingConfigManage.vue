@@ -334,7 +334,7 @@ export default {
     }
   },
   mounted() {
-    this.searchFun();
+    // this.searchFun();
   }
 };
 </script>
