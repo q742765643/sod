@@ -9,6 +9,7 @@ import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.dm.rpc.mapper.TableColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    @Transactional(readOnly = false)
     public int deleteByIdIn(List<String> ids) {
         return this.tableColumnDao.deleteByIdIn(ids);
     }
