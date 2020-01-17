@@ -129,9 +129,9 @@ export default {
   mounted() {},
   watch: {
     tableInfo(val) {
-      this.tableInfo = val;
-      this.getColumnData();
-      this.getShared();
+      // this.tableInfo = val;
+      // this.getColumnData();
+      // this.getShared();
     }
   }
 };

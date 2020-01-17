@@ -53,15 +53,15 @@ export default {
   },
   watch: {
     tableInfo(val) {
-      this.axios
-        .get(interfaceObj.TableStructure_getColumnInfo, {
-          params: { table_id: val.table_id }
-        })
-        .then(res => {
-          this.columnData = res.data.data;
-          this.getSampleData();
-        })
-        .catch(error => {});
+      // this.axios
+      //   .get(interfaceObj.TableStructure_getColumnInfo, {
+      //     params: { table_id: val.table_id }
+      //   })
+      //   .then(res => {
+      //     this.columnData = res.data.data;
+      //     this.getSampleData();
+      //   })
+      //   .catch(error => {});
     }
   }
 };

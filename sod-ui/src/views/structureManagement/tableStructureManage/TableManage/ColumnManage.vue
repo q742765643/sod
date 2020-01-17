@@ -1,5 +1,5 @@
 <template>
-  <el-main>
+  <el-main class="columnTemplate">
     <el-button-group style="padding: 8px;">
       <el-button
         type="primary"
@@ -20,26 +20,73 @@
       <el-button type="primary" size="small" icon="el-icon-upload2" @click="importTelplate">导入</el-button>
       <el-button type="primary" size="small" icon="el-icon-s-operation" @click="syncServe">同步服务名称</el-button>
     </el-button-group>
-    <el-table :data="columnData" border @selection-change="res=>selColumnData=res">
-      <el-table-column type="index"></el-table-column>
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="公共元数据字段" prop="db_ele_code" width="120"></el-table-column>
-      <el-table-column label="字段编码" prop="c_element_code" width="120"></el-table-column>
-      <el-table-column label="服务代码" prop="user_ele_code" width="120"></el-table-column>
-      <el-table-column label="中文简称" prop="ele_name" width="120"></el-table-column>
-      <el-table-column label="数据类型" prop="type" width="100"></el-table-column>
-      <!--                                            <el-table-column label="数据长度" prop="datalength"></el-table-column>-->
-      <el-table-column label="数据精度" prop="accuracy" width="70"></el-table-column>
-      <el-table-column label="要素单位" prop="unit_cn"></el-table-column>
-      <el-table-column label="是否可空" prop="is_null" width="70"></el-table-column>
-      <el-table-column label="是否可改" prop="is_update" width="70"></el-table-column>
-      <el-table-column label="是否显示" prop="is_show" width="70"></el-table-column>
-      <el-table-column label="是否主键" prop="is_premary_key" width="70"></el-table-column>
-      <el-table-column label="中文描述" prop="name_cn"></el-table-column>
-      <el-table-column label="是否管理字段" prop="is_manager"></el-table-column>
-      <el-table-column label="默认值" prop="default_value"></el-table-column>
-      <el-table-column label="序号" prop="serial_number" width="50"></el-table-column>
-    </el-table>
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-table :data="columnData" border @selection-change="res=>selColumnData=res">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" class="demo-table-expand">
+              <el-form-item label="是否可空">
+                <span>{{ props.row.isNull }}</span>
+              </el-form-item>
+              <el-form-item label="是否可改">
+                <span>{{ props.row.isUpdate }}</span>
+              </el-form-item>
+              <el-form-item label="是否显示">
+                <span>{{ props.row.isShow }}</span>
+              </el-form-item>
+              <el-form-item label="是否主键">
+                <span>{{ props.row.isPrimaryKey }}</span>
+              </el-form-item>
+              <el-form-item label="中文描述">
+                <span>{{ props.row.nameCn }}</span>
+              </el-form-item>
+              <el-form-item label="是否管理字段">
+                <span>{{ props.row.isManager }}</span>
+              </el-form-item>
+              <el-form-item label="默认值">
+                <span>{{ props.row.defaultValue }}</span>
+              </el-form-item>
+              <el-form-item label="序号">
+                <span>{{ props.row.serialNumber }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column type="index" width="70" align="center"></el-table-column>
+        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        <el-table-column
+          label="公共元数据字段"
+          prop="dbEleCode"
+          width="200px"
+          align="center"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          label="字段编码"
+          prop="celementCode"
+          width="200px"
+          align="center"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          label="服务代码"
+          prop="userEleCode"
+          width="200px"
+          align="center"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column label="中文简称" prop="eleName" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column
+          label="数据类型"
+          prop="type"
+          width="100px"
+          align="center"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column label="数据精度" prop="accuracy" width="100px" align="center"></el-table-column>
+        <el-table-column label="要素单位" prop="unitCn" width="100px" align="center"></el-table-column>
+      </el-table>
+    </el-scrollbar>
     <el-dialog
       width="80%"
       title="公共元数据"
@@ -78,7 +125,7 @@
             >
               <el-table-column type="index" width="50"></el-table-column>
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="数据元代码" prop="c_element_code"></el-table-column>
+              <el-table-column label="数据元代码" prop="celementCode"></el-table-column>
               <el-table-column label="中文名称" prop="c_element_namech"></el-table-column>
               <el-table-column label="英文名称" prop="c_element_name"></el-table-column>
               <el-table-column label="数据类型" prop="c_datatype" width="70px"></el-table-column>
@@ -116,7 +163,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="字段名称">
-                      <el-input v-model="searchMmdata.db_ele_code" placeholder="字段名称" size="small"></el-input>
+                      <el-input v-model="searchMmdata.dbEleCode" placeholder="字段名称" size="small"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
@@ -126,11 +173,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="服务名称">
-                      <el-input
-                        v-model="searchMmdata.user_ele_code"
-                        placeholder="服务名称"
-                        size="small"
-                      ></el-input>
+                      <el-input v-model="searchMmdata.userEleCode" placeholder="服务名称" size="small"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="2">
@@ -155,21 +198,21 @@
               @selection-change="handleSelectionMmdata"
             >
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="字段名称" prop="db_ele_code"></el-table-column>
-              <el-table-column label="服务名称" prop="user_ele_code"></el-table-column>
+              <el-table-column label="字段名称" prop="dbEleCode"></el-table-column>
+              <el-table-column label="服务名称" prop="userEleCode"></el-table-column>
               <el-table-column label="中文名称" prop="db_ele_name"></el-table-column>
-              <el-table-column label="字段短名" prop="ele_name"></el-table-column>
+              <el-table-column label="字段短名" prop="eleName"></el-table-column>
               <el-table-column label="类型" prop="type"></el-table-column>
               <el-table-column label="字段精度" prop="data_precision" width="90px"></el-table-column>
-              <el-table-column label="是否可为空" prop="is_null" width="90px">
+              <el-table-column label="是否可为空" prop="isNull" width="90px">
                 <template slot-scope="scope">
-                  <span v-if="scope.row.is_null == true">是</span>
+                  <span v-if="scope.row.isNull == true">是</span>
                   <span v-else>否</span>
                 </template>
               </el-table-column>
-              <el-table-column label="是否可更新" prop="is_update" width="90px">
+              <el-table-column label="是否可更新" prop="isUpdate" width="90px">
                 <template slot-scope="scope">
-                  <span v-if="scope.row.is_update == true">是</span>
+                  <span v-if="scope.row.isUpdate == true">是</span>
                   <span v-else>否</span>
                 </template>
               </el-table-column>
@@ -196,23 +239,23 @@
         label-width="140px"
       >
         <el-col :span="12">
-          <el-form-item label="公共元数据字段" prop="db_ele_code">
-            <el-input placeholder="公共元数据字段" v-model="columnEditData.db_ele_code"></el-input>
+          <el-form-item label="公共元数据字段" prop="dbEleCode">
+            <el-input placeholder="公共元数据字段" v-model="columnEditData.dbEleCode"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="字段名称" prop="c_element_code">
-            <el-input placeholder="字段名称" v-model="columnEditData.c_element_code"></el-input>
+          <el-form-item label="字段名称" prop="celementCode">
+            <el-input placeholder="字段名称" v-model="columnEditData.celementCode"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="服务名称" prop="user_ele_code">
-            <el-input placeholder="服务名称" v-model="columnEditData.user_ele_code"></el-input>
+          <el-form-item label="服务名称" prop="userEleCode">
+            <el-input placeholder="服务名称" v-model="columnEditData.userEleCode"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="中文简称" prop="ele_name">
-            <el-input placeholder="中文简称" v-model="columnEditData.ele_name"></el-input>
+          <el-form-item label="中文简称" prop="eleName">
+            <el-input placeholder="中文简称" v-model="columnEditData.eleName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -228,8 +271,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="要素单位" prop="unit_cn">
-            <el-input placeholder="要素单位" v-model="columnEditData.unit_cn"></el-input>
+          <el-form-item label="要素单位" prop="unitCn">
+            <el-input placeholder="要素单位" v-model="columnEditData.unitCn"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -240,7 +283,7 @@
         <el-col :span="12">
           <el-form-item label="是否可空">
             <el-switch
-              v-model="columnEditData.is_null"
+              v-model="columnEditData.isNull"
               active-color="#13ce66"
               inactive-color="#909399"
               active-value="true"
@@ -251,7 +294,7 @@
         <el-col :span="12">
           <el-form-item label="是否可改">
             <el-switch
-              v-model="columnEditData.is_update"
+              v-model="columnEditData.isUpdate"
               active-color="#13ce66"
               inactive-color="#909399"
               active-value="true"
@@ -262,7 +305,7 @@
         <el-col :span="12">
           <el-form-item label="是否显示">
             <el-switch
-              v-model="columnEditData.is_show"
+              v-model="columnEditData.isShow"
               active-color="#13ce66"
               inactive-color="#909399"
               active-value="true"
@@ -273,7 +316,7 @@
         <el-col :span="12">
           <el-form-item label="是否主键">
             <el-switch
-              v-model="columnEditData.is_premary_key"
+              v-model="columnEditData.isPrimaryKey"
               active-color="#13ce66"
               inactive-color="#909399"
               active-value="true"
@@ -284,7 +327,7 @@
         <el-col :span="12">
           <el-form-item label="是否管理字段">
             <el-switch
-              v-model="columnEditData.is_manager"
+              v-model="columnEditData.isManager"
               active-color="#13ce66"
               inactive-color="#909399"
               active-value="true"
@@ -294,17 +337,17 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="默认值">
-            <el-input placeholder="默认值" v-model="columnEditData.default_value"></el-input>
+            <el-input placeholder="默认值" v-model="columnEditData.defaultValue"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文描述">
-            <el-input placeholder="中文描述" v-model="columnEditData.name_cn"></el-input>
+            <el-input placeholder="中文描述" v-model="columnEditData.nameCn"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="序号" prop="serial_number">
-            <el-input placeholder="序号" v-model="columnEditData.serial_number"></el-input>
+          <el-form-item label="序号" prop="serialNumber">
+            <el-input placeholder="序号" v-model="columnEditData.serialNumber"></el-input>
           </el-form-item>
         </el-col>
         <div class="clear"></div>
@@ -336,13 +379,13 @@
               ></i>
               <el-row class="sortRow">
                 <el-col :span="6">
-                  <span>{{'序号:'}}{{ element.serial_number }}</span>
+                  <span>{{'序号:'}}{{ element.serialNumber }}</span>
                 </el-col>
                 <el-col :span="9">
-                  <span>{{'字段名称:'}}{{ element.c_element_code }}</span>
+                  <span>{{'字段名称:'}}{{ element.celementCode }}</span>
                 </el-col>
                 <el-col :span="9">
-                  <span>{{'中文简称:'}}{{ element.ele_name }}</span>
+                  <span>{{'中文简称:'}}{{ element.eleName }}</span>
                 </el-col>
               </el-row>
             </li>
@@ -386,8 +429,8 @@
 <script>
 // 拖拽组件
 import draggable from "vuedraggable";
-//下载组件
 
+import { findByTableId } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object, tableType: String },
   components: {
@@ -404,7 +447,7 @@ export default {
       exportInnerVisible: false,
       filepath: "",
       upLoadUrl: "",
-      columnEditData: { unit_cn: "N" },
+      columnEditData: { unitCn: "N" },
       columnData: [],
       selColumnData: [],
       pubData: { matedata: [], mmdata: [] }, //公共元数据字段，管理字段
@@ -415,9 +458,9 @@ export default {
       },
       searchMmdata: {
         group_id: "",
-        db_ele_code: "",
+        dbEleCode: "",
         db_ele_name: "",
-        user_ele_code: ""
+        userEleCode: ""
       },
       dataTypes: [],
       dragList: [],
@@ -426,25 +469,25 @@ export default {
       activePublicName: "first",
       repeatIndex: 0,
       rules: {
-        db_ele_code: [
+        dbEleCode: [
           { required: true, message: "请输入公共元数据字段", trigger: "blur" }
         ],
-        c_element_code: [
+        celementCode: [
           { required: true, message: "请输入字段名称", trigger: "blur" }
         ],
-        user_ele_code: [
+        userEleCode: [
           { required: true, message: "请输入服务名称", trigger: "blur" }
         ],
-        ele_name: [
+        eleName: [
           { required: true, message: "请输入中文简称", trigger: "blur" }
         ],
         type: [
           { required: true, message: "请选择数据类型", trigger: "change" }
         ],
-        unit_cn: [
+        unitCn: [
           { required: true, message: "请输入要素单位", trigger: "blur" }
         ],
-        serial_number: [
+        serialNumber: [
           { required: true, message: "请输入序号", trigger: "blur" }
         ]
       }
@@ -452,7 +495,7 @@ export default {
   },
   methods: {
     columnAdd() {
-      if (!this.tableInfo.table_id) {
+      if (!this.tableInfo.id) {
         this.$message({
           type: "error",
           message: "表不存在"
@@ -489,7 +532,7 @@ export default {
         });
         this.axios
           .post(interfaceObj.TableStructure_deleteColumnList, {
-            table_id: this.tableInfo.table_id,
+            id: this.tableInfo.id,
             column_ids: ids.join(",")
           })
           .then(res => {
@@ -525,7 +568,7 @@ export default {
       if (this.keyObj.tableInfo) {
         this.axios
           .get(interfaceObj.TableStructure_getColumnInfo, {
-            params: { table_id: this.keyObj.tableInfo.table_id }
+            params: { id: this.keyObj.tableInfo.id }
           })
           .then(res => {
             this.keyObj.keyColumnData = res.data.data;
@@ -582,7 +625,7 @@ export default {
       //校验表单
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.columnEditData.table_id = this.tableInfo.table_id;
+          this.columnEditData.id = this.tableInfo.id;
           this.columnEditData.table_name = this.tableInfo.table_name;
           if (this.selColumnData.length > 0) {
             this.columnEditData.column_id = this.selColumnData[0].column_id;
@@ -620,15 +663,12 @@ export default {
       if (this.tableType == "E-show") {
         flag = "true";
       }
-      await this.axios
-        .get(interfaceObj.TableStructure_getColumnInfo, {
-          params: { table_id: this.tableInfo.table_id, is_kv_k: flag }
-        })
-        .then(res => {
-          this.columnData = res.data.data;
+      await findByTableId({ id: this.tableInfo.id }).then(response => {
+        if (response.code == 200) {
+          this.columnData = response.data;
           this.$emit("reloadTableInfo");
-        })
-        .catch(error => {});
+        }
+      });
     },
     handleSort() {
       this.dragList = this.columnData;
@@ -665,7 +705,7 @@ export default {
       this.dialogStatus.codeSortDialog = false;
     },
     exportCode(type) {
-      if (!this.tableInfo.table_id) {
+      if (!this.tableInfo.id) {
         this.$message({
           type: "error",
           message: "表不存在"
@@ -675,9 +715,7 @@ export default {
       let url;
       if (type == "code") {
         url =
-          interfaceObj.TableStructure_columnExport +
-          "?table_id=" +
-          this.tableInfo.table_id;
+          interfaceObj.TableStructure_columnExport + "?id=" + this.tableInfo.id;
       } else {
         url = interfaceObj.TableStructure_importTelplate;
       }
@@ -709,7 +747,7 @@ export default {
       // this.filepath = response.filepath;
     },
     importTelplate() {
-      if (!this.tableInfo.table_id) {
+      if (!this.tableInfo.id) {
         this.$message({
           type: "error",
           message: "表不存在"
@@ -718,9 +756,7 @@ export default {
       }
       this.handleRemove();
       this.upLoadUrl =
-        interfaceObj.TableStructure_importColumn +
-        "?table_id=" +
-        this.tableInfo.table_id;
+        interfaceObj.TableStructure_importColumn + "?id=" + this.tableInfo.id;
 
       this.exportInnerVisible = true;
     },
@@ -802,11 +838,11 @@ export default {
           publicRows.forEach(element => {
             if (element.switch) {
               var switchObj = Object.assign({}, element);
-              var firstChar = element.c_element_code.substr(0, 1);
-              let newCode = element.c_element_code.replace(firstChar, "Q");
-              switchObj.ele_name = element.ele_name + "质量标志";
-              switchObj.c_element_code = newCode;
-              switchObj.db_ele_code = newCode;
+              var firstChar = element.celementCode.substr(0, 1);
+              let newCode = element.celementCode.replace(firstChar, "Q");
+              switchObj.eleName = element.eleName + "质量标志";
+              switchObj.celementCode = newCode;
+              switchObj.dbEleCode = newCode;
               publicRows.push(switchObj);
             }
           });
@@ -884,11 +920,11 @@ export default {
               let publicRows = this.selColumnData;
               publicRows.forEach(element => {
                 var switchObj = Object.assign({}, element);
-                var firstChar = element.c_element_code.substr(0, 1);
-                let newCode = element.c_element_code.replace(firstChar, "Q");
-                switchObj.ele_name = element.ele_name + "质量标志";
-                switchObj.c_element_code = newCode;
-                switchObj.db_ele_code = newCode;
+                var firstChar = element.celementCode.substr(0, 1);
+                let newCode = element.celementCode.replace(firstChar, "Q");
+                switchObj.eleName = element.eleName + "质量标志";
+                switchObj.celementCode = newCode;
+                switchObj.dbEleCode = newCode;
                 publicRows.push(switchObj);
               });
               this.axios
@@ -940,7 +976,7 @@ export default {
     array_diff(a, b, tabActive) {
       for (var i = 0; i < b.length; i++) {
         for (var j = 0; j < a.length; j++) {
-          if (a[j].c_element_code == b[i].c_element_code) {
+          if (a[j].celementCode == b[i].celementCode) {
             a.splice(j, 1);
             j = j - 1;
             this.repeatIndex++;
@@ -952,36 +988,36 @@ export default {
         let obj = {};
         if (tabActive == "paste") {
           obj = element;
-          obj.table_id = this.tableInfo.table_id;
+          obj.id = this.tableInfo.id;
           newRows.push(obj);
         } else {
           if (tabActive == "first") {
-            obj.ele_name = element.c_element_namech;
-            obj.db_ele_code = element.c_element_code;
-            obj.c_element_code = element.c_element_code;
+            obj.eleName = element.c_element_namech;
+            obj.dbEleCode = element.celementCode;
+            obj.celementCode = element.celementCode;
             obj.type = element.c_datatype;
             obj.accuracy = element.c_element_pre;
-            obj.is_null = false;
-            obj.is_update = false;
+            obj.isNull = false;
+            obj.isUpdate = false;
           } else if (tabActive == "second") {
-            obj.ele_name = element.db_ele_name;
-            obj.db_ele_code = element.db_ele_code;
-            obj.c_element_code = element.db_ele_code;
+            obj.eleName = element.db_ele_name;
+            obj.dbEleCode = element.dbEleCode;
+            obj.celementCode = element.dbEleCode;
             obj.type = element.type;
             obj.accuracy = element.data_precision;
-            obj.is_null = element.is_null;
-            obj.is_update = element.is_update;
+            obj.isNull = element.isNull;
+            obj.isUpdate = element.isUpdate;
           }
           obj.switch = element.switch;
-          obj.table_id = this.tableInfo.table_id;
-          obj.is_manager = false;
-          obj.is_premary_key = false;
-          obj.is_show = false;
-          obj.name_cn = element.c_notes;
-          obj.serial_number = 0;
+          obj.id = this.tableInfo.id;
+          obj.isManager = false;
+          obj.isPrimaryKey = false;
+          obj.isShow = false;
+          obj.nameCn = element.c_notes;
+          obj.serialNumber = 0;
           obj.unit = element.c_element_unit;
-          obj.unit_cn = element.c_element_unit;
-          obj.user_ele_code = element.c_short_name;
+          obj.unitCn = element.c_element_unit;
+          obj.userEleCode = element.c_short_name;
           newRows.push(obj);
         }
       });
@@ -1004,23 +1040,26 @@ export default {
   watch: {
     tableInfo(val) {
       let flag = undefined;
-
       if (this.tableType == "E-show") {
         flag = "true";
       }
-      this.axios
-        .get(interfaceObj.TableStructure_getColumnInfo, {
-          params: { table_id: this.tableInfo.table_id, is_kv_k: flag }
-        })
-        .then(res => {
-          this.columnData = res.data.data;
-        })
-        .catch(error => {});
+      this.columnData = this.tableInfo.columns;
     }
   }
 };
 </script>
 <style lang="scss">
+.columnTemplate {
+  height: 600px;
+  overflow: hidden;
+  .el-scrollbar {
+    margin-top: 10px;
+    height: 500px !important;
+  }
+  .demo-table-expand {
+    padding-left: 122px;
+  }
+}
 .dragBox {
   max-height: 400px;
   overflow: hidden;

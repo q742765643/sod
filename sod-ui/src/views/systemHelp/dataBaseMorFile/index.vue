@@ -79,7 +79,6 @@
 
 <script>
 import { getpage, deleteByIds } from "@/api/systemHelp/dataBaseDevFile";
-const baseUrl = process.env.VUE_APP_DB_API;
 export default {
   data() {
     return {
