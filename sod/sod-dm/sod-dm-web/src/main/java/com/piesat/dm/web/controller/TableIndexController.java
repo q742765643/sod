@@ -82,4 +82,17 @@ public class TableIndexController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据tableId查询")
+    @RequiresPermissions("dm:tableIndex:findByTableId")
+    @GetMapping(value = "/findByTableId")
+    public ResultT findByTableId(String tableId) {
+        try {
+            List<TableIndexDto> all = this.tableIndexService.findByTableId(tableId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }
