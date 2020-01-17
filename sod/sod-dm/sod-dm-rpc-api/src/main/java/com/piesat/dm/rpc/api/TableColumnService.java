@@ -26,4 +26,6 @@ public interface TableColumnService {
     List<TableColumnDto> all();
 
     List<TableColumnDto> findByTableId(String tableId);
+
+    int deleteByIdIn(List<String> ids);
 }

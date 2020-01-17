@@ -62,6 +62,11 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    public int deleteByIdIn(List<String> ids) {
+        return this.tableColumnDao.deleteByIdIn(ids);
+    }
+
+    @Override
     public TableColumnDto getDotById(String id) {
         TableColumnEntity tableColumnEntity = this.getById(id);
         return this.tableColumnMapper.toDto(tableColumnEntity);

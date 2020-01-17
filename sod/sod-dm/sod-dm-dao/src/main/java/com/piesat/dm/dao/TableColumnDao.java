@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface TableColumnDao extends BaseDao<TableColumnEntity> {
     List<TableColumnEntity> findByTableId(String tableId);
+    int deleteByIdIn(List<String> ids);
 }

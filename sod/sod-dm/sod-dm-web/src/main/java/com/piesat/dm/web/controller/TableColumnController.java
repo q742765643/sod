@@ -15,6 +15,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class TableColumnController {
             TableColumnDto save = this.tableColumnService.saveDto(tableColumnDto);
             DataTableDto dataTable = dataTableService.getDotById(save.getTableId());
             DataLogicDto dataLogic = dataTable.getClassLogic();
-            if (dataLogic.getIsComplete()==null||!dataLogic.getIsComplete()){
+            if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {
                 dataLogic.setIsComplete(true);
                 dataLogicService.saveDto(dataLogic);
             }
@@ -81,6 +82,20 @@ public class TableColumnController {
         }
     }
 
+    @ApiOperation(value = "根据多个id删除")
+    @RequiresPermissions("dm:tableColumn:delIds")
+    @Log(title = "表字段管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/delIds")
+    public ResultT delByIds(String ids) {
+        try {
+            int i = this.tableColumnService.deleteByIdIn(Arrays.asList(ids.split(",")));
+            return ResultT.success(i);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "查询所有")
     @RequiresPermissions("dm:tableColumn:all")
     @GetMapping(value = "/all")
@@ -97,12 +112,12 @@ public class TableColumnController {
     @ApiOperation(value = "批量添加")
     @RequiresPermissions("dm:tableColumn:saveList")
     @GetMapping(value = "/saveList")
-    public ResultT saveDtoList(@RequestBody List<TableColumnDto> tableColumnDtoList){
+    public ResultT saveDtoList(@RequestBody List<TableColumnDto> tableColumnDtoList) {
         try {
             List<TableColumnDto> save = this.tableColumnService.saveDtoList(tableColumnDtoList);
             DataTableDto dataTable = dataTableService.getDotById(save.get(0).getTableId());
             DataLogicDto dataLogic = dataTable.getClassLogic();
-            if (dataLogic.getIsComplete()==null||!dataLogic.getIsComplete()){
+            if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {
                 dataLogic.setIsComplete(true);
                 dataLogicService.saveDto(dataLogic);
             }
@@ -116,7 +131,7 @@ public class TableColumnController {
     @ApiOperation(value = "根据tableId查询")
     @RequiresPermissions("dm:tableColumn:findByTableId")
     @GetMapping(value = "/findByTableId")
-    public ResultT findByTableId(String tableId){
+    public ResultT findByTableId(String tableId) {
         try {
             List<TableColumnDto> all = this.tableColumnService.findByTableId(tableId);
             return ResultT.success(all);
