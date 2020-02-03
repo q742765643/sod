@@ -1,5 +1,5 @@
 server:
-  port: 8761
+  port: 8002
 
 spring:
   application:
@@ -7,7 +7,7 @@ spring:
 
 eureka:
   instance:
-    hostname: 10.40.17.44
+    hostname: 1.119.5.177
     prefer-ip-address: true
     status-page-url-path: /actuator/info
     health-check-url-path: /actuator/health
@@ -17,7 +17,7 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://10.40.17.44:8761/eureka/
+      defaultZone: http://1.119.5.177:8002/eureka/
   server:
     enable-self-preservation: false
 
