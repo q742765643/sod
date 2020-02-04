@@ -21,7 +21,9 @@ public interface TableForeignKeyService {
 
     void delete(String id);
 
+    int deleteByIdIn(List<String> ids);
+
     List<TableForeignKeyDto> all();
 
-    List<TableForeignKeyDto> findByTableId(String tableId);
+    List<TableForeignKeyDto> findByClassLogicId(String classLogicId);
 }

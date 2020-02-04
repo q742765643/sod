@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.rpc.api.DatumTypeInfoService;
 import com.piesat.dm.rpc.dto.DatumTypeInfoDto;
 import com.piesat.sso.client.annotation.Log;
@@ -74,6 +75,19 @@ public class DatumTypeInfoController {
         try {
             List<DatumTypeInfoDto> all = this.datumTypeInfoService.all();
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询资料分类树")
+    @RequiresPermissions("dm:datumType:getTree")
+    @GetMapping(value = "/getTree")
+    public ResultT getTree() {
+        try {
+            JSONArray tree = this.datumTypeInfoService.getTree();
+            return ResultT.success(tree);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
