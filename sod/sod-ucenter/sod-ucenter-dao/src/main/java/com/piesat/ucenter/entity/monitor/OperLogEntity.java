@@ -77,7 +77,7 @@ public class OperLogEntity extends BaseEntity{
     private Integer status;
 
     /** 错误消息 */
-    @Column(name="error_msg", columnDefinition="CLOB")
+    @Column(name="error_msg", length=5000)
     private String errorMsg;
 
     /** 操作时间 */

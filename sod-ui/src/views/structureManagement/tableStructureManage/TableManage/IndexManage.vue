@@ -87,7 +87,7 @@ export default {
     getIndexTable() {
       this.axios
         .get(interfaceObj.TableStructure_getTableIndex, {
-          params: { table_id: this.tableInfo.table_id }
+          params: { id: this.tableInfo.id }
         })
         .then(res => {
           this.indexItem = res.data.data;
@@ -95,7 +95,7 @@ export default {
         .catch(error => {});
     },
     addIndex() {
-      if (!this.tableInfo.table_id) {
+      if (!this.tableInfo.id) {
         this.$message({
           type: "error",
           message: "表不存在"
@@ -108,7 +108,7 @@ export default {
       this.dialogStatus.indexDialog = true;
     },
     trueIndex() {
-      this.indexForm.table_id = this.tableInfo.table_id;
+      this.indexForm.id = this.tableInfo.id;
       this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
       let url = "";
       if (this.indexTitle == "新增索引") {
@@ -194,7 +194,7 @@ export default {
       this.indexItem = this.tableInfo.tableIndexList;
       // this.axios
       //   .get(interfaceObj.TableStructure_getColumnInfo, {
-      //     params: { table_id: val.table_id }
+      //     params: { id: val.id }
       //   })
       //   .then(res => {
       //     this.columnData = res.data.data;

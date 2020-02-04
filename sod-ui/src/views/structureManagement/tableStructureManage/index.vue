@@ -317,7 +317,6 @@ export default {
         } else if (checkedNodeStr == "" && checkedNodeStr != "search") {
           this.searchObj.classIds = [];
         }
-        console.log(this.searchObj);
         getListBYIn(this.searchObj).then(response => {
           this.tableData = response.data;
           if (this.tableData.length > 0) {
@@ -357,6 +356,7 @@ export default {
     //显示表结构管理
     showStructureManage(row) {
       this.rowData = row;
+      console.log(row);
       this.structureManageTitle = row.CLASS_NAME;
       this.structureManageVisible = true;
     },

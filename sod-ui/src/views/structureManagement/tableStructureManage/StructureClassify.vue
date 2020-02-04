@@ -74,7 +74,8 @@
 import {
   dataClassAll,
   databaseClass,
-  logicClass
+  logicClass,
+  datumTypeGetTree
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 
 export default {
@@ -115,7 +116,7 @@ export default {
       this.$refs.elTree.filter(val);
     }
   },
-  created() {
+  mounted() {
     //初始化资料分类树
     this.initMethodsTree("资料分类树");
   },
@@ -128,6 +129,8 @@ export default {
     // 初始化树 同步
     async initMethodsTree(whichTree, treeRefreshData) {
       this.loading = true;
+      let classBox = document.getElementsByClassName("classifyTree");
+      classBox[0].classList.remove("disActive");
       if (whichTree == "资料分类树") {
         this.sourceTreeOp = true;
         await dataClassAll().then(response => {
@@ -144,8 +147,9 @@ export default {
           this.treeData = response.data;
         });
       } else if (whichTree == "公共元数据结构树") {
+        classBox[0].classList.add("disActive");
         this.publicActive = true;
-        await logicClass().then(response => {
+        await datumTypeGetTree().then(response => {
           this.treeData = response.data;
         });
       }
@@ -275,6 +279,7 @@ export default {
     },
     // 显示未创建、显示全部
     handleShowTree(type) {
+      //初始化资料分类树
       if (this.showAll == "primary" && type == "all") {
         this.showNoCreat = "primary";
         this.showAll = "";
@@ -282,8 +287,8 @@ export default {
         this.showNoCreat = "";
         this.showAll = "primary";
       }
-      let initTreeUlr = interfaceObj.TableStructure_publicDatumTree;
-      this.initMethodsTree(initTreeUlr);
+      let classBox = document.getElementsByClassName("classifyTree");
+      classBox[0].classList.remove("disActive");
     },
     //查询分类树
     sourceTopSearch() {
@@ -392,6 +397,11 @@ export default {
     }
     .el-tree-node[aria-disabled="false"] {
       color: #409eff;
+    }
+  }
+  .disActive {
+    .el-tree-node[aria-disabled="true"] {
+      display: inline-block;
     }
   }
 }

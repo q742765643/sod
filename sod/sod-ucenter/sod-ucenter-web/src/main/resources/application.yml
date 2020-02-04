@@ -1,5 +1,5 @@
 server:
-  port: 1234
+  port: 8003
   servlet:
       context-path: /
 tomcat:
@@ -11,7 +11,7 @@ tomcat:
 
 grpc:
   server:
-    port: 6000
+    port: 8004
 spring:
   #aop:
   #auto: true
@@ -27,14 +27,14 @@ spring:
       charset: utf-8
       enabled: true
   datasource:
-      driver-class-name: com.xugu.cloudjdbc.Driver
-      url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
-      username: sod5
-      password: 123456
-      #driver-class-name: com.mysql.jdbc.Driver
-      #url: jdbc:mysql://10.224.47.209:3306/test02
-      #username: root
-      #password: root
+      #driver-class-name: com.xugu.cloudjdbc.Driver
+      #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
+      #username: sod5
+      #password: 123456
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:8000/sod
+      username: root
+      password: root
       type: com.alibaba.druid.pool.DruidDataSource
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
@@ -56,14 +56,15 @@ spring:
       hibernate:
         hbm2ddl:
           auto: update
-        dialect: com.xugu.dialect.XuguDialect5
+        #dialect: com.xugu.dialect.XuguDialect5
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         format_sql: true
     show-sql: true
     #database: mysql
     open-in-view: false
   redis:
-    host: 10.40.17.44
-    port: 6379
+    host: 127.0.0.1
+    port: 8001
     timeout: 5000
     password:
 mybatis:
@@ -87,4 +88,4 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.40.17.44:8761/eureka/
+      defaultZone: http://127.0.0.1:8002/eureka/

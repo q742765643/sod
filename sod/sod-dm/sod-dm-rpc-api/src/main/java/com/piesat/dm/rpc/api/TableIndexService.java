@@ -22,4 +22,6 @@ public interface TableIndexService {
     void delete(String id);
 
     List<TableIndexDto> all();
+
+    List<TableIndexDto> findByTableId(String tableId);
 }

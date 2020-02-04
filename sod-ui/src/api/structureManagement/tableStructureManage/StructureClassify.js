@@ -21,6 +21,13 @@ export function logicClass() {
     method: 'get',
   })
 }
+// 公共元数据结构树
+export function datumTypeGetTree() {
+  return request({
+    url: baseUrl + '/dm/datumType/getTree',
+    method: 'get',
+  })
+}
 // 根据ID删除
 export function delBackup(id) {
   return request({

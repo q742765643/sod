@@ -340,7 +340,6 @@ export default {
   watch: {
     tableInfo(val) {
       this.Info = JSON.parse(JSON.stringify(val));
-      console.log(this.Info);
       if (this.tableType == "E-show") {
         this.childTableType = "E";
         this.namehelp = "show";
