@@ -32,7 +32,7 @@
     </select>
     <!-- 获取最大type -->
     <select id="selectMaxType" resultType ="java.lang.Integer">
-    	select max(type) from t_sod_system_dictionary
+    	select max(type) from dmin_system_dictionary
     </select>
 
 </mapper>
