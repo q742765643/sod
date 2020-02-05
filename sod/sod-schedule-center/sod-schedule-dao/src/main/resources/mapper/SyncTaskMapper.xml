@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.schedule.mapper.sync.SyncTaskMapper">
+    <resultMap id="BaseResultMap" type="com.piesat.schedule.entity.sync.SyncTaskEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="CREATE_BY" jdbcType="VARCHAR" property="createBy" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="DEL_FLAG" jdbcType="VARCHAR" property="delFlag" />
+        <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="VERSION" jdbcType="INTEGER" property="version" />
+        <result column="TASK_NAME" jdbcType="VARCHAR" property="taskName" />
+        <result column="sync_type" jdbcType="INTEGER" property="syncType" />
+        <result column="data_source_id" jdbcType="VARCHAR" property="dataSourceId" />
+        <result column="data_flow_direction_id" jdbcType="VARCHAR" property="dataFlowDirectionId" />
+        <result column="source_database_id" jdbcType="VARCHAR" property="sourceDatabaseId" />
+        <result column="target_database_id" jdbcType="VARCHAR" property="targetDatabaseId" />
+        <result column="source_table" jdbcType="VARCHAR" property="sourceTable" />
+        <result column="source_table_datecolumn" jdbcType="VARCHAR" property="sourceTableDatecolumn" />
+        <result column="batch_amount" jdbcType="INTEGER" property="batchAmount" />
+        <result column="begin_time" jdbcType="TIMESTAMP"  property="beginTime" />
+        <result column="last_success_time" jdbcType="TIMESTAMP" property="lastSuccessTime" />
+        <result column="has_modify" jdbcType="VARCHAR" property="hasModify" />
+        <result column="slave_tables" jdbcType="VARCHAR" property="slaveTables" />
+        <result column="link_key" jdbcType="VARCHAR" property="linkKey" />
+        <result column="sync_period" jdbcType="INTEGER" property="syncPeriod" />
+        <result column="di_off" jdbcType="VARCHAR" property="diOff" />
+        <result column="discard_on_duplicate" jdbcType="VARCHAR" property="discardOnDuplicate" />
+        <result column="exec_ip" jdbcType="VARCHAR"  property="execIp" />
+        <result column="exec_port" jdbcType="INTEGER" property="execPort" />
+    </resultMap>
+    <resultMap id="LogResultMap" type="com.piesat.schedule.entity.sync.SyncTaskLogEntity" >
+        <result column="id" property="id" />
+        <result column="CREATE_BY" jdbcType="VARCHAR" property="createBy" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="DEL_FLAG" jdbcType="VARCHAR" property="delFlag" />
+        <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="VERSION" jdbcType="INTEGER" property="version" />
+        <result column="task_id" property="taskId" />
+        <result column="log_level" property="logLevel" />
+        <result column="log_time" property="logTime" />
+        <result column="state" property="state" />
+        <result column="counts" property="counts" />
+        <result column="insert_count" property="insertCount" />
+        <result column="update_count" property="updateCount" />
+        <result column="discard_count" property="discardCount" />
+        <result column="begintime" property="begintime" />
+        <result column="endtime" property="endtime" />
+        <result column="spendtime" property="spendtime" />
+        <result column="error" property="error" />
+    </resultMap>
+    <sql id="selectVo">
+        select
+            d.ID, d.CREATE_BY, d.CREATE_TIME, d.DEL_FLAG, d.UPDATE_BY, d.UPDATE_TIME, d.VERSION,
+            d.task_name, d.sync_type, d.data_source_id, d.data_flow_direction_id, d.source_database_id, d.target_database_id,
+            d.source_table, d.source_table_datecolumn, d.batch_amount, d.begin_time, d.last_success_time, d.has_modify, d.slave_tables,
+            d.link_key, d.sync_period, d.di_off, d.discard_on_duplicate, d.exec_ip, d.exec_port
+        from T_SOD_JOB_SYNCTASK_INFO d
+    </sql>
+    <select id="selectPageList" parameterType="com.piesat.schedule.entity.sync.SyncTaskEntity" resultMap="BaseResultMap">
+        <include refid="selectVo"/>
+        where 1=1
+        <if test="taskName!=null and taskName!=''">
+            and d.TASK_NAME like '%${taskName}%'
+        </if>
+        <if test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+            and  d.BEGIN_TIME between #{beginTime} and #{endTime}
+        </if>
+        <if test="dataSourceId!=null and dataSourceId!=''">
+            and d.DATA_SOURCE_ID like '%${dataSourceId}%'
+        </if>
+        <if test="dataFlowDirectionId!=null and dataFlowDirectionId!=''">
+            and d.DATA_FLOW_DIRECTION_ID like '%${dataFlowDirectionId}%'
+        </if>
+        <if test="execIp!=null and execIp!=''">
+            and d.EXEC_IP like '%${execIp}%'
+        </if>
+        <if test="execPort!=null and execPort!=''">
+            and d.EXEC_PORT like '%${execPort}%'
+        </if>
+    </select>
+
+    <select id="selectLogPageList" parameterType="com.piesat.schedule.entity.sync.SyncTaskLogEntity" resultMap="LogResultMap">
+        select
+        id,
+        CREATE_BY,
+        CREATE_TIME,
+        DEL_FLAG,
+        UPDATE_BY,
+        UPDATE_TIME,
+        VERSION,
+        task_id,
+        log_level,
+        log_time,
+        state,
+        counts,
+        insert_count,
+        update_count,
+        discard_count,
+        begin_time,
+        end_time,
+        spend_time,
+        error
+        from T_SOD_JOB_SYNCTASK_INFO_LOG
+        <where>
+            <if test="taskId!=null and taskId!=''">
+                and TASK_ID = '${taskId}'
+            </if>
+        </where>
+        order by log_time desc
+    </select>
+    <!--<insert id="addSyncFilter" parameterType="com.piesat.schedule.entity.sync.SyncFilterEntity" useGeneratedKeys="true" keyProperty="id" keyColumn="ID">
+        insert into T_SOD_DICT_DATA (COLUMN_NAME, FILTER_VALUES, COLUMN_OPER)
+        values (#{columnName},#{filterValues},#{columnOper})
+    </insert>-->
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.sod.system.mapper.SqlTemplateMapper">
+    <resultMap id="baseResult" type="com.piesat.sod.system.entity.SqlTemplateEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="DATABASE_SERVER" jdbcType="VARCHAR" property="databaseServer" />
+        <result column="TEMPLATE" jdbcType="VARCHAR" property="template" />
+        <result column="DATABASE_NAME" jdbcType="VARCHAR" property="databaseName" />
+        
+    </resultMap>
+    <!-- 查询全部-->
+    <select id="selectList" parameterType="com.piesat.sod.system.entity.SqlTemplateEntity" resultMap="baseResult">
+		select
+			t.database_server ,d.name_cn as database_name,t.id as id,t.template
+		from 
+			t_sod_sql_template t,t_sod_system_dictionary d 
+		where 
+			t.database_server = d.key_col and d.name_cn is not null and d.name_cn !='' and
+			t.database_server is not null and t.database_server !=''
+    </select>
+
+</mapper>

@@ -20,7 +20,7 @@
 			t1.id,t1.key_col,t1.type,t1.name_cn,t1.description,
 			t1.flag,t1.can_delete,t1.menu,t1.serial_number,t2.key_col as data_type
 		from 
-			dmin_system_dictionary t1 left join (select key_col,type from dmin_system_dictionary where flag = 'T') t2
+			t_sod_system_dictionary t1 left join (select key_col,type from t_sod_system_dictionary where flag = 'T') t2
 		on 
 			t1.type = t2.type
 		where
@@ -32,7 +32,7 @@
     </select>
     <!-- 获取最大type -->
     <select id="selectMaxType" resultType ="java.lang.Integer">
-    	select max(type) from dmin_system_dictionary
+    	select max(type) from t_sod_system_dictionary
     </select>
 
 </mapper>
