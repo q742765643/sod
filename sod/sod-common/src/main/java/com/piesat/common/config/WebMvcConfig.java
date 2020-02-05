@@ -51,7 +51,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     }
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
+        registry.addResourceHandler("doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
@@ -108,7 +108,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
       registry.addInterceptor(new HthtInterceptor()).addPathPatterns("/**")
               //.excludePathPatterns("/loginPage","/login")
               .excludePathPatterns("/error")
-              .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**");
+              .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/doc.html");
   }
 
     @Override

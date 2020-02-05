@@ -1,6 +1,5 @@
 package com.piesat.ucenter.rpc.dto.system;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.piesat.util.BaseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
