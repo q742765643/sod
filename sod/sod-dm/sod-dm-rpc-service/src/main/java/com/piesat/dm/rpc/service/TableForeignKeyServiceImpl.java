@@ -44,8 +44,8 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
     }
 
     @Override
-    public List<TableForeignKeyDto> findByTableId(String tableId) {
-        List<TableForeignKeyEntity> all = this.tableForeignKeyDao.findByTableId(tableId);
+    public List<TableForeignKeyDto> findByClassLogicId(String classLogicId) {
+        List<TableForeignKeyEntity> all = this.tableForeignKeyDao.findByClassLogicId(classLogicId);
         return this.tableForeignKeyMapper.toDto(all);
     }
 
@@ -54,4 +54,11 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
         TableForeignKeyEntity TableForeignKeyEntity = this.getById(id);
         return this.tableForeignKeyMapper.toDto(TableForeignKeyEntity);
     }
+
+    @Override
+    public int deleteByIdIn(List<String> ids) {
+        return this.tableForeignKeyDao.deleteByIdIn(ids);
+    }
+
+
 }

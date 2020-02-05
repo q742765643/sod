@@ -3,7 +3,6 @@ package com.piesat.dm.rpc.service;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
-import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.common.tree.BaseParser;
 import com.piesat.dm.common.tree.TreeLevel;
 import com.piesat.dm.dao.*;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -177,35 +175,5 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataClassDao.deleteByDataClassId(dataClassId);
     }
 
-    public void importData() {
-        String sql = "select * from DMIN_DATA_CLASS_TABLE";
-        List<Map> list = CodeDOM.getList(sql);
-        for (Map<String, Object> m : list) {
-            DataClassEntity dc = new DataClassEntity();
-            dc.setClassName(m.get("CLASS_NAME").toString());
-            dc.setDataClassId(m.get("DATA_CLASS_ID").toString());
-            dc.setDDataId(m.get("D_DATA_ID").toString());
-            dc.setFrequencyType(0);
-            dc.setIfStopUse(false);
-            dc.setIsAccess(1);
-            dc.setIsAllLine(1);
-            dc.setMetaDataName(m.get("META_DATA_NAME").toString());
-            dc.setParentId(m.get("PARENT_CLASS_ID").toString());
-            Object serial_no = m.get("SERIAL_NO");
-            int n = 0;
-            if (serial_no != null) {
-                if (StringUtils.isNotEmpty(serial_no.toString())) {
-                    n = Integer.parseInt(serial_no.toString());
-                }
-            }
-            dc.setSerialNo(n);
-            String meta_data_stor_type = m.get("META_DATA_STOR_TYPE").toString();
-            if ("目录".equals(meta_data_stor_type)) dc.setType(1);
-            else dc.setType(2);
-            dc.setUseBaseInfo(1);
-            dc.setDelFlag("0");
-            dc.setCreateTime(new Date());
-            save(dc);
-        }
-    }
+
 }

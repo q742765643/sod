@@ -11,6 +11,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -67,6 +68,20 @@ public class TableForeignKeyController {
         }
     }
 
+    @ApiOperation(value = "根据多个id删除")
+    @RequiresPermissions("dm:foreignKey:delByIds")
+    @Log(title = "外键关联", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/delByIds")
+    public ResultT delByIds(String ids) {
+        try {
+            int i = this.tableForeignKeyService.deleteByIdIn(Arrays.asList(ids.split(",")));
+            return ResultT.success(i);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "查询所有")
     @RequiresPermissions("dm:foreignKey:all")
     @GetMapping(value = "/all")
@@ -80,12 +95,12 @@ public class TableForeignKeyController {
         }
     }
 
-    @ApiOperation(value = "根据tableId查询")
-    @RequiresPermissions("dm:foreignKey:findByTableId")
-    @GetMapping(value = "/findByTableId")
-    public ResultT findByTableId(String tableId){
+    @ApiOperation(value = "根据类型和逻辑库关系id查询")
+    @RequiresPermissions("dm:foreignKey:findByClassLogicId")
+    @GetMapping(value = "/findByClassLogicId")
+    public ResultT findByClassLogicId(String classLogicId){
         try {
-            List<TableForeignKeyDto> all = this.tableForeignKeyService.findByTableId(tableId);
+            List<TableForeignKeyDto> all = this.tableForeignKeyService.findByClassLogicId(classLogicId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

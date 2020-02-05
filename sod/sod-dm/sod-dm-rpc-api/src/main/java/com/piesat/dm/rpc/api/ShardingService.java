@@ -17,6 +17,8 @@ import java.util.List;
 public interface ShardingService {
     ShardingDto saveDto(ShardingDto shardingDto);
 
+    List<ShardingDto> saveDto(List<ShardingDto> shardingDto);
+
     ShardingDto getDotById(String id);
 
     List<ShardingDto> getDotByTableId(String id);
@@ -24,4 +26,6 @@ public interface ShardingService {
     void delete(String id);
 
     List<ShardingDto> all();
+
+
 }
