@@ -27,6 +27,10 @@ public class SqlTemplateDto implements Serializable{
 	/**
 	 * 模板信息
 	 */
-	private String template; 
+	private String template;
+	/**
+	 *  数据库名称
+	 */
+	private String databaseName;
 
 }
