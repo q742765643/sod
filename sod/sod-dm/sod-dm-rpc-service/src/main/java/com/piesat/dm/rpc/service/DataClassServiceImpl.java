@@ -177,7 +177,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public List<Map<String, Object>> getDataTypeList() {
-        String sql = "select data_class_id,class_name fom t_sod_data_class where length(data_class_id)=1";
+        String sql = "select data_class_id,class_name from t_sod_data_class where length(data_class_id)=1";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }
