@@ -17,24 +17,24 @@ import java.util.List;
 public class Xugu extends DatabaseDclAbs {
     private final String driver = "com.xugu.cloudjdbc.Driver";
 
-    public Xugu(String url, String user, String password) {
+    public Xugu(String url, String user, String password) throws Exception {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("虚谷数据库连接失败");
+            throw new Exception("虚谷数据库连接失败");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new RuntimeException("虚谷数据驱动类缺失");
+            throw new Exception("虚谷数据驱动类缺失");
         }
     }
 
     @Override
-    public void addUser(String identifier, String password, String[] ips) {
+    public void addUser(String identifier, String password, String[] ips) throws Exception {
         int userNum = getUserNum(identifier);
         if (userNum > 0) {
-            throw new RuntimeException("数据库用户已经存在！");
+            throw new Exception("数据库用户已经存在！");
         }
         String sql = "CREATE USER " + identifier + " IDENTIFIED BY '" + password + "'";
         try {
@@ -42,12 +42,12 @@ public class Xugu extends DatabaseDclAbs {
             stmt.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("新增用户失败！errInfo：" + e.getMessage());
+            throw new Exception("新增用户失败！errInfo：" + e.getMessage());
         }
 
     }
 
-    public int getUserNum(String user) {
+    public int getUserNum(String user) throws Exception {
         int num = 0;
         String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + user.toUpperCase() + "'";
         try {
@@ -58,13 +58,13 @@ public class Xugu extends DatabaseDclAbs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("错误：" + e.getMessage());
+            throw new Exception("错误：" + e.getMessage());
         }
         return num;
     }
 
     @Override
-    public void deleteUser(String identifier, String ip) {
+    public void deleteUser(String identifier, String ip) throws Exception {
         int num = 0;
         String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + identifier.toUpperCase() + "'";
         try {
@@ -80,18 +80,18 @@ public class Xugu extends DatabaseDclAbs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("删除用户失败！errInfo：" + e.getMessage());
+            throw new Exception("删除用户失败！errInfo：" + e.getMessage());
         }
     }
 
-    public void disabledUser(String identifier) {
+    public void disabledUser(String identifier) throws Exception {
         String sql = "ALTER USER " + identifier + " ACCOUNT LOCK ";
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("禁用用户(" + identifier + ")失败！errInfo：" + e.getMessage());
+            throw new Exception("禁用用户(" + identifier + ")失败！errInfo：" + e.getMessage());
         }
     }
 
@@ -114,7 +114,7 @@ public class Xugu extends DatabaseDclAbs {
     }
 
     @Override
-    public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) {
+    public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         String permission = ArrayUtils.toString(permissions, ",");
         String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM " + identifier;
         try {
@@ -122,12 +122,12 @@ public class Xugu extends DatabaseDclAbs {
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("撤销数据库授权失败！errInfo：" + e.getMessage());
+            throw new Exception("撤销数据库授权失败！errInfo：" + e.getMessage());
         }
     }
 
     @Override
-    public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) {
+    public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) throws Exception {
         String sql = "SELECT COUNT(*) FROM DBA_SCHEMAS WHERE SCHEMA_NAME = '" + schemaName + "'";
         int num = 0;
         try {
@@ -173,13 +173,13 @@ public class Xugu extends DatabaseDclAbs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("错误：" + e.getMessage());
+            throw new Exception("错误：" + e.getMessage());
         }
 
     }
 
     @Override
-    public void dropSchemas(String schemaName) {
+    public void dropSchemas(String schemaName) throws Exception {
         String sql = "SELECT COUNT(*) FROM DBA_SCHEMAS WHERE SCHEMA_NAME = '" + schemaName + "'";
         int num = 0;
         try {
@@ -195,7 +195,7 @@ public class Xugu extends DatabaseDclAbs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("错误：" + e.getMessage());
+            throw new Exception("错误：" + e.getMessage());
         }
     }
 

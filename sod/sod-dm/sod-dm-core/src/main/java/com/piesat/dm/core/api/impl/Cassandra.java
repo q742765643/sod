@@ -29,7 +29,7 @@ public class Cassandra implements DatabaseDcl {
     public Cassandra() {
     }
 
-    public Cassandra(String ip, int port, String username, String password, String keyspace) {
+    public Cassandra(String ip, int port, String username, String password, String keyspace) throws Exception {
         String[] ips = ip.split(",");
         if (null == instance) {
             try {
@@ -49,7 +49,7 @@ public class Cassandra implements DatabaseDcl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("Cassandra数据库连接失败，请检查！ERROR INFO:" + e.getMessage());
+                throw new Exception("Cassandra数据库连接失败，请检查！ERROR INFO:" + e.getMessage());
             } finally {
                 lock.unlock();
             }
@@ -88,7 +88,7 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
-    public void addUser(String identifier, String password, String[] ips) {
+    public void addUser(String identifier, String password, String[] ips) throws Exception {
         identifier = identifier.toLowerCase();
         String cql = "LIST USERS;";
         ResultSet rs = instance.execute(cql);
@@ -96,7 +96,7 @@ public class Cassandra implements DatabaseDcl {
         while (it.hasNext()) {
             Row row = it.next();
             if (identifier.equals(row.getObject(0))) {
-                throw new RuntimeException("用户已存在!");
+                throw new Exception("用户已存在!");
             }
         }
         cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
@@ -131,7 +131,7 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
-    public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) {
+    public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         identifier = identifier.toLowerCase();
         String permission = ArrayUtils.toString(permissions, ",");
         try {
@@ -140,12 +140,12 @@ public class Cassandra implements DatabaseDcl {
                 instance.execute(cql);
             }
         } catch (Exception e) {
-            throw new RuntimeException("撤销Cassandra数据库授权失败！errInfo：" + e.getMessage());
+            throw new Exception("撤销Cassandra数据库授权失败！errInfo：" + e.getMessage());
         }
     }
 
     @Override
-    public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) {
+    public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) throws Exception {
         try {
             dataBaseUser = dataBaseUser.toLowerCase();
             String cql = "CREATE KEYSPACE IF NOT EXISTS " + schemaName + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1}";
@@ -166,7 +166,7 @@ public class Cassandra implements DatabaseDcl {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("检查Cassandra数据库账户是否存在，errInfo：" + e.getMessage());
+            throw new Exception("检查Cassandra数据库账户是否存在，errInfo：" + e.getMessage());
         }
     }
 

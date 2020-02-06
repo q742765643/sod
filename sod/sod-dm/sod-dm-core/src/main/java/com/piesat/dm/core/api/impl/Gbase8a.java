@@ -17,21 +17,21 @@ import java.util.List;
 public class Gbase8a extends DatabaseDclAbs {
     private final String driver = "com.gbase.jdbc.Driver";
 
-    public Gbase8a(String url, String user, String password){
+    public Gbase8a(String url, String user, String password) throws Exception{
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Gbase8a数据库连接失败");
+            throw new Exception("Gbase8a数据库连接失败");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new RuntimeException("Gbase8a数据驱动类缺失");
+            throw new Exception("Gbase8a数据驱动类缺失");
         }
     }
 
 
-    public int getUserNum(String user) {
+    public int getUserNum(String user) throws Exception {
         int num = 0;
         String sql = "SELECT COUNT(*) FROM GBASE.USER WHERE USER='" + user + "'";
         try {
@@ -42,16 +42,16 @@ public class Gbase8a extends DatabaseDclAbs {
                 num = rs.getInt(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("错误：" + e.getMessage());
+            throw new Exception("错误：" + e.getMessage());
         }
         return num;
     }
 
     @Override
-    public void addUser(String identifier, String password, String[] ips) {
+    public void addUser(String identifier, String password, String[] ips) throws Exception {
         int userNum = getUserNum(identifier);
         if (userNum > 0) {
-            throw new RuntimeException("数据库用户已经存在！");
+            throw new Exception("数据库用户已经存在！");
         }
         for (String ip : ips) {
             String sql = "CREATE USER '" + identifier + "'@'" + ip + "' IDENTIFIED BY '" + password + "'";
@@ -59,13 +59,13 @@ public class Gbase8a extends DatabaseDclAbs {
                 stmt = connection.createStatement();
                 stmt.execute(sql);
             } catch (SQLException e) {
-                throw new RuntimeException("新增用户失败！errInfo：" + e.getMessage());
+                throw new Exception("新增用户失败！errInfo：" + e.getMessage());
             }
         }
     }
 
     @Override
-    public void deleteUser(String identifier, String ip) {
+    public void deleteUser(String identifier, String ip) throws Exception {
         String sql = "SELECT HOST FROM GBASE.USER WHERE USER ='" + identifier + "'";
         try {
             stmt = connection.createStatement();
@@ -82,11 +82,11 @@ public class Gbase8a extends DatabaseDclAbs {
 
             }
         } catch (SQLException e) {
-            throw new RuntimeException("删除用户失败！errInfo：" + e.getMessage());
+            throw new Exception("删除用户失败！errInfo：" + e.getMessage());
         }
     }
 
-    public void deleteUser(String identifier) {
+    public void deleteUser(String identifier) throws Exception {
         String sql = "SELECT HOST FROM GBASE.USER WHERE USER ='" + identifier + "'";
         try {
             stmt = connection.createStatement();
@@ -101,7 +101,7 @@ public class Gbase8a extends DatabaseDclAbs {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("删除用户失败！errInfo：" + e.getMessage());
+            throw new Exception("删除用户失败！errInfo：" + e.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
     @Override
-    public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws SQLException {
+    public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         String permission = select ? "SELECT" : "SELECT,UPDATE,INSERT,DELETE";
         stmt = connection.createStatement();
         for (int i = 0; i < ips.size(); i++) {
@@ -127,7 +127,7 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
     @Override
-    public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) {
+    public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         String permission = ArrayUtils.toString(permissions, ",");
         try {
             stmt = connection.createStatement();
@@ -137,12 +137,12 @@ public class Gbase8a extends DatabaseDclAbs {
                 stmt.execute(sql);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("撤销数据库授权失败！errInfo：" + e.getMessage());
+            throw new Exception("撤销数据库授权失败！errInfo：" + e.getMessage());
         }
     }
 
     @Override
-    public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) {
+    public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) throws Exception {
         String sql = "SELECT COUNT(SCHEMA_NAME) from INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME = '" + schemaName + "'";
         int num = 0;
         try {
@@ -170,7 +170,7 @@ public class Gbase8a extends DatabaseDclAbs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("错误：" + e.getMessage());
+            throw new Exception("错误：" + e.getMessage());
         }
 
     }

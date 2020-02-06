@@ -18,7 +18,7 @@ import java.util.Map;
 @PropertySource(value = {"classpath:config.yml"}, factory = YamlConfigFactory.class)
 @ConfigurationProperties(prefix = "column")
 public class ColumnSet {
-    private Map<String, Object> xugu;
-    private Map<String, Object> gbase8a;
-    private Map<String, Object> cassandra;
+    private Map<String, String> xugu;
+    private Map<String, String> gbase8a;
+    private Map<String, String> cassandra;
 }
