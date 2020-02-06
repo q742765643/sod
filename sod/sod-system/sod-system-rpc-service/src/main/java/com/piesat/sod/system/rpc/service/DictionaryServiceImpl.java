@@ -98,6 +98,7 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 	public void addType(DictionaryDto dictionaryDto) throws Exception {
 		
 		Integer type = dictionaryMapper.selectMaxType();
+		if(null == type) type=0;
 		
 		DictionaryEntity de = dictionaryMapstruct.toEntity(dictionaryDto);
 		de.setType(type++);
