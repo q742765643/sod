@@ -75,4 +75,12 @@ public interface DictionaryService {
 	 */
 	void deleteByIds (String ids) throws Exception;
 
+	/**
+	 * 根据类型查询
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	List<DictionaryDto> findByType(Integer type) throws Exception;
+
 }
