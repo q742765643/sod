@@ -9,4 +9,5 @@ package com.piesat.util.constant;
 public class GrpcConstant {
     public static final String UCENTER_SERVER="ucenter-server";
     public static final String DM_SERVER="dm-server";
+    public static final String SYSTEM_SERVER="system-server";
 }

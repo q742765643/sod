@@ -1,16 +1,18 @@
 package com.piesat.sod.system.rpc.api;
 
-import java.util.List;
-
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
+import com.piesat.util.constant.GrpcConstant;
+
+import java.util.List;
+
 /**
  *  sql 模板管理
  * @author adminis
  *
  */
-@GrpcHthtService(server = "sqlTemplate",serialization = SerializeType.PROTOSTUFF)
+@GrpcHthtService(server = GrpcConstant.SYSTEM_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface SqlTemplateService {
 
 	/**
