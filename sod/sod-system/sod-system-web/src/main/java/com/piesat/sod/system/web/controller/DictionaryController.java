@@ -23,7 +23,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-/**
+/** 字典表管理
 *@description
 *@author wlg
 *@date 2020年1月14日下午6:58:57

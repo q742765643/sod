@@ -61,5 +61,10 @@ public class ManageFieldDto implements Serializable{
 	 * 数据精度
 	 */
 	private Integer dataPrecision;
+	/**
+	 *  分组id
+	 */
+	private String groupId;
+	
 
 }
