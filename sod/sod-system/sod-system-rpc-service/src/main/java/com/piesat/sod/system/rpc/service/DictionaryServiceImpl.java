@@ -155,4 +155,10 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		dictionaryDao.deleteByIds(idList);
 	}
 
+	@Override
+	public List<DictionaryDto> findByType(Integer type) throws Exception {
+		List<DictionaryEntity> dictionaryEntities = dictionaryMapper.findByType(type);
+		return dictionaryMapstruct.toDto(dictionaryEntities);
+	}
+
 }
