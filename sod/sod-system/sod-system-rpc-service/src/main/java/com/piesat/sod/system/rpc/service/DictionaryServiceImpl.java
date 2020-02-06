@@ -155,4 +155,23 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		dictionaryDao.deleteByIds(idList);
 	}
 
+	/**
+	 *  根据type 查询管理字段
+	 * @description 
+	 * @author wlg
+	 * @date 2020-02-06 17:54
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public List<DictionaryDto> findByType(String type) throws Exception {
+		DictionaryEntity de = new DictionaryEntity();
+		de.setType(Integer.valueOf(type));
+		
+		List<DictionaryEntity> deList = dictionaryMapper.selectList(de);
+		List<DictionaryDto> ddList = dictionaryMapstruct.toDto(deList);
+		return ddList;
+	}
+
 }

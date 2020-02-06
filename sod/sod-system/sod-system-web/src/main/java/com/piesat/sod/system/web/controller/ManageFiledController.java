@@ -205,7 +205,7 @@ public class ManageFiledController {
 	 * @return
 	 */
 	@RequiresPermissions("restApi:manageField:findManageFieldByPk")
-	@GetMapping(value="/findManageGroupByPk")
+	@GetMapping(value="/findManageFieldByPk")
 	@ApiOperation(value="查询管理字段分组",notes="查询单条管理字段分组接口")
 	public ResultT findManageFieldByPk(String id) {
 		log.info(">>>>>>>>主键查询单条管理字段");
