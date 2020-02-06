@@ -174,4 +174,10 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		return ddList;
 	}
 
+	@Override
+	public List<DictionaryDto> findByType(Integer type) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

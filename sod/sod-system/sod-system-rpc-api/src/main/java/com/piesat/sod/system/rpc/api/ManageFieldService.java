@@ -1,13 +1,14 @@
 package com.piesat.sod.system.rpc.api;
 
-import java.util.List;
-
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.sod.system.rpc.dto.ManageFieldDto;
 import com.piesat.sod.system.rpc.dto.ManageGroupDto;
+import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+
+import java.util.List;
 
 /**
 *@description
@@ -15,7 +16,7 @@ import com.piesat.util.page.PageForm;
 *@date 2020年1月16日下午5:12:11
 *
 */
-@GrpcHthtService(server = "mngfield",serialization = SerializeType.PROTOSTUFF)
+@GrpcHthtService(server = GrpcConstant.SYSTEM_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface ManageFieldService {
 
 	/**

@@ -33,4 +33,11 @@ public interface DictionaryMapper {
 	 * @return
 	 */
 	public Integer selectMaxType();
+
+	/**
+	 * 根据type查询字典数据
+	 * @param type
+	 * @return
+	 */
+	public List<DictionaryEntity> findByType(Integer type);
 }

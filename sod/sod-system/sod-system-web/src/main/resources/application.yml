@@ -14,7 +14,7 @@ grpc:
     port: 6000
 spring:
   application:
-    name: local-grpc-server
+    name: system-server
   http:
     encoding:
       force: true
