@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.sod.system.mapper.ManageFieldMapper">
+    <resultMap id="baseResult" type="com.piesat.sod.system.entity.ManageFieldEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="DB_ELE_CODE" jdbcType="VARCHAR" property="dbEleCode" />
+        <result column="USER_ELE_CODE" jdbcType="VARCHAR" property="userEleCode" />
+        <result column="DB_ELE_NAME" jdbcType="VARCHAR" property="dbEleName" />
+        <result column="ELE_NAME" jdbcType="VARCHAR" property="eleName" />
+        <result column="TYPE" jdbcType="VARCHAR" property="type" />
+        <result column="DATA_PRECISION" jdbcType="INTEGER" property="dataPrecision" />
+        <result column="LENGTH" jdbcType="INTEGER" property="length" />
+        <result column="IS_NULL" jdbcType="BOOLEAN" property="nullAble" />
+        <result column="IS_UPDATE" jdbcType="BOOLEAN" property="updateAble" />
+        <result column="DATA_PRECISION1" jdbcType="INTEGER" property="dataPrecision1" />
+        <result column="GROUP_IP" jdbcType="VARCHAR" property="groupId" />
+        
+    </resultMap>
+    <!-- 条件查询 -->
+    <select id="findByConditions" resultMap="baseResult" parameterType="com.piesat.sod.system.entity.ManageFieldEntity">
+    	select 
+    		t2.* 
+    	from 
+    		dmin_db_manager_field_fieldgroup t1
+		left join 
+			dmin_db_manager_field t2 
+		on 
+			t1.field_id = t2.id
+		where 
+			t1.group_id = #{groupId}
+		<if test="dbEleCode != null and dbEleCode != ''">
+			and upper(t2.DB_ELE_CODE) like upper('%'||#{dbEleCode}||'%')
+		</if>
+		order by t2.DB_ELE_CODE asc
+    </select>
+
+</mapper>

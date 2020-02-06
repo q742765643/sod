@@ -28,6 +28,7 @@ public class SqlTemplateServiceImpl extends BaseService<SqlTemplateEntity> imple
 	@Autowired
 	private SqlTemplateMapstruct sqlTemplateMapstruct;
 	
+	@Autowired
 	private SqlTemplateMapper sqlTemplateMapper;
 
 	@Override

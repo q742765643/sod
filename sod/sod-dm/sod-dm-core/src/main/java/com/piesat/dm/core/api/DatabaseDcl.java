@@ -2,7 +2,6 @@ package com.piesat.dm.core.api;
 
 import com.piesat.util.ResultT;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -40,14 +39,14 @@ public interface DatabaseDcl {
      * @param identifier 用户标识
      * @param password   密码
      */
-    void addUser(String identifier, String password,String[] ips);
+    void addUser(String identifier, String password,String[] ips) throws Exception;
 
     /**
      * 删除用户
      *
      * @param identifier 用户标识
      */
-    void deleteUser(String identifier, String ip);
+    void deleteUser(String identifier, String ip) throws Exception;
 
     /**
      * 增加白名单用户
@@ -57,7 +56,7 @@ public interface DatabaseDcl {
      * @param ips         白名单ip
      * @param type       ip或ip段，（0：IP，1：IP段）
      */
-    void addEnable(String identifier, String resource, List<String> ips, int type);
+    void addEnable(String identifier, String resource, List<String> ips, int type) throws Exception;
 
     /**
      * 删除白名单用户
@@ -67,21 +66,21 @@ public interface DatabaseDcl {
      * @param ips         白名单ip
      * @param type       ip或ip段，（0：IP，1：IP段）
      */
-    void deleteEnable(String identifier, String resource, List<String> ips, int type);
+    void deleteEnable(String identifier, String resource, List<String> ips, int type) throws Exception;
 
     /**
      * 增加权限
      *
      * @param select 读权限
      */
-    void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws SQLException;
+    void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips)  throws Exception;
 
     /**
      * 删除权限
      *
      * @param select 读权限
      */
-    void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips);
+    void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception;
 
     /**
      * 新增数据库实例
@@ -92,14 +91,14 @@ public interface DatabaseDcl {
      * @param creatAuthor  建表权限
      * @param dropAuthor   删表权限
      */
-    void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips);
+    void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) throws Exception;
 
     /**
      * 删除数据库实例
      *
      * @param schemaName
      */
-    void dropSchemas(String schemaName);
+    void dropSchemas(String schemaName) throws Exception;
 
     /**
      * 根据sql创建表结构
@@ -108,7 +107,7 @@ public interface DatabaseDcl {
      * @param deleteOld 是否删除旧表
      * @return
      */
-    ResultT createTable(String sql, String tableName, Boolean deleteOld);
+    ResultT createTable(String sql, String tableName, Boolean deleteOld) throws Exception;
 
     /**
      * 查询表结构是否存在
@@ -116,7 +115,7 @@ public interface DatabaseDcl {
      * @param tableName 表名
      * @return
      */
-    ResultT existTable(String schema, String tableName);
+    ResultT existTable(String schema, String tableName) throws Exception;
 
     /**
      * 修改数据库密码
@@ -124,5 +123,5 @@ public interface DatabaseDcl {
      * @param newPassword
      * @return
      */
-    ResultT updateAccount(String dataBaseUser, String newPassword);
+    ResultT updateAccount(String dataBaseUser, String newPassword) throws Exception;
 }

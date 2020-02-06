@@ -9,7 +9,7 @@
         
     </resultMap>
     <!-- 查询全部-->
-    <select id="selectList" parameterType="com.piesat.sod.system.entity.SqlTemplateEntity" resultMap="baseResult">
+    <select id="findAll" parameterType="com.piesat.sod.system.entity.SqlTemplateEntity" resultMap="baseResult">
 		select
 			t.database_server ,d.name_cn as database_name,t.id as id,t.template
 		from 
