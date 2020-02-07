@@ -37,9 +37,16 @@
     <select id="selectMaxType" resultType ="java.lang.Integer">
     	select max(type) from t_sod_system_dictionary
     </select>
-
-	<select id="findByType" parameterType ="java.lang.Integer" resultMap="BaseResult">
-		select * from t_sod_system_dictionary where type=#{type} and flag='D'
+	
+	<!-- 获取所有数据库类型 -->
+	<select id="queryAllByTypeAndFlag" resultMap="BaseResult">
+		select 
+			key_col,name_cn
+		from 
+			t_sod_system_dictionary
+		where 
+			type='36' and flag='D' 
+			and key_col is not null and key_col !='' and name_cn is not null and name_cn !=''
 	</select>
 
 </mapper>

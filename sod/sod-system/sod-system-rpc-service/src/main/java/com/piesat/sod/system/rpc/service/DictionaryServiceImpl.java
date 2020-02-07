@@ -174,4 +174,19 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		return ddList;
 	}
 
+	/**
+	 *  获取数据库类型
+	 * @description 
+	 * @author wlg
+	 * @date 2020-02-07 17:11
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public List<DictionaryDto> queryAllByTypeAndFlag() throws Exception {
+		List<DictionaryEntity> deList = dictionaryMapper.queryAllByTypeAndFlag();
+		List<DictionaryDto> ddList =  dictionaryMapstruct.toDto(deList);
+		return ddList;
+	}
+
 }

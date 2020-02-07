@@ -23,7 +23,7 @@ public interface DictionaryMapper {
 	 * @param dictionaryEntity
 	 * @return
 	 */
-	public List<DictionaryEntity> selectList(DictionaryEntity dictionaryEntity);
+	public List<DictionaryEntity> selectList(DictionaryEntity dictionaryEntity) throws Exception;
 	
 	/**
 	 *  获得最大type
@@ -32,12 +32,15 @@ public interface DictionaryMapper {
 	 * @date 2020年1月15日上午9:50:50
 	 * @return
 	 */
-	public Integer selectMaxType();
+	public Integer selectMaxType() throws Exception;
 
 	/**
-	 * 根据type查询字典数据
-	 * @param type
+	 *  获取所有数据库类型
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月7日下午5:14:20
 	 * @return
+	 * @throws Exception
 	 */
-	public List<DictionaryEntity> findByType(Integer type);
+	public List<DictionaryEntity> queryAllByTypeAndFlag() throws Exception;
 }

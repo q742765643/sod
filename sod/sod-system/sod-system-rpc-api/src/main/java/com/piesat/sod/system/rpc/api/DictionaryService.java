@@ -85,5 +85,14 @@ public interface DictionaryService {
 	 * @throws Exception
 	 */
 	List<DictionaryDto> findByType(String type) throws Exception;
+	/**
+	 *  获取数据库类型
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月7日下午5:11:08
+	 * @return
+	 * @throws Exception
+	 */
+	List<DictionaryDto> queryAllByTypeAndFlag() throws Exception;
 
 }
