@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -86,5 +87,11 @@ public class ManageFieldEntity implements Serializable{
 	 */
 	@Column(name="DATA_PRECISION")
 	private Integer dataPrecision;
+	
+	/**
+	 *  分组id
+	 */
+	@Transient
+	private String groupId;
 
 }

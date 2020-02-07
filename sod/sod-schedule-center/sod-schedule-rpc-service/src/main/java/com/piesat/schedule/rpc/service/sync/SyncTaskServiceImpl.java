@@ -179,7 +179,59 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
     @Override
     public SyncTaskDto saveDto(SyncTaskDto syncTaskDto) {
-        //将源表过滤字段信息存到sync_filter表中
+        //将源表过滤字段信息存到sync_filter表中，
+        String filterRecordIds = syncFilterSaveDto(syncTaskDto);
+
+        //将目标表信息存到sync_config表中
+        List<Map<String, Object>> targetRelationList = syncTaskDto.getTargetRelation();
+        StringBuffer sourceIds = new StringBuffer();
+        for(int i=0;i<targetRelationList.size();i++) {
+            Map<String, Object>  targetRelation = targetRelationList.get(i);
+            String targetTableId = (String) targetRelation.get("targetTable");
+            String mapping = (String)targetRelation.get("mapping");
+
+            String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(),targetTableId,mapping,filterRecordIds,StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
+            if(sourceIds.length()>0) {
+                sourceIds.append(",").append(mappingRecordId);
+            }else {
+                sourceIds.append(mappingRecordId);
+            }
+        }
+
+        //值表映射关系入库
+        StringBuffer slaveIds = new StringBuffer();
+        Map<String,Object> slaveRelation = syncTaskDto.getSlaveRelation();
+        if(slaveRelation != null){
+            String sourceVTableId = (String) slaveRelation.get("sourceTable");
+            String targetVTableId = (String) slaveRelation.get("targetTable");
+            String mapping = (String)slaveRelation.get("mapping");
+            String linkKey = (String)slaveRelation.get("linkKey");
+            syncTaskDto.setLinkKey(linkKey);
+
+            String mappingRecordId = syncConfigAndMappingSaveDto(sourceVTableId,targetVTableId,mapping,"",true);
+            slaveIds.append(mappingRecordId);
+        }
+        syncTaskDto.setSourceTable(sourceIds.toString());
+        syncTaskDto.setSlaveTables(slaveIds.toString());
+
+        SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
+        syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
+        return this.syncTaskMapstruct.toDto(syncTaskEntity);
+    }
+
+    @Override
+    public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
+        this.deleteSync(syncTaskDto.getId());
+        this.saveDto(syncTaskDto);
+        return syncTaskDto;
+    }
+
+    /**
+     * 保存syncFilter
+     * @param syncTaskDto
+     * @return 可能情况：空  一个  多个用逗号分隔
+     */
+    public String syncFilterSaveDto(SyncTaskDto syncTaskDto){
         String[] sourceTableFilter = syncTaskDto.getSourceTableFilter();
         String filterRecordIds = "";
         if(sourceTableFilter != null && sourceTableFilter.length > 0){
@@ -199,136 +251,75 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
             }
         }
+        return  filterRecordIds;
+    }
 
-        //将目标表信息存到sync_config表中
-        List<Map<String, Object>> targetRelationList = syncTaskDto.getTargetRelation();
-        StringBuffer sourceIds = new StringBuffer();
-        for(int i=0;i<targetRelationList.size();i++) {
-            Map<String, Object>  targetRelation = targetRelationList.get(i);
-            String targetTableId = (String) targetRelation.get("targetTable");
-            String mapping = (String)targetRelation.get("mapping");
+    /**
+     * 保存syncConfig和syncMapping
+     * @param sourceTableId
+     * @param targetTableId
+     * @param mapping
+     * @param filterRecordIds
+     * @param isKV
+     * @return
+     */
+    public String syncConfigAndMappingSaveDto(String sourceTableId,String targetTableId,String mapping,String filterRecordIds,boolean isKV){
+        //获取源表信息
+        DataTableDto sourceTableDto = dataTableService.getDotById(sourceTableId);
+        //获取目标表信息
+        DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
 
-            //获取源表信息
-            DataTableDto sourceTableDto = dataTableService.getDotById(syncTaskDto.getSourceTableId());
-            //获取目标表信息
-            DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
+        SyncConfigEntity tti = new SyncConfigEntity();
+        //获取目标表的唯一索引
+        List<TableIndexDto> tableIndexDtos = tableIndexService.findByTableId(targetTableId);
+        String unique_index = findUniqueIndex(tableIndexDtos);
+        //目标表的唯一索引不存在的话用源表唯一索引代替
+        if(!StringUtils.isNotNullString(unique_index)){
+            tableIndexDtos = tableIndexService.findByTableId(sourceTableId);
+            unique_index = findUniqueIndex(tableIndexDtos);
+        }
+        tti.setUniqueKeys(unique_index);
 
-            SyncConfigEntity tti = new SyncConfigEntity();
-            //获取目标表的唯一索引
-            List<TableIndexDto> tableIndexDtos = tableIndexService.findByTableId(targetTableId);
-            String unique_index = findUniqueIndex(tableIndexDtos);
-            //目标表的唯一索引不存在的话用源表唯一索引代替
-            if(!StringUtils.isNotNullString(unique_index)){
-                tableIndexDtos = tableIndexService.findByTableId(syncTaskDto.getSourceTableId());
-                unique_index = findUniqueIndex(tableIndexDtos);
-            }
-            tti.setUniqueKeys(unique_index);
-
-            //目标表分库分表键
-            List<ShardingDto> shardingDtos = shardingService.getDotByTableId(targetTableId);
-            String ttkeys = getPartitionKey(shardingDtos);
-            if(StringUtils.isNotNullString(ttkeys)){
-                tti.setIfpatitions("1");
-                tti.setPartitionKeys(ttkeys);
-            }else{
-                tti.setIfpatitions("0");
-            }
-
-            //是否kv表
-            String targetVTableId = syncTaskDto.getTargetVTableId();
-            if(StringUtils.isNotNullString(targetVTableId)){
-                tti.setIsKv("1");
-            }else{
-                tti.setIsKv("0");
-            }
-
-            //目标表的存储编码
-            tti.setDDataId(targetTableDto.getDataServiceId());
-            //存储
-            tti = syncConfigDao.saveNotNull(tti);
-
-            //保存sync_mapping
-            SyncMappingEntity syncMappingEntity = new SyncMappingEntity();
-            syncMappingEntity.setSourceTableId(filterRecordIds);
-            syncMappingEntity.setSourceTableName(sourceTableDto.getTableName());
-            syncMappingEntity.setTargetTableId(String.valueOf(tti.getId()));
-            syncMappingEntity.setTargetTableName(targetTableDto.getTableName());
-            syncMappingEntity.setMapping(mapping);
-            syncMappingEntity = syncMappingDao.saveNotNull(syncMappingEntity);
-            if(sourceIds.length()>0) {
-                sourceIds.append(",").append(syncMappingEntity.getId());
-            }else {
-                sourceIds.append(syncMappingEntity.getId());
-            }
+        //目标表分库分表键
+        List<ShardingDto> shardingDtos = shardingService.getDotByTableId(targetTableId);
+        String ttkeys = getPartitionKey(shardingDtos);
+        if(StringUtils.isNotNullString(ttkeys)){
+            tti.setIfpatitions("1");
+            tti.setPartitionKeys(ttkeys);
+        }else{
+            tti.setIfpatitions("0");
         }
 
-        //值表映射关系入库
-        StringBuffer slaveIds = new StringBuffer();
-        Map<String,Object> slaveRelation = syncTaskDto.getSlaveRelation();
-        if(slaveRelation != null){
-            String sourceVTableId = (String) slaveRelation.get("sourceTable");
-            String targetVTableId = (String) slaveRelation.get("targetTable");
-            String mapping = (String)slaveRelation.get("mapping");
-            String linkKey = (String)slaveRelation.get("linkKey");
-
-            SyncConfigEntity tti = new SyncConfigEntity();
-            //获取源表值表信息
-            DataTableDto sourceTableDto = dataTableService.getDotById(sourceVTableId);
-            //获取目标表值表信息
-            DataTableDto targetTableDto = dataTableService.getDotById(targetVTableId);
-            //获取目标表值表的唯一索引
-            List<TableIndexDto> tableIndexDtos = tableIndexService.findByTableId(targetVTableId);
-            String unique_index = findUniqueIndex(tableIndexDtos);
-            //目标表值表的唯一索引不存在的话用源表值表唯一索引代替
-            if(!StringUtils.isNotNullString(unique_index)){
-                tableIndexDtos = tableIndexService.findByTableId(sourceVTableId);
-                unique_index = findUniqueIndex(tableIndexDtos);
-            }
-            tti.setUniqueKeys(unique_index);
-
-            //目标表值表分库分表键
-            List<ShardingDto> shardingDtos = shardingService.getDotByTableId(targetVTableId);
-            String ttkeys = getPartitionKey(shardingDtos);
-            if(StringUtils.isNotNullString(ttkeys)){
-                tti.setIfpatitions("1");
-                tti.setPartitionKeys(ttkeys);
-            }else{
-                tti.setIfpatitions("0");
-            }
-
-            //是否kv表
+        //是否kv表
+        if(isKV){
             tti.setIsKv("1");
-            //目标表的存储编码
-            tti.setDDataId(targetTableDto.getDataServiceId());
-            //存储
-            tti = syncConfigDao.saveNotNull(tti);
-
-            //保存sync_mapping
-            SyncMappingEntity syncMappingEntity = new SyncMappingEntity();
-            //syncMappingEntity.setSourceTableId(filterRecordIds);
-            syncMappingEntity.setSourceTableName(sourceTableDto.getTableName());
-            syncMappingEntity.setTargetTableId(String.valueOf(tti.getId()));
-            syncMappingEntity.setTargetTableName(targetTableDto.getTableName());
-            syncMappingEntity.setMapping(mapping);
-            syncMappingEntity = syncMappingDao.saveNotNull(syncMappingEntity);
-
-            slaveIds.append(syncMappingEntity.getId());
+        }else{
+            tti.setIsKv("0");
         }
-        syncTaskDto.setSourceTable(sourceIds.toString());
-        syncTaskDto.setSlaveTables(slaveIds.toString());
 
-        SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
-        syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
-        return this.syncTaskMapstruct.toDto(syncTaskEntity);
+        //目标表的存储编码
+        tti.setDDataId(targetTableDto.getDataServiceId());
+        //存储
+        tti = syncConfigDao.saveNotNull(tti);
+
+
+
+        //保存sync_mapping
+        SyncMappingEntity syncMappingEntity = new SyncMappingEntity();
+        syncMappingEntity.setSourceTableId(filterRecordIds);
+        syncMappingEntity.setSourceTableName(sourceTableDto.getTableName());
+        syncMappingEntity.setTargetTableId(String.valueOf(tti.getId()));
+        syncMappingEntity.setTargetTableName(targetTableDto.getTableName());
+        syncMappingEntity.setMapping(mapping);
+        syncMappingEntity = syncMappingDao.saveNotNull(syncMappingEntity);
+        return String.valueOf(syncMappingEntity.getId());
     }
 
-    @Override
-    public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
-        this.deleteSync(syncTaskDto.getId());
-        this.saveDto(syncTaskDto);
-        return syncTaskDto;
-    }
-
+    /**
+     * 唯一索引/主键
+     * @param tableIndexList
+     * @return
+     */
     private String findUniqueIndex(List<TableIndexDto> tableIndexList){
         if(tableIndexList != null && tableIndexList.size() > 0){
             for(TableIndexDto ti : tableIndexList){
@@ -340,6 +331,11 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         return "";
     }
 
+    /**
+     * 分库分表键
+     * @param shardingDtos
+     * @return
+     */
     public String getPartitionKey(List<ShardingDto> shardingDtos){
         try {
             String partitionKey = "";//分库分表键，用逗号分隔

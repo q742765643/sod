@@ -32,7 +32,6 @@ public class ManageFieldGroupEntity implements Serializable {
 	/**
 	 *  关联id
 	 */
-	@Id
 	@Column(name="FIELD_ID")
 	private String fieldId;
 

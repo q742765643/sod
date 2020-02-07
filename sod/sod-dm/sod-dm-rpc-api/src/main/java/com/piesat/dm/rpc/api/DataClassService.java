@@ -36,4 +36,6 @@ public interface DataClassService {
     JSONArray getTree();
 
     List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId);
+
+    public List<Map<String, Object>> getDataTypeList();
 }

@@ -21,7 +21,7 @@ import lombok.Data;
 */
 @Data
 @Entity
-@Table(name = "DMIN_SYSTEM_DICTIONARY")
+@Table(name = "T_SOD_SYSTEM_DICTIONARY")
 public class DictionaryEntity implements Serializable{
 
 	/**
@@ -34,39 +34,39 @@ public class DictionaryEntity implements Serializable{
 	 *  
 	 */
 	@Id
-    @Column(name="ID")
+    @Column(name="ID",length=36)
     @GeneratedValue(generator = "htht.uuid")
     @GenericGenerator(name = "htht.uuid", strategy = "com.piesat.common.jpa.generator.UUIDStringGenerator")
 	private String id;
 	/**
 	 * 关键字
 	 */
-	@Column(name="KEY_COL")
+	@Column(name="KEY_COL",length=64)
 	private String keyCol;
 	/**
 	 * 字典类型
 	 */
-	@Column(name="TYPE")
+	@Column(name="TYPE",length=11)
 	private Integer type;
 	/**
 	 * 中文名
 	 */
-	@Column(name="NAME_CN")
+	@Column(name="NAME_CN",length=64)
 	private String nameCn;
 	/**
 	 * 字典描述
 	 */
-	@Column(name="DESCRIPTION")
+	@Column(name="DESCRIPTION",length=255)
 	private String description;
 	/**
 	 * 区分是字典数据还是字典类型
 	 */
-	@Column(name="FLAG")
+	@Column(name="FLAG",length=255)
 	private String flag;
 	/**
 	 * 是否可删除
 	 */
-	@Column(name="CAN_DELETE")
+	@Column(name="CAN_DELETE",length=255)
 	private String canDelete;
 	/**
 	 * 目录id
@@ -76,7 +76,7 @@ public class DictionaryEntity implements Serializable{
 	/**
 	 * 排序编号
 	 */
-	@Column(name="SERIAL_NUMBER")
+	@Column(name="SERIAL_NUMBER",length=10)
 	private String serialNumber;
 	
 	/**

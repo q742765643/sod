@@ -1,12 +1,13 @@
 package com.piesat.sod.system.rpc.api;
 
-import java.util.List;
-
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.sod.system.rpc.dto.DictionaryDto;
+import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+
+import java.util.List;
 
 /** 字典表管理
 *@description
@@ -14,7 +15,7 @@ import com.piesat.util.page.PageForm;
 *@date 2020年1月14日下午4:57:46
 *
 */
-@GrpcHthtService(server = "dictionary",serialization = SerializeType.PROTOSTUFF)
+@GrpcHthtService(server = GrpcConstant.SYSTEM_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface DictionaryService {
 	/**
 	 *  获取分页数据
@@ -74,5 +75,15 @@ public interface DictionaryService {
 	 * @throws Exception
 	 */
 	void deleteByIds (String ids) throws Exception;
+	/**
+	 *  根据type 查询
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月6日下午5:53:19
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	List<DictionaryDto> findByType(String type) throws Exception;
 
 }

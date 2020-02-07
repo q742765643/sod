@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -43,6 +44,11 @@ public class SqlTemplateEntity implements Serializable{
 	 * 模板信息
 	 */
 	@Column(name="TEMPLATE",length=4000)
-	private String template; 
+	private String template;
+	/**
+	 *  数据库名称
+	 */
+	@Transient
+	private String databaseName;
 
 }
