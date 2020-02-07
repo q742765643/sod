@@ -217,14 +217,14 @@ public class SyncTaskController {
 
     @ApiOperation(value = "删除同步任务")
     @RequiresPermissions("schedule:sync:deleteSync")
-    @GetMapping("/deleteSync")
+    @GetMapping("/deleteSync/{taskId}")
     public ResultT<String> deleteSync(@PathVariable String taskId) {
         ResultT<String> resultT=new ResultT<>();
         this.syncTaskService.deleteSync(taskId);
         return  resultT;
     }
 
-    @GetMapping(value = "/getSyncById")
+    @GetMapping(value = "/getSyncById/{taskId}")
     public ResultT<JSONObject> getSyncById(@PathVariable String taskId)
     {
         ResultT<JSONObject> resultT=new ResultT<>();
