@@ -170,8 +170,10 @@ public class DateExpressionEngine {
             if (YEAR_STRING.equalsIgnoreCase(unit)) {
                 // IgnoreCase
                 rs = dateTime.plusYears(num);
+                return rs.toString(format).substring(0,4)+"010100";
             } else if (MONTH_STRING.equals(unit)) {
                 rs = dateTime.plusMonths(num);
+                return rs.toString(format).substring(0,6)+"0100";
             } else if (WEEK_STRING.equalsIgnoreCase(unit)) {
                 // IgnoreCase
                 rs = dateTime.plusWeeks(num);

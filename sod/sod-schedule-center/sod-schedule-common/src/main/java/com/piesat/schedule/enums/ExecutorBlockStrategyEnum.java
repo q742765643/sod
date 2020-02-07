@@ -8,6 +8,7 @@ package com.piesat.schedule.enums;
  */
 public enum  ExecutorBlockStrategyEnum {
     SINGLE_SERIAL("SINGLE_SERIAL"),
+    TASK_SERIAL("TASK_SERIAL"),
     SINGLE_PARALLEL("SINGLE_PARALLEL"),
     CLUSTER_SERIAL("CLUSTER_SERIAL");
 

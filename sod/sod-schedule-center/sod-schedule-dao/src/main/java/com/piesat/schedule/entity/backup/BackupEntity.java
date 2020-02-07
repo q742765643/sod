@@ -39,6 +39,8 @@ public class BackupEntity extends JobInfoEntity{
     private String tableName;
     @Column(name="v_table_name", length=50)
     private String vTableName;
+    @Column(name="database_type", length=50)
+    private String databaseType;
 
 
 }

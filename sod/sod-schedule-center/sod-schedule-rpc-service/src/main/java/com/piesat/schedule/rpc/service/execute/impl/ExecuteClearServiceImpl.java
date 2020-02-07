@@ -7,6 +7,7 @@ import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
+import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
 import com.piesat.schedule.rpc.mapstruct.ClearToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
@@ -33,17 +34,18 @@ public class ExecuteClearServiceImpl extends ExecuteBaseService implements Execu
     @Autowired
     private JobInfoLogService jobInfoLogService;
     @Override
-    public void insertLog(JobInfoEntity jobInfo) {
-        /*ClearEntity clearEntity= (ClearEntity) jobInfo;
+    public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId) {
+        ClearEntity clearEntity= (ClearEntity) jobInfo;
         ClearLogEntity clearLogEntity=clearToLogMapstruct.toEntity(clearEntity);
+        clearLogEntity.setId(logId);
         clearLogEntity.setJobId(clearEntity.getId());
-        clearLogEntity.setId(null);
-        clearLogEntity.setExecutorAddress("192.168.0.12:6000");
-        clearLogEntity.setHandleCode("0");
+        clearLogEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
+        clearLogEntity.setHandleCode(result);
         clearLogEntity.setTriggerTime(clearEntity.getTriggerLastTime());
         clearLogEntity.setHandleTime(new Date());
-        clearLogEntity.setElapsedTime(10000);
-        jobInfoLogService.saveNotNull(clearLogEntity);*/
+        clearLogEntity.setElapsedTime(0);
+        clearLogEntity= (ClearLogEntity) jobInfoLogService.saveNotNull(clearLogEntity);
+        return clearLogEntity.getId();
     }
 
     @Override
@@ -51,9 +53,15 @@ public class ExecuteClearServiceImpl extends ExecuteBaseService implements Execu
         return clearDao.findById(id).get();
     }
 
+
     @Override
-    public Server operationalControl(JobInfoEntity jobInfoEntity, List<Server> servers, ResultT<String> resultT) {
-        return servers.get(0);
+    public void checkExecutorBlockStrategyEnum(List<Server> servers, JobInfoEntity jobInfoEntity) {
+         ClearEntity clearEntity= (ClearEntity) jobInfoEntity;
+         if("XUGU".equals(clearEntity.getDatabaseType())){
+             jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.CLUSTER_SERIAL.name());
+         }else{
+             jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.TASK_SERIAL.name());
+         }
     }
 }
 

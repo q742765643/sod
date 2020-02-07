@@ -6,6 +6,7 @@ import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
 import com.piesat.schedule.rpc.mapstruct.BackupToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
@@ -34,17 +35,18 @@ public class ExecuteBackupServiceImpl extends ExecuteBaseService implements Exec
 
 
     @Override
-    public void insertLog(JobInfoEntity jobInfo){
-       /* BackupEntity backupEntity= (BackupEntity) jobInfo;
+    public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId){
+        BackupEntity backupEntity= (BackupEntity) jobInfo;
         BackupLogEntity backupLogEntity=backupToLogMapstruct.toEntity(backupEntity);
         backupLogEntity.setJobId(backupEntity.getId());
-        backupLogEntity.setId(null);
-        backupLogEntity.setExecutorAddress("192.168.0.12:6000");
-        backupLogEntity.setHandleCode("0");
+        backupLogEntity.setId(logId);
+        backupLogEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
+        backupLogEntity.setHandleCode(result);
         backupLogEntity.setTriggerTime(backupEntity.getTriggerLastTime());
         backupLogEntity.setHandleTime(new Date());
-        backupLogEntity.setElapsedTime(10000);
-        jobInfoLogService.saveNotNull(backupLogEntity);*/
+        backupLogEntity.setElapsedTime(0);
+        backupLogEntity= (BackupLogEntity) jobInfoLogService.saveNotNull(backupLogEntity);
+        return backupLogEntity.getId();
     }
 
     @Override
@@ -52,10 +54,10 @@ public class ExecuteBackupServiceImpl extends ExecuteBaseService implements Exec
         return backupDao.findById(id).get();
     }
 
-    @Override
-    public Server operationalControl(JobInfoEntity jobInfoEntity, List<Server> servers, ResultT<String> resultT) {
 
-        return servers.get(0);
+    @Override
+    public void checkExecutorBlockStrategyEnum(List<Server> servers, JobInfoEntity jobInfoEntity) {
+        jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.TASK_SERIAL.name());
     }
 }
 

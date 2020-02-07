@@ -6,6 +6,7 @@ import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
 import com.piesat.schedule.entity.move.MoveLogEntity;
+import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
 import com.piesat.schedule.rpc.mapstruct.MoveToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
@@ -32,17 +33,18 @@ public class ExecuteMoveServiceImpl extends ExecuteBaseService implements Execut
     @Autowired
     private JobInfoLogService jobInfoLogService;
     @Override
-    public void insertLog(JobInfoEntity jobInfo) {
-       /* MoveEntity moveEntity= (MoveEntity) jobInfo;
+    public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId) {
+        MoveEntity moveEntity= (MoveEntity) jobInfo;
         MoveLogEntity moveLogEntity=moveToLogMapstruct.toEntity(moveEntity);
+        moveLogEntity.setId(logId);
         moveLogEntity.setJobId(jobInfo.getId());
-        moveLogEntity.setId(null);
-        moveLogEntity.setExecutorAddress("192.168.0.12:6000");
-        moveLogEntity.setHandleCode("0");
+        moveLogEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
+        moveLogEntity.setHandleCode(result);
         moveLogEntity.setTriggerTime(moveEntity.getTriggerLastTime());
         moveLogEntity.setHandleTime(new Date());
-        moveLogEntity.setElapsedTime(10000);
-        jobInfoLogService.saveNotNull(moveLogEntity);*/
+        moveLogEntity.setElapsedTime(0);
+        moveLogEntity= (MoveLogEntity) jobInfoLogService.saveNotNull(moveLogEntity);
+        return moveLogEntity.getId();
     }
 
     @Override
@@ -50,9 +52,11 @@ public class ExecuteMoveServiceImpl extends ExecuteBaseService implements Execut
         return moveDao.findById(id).get();
     }
 
+
     @Override
-    public Server operationalControl(JobInfoEntity jobInfoEntity, List<Server> servers, ResultT<String> resultT) {
-        return servers.get(0);
+    public void checkExecutorBlockStrategyEnum(List<Server> servers, JobInfoEntity jobInfoEntity) {
+        jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.TASK_SERIAL.name());
+
     }
 }
 
