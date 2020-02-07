@@ -182,4 +182,15 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         return list;
     }
 
+    /**
+     * 获取所有目录
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getDataGroup() {
+        String sql = "select * from t_sod_data_class where type=1 order by data_class_id";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
+    }
+
 }
