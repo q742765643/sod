@@ -222,6 +222,7 @@ public class ScheduleThread {
                 long count=redisUtil.zsetCount(QUARTZ_HTHT_WAIT);
                 if(count>20000){
                     log.info("积压条数超过2万,放弃调度");
+                    return;
                 }
                 String type= (String) redisUtil.hget(QUARTZ_HTHT_CRON+jobInfo.getId(),"type");
                 String serviceName= ExecuteEnum.getService(type);
@@ -232,6 +233,19 @@ public class ScheduleThread {
                     return;
                 }
                 newJob.setType(type);
+              /*  if("BACKUP".equals(type)){
+                    JobInfoLogEntity jobInfoLogEntity=jobInfoLogService.selectMaxTriggerTimeByJobId(newJob.getId());
+                    if(null!=jobInfoLogEntity&&jobInfoLogEntity.getTriggerTime()>0) {
+                        newJob.setTriggerLastTime(jobInfoLogEntity.getTriggerTime());
+                        while (jobInfo.getTriggerLastTime() > newJob.getTriggerLastTime()) {
+                            refreshNextValidTime(newJob, new Date(jobInfoLogEntity.getTriggerTime()));
+                            if(newJob.getTriggerLastTime()>=jobInfo.getTriggerLastTime()){
+                                break;
+                            }
+                            this.pushRedis(newJob);
+                        }
+                    }
+                }*/
                 newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
                 newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
                 this.pushRedis(newJob);

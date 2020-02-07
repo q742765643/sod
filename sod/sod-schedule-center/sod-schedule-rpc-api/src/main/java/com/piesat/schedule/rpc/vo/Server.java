@@ -14,5 +14,6 @@ public class Server {
     private Integer httpPort;
     private Integer grpcPort;
     private Integer limit=200;
+    private Integer use;
 }
 

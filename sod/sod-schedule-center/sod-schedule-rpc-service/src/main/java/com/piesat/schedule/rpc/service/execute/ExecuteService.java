@@ -12,7 +12,7 @@ import com.piesat.util.ResultT;
 public interface ExecuteService {
     public void executeBusiness(JobInfoEntity jobInfoEntity,ResultT<String> resultT);
 
-    public void insertLog(JobInfoEntity jobInfo);
+    //public void insertLog(JobInfoEntity jobInfo);
 
     public JobInfoEntity getById(String id);
 }

@@ -45,6 +45,7 @@ public class MoveEntity extends JobInfoEntity {
     private long moveLimit;
     @Column(name="v_table_name", length=50)
     private String vTableName;
-
+    @Column(name="database_type", length=50)
+    private String databaseType;
 }
 
