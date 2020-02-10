@@ -76,7 +76,7 @@ public class BackupHandler implements BaseHandler {
                 backupLogHisEntity.setBackupTime(new Date(backupHisVo.getBackupTime()));
                 backupLogHisEntity.setConditions(backupHisVo.getConditions());
                 backupLogHisEntity.setSecondConditions(backupHisVo.getSecondConditions());
-                backupLogHisEntity.setIsEnd(1);
+                backupLogHisEntity.setIsEnd(0);
                 compensateList.add(backupLogHisEntity);
             }
 
@@ -85,11 +85,11 @@ public class BackupHandler implements BaseHandler {
         if(backupVo.getMistiming()==0){
             backupLogNewEntity.setIsEnd(1);
         }
-        if(backupLogNewEntity.getIsEnd()==0){
+        if(backupVo.getMistiming()>0){
             BackupLogEntity backupLogHisEntity=new BackupLogEntity();
             backupLogHisEntity.setConditions(backupVo.getSecondConditions());
             backupLogHisEntity.setBackupTime(new Date(backupVo.getBackupTimeHis()));
-            backupLogHisEntity.setIsEnd(2);
+            backupLogHisEntity.setIsEnd(1);
             BeanUtils.copyProperties(backupEntity,backupLogHisEntity);
             compensateList.add(backupLogHisEntity);
         }
