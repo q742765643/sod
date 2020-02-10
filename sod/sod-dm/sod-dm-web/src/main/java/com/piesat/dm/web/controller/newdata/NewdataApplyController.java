@@ -244,7 +244,7 @@ public class NewdataApplyController {
     @ApiOperation(value="更新或添加数据表接口",notes="更新或添加数据表接口")
     @PostMapping(value="/addOrUpdateDataTable")
     public ResultT<String> addOrUpdateDataTable(@RequestBody DataTableDto dataTableDto, HttpServletRequest request){
-       return newdataApplyService.addOrUpdateDataTable(dataTableDto, request);
+       return newdataApplyService.addOrUpdateDataTable(dataTableDto);
     }
 
 
