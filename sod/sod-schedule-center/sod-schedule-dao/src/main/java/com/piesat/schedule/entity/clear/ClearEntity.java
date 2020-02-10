@@ -38,6 +38,7 @@ public class ClearEntity extends JobInfoEntity{
     private String vTableName;
     @Column(name="database_type", length=50)
     private String databaseType;
-
+    @Column(name="parent_id", length=50)
+    private String parentId;
 }
 

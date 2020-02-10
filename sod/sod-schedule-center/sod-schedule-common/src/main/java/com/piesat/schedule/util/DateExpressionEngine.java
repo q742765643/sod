@@ -170,16 +170,19 @@ public class DateExpressionEngine {
             if (YEAR_STRING.equalsIgnoreCase(unit)) {
                 // IgnoreCase
                 rs = dateTime.plusYears(num);
-                return rs.toString(format).substring(0,4)+"010100";
+                rs=rs.dayOfYear().withMinimumValue();
+                return rs.toString(format);
             } else if (MONTH_STRING.equals(unit)) {
                 rs = dateTime.plusMonths(num);
-                return rs.toString(format).substring(0,6)+"0100";
+                rs=rs.dayOfMonth().withMinimumValue();
+                return rs.toString(format);
             } else if (WEEK_STRING.equalsIgnoreCase(unit)) {
                 // IgnoreCase
                 rs = dateTime.plusWeeks(num);
             } else if (DAY_STRING.equalsIgnoreCase(unit)) {
                 // IgnoreCase
                 rs = dateTime.plusDays(num);
+                return rs.toString(format);
             } else if (HOUR_STRING.equalsIgnoreCase(unit)) {
                 // IgnoreCase
                 rs = dateTime.plusHours(num);
