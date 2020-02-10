@@ -231,10 +231,12 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
-    public ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto, HttpServletRequest request) {
+    public ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto) {
         dataTableDto.setTableName(dataTableDto.getTableName().toUpperCase());
-        String databaseId = request.getParameter("databaseId");
-        String dataClassId = request.getParameter("dataClassId");
+       /* String databaseId = request.getParameter("databaseId");
+        String dataClassId = request.getParameter("dataClassId");*/
+        String databaseId = dataTableDto.getId();
+        String dataClassId = dataTableDto.getDataServiceId();
         //最后返回一条记录
         List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
         if (dataTableDtos != null && dataTableDtos.size() > 0) {
@@ -242,14 +244,15 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
             dataTableService.updateById(dataTableDtos.get(0));
         }else{
             //添加
+            dataTableService.saveDto(dataTableDtos.get(0));
         }
-
-        return null;
+        return ResultT.success();
     }
 
     @Override
-    public List<Map<String, Object>> getNewdataTableField(String id) {
-        return null;
+    public List<TableColumnDto> getNewdataTableField(String id) {
+        List<TableColumnDto> tableField = tableColumnService.findByTableId(id);
+        return tableField;
     }
 
     @Override

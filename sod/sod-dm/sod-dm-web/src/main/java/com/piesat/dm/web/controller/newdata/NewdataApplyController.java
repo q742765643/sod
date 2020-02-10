@@ -251,9 +251,9 @@ public class NewdataApplyController {
     //
     @GetMapping("/getNewdataTableField/{id}")
     @ApiOperation(value = "根据任务id获取表字段信息", notes = "根据任务id获取表字段信息")
-    public  ResultT<List<Map<String,Object>>> getNewdataTableField(@PathVariable String id){
-        List<Map<String, Object>> newdataTableField = newdataApplyService.getNewdataTableField(id);
-        return ResultT.success(newdataTableField);
+    public  ResultT<String> getNewdataTableField(@PathVariable String id){
+        List<TableColumnDto> newdataTableField = newdataApplyService.getNewdataTableField(id);
+        return ResultT.success();
     }
 
     //addDataStructure

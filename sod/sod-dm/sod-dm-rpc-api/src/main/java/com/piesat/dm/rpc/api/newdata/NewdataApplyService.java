@@ -9,7 +9,6 @@ import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +31,9 @@ public interface NewdataApplyService {
 
     ResultT<String> updateGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto ,String old_data_class_id);
 
-    ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto, HttpServletRequest request);
+    ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto);
 
-    List<Map<String,Object>> getNewdataTableField(String id);
+    List<TableColumnDto> getNewdataTableField(String id);
 
     ResultT<String> addDataStructure(TableColumnDto tableColumnDto);
 
