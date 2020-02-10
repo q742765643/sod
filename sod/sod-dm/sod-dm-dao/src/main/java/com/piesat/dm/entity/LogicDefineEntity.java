@@ -47,4 +47,8 @@ public class LogicDefineEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="logic_id")
     private Set<LogicStorageTypesEntity> logicStorageTypesEntityList = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="logic_id")
+    private Set<LogicDatabaseEntity> logicDatabaseEntityList = new HashSet<>();
 }

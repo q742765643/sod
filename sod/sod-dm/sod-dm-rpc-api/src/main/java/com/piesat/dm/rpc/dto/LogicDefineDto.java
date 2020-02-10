@@ -48,4 +48,6 @@ public class LogicDefineDto {
     private Integer version;
 
     private List<LogicStorageTypesDto> logicStorageTypesEntityList;
+
+    private List<LogicDatabaseDto> logicDatabaseEntityList;
 }
