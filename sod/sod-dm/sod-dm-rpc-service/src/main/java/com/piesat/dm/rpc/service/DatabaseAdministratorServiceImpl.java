@@ -14,7 +14,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 数据库管理账户
@@ -59,10 +58,6 @@ public class DatabaseAdministratorServiceImpl extends BaseService<DatabaseAdmini
 
     @Override
     public List<DatabaseAdministratorDto> all() {
-        Map<String, Object> cassandra = columnSet.getCassandra();
-        Map<String, Object> gbase8a = columnSet.getGbase8a();
-        Map<String, Object> xugu = columnSet.getXugu();
-        System.out.println(xugu.size());
         List<DatabaseAdministratorEntity> all = this.getAll();
         return this.databaseAdministratorMapper.toDto(all);
     }

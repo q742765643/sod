@@ -20,5 +20,7 @@ public class BackUpDto extends JobInfoDto{
     private String storageDirectory;
     private String tableName;
     private String vTableName;
+    private String databaseType;
+
 }
 

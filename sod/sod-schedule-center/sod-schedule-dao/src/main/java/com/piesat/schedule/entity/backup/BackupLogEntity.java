@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * @program: sod
@@ -38,5 +39,7 @@ public class BackupLogEntity extends JobInfoLogEntity{
     private String tableName;
     @Column(name="v_table_name", length=50)
     private String vTableName;
+    @Column(name="backup_time")
+    private Date backupTime;
 }
 
