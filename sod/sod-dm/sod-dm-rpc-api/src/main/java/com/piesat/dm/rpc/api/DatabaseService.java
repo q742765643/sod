@@ -25,4 +25,6 @@ public interface DatabaseService {
     List<DatabaseDto> all();
 
     List<Map<String,Object>> getDatabaseName();
+
+    List<Map<String,Object>> getByDatabaseDefineId(String id);
 }

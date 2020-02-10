@@ -40,14 +40,14 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.40.17.36:1234`,
+        target: `http://1.119.5.177:8003`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
         }
       },
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `http://10.40.17.36:1237`,
+        target: `http://127.0.0.1:1237`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -68,7 +68,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_DICT]: {
-        target: `http://10.40.17.44:1234`,
+        target: `http://1.119.5.177:8003`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DICT]: ""

@@ -40,6 +40,20 @@ public class ShardingController {
         }
     }
 
+    @ApiOperation(value = "新增多个")
+    @RequiresPermissions("dm:sharding:adds")
+    @Log(title = "表分库分表键", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/saves")
+    public ResultT saves(@RequestBody List<ShardingDto> shardingDto) {
+        try {
+            List<ShardingDto> save = this.shardingService.saveDto(shardingDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据id查询")
     @RequiresPermissions("dm:sharding:get")
     @GetMapping(value = "/get")

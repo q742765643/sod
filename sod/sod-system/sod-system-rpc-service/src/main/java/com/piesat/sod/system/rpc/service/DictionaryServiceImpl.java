@@ -98,6 +98,7 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 	public void addType(DictionaryDto dictionaryDto) throws Exception {
 		
 		Integer type = dictionaryMapper.selectMaxType();
+		if(null == type) type=0;
 		
 		DictionaryEntity de = dictionaryMapstruct.toEntity(dictionaryDto);
 		de.setType(type++);
@@ -152,6 +153,40 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		List<String> idList = Arrays.asList(idArr);
 		
 		dictionaryDao.deleteByIds(idList);
+	}
+
+	/**
+	 *  根据type 查询管理字段
+	 * @description 
+	 * @author wlg
+	 * @date 2020-02-06 17:54
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public List<DictionaryDto> findByType(String type) throws Exception {
+		DictionaryEntity de = new DictionaryEntity();
+		de.setType(Integer.valueOf(type));
+		
+		List<DictionaryEntity> deList = dictionaryMapper.selectList(de);
+		List<DictionaryDto> ddList = dictionaryMapstruct.toDto(deList);
+		return ddList;
+	}
+
+	/**
+	 *  获取数据库类型
+	 * @description 
+	 * @author wlg
+	 * @date 2020-02-07 17:11
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public List<DictionaryDto> queryAllByTypeAndFlag() throws Exception {
+		List<DictionaryEntity> deList = dictionaryMapper.queryAllByTypeAndFlag();
+		List<DictionaryDto> ddList =  dictionaryMapstruct.toDto(deList);
+		return ddList;
 	}
 
 }

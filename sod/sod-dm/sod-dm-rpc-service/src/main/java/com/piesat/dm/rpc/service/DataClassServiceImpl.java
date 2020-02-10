@@ -3,7 +3,6 @@ package com.piesat.dm.rpc.service;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
-import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.common.tree.BaseParser;
 import com.piesat.dm.common.tree.TreeLevel;
 import com.piesat.dm.dao.*;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -177,35 +175,71 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataClassDao.deleteByDataClassId(dataClassId);
     }
 
-    public void importData() {
-        String sql = "select * from DMIN_DATA_CLASS_TABLE";
-        List<Map> list = CodeDOM.getList(sql);
-        for (Map<String, Object> m : list) {
-            DataClassEntity dc = new DataClassEntity();
-            dc.setClassName(m.get("CLASS_NAME").toString());
-            dc.setDataClassId(m.get("DATA_CLASS_ID").toString());
-            dc.setDDataId(m.get("D_DATA_ID").toString());
-            dc.setFrequencyType(0);
-            dc.setIfStopUse(false);
-            dc.setIsAccess(1);
-            dc.setIsAllLine(1);
-            dc.setMetaDataName(m.get("META_DATA_NAME").toString());
-            dc.setParentId(m.get("PARENT_CLASS_ID").toString());
-            Object serial_no = m.get("SERIAL_NO");
-            int n = 0;
-            if (serial_no != null) {
-                if (StringUtils.isNotEmpty(serial_no.toString())) {
-                    n = Integer.parseInt(serial_no.toString());
-                }
-            }
-            dc.setSerialNo(n);
-            String meta_data_stor_type = m.get("META_DATA_STOR_TYPE").toString();
-            if ("目录".equals(meta_data_stor_type)) dc.setType(1);
-            else dc.setType(2);
-            dc.setUseBaseInfo(1);
-            dc.setDelFlag("0");
-            dc.setCreateTime(new Date());
-            save(dc);
-        }
+    @Override
+    public List<Map<String, Object>> getDataTypeList() {
+        String sql = "select data_class_id,class_name from t_sod_data_class where length(data_class_id)=1";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
     }
+
+    /**
+     * 获取所有目录
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getDataGroup() {
+        String sql = "select * from t_sod_data_class where type=1 order by data_class_id";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
+    }
+
+    @Override
+    public String getDataClassIdNum() {
+        String xuguSql = "select" +
+                "   case" +
+                "      when not exists(select 1 from (SELECT atol(substr(DATA_CLASS_ID,14,3)) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') where id=1)" +
+                "      then 1" +
+                "      else (" +
+                "         select min(a.id+1)" +
+                "           from (SELECT atol(substr(DATA_CLASS_ID,14,3)) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as a" +
+                "        where not exists" +
+                "        (" +
+                "          select 1" +
+                "            from (SELECT atol(substr(DATA_CLASS_ID,14,3)) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as b" +
+                "         where b.id=a.id+1" +
+                "        )" +
+                "     )" +
+                "  end as NUM;";
+
+        String mysqlSql = "select" +
+                "   case" +
+                "      when not exists(select 1 from (SELECT cast(substr(DATA_CLASS_ID,14,3) as SIGNED) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') where id=1)" +
+                "      then 1" +
+                "      else (" +
+                "         select min(a.id+1)" +
+                "           from (SELECT cast(substr(DATA_CLASS_ID,14,3) as SIGNED) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as a" +
+                "        where not exists" +
+                "        (" +
+                "          select 1" +
+                "            from (SELECT cast(substr(DATA_CLASS_ID,14,3) as SIGNED) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as b" +
+                "         where b.id=a.id+1" +
+                "        )" +
+                "     )" +
+                "  end as NUM;";
+        List<Map<String, Object>> list = this.queryByNativeSQL(mysqlSql);
+        String num = list.get(0).get("NUM").toString();
+        if (num.length() < 3) {
+            String ling = "00";
+            int a = 3 - num.length();
+            num = ling.substring(0, a) + num;
+        }
+        return num;
+    }
+
 }

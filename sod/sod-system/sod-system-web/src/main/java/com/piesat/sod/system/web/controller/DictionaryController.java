@@ -22,8 +22,9 @@ import com.piesat.util.page.PageForm;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
-/**
+/** 字典表管理
 *@description
 *@author wlg
 *@date 2020年1月14日下午6:58:57
@@ -32,6 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping(value="/restApi/dicmgn")
 @Api(value="字典表管理Controller",tags = {"字段与索引类型管理接口"})
+@Slf4j
 public class DictionaryController {
 	
 	@Autowired
@@ -179,6 +181,47 @@ public class DictionaryController {
 		}
 	}
 	
+	/**
+	 *  根据type 查询
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月6日下午5:59:59
+	 * @param type
+	 * @return
+	 */
+	@ApiOperation(value="根据type查询字典数据",notes="根据type查询字典数据")
+	@GetMapping(value="/findByType")
+	@RequiresPermissions("restApi:dicmgn:findByType")
+	public ResultT findByType(String type) {
+		log.info(">>>>>>>>根据type查询字典数据");
+		if(StringUtil.isEmpty(type)) return ResultT.failed("参数不能为空");
+		try {
+			List<DictionaryDto> data = dictionaryService.findByType(type);
+			return ResultT.success(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+	/**
+	 *  获取所有数据库类型
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月7日下午5:18:52
+	 * @return
+	 */
+	@ApiOperation(value="获取数据库类型",notes="获取数据库类型")
+	@GetMapping(value="/queryAllByTypeAndFlag")
+	@RequiresPermissions("restApi:dicmgn:findById")
+	public ResultT queryAllByTypeAndFlag() {
+		log.info(">>>>>>>获取数据库类型");
+		try {
+			List<DictionaryDto> data = dictionaryService.queryAllByTypeAndFlag();
+			return ResultT.success(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
 	
-
 }

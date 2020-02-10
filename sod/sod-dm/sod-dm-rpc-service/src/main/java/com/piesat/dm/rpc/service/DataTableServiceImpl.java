@@ -2,17 +2,23 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.DataTableDao;
+import com.piesat.dm.dao.DatabaseDao;
+import com.piesat.dm.dao.ShardingDao;
 import com.piesat.dm.entity.DataTableEntity;
+import com.piesat.dm.entity.DatabaseEntity;
+import com.piesat.dm.entity.ShardingEntity;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.mapper.DataTableMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 表信息
@@ -26,6 +32,15 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     private DataTableDao dataTableDao;
     @Autowired
     private DataTableMapper dataTableMapper;
+    @Autowired
+    private ShardingDao shardingDao;
+    @Autowired
+    private DatabaseDao databaseDao;
+    @Autowired
+    private DatabaseSqlService databaseSqlService;
+    @Autowired
+    private DatabaseInfo databaseInfo;
+
 
     @Override
     public BaseDao<DataTableEntity> getBaseDao() {
@@ -69,6 +84,28 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public List<DataTableDto> getByClassLogicId(String classLogic) {
         List<DataTableEntity> tableEntities = this.dataTableDao.getByClassLogicId(classLogic);
         return this.dataTableMapper.toDto(tableEntities);
+    }
+
+    @Override
+    public int updateById(DataTableDto dataTableDto) {
+        return dataTableDao.updateById(dataTableDto.getTableName(), dataTableDto.getId());
+    }
+    public Map<String, String> getSql(String tableId, String databaseId) {
+        List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
+        DataTableDto dataTableDto = this.getDotById(tableId);
+        Optional<DatabaseEntity> databaseEntity = this.databaseDao.findById(databaseId);
+        DatabaseEntity database = databaseEntity.get();
+        String databaseType = database.getDatabaseDefine().getDatabaseType();
+        Map<String, String> map = new HashMap<>();
+        if (this.databaseInfo.getXugu().equals(databaseType)){
+//            this.databaseSqlService.getXuGuCreateSql()
+        }else if (this.databaseInfo.getGbase8a().equals(databaseType)){
+
+        }else if (this.databaseInfo.getCassandra().equals(databaseType)){
+
+        }
+
+        return map;
     }
 
 

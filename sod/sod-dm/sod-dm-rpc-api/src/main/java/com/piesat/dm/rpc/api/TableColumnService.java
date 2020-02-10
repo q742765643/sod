@@ -28,4 +28,6 @@ public interface TableColumnService {
     List<TableColumnDto> findByTableId(String tableId);
 
     int deleteByIdIn(List<String> ids);
+
+    int updateDto(TableColumnDto tableColumnDto);
 }

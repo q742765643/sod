@@ -19,8 +19,8 @@ import javax.persistence.Table;
 public class TableForeignKeyEntity extends BaseEntity {
 
     /* 表id */
-    @Column(name = "table_id", length = 255)
-    private String tableId;
+    @Column(name = "class_logic_id", length = 255)
+    private String classLogicId;
 
     /* 键字段 */
     @Column(name = "key_column", length = 255)

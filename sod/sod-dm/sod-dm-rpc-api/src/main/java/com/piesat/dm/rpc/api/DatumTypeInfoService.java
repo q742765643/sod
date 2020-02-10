@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.api;
 
+import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.DatumTypeInfoDto;
@@ -22,4 +23,6 @@ public interface DatumTypeInfoService {
     void delete(String id);
 
     List<DatumTypeInfoDto> all();
+
+    JSONArray getTree();
 }

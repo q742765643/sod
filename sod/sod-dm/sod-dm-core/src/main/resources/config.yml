@@ -79,3 +79,33 @@ column:
     map: map
     set: set
     list: list
+dclsql:
+  xugu:
+    createuser: "CREATE USER % IDENTIFIED BY '%'"
+    updateaccount: "ALTER USER % IDENTIFIED BY '%'"
+    deleteuser: "DROP USER %"
+    lockuser: "ALTER USER % ACCOUNT LOCK"
+    usernum: "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='%'"
+    schemasnum: "SELECT COUNT(*) FROM DBA_SCHEMAS WHERE SCHEMA_NAME = '%'"
+    addpermissions: "GRANT % ON %.% To %"
+    deletepermissions: "REVOKE % ON %.% FROM %"
+    createschemas: "CREATE SCHEMA % AUTHORIZATION %"
+    dropschemas: "DROP SCHEMA %"
+    author: "GRANT % ANY TABLE IN SCHEMA % TO %"
+  gbase8a:
+    createuser: "CREATE USER '%'@'%' IDENTIFIED BY '%'"
+    updateaccount: "ALTER USER % IDENTIFIED BY '%'"
+    deleteuser: "DROP USER %"
+    deleteipuser: "DROP USER '%'@'%'"
+    lockuser: "ALTER USER % ACCOUNT LOCK"
+    usernum: "SELECT COUNT(*) FROM GBASE.USER WHERE USER='%'"
+    schemasnum: "SELECT COUNT(*) FROM DBA_SCHEMAS WHERE SCHEMA_NAME = '%'"
+    addpermissions: "GRANT % ON %.% To %"
+    deletepermissions: "REVOKE % ON %.% FROM %"
+    createschemas: "CREATE SCHEMA % AUTHORIZATION %"
+    dropschemas: "DROP SCHEMA %"
+    author: "GRANT % ANY TABLE IN SCHEMA % TO %"
+databasename:
+  xugu: xugu
+  gbase8a: gbase8a
+  cassandra: cassandra

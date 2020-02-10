@@ -17,6 +17,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @创建人 zzj
  * @创建时间 2019/12/5 14:28
  */
+@Order(0)
 @Configuration
 public class ShiroConfig {
     @Value("${spring.redis.host}")
@@ -63,6 +65,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/v2/**", "anon");
         filterChainDefinitionMap.put("/swagger-resources/**", "anon");
+        filterChainDefinitionMap.put("/doc.html", "anon");
         filterChainDefinitionMap.put("/**", "authc");
         LinkedHashMap<String, Filter> filtsMap = new LinkedHashMap<>();
         // 这里使用自定义的filter

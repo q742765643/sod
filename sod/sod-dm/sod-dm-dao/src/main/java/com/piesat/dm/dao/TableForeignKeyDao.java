@@ -12,5 +12,6 @@ import java.util.List;
  * @date 2019年 12月09日 14:08:41
  */
 public interface TableForeignKeyDao extends BaseDao<TableForeignKeyEntity> {
-    List<TableForeignKeyEntity> findByTableId(String tableId);
+    List<TableForeignKeyEntity> findByClassLogicId(String classLogicId);
+    int deleteByIdIn(List<String> ids);
 }

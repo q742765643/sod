@@ -83,6 +83,7 @@ pagehelper:
 eureka:
   instance:
     prefer-ip-address: true
+    ip-address: 1.119.5.177
     instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
   client:
     register-with-eureka: true

@@ -28,4 +28,10 @@ public interface DataTableService {
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
     List<DataTableDto> getByClassLogicId(String classLogic);
+
+
+    int updateById(DataTableDto dataTableDto);
+
+    Map<String,String> getSql(String tableId,String databaseId);
+
 }

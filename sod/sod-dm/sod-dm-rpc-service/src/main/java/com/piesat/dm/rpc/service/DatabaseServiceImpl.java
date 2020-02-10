@@ -15,7 +15,6 @@ import com.piesat.dm.rpc.mapper.DatabaseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +57,13 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     @Override
     public List<Map<String,Object>> getDatabaseName() {
         String sql = "select t.id ID,concat(d.database_name,'_',t.database_name) DATABASE_NAME  from T_SOD_DATABASE t left join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> getByDatabaseDefineId(String id) {
+        String sql = "select *  from T_SOD_DATABASE t where t.DATABASE_DEFINE_ID = '"+id+"'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }
