@@ -29,5 +29,9 @@ public interface DataTableService {
 
     List<DataTableDto> getByClassLogicId(String classLogic);
 
+
     int updateById(DataTableDto dataTableDto);
+
+    Map<String,String> getSql(String tableId,String databaseId);
+
 }
