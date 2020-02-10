@@ -68,6 +68,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    public void deleteByDataClassId(String dataClassId) {
+        this.dataLogicDao.deleteByDataClassId(dataClassId);
+    }
+
+    @Override
     public DataLogicDto getDotById(String id) {
         DataLogicEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);

@@ -29,4 +29,7 @@ public interface DataLogicService {
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
     List<Map<String, Object>> getDistinctDatabaseAndLogic();
+
+    void deleteByDataClassId(String dataClassId);
+
 }

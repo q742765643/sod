@@ -21,7 +21,5 @@ public class BackupLogDto extends JobInfoLogDto {
     private String storageDirectory;
     private String tableName;
     private String vTableName;
-    private String databaseType;
-    private String parentId;
 }
 

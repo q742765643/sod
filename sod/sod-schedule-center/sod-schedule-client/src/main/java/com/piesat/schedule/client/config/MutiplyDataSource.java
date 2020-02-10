@@ -40,9 +40,9 @@ public class MutiplyDataSource {
      * 配置@Transactional注解事务
      * @return
      */
-    /*@Bean
+    @Bean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dynamicDataSource());
-    }*/
+    }
 }
 

@@ -48,10 +48,6 @@ public class MoveLogEntity extends JobInfoLogEntity {
     private String vTableName;
     @Column(name="move_count", length=50)
     private long moveCount;
-    @Column(name="database_type", length=50)
-    private String databaseType;
-    @Column(name="parent_id", length=50)
-    private String parentId;
 
 }
 

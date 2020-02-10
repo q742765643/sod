@@ -20,8 +20,6 @@ public class ClearLogDto extends JobInfoLogDto{
     private long clearLimit;
     private String vTableName;
     private long clearCount;
-    private String databaseType;
-    private String parentId;
 
 }
 

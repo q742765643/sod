@@ -44,4 +44,10 @@ public interface DataClassService {
      * @return
      */
     public List<Map<String, Object>>  getDataGroup();
+
+    /**
+     * 获取data_class_id最大编码
+     * @return
+     */
+    public String getDataClassIdNum();
 }

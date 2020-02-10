@@ -2,9 +2,11 @@ package com.piesat.dm.dao;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.DataTableEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 
@@ -22,4 +24,9 @@ public interface DataTableDao extends BaseDao<DataTableEntity> {
     void deleteByClassLogic_Id(String clId);
 
     List<DataTableEntity> findByClassLogic_Id(String clId);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update T_SOD_DATA_TABLE p set p.table_name =?1  where p.id = ?2",nativeQuery = true)
+    int updateById(String table_name, String id);
 }
