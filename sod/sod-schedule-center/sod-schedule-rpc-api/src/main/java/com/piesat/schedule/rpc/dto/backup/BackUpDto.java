@@ -3,6 +3,8 @@ package com.piesat.schedule.rpc.dto.backup;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
 import lombok.Data;
 
+import javax.persistence.Column;
+
 /**
  * @program: sod
  * @description:
@@ -21,6 +23,7 @@ public class BackUpDto extends JobInfoDto{
     private String tableName;
     private String vTableName;
     private String databaseType;
+    private String parentId;
 
 }
 

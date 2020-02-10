@@ -136,6 +136,7 @@ public abstract class ExecuteBaseService {
                   if((ExecutorBlockStrategyEnum.CLUSTER_SERIAL.name()).equals(jobInfoEntity.getExecutorBlockStrategy())){
                         redisUtil.set(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfoEntity.getId(),jobInfoEntity.getId(),86400);
                   }
+                  jobInfoEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
                   Class<?> target = ExecutorBiz.class;
                   Object invoker = new Object();
                   InvocationHandler invocationHandler = new GrpcServiceProxy<>(target, invoker,server);

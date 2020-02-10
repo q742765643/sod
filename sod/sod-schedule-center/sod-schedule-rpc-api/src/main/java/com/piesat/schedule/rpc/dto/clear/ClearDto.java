@@ -19,5 +19,7 @@ public class ClearDto extends JobInfoDto {
     private String conditions;
     private long clearLimit;
     private String vTableName;
+    private String databaseType;
+    private String parentId;
 }
 
