@@ -30,14 +30,14 @@ spring:
       charset: utf-8
       enabled: true
   datasource:
-      driver-class-name: com.xugu.cloudjdbc.Driver
-      url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
-      username: sod5
-      password: 123456
-      #driver-class-name: com.mysql.jdbc.Driver
-      #url: jdbc:mysql://10.224.47.209:3306/test02
-      #username: root
-      #password: root
+      #driver-class-name: com.xugu.cloudjdbc.Driver
+      #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
+      #username: sod5
+      #password: 123456
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://1.119.5.177:8000/sod
+      username: root
+      password: root
       type: com.alibaba.druid.pool.DruidDataSource
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
@@ -49,25 +49,25 @@ spring:
       # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
       #timeBetweenEvictionRunsMillis: 60000
       # 配置一个连接在池中最小生存的时间，单位是毫秒
-      #minEvictableIdleTimeMillis: 30000
-      #validationQuery: select 'x'
-      #testWhileIdle: true
-      #testOnBorrow: false
-      #testOnReturn: false
+      # minEvictableIdleTimeMillis: 30000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
   jpa:
     properties:
       hibernate:
         hbm2ddl:
 #          auto: update
           auto: update
-        dialect: com.piesat.common.jpa.dialect.XuguDialect
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         format_sql: true
     show-sql: true
     #database: mysql
     open-in-view: false
   redis:
-    host: 10.40.17.44
-    port: 6379
+    host: 1.119.5.177
+    port: 8001
     timeout: 5000
     password:
 mybatis:
@@ -92,4 +92,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.40.17.44:8761/eureka/
+      defaultZone: http://1.119.5.177:8002/eureka/
+
+serverfile:
+  filePath: D:/upload/

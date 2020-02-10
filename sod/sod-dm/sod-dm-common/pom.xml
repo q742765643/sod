@@ -16,6 +16,11 @@
             <artifactId>sod-common</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
+        </dependency>
     </dependencies>
     <build>
         <!--解决idea打包没有xml-->
