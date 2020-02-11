@@ -59,7 +59,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
 
     private void setDataSource(String dataSourceName, DataSource dataSource) {
         this.addTargetDataSource(dataSourceName, dataSource);
-        DataSourceContextHolder.setDataSource(dataSourceName);
+        //DataSourceContextHolder.setDataSource(dataSourceName);
     }
     private DataSource getDataSource(String dataSourceName) {
         String driverClassName="com.xugu.cloudjdbc.Driver";
