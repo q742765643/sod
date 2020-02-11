@@ -33,10 +33,16 @@ public interface NewdataApplyService {
 
     ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto);
 
+    List<DataTableDto> getDataTableByType(DataLogicDto dataLogicDto);
+
     List<TableColumnDto> getNewdataTableField(String id);
 
     ResultT<String> addDataStructure(TableColumnDto tableColumnDto);
 
     ResultT<String> updateDataStructure(TableColumnDto tableColumnDto);
+
+    PageBean getTableDataInfo(String tableId, String databaseId, int pageNum, int pageSize);
+
+    Map<String,Object> getArchiveInfo(String id);
 
 }

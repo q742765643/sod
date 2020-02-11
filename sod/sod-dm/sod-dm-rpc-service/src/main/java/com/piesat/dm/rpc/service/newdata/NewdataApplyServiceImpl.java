@@ -20,7 +20,6 @@ import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +58,10 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
     @Autowired
     private TableColumnService tableColumnService;
+    @Autowired
+    private DatabaseService databaseService;
+    @Autowired
+    private ShardingService shardingService;
 
 
     @Override
@@ -233,20 +236,48 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto) {
         dataTableDto.setTableName(dataTableDto.getTableName().toUpperCase());
-       /* String databaseId = request.getParameter("databaseId");
-        String dataClassId = request.getParameter("dataClassId");*/
-        String databaseId = dataTableDto.getId();
-        String dataClassId = dataTableDto.getDataServiceId();
-        //最后返回一条记录
+        //为新增资料申请用户
+        //dataTableDto.setUserId();
+
+        //查表信息
+        String databaseId = dataTableDto.getClassLogic().getDatabaseId();
+        String dataClassId = dataTableDto.getClassLogic().getDataClassId();
+        //最后返回一条或两条(KV)
         List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
         if (dataTableDtos != null && dataTableDtos.size() > 0) {
-            //修改
-            dataTableService.updateById(dataTableDtos.get(0));
+            //修改,需要有id
+            for(DataTableDto tableDto : dataTableDtos){
+                dataTableService.saveDto(tableDto);
+            }
         }else{
-            //添加
-            dataTableService.saveDto(dataTableDtos.get(0));
+            //添加//如果是kv表呢？
+            dataTableDto = dataTableService.saveDto(dataTableDto);
+            //根据物理库id查父id
+            DatabaseDto dotById = databaseService.getDotById(databaseId);
+            String parent_id = dotById.getDatabaseDefine().getId();
+            //添加分库分表记录
+            if ("STDB".equals(parent_id)) {
+                ShardingDto sharding = new ShardingDto();
+                sharding.setTableId(dataTableDto.getId());
+                sharding.setColumnName("D_DATETIME");
+                sharding.setShardingType(0);
+                shardingService.saveDto(sharding);
+            } else if ("HADB".equals(parent_id)) {
+                ShardingDto sharding = new ShardingDto();
+                sharding.setTableId(dataTableDto.getId());
+                sharding.setColumnName("V01301");
+                sharding.setShardingType(0);
+                shardingService.saveDto(sharding);
+            }
         }
+        //进行物理库表读写权限授权
         return ResultT.success();
+    }
+
+    @Override
+    public List<DataTableDto> getDataTableByType(DataLogicDto dataLogicDto) {
+        List<DataTableDto> byDatabaseIdAndClassId = dataTableService.getByDatabaseIdAndClassId(dataLogicDto.getDatabaseId(), dataLogicDto.getDataClassId());
+        return byDatabaseIdAndClassId;
     }
 
     @Override
@@ -265,6 +296,23 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     public ResultT<String> updateDataStructure(TableColumnDto tableColumnDto) {
         tableColumnService.updateDto(tableColumnDto);
         return ResultT.success();
+    }
+
+    @Override
+    public PageBean getTableDataInfo(String tableId, String databaseId, int pageNum, int pageSize) {
+        String sql = "select *  from t_sod_table_collect_info where table_id='" + tableId + "' and database_id = '" +databaseId+ "'";
+        PageBean page = this.queryByNativeSQLPageMap(sql,null, new PageForm(pageNum, pageSize));
+        return page;
+    }
+
+    @Override
+    public Map<String, Object> getArchiveInfo(String c_datum_code) {
+        String sql = "SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM T_SOD_DATA_DATUMTYPEINFO A " +
+                "START WITH A.C_DATUM_CODE = '" + c_datum_code + "'" +
+                "CONNECT BY PRIOR A.C_SOURSDATUM_CODE = A.C_DATUM_CODE) B,T_SOD_ARCHIVE_INFO C  " +
+                "WHERE L = 2 AND B.C_SOURSDATUM_CODE = C.PRODUCTIONCODE";
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list == null ? null:list.get(0);
     }
 
 }
