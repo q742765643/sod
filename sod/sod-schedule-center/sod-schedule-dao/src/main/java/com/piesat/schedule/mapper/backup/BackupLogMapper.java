@@ -4,6 +4,8 @@ import com.piesat.schedule.entity.JobInfoLogEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @description:
@@ -12,7 +14,8 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 public interface BackupLogMapper {
-    BackupLogEntity findMaxBackupTime(String jobId);
+    List<BackupLogEntity> findMaxBackupTime(String jobId);
 
+    List<BackupLogEntity> findByJobId(BackupLogEntity backupLogEntity);
 }
 

@@ -40,7 +40,7 @@ public class BackupLogEntity extends JobInfoLogEntity{
     @Column(name="v_table_name", length=50)
     private String vTableName;
     @Column(name="backup_time")
-    private Date backupTime;
+    private long backupTime;
     @Column(name="database_type", length=50)
     private String databaseType;
     @Column(name="parent_id", length=50)
