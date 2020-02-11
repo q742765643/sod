@@ -2,10 +2,7 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.api.DatabaseUserService;
-import com.piesat.dm.rpc.dto.DataClassDto;
-import com.piesat.dm.rpc.dto.DataLogicDto;
-import com.piesat.dm.rpc.dto.DatabaseDto;
-import com.piesat.dm.rpc.dto.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.*;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -19,7 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.File;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Result;
+import java.io.*;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -97,7 +97,7 @@ public class DatabaseUserManagerController {
         }
     }
 
-    @ApiOperation(value="申请文件上传接口",notes="申请文件上传接口")
+    @ApiOperation(value="申请文件上传接口")
     @RequiresPermissions("api:databaseUser:upload")
     @PostMapping(value="/api/databaseUser/upload")
     public ResultT uploadFile(MultipartHttpServletRequest request) {
@@ -115,6 +115,126 @@ public class DatabaseUserManagerController {
             //上传文件到服务器指定路径
             FileCopyUtils.copy(mf.getBytes(), new File(filePath));
             return ResultT.success(filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value="申请文件下载接口")
+    @RequiresPermissions("api:databaseUser:download")
+    @GetMapping(value="/download")
+    public void download(HttpServletRequest request, HttpServletResponse response) {
+        String fullPath = request.getParameter("filePath");
+        File file = new File(fullPath);
+        String fileName = file.getName();
+
+        if(file.exists()){
+            try {
+                String userAgent = request.getHeader("User-Agent");
+                if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
+                    //IE浏览器处理
+                    fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                } else {
+                    // 非IE浏览器的处理：
+                    fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+                }
+                // 以流的形式下载文件。
+                InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+                byte[] buffer = new byte[inputStream.available()];
+                inputStream.read(buffer);
+                inputStream.close();
+                // 清空response
+                response.reset();
+                // 设置response的Header
+                response.addHeader("Content-Disposition", "attachment;filename=" + new String(fileName));
+                response.addHeader("Content-Length", "" + file.length());
+                OutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
+                response.setContentType("application/octet-stream");
+                outputStream.write(buffer);
+                outputStream.flush();
+                outputStream.close();
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }else{
+            try {
+                response.setContentType("text/html; charset=UTF-8"); //转码
+                PrintWriter out = response.getWriter();
+                out.flush();
+                out.println("<script defer='defer' type='text/javascript'>");
+                out.println("alert('文件不存在或已经被删除！');");
+//                out.println("window.location='/AnnualStatistics/downloadList';");
+                out.println("</script>");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @ApiOperation(value = "判断UP账户是否已存在")
+    @RequiresPermissions("dm:databaseUser:ifUPExist")
+    @GetMapping(value = "/ifUPExist")
+    public ResultT ifUPExist(String databaseUPId) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.getDotByUPID(databaseUPId);
+            if(databaseUserDto!=null){
+                return ResultT.success("YES");
+            }
+            return ResultT.success("NO");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "判断申请账户是否已存在")
+    @RequiresPermissions("dm:databaseUser:ifUserExist")
+    @GetMapping(value = "/ifUserExist")
+    public ResultT ifUserExist(String userId) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.getDotByUserId(userId);
+            if(databaseUserDto!=null){
+                return ResultT.success("YES");
+            }
+            return ResultT.success("NO");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:databaseUser:add")
+    @PostMapping(value = "/add")
+    public ResultT save(@RequestBody DatabaseUserDto databaseUserDto) {
+        try {
+            DatabaseUserDto save = this.databaseUserService.saveDto(databaseUserDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "审核")
+    @RequiresPermissions("dm:databaseUser:update")
+    @PostMapping(value = "/update")
+    public ResultT update(@RequestBody DatabaseUserDto databaseUserDto) {
+        try {
+            //审核通过，给数据库授权
+            if(databaseUserDto.getExamineStatus().equals("1")){
+                //数据库授权
+                boolean b = this.databaseUserService.empower(databaseUserDto);
+                if(b){
+                    DatabaseUserDto update = this.databaseUserService.saveDto(databaseUserDto);
+                    return ResultT.success(update);
+                }
+                return ResultT.success("数据库授权失败，审核操作未完成");
+            }
+            //审核不通过
+            DatabaseUserDto update = this.databaseUserService.saveDto(databaseUserDto);
+            return ResultT.success(update);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
