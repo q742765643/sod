@@ -38,7 +38,10 @@ public class ClearLogEntity extends JobInfoLogEntity {
     private String vTableName;
     @Column(name="clear_count", length=50)
     private long clearCount;
-
+    @Column(name="database_type", length=50)
+    private String databaseType;
+    @Column(name="parent_id", length=50)
+    private String parentId;
 
 }
 

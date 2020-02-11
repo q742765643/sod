@@ -5,7 +5,7 @@
         <el-col :span="4" v-for="(item,index) in sqlData" :key="index" :offset="0" class="colClass">
           <el-card>
             <div slot="header" class="clearfix">
-              <span>{{item.databaseName}}</span>
+              <span>{{item.database_name}}</span>
             </div>
             <div style="padding: 14px;">
               <el-button type="primary" size="small" round @click="editSqlTemplate(item)">编辑</el-button>
@@ -36,7 +36,7 @@
           <el-form :inline="true">
             <el-form-item label="数据库厂商：">
               <el-select
-                v-model="handleSqlTemplate.databaseName"
+                v-model="handleSqlTemplate.database_name"
                 v-on:change="indexSelect()"
                 size="small"
               >
@@ -132,8 +132,6 @@
 
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
-import { initSqlList,getDBType,addSqlTem,delSqlTem,editSqlTem,getSqlTemById } from "@/api/system/sqlTemplateMangement";
-
 export default {
   data() {
     return {
@@ -147,71 +145,28 @@ export default {
       sqlData:[],
       databaseList:[],
       // 弹窗
-      dialogTitle:'新增模板',
+      dialogTitle:'',
       handleDailyVisible:false,
       handleSqlTemplate:{
-        databaseName:'',
+        database_name:'',
         template:'',
       }
     };
   },
   created() {
-    this.getSqlList();
+    // this.getList();
   },
   methods: {
-    getSqlList(){
-      initSqlList().then(
-        response => {
-          this.sqlData = response.data
-        }
-      );
-    },
-    editSqlTemplate(item){
-      this.handleDailyVisible = true;
-      this.handleSqlTemplate.template = item.template;
-      this.handleSqlTemplate.databaseName = item.databaseName;
-      this.dialogTitle = '编辑模板';
-    },
-    deleteSqlTemplate(item){
-      this.$confirm('数据删除后将无法恢复，确认删除吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          delSqlTem({ids:item.id}).then(response => {
-            console.log(response);
-        });
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-    },
+     editSqlTemplate(item){},
+    deleteSqlTemplate(item){},
     addSqlTemplate(){
       this.handleDailyVisible = true;
-      this.dialogTitle = '新增模板';
     },
     autoFillIn(value){
       this.handleSqlTemplate.template+=value;
-    },
-    trueDialog(){
-      //新增
-      if(this.dialogTitle==='新增模板'){
-        addSqlTem().then(response => {
-          this.sqlData = response.data
-        });
-      }
-      //编辑
-      else{
 
-      }
     },
-
+    trueDialog(){},
     closeDialog(){
        this.handleDailyVisible = false;
     },

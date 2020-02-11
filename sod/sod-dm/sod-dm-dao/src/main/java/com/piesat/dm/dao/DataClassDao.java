@@ -18,4 +18,5 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
     void deleteByDataClassId(String dataClassId);
 
     DataClassEntity findByDataClassId(String dataClassId);
+
 }

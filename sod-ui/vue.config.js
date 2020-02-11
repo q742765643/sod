@@ -74,24 +74,18 @@ module.exports = {
           ["^" + process.env.VUE_APP_DICT]: ""
         }
       },
-      // [process.env.VUE_APP_DB_API]: {
-      //   target: `http://10.28.104.152:2345`,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     ["^" + process.env.VUE_APP_DB_API]: ""
-      //   }
-      // },
-
-      /*** 
-       * 2020/02/07
-       * 王娜
-       * 临时对接接口ip
-      */
       [process.env.VUE_APP_DB_API]: {
-        target: `http://pw29059549.wicp.vip`,
+        target: `http://10.28.104.152:2345`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DB_API]: ""
+        }
+      },
+      [process.env.VUE_APP_SYNC]: {
+        target: `http://10.28.104.199:1237`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_SYNC]: ""
         }
       }
     },

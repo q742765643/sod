@@ -1,5 +1,5 @@
 server:
-  port: 8007
+  port: 1221
   servlet:
       context-path: /
 tomcat:
@@ -11,17 +11,13 @@ tomcat:
 
 grpc:
   server:
-    port: 8008
+    port: 6001
   client:
     ucenter-server:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
     dm-server:
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-    system-server:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
@@ -34,13 +30,12 @@ spring:
       charset: utf-8
       enabled: true
   datasource:
-#      driver-class-name: com.xugu.cloudjdbc.Driver
-#      url: jdbc:xugu://1.119.5.177:5138/BABJ_SMDB?char_set=utf8
-#      username: USR_SOD
-#      password: Pnmic_qwe123
+      #driver-class-name: com.xugu.cloudjdbc.Driver
+      #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
+      #username: sod5
+      #password: 123456
       driver-class-name: com.mysql.jdbc.Driver
-#      url: jdbc:mysql://1.119.5.177:8000/sod
-      url: jdbc:mysql://127.0.0.1:8000/sod
+      url: jdbc:mysql://1.119.5.177:8000/sod
       username: root
       password: root
       type: com.alibaba.druid.pool.DruidDataSource
@@ -54,26 +49,24 @@ spring:
       # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
       #timeBetweenEvictionRunsMillis: 60000
       # 配置一个连接在池中最小生存的时间，单位是毫秒
-      #minEvictableIdleTimeMillis: 30000
-      #validationQuery: select 'x'
-      #testWhileIdle: true
-      #testOnBorrow: false
-      #testOnReturn: false
+      # minEvictableIdleTimeMillis: 30000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
   jpa:
     properties:
       hibernate:
         hbm2ddl:
 #          auto: update
           auto: update
-#        dialect: com.piesat.common.jpa.dialect.XuguDialect
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         format_sql: true
     show-sql: true
     #database: mysql
     open-in-view: false
   redis:
-#    host: 1.119.5.177
-    host: 127.0.0.1
+    host: 1.119.5.177
     port: 8001
     timeout: 5000
     password:
@@ -99,5 +92,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-#      defaultZone: http://1.119.5.177:8002/eureka/
-      defaultZone: http://127.0.0.1:8002/eureka/
+      defaultZone: http://1.119.5.177:8002/eureka/
+
+serverfile:
+  filePath: D:/upload/

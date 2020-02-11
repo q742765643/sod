@@ -24,6 +24,8 @@ public class MoveDto extends JobInfoDto{
     private String isClear;
     private long moveLimit;
     private String vTableName;
+    private String databaseType;
+    private String parentId;
 
 }
 

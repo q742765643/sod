@@ -25,7 +25,7 @@
         <result column="CONDITIONS" property="conditions" />
         <result column="DATA_CLASS_ID" property="dataClassId" />
         <result column="DATABASE_ID" property="databaseId" />
-        <result column="D_DATA_ID" property="dDataId" />
+        <result column="D_DATA_ID" property="ddataId" />
         <result column="PROFILE_NAME" property="profileName" />
         <result column="SECOND_CONDITIONS" property="secondConditions" />
         <result column="STORAGE_DIRECTORY" property="storageDirectory" />

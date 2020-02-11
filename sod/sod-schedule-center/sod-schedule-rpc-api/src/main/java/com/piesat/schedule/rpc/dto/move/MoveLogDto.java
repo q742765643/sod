@@ -25,6 +25,8 @@ public class MoveLogDto extends JobInfoLogDto{
     private long moveLimit;
     private String vTableName;
     private long moveCount;
+    private String databaseType;
+    private String parentId;
 
 }
 

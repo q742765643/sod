@@ -87,6 +87,9 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
+    public int updateById(DataTableDto dataTableDto) {
+        return dataTableDao.updateById(dataTableDto.getTableName(), dataTableDto.getId());
+    }
     public Map<String, String> getSql(String tableId, String databaseId) {
         List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
         DataTableDto dataTableDto = this.getDotById(tableId);

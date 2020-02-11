@@ -193,4 +193,53 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         return list;
     }
 
+    @Override
+    public String getDataClassIdNum() {
+        String xuguSql = "select" +
+                "   case" +
+                "      when not exists(select 1 from (SELECT atol(substr(DATA_CLASS_ID,14,3)) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') where id=1)" +
+                "      then 1" +
+                "      else (" +
+                "         select min(a.id+1)" +
+                "           from (SELECT atol(substr(DATA_CLASS_ID,14,3)) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as a" +
+                "        where not exists" +
+                "        (" +
+                "          select 1" +
+                "            from (SELECT atol(substr(DATA_CLASS_ID,14,3)) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as b" +
+                "         where b.id=a.id+1" +
+                "        )" +
+                "     )" +
+                "  end as NUM;";
+
+        String mysqlSql = "select" +
+                "   case" +
+                "      when not exists(select 1 from (SELECT cast(substr(DATA_CLASS_ID,14,3) as SIGNED) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') where id=1)" +
+                "      then 1" +
+                "      else (" +
+                "         select min(a.id+1)" +
+                "           from (SELECT cast(substr(DATA_CLASS_ID,14,3) as SIGNED) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as a" +
+                "        where not exists" +
+                "        (" +
+                "          select 1" +
+                "            from (SELECT cast(substr(DATA_CLASS_ID,14,3) as SIGNED) id FROM DMIN_DATA_CLASS_TABLE WHERE META_DATA_STOR_TYPE = '资料' AND D_DATA_ID = 'Z.9999.9999'" +
+                "AND substr(DATA_CLASS_ID,13,1)='M') as b" +
+                "         where b.id=a.id+1" +
+                "        )" +
+                "     )" +
+                "  end as NUM;";
+        List<Map<String, Object>> list = this.queryByNativeSQL(mysqlSql);
+        String num = list.get(0).get("NUM").toString();
+        if (num.length() < 3) {
+            String ling = "00";
+            int a = 3 - num.length();
+            num = ling.substring(0, a) + num;
+        }
+        return num;
+    }
+
 }
