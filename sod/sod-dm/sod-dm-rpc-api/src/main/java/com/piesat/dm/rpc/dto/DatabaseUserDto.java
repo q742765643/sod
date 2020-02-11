@@ -15,44 +15,49 @@ public class DatabaseUserDto {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 主键
+     */
+    private String id;
+
+    /**
      * 用户ID
      */
-    private String user_id;
+    private String userId;
 
     /**
      * UP账户ID
      */
-    private String database_up_id;
+    private String databaseUpId;
 
     /**
      * UP账户密码
      */
-    private String database_up_password;
+    private String databaseUpPassword;
 
     /**
      * up账户IP
      */
-    private String database_up_ip;
+    private String databaseUpIp;
 
     /**
      * UP账户IP区间
      */
-    private String database_up_ip_segment;
+    private String databaseUpIpSegment;
 
     /**
      * UP账户描述
      */
-    private String database_up_desc;
+    private String databaseUpDesc;
 
     /**
      * 申请数据库ID
      */
-    private String apply_database_id;
+    private String applyDatabaseId;
 
     /**
      * 申请材料
      */
-    private String apply_material;
+    private String applyMaterial;
 
     /**
      * 审核人
@@ -62,22 +67,22 @@ public class DatabaseUserDto {
     /**
      * 审核状态
      */
-    private String examine_status;
+    private String examineStatus;
 
     /**
      * 审核时间
      */
-    private Date examine_time;
+    private Date examineTime;
 
     /**
      * 审核通过的数据库ID
      */
-    private String examine_database_id;
+    private String examineDatabaseId;
 
     /**
      * 拒绝原因
      */
-    private String failure_reason;
+    private String failureReason;
 
     /**
      * 记录

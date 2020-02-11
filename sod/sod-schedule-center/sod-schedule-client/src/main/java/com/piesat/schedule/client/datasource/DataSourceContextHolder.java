@@ -13,7 +13,11 @@ public class DataSourceContextHolder {
     private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();
 
     public static void setDataSource(String dbType){
-        log.info("切换到["+dbType+"]数据源");
+        if(null==dbType){
+            log.info("切换到[元数据库]数据源");
+        }else{
+            log.info("切换到["+dbType+"]数据源");
+        }
         contextHolder.set(dbType);
     }
 

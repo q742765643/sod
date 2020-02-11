@@ -37,14 +37,14 @@ public class TableIndexEntity extends BaseEntity {
      * 索引名称
      * index_name
      */
-    @Column(name = "index_name", length = 36, nullable = false)
+    @Column(name = "index_name", length = 255, nullable = false)
     private String indexName;
 
     /**
      * 索引字段
      * index_column
      */
-    @Column(name = "index_column", length = 36, nullable = false)
+    @Column(name = "index_column", length = 255, nullable = false)
     private String indexColumn;
 
 }

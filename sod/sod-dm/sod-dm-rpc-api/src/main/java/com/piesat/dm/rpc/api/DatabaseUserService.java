@@ -35,4 +35,31 @@ public interface DatabaseUserService {
      */
     void delete(String id);
 
+    /**
+     * 根据UP账户查询
+     * @param databaseUPId
+     * @return
+     */
+    DatabaseUserDto getDotByUPID(String databaseUPId);
+
+    /**
+     * 根据userId查询
+     * @param userId
+     * @return
+     */
+    DatabaseUserDto getDotByUserId(String userId);
+
+    /**
+     * 新增
+     * @param atabaseUserDto
+     * @return
+     */
+    DatabaseUserDto saveDto(DatabaseUserDto atabaseUserDto);
+
+    /**
+     * 数据库授权
+     * @param databaseUserDto
+     * @return
+     */
+    boolean empower(DatabaseUserDto databaseUserDto);
 }

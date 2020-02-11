@@ -25,49 +25,49 @@ public class DatabaseUserEntity extends BaseEntity {
      * 用户ID
      */
     @Column(name = "user_id")
-    private String user_id;
+    private String userId;
 
     /**
      * UP账户ID
      */
     @Column(name = "database_up_id")
-    private String database_up_id;
+    private String databaseUpId;
 
     /**
      * UP账户密码
      */
     @Column(name = "database_up_password")
-    private String database_up_password;
+    private String databaseUpPassword;
 
     /**
      * up账户IP
      */
     @Column(name = "database_up_ip")
-    private String database_up_ip;
+    private String databaseUpIp;
 
     /**
      * UP账户IP区间
      */
     @Column(name = "database_up_ip_segment")
-    private String database_up_ip_segment;
+    private String databaseUpIpSegment;
 
     /**
      * UP账户描述
      */
     @Column(name = "database_up_desc")
-    private String database_up_desc;
+    private String databaseUpDesc;
 
     /**
      * 申请数据库ID
      */
     @Column(name = "apply_database_id")
-    private String apply_database_id;
+    private String applyDatabaseId;
 
     /**
      * 申请材料
      */
     @Column(name = "apply_material")
-    private String apply_material;
+    private String applyMaterial;
 
     /**
      * 审核人
@@ -79,25 +79,25 @@ public class DatabaseUserEntity extends BaseEntity {
      * 审核状态
      */
     @Column(name = "examine_status")
-    private String examine_status;
+    private String examineStatus;
 
     /**
      * 审核时间
      */
     @Column(name = "examine_time")
-    private Date examine_time;
+    private Date examineTime;
 
     /**
      * 审核通过的数据库ID
      */
     @Column(name = "examine_database_id")
-    private String examine_database_id;
+    private String examineDatabaseId;
 
     /**
      * 拒绝原因
      */
     @Column(name = "failure_reason")
-    private String failure_reason;
+    private String failureReason;
 
     /**
      * 记录

@@ -89,3 +89,6 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://10.1.6.117:8002/eureka/
+
+backup:
+  temp-path: /zzj/CMADASS
