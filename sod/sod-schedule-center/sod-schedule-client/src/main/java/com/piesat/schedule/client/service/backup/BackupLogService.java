@@ -24,9 +24,8 @@ public class BackupLogService extends BaseService<BackupLogEntity>{
     public BaseDao<BackupLogEntity> getBaseDao() {
         return backupLogDao;
     }
-    public BackupLogEntity findMaxBackupTime(String jobId){
-        BackupLogEntity backupLogEntity=backupLogMapper.findMaxBackupTime(jobId);
-        return backupLogEntity;
-    }
+
+    
+
 }
 
