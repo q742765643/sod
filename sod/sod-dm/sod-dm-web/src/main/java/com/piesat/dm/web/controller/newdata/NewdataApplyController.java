@@ -2,14 +2,9 @@ package com.piesat.dm.web.controller.newdata;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.piesat.dm.rpc.api.DataClassService;
-import com.piesat.dm.rpc.api.DatabaseService;
-import com.piesat.dm.rpc.api.DatumTypeInfoService;
+import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.newdata.NewdataApplyService;
-import com.piesat.dm.rpc.dto.DataClassDto;
-import com.piesat.dm.rpc.dto.DataLogicDto;
-import com.piesat.dm.rpc.dto.DataTableDto;
-import com.piesat.dm.rpc.dto.TableColumnDto;
+import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.newdata.NewdataApplyDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -21,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author yaya
@@ -41,8 +34,19 @@ public class NewdataApplyController {
     @Autowired
     private DatabaseService databaseService;
     @Autowired
+    private DatabaseDefineService databaseDefineService;
+    @Autowired
     private DatumTypeInfoService datumTypeInfoService;
-
+    @Autowired
+    private TableColumnService tableColumnService;
+    @Autowired
+    private TableForeignKeyService tableForeignKeyService;
+    @Autowired
+    private DataLogicService dataLogicService;
+    @Autowired
+    private TableIndexService tableIndexService;
+    @Autowired
+    private ShardingService shardingService;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -241,6 +245,20 @@ public class NewdataApplyController {
     }
 
 
+    @GetMapping("/getDbDataById/{id}")
+    @ApiOperation(value = "根据物理库id获取物理库信息", notes = "根据物理库id获取物理库信息")
+    public  ResultT<DatabaseDefineDto> getDbDataById(@PathVariable String id){
+        DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
+        return ResultT.success(databaseDefineDto);
+    }
+
+
+    /**
+     * 一个表应该对应多个classLogic？
+     * @param dataTableDto
+     * @param request
+     * @return
+     */
     @ApiOperation(value="更新或添加数据表接口",notes="更新或添加数据表接口")
     @PostMapping(value="/addOrUpdateDataTable")
     public ResultT<String> addOrUpdateDataTable(@RequestBody DataTableDto dataTableDto, HttpServletRequest request){
@@ -258,13 +276,13 @@ public class NewdataApplyController {
 
     //addDataStructure
     @ApiOperation(value="添加表结构接口",notes="添加表结构接口")
-    @PostMapping("addDataStructure")
+    @PostMapping("/addDataStructure")
     public ResultT<String> addDataStructure(@RequestBody TableColumnDto tableColumnDto) {
         return this.newdataApplyService.addDataStructure(tableColumnDto);
     }
 
     @ApiOperation(value="修改表结构接口",notes="添加表结构接口")
-    @PostMapping("updateDataStructure")
+    @PostMapping("/updateDataStructure")
     public ResultT<String> updateDataStructure(@RequestBody TableColumnDto tableColumnDto) {
         return this.newdataApplyService.updateDataStructure(tableColumnDto);
     }
@@ -274,5 +292,90 @@ public class NewdataApplyController {
     public ResultT<String> getTableByPhysicsId(@PathVariable String databaseId) {
         return this.newdataApplyService.getTableByPhysicsId(databaseId);
     }*/
+
+    @ApiOperation(value="根据存储编码、物理库获取表信息",notes="根据存储编码、物理库获取表信息")
+    @PostMapping("/getDataTableByType")
+    public ResultT<List<DataTableDto>> getDataTableByType(@RequestBody DataLogicDto dataLogicDto){
+        List<DataTableDto> dataTableByType = newdataApplyService.getDataTableByType(dataLogicDto);
+        return ResultT.success(dataTableByType);
+    }
+
+    @GetMapping("/getDataStructure/{id}")
+    @ApiOperation(value = "根据表id获取表字段信息", notes = "根据表id获取表字段信息")
+    public ResultT<List<TableColumnDto>> getDataStructure(@PathVariable String id){
+        List<TableColumnDto> tableColumnDtos = tableColumnService.findByTableId(id);
+        return ResultT.success(tableColumnDtos);
+    }
+
+    @ApiOperation(value="根据表id获取表索引信息",notes="根据表id获取表索引信息")
+    @PostMapping("/getTableIndex/{id}")
+    public ResultT<List<TableIndexDto>> getTableIndex(@PathVariable String id){
+        List<TableIndexDto> tableIndexDtos = tableIndexService.findByTableId(id);
+        return ResultT.success(tableIndexDtos);
+    }
+
+    /**
+     * 外键可以对应多个datalogic,
+     * 不同的物理库，相同的编码和存储类型，他们的表结构和外键是一样的，分库分表键不一定一样？
+     * @param dataLogicDto
+     * @return
+     */
+    @ApiOperation(value="根据存储编码、逻辑库、存储类型获取键值表的外键",notes="根据存储编码、物理库获取键值表的外键")
+    @PostMapping("/getForeignKey")
+    public ResultT<List<Map<String,Object>>> getForeignKey(@RequestBody DataLogicDto dataLogicDto){
+        List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
+        List<DataLogicDto> dataLogicDtos = dataLogicService.findByDataClassIdAndLogicFlagAndStorageType(dataLogicDto);
+        if(dataLogicDtos != null && dataLogicDtos.size() > 0){
+            for(DataLogicDto logicDto : dataLogicDtos){
+                List<TableForeignKeyDto> byClassLogicId = tableForeignKeyService.findByClassLogicId(logicDto.getId());
+                if(byClassLogicId != null && byClassLogicId.size() > 0){
+                    for(TableForeignKeyDto tableForeignKeyDto : byClassLogicId){
+                        Map<String,Object> result = new HashMap<String,Object>();
+                        result.put("K",byClassLogicId.get(0).getKeyColumn());
+                        result.put("V",byClassLogicId.get(0).getEleColumn());
+                        results.add(result);
+                    }
+                    break;
+                }
+            }
+
+        }
+        return ResultT.success(results);
+    }
+
+    @ApiOperation(value="根据表id获取表分库分表信息",notes="根据表id获取表分库分表信息")
+    @PostMapping("/findSharding/{id}")
+    public ResultT<List<ShardingDto>> findSharding(@PathVariable String id){
+        List<ShardingDto> shardingDtos = shardingService.getDotByTableId(id);
+        return ResultT.success(shardingDtos);
+    }
+
+    /**
+     * 在线时间？
+     * @param id
+     * @return
+     */
+    @ApiOperation(value="根据资料id获取资料在线时间段",notes="根据资料id获取资料在线时间段")
+    @PostMapping("/getArchiveInfo/{id}")
+    public ResultT<Map<String,Object>> getArchiveInfo(@PathVariable String id){
+        Map<String,Object> archiveInfo = newdataApplyService.getArchiveInfo(id);
+        return ResultT.success(archiveInfo);
+    }
+
+    @GetMapping("/getTableDataInfo")
+    @ApiOperation(value = "分页查询在线时间数据", notes = "分页查询在线时间数据")
+    public ResultT<PageBean> getTableDataInfo(HttpServletRequest request,
+                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        ResultT<PageBean> resultT=new ResultT<>();
+        String tableId = request.getParameter("tableId");
+        String databaseId = request.getParameter("databaseId");
+        PageBean pageBean = this.newdataApplyService.getTableDataInfo(tableId, databaseId, pageNum, pageSize);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+
+    //selectYang样例数据查询
+
 
 }

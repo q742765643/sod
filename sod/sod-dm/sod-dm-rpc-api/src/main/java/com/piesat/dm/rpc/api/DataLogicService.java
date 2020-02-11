@@ -32,4 +32,6 @@ public interface DataLogicService {
 
     void deleteByDataClassId(String dataClassId);
 
+    List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto);
+
 }

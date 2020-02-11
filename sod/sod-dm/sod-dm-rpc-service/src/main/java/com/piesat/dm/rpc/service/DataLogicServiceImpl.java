@@ -73,6 +73,12 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    public List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto) {
+        List<DataLogicEntity> byDataClassIdAndLogicFlagAndStorageType = dataLogicDao.findByDataClassIdAndLogicFlagAndStorageType(dataLogicDto.getDataClassId(), dataLogicDto.getLogicFlag(), dataLogicDto.getStorageType());
+        return this.dataLogicMapper.toDto(byDataClassIdAndLogicFlagAndStorageType);
+    }
+
+    @Override
     public DataLogicDto getDotById(String id) {
         DataLogicEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);
