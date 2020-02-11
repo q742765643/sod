@@ -39,8 +39,8 @@ public class ImportData {
 
     public void implAll(){
 //        importDataClassData();
-        importDataClassLogicData();
-        importDatumData();
+//        importDataClassLogicData();
+//        importDatumData();
         impLogicDefine();
         importDatabaseData();
     }
@@ -267,6 +267,7 @@ public class ImportData {
         for (Map<String, Object> m : logic) {
             sql = "select * from DMIN_DB_LOGIC_PHYSICS where LOGIC_ID = '"+m.get("LOGIC_ID")+"'";
             LogicDefineEntity dte = new LogicDefineEntity();
+            dte.setLogicFlag(toString(m.get("LOGIC_ID")));
             dte.setLogicName(toString(m.get("LOGIC_NAME")));
             dte.setLogicDesc(toString(m.get("LOGIC_DESC")));
             dte.setSerialNumber(Integer.getInteger(toString(m.get("SERIAL_NUMBER"))));

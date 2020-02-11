@@ -110,7 +110,7 @@ public class DatabaseDefineEntity extends BaseEntity {
      * 数据库连接url
      * database_url
      */
-    @Column(name = "database_url", length = 255, nullable = false)
+    @Column(name = "database_url", length = 655, nullable = false)
     private String databaseUrl;
 
     /**
