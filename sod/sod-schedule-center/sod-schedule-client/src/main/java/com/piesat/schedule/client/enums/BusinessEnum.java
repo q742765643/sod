@@ -1,4 +1,8 @@
 package com.piesat.schedule.client.enums;
+
+import com.piesat.schedule.client.business.BaseBusiness;
+import com.piesat.schedule.client.business.XuguBusiness;
+
 /**
  * @program: SyncMaster
  * @description:
@@ -7,17 +11,17 @@ package com.piesat.schedule.client.enums;
  **/
 public enum BusinessEnum {
     //ADS备份逻辑
-    ALI_ADS("ads", ""),
+    //ALI_ADS("ads", ""),
     //虚谷备份逻辑
-    XUGU("xugu", ""),
+    XUGU("xugu", new XuguBusiness());
     //DRDS备份逻辑
-    ALI_DRDS("stdb", ""),
+    //ALI_DRDS("stdb", ""),
     //GBASE备份逻辑
-    GBASE8A("gabse8a", "");
+    //GBASE8A("gabse8a", "");
     private String title;
-    private String baseBusiness;
+    private BaseBusiness baseBusiness;
 
-    BusinessEnum(String title, String baseBusiness) {
+    BusinessEnum(String title, BaseBusiness baseBusiness) {
         this.title = title;
         this.baseBusiness = baseBusiness;
     }
@@ -37,7 +41,7 @@ public enum BusinessEnum {
         return title;
     }
 
-    public String getBaseBusiness() {
+    public BaseBusiness getBaseBusiness() {
         return baseBusiness;
     }
 }

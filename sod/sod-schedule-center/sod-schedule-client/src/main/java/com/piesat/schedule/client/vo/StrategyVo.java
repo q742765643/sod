@@ -10,14 +10,16 @@ import lombok.Data;
  **/
 @Data
 public class StrategyVo {
-    private String databaseId;
-    private String ddataId;
-    private String fileName;
-    private String tableName;
-    private String vtableName;
-    private long beginTime;
+
+    private String tempPtah;
+    private String vfileName;
+    private String kfilePath;
+    private String vfilePath;
+    private String indexPath;
+    private String tempZipPath;
+    private long startTime;
     private long endTime;
-    private String tableForeighFieId;
-    private Integer isFull;
+    private StringBuilder handMsg;
+
 }
 
