@@ -1,14 +1,19 @@
 package com.piesat.schedule.client.handler.backup;
 
 import com.github.pagehelper.PageHelper;
+import com.piesat.schedule.client.business.BaseBusiness;
 import com.piesat.schedule.client.business.XuguBusiness;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
+import com.piesat.schedule.client.enums.BusinessEnum;
 import com.piesat.schedule.client.handler.base.BaseHandler;
 import com.piesat.schedule.client.service.JobInfoLogService;
 import com.piesat.schedule.client.service.backup.BackupLogService;
 import com.piesat.schedule.client.util.ExtractMessage;
+import com.piesat.schedule.client.util.FileUtil;
+import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.vo.BackupVo;
 import com.piesat.schedule.client.vo.ReplaceVo;
+import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.constant.HandleConstant;
 import com.piesat.schedule.dao.JobInfoLogDao;
 import com.piesat.schedule.mapper.test.TestMapper;
@@ -16,11 +21,14 @@ import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.mapper.backup.BackupLogMapper;
+import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,20 +48,29 @@ public class BackupHandler implements BaseHandler {
 
     @Autowired
     private BackupLogService backupLogService;
+
+    @Value("${backup.temp-path}")
+    private String backupTempPath;
     @Override
     public void execute(JobInfoEntity jobInfoEntity) {
         BackupEntity backupEntity= (BackupEntity) jobInfoEntity;
-        this.preParam(backupEntity);
+        ResultT<String> resultT=new ResultT<>();
+        this.preParam(backupEntity,resultT);
         log.info("备份调用成功");
     }
-    public void preParam(BackupEntity backupEntity){
+    public void preParam(BackupEntity backupEntity,ResultT<String> resultT){
         /*****========1.查询备份最大日期============***/
-        BackupLogEntity backupLogEntity=this.findMaxBackupTime(backupEntity.getId());
-        DateFormat format= new SimpleDateFormat("yyyyMMddHHmm");
+        BackupLogEntity backupLogEntity=this.findMaxBackupTime(backupEntity.getId(),resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
         BackupLogEntity backupLogNewEntity=new BackupLogEntity();
         BeanUtils.copyProperties(backupEntity,backupLogNewEntity);
         /*****========2.计算备份时次============***/
-        BackupVo backupVo=this.calculateBackupTime(backupEntity,backupEntity.getTriggerLastTime());
+        BackupVo backupVo=this.calculateBackupTime(backupEntity,backupEntity.getTriggerLastTime(),resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
         backupLogNewEntity.setBackupTime(backupVo.getBackupTime());
         backupLogNewEntity.setConditions(backupVo.getConditions());
         backupLogNewEntity.setSecondConditions(backupVo.getSecondConditions());
@@ -79,7 +96,7 @@ public class BackupHandler implements BaseHandler {
                 }
                 BackupLogEntity backupLogHisEntity=new BackupLogEntity();
                 BeanUtils.copyProperties(backupEntity,backupLogEntity);
-                BackupVo backupHisVo=this.calculateBackupTime(backupEntity,startTime);
+                BackupVo backupHisVo=this.calculateBackupTime(backupEntity,startTime,resultT);
                 backupLogHisEntity.setBackupTime(backupHisVo.getBackupTime());
                 backupLogHisEntity.setConditions(backupHisVo.getConditions());
                 backupLogHisEntity.setSecondConditions(backupHisVo.getSecondConditions());
@@ -105,20 +122,20 @@ public class BackupHandler implements BaseHandler {
         compensateList.add(backupLogNewEntity);
 
         for(BackupLogEntity log:compensateList){
-            this.backupExecute(log,backupEntity);
+            this.backupExecute(log,backupEntity,resultT);
         }
 
 
 
     }
 
-    public BackupLogEntity insertBackupLog( BackupLogEntity backupLogEntity,BackupEntity backupEntity){
+    public BackupLogEntity insertBackupLog( BackupLogEntity backupLogEntity,BackupEntity backupEntity,ResultT<String> resultT){
         ReplaceVo replaceVo=new ReplaceVo();
         replaceVo.setMsg(backupEntity.getStorageDirectory()+"/{databaseId}/{yyyy}/{yyyy-MM}");
         replaceVo.setDatabaseId(backupEntity.getParentId());
         replaceVo.setDataClassId(backupEntity.getDataClassId());
         replaceVo.setBackupTime(backupLogEntity.getBackupTime());
-        ExtractMessage.getIndexOf(replaceVo);
+        ExtractMessage.getIndexOf(replaceVo,resultT);
         backupLogEntity.setId(null);
         backupLogEntity.setJobId(backupEntity.getId());
         backupLogEntity.setHandleCode("0");
@@ -129,11 +146,13 @@ public class BackupHandler implements BaseHandler {
         return backupLogEntity;
     }
 
-    public void backupExecute(BackupLogEntity backupLog,BackupEntity backupEntity){
+    public void backupExecute(BackupLogEntity backupLog,BackupEntity backupEntity,ResultT<String> resultT){
+        StrategyVo strategyVo=new StrategyVo();
+        strategyVo.setStartTime(System.currentTimeMillis());
         BackupLogEntity backupLogEntity=null;
         if(backupLog.getIsEnd()==0){
             /*****========1.查询远时备份日志  ============***/
-            BackupLogEntity backupLogEntityHis=this.findByJobId(backupLog);
+            BackupLogEntity backupLogEntityHis=this.findByJobId(backupLog,resultT);
             if(backupLogEntityHis==null){
                 return;
             }else{
@@ -147,7 +166,7 @@ public class BackupHandler implements BaseHandler {
 
         }else{
             /*****========2.插入日志正在运行中  ============***/
-            BackupLogEntity backupLogEntityNew=this.findByJobId(backupLog);
+            BackupLogEntity backupLogEntityNew=this.findByJobId(backupLog,resultT);
             if(backupLogEntityNew!=null){
                 if("1".equals(backupLogEntityNew.getHandleCode())){
                     return;
@@ -155,7 +174,7 @@ public class BackupHandler implements BaseHandler {
                     backupLogEntity=backupLogEntityNew;
                 }
             }else{
-                backupLogEntity=this.insertBackupLog(backupLog,backupEntity);
+                backupLogEntity=this.insertBackupLog(backupLog,backupEntity,resultT);
             }
 
         }
@@ -164,16 +183,27 @@ public class BackupHandler implements BaseHandler {
         String backupTime=format.format(backupLogEntity.getBackupTime());
         String fileName=backupLogEntity.getParentId()+ "--" + backupLogEntity.getTableName()+ "--" + backupTime+"--"+backupLogEntity.getDataClassId();
         backupLogEntity.setFileName(fileName);
-        Map<String,Object> map=new HashMap<>();
-        XuguBusiness xuguBusiness=new XuguBusiness();
+        /*****========3.获取枚举类  ============***/
+        BusinessEnum businessEnum= BusinessEnum.match(backupEntity.getDatabaseType(),null);
+        BaseBusiness baseBusiness=businessEnum.getBaseBusiness();
+        strategyVo.setTempPtah(backupTempPath+"/"+fileName);
+        strategyVo.setIndexPath(strategyVo.getTempPtah()+"/"+"index.sql");
+        FileUtil.mkdirs(strategyVo.getTempPtah(),resultT);
+        FileUtil.createFile(strategyVo.getTempPtah(),resultT);
+        /*****========4.先备份k表，再备份v表  ============***/
         if(null!=backupLogEntity.getTableName()){
-            xuguBusiness.backUpKtable(backupLogEntity,map);
+            baseBusiness.backUpKtable(backupLogEntity,strategyVo,resultT);
         }
         if(null!=backupLogEntity.getVTableName()){
             String vfileName=backupLogEntity.getParentId()+ "--" + backupLogEntity.getVTableName()+ "--" + backupTime+"--"+backupLogEntity.getDataClassId();
-            map.put("vfileName",vfileName);
-            xuguBusiness.backUpVtable(backupLogEntity,map);
+            strategyVo.setVfileName(vfileName);
+            baseBusiness.backUpVtable(backupLogEntity,strategyVo,resultT);
         }
+        strategyVo.setTempZipPath(strategyVo.getTempPtah()+".zip");
+        /*****========5.压缩备份文件  ============***/
+        ZipUtils.doCompress(strategyVo.getTempPtah(),strategyVo.getTempZipPath(),resultT);
+        FileUtil.delFile(new File(strategyVo.getTempPtah()));
+
 
 
 
@@ -183,22 +213,22 @@ public class BackupHandler implements BaseHandler {
 
     }
 
-    public BackupVo calculateBackupTime(BackupEntity backupEntity,long backupTime){
+    public BackupVo calculateBackupTime(BackupEntity backupEntity,long backupTime,ResultT<String> resultT){
         ReplaceVo replaceVo=new ReplaceVo();
         replaceVo.setMsg(backupEntity.getConditions());
         replaceVo.setDatabaseId(backupEntity.getParentId());
         replaceVo.setDataClassId(backupEntity.getDataClassId());
         replaceVo.setBackupTime(backupTime);
-        ExtractMessage.getIndexOf(replaceVo);
-        Map<String,Long> map=this.calculateMistiming(replaceVo.getTimeSet(),backupTime);
+        ExtractMessage.getIndexOf(replaceVo,resultT);
+        Map<String,Long> map=this.calculateMistiming(replaceVo.getTimeSet(),backupTime,resultT);
         BackupVo backupVo=new BackupVo();
         backupVo.setBackupTime(map.get("backupTime"));
         backupVo.setMistiming(map.get("mistiming"));
         backupVo.setConditions(replaceVo.getMsg());
         replaceVo.setMsg(backupEntity.getSecondConditions());
-        ExtractMessage.getIndexOf(replaceVo);
+        ExtractMessage.getIndexOf(replaceVo,resultT);
         if(backupVo.getMistiming()>0){
-            Map<String,Long> mapHis=this.calculateMistiming(replaceVo.getTimeSet(),backupTime);
+            Map<String,Long> mapHis=this.calculateMistiming(replaceVo.getTimeSet(),backupTime,resultT);
             backupVo.setBackupTimeHis(mapHis.get("backupTime"));
             backupVo.setSecondConditions(replaceVo.getMsg());
         }
@@ -207,7 +237,7 @@ public class BackupHandler implements BaseHandler {
         return backupVo;
     }
 
-    public Map<String,Long>  calculateMistiming(Set<String> timeSet,long deafulBackupTime){
+    public Map<String,Long>  calculateMistiming(Set<String> timeSet,long deafulBackupTime,ResultT<String> resultT){
         Map<String,Long> map=new HashMap<>();
         DateFormat format= new SimpleDateFormat("yyyyMMddHHmm");
         long mistiming=0;
@@ -239,8 +269,12 @@ public class BackupHandler implements BaseHandler {
         return map;
 
     }
+    public void calculateFileName(){
+        //aa--bb--\d{2}--\w[a-z0-9]*.[1-9]\d*.zip
 
-    public BackupLogEntity findMaxBackupTime(String jobId){
+    }
+
+    public BackupLogEntity findMaxBackupTime(String jobId,ResultT<String> resultT){
         PageHelper.startPage(1,1);
         List<BackupLogEntity> backupLogEntityList=backupLogMapper.findMaxBackupTime(jobId);
         if(backupLogEntityList!=null&& backupLogEntityList.size()>0){
@@ -249,7 +283,7 @@ public class BackupHandler implements BaseHandler {
         return null;
 
     }
-    public BackupLogEntity findByJobId(BackupLogEntity backupLogEntity){
+    public BackupLogEntity findByJobId(BackupLogEntity backupLogEntity,ResultT<String> resultT){
         PageHelper.startPage(1,1);
         List<BackupLogEntity> backupLogEntityList=backupLogMapper.findByJobId(backupLogEntity);
         if(backupLogEntityList!=null&& backupLogEntityList.size()>0){
@@ -258,5 +292,7 @@ public class BackupHandler implements BaseHandler {
         return null;
 
     }
+
+
 
 }
