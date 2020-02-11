@@ -29,8 +29,24 @@ public class ImportData {
     private ShardingDao shardingDao;
     @Autowired
     private DatumTypeInfoDao datumTypeInfoDao;
+    @Autowired
+    private LogicDefineDao logicDefineDao;
+    @Autowired
+    private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseDao databaseDao;
 
-    public void importData1() {
+
+    public void implAll(){
+//        importDataClassData();
+        importDataClassLogicData();
+        importDatumData();
+        impLogicDefine();
+        importDatabaseData();
+    }
+
+
+    public void importDataClassData() {
         String sql = "select * from DMIN_DATA_CLASS_TABLE";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
@@ -62,7 +78,7 @@ public class ImportData {
         }
     }
 
-    public void importData() {
+    public void importDataClassLogicData() {
         String sql = "select * from DMIN_DATA_CLASS_LOGIC a,DMIN_DATA_DL_PHYSICS b where a.CLASS_LOGIC_ID = b.DL_ID";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
@@ -78,12 +94,12 @@ public class ImportData {
             dc.setDatabaseId(database_id);
             dc.setCreateTime(new Date());
             DataLogicEntity save = dataLogicDao.save(dc);
-            importData(class_logic_id, save);
+            importTableData(class_logic_id, save);
         }
     }
 
     @Transactional
-    public void importData(String oldId, DataLogicEntity newId) {
+    public void importTableData(String oldId, DataLogicEntity newId) {
         String sql = "select * from DMIN_DATA_ID_TABLE where CLASS_LOGIC_ID = '" + oldId + "'";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
@@ -106,7 +122,8 @@ public class ImportData {
             String user_id = toString(m.get("USER_ID"));
             dt.setUserId(user_id);
             String class_logic_id = toString(m.get("CLASS_LOGIC_ID"));
-            dt.setClassLogic(newId);
+            Optional<DataLogicEntity> byId = dataLogicDao.findById(newId.getId());
+            dt.setClassLogic(byId.get());
             dt.setCreateTime(new Date());
             dt = this.dataTableDao.save(dt);
             sql = "select * from DMIN_DATA_TABLE_FIELD where TABLE_ID ='" + table_id + "'";
@@ -241,6 +258,101 @@ public class ImportData {
             dte.setCNettype(toString(m.get("C_NETTYPE")));
             dte.setCCoremetaId(toString(m.get("C_COREMETA_ID")));
             this.datumTypeInfoDao.save(dte);
+        }
+    }
+
+    public void impLogicDefine(){
+        String sql = "select * from DMIN_DB_LOGIC_DEFINE";
+        List<Map> logic = CodeDOM.getList(sql);
+        for (Map<String, Object> m : logic) {
+            sql = "select * from DMIN_DB_LOGIC_PHYSICS where LOGIC_ID = '"+m.get("LOGIC_ID")+"'";
+            LogicDefineEntity dte = new LogicDefineEntity();
+            dte.setLogicName(toString(m.get("LOGIC_NAME")));
+            dte.setLogicDesc(toString(m.get("LOGIC_DESC")));
+            dte.setSerialNumber(Integer.getInteger(toString(m.get("SERIAL_NUMBER"))));
+            String storage_type = toString(m.get("STORAGE_TYPE"));
+            String[] split = storage_type.split(",");
+            Set<LogicStorageTypesEntity> ls = new HashSet<>();
+            for (String s:split ) {
+                LogicStorageTypesEntity lst = new LogicStorageTypesEntity();
+                lst.setStorageType(s);
+                lst.setCreateTime(new Date());
+                ls.add(lst);
+            }
+            dte.setLogicStorageTypesEntityList(ls);
+            Set<LogicDatabaseEntity> lll = new HashSet<>();
+            List<Map> lde = CodeDOM.getList(sql);
+            for (Map mm: lde ) {
+                String database_id = toString(mm.get("DATABASE_ID"));
+                LogicDatabaseEntity ld = new LogicDatabaseEntity();
+                ld.setDatabaseDefineId(database_id);
+                ld.setCreateTime(new Date());
+                lll.add(ld);
+            }
+            dte.setLogicDatabaseEntityList(lll);
+            dte.setCreateTime(new Date());
+            this.logicDefineDao.save(dte);
+        }
+
+    }
+
+    /**
+     * 必须在dataClassLogic同步完成后再同步此表
+     */
+    public void importDatabaseData() {
+        String sql = "select * from DMIN_DB_PHYSICS_DEFINE order by DATABASE_CLASSIFY desc";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String database_id = toString(m.get("DATABASE_ID"));
+            String database_name = toString(m.get("DATABASE_NAME"));
+            String serial_number = toString(m.get("SERIAL_NUMBER"));
+            String database_instance = toString(m.get("DATABASE_INSTANCE"));
+            String database_type = toString(m.get("DATABASE_TYPE"));
+            String database_capacity = toString(m.get("DATABASE_CAPACITY"));
+            String create_time = toString(m.get("CREATE_TIME"));
+            String driver_class_name = toString(m.get("DRIVER_CLASS_NAME"));
+            String display_control = toString(m.get("DISPLAY_CONTROL"));
+            String mainbak_type = toString(m.get("MAINBAK_TYPE"));
+            String check_conn = toString(m.get("CHECK_CONN"));
+            String special_database_name = toString(m.get("SPECIAL_DATABASE_NAME"));
+            String database_schema_name = toString(m.get("DATABASE_SCHEMA_NAME"));
+            String parent_id = toString(m.get("PARENT_ID"));
+            String database_classify = toString(m.get("DATABASE_CLASSIFY"));
+            String user_display_control = toString(m.get("USER_DISPLAY_CONTROL"));
+            String tdb_id = toString(m.get("TDB_ID"));
+            DatabaseEntity de = new DatabaseEntity();
+            DatabaseDefineEntity dd = new DatabaseDefineEntity();
+            if (database_id.equals(parent_id)){
+                sql = "select * from DMIN_DB_PHYSICS_CONNECTION where DATABASE_ID = '"+database_id+"'";
+                Map map = CodeDOM.getList(sql).get(0);
+                dd.setId(database_id);
+                if (com.piesat.common.utils.StringUtils.isNotEmpty(database_capacity))dd.setDatabaseCapacity(Integer.parseInt(database_capacity));
+                dd.setDatabaseInstance(database_instance);
+                dd.setDatabaseIp(toString(map.get("DATABASE_IP")));
+                dd.setDatabasePort(toString(map.get("DATABASE_PORT")));
+                dd.setDatabaseUrl(toString(map.get("DATABASE_URL")));
+                dd.setUpUrl(toString(map.get("UP_URL")));
+                dd.setDriverClassName(driver_class_name);
+                dd.setDatabaseType(database_type);
+                dd.setDatabaseName(database_name);
+                dd.setCheckConn(Integer.parseInt(check_conn));
+                dd.setMainBakType(Integer.parseInt(mainbak_type));
+                dd.setUserDisplayControl(Integer.parseInt(user_display_control));
+                dd.setSerialNumber(Integer.parseInt(serial_number));
+                dd.setCreateTime(new Date());
+                this.databaseDefineDao.save(dd);
+            }
+            DatabaseDefineEntity one = this.databaseDefineDao.getOne(parent_id);
+            de.setTdbId(tdb_id);
+            de.setDatabaseName(database_name);
+            de.setDatabaseClassify(database_classify);
+            de.setSchemaName(database_schema_name);
+            de.setDatabaseName(special_database_name);
+            de.setDatabaseDefine(one);
+            de.setStopUse(false);
+            de.setCreateTime(new Date());
+            DatabaseEntity save = this.databaseDao.save(de);
+            dataLogicDao.updateDatabaseId(save.getId(),database_id);
         }
     }
 }
