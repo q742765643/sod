@@ -10,6 +10,7 @@ import com.piesat.dm.entity.DataClassEntity;
 import com.piesat.dm.entity.DataLogicEntity;
 import com.piesat.dm.entity.DataTableEntity;
 import com.piesat.dm.entity.DatabaseEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.dto.DataClassDto;
 import com.piesat.dm.rpc.mapper.DataClassMapper;
@@ -41,7 +42,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataTableDao dataTableDao;
     @Autowired
     private ShardingDao shardingDao;
-
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -152,7 +154,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId) {
-        return this.dataClassDao.getListBYIn(classIds, StringUtils.isNotBlank(className) ? "%" + className + "%" : null, StringUtils.isNotBlank(dDataId) ? "%" + dDataId + "%" : null);
+        return this.mybatisQueryMapper.getDataClassListBYIn(classIds, StringUtils.isNotBlank(className) ? "%" + className + "%" : null, StringUtils.isNotBlank(dDataId) ? "%" + dDataId + "%" : null);
     }
 
     @Override
