@@ -53,6 +53,7 @@ module.exports = {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
         }
       },
+      // 崔文慧
       [process.env.VUE_APP_DM]: {
         target: `http://10.40.17.36:1221`,
         changeOrigin: true,
@@ -60,6 +61,7 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
+      // 姜海峰
       [process.env.VUE_APP_SERVER_API]: {
         target: `http://10.28.104.159:1111`,
         changeOrigin: true,
@@ -74,18 +76,28 @@ module.exports = {
           ["^" + process.env.VUE_APP_DICT]: ""
         }
       },
+      // 韦立国
       [process.env.VUE_APP_DB_API]: {
-        target: `http://10.28.104.152:2345`,
+        target: `http://10.1.6.70:2345`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DB_API]: ""
         }
       },
+      //王亚娟
       [process.env.VUE_APP_SYNC]: {
-        target: `http://10.28.104.199:1237`,
+        target: `http://10.1.6.74:1237`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYNC]: ""
+        }
+      },
+      // 吴磊
+      [process.env.VUE_APP_WLEI]: {
+        target: `http://g2904p3425.qicp.vip/`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_LEI]: ""
         }
       }
     },

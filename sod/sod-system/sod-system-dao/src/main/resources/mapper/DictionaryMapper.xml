@@ -26,12 +26,12 @@
 		where
 			t1.flag = 'D'
 		<if test="keyCol != null and keyCol != ''">
-			and upper(key_col) like upper('%'||#{keyCol}||'%')
+			and upper(t1.key_col) like upper('%'||#{keyCol}||'%')
 		</if>
 		<if test="type != null and type != ''">
-			and type = #{type}
+			and t1.type = #{type}
 		</if>
-		order by serial_number asc 
+		order by t1.serial_number asc 
     </select>
     <!-- 获取最大type -->
     <select id="selectMaxType" resultType ="java.lang.Integer">

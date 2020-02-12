@@ -26,7 +26,7 @@ public class ImportDataController {
     @PostMapping(value = "/import")
     public ResultT save() {
         try {
-//            this.importData.importDatumData();
+            this.importData.implAll();
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

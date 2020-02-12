@@ -183,7 +183,8 @@
     </div>
     <el-dialog width="30%" title="信息" :visible.sync="innerVisible" append-to-body>
       <div class="ipDialog">
-        <el-form :model="ipArryForm" label-width="30px" ref="ipform">
+        <el-alert title="范例(指定IP:192.168.1.1;IP段：192.168.1.%)" type="info" :closable="false"></el-alert>
+        <el-form :model="ipArryForm" label-width="30px" ref="ipform" style="margin-top:10px;">
           <el-form-item
             v-for="(domain,index) in ipArryForm.domains"
             :key="domain.key"
@@ -204,6 +205,7 @@
 </template>
 
 <script>
+import { addTable } from "@/api/authorityAudit/DBaccount";
 export default {
   name: "handleAccountDialog",
   props: {
@@ -347,6 +349,13 @@ export default {
       this.innerVisible = false;
     },
     iptrueDialog(formName) {
+      console.log(this.ipArryForm.domains);
+      let ips = [];
+      let arrys = this.ipArryForm.domains;
+      arrys.forEach(element => {
+        ips.push(element.value);
+      });
+      this.msgFormDialog.databaseup_IP = ips.join(",");
       this.$refs[formName].resetFields();
       this.innerVisible = false;
     },

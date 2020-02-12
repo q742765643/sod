@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.DataLogicDao;
 import com.piesat.dm.entity.DataLogicEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.mapper.DataLogicMapper;
@@ -26,6 +27,8 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     private DataLogicDao dataLogicDao;
     @Autowired
     private DataLogicMapper dataLogicMapper;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
 
     @Override
@@ -55,9 +58,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
 
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
-        String sql = "SELECT A.*,B.D_DATA_ID,B.CLASS_NAME,B.META_DATA_NAME FROM T_SOD_DATA_LOGIC A LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID AND A.DATABASE_ID = '" + databaseId + "'";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        return list;
+        return this.mybatisQueryMapper.getDataLogicByDatabaseId(databaseId);
     }
 
     @Override
@@ -70,6 +71,12 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     @Override
     public void deleteByDataClassId(String dataClassId) {
         this.dataLogicDao.deleteByDataClassId(dataClassId);
+    }
+
+    @Override
+    public List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto) {
+        List<DataLogicEntity> byDataClassIdAndLogicFlagAndStorageType = dataLogicDao.findByDataClassIdAndLogicFlagAndStorageType(dataLogicDto.getDataClassId(), dataLogicDto.getLogicFlag(), dataLogicDto.getStorageType());
+        return this.dataLogicMapper.toDto(byDataClassIdAndLogicFlagAndStorageType);
     }
 
     @Override

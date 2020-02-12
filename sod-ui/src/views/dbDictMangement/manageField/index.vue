@@ -16,12 +16,12 @@
           <el-tree
             class="el-tree"
             :highlight-current="highlight"
-            node-key="type"
+            node-key="groupId"
             :data="treeData"
             :props="defaultProps"
-            :default-expanded-keys="expandedKeys"
             @node-click="handleNodeClick"
             ref="elTree"
+            :render-content="renderContent"
           ></el-tree>
         </el-scrollbar>
       </el-aside>
@@ -80,8 +80,15 @@
   </div>
 </template>
 <script>
-import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
-import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
+import handleTree from "@/views/dbDictMangement/manageField/handleTree";
+import handleDict from "@/views/dbDictMangement/manageField/handleDict";
+
+import {
+  findAllManageGroup,
+  findManageFieldByPk,
+  delManageGroup
+} from "@/api/dbDictMangement/manageField";
+
 //分类树
 export default {
   components: {
@@ -92,16 +99,11 @@ export default {
     return {
       highlight: true,
       treeData: [],
-      // defaultProps: {
-      //   children: "children",
-      //   label: "key_col"
-      // },
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "groupName"
       },
       checkNode: {}, //选中高亮的节点
-      expandedKeys: [], //展开的节点
       // 弹窗 树
       dialogTitle: "",
       TreeDialog: false,
@@ -110,7 +112,7 @@ export default {
       tableData: [],
       total: 0,
       queryParams: {
-        db_ele_code: "",
+        id: "",
         pageNum: 1,
         pageSize: 10
       },
@@ -119,8 +121,40 @@ export default {
       handleDictObj: {}
     };
   },
-  created() {},
+  async created() {
+    await this.getTreeData();
+  },
   methods: {
+    // 查询字段分组
+    async getTreeData() {
+      await findAllManageGroup().then(res => {
+        res.success
+          ? (this.treeData = res.data)
+          : this.$message({
+              type: "error",
+              message: res.msg
+            });
+      });
+      this.$refs.elTree.setCurrentKey(this.treeData[0].groupId);
+      this.checkNode = this.treeData[0];
+      this.queryParams.id = this.treeData[0].groupId;
+      // this.handleQuery();
+    },
+    //格式化tree
+    renderContent(h, { node, data, store }) {
+      return (
+        <span class="custom-tree-node treeItem">
+          <i class="el-icon-menu"></i>
+          <span style="margin-left:5px;">{node.label}</span>
+        </span>
+      );
+    },
+    //树点击查询
+    handleNodeClick(node) {
+      this.queryParams.id = node.groupId;
+      this.checkNode = node;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -131,10 +165,18 @@ export default {
       this.dialogTitle = "添加管理字段分组";
       this.TreeDialog = true;
     },
-    editType() {},
+    editType() {
+      if (!this.checkNode.groupId) {
+        this.$message({ message: "请选中需要编辑的数据!", type: "error" });
+        return;
+      }
+      this.dialogTitle = "编辑管理字段分组";
+      this.handleTreeObj = this.checkNode;
+      this.TreeDialog = true;
+    },
     deleteAlert() {
-      if (!this.checkNode.id) {
-        this.$message({ message: "请选中需要删除的数据!", type: "warning" });
+      if (!this.checkNode.groupId) {
+        this.$message({ message: "请选中需要删除的数据!", type: "error" });
         return;
       }
       this.$confirm("数据和类型都会被删除，确认删除", "提示", {
@@ -143,20 +185,30 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.rowData = this.checkNode;
-          this.deleteFun();
+          delManageGroup({ groupId: this.queryParams.id }).then(res => {
+            this.getTreeData();
+          });
         })
         .catch(() => {}); //一定别忘了这个
     },
     showSearch() {},
-    handleNodeClick() {},
-    cancelDialog(msg) {
-      if (!msg) {
-        this.TreeDialog = false;
-        this.DictDialog = false;
+    async cancelDialog(msg) {
+      if (msg == "Tree") {
+        await this.getTreeData();
+      } else if (msg == "File") {
       }
+      this.TreeDialog = false;
+      this.DictDialog = false;
     },
-    handleQuery() {},
+    handleQuery() {
+      this.loading = true;
+      console.log(this.queryParams);
+      findManageFieldByPk(this.queryParams).then(res => {
+        this.tableData = res.data.pageData;
+        this.total = res.data.totalCount;
+        this.loading = false;
+      });
+    },
     addRow() {
       this.dialogTitle = "新增字典";
       this.DictDialog = true;
