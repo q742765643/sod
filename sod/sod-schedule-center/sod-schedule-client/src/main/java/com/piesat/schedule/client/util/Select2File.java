@@ -103,6 +103,8 @@ public class Select2File {
         } catch (Exception e) {
             throw e;
         } finally {
+            DataSourceContextHolder.clearDataSource();
+
             if (pre != null) {
                 pre.close();
             }

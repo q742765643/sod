@@ -1,9 +1,14 @@
 package com.piesat.schedule.client.business;
 
 import com.piesat.schedule.client.util.Select2File;
+import com.piesat.schedule.client.util.ZipUtils;
+import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
+import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.util.ResultT;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -11,29 +16,44 @@ import java.io.File;
  * @author: zzj
  * @create: 2020-02-10 09:13
  **/
-public class XuguBusiness {
-    public void backUpKtable(BackupLogEntity backupLogEntity,String conditions)  {
+public class XuguBusiness extends BaseBusiness{
+    @Override
+    public void backUpKtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT)  {
         StringBuilder sql=new StringBuilder();
-        sql.append("select * from ").append(backupLogEntity.getTableName()).append(" where ").append(conditions);
+        sql.append("select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions());
         Select2File select2File=new Select2File();
-        String tempPath="/zzj/CMADASS/"+backupLogEntity.getFileName();
-        if(!new File(tempPath).exists()){
-            new File(tempPath).mkdirs();
-        }
-        tempPath=tempPath+"/"+backupLogEntity.getFileName()+".exp";
+
+        String tempFilePath=strategyVo.getTempPtah()+"/"+backupLogEntity.getFileName()+".exp";
         try {
-            select2File.expparttab2(backupLogEntity.getTableName(),tempPath,sql,backupLogEntity.getParentId());
+            select2File.expparttab2(backupLogEntity.getTableName(),tempFilePath,sql,backupLogEntity.getParentId());
+            strategyVo.setKfilePath(tempFilePath);
+            ExpMetadata expMetadata=new ExpMetadata();
+            File tempFile=new File(tempFilePath);
+            String index=expMetadata.expData(tempFile.getName(),backupLogEntity.getTableName(),sql.toString(),backupLogEntity.getParentId());
+            ZipUtils.writetxt(strategyVo.getIndexPath(),index,resultT);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-    public void backUpVtable(BackupLogEntity backupLogEntity,String conditions){
+    @Override
+    public void backUpVtable(BackupLogEntity backupLogEntity,StrategyVo strategyVo,ResultT<String> resultT){
         StringBuilder sql=new StringBuilder();
         sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a inner join");
-        sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" ").append(conditions).append(") b");
-        sql.append(" where a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
-
+        sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
+        sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
+        Select2File select2File=new Select2File();
+        String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".exp";
+        try {
+            select2File.expparttab2(backupLogEntity.getVTableName(),tempFilePath,sql,backupLogEntity.getParentId());
+            strategyVo.setVfilePath(tempFilePath);
+            File tempFile=new File(tempFilePath);
+            ExpMetadata expMetadata=new ExpMetadata();
+            String index=expMetadata.expData(tempFile.getName(),backupLogEntity.getVTableName(),sql.toString(),backupLogEntity.getParentId());
+            ZipUtils.writetxt(strategyVo.getIndexPath(),index,resultT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

@@ -4,7 +4,6 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.TableIndexDto;
 import com.piesat.util.constant.GrpcConstant;
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;

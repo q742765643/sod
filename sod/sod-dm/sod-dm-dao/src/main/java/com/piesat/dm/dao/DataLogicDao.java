@@ -19,4 +19,6 @@ public interface DataLogicDao extends BaseDao<DataLogicEntity> {
     void deleteByDataClassId(String dataClassId);
 
     List<DataLogicEntity> findByDataClassId(String dataClassId);
+
+    List<DataLogicEntity> findByDataClassIdAndLogicFlagAndStorageType(String dataClassId, String logicFlag, String storageType);
 }

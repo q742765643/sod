@@ -32,6 +32,12 @@
         <result column="TABLE_NAME" property="tableName" />
         <result column="V_TABLE_NAME" property="vTableName" />
         <result column="BACKUP_TIME" property="backupTime" />
+        <result column="DATABASE_TYPE" property="databaseType" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="FILE_NAME" property="fileName" />
+        <result column="FOREIGN_KEY" property="foreignKey" />
+        <result column="IS_END" property="isEnd" />
+
     </resultMap>
     <sql id="Base_Column_List">
         <!--
@@ -51,7 +57,13 @@
         b.STORAGE_DIRECTORY,
         b.TABLE_NAME,
         b.V_TABLE_NAME,
-        b.BACKUP_TIME
+        b.BACKUP_TIME,
+        b.DATABASE_TYPE,
+        b.PARENT_ID,
+        b.FILE_NAME,
+        b.FOREIGN_KEY,
+        b.IS_END
+
     </sql>
 
     <select id="findMaxBackupTime"  resultMap="BaseResultMap">
@@ -62,7 +74,23 @@
         select
         <include refid="Base_Column_List" />
         from T_SOD_JOB_INFO_LOG a,T_SOD_JOB_BACKUP_INFO_LOG b where
-        a.ID=b.ID  AND a.JOB_ID = #{jobId,jdbcType=VARCHAR} order by  b.BACKUP_TIME desc limit 0,1
+        a.ID=b.ID  AND a.JOB_ID = #{jobId,jdbcType=VARCHAR} order by  b.BACKUP_TIME desc
+    </select>
+    <select id="findByJobId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from T_SOD_JOB_INFO_LOG a,T_SOD_JOB_BACKUP_INFO_LOG b where
+        a.ID=b.ID  AND a.JOB_ID = #{jobId,jdbcType=VARCHAR}
+        <if test="databaseId != null and databaseId != ''">
+            AND DATABASE_ID = #{databaseId}
+        </if>
+        <if test="dataClassId != null and dataClassId != ''">
+            AND DATA_CLASS_ID = #{dataClassId}
+        </if>
+        <if test="backupTime != null and backupTime != ''">
+            AND BACKUP_TIME = #{backupTime}
+        </if>
+        order by  b.BACKUP_TIME desc
     </select>
 
 </mapper>
