@@ -154,6 +154,7 @@ public class BackupHandler implements BaseHandler {
         replaceVo.setMsg(backupEntity.getStorageDirectory() + "/{databaseId}/{dataClassId}/{yyyy}/{yyyy-MM}");
         replaceVo.setDatabaseId(backupEntity.getParentId());
         replaceVo.setDataClassId(backupEntity.getDataClassId());
+        replaceVo.setDdataId(backupEntity.getDdataId());
         replaceVo.setBackupTime(backupLogEntity.getBackupTime());
         ExtractMessage.getIndexOf(replaceVo, resultT);
         backupLogEntity.setId(null);
@@ -303,6 +304,7 @@ public class BackupHandler implements BaseHandler {
         replaceVo.setMsg(backupEntity.getConditions());
         replaceVo.setDatabaseId(backupEntity.getParentId());
         replaceVo.setDataClassId(backupEntity.getDataClassId());
+        replaceVo.setDdataId(backupEntity.getDdataId());
         replaceVo.setBackupTime(backupTime);
         ExtractMessage.getIndexOf(replaceVo, resultT);
         Map<String, Long> map = this.calculateMistiming(replaceVo.getTimeSet(), backupTime, resultT);

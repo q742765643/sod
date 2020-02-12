@@ -45,6 +45,8 @@ public class ExtractMessage {
                         msg = msg.replace(s, replaceVo.getDatabaseId());
                     } else if (s.toUpperCase().indexOf("DATACLASSID") != -1) {
                         msg = msg.replace(s, replaceVo.getDataClassId());
+                    } else if (s.toUpperCase().indexOf("DDATAID") != -1) {
+                        msg = msg.replace(s, replaceVo.getDdataId());
                     } else if (s.toUpperCase().indexOf("YYYY") != -1) {
                         String date = format.format(new Date(replaceVo.getBackupTime()));
                         String time="";
