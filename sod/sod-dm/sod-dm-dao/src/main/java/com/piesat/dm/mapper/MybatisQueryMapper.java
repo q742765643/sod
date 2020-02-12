@@ -16,4 +16,7 @@ import java.util.Map;
 public interface MybatisQueryMapper {
     List<Map<String, Object>> getDataClassListBYIn(@Param("classIds")List<String> classIds, @Param("className")String className, @Param("dDataId")String dDataId);
     List<Map<String, Object>> getDataLogicByDatabaseId(String databaseId);
+
+    List<Map<String, Object>> selectStorageConfigurationPageList(@Param("map")Map<String,String> map);
+    void updateStorageConfigurationStatus(@Param("id")String id, @Param("column")String column, @Param("value")String value);
 }
