@@ -5,6 +5,8 @@ import com.piesat.util.ResultT;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @program: sod
@@ -48,6 +50,15 @@ public class FileUtil {
             }
         }
         return file.delete();
+    }
+    public static void delFileList(List<String> fileList){
+        for(String f:fileList){
+           File file=new File(f);
+           if(file.exists()){
+               file.delete();
+           }
+        }
+
     }
 }
 

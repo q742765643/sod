@@ -101,7 +101,7 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		if(null == type) type=0;
 		
 		DictionaryEntity de = dictionaryMapstruct.toEntity(dictionaryDto);
-		de.setType(type++);
+		de.setType(++type);
 		
 		dictionaryDao.save(de);
 	}
