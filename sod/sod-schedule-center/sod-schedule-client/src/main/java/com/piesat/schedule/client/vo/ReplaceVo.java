@@ -15,6 +15,7 @@ import java.util.Set;
 public class ReplaceVo {
     private String databaseId;
     private String dataClassId;
+    private String ddataId;
     private long backupTime;
     private String msg;
     private Set timeSet;

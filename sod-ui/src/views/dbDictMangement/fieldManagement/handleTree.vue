@@ -59,7 +59,18 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           addType(this.ruleForm).then(res => {
-            this.$emit("cancelDialog", "T");
+            if (res.code == "200") {
+              this.$message({
+                type: "success",
+                message: "新增成功"
+              });
+              this.$emit("cancelDialog", "Tree");
+            } else {
+              this.$message({
+                type: "error",
+                message: "新增失败"
+              });
+            }
           });
         }
       });
