@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name="T_SOD_JOB_INFO_LOG")
-@Inheritance(strategy= InheritanceType.JOINED)
+@Inheritance(strategy= InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name="type")
 public class JobInfoLogEntity extends BaseEntity{
     @Column(name="job_id", length=50)
@@ -34,8 +34,6 @@ public class JobInfoLogEntity extends BaseEntity{
     private String handleMsg;
     @Column(name="elapsed_time")
     private long elapsedTime;
-    @Transient
-    private String type;
 
 
 }

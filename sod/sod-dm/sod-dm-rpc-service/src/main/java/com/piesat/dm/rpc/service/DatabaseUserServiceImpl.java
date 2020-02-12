@@ -2,6 +2,11 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.api.impl.Cassandra;
+import com.piesat.dm.core.api.impl.Gbase8a;
+import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.DatabaseDao;
 import com.piesat.dm.dao.DatabaseDefineDao;
 import com.piesat.dm.dao.DatabaseUserDao;
@@ -32,6 +37,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private DatabaseDao databaseDao;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseInfo databaseInfo;
 
 
     @Override
@@ -75,24 +82,49 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         try{
             //根据ID获取旧的申请信息
             DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
-
-            /**为申请的IP授权**/
             //待授权Id
             String[] needEmpowerIdArr = databaseUserDto.getDatabaseUpId().split(",");
             List<String> needEmpowerIdist = Arrays.asList(needEmpowerIdArr);
+            String[] haveEmpowerIdArr = oldDatabaseUserEntity.getDatabaseUpId().split(",");
+            List<String> haveEmpowerIdist = Arrays.asList(haveEmpowerIdArr);
             //非首次审核通过，授权的id中去掉以前的id
             if(oldDatabaseUserEntity.getExamineStatus().equals("1")){
-                String[] haveEmpowerIdArr = oldDatabaseUserEntity.getDatabaseUpId().split(",");
-                needEmpowerIdist.removeAll(Arrays.asList(haveEmpowerIdArr));
+                needEmpowerIdist.removeAll(haveEmpowerIdist);
             }
+
+            /**为申请的IP授权**/
             //待授权IP
             String[] needEmpowerIpArr = databaseUserDto.getDatabaseUpIp().split(";");
             for(String databaseId : needEmpowerIdist){
-                DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
-                DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
-                Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
-                //获取任意登录账号
+                DatabaseDcl databaseVO = getDatabase(databaseId);
+                if(databaseVO!=null){
+                    databaseVO.addUser(databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),needEmpowerIpArr);
+                    databaseVO.closeConnect();
+                }
+            }
 
+            /**为已有账号修改密码**/
+            if(oldDatabaseUserEntity.getExamineStatus().equals("1")){
+                needEmpowerIdist.addAll(haveEmpowerIdist);
+            }
+            for(String databaseId : needEmpowerIdist){
+                DatabaseDcl databaseVO = getDatabase(databaseId);
+                if(databaseVO!=null){
+                    databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword());
+                    databaseVO.closeConnect();
+                }
+            }
+
+            /**删除被撤销的数据库**/
+            haveEmpowerIdist.removeAll(needEmpowerIdist);
+            for(String databaseId : haveEmpowerIdist){
+                DatabaseDcl databaseVO = getDatabase(databaseId);
+                if(databaseVO!=null){
+                    for(String ip : needEmpowerIpArr){
+                        databaseVO.deleteUser(databaseUserDto.getDatabaseUpId(),ip);
+                        databaseVO.closeConnect();
+                    }
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -100,4 +132,40 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return false;
     }
 
+    /**
+     * @param databaseId
+     * @return
+     */
+    private DatabaseDcl getDatabase(String databaseId){
+        DatabaseDcl databaseVO = null;
+        try{
+            DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
+            DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
+            Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
+            //访问路径、账号、密码
+            String url = databaseDefineEntity.getDatabaseUrl();
+            String username = null;
+            String password = null;
+            if(databaseAdministratorSet!=null){
+                //获取任意登录账号
+                DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
+                username = databaseAdministratorEntity.getUserName();
+                password = databaseAdministratorEntity.getPassWord();
+
+                //判断是什么数据库
+                if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())){
+                    databaseVO = new Xugu(url,username,password);
+                }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())){
+                    databaseVO = new Gbase8a(url,username,password);
+                }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())){
+                    databaseVO = new Cassandra(databaseDefineEntity.getDatabaseIp(),
+                            Integer.parseInt(databaseDefineEntity.getDatabasePort()),
+                            username,password,databaseEntity.getSchemaName());
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return databaseVO;
+    }
 }

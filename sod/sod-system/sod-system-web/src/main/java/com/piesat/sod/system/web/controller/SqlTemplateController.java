@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
  */
 
 @RestController
-@RequestMapping(value="/restApi/sqlTemplate")
+@RequestMapping(value="/sqlTemplate")
 @Api(value="SQL模板管理Controller",tags= {"sql模板管理相关接口"})
 public class SqlTemplateController {
 

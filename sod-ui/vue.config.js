@@ -40,7 +40,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.1.6.117:8003`,
+        target: `http://1.119.5.177:8003`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
