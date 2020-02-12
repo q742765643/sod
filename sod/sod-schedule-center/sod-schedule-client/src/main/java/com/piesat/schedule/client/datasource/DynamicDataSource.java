@@ -64,7 +64,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     private DataSource getDataSource(String dataSourceName) {
         String driverClassName="com.xugu.cloudjdbc.Driver";
         String userName="USR_SOD";
-        String url="jdbc:xugu://10.1.6.117:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false";
+        String url="jdbc:xugu://1.119.5.177:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false";
         String password="Pnmic_qwe123";
         DataSource dataSource = this.createDataSource(
                 driverClassName, url, userName, password);
