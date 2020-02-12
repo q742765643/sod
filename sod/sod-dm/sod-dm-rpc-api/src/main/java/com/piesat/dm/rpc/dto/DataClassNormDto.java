@@ -5,22 +5,24 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 区域信息
+ * 规范信息
  *
  * @author cwh
- * @date 2020年 02月10日 14:17:36
+ * @date 2020年 02月12日 16:56:04
  */
 @Data
-public class GridAreaDto {
+public class DataClassNormDto {
     private static final long serialVersionUID = 1L;
 
     private String id;
 
-    private Integer dataServiceId;
+    private String dirNorm;
 
-    private Integer areaId;
+    private Boolean isForecast;
 
-    private Integer areaRegionDesc;
+    private String property;
+
+    private int variable;
 
     private Date createTime;
 

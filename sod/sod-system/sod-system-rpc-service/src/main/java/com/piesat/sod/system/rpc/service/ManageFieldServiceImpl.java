@@ -139,13 +139,13 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	@Transactional
 	public void addManageField(ManageFieldDto manageFieldDto) throws Exception {
 		ManageFieldEntity mfe = manageFieldMapstruct.toEntity(manageFieldDto);
-		manageFieldDao.save(mfe);
+		mfe = manageFieldDao.save(mfe);
 		
 		//保存与分组关联表
 		String[] groupIds = manageFieldDto.getGroupId().split(",");
 		for(String groupId:groupIds) {
 			ManageFieldGroupEntity mfge = new ManageFieldGroupEntity();
-			mfge.setFieldId(manageFieldDto.getId());
+			mfge.setFieldId(mfe.getId());
 			mfge.setGroupId(groupId);
 			manageFieldGroupDao.save(mfge);
 		}

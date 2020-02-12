@@ -11,16 +11,21 @@ import java.util.Date;
  * @date 2020年 02月10日 14:17:36
  */
 @Data
-public class GridAreaDto {
+public class DataServerBaseInfoDto {
     private static final long serialVersionUID = 1L;
 
     private String id;
 
-    private Integer dataServiceId;
-
-    private Integer areaId;
-
-    private Integer areaRegionDesc;
+    private String dataCLassId;
+    private String eleField;
+    private String regionField;
+    private String region;
+    private String gribVersion;
+    private String fieldType;//场类型
+    private String processType;
+    private String dataTime;
+    private String timeUnit;
+    private String spatialResolution;
 
     private Date createTime;
 
