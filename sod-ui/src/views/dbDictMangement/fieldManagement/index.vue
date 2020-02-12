@@ -52,12 +52,7 @@
             <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
           </el-col>
         </el-row>
-        <el-table
-          v-loading="loading"
-          :data="tableData"
-          highlight-current-row
-          @current-change="handleSelectionChange"
-        >
+        <el-table :data="tableData" highlight-current-row @current-change="handleSelectionChange">
           <el-table-column type="index" width="50" :index="table_index"></el-table-column>
           <el-table-column width="50">
             <template slot-scope="scope">
@@ -76,7 +71,7 @@
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+          @pagination="handleQuery"
         />
       </el-main>
     </el-container>
@@ -100,7 +95,8 @@
 //接口
 import {
   findMenu,
-  getTableData
+  getTableData,
+  deleteByIds
 } from "@/api/dbDictMangement/fieldManagement/index";
 
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
@@ -156,11 +152,15 @@ export default {
               message: res.msg
             });
       });
-      this.$refs.elTree.setCurrentKey(this.treeData[0].id);
-      this.queryParams.menu = this.treeData[0].menu;
-      this.queryParams.type = this.treeData[0].type;
-      this.indexNodeId = this.treeData[0].id;
-      this.handleQuery();
+      if (this.treeData.length > 0) {
+        this.$refs.elTree.setCurrentKey(this.treeData[0].id);
+        this.queryParams.menu = this.treeData[0].menu;
+        this.queryParams.type = this.treeData[0].type;
+        this.indexNodeId = this.treeData[0].id;
+        this.handleQuery();
+      } else {
+        this.loading = false;
+      }
     },
     //格式化tree
     renderContent(h, { node, data, store }) {
@@ -241,8 +241,7 @@ export default {
     },
     editRow() {},
     deleteRow() {},
-    handleSelectionChange() {},
-    getList() {}
+    handleSelectionChange() {}
   }
 };
 </script>

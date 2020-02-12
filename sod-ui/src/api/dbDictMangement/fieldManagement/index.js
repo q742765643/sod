@@ -17,3 +17,11 @@ export function getTableData(query) {
     params: query
   });
 }
+//查询表格
+export function deleteByIds(query) {
+  return request({
+    url: baseUrl + "/restApi/dicmgn/deleteByIds",
+    method: "get",
+    params: query
+  });
+}

@@ -28,6 +28,13 @@ export function findManageFieldByPk(query) {
     data: query
   })
 }
+export function pageField(query) {
+  return request({
+    url: baseUrl + '/managefield/page',
+    method: 'get',
+    data: query
+  })
+}
 export function delManageGroup(data) {
   return request({
     url: baseUrl + '/managefield/delManageGroup',
@@ -40,5 +47,17 @@ export function addManageField(query) {
     url: baseUrl + "/managefield/addManageField",
     method: "post",
     params: query
+  });
+}
+export function findByType() {
+  return request({
+    url: baseUrl + "/restApi/dicmgn/findByType?type=2",
+    method: "get",
+  });
+}
+export function delManageField() {
+  return request({
+    url: baseUrl + "/restApi/dicmgn/delManageField",
+    method: "DELETE",
   });
 }

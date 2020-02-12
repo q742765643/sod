@@ -28,7 +28,7 @@
       <el-main class="elMain">
         <el-form :model="queryParams" ref="queryForm" :inline="true">
           <el-form-item label="字段编码">
-            <el-input size="small" v-model="queryParams.db_ele_code" placeholder="字段编码"></el-input>
+            <el-input size="small" v-model="queryParams.dbEleCode" placeholder="字段编码"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -52,7 +52,7 @@
           <el-table-column type="index" width="40" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label=" " prop="id" v-if="false"></el-table-column>
-          <el-table-column label="字段编码" prop="db_ele_code"></el-table-column>
+          <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
           <el-table-column label="服务编码" prop="user_ele_code"></el-table-column>
           <el-table-column label="中文名称" prop="db_ele_name"></el-table-column>
           <el-table-column label="字段类型" prop="type"></el-table-column>
@@ -64,7 +64,7 @@
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+          @pagination="handleQuery"
         />
       </el-main>
     </el-container>
@@ -75,7 +75,12 @@
 
     <!-- 弹窗 字典-->
     <el-dialog :title="dialogTitle" :visible.sync="DictDialog">
-      <handleDict v-if="DictDialog" :handleDictObj="handleDictObj" @cancelDialog="cancelDialog"></handleDict>
+      <handleDict
+        v-if="DictDialog"
+        :handleGroup="handleGroup"
+        :handleDictObj="handleDictObj"
+        @cancelDialog="cancelDialog"
+      ></handleDict>
     </el-dialog>
   </div>
 </template>
@@ -86,7 +91,9 @@ import handleDict from "@/views/dbDictMangement/manageField/handleDict";
 import {
   findAllManageGroup,
   findManageFieldByPk,
-  delManageGroup
+  delManageGroup,
+  pageField,
+  delManageField
 } from "@/api/dbDictMangement/manageField";
 
 //分类树
@@ -108,14 +115,18 @@ export default {
       dialogTitle: "",
       TreeDialog: false,
       handleTreeObj: {},
+      handleGroup: [],
       // 表格
       tableData: [],
       total: 0,
       queryParams: {
-        id: "",
+        dbEleCode: "", //字段编码
+        groupId: "", //分组ID
         pageNum: 1,
         pageSize: 10
       },
+      // 选中的行
+      multipleSelection: [],
       // 弹窗 字典
       DictDialog: false,
       handleDictObj: {}
@@ -135,10 +146,13 @@ export default {
               message: res.msg
             });
       });
-      this.$refs.elTree.setCurrentKey(this.treeData[0].groupId);
-      this.checkNode = this.treeData[0];
-      this.queryParams.id = this.treeData[0].groupId;
-      // this.handleQuery();
+      this.handleGroup = this.treeData;
+      if (this.treeData.length > 0) {
+        this.$refs.elTree.setCurrentKey(this.treeData[0].groupId);
+        this.checkNode = this.treeData[0];
+        this.queryParams.groupId = this.treeData[0].groupId;
+        this.handleQuery();
+      }
     },
     //格式化tree
     renderContent(h, { node, data, store }) {
@@ -151,7 +165,7 @@ export default {
     },
     //树点击查询
     handleNodeClick(node) {
-      this.queryParams.id = node.groupId;
+      this.queryParams.groupId = node.groupId;
       this.checkNode = node;
       this.handleQuery();
     },
@@ -163,6 +177,7 @@ export default {
     },
     addType() {
       this.dialogTitle = "添加管理字段分组";
+      this.handleTreeObj = {};
       this.TreeDialog = true;
     },
     editType() {
@@ -185,17 +200,17 @@ export default {
         type: "warning"
       })
         .then(() => {
-          delManageGroup({ groupId: this.queryParams.id }).then(res => {
+          delManageGroup({ groupId: this.queryParams.groupId }).then(res => {
             this.getTreeData();
           });
         })
         .catch(() => {}); //一定别忘了这个
     },
-    showSearch() {},
     async cancelDialog(msg) {
       if (msg == "Tree") {
         await this.getTreeData();
-      } else if (msg == "File") {
+      } else if (msg == "Field") {
+        this.handleQuery();
       }
       this.TreeDialog = false;
       this.DictDialog = false;
@@ -203,7 +218,7 @@ export default {
     handleQuery() {
       this.loading = true;
       console.log(this.queryParams);
-      findManageFieldByPk(this.queryParams).then(res => {
+      pageField(this.queryParams).then(res => {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
         this.loading = false;
@@ -213,10 +228,39 @@ export default {
       this.dialogTitle = "新增字典";
       this.DictDialog = true;
     },
-    editRow() {},
-    deleteRow() {},
-    handleSelectionChange() {},
-    getList() {},
+    editRow() {
+      if (!this.multipleSelection.length != 1) {
+        this.$message({ message: "请选中一条需要编辑的数据!", type: "error" });
+        return;
+      }
+      this.dialogTitle = "编辑管理字段";
+      this.handleDictObj = this.multipleSelection;
+      this.DictDialog = true;
+    },
+    deleteRow() {
+      if (!this.multipleSelection.length == 0) {
+        this.$message({ message: "请选中需要删除的数据!", type: "error" });
+        return;
+      }
+      this.$confirm("确认删除吗", "提示", {
+        cancelButtonText: "取消",
+        confirmButtonText: "确定",
+        type: "warning"
+      })
+        .then(() => {
+          let ids = [];
+          this.multipleSelection.forEach(element => {
+            ids.push(element.id);
+          });
+          delManageField({ ids: ids.join(",") }).then(res => {
+            this.handleQuery();
+          });
+        })
+        .catch(() => {}); //一定别忘了这个
+    },
+    handleSelectionChange() {
+      this.multipleSelection = val;
+    },
     exportData() {
       // let url =
       //   interfaceObj.manageFieldApi_export +
