@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 *
 */
 @RestController
-@RequestMapping(value="/restApi/managefield")
+@RequestMapping(value="/managefield")
 @Api(value="管理字段管理Controller",tags = {"管理字段管理页面相关接口"})
 @Slf4j
 public class ManageFiledController {
@@ -48,7 +48,7 @@ public class ManageFiledController {
 	 * @return
 	 */
 	@RequiresPermissions("restApi:manageField:findAllManageGroup")
-	@ApiOperation(value="获取管理字段分组",notes="管理字段分组获取接口")
+	@ApiOperation(value="获取所有管理字段分组",notes="管理字段分组获取接口")
 	@GetMapping(value="/findAllManageGroup")
 	public ResultT findAllManageGroup() {
 		log.info(">>>>>>>>>>>>>开始获取管理字段分组");
@@ -115,7 +115,7 @@ public class ManageFiledController {
 	 */
 	@RequiresPermissions("restApi:manageField:findManageGroupByPk")
 	@GetMapping(value="/findManageGroupByPk")
-	@ApiOperation(value="查询管理字段分组",notes="查询单条管理字段分组接口")
+	@ApiOperation(value="根据groupId查询管理字段分组",notes="查询单条管理字段分组接口")
 	public ResultT findManageGroupByPk(String groupId) {
 		log.info(">>>>>>>>主键查询管理字段分组");
 		try {
@@ -161,7 +161,7 @@ public class ManageFiledController {
 	 * @return
 	 */
 	@RequiresPermissions("restApi:manageField:page")
-	@ApiOperation(value="管理字段查询接口",notes="管理字段查询接口")
+	@ApiOperation(value="管理字段分页查询接口",notes="管理字段查询接口")
 	@GetMapping(value="/page")
 	public ResultT findPageData(ManageFieldDto manageFieldDto,int pageNum,int pageSize) {
 		log.info(">>>>>>>>>>>>获取管理字段分页数据");
@@ -206,7 +206,7 @@ public class ManageFiledController {
 	 */
 	@RequiresPermissions("restApi:manageField:findManageFieldByPk")
 	@GetMapping(value="/findManageFieldByPk")
-	@ApiOperation(value="查询管理字段分组",notes="查询单条管理字段分组接口")
+	@ApiOperation(value="根据ID查询管理字段",notes="查询单条管理字段分组接口")
 	public ResultT findManageFieldByPk(String id) {
 		log.info(">>>>>>>>主键查询单条管理字段");
 		try {
