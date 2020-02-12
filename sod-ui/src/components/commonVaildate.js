@@ -54,7 +54,30 @@ export function englishAndNumValidation(str) {
   const reg = /[0-9]+[a-zA-Z]+[0-9a-zA-Z]*|[a-zA-Z]+[0-9]+[0-9a-zA-Z]*$/
   return reg.test(str)
 }
-
+/**
+ * 
+ * 不允许输入小写字母和中文，且需以大写字母开头
+ */
+export function codeVer(str) {
+  const reg = /^[_A-Z][^a-z\u4e00-\u9fa5]*$/
+  return reg.test(str)
+}
+/**
+ * 
+ * 验证由中文组成：
+ */
+export function chinese(str) {
+  const reg = /^[()\u4e00-\u9fa5]+$/
+  return reg.test(str)
+}
+/**
+ * 
+ * 验证由大于0正整数组成：
+ */
+export function num(info) {
+  const reg = /^[0-9]+(\.\d+)?$/;;
+  return reg.test(info);
+}
 /**
  * @param {string} str
  * @returns {Boolean}
