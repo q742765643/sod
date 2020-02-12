@@ -1,13 +1,16 @@
 <template>
   <section class="fileHandleDict">
     <el-form :model="ruleForm" ref="ruleForm" :rules="rules" label-width="100px">
-      <el-form-item label="关键字:" prop="key_col">
-        <el-input v-model="ruleForm.key_col" placeholder="请输入关键字"></el-input>
+      <el-form-item label="字段编码:" prop="dbEleCode">
+        <el-input v-model="ruleForm.dbEleCode" placeholder="请输入字段编码"></el-input>
       </el-form-item>
-      <el-form-item label="中文名:">
-        <el-input v-model="ruleForm.name_cn"></el-input>
+      <el-form-item label="服务代码:" prop="userEleCode">
+        <el-input v-model="ruleForm.userEleCode" placeholder="请输入服务代码"></el-input>
       </el-form-item>
-      <el-form-item label="字典类型:">
+      <el-form-item label="中文名:" prop="dbEleName">
+        <el-input v-model="ruleForm.dbEleName"></el-input>
+      </el-form-item>
+      <el-form-item label="字典类型:" prop="type">
         <el-select v-model="ruleForm.type">
           <el-option
             v-for="item in dictTypes"
@@ -17,21 +20,30 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="字典描述:">
-        <el-input v-model="ruleForm.description"></el-input>
-      </el-form-item>
-      <el-form-item label="是否可删:" prop="can_delete">
-        <el-select v-model="ruleForm.can_delete">
+      <el-form-item label="组名称:" prop="dbEleName">
+        <el-select v-model="ruleForm.type">
           <el-option
-            v-for="item in canDeletes"
-            :key="item.key"
-            :label="item.label"
-            :value="item.key"
+            v-for="item in dictTypes"
+            :key="item.type"
+            :label="item.key_col"
+            :value="item.type"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="显示序号:" prop="serial_number">
-        <el-input v-model="ruleForm.serial_number"></el-input>
+      <el-form-item label="字段精度:">
+        <el-input v-model="ruleForm.dataPrecision"></el-input>
+      </el-form-item>
+      <el-form-item label="是否可为空:" prop="is_null">
+        <el-select v-model="ruleForm.is_null">
+          <el-option label="是" value="true"></el-option>
+          <el-option label="否" value="false"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="是否可更新:" prop="is_update">
+        <el-select v-model="ruleForm.is_update">
+          <el-option label="是" value="true"></el-option>
+          <el-option label="否" value="false"></el-option>
+        </el-select>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -42,6 +54,7 @@
 </template>
 
 <script>
+import { addManageField } from "@/api/dbDictMangement/manageField";
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -53,12 +66,7 @@ export default {
   data() {
     return {
       ruleForm: {
-        key_col: "",
-        name_cn: "",
-        type: "",
-        description: "",
-        can_delete: "",
-        serial_number: ""
+        dataPrecision: ""
       },
       dictTypes: [],
       rules: {

@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 数据库访问账户 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
-     <el-form-item label="审核状态" prop="status">
+      <el-form-item label="审核状态" prop="status">
         <el-select
           v-model="queryParams.status"
           placeholder="审核状态"
@@ -20,39 +20,41 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="addCell" icon="el-icon-plus"  v-hasPermi="['DBaccount:role:add']">新增</el-button>
-        <el-button size="small"
-          type="success"
-          icon="el-icon-download"
-          @click="downloadTable"
-        >导出</el-button>
-        
+        <el-button
+          size="small"
+          type="primary"
+          @click="addCell"
+          icon="el-icon-plus"
+          v-hasPermi="['DBaccount:role:add']"
+        >新增</el-button>
+        <el-button size="small" type="success" icon="el-icon-download" @click="downloadTable">导出</el-button>
       </el-form-item>
     </el-form>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column  align="center"
+      <el-table-column
+        align="center"
         prop="databaseup_id"
         label="账户ID"
         width="120px"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column  align="center" prop="userRealname" label="关联用户" width="100px"></el-table-column>
-      <el-table-column  align="center" prop="department" label="机构" width="140px"></el-table-column>
-      <el-table-column  align="center" prop="userPhone" label="联系方式" width="120px"></el-table-column>
-      <el-table-column  align="center" prop="create_time" label="创建时间" width="160px">
+      <el-table-column align="center" prop="userRealname" label="关联用户" width="100px"></el-table-column>
+      <el-table-column align="center" prop="department" label="机构" width="140px"></el-table-column>
+      <el-table-column align="center" prop="userPhone" label="联系方式" width="120px"></el-table-column>
+      <el-table-column align="center" prop="create_time" label="创建时间" width="160px">
         <!-- <template slot-scope="scope">{{scope.row.create_time.split('.')[0]}}</template> -->
       </el-table-column>
-      <el-table-column  align="center" prop="database_name" label="可用数据库"></el-table-column>
-      <el-table-column  align="center" prop="examine_status" label="状态" width="100px">
+      <el-table-column align="center" prop="database_name" label="可用数据库"></el-table-column>
+      <el-table-column align="center" prop="examine_status" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examine_status=='0'">待审核</span>
           <span v-if="scope.row.examine_status=='1'">审核通过</span>
           <el-link v-if="scope.row.examine_status=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
         </template>
       </el-table-column>
-      <el-table-column  align="center" label="操作" class-name="small-padding fixed-width">
+      <el-table-column align="center" label="操作" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.examine_status=='0'"
@@ -80,7 +82,13 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="90%" max-width="1100px" top="5vh">
+    <el-dialog
+      :title="dialogTitle"
+      :visible.sync="handleDialog"
+      width="90%"
+      max-width="1100px"
+      top="5vh"
+    >
       <handleAccount
         v-if="handleDialog"
         :handleObj="handleObj"
@@ -88,12 +96,20 @@
         ref="myHandleServer"
       />
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
+import {
+  listRole,
+  getRole,
+  delRole,
+  addRole,
+  updateRole,
+  exportRole,
+  dataScope,
+  changeRoleStatus
+} from "@/api/system/role";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
   components: {
@@ -101,7 +117,7 @@ export default {
   },
   data() {
     return {
-     // 遮罩层
+      // 遮罩层
       loading: true,
       queryParams: {
         pageNum: 1,
@@ -132,9 +148,11 @@ export default {
     this.getList();
   },
   methods: {
-     // table自增定义方法
+    // table自增定义方法
     table_index(index) {
-      return (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -152,12 +170,12 @@ export default {
         }
       );
     },
-    addCell(){
+    addCell() {
       this.dialogTitle = "新增数据库账户审核";
       this.handleObj = {};
       this.handleDialog = true;
     },
-    downloadTable(){},
+    downloadTable() {},
     //查看原因
     viewReason(row) {
       this.$alert(row.failure_reason, "拒绝原因", {
@@ -174,7 +192,6 @@ export default {
       this.handleDialog = false;
       this.handleObj = {};
     }
-    
   }
 };
 </script>
