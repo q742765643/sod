@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.schedule.client.annotation.HtJson;
-import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.vo.EiSendVo;
 import com.piesat.util.ResultT;
@@ -169,7 +168,6 @@ public class EiSendUtil {
     }
 
     public static void executeSqlException(String parentId, String sql, ResultT<String> resultT) {
-        DataSourceContextHolder.setDataSource(parentId);
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
             DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
@@ -188,7 +186,7 @@ public class EiSendUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DataSourceContextHolder.clearDataSource();
+
         }
 
 
@@ -214,7 +212,6 @@ public class EiSendUtil {
     }
 
     public static void partitionException(String parentId, String partition, ResultT<String> resultT) {
-        DataSourceContextHolder.setDataSource(parentId);
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
             DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
@@ -228,7 +225,6 @@ public class EiSendUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DataSourceContextHolder.clearDataSource();
         }
 
     }
@@ -244,7 +240,6 @@ public class EiSendUtil {
     }
 
     public static void gbaseException(String parentId, String shell, ResultT<String> resultT) {
-        DataSourceContextHolder.setDataSource(parentId);
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
             DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
@@ -259,12 +254,10 @@ public class EiSendUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DataSourceContextHolder.clearDataSource();
         }
     }
 
     public static void xuguException(String parentId, ResultT<String> resultT) {
-        DataSourceContextHolder.setDataSource(parentId);
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
             DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
@@ -283,7 +276,6 @@ public class EiSendUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DataSourceContextHolder.clearDataSource();
         }
 
 
