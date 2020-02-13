@@ -4,6 +4,8 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.LogicDefineDto;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import java.util.List;
 
@@ -15,6 +17,9 @@ import java.util.List;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface LogicDefineService {
+
+    public PageBean selectPageList(PageForm<LogicDefineDto> pageForm);
+
     List<LogicDefineDto> getAllLogicDefine();
 
     LogicDefineDto saveDto(LogicDefineDto logicDefineDto);
@@ -24,4 +29,6 @@ public interface LogicDefineService {
     void delete(String id);
 
     List<LogicDefineDto> all();
+
+    List<LogicDefineDto> findByParam(LogicDefineDto logicDefineDto);
 }

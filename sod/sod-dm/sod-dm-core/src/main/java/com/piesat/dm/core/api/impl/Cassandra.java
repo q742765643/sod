@@ -9,8 +9,7 @@ import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,7 +20,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * @date 2020年 02月04日 16:11:43
  */
 public class Cassandra implements DatabaseDcl {
-    private final String databaseName = "Cassandra";
     private Session instance = null;
     private Cluster cluster = null;
     private Lock lock = new ReentrantLock();
@@ -221,5 +219,22 @@ public class Cassandra implements DatabaseDcl {
             return ResultT.failed(e.getMessage());
         }
         return ResultT.success();
+    }
+
+
+    @Override
+    public ResultT queryData(String schema, String tableName, List<String> column, int row) throws Exception {
+        String columns = String.join(",", column);
+        String sql = "SELECT " + columns + " FROM " + schema + "." + tableName + " limit " + row;
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResultSet rs = instance.execute(sql);
+        for (Row r : rs) {
+            Map<String, Object> rowData = new HashMap<String, Object>();
+            for (int i = 1; i <= column.size(); i++) {
+                rowData.put(column.get(i - 1), r.getObject(i));
+            }
+            list.add(rowData);
+        }
+        return ResultT.success(list);
     }
 }

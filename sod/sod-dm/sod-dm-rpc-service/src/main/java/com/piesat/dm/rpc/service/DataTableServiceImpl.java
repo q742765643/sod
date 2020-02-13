@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.DataTableDao;
 import com.piesat.dm.dao.DatabaseDao;
@@ -11,7 +12,12 @@ import com.piesat.dm.entity.DatabaseEntity;
 import com.piesat.dm.entity.ShardingEntity;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataTableDto;
+import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.dto.SampleData;
 import com.piesat.dm.rpc.mapper.DataTableMapper;
+import com.piesat.dm.rpc.mapper.DatabaseMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,10 +43,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Autowired
     private DatabaseDao databaseDao;
     @Autowired
+    private DatabaseMapper databaseMapper;
+    @Autowired
     private DatabaseSqlService databaseSqlService;
     @Autowired
     private DatabaseInfo databaseInfo;
-
 
     @Override
     public BaseDao<DataTableEntity> getBaseDao() {
@@ -108,5 +115,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         return map;
     }
 
-
+    @Override
+    public ResultT getSampleData(SampleData sampleData) throws Exception {
+        DatabaseEntity databaseEntity = this.databaseDao.findById(sampleData.getDatabaseId()).get();
+        DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
+        DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+        return database.queryData(databaseDto.getSchemaName(), sampleData.getTableName(), sampleData.getColumn(), 10);
+    }
 }

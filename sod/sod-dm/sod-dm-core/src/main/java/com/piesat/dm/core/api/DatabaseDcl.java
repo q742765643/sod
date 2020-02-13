@@ -124,4 +124,6 @@ public interface DatabaseDcl {
      * @return
      */
     ResultT updateAccount(String dataBaseUser, String newPassword) throws Exception;
+
+    ResultT queryData(String schema,String tableName, List<String> column,int row) throws Exception;
 }

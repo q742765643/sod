@@ -3,6 +3,8 @@ package com.piesat.dm.rpc.api;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.DataTableDto;
+import com.piesat.dm.rpc.dto.SampleData;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
@@ -33,5 +35,7 @@ public interface DataTableService {
     int updateById(DataTableDto dataTableDto);
 
     Map<String,String> getSql(String tableId,String databaseId);
+
+    ResultT getSampleData(SampleData sampleData) throws Exception;
 
 }

@@ -4,6 +4,7 @@ import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
+import com.piesat.dm.rpc.dto.SampleData;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -127,6 +128,18 @@ public class DataTableController {
         try {
             List<Map<String, Object>> r = this.dataTableService.getByDatabaseId(databaseId);
             return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询样例数据")
+    @RequiresPermissions("dm:dataTable:sample")
+    @GetMapping(value = "/sample")
+    public ResultT getSampleData(SampleData sampleData){
+        try {
+            return this.dataTableService.getSampleData(sampleData);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
