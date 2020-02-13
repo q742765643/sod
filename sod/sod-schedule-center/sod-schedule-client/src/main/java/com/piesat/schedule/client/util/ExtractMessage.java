@@ -3,12 +3,13 @@ package com.piesat.schedule.client.util;
 import com.piesat.schedule.client.vo.ReplaceVo;
 import com.piesat.schedule.util.DateExpressionEngine;
 import com.piesat.util.ResultT;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,19 +45,21 @@ public class ExtractMessage {
                         msg = msg.replace(s, replaceVo.getDatabaseId());
                     } else if (s.toUpperCase().indexOf("DATACLASSID") != -1) {
                         msg = msg.replace(s, replaceVo.getDataClassId());
+                    } else if (s.toUpperCase().indexOf("DDATAID") != -1) {
+                        msg = msg.replace(s, replaceVo.getDdataId());
                     } else if (s.toUpperCase().indexOf("YYYY") != -1) {
                         String date = format.format(new Date(replaceVo.getBackupTime()));
+                        String time = "";
                         String vlaue = DateExpressionEngine.formatDateExpression("$" + s, date);
-
                         if (s.split(",").length > 1) {
                             String real = s.replace("{", "").replace("}", "").split(",")[0];
                             Date realDate = new SimpleDateFormat(real).parse(vlaue);
+                            if (!vlaue.equals(s.toUpperCase())) {
+                                timeSet.add(realDate.getTime());
+                            }
                             vlaue = format1.format(realDate);
                         }
                         msg = msg.replace(s, vlaue);
-                        if (!vlaue.equals(s.toUpperCase())) {
-                            timeSet.add(vlaue);
-                        }
 
 
                     }
@@ -74,19 +77,15 @@ public class ExtractMessage {
 
     public static void main(String[] args) {
         try {
-            String srcDirPath = "/zzj/git/hthtsod/sod/sod-schedule-center/sod-schedule-client/src/main/java/com/piesat/schedule/client";
-            // 转为UTF-8编码格式源码路径
-            String utf8DirPath = "/zzj/git/hthtsod/fetl";
+            String fileNameEl = "HADB--USR_SOD.DMIN_DATA_BACKUP_TASK----A.0010.0001.M006--\\w[a-z0-9]*.[1-9]\\d*.zip";
+            Pattern pattern = Pattern.compile(fileNameEl);
 
-            // 获取所有java文件
-            Collection<File> javaGbkFileCol = FileUtils.listFiles(new File(srcDirPath), new String[] { "java" }, true);
-
-            for (File javaGbkFile : javaGbkFileCol) {
-                // UTF8格式文件路径
-                //String utf8FilePath = utf8DirPath + javaGbkFile.getAbsolutePath().substring(srcDirPath.length());
-                // 使用GBK读取数据，然后用UTF-8写入数据
-                //FileUtils.writeLines(new File(utf8FilePath), "UTF-8", FileUtils.readLines(javaGbkFile, "GBK"));
+            Matcher m = pattern.matcher("HADB--USR_SOD.DMIN_DATA_BACKUP_TASK--20190414--A.0010.0001.M006--645ededa270cb1baa6653fdccf43197f.1.zip");
+            String str = "";
+            if (m.find()) {
+                str = m.group(1);
             }
+            System.out.println(str);
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();

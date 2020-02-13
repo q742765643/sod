@@ -2,9 +2,13 @@ package com.piesat.schedule.client.util;
 
 import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
+import com.piesat.util.ReturnCodeEnum;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @program: sod
@@ -21,7 +25,8 @@ public class FileUtil {
             }
         } catch (Exception e) {
             resultT.setErrorMessage(OwnException.get(e));
-            e.printStackTrace();
+            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_5_ERROR.getKey());
+            EiSendUtil.fileException(path,resultT);
         }
     }
 
@@ -32,11 +37,23 @@ public class FileUtil {
             }
         } catch (IOException e) {
             resultT.setErrorMessage(OwnException.get(e));
-            e.printStackTrace();
+            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_5_ERROR.getKey());
+            EiSendUtil.fileException(path,resultT);
         }
     }
 
-    public static boolean delFile(File file) {
+    public static void delFile(File file,ResultT<String> resultT) {
+
+        try {
+            delFiles(file);
+            resultT.setSuccessMessage("删除文件{}成功",file.getPath());
+        } catch (Exception e) {
+            resultT.setErrorMessage("删除文件{}失败{}",file.getPath(),OwnException.get(e));
+            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_3_ERROR.getKey());
+            EiSendUtil.fileException(file.getPath(),resultT);
+        }
+    }
+    public static boolean delFiles(File file) {
         if (!file.exists()) {
             return false;
         }
@@ -44,10 +61,38 @@ public class FileUtil {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File f : files) {
-                delFile(f);
+                delFiles(f);
             }
         }
         return file.delete();
+    }
+    public static void delFileList(List<String> fileList,ResultT<String> resultT){
+        for(String f:fileList){
+           File file=new File(f);
+            try {
+                if(file.exists()){
+                    file.delete();
+                }
+                resultT.setSuccessMessage("删除文件{}成功",file.getPath());
+            } catch (Exception e) {
+                resultT.setErrorMessage("删除文件{}失败{}",file.getPath(),OwnException.get(e));
+                resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_3_ERROR.getKey());
+                EiSendUtil.fileException(file.getPath(),resultT);
+            }
+        }
+
+    }
+
+    public static void copyFile(String srcFile,String tagertFile,ResultT<String> resultT){
+        try {
+            FileUtils.copyFile(new File(srcFile), new File(tagertFile));
+            resultT.setSuccessMessage("移动文件{}到{}成功",srcFile,tagertFile);
+
+        } catch (IOException e) {
+            resultT.setErrorMessage("移动文件{}到{}失败,{}",srcFile,tagertFile,OwnException.get(e));
+            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_4_ERROR.getKey());
+            EiSendUtil.fileException(srcFile,resultT);
+        }
     }
 }
 

@@ -16,6 +16,7 @@ import java.util.List;
  * @description TODO
  * @date 2020/1/13 17:01
  */
+@GrpcHthtService(server = GrpcConstant.SCHEDULE_SERVER,serialization = SerializeType.PROTOSTUFF)
 public interface SyncTaskService {
     public PageBean selectPageList(PageForm<SyncTaskDto> pageForm);
 

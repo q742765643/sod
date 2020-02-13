@@ -40,7 +40,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.1.6.117:8003`,
+        target: `http://1.119.5.177:8003`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
@@ -78,7 +78,7 @@ module.exports = {
       },
       // 韦立国
       [process.env.VUE_APP_DB_API]: {
-        target: `http://10.1.6.70:2345`,
+        target: `http://pw29059549.wicp.vip`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DB_API]: ""

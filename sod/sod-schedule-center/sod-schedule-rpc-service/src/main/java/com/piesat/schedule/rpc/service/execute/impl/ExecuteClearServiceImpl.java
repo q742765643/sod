@@ -8,7 +8,6 @@ import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
-import com.piesat.schedule.rpc.mapstruct.ClearToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
 import com.piesat.schedule.rpc.vo.Server;
@@ -29,23 +28,12 @@ import java.util.List;
 public class ExecuteClearServiceImpl extends ExecuteBaseService implements ExecuteService {
     @Autowired
     private ClearDao clearDao;
-    @Autowired
-    private ClearToLogMapstruct clearToLogMapstruct;
+
     @Autowired
     private JobInfoLogService jobInfoLogService;
     @Override
     public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId) {
-        ClearEntity clearEntity= (ClearEntity) jobInfo;
-        ClearLogEntity clearLogEntity=clearToLogMapstruct.toEntity(clearEntity);
-        clearLogEntity.setId(logId);
-        clearLogEntity.setJobId(clearEntity.getId());
-        clearLogEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
-        clearLogEntity.setHandleCode(result);
-        clearLogEntity.setTriggerTime(clearEntity.getTriggerLastTime());
-        clearLogEntity.setHandleTime(new Date());
-        clearLogEntity.setElapsedTime(0);
-        clearLogEntity= (ClearLogEntity) jobInfoLogService.saveNotNull(clearLogEntity);
-        return clearLogEntity.getId();
+        return null;
     }
 
     @Override

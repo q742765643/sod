@@ -34,4 +34,39 @@
         LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE A.DATABASE_ID = #{databaseId}
     </select>
 
+    <!--查询存储结构概览-->
+    <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
+        select *,e.database_name special_database_name,ee.database_name database_name
+        from t_sod_data_class f
+        left join t_sod_data_logic a on (a.DATA_CLASS_ID = f.DATA_CLASS_ID AND f.type = 2 )
+        left join t_sod_database e on a.DATABASE_ID = e.id
+        left join t_sod_database_define ee on e.database_define_id = ee.id
+        left join t_sod_storage_configuration h on (a.DATA_CLASS_ID = h.DATA_CLASS_ID AND a.LOGIC_flag=h.LOGIC_ID AND e.id=h.DATABASE_ID)
+        left join t_sod_logic_define c on a.logic_flag = c.logic_flag
+        left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID	AND b.DB_TABLE_TYPE = 'E')
+        <where>
+            <if test="map.database_name != null and map.database_name  != ''">
+                AND ee.database_name like '${map.database_name}%'
+            </if>
+            <if test="map.special_database_name != null and map.special_database_name  != ''">
+                AND e.database_name like '${map.special_database_name}%'
+            </if>
+            <if test="map.class_name != null and map.class_name  != ''">
+                AND f.class_name like '${map.class_name}%'
+            </if>
+            <if test="map.parent_id != null and map.parent_id  != ''">
+                AND f.data_class_id like '${map.parent_id}%'
+            </if>
+            <if test="map.d_data_id != null and map.d_data_id  != ''">
+                AND b.d_data_id like '${map.d_data_id}%'
+            </if>
+            <if test="map.logic_name != null and map.logic_name  != ''">
+                AND c.logic_name like '${map.logic_name}%'
+            </if>
+        </where>
+    </select>
+    <!--修改存储结构概览状态-->
+    <update id="updateStorageConfigurationStatus">
+        update t_sod_storage_configuration set  ${column} = ${value} where  id = #{id}
+    </update>
 </mapper>

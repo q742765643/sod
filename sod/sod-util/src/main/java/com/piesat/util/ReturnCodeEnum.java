@@ -23,10 +23,20 @@ public enum ReturnCodeEnum {
 
 
 
-    ReturnCodeEnum_101_ERROR(101, "获取任务详情失败#1#1"),
-
-    ReturnCodeEnum_12_ERROR(12, "删除分区异常#检查虚谷数据库是否产生异常#1.虚谷数据库产生错误");
-
+    ReturnCodeEnum_13_ERROR(13, "执行sql异常"),
+    ReturnCodeEnum_2_ERROR(2, "获取实现类异常"),
+    ReturnCodeEnum_3_ERROR(3, "删除文件异常"),
+    ReturnCodeEnum_4_ERROR(4, "移动文件异常"),
+    ReturnCodeEnum_5_ERROR(5, "创建文件夹异常"),
+    ReturnCodeEnum_6_ERROR(6, "执行mysqldump异常"),
+    ReturnCodeEnum_7_ERROR(7, "OSS下载异常"),
+    ReturnCodeEnum_8_ERROR(8, "未知错误"),
+    ReturnCodeEnum_9_ERROR(9, "备份至OSS异常"),
+    ReturnCodeEnum_10_ERROR(10, "执行select into file异常"),
+    ReturnCodeEnum_11_ERROR(11, "迁移根目录错误"),
+    ReturnCodeEnum_12_ERROR(12, "删除分区异常"),
+    ReturnCodeEnum_14_ERROR(14, "执行虚谷备份异常"),
+    ReturnCodeEnum_15_ERROR(15, "执行GBASE备份异常");
 
 
 

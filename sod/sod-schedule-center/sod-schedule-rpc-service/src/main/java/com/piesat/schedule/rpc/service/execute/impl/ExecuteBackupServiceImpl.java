@@ -7,7 +7,6 @@ import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
-import com.piesat.schedule.rpc.mapstruct.BackupToLogMapstruct;
 import com.piesat.schedule.rpc.service.JobInfoLogService;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
 import com.piesat.schedule.rpc.vo.Server;
@@ -28,25 +27,14 @@ import java.util.List;
 public class ExecuteBackupServiceImpl extends ExecuteBaseService implements ExecuteService {
     @Autowired
     private JobInfoLogService jobInfoLogService;
-    @Autowired
-    private BackupToLogMapstruct backupToLogMapstruct;
+
     @Autowired
     private BackupDao backupDao;
 
 
     @Override
     public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId){
-        BackupEntity backupEntity= (BackupEntity) jobInfo;
-        BackupLogEntity backupLogEntity=backupToLogMapstruct.toEntity(backupEntity);
-        backupLogEntity.setJobId(backupEntity.getId());
-        backupLogEntity.setId(logId);
-        backupLogEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
-        backupLogEntity.setHandleCode(result);
-        backupLogEntity.setTriggerTime(backupEntity.getTriggerLastTime());
-        backupLogEntity.setHandleTime(new Date());
-        backupLogEntity.setElapsedTime(0);
-        backupLogEntity= (BackupLogEntity) jobInfoLogService.saveNotNull(backupLogEntity);
-        return backupLogEntity.getId();
+        return null;
     }
 
     @Override

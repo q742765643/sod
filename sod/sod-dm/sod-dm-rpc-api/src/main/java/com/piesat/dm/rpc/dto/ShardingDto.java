@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 分库分表键
  *
@@ -10,6 +12,9 @@ import lombok.Data;
  */
 @Data
 public class ShardingDto {
+    private static final long serialVersionUID = 1L;
+
+    private String id;
     /**
      * table_id
      */
@@ -26,4 +31,15 @@ public class ShardingDto {
      * column_name
      */
     private Integer shardingType;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    /**
+     * 删除标志（0代表存在 2代表删除）
+     */
+    private String delFlag;
+
+    private Integer version;
 }
