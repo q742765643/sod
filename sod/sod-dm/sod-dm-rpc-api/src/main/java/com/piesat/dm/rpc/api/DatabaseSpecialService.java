@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.api;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.dm.rpc.dto.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.dto.DatabaseUserDto;
@@ -34,5 +35,16 @@ public interface DatabaseSpecialService {
      */
     DatabaseSpecialDto getDotById(String id);
 
+    /**
+     * 更新
+     * @param databaseSpecialDto
+     * @return
+     */
+    DatabaseSpecialDto saveDto(DatabaseSpecialDto databaseSpecialDto);
 
+    /**
+     * 数据库授权
+     * @param databaseDto
+     */
+    void empowerDatabaseSperial(DatabaseDto databaseDto);
 }

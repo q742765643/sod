@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 数据库基础库专题库
@@ -57,4 +58,11 @@ public class DatabaseDto {
     private String delFlag;
 
     private Integer version;
+
+    /**
+     * 用户ID
+     */
+    private String userId;
+
+    private List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList;
 }

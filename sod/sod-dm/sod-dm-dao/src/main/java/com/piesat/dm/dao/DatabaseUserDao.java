@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.DatabaseUserEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DatabaseUserDao extends BaseDao<DatabaseUserEntity> {
     DatabaseUserEntity findByDatabaseUpId(String databaseUPId);
@@ -13,4 +15,6 @@ public interface DatabaseUserDao extends BaseDao<DatabaseUserEntity> {
      * @return
      */
     DatabaseUserEntity findByUserIdAndExamineStatusNot(String userId,String ExamineStatus);
+
+    List<DatabaseUserEntity> findByUserId(String userId);
 }
