@@ -1,15 +1,22 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.common.util.ExportTableUtil;
+import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -22,16 +29,84 @@ import org.springframework.web.bind.annotation.RestController;
 public class StorageConfigurationController {
 
     @Autowired
+    private DataClassService dataClassService;
+    @Autowired
     private StorageConfigurationService storageConfigurationService;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+    public ResultT<PageBean> list(HttpServletRequest request,
+                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-        ResultT<PageBean> resultT=new ResultT<>();
-       // PageBean pageBean = this.storageConfigurationService.selectPageList(newdataApplyDto, pageNum, pageSize);
-       // resultT.setData(pageBean);
+        Map<String,String> map = new HashMap<String,String>();
+        if(StringUtils.isNotNullString(request.getParameter("database_name"))){
+            map.put("database_name",request.getParameter("database_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("special_database_name"))){
+            map.put("special_database_name",request.getParameter("special_database_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
+            map.put("class_name",request.getParameter("class_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("parent_id"))){
+            map.put("parent_id",request.getParameter("parent_id"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("d_data_id"))){
+            map.put("d_data_id",request.getParameter("d_data_id"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
+            map.put("logic_name",request.getParameter("logic_name"));
+        }
 
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = storageConfigurationService.selectPageList(pageForm);
+        resultT.setData(pageBean);
         return resultT;
+    }
+
+    @GetMapping("/getDataClassSuper")
+    @ApiOperation(value = "查询资料顶级分类", notes = "查询资料顶级分类")
+    public ResultT<List<Map<String,Object>>> getDataClassSuper(){
+        List<Map<String,Object>> dataTypeList = this.dataClassService.getDataTypeList();
+        return ResultT.success(dataTypeList);
+    }
+
+    @PostMapping(value = "/exportTable")
+    @ApiOperation(value = "导出", notes = "导出")
+    public void exportTable(HttpServletRequest request, HttpServletResponse response){
+        Map<String,String> map = new HashMap<String,String>();
+        if(StringUtils.isNotNullString(request.getParameter("database_name"))){
+            map.put("database_name",request.getParameter("database_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("special_database_name"))){
+            map.put("special_database_name",request.getParameter("special_database_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
+            map.put("class_name",request.getParameter("class_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("parent_id"))){
+            map.put("parent_id",request.getParameter("parent_id"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("d_data_id"))){
+            map.put("d_data_id",request.getParameter("d_data_id"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
+            map.put("logic_name",request.getParameter("logic_name"));
+        }
+        Map<String, Object> headAndData = storageConfigurationService.exportTable(map);
+        ExportTableUtil.exportTable(request, response, (List<String>)headAndData.get("headList"),(List<List<String>>)headAndData.get("lists") , "存储数据概览导出");
+    }
+
+    @PostMapping(value = "/updateColumnValue")
+    @ApiOperation(value = "修改配置参数值", notes = "修改配置参数值")
+    public ResultT<String> updateColumnValue(String id, String column, String value){
+        return storageConfigurationService.updateColumnValue(id, column, value);
+    }
+
+    @DeleteMapping(value = "/updateColumnValue")
+    @ApiOperation(value = "根据ID删除资料以及配置", notes = "根据ID删除资料以及配置")
+    public ResultT<String> deleteById(String id){
+        return storageConfigurationService.deleteById(id);
     }
 }
