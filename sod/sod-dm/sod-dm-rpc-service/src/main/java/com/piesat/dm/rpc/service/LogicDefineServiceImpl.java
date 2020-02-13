@@ -2,12 +2,18 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.LogicDefineDao;
 import com.piesat.dm.entity.LogicDefineEntity;
 import com.piesat.dm.rpc.api.LogicDefineService;
 import com.piesat.dm.rpc.dto.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.LogicDefineMapper;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -46,9 +52,41 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     }
 
     @Override
+    public List<LogicDefineDto> findByParam(LogicDefineDto logicDefineDto) {
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(logicDefineDto.getLogicFlag())){
+            specificationBuilder.add("logicFlag", SpecificationOperator.Operator.likeAll.name(),logicDefineDto.getLogicFlag());
+        }
+        if(StringUtils.isNotNullString(logicDefineDto.getLogicName())){
+            specificationBuilder.add("logicName", SpecificationOperator.Operator.likeAll.name(),logicDefineDto.getLogicName());
+        }
+        List<LogicDefineEntity> logicDefineEntities = this.getAll(specificationBuilder.generateSpecification());
+        return this.logicDefineMapper.toDto(logicDefineEntities);
+    }
+
+    @Override
     public LogicDefineDto getDotById(String id) {
         LogicDefineEntity logicDefineEntity = this.getById(id);
         return this.logicDefineMapper.toDto(logicDefineEntity);
+    }
+
+    @Override
+    public PageBean selectPageList(PageForm<LogicDefineDto> pageForm) {
+        LogicDefineEntity logicDefineEntity=logicDefineMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(logicDefineEntity.getLogicFlag())){
+            specificationBuilder.add("logicFlag", SpecificationOperator.Operator.likeAll.name(),logicDefineEntity.getLogicFlag());
+        }
+        if(StringUtils.isNotNullString(logicDefineEntity.getLogicName())){
+            specificationBuilder.add("logicName", SpecificationOperator.Operator.likeAll.name(),logicDefineEntity.getLogicName());
+        }
+        Sort sort=Sort.by(Sort.Direction.ASC,"serialNumber");
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        List<LogicDefineEntity> logicDefineEntities= (List<LogicDefineEntity>) pageBean.getPageData();
+        pageBean.setPageData(logicDefineMapper.toDto(logicDefineEntities));
+
+
+        return pageBean;
     }
 
     @Override
