@@ -3,13 +3,13 @@ package com.piesat.schedule.client.util;
 import com.piesat.schedule.client.vo.ReplaceVo;
 import com.piesat.schedule.util.DateExpressionEngine;
 import com.piesat.util.ResultT;
-import org.apache.commons.io.FileUtils;
-import org.bouncycastle.math.ec.ScaleYPointMap;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +49,7 @@ public class ExtractMessage {
                         msg = msg.replace(s, replaceVo.getDdataId());
                     } else if (s.toUpperCase().indexOf("YYYY") != -1) {
                         String date = format.format(new Date(replaceVo.getBackupTime()));
-                        String time="";
+                        String time = "";
                         String vlaue = DateExpressionEngine.formatDateExpression("$" + s, date);
                         if (s.split(",").length > 1) {
                             String real = s.replace("{", "").replace("}", "").split(",")[0];
@@ -60,7 +60,6 @@ public class ExtractMessage {
                             vlaue = format1.format(realDate);
                         }
                         msg = msg.replace(s, vlaue);
-
 
 
                     }
@@ -78,7 +77,7 @@ public class ExtractMessage {
 
     public static void main(String[] args) {
         try {
-            String fileNameEl ="HADB--USR_SOD.DMIN_DATA_BACKUP_TASK----A.0010.0001.M006--\\w[a-z0-9]*.[1-9]\\d*.zip";
+            String fileNameEl = "HADB--USR_SOD.DMIN_DATA_BACKUP_TASK----A.0010.0001.M006--\\w[a-z0-9]*.[1-9]\\d*.zip";
             Pattern pattern = Pattern.compile(fileNameEl);
 
             Matcher m = pattern.matcher("HADB--USR_SOD.DMIN_DATA_BACKUP_TASK--20190414--A.0010.0001.M006--645ededa270cb1baa6653fdccf43197f.1.zip");
