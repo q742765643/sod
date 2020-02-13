@@ -5,32 +5,32 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 分库分表键
+ * 表数据统计
  *
  * @author cwh
- * @date 2019年 12月16日 15:52:04
+ * @date 2020年 02月13日 14:44:37
  */
 @Data
-public class ShardingDto {
+public class TableDataStatisticsDto {
     private static final long serialVersionUID = 1L;
 
     private String id;
-    /**
-     * table_id
-     */
+
+    private String databaseId;
+
     private String tableId;
 
-    /**
-     * 列名
-     * column_name
-     */
-    private String columnName;
+    private Date statisticDate;
 
-    /**
-     * 列名(分库键：0  分表键：1 )
-     * column_name
-     */
-    private Integer shardingType;
+    private Date beginTime;
+
+    private Date endTime;
+
+    private long recordCount;
+
+    private int dayTotal;
+
+    private String statisticTime;
 
     private Date createTime;
 

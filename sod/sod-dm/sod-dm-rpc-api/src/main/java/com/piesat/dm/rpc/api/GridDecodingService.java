@@ -4,6 +4,8 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.GridDecodingDto;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import java.util.List;
 
@@ -22,4 +24,6 @@ public interface GridDecodingService {
     void delete(String id);
 
     List<GridDecodingDto> all();
+
+    PageBean list(PageForm pageForm);
 }
