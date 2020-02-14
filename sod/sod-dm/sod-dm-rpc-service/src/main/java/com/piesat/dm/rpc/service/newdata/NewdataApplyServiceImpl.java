@@ -88,6 +88,11 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
+    public List<Map<String, Object>> getLogicInfo() {
+        return null;
+    }
+
+    @Override
     public Map<String, Object> queryCheckByApplyId(NewdataApplyDto newdataApplyDto) {
         String sql = "SELECT a.*, b.c_datum_code,b.c_datumtype,c.c_datum_code type_code,c.c_datumtype type_name "
                 + " FROM dmin_data_newdata_apply a,t_sod_data_datumtypeinfo b,t_sod_data_datumtypeinfo c "

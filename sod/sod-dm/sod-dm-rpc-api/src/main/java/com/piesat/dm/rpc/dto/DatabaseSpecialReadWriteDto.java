@@ -36,12 +36,12 @@ public class DatabaseSpecialReadWriteDto extends BaseEntity {
     /**
      * 申请权限
      */
-    private String applyAuthority;
+    private Integer applyAuthority;
 
     /**
      * 授权权限
      */
-    private String empowerAuthority;
+    private Integer empowerAuthority;
 
     /**
      * 审核人
@@ -67,4 +67,6 @@ public class DatabaseSpecialReadWriteDto extends BaseEntity {
      * 区分自建还是申请
      */
     private Integer dataType;
+
+    private String userId;
 }

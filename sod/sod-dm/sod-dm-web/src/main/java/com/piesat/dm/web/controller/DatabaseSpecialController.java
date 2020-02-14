@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.netflix.discovery.converters.Auto;
 import com.piesat.dm.entity.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.rpc.api.DatabaseSpecialAuthorityService;
@@ -120,6 +121,34 @@ public class DatabaseSpecialController {
     public ResultT empowerDatabaseSperial(@RequestBody DatabaseDto DatabaseDto) {
         try {
             this.databaseSpecialService.empowerDatabaseSperial(DatabaseDto);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "资料授权-单独")
+    @RequiresPermissions("dm:databaseSpecial:empowerDataOne")
+    @PostMapping(value = "/empowerDataOne")
+    public ResultT empowerDataOne(@RequestBody DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
+        try {
+            this.databaseSpecialService.empowerDataOne(databaseSpecialReadWriteDto);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "资料授权-批量")
+    @RequiresPermissions("dm:databaseSpecial:empowerDataOne")
+    @PostMapping(value = "/empowerDataBatch")
+    public ResultT empowerDataBatch(@RequestBody String listString) {
+        try {
+            List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList = JSONObject.parseArray(listString,
+                    DatabaseSpecialReadWriteDto.class);
+            this.databaseSpecialService.empowerDataBatch(databaseSpecialReadWriteDtoList);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

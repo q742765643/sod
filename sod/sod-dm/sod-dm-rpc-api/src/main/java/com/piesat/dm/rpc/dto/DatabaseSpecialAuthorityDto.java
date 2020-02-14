@@ -30,16 +30,16 @@ public class DatabaseSpecialAuthorityDto extends BaseEntity {
     /**
      * 建表权限
      */
-    private String createTable;
+    private Integer createTable;
 
     /**
      * 删表权限
      */
-    private String deleteTable;
+    private Integer deleteTable;
 
     /**
      * 表数据访问权限
      */
-    private String tableDataAccess;
+    private Integer tableDataAccess;
 
 }
