@@ -43,13 +43,13 @@ public class DatabaseSpecialReadWriteEntity extends BaseEntity {
      * 申请权限
      */
     @Column(name = "apply_authority")
-    private String applyAuthority;
+    private Integer applyAuthority;
 
     /**
      * 授权权限
      */
     @Column(name = "empower_authority")
-    private String empowerAuthority;
+    private Integer empowerAuthority;
 
     /**
      * 审核人

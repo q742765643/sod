@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.entity.UUIDEntity;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
@@ -13,10 +14,7 @@ import com.piesat.dm.entity.*;
 import com.piesat.dm.rpc.api.DatabaseSpecialService;
 import com.piesat.dm.rpc.api.DatabaseUserService;
 import com.piesat.dm.rpc.dto.*;
-import com.piesat.dm.rpc.mapper.DatabaseMapper;
-import com.piesat.dm.rpc.mapper.DatabaseSpecialAuthorityMapper;
-import com.piesat.dm.rpc.mapper.DatabaseSpecialMapper;
-import com.piesat.dm.rpc.mapper.DatabaseUserMapper;
+import com.piesat.dm.rpc.mapper.*;
 import org.bouncycastle.asn1.dvcs.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +41,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DatabaseDao databaseDao;
     @Autowired
     private DatabaseMapper databaseMapper;
+    @Autowired
+    private DatabaseSpecialReadWriteDao databaseSpecialReadWriteDao;
+    @Autowired
+    private DatabaseSpecialReadWriteMapper databaseSpecialReadWriteMapper;
+    @Autowired
+    private DataTableDao dataTableDao;
     @Autowired
     private DatabaseInfo databaseInfo;
 
@@ -162,6 +166,180 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void empowerDataOne(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
+        try {
+            //更新权限
+            DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity = databaseSpecialReadWriteMapper
+                    .toEntity(databaseSpecialReadWriteDto);
+            databaseSpecialReadWriteDao.save(databaseSpecialReadWriteEntity);
+
+            if(databaseSpecialReadWriteDto.getDatabaseId()!="RADB"){
+                String userId = databaseSpecialReadWriteDto.getUserId();
+                String databaseId = databaseSpecialReadWriteDto.getDatabaseId();
+                String dataClassId = databaseSpecialReadWriteDto.getDataClassId();
+                Integer applyAuthority = databaseSpecialReadWriteDto.getApplyAuthority();
+                Map<String,Object> paramMap = new HashMap<>();
+
+                if(databaseSpecialReadWriteDto.getExamineStatus()==1){
+                    //授权
+                    empowerAuthority(userId,databaseId,dataClassId,applyAuthority);
+                }else if(databaseSpecialReadWriteDto.getExamineStatus()==2){
+                    //撤销授权
+                    cancelAuthority(userId,databaseId,dataClassId,1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList) {
+        try {
+            for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtoList){
+                String sdbId = databaseSpecialReadWriteDto.getSdbId();//专题库ID
+                String dataClassId = databaseSpecialReadWriteDto.getDataClassId();//存储编码
+                String databaseId = databaseSpecialReadWriteDto.getDatabaseId();//数据库ID
+                Integer applyAuthority = databaseSpecialReadWriteDto.getApplyAuthority();//申请权限
+                Integer examineStatus = databaseSpecialReadWriteDto.getExamineStatus();//授权状态
+                String userId = databaseSpecialReadWriteDto.getUserId();//用户ID
+                List<DataTableEntity> dataTableList = dataTableDao.findByDataClassIdAndClassLogicId(dataClassId,databaseId);
+                for(DataTableEntity dataTableEntity : dataTableList){
+                    //逐一授权
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 授权
+     */
+    private void empowerAuthority(String userId,String databaseId,String dataClassId,Integer applyAuthority){
+        DatabaseDcl databaseVO = null;
+        try {
+            //判断用户是否申请过数据库账户
+            List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
+            if(databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+                DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
+                //up账户IP
+                String databaseUPIp = null;
+                if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())){
+                    databaseUPIp = databaseUserEntity.getDatabaseUpIp();
+                }else if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())){
+                    databaseUPIp = databaseUserEntity.getDatabaseUpIpSegment();
+                }
+                //获取用户可用的物理库ID
+                String[] databaseIdArray = databaseUserEntity.getDatabaseUpId().split(",");
+                //获取申请ID对应的物理库
+                DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
+                String databaseDefineId = databaseEntity.getDatabaseDefine().getId();
+                String[] xuguDatabaseArray = {"HADB"};
+                String[] gbaseDatabaseArray = {"STDB","BFDB","FIDB"};
+                //判断待授权物理库是否是用户可用
+                if(Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
+                        (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)
+                        || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))){
+                    DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
+                    Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
+                    //访问路径、账号、密码
+                    String url = databaseDefineEntity.getDatabaseUrl();
+                    if(databaseAdministratorSet!=null) {
+                        //获取任意登录账号
+                        DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
+                        String username = databaseAdministratorEntity.getUserName();
+                        String password = databaseAdministratorEntity.getPassWord();
+
+                        //虚谷
+                        if(Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)){
+                            databaseVO = new Xugu(url,username,password);
+                        }else if(Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)){//南大
+                            databaseVO = new Gbase8a(url,username,password);
+                        }
+                        List<DataTableEntity> dataTableList = dataTableDao.findByDataClassIdAndClassLogicId(dataClassId,databaseId);
+                        for(DataTableEntity dataTableEntity : dataTableList){
+                            String tableName = dataTableEntity.getTableName();
+                            //默认读权限
+                            boolean select = true;
+                            if(applyAuthority==2){//读写权限
+                                select = false;
+                            }
+                            databaseVO.addPermissions(select,databaseEntity.getSchemaName(),
+                                     tableName,databaseUserEntity.getDatabaseUpId(),null,null);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            databaseVO.closeConnect();
+        }
+    }
+
+    /**
+     * 撤销权限
+     */
+    private void cancelAuthority(String userId,String databaseId,String dataClassId,Integer mark){
+        DatabaseDcl databaseVO = null;
+        try {
+            //判断用户是否申请过数据库账户
+            List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
+            if(databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+                DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
+                //up账户IP
+                String databaseUPIp = null;
+                if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())){
+                    databaseUPIp = databaseUserEntity.getDatabaseUpIp();
+                }else if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())){
+                    databaseUPIp = databaseUserEntity.getDatabaseUpIpSegment();
+                }
+                //获取用户可用的物理库ID
+                String[] databaseIdArray = databaseUserEntity.getDatabaseUpId().split(",");
+                //获取申请ID对应的物理库
+                DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
+                String databaseDefineId = databaseEntity.getDatabaseDefine().getId();
+                String[] xuguDatabaseArray = {"HADB"};
+                String[] gbaseDatabaseArray = {"STDB","BFDB","FIDB"};
+                //判断待授权物理库是否是用户可用
+                if(Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
+                        (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)
+                                || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))){
+                    DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
+                    Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
+                    //访问路径、账号、密码
+                    String url = databaseDefineEntity.getDatabaseUrl();
+                    if(databaseAdministratorSet!=null) {
+                        //获取任意登录账号
+                        DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
+                        String username = databaseAdministratorEntity.getUserName();
+                        String password = databaseAdministratorEntity.getPassWord();
+
+                        //虚谷
+                        if(Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)){
+                            databaseVO = new Xugu(url,username,password);
+                        }else if(Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)){//南大
+                            databaseVO = new Gbase8a(url,username,password);
+                        }
+                        List<DataTableEntity> dataTableList = dataTableDao.findByDataClassIdAndClassLogicId(dataClassId,databaseId);
+                        String[] permissions = {"SELECT","UPDATE","INSERT","DELETE"};
+                        for(DataTableEntity dataTableEntity : dataTableList){
+                            String tableName = dataTableEntity.getTableName();
+                            databaseVO.deletePermissions(permissions,databaseEntity.getSchemaName(),
+                                    dataTableEntity.getTableName(),databaseUserEntity.getDatabaseUpId(),null,null);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            databaseVO.closeConnect();
         }
     }
 }

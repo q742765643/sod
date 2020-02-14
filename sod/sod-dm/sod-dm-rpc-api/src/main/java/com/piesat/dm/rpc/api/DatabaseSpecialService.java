@@ -47,4 +47,16 @@ public interface DatabaseSpecialService {
      * @param databaseDto
      */
     void empowerDatabaseSperial(DatabaseDto databaseDto);
+
+    /**
+     * 单独资料授权
+     * @param databaseSpecialReadWriteDto
+     */
+    void empowerDataOne(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto);
+
+    /**
+     * 批量资料授权
+     * @param databaseSpecialReadWriteDtoList
+     */
+    void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList);
 }

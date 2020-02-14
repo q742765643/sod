@@ -28,4 +28,6 @@ public interface DataTableDao extends BaseDao<DataTableEntity> {
     @Modifying(clearAutomatically = true)
     @Query(value = "update T_SOD_DATA_TABLE p set p.table_name =?1  where p.id = ?2",nativeQuery = true)
     int updateById(String table_name, String id);
+
+    List<DataTableEntity> findByDataClassIdAndClassLogicId(String dataClassId, String databaseId);
 }
