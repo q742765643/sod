@@ -32,6 +32,7 @@ public class ConsistencyCheckController {
         PageForm<ConsistencyCheckDto> pageForm = new PageForm<>(pageNum, pageSize, consistencyCheckDto);
         PageBean pageBean = consistencyCheckService.selectPageList(pageForm);
         resultT.setData(pageBean);
+
         return resultT;
     }
 }
