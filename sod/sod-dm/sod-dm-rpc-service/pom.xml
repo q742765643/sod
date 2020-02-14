@@ -21,7 +21,16 @@
             <artifactId>sod-dm-rpc-api</artifactId>
             <version>${parent.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.htht</groupId>
+            <artifactId>sod-schedule-rpc-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.htht</groupId>
+            <artifactId>sod-system-rpc-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.htht</groupId>
             <artifactId>sod-ucenter-sso-client</artifactId>

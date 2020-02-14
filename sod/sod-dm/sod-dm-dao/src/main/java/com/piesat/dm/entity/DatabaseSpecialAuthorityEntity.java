@@ -37,18 +37,18 @@ public class DatabaseSpecialAuthorityEntity extends BaseEntity {
      * 建表权限
      */
     @Column(name = "create_table")
-    private String createTable;
+    private Integer createTable;
 
     /**
      * 删表权限
      */
     @Column(name = "delete_table")
-    private String deleteTable;
+    private Integer deleteTable;
 
     /**
      * 表数据访问权限
      */
     @Column(name = "table_data_access")
-    private String tableDataAccess;
+    private Integer tableDataAccess;
 
 }

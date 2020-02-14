@@ -6,16 +6,15 @@ import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.newdata.NewdataApplyService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.newdata.NewdataApplyDto;
+import com.piesat.dm.rpc.service.newdata.NewdataApplyGrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -29,6 +28,8 @@ import java.util.*;
 public class NewdataApplyController {
     @Autowired
     private NewdataApplyService newdataApplyService;
+    @Autowired
+    private NewdataApplyGrpcService newdataApplyGrpcService;
     @Autowired
     private DataClassService dataClassService;
     @Autowired
@@ -135,7 +136,7 @@ public class NewdataApplyController {
     @GetMapping("/getLogicInfo")
     @ApiOperation(value = "查询逻辑库物理库信息", notes = "查询逻辑库物理库信息")
     public ResultT<List<Map<String,Object>>> getLogicInfo(){
-        List<Map<String,Object>> logicInfoList = this.newdataApplyService.getLogicInfo();
+        List<Map<String,Object>> logicInfoList = this.newdataApplyGrpcService.getLogicInfo();
         return ResultT.success(logicInfoList);
     }
 

@@ -5,8 +5,12 @@ import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 8a数据库管理
@@ -230,5 +234,78 @@ public class Gbase8a extends DatabaseDclAbs {
             return ResultT.failed(e.getMessage());
         }
         return ResultT.success();
+    }
+
+    @Override
+    public ResultT queryAllTableName(String schema) throws Exception {
+        List<String> list = new ArrayList<String>();
+        String sql = "select table_name from information_schema.tables where table_schema='"+schema+"'";
+        try {
+            ps = connection.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                if(!rs.getString("TABLE_NAME").contains("#")){
+                    list.add(rs.getString("TABLE_NAME"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+        return ResultT.success(list);
+    }
+
+    @Override
+    public ResultT queryAllColumnInfo(String schema, String tableName) throws Exception {
+        Map<String,Map<String,Object>> columnInfos = new HashMap<String,Map<String,Object>>();
+        String sql = "select  table_schema,table_name,upper(column_name) column_name,data_type column_type,is_nullable,column_comment"+
+                " from information_schema.columns where TABLE_NAME= '"+tableName+"' and table_schema='"+schema+"'";
+        try {
+            ps = connection.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Map columnOneInfo = new HashMap<String,Object>();
+                columnOneInfo.put("column_name", rs.getString("column_name"));
+                columnOneInfo.put("column_type", rs.getString("column_type"));//类型和精度 decimal(4,0)  varchar(200)
+                columnOneInfo.put("column_comment", rs.getString("column_comment"));//字段含义
+                if("NO".equals(rs.getString("is_nullable"))){
+                    columnOneInfo.put("is_nullable", 0);
+                }else{
+                    columnOneInfo.put("is_nullable", 0);
+                }
+                columnInfos.put(rs.getString("column_name"),columnOneInfo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+        return ResultT.success(columnInfos);
+    }
+
+    @Override
+    public ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception {
+        HashMap<String,String> indexs = new HashMap<String,String>();
+        HashMap<String,String> shardings = new HashMap<String,String>();
+        Map<String,Map<String,String>> results = new HashMap<String,Map<String,String>>();
+        String sql = "select table_name,non_unique,index_schema,index_name,GROUP_CONCAT(column_name) as index_column from information_schema.STATISTICS "+
+                " WHERE TABLE_NAME='"+tableName+"' and index_schema='"+schema+"'"+
+                " group by table_name,non_unique,index_schema,index_name;";
+        try {
+            ps = connection.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                if(rs.getString("index_name").startsWith("auto")){
+                    shardings.put(rs.getString("index_name"), rs.getString("index_column"));
+                }else{
+                    indexs.put(rs.getString("index_name"), rs.getString("index_column"));
+                }
+            }
+            results.put("indexs",indexs);
+            results.put("shardings",shardings);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+        return ResultT.success(results);
     }
 }
