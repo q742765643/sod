@@ -48,12 +48,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     private RedisUtil redisUtil;
 
 
-    @GrpcHthtClient
-    private DatabaseService databaseService;
-    @GrpcHthtClient
-    private DataTableService dataTableService;
-    @GrpcHthtClient
-    private DataLogicService dataLogicService;
+
 
 
     @Override
@@ -69,37 +64,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     public Object getJobById(String id){
         return this.getById(id);
     }
-    @Override
-    public List<DatabaseDto> findAllDataBase(){
-        List<DatabaseDto> databaseDtos=databaseService.all();
-        return databaseDtos;
-    }
-    @Override
-    public List<Map<String, Object>> getByDatabaseId(String databaseId){
-        List<Map<String, Object>> mapList=dataLogicService.getByDatabaseId(databaseId);
-        return mapList;
-    }
-    @Override
-    public Map<String,String> getByDatabaseIdAndClassId(String databaseId,String dataClassId){
-        List<DataTableDto>  dataTableDtos=dataTableService.getByDatabaseIdAndClassId(databaseId,dataClassId);
-        Map<String,String> map=new HashMap<>();
-        if(dataTableDtos.size()>1){
-            for(DataTableDto dataTableDto:dataTableDtos){
-               if("K".equals(dataTableDto.getDbTableType())){
-                   map.put("tableName",dataTableDto.getTableName());
-               }else{
-                   map.put("vTableName",dataTableDto.getTableName());
-               }
-            }
-        }
-        if(dataTableDtos.size()==1)
-        {
-            map.put("tableName",dataTableDtos.get(0).getTableName());
-            map.put("vTableName","");
-        }
-        return map;
 
-    }
     @Override
     public void init(){
         List<JobInfoDto> jobInfoDtos=this.findJobList();
