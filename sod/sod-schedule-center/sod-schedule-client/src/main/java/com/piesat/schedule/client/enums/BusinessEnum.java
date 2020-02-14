@@ -1,6 +1,7 @@
 package com.piesat.schedule.client.enums;
 
 import com.piesat.schedule.client.business.BaseBusiness;
+import com.piesat.schedule.client.business.GbaseBusiness;
 import com.piesat.schedule.client.business.XuguBusiness;
 
 /**
@@ -13,11 +14,11 @@ public enum BusinessEnum {
     //ADS备份逻辑
     //ALI_ADS("ads", ""),
     //虚谷备份逻辑
-    XUGU("xugu", new XuguBusiness());
+    XUGU("xugu", new XuguBusiness()),
     //DRDS备份逻辑
     //ALI_DRDS("stdb", ""),
     //GBASE备份逻辑
-    //GBASE8A("gabse8a", "");
+    GBASE8A("gabse8a", new GbaseBusiness());
     private String title;
     private BaseBusiness baseBusiness;
 

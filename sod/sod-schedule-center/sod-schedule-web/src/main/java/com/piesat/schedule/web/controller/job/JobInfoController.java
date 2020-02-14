@@ -4,6 +4,7 @@ import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.rpc.api.JobInfoService;
+import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,25 +26,27 @@ import java.util.Map;
 public class JobInfoController {
     @Autowired
     private JobInfoService jobInfoService;
+    @Autowired
+    private DataBaseService dataBaseService;
 
     @GetMapping("/findAllDataBase")
     public ResultT findAllDataBase(){
         ResultT resultT=new ResultT();
-        List<DatabaseDto> databaseDtos=jobInfoService.findAllDataBase();
+        List<DatabaseDto> databaseDtos= (List<DatabaseDto>) dataBaseService.findAllDataBase();
         resultT.setData(databaseDtos);
         return resultT;
     }
     @GetMapping(value = "/getByDatabaseId/{databaseId}")
     public ResultT getByDatabaseId(@PathVariable String databaseId){
         ResultT resultT=new ResultT();
-        List<Map<String, Object>> mapList=jobInfoService.getByDatabaseId(databaseId);
+        List<Map<String, Object>> mapList=dataBaseService.getByDatabaseId(databaseId);
         resultT.setData(mapList);
         return resultT;
     }
     @GetMapping(value = "/getByDatabaseIdAndClassId")
     public ResultT getByDatabaseIdAndClassId(String databaseId,String dataClassId){
         ResultT resultT=new ResultT();
-        Map<String,String> map=jobInfoService.getByDatabaseIdAndClassId(databaseId,dataClassId);
+        Map<String,String> map=dataBaseService.getByDatabaseIdAndClassId(databaseId,dataClassId);
         resultT.setData(map);
         return resultT;
     }

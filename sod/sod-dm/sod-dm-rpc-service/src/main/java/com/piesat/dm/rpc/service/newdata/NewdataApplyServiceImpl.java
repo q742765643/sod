@@ -1,8 +1,5 @@
 package com.piesat.dm.rpc.service.newdata;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.newdata.NewdataApplyDao;
@@ -12,16 +9,12 @@ import com.piesat.dm.rpc.api.newdata.NewdataApplyService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.newdata.NewdataApplyDto;
 import com.piesat.dm.rpc.mapper.newdata.NewdataApplyMapper;
-import com.piesat.ucenter.rpc.api.system.DictDataService;
-import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +39,6 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
     @Autowired
     private DataLogicService dataLogicService;
-
-    @GrpcHthtClient
-    private DictDataService dictDataService;
 
     @Autowired
     private StorageConfigurationService storageConfigurationService;
@@ -95,58 +85,6 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public int updateStatus(NewdataApplyDto newdataApplyDto) {
         return newdataApplyDao.updateStatus(newdataApplyDto.getExamineStatus(),newdataApplyDto.getRemark(),newdataApplyDto.getExaminer(),newdataApplyDto.getId(),newdataApplyDto.getDDataId(),newdataApplyDto.getTableName());
-    }
-
-    @Override
-    public List<Map<String, Object>> getLogicInfo() {
-        List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
-
-        // 获取逻辑库类型
-        List<LogicDefineDto> logiclist = logicDefineService.all();
-        //查询物理库-逻辑库
-        List<Map<String, Object>> distinctDatabaseAndLogic = dataLogicService.getDistinctDatabaseAndLogic();
-        //查询所有的表类型
-        Map<String,String> dictMap = new HashMap<String,String>();
-        List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType("table_type");
-        if(dictDataDtos != null){
-            for(DictDataDto dictDataDto:dictDataDtos){
-                dictMap.put(dictDataDto.getDictValue(),dictDataDto.getDictLabel());//E_table 要素表
-            }
-        }
-
-        if (logiclist != null && logiclist.size() > 0){
-            for (int i = logiclist.size()-1; i >=0; i--) {
-                LogicDefineDto logicDefineDto = logiclist.get(i);
-                Map<String,Object> logicDefineMap = JSONObject.parseObject(JSON.toJSONString(logicDefineDto));
-                //逻辑库对应的表类型
-                List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
-                List<Map<String, Object>> tableTypeList = new ArrayList<Map<String, Object>>();
-                if(logicStorageTypesEntityList != null){
-                    for(LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList){
-                        Map<String, Object> map = new HashMap<String, Object>();
-                        String storageType = logicStorageTypesDto.getStorageType();
-                        map.put("key",storageType);
-                        map.put("name",dictMap.get(storageType));
-                        tableTypeList.add(map);
-                    }
-                }
-                logicDefineMap.put("tableType", tableTypeList);
-
-                //逻辑库对应的物理库
-                List<Map<String, Object>> databaseList = new ArrayList<Map<String, Object>>();
-                for(Map<String, Object> databaseLogic : distinctDatabaseAndLogic){
-                    if(logicDefineDto.getLogicFlag().toString().equals(String.valueOf(databaseLogic.get("logic_flag")))){
-                        databaseList.add(databaseLogic);
-                    }
-                }
-                if (databaseList.size() != 0) {
-                    logicDefineMap.put("physics", databaseList);
-                    result.add(logicDefineMap);
-                }
-            }
-        }
-
-        return result;
     }
 
     @Override

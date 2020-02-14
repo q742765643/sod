@@ -4,6 +4,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.service.StorageConfigurationGrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -32,6 +33,8 @@ public class StorageConfigurationController {
     private DataClassService dataClassService;
     @Autowired
     private StorageConfigurationService storageConfigurationService;
+    @Autowired
+    private StorageConfigurationGrpcService storageConfigurationGrpcService;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -101,12 +104,12 @@ public class StorageConfigurationController {
     @PostMapping(value = "/updateColumnValue")
     @ApiOperation(value = "修改配置参数值", notes = "修改配置参数值")
     public ResultT<String> updateColumnValue(String id, String column, String value){
-        return storageConfigurationService.updateColumnValue(id, column, value);
+        return storageConfigurationGrpcService.updateColumnValue(id, column, value);
     }
 
     @DeleteMapping(value = "/updateColumnValue")
     @ApiOperation(value = "根据ID删除资料以及配置", notes = "根据ID删除资料以及配置")
     public ResultT<String> deleteById(String id){
-        return storageConfigurationService.deleteById(id);
+        return storageConfigurationGrpcService.deleteById(id);
     }
 }
