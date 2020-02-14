@@ -237,4 +237,19 @@ public class Cassandra implements DatabaseDcl {
         }
         return ResultT.success(list);
     }
+
+    @Override
+    public ResultT queryAllTableName(String schema) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ResultT queryAllColumnInfo(String schema, String tableName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception {
+        return null;
+    }
 }

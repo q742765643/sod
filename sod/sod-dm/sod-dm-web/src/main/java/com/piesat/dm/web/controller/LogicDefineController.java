@@ -124,7 +124,7 @@ public class LogicDefineController {
 
     @PostMapping(value = "/exportTable")
     @ApiOperation(value = "导出", notes = "导出")
-    public ResultT<List<LogicDefineDto>> exportTable(LogicDefineDto logicDefineDto, HttpServletRequest request, HttpServletResponse response){
+    public void exportTable(LogicDefineDto logicDefineDto, HttpServletRequest request, HttpServletResponse response){
         List<LogicDefineDto> logicDefineDtos = logicDefineService.findByParam(logicDefineDto);
         //定义存放列名的集合
         ArrayList<String> headList = new ArrayList<>();
@@ -163,6 +163,5 @@ public class LogicDefineController {
             lists.add(strings);
         }
         ExportTableUtil.exportTable(request, response, headList, lists , "逻辑库定义导出");
-        return ResultT.success(logicDefineDtos);
     }
 }

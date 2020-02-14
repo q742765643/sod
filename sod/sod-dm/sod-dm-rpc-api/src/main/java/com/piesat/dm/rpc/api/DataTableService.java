@@ -38,4 +38,6 @@ public interface DataTableService {
 
     ResultT getSampleData(SampleData sampleData) throws Exception;
 
+    List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId,String tableName);
+
 }
