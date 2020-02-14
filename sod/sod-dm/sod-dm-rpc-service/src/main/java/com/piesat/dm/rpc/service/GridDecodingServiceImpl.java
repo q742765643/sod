@@ -2,12 +2,16 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.dm.dao.GridDecodingDao;
 import com.piesat.dm.entity.GridDecodingEntity;
 import com.piesat.dm.rpc.api.GridDecodingService;
 import com.piesat.dm.rpc.dto.GridDecodingDto;
 import com.piesat.dm.rpc.mapper.GridDecodingMapper;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,5 +53,15 @@ public class GridDecodingServiceImpl extends BaseService<GridDecodingEntity> imp
     public List<GridDecodingDto> all() {
         List<GridDecodingEntity> all = this.getAll();
         return this.gridDecodingMapper.toDto(all);
+    }
+
+    @Override
+    public PageBean list(PageForm pageForm) {
+        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
+        List<GridDecodingEntity> pageData = (List<GridDecodingEntity>)page.getPageData();
+        page.setPageData(this.gridDecodingMapper.toDto(pageData));
+        return page;
     }
 }

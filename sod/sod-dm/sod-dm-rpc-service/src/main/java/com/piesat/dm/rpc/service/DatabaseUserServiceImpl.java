@@ -73,7 +73,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public DatabaseUserDto saveDto(DatabaseUserDto databaseUserDto) {
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
-        databaseUserEntity = this.save(databaseUserEntity);
+        this.save(databaseUserEntity);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
@@ -144,13 +144,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
             //访问路径、账号、密码
             String url = databaseDefineEntity.getDatabaseUrl();
-            String username = null;
-            String password = null;
+
             if(databaseAdministratorSet!=null){
                 //获取任意登录账号
                 DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
-                username = databaseAdministratorEntity.getUserName();
-                password = databaseAdministratorEntity.getPassWord();
+                String username = databaseAdministratorEntity.getUserName();
+                String password = databaseAdministratorEntity.getPassWord();
 
                 //判断是什么数据库
                 if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())){

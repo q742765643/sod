@@ -1,7 +1,7 @@
 package com.piesat.dm.web.controller;
 
-import com.piesat.dm.rpc.api.GridAreaService;
-import com.piesat.dm.rpc.dto.GridAreaDto;
+import com.piesat.dm.rpc.api.TableDataStatisticsService;
+import com.piesat.dm.rpc.dto.TableDataStatisticsDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -19,25 +19,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 区域信息
+ * 表数据统计
  *
  * @author cwh
- * @date 2020年 02月10日 14:44:21
+ * @date 2020年 02月13日 14:56:37
  */
-@Api(tags = "区域信息")
-@RequestMapping("/dm/gridarea")
+@Api(tags = "表数据统计")
+@RequestMapping("/dm/datastatistics")
 @RestController
-public class GridAreaController {
+public class TableDataStatisticsController {
+
     @Autowired
-    private GridAreaService gridAreaService;
+    private TableDataStatisticsService tableDataStatisticsService;
 
     @ApiOperation(value = "新增")
-    @RequiresPermissions("dm:gridarea:add")
-    @Log(title = "区域信息管理", businessType = BusinessType.INSERT)
+    @RequiresPermissions("dm:datastatistics:add")
+    @Log(title = "表数据统计", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save(@RequestBody GridAreaDto gridAreaDto) {
+    public ResultT save(@RequestBody TableDataStatisticsDto tableDataStatisticsDto) {
         try {
-            GridAreaDto save = this.gridAreaService.saveDto(gridAreaDto);
+            TableDataStatisticsDto save = this.tableDataStatisticsService.saveDto(tableDataStatisticsDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,12 +47,12 @@ public class GridAreaController {
     }
 
     @ApiOperation(value = "根据id查询")
-    @RequiresPermissions("dm:gridarea:get")
+    @RequiresPermissions("dm:datastatistics:get")
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            GridAreaDto gridAreaDto = this.gridAreaService.getDotById(id);
-            return ResultT.success(gridAreaDto);
+            TableDataStatisticsDto tableDataStatisticsDto = this.tableDataStatisticsService.getDotById(id);
+            return ResultT.success(tableDataStatisticsDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -59,12 +60,12 @@ public class GridAreaController {
     }
 
     @ApiOperation(value = "根据id删除")
-    @RequiresPermissions("dm:gridarea:del")
-    @Log(title = "区域信息管理", businessType = BusinessType.DELETE)
+    @RequiresPermissions("dm:datastatistics:del")
+    @Log(title = "表数据统计", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
-            this.gridAreaService.delete(id);
+            this.tableDataStatisticsService.delete(id);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,11 +74,11 @@ public class GridAreaController {
     }
 
     @ApiOperation(value = "查询所有")
-    @RequiresPermissions("dm:gridarea:all")
+    @RequiresPermissions("dm:datastatistics:all")
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
-            List<GridAreaDto> all = this.gridAreaService.all();
+            List<TableDataStatisticsDto> all = this.tableDataStatisticsService.all();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,14 +88,14 @@ public class GridAreaController {
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    @RequiresPermissions("dm:gridarea:list")
+    @RequiresPermissions("dm:datastatistics:list")
     public ResultT<PageBean> list(HttpServletRequest request,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         Map<String,String> map = new HashMap<String,String>();
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
-        PageBean pageBean = gridAreaService.list(pageForm);
+        PageBean pageBean = tableDataStatisticsService.list(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }

@@ -3,7 +3,6 @@ package com.piesat.schedule.rpc.dto.backup;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
 import lombok.Data;
 
-import javax.persistence.Column;
 
 /**
  * @program: sod

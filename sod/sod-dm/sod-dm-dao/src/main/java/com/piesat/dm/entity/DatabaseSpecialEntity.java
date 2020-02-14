@@ -42,8 +42,8 @@ public class DatabaseSpecialEntity extends BaseEntity {
     /**
      * 用途
      */
-    @Column(name = "use")
-    private String use;
+    @Column(name = "uses")
+    private String uses;
 
     /**
      * 申请材料
