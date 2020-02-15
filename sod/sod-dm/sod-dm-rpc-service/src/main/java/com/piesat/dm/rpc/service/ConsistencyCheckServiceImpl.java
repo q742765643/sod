@@ -89,28 +89,28 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
             if("Gbase8a".equals(databaseDto.getDatabaseDefine().getDatabaseType())){
                 Gbase8a gbase8a = new Gbase8a(url, username, password);
                 //获取数据库中所有的表名
-                tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName()).getData();
+                tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName());
 
                 for(String tableName:tableList){
                     //物理库表字段信息
-                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)gbase8a.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
+                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)gbase8a.queryAllColumnInfo(databaseDto.getSchemaName(), tableName);
                     //物理库表索引和分库分表信息
-                    Map<String,String> indexs = (Map<String,String>)gbase8a.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
-                    compareDifferences(databaseId,tableName,columnInfos,indexs,compileResult);
+                    Map<String,Map<String,String>> indexAndShardings = (Map<String,Map<String,String>>)gbase8a.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName);
+                    compareDifferences(databaseId,tableName,columnInfos,indexAndShardings,compileResult);
 
                 }
             }else{
                 Xugu xugu = new Xugu(url, username, password);
                 //获取数据库中所有的表名
-                tableList = (List<String>)xugu.queryAllTableName(databaseDto.getSchemaName()).getData();
+                tableList = (List<String>)xugu.queryAllTableName(databaseDto.getSchemaName());
 
                 for(String tableName:tableList){
 
                     //表字段信息
-                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)xugu.queryAllColumnInfo(databaseDto.getSchemaName(),tableName.toUpperCase()).getData();
+                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)xugu.queryAllColumnInfo(databaseDto.getSchemaName(),tableName.toUpperCase());
                     //表索引和分开分表信息
-                    Map<String,String> indexs = (Map<String,String>)xugu.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
-                    compareDifferences(databaseId,tableName,columnInfos,indexs,compileResult);
+                    Map<String,Map<String,String>> indexAndShardings = (( Map<String,Map<String,String>>)xugu.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName));
+                    compareDifferences(databaseId,tableName,columnInfos,indexAndShardings,compileResult);
                 }
             }
 
@@ -123,8 +123,9 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         return compileResult;
     }
 
-    public void compareDifferences(String databaseId, String tableName, Map<String,Map<String,Object>> columnInfos, Map<String,String> indexs, Map<String,List<List<String>>> compileResult){
-        //物理库数据表名	  存储编码	资料名称	  存储元数据中该表是否存在	存储元数据多余的字段   存储元数据缺失的字段  存储元数据类型需要修改的字段   存储元数据类型需要修改的字段   存储元数据和物理库非空设置不一致的字段   存储元数据和物理库主键设置不一致的字段
+    public void compareDifferences(String databaseId, String tableName, Map<String,Map<String,Object>> columnInfos, Map<String,Map<String,String>> indexAndShardings, Map<String,List<List<String>>> compileResult){
+        //物理库数据表名	  存储编码	资料名称	  存储元数据中该表是否存在	存储元数据多余的字段   存储元数据缺失的字段  存储元数据类型需要修改的字段   存储元数据精度需要修改的字段   存储元数据和物理库非空设置不一致的字段   存储元数据和物理库主键设置不一致的字段
+        //物理库数据表名   存储编码  资料名称  存储元数据中该表是否存在   存储元数据多余的索引   存储元数据缺失的索引  存储元数据需要修改的索引
         List<List<String>> columnResults = compileResult.get("columnResult");
         List<List<String>> indexResults = compileResult.get("indexResult");
         List<List<String>> shardingResults = compileResult.get("shardingResult");
@@ -139,11 +140,19 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
             columnResult.add(tableName);
             columnResult.add(3,"不存在");
             columnResults.add(columnResult);
+            indexResult = new ArrayList<String>();
+            indexResult.add(tableName);
+            indexResult.add(3,"不存在");
+            indexResults.add(indexResult);
+            shardingResult = new ArrayList<String>();
+            shardingResult.add(tableName);
+            shardingResult.add(3,"不存在");
+            shardingResults.add(shardingResult);
            return;
         }
         for(Map<String, Object> dataTable : dataTableList) {
-            columnResult = new ArrayList<String>();
             DataTableDto dataTableDto = dataTableService.getDotById((String) dataTable.get("id"));
+            columnResult = new ArrayList<String>();
             columnResult.add(tableName);
             columnResult.add(dataTableDto.getDataServiceId());
             columnResult.add(dataTableDto.getNameCn());
@@ -163,14 +172,112 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                     continue;
                 }
                 //判断类型和长度
+                String dbColumnType = ((String) columnOneInfo.get("column_type")).replace(",",".");// decimal(4,0)  varchar(200)  date
+                String dbType = "";
+                String dbAcc = "";
+                if(dbColumnType.indexOf("(") != -1){
+                    dbType = dbColumnType.substring(0,dbColumnType.indexOf("("));
+                    dbAcc = dbColumnType.substring(dbColumnType.indexOf("(") + 1, dbColumnType.length()-1);
+                }else{
+                    dbType = dbColumnType;
+                }
+                if(!dbType.equalsIgnoreCase(columnDto.getType())){
+                    if(!("decimal".equalsIgnoreCase(columnDto.getType()) && "NUMERIC".equalsIgnoreCase(dbType)) &&
+                            !("int".equalsIgnoreCase(columnDto.getType()) && "INTEGER".equalsIgnoreCase(dbType))){
+                        if(StringUtils.isNotNullString(columnResult.get(6))){
+                            columnResult.set(6,columnResult.get(6)+";"+columnDto.getDbEleCode()+":"+columnDto.getType()+"=>"+dbType);
+                        }else{
+                            columnResult.set(6,columnDto.getDbEleCode()+":"+columnDto.getType()+"=>"+dbType);
+                        }
+                    }
+                }
+                if(!dbAcc.equalsIgnoreCase(columnDto.getAccuracy())){
+                    if(StringUtils.isNotNullString(columnResult.get(7))){
+                        columnResult.set(7,columnResult.get(7)+";"+columnDto.getDbEleCode()+":"+columnDto.getAccuracy()+"=>"+dbAcc);
+                    }else{
+                        columnResult.set(7,columnDto.getDbEleCode()+":"+columnDto.getAccuracy()+"=>"+dbAcc);
+                    }
+
+                }
+                //判断为空设置是否一致
+                if((columnDto.getIsNull() && (Integer)columnOneInfo.get("is_nullable") == 0) || (!columnDto.getIsNull() && (Integer)columnOneInfo.get("is_nullable") == 1)){
+                    if(StringUtils.isNotNullString(columnResult.get(8))){
+                        columnResult.set(8,columnResult.get(8)+";"+columnDto.getDbEleCode());
+                    }else{
+                        columnResult.set(8,columnDto.getDbEleCode());
+                    }
+                }
+                //以物理库为基础，查找元数据库缺失的字段
+                for(String codeName : columnInfos.keySet()){
+                    boolean flag = false;
+                    while(columnIterator.hasNext()) {
+                        TableColumnDto columnDto1 = columnIterator.next();
+                        if(codeName.equalsIgnoreCase(columnDto1.getDbEleCode())){
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if(!flag){
+                        if(StringUtils.isNotNullString(columnResult.get(5))) {
+                            columnResult.set(5,columnResult.get(5) + ";" + codeName);
+                        }else{
+                            columnResult.set(5,codeName);
+                        }
+                    }
+                }
             }
             columnResults.add(columnResult);
 
 
+            indexResult = new ArrayList<String>();
+            indexResult.add(tableName);
+            indexResult.add(dataTableDto.getDataServiceId());
+            indexResult.add(dataTableDto.getNameCn());
+            indexResult.add("存在");
             //以元数据库索引为准，遍历元数据索引
             Iterator<TableIndexDto> indexIterator = dataTableDto.getTableIndexList().iterator();
+            Map<String, String> dbIndexs = indexAndShardings.get("indexs");
+            while(indexIterator.hasNext()) {
+                TableIndexDto indexDto = indexIterator.next();
+                String indexColumn = dbIndexs.get(indexDto.getIndexName());
+                //元数据多余的索引
+                if(!StringUtils.isNotNullString(indexColumn)){
+                    if(StringUtils.isNotNullString(indexResult.get(4))){
+                        indexResult.set(4,indexResult.get(4) +";"+indexDto.getIndexName());
+                    }else{
+                        indexResult.set(4,indexDto.getIndexName());
+                    }
+                    continue;
+                }
+                //判断索引字段
+                if(!indexColumn.equalsIgnoreCase(indexDto.getIndexColumn())){
+                    if(StringUtils.isNotNullString(indexResult.get(6))){
+                        indexResult.set(6,indexResult.get(6) +";"+indexDto.getIndexName());
+                    }else{
+                        indexResult.set(6,indexDto.getIndexName());
+                    }
+                }
+                //以物理库为基础，查找元数据库缺失的索引
+                for(String indexName : dbIndexs.keySet()){
+                    boolean flag = false;
+                    while(indexIterator.hasNext()) {
+                        TableIndexDto indexDto1 = indexIterator.next();
+                        if(indexName.equalsIgnoreCase(indexDto1.getIndexName())){
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if(!flag){
+                        if(StringUtils.isNotNullString(indexResult.get(5))) {
+                            indexResult.set(5,indexResult.get(5) + ";" + indexName);
+                        }else{
+                            indexResult.set(5,indexName);
+                        }
+                    }
+                }
+            }
+            indexResults.add(indexResult);
         }
-
     }
 
 

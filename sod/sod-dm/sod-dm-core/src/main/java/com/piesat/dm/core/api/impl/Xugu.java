@@ -297,7 +297,7 @@ public class Xugu extends DatabaseDclAbs {
                 if("NO".equals(rs.getString("is_nullable"))){
                     columnOneInfo.put("is_nullable", 0);
                 }else{
-                    columnOneInfo.put("is_nullable", 0);
+                    columnOneInfo.put("is_nullable", 1);
                 }
                 columnInfos.put(rs.getString("column_name"),columnOneInfo);
             }
