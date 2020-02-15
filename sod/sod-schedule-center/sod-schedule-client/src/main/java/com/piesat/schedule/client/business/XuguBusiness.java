@@ -1,16 +1,24 @@
 package com.piesat.schedule.client.business;
 
+import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
+import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.Select2File;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
+import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 
 import java.io.File;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +71,57 @@ public class XuguBusiness extends BaseBusiness{
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_14_ERROR.getKey());
             EiSendUtil.xuguException(backupLogEntity.getParentId(),resultT);
         }
+    }
+
+    public void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT){
+        try {
+            if(null!=clearLogEntity.getVTableName()){
+                this.deleteXugu(clearLogEntity.getVTableName(),clearVo,clearLogEntity,resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
+            }
+            this.deleteXugu(clearLogEntity.getTableName(),clearVo,clearLogEntity,resultT);
+        } catch (Exception e) {
+            resultT.setErrorMessage("执行虚谷删除分区失败:{}",OwnException.get(e));
+
+        }
+    }
+    public void deleteXugu(String tableName,ClearVo clearVo,ClearLogEntity clearLogEntity,ResultT<String> resultT) throws Exception {
+        String schemaName=tableName.split("\\.")[0];
+        String table=tableName.split("\\.")[1];
+        DatabaseOperationService databaseOperationService= SpringUtil.getBean(DatabaseOperationService.class);
+        List<Map<String,Object>> partList=databaseOperationService.selectXuguPartition(schemaName,table);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(partList!=null&&!partList.isEmpty()){
+            for(Map<String,Object> map:partList){
+                String partiName= (String) map.get("parti_name");
+                String partiVal = (String) map.get("parti_val");
+                long time = sdf.parse(partiVal.replace("'", "")).getTime();
+                if(time>clearVo.getClearTime()){
+                    break;
+                }
+                int loopNum=0;
+                while (true){
+                    loopNum++;
+                    try {
+                        databaseOperationService.deletePartition(tableName,partiName);
+                        resultT.setSuccessMessage("删除表{},分区{}成功",tableName,partiName);
+                    } catch (Exception e) {
+                        if(loopNum>3){
+                            resultT.setErrorMessage("删除表{},分区{}异常;错误原因{}",tableName,partiName,OwnException.get(e));
+                            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_12_ERROR.getKey());
+                            EiSendUtil.partitionException(partiName,clearLogEntity.getParentId(),resultT);
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+            }
+        }
+
     }
 }
 

@@ -2,11 +2,16 @@ package com.piesat.schedule.client.business;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
+import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
+import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.ZipUtils;
+import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 
@@ -14,6 +19,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @program: sod
@@ -112,5 +119,49 @@ public class GbaseBusiness extends BaseBusiness{
         ZipUtils.writetxt(indexPath,msg.toString(),resultT);
 
     }
+
+    public void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT){
+        DataSourceContextHolder.setDataSource(clearLogEntity.getParentId());
+        try {
+            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
+            Date minDate=databaseOperationService.selectKtableMaxTime(clearLogEntity.getTableName(),clearLogEntity.getConditions());
+            long startTime=minDate.getTime();
+            if(clearVo.getClearTime()==0){
+                resultT.setSuccessMessage("根据条件未按清除频率进行切割");
+                this.deleteGbase(clearLogEntity,clearLogEntity.getConditions());
+                resultT.setSuccessMessage("清除条件为{}成功",clearLogEntity.getConditions());
+                return;
+            }
+            String ytime=format.format(clearVo.getClearTime());
+            resultT.setSuccessMessage("按清除频率进行切割{}",clearLogEntity.getClearLimit());
+            while (startTime<clearVo.getClearTime()){
+                 startTime=startTime+clearLogEntity.getClearLimit()*1000;
+                if(startTime>clearVo.getClearTime()){
+                    startTime=clearVo.getClearTime();
+                }
+                String ddateTime=format.format(startTime);
+                String conditions=clearLogEntity.getConditions().replaceAll(ytime,ddateTime);
+                this.deleteGbase(clearLogEntity,conditions);
+                resultT.setSuccessMessage("清除条件为{}成功",conditions);
+            }
+        } catch (Exception e) {
+            resultT.setErrorMessage("执行清除失败:{}", OwnException.get(e));
+            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
+        }finally {
+            DataSourceContextHolder.clearDataSource();
+        }
+
+    }
+
+    public void deleteGbase(ClearLogEntity clearLogEntity,String conditions){
+        DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
+        if(null!=clearLogEntity.getVTableName()){
+            databaseOperationService.deleteVtable(clearLogEntity,conditions);
+        }
+        databaseOperationService.delteKtable(clearLogEntity,conditions);
+    }
+
+
 }
 

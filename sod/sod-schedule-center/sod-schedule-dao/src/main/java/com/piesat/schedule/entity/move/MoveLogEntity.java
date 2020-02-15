@@ -50,6 +50,8 @@ public class MoveLogEntity extends JobInfoLogEntity {
     private long moveCount;
     @Column(name="database_type", length=50)
     private String databaseType;
+    @Column(name="foreign_key", length=50)
+    private String foreignKey;
     @Column(name="parent_id", length=50)
     private String parentId;
 
