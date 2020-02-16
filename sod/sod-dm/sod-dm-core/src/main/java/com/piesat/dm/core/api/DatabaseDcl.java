@@ -126,4 +126,30 @@ public interface DatabaseDcl {
     ResultT updateAccount(String dataBaseUser, String newPassword) throws Exception;
 
     ResultT queryData(String schema,String tableName, List<String> column,int row) throws Exception;
+
+    /**
+     * 查询实例下所有表名
+     * @param schema
+     * @return
+     * @throws Exception
+     */
+    ResultT queryAllTableName(String schema) throws Exception;
+
+    /**
+     *  查询字段信息
+     * @param schema
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
+    ResultT queryAllColumnInfo(String schema, String tableName) throws Exception;
+
+    /**
+     * 查询索引和分库分表信息
+     * @param schema
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
+    ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception;
 }

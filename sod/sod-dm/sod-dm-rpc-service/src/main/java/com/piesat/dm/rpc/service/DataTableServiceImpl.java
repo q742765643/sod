@@ -10,6 +10,7 @@ import com.piesat.dm.dao.ShardingDao;
 import com.piesat.dm.entity.DataTableEntity;
 import com.piesat.dm.entity.DatabaseEntity;
 import com.piesat.dm.entity.ShardingEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
@@ -48,7 +49,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     private DatabaseSqlService databaseSqlService;
     @Autowired
     private DatabaseInfo databaseInfo;
-
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
     @Override
     public BaseDao<DataTableEntity> getBaseDao() {
         return dataTableDao;
@@ -121,5 +123,10 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
         DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
         return database.queryData(databaseDto.getSchemaName(), sampleData.getTableName(), sampleData.getColumn(), 10);
+    }
+
+    @Override
+    public List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId, String tableName) {
+       return mybatisQueryMapper.getByDatabaseIdAndTableName(databaseId,tableName);
     }
 }

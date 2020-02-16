@@ -19,4 +19,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> selectStorageConfigurationPageList(@Param("map")Map<String,String> map);
     void updateStorageConfigurationStatus(@Param("id")String id, @Param("column")String column, @Param("value")String value);
+
+    List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId")String databaseId, @Param("tableName")String tableName);
 }
