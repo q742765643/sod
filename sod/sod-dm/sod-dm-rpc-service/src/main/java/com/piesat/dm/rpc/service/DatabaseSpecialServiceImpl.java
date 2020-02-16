@@ -207,10 +207,17 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 Integer applyAuthority = databaseSpecialReadWriteDto.getApplyAuthority();//申请权限
                 Integer examineStatus = databaseSpecialReadWriteDto.getExamineStatus();//授权状态
                 String userId = databaseSpecialReadWriteDto.getUserId();//用户ID
-                List<DataTableEntity> dataTableList = dataTableDao.findByDataClassIdAndClassLogicId(dataClassId,databaseId);
-                for(DataTableEntity dataTableEntity : dataTableList){
-                    //逐一授权
+                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
+
+                if(!databaseId.equals("RADB")){
+                    if(databaseSpecialReadWriteDto.getExamineStatus()==1){//授权
+                        empowerAuthority(userId,databaseId,dataClassId,applyAuthority);
+                    }else if(databaseSpecialReadWriteDto.getExamineStatus()==2){//撤销权限
+                        cancelAuthority(userId,databaseId,dataClassId,1);
+                    }
                 }
+                //更新数据库状态
+                databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,7 +268,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         }else if(Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)){//南大
                             databaseVO = new Gbase8a(url,username,password);
                         }
-                        List<DataTableEntity> dataTableList = dataTableDao.findByDataClassIdAndClassLogicId(dataClassId,databaseId);
+                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
                         for(DataTableEntity dataTableEntity : dataTableList){
                             String tableName = dataTableEntity.getTableName();
                             //默认读权限
@@ -326,7 +333,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         }else if(Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)){//南大
                             databaseVO = new Gbase8a(url,username,password);
                         }
-                        List<DataTableEntity> dataTableList = dataTableDao.findByDataClassIdAndClassLogicId(dataClassId,databaseId);
+                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
                         String[] permissions = {"SELECT","UPDATE","INSERT","DELETE"};
                         for(DataTableEntity dataTableEntity : dataTableList){
                             String tableName = dataTableEntity.getTableName();
