@@ -8,6 +8,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表数据统计
@@ -26,4 +27,6 @@ public interface TableDataStatisticsService {
     List<TableDataStatisticsDto> all();
 
     PageBean list(PageForm pageForm);
+
+    PageBean onLineList(PageForm<Map<String,String>> pageForm);
 }

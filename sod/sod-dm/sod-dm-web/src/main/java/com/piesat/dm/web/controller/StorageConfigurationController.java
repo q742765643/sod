@@ -60,6 +60,9 @@ public class StorageConfigurationController {
         if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
             map.put("logic_name",request.getParameter("logic_name"));
         }
+        if(StringUtils.isNotNullString(request.getParameter("queryTable"))){
+            map.put("queryTable",request.getParameter("queryTable"));
+        }
 
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);

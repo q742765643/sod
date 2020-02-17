@@ -1,10 +1,13 @@
 package com.piesat.dm.rpc.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.dm.dao.TableDataStatisticsDao;
 import com.piesat.dm.entity.TableDataStatisticsEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.TableDataStatisticsService;
 import com.piesat.dm.rpc.dto.TableDataStatisticsDto;
 import com.piesat.dm.rpc.mapper.TableDataStatisticsMapper;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表数据统计
@@ -28,6 +32,9 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
     private TableDataStatisticsDao tableDataStatisticsDao;
     @Autowired
     private TableDataStatisticsMapper tableDataStatisticsMapper;
+
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<TableDataStatisticsEntity> getBaseDao() {
@@ -61,5 +68,15 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
         List<TableDataStatisticsEntity> pageData = (List<TableDataStatisticsEntity>)page.getPageData();
         page.setPageData(this.tableDataStatisticsMapper.toDto(pageData));
         return page;
+    }
+
+    @Override
+    public PageBean onLineList(PageForm<Map<String,String>> pageForm) {
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<Map<String,Object>> lists = mybatisQueryMapper.onLineList(pageForm.getT());
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
+        //获取当前页数据
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
+        return  pageBean;
     }
 }

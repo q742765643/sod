@@ -21,4 +21,12 @@ public interface MybatisQueryMapper {
     void updateStorageConfigurationStatus(@Param("id")String id, @Param("column")String column, @Param("value")String value);
 
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId")String databaseId, @Param("tableName")String tableName);
+
+
+    /**
+     * 在线时间检索条件分页查询
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> onLineList(@Param("map")Map<String,String> map);
 }

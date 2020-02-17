@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.TableDataStatisticsService;
 import com.piesat.dm.rpc.dto.TableDataStatisticsDto;
 import com.piesat.sso.client.annotation.Log;
@@ -96,6 +97,24 @@ public class TableDataStatisticsController {
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
         PageBean pageBean = tableDataStatisticsService.list(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+    @GetMapping("/onLineList")
+    @ApiOperation(value = "在线时间检索条件分页查询", notes = "在线时间检索条件分页查询")
+    public ResultT<PageBean> onLineList(HttpServletRequest request,
+                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String,String> map = new HashMap<String,String>();
+        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
+            map.put("class_name",request.getParameter("class_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("d_data_id"))){
+            map.put("d_data_id",request.getParameter("d_data_id"));
+        }
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = tableDataStatisticsService.onLineList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
