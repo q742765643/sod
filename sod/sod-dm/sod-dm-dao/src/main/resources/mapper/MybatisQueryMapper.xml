@@ -73,4 +73,60 @@
     <select id="getByDatabaseIdAndTableName">
         select a.* from  t_sod_data_table a, t_sod_data_logic b where a.class_logic_id = b.id and a.table_name=#{tableName} and b.database_id = #{databaseId}
     </select>
+
+    <select id="getLogicClassTree" resultType="java.util.Map">
+        SELECT LOGIC_NAME "name",CONCAT('0-',LOGIC_FLAG) "id",'0' "pId",'1' "type",'0' "metaDataId" FROM  T_SOD_LOGIC_DEFINE
+            UNION
+        SELECT DISTINCT CLASS_NAME "name", CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) "id",CONCAT(PARENT_ID,  CONCAT('-', LOGIC_FLAG)) "pId", '1' "type", '0' "metaDataId"
+        FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID =  SUBSTR(B.DATA_CLASS_ID,0,1)
+            UNION
+        SELECT D.CLASS_NAME "name", CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) "id", CONCAT(D.PARENT_ID,  CONCAT('-', C.LOGIC_FLAG)) "pId",'1' "type",'0' "metaDataId"
+        FROM (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A
+            INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D where C.PARENT_ID = D.DATA_CLASS_ID
+            UNION
+        SELECT F.CLASS_NAME "name", CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) "id", CONCAT(F.PARENT_ID,  CONCAT('-', E.LOGIC_FLAG)) "pId",'1' "type",'0' "metaDataId"  FROM
+        (SELECT D.CLASS_NAME,D.DATA_CLASS_ID,D.PARENT_ID,C.LOGIC_FLAG FROM
+        (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B  ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D
+        where C.PARENT_ID = D.DATA_CLASS_ID) E,T_SOD_DATA_CLASS F  where E.PARENT_ID = F.DATA_CLASS_ID
+            UNION
+        SELECT CLASS_NAME "name",A.DATA_CLASS_ID "id",CONCAT(PARENT_ID,CONCAT('-',LOGIC_FLAG)) "pId",
+        '2' "type",'0' "metaDataId" FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE TYPE = 2
+    </select>
+
+    <select id="getDatabaseTree" resultType="java.util.Map">
+        SELECT * FROM (SELECT CONCAT(ID,'-P') ID,'999' PID,DATABASE_NAME NAME,'' DATA_CLASS_ID,1 TYPE,true isParent FROM
+        T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1 ORDER BY ID) A
+        UNION
+        SELECT * FROM (SELECT ID ID,CONCAT(DATABASE_DEFINE_ID,'-P') PID,
+        CONCAT(CONCAT(CONCAT(DATABASE_NAME,'('),SCHEMA_NAME),')') NAME,'' DATA_CLASS_ID,1 TYPE,true isParent FROM
+        T_SOD_DATABASE WHERE STOP_USE = false AND DATABASE_DEFINE_ID IN
+        (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1) ORDER BY ID) B
+    </select>
+
+    <select id="getDatabaseClassTree" resultType="java.util.Map">
+        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END id,CLASS_NAME name,
+        CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, #{id}) pId,DATA_CLASS_ID,TYPE  type,
+        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
+        FROM T_SOD_DATA_CLASS START WITH DATA_CLASS_ID IN (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATA_LOGIC WHERE DATABASE_ID = #{id})
+        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id
+    </select>
+
+    <select id="getDatabaseClassTreeMysql" resultType="java.util.Map">
+        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END ID,CLASS_NAME NAME,PARENT_ID,
+        CONCAT(CASE PARENT_ID WHEN '0' THEN '' ELSE PARENT_ID END, #{id}) PID,DATA_CLASS_ID,TYPE  TYPE,
+        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
+        FROM T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATA_LOGIC WHERE DATABASE_ID = #{id})
+         ORDER BY id
+    </select>
+
+    <select id="getDatabaseClassTreePMysql" resultType="java.util.Map">
+        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END ID,CLASS_NAME NAME,PARENT_ID,
+        CONCAT(CASE PARENT_ID WHEN '0' THEN '' ELSE PARENT_ID END, #{id}) PID,DATA_CLASS_ID,TYPE  TYPE,
+        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
+        FROM T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN
+        <foreach collection="classIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+         ORDER BY id
+    </select>
 </mapper>
