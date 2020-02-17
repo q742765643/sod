@@ -23,10 +23,18 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId")String databaseId, @Param("tableName")String tableName);
 
 
+
     /**
      * 在线时间检索条件分页查询
      * @param map
      * @return
      */
     List<Map<String, Object>> onLineList(@Param("map")Map<String,String> map);
+
+    List<Map<String, Object>> getLogicClassTree();
+    List<Map<String, Object>> getDatabaseTree();
+    List<Map<String, Object>> getDatabaseClassTree(@Param("id")String id);
+    List<Map<String, Object>> getDatabaseClassTreeMysql(@Param("id")String id);
+    List<Map<String, Object>> getDatabaseClassTreePMysql(@Param("classIds")List<String> classIds,@Param("id")String id);
+
 }
