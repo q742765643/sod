@@ -97,22 +97,23 @@ public class MoveHandler implements BaseHandler {
         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date minDate=databaseOperationService.selectKtableMaxTime(moveLogEntity.getTableName(),conditions);
         long startTime=minDate.getTime();
-        if(time>0){
-            String ytime=format.format(time);
-            while (startTime<time){
-                startTime=startTime+moveLogEntity.getMoveLimit()*1000;
-                if(startTime>time){
-                    startTime=time;
+        try {
+            if(time>0){
+                String ytime=format.format(time);
+                while (startTime<time){
+                    startTime=startTime+moveLogEntity.getMoveLimit()*1000;
+                    if(startTime>time){
+                        startTime=time;
+                    }
+                    String ddateTime=format.format(startTime);
+                    conditions=conditions.replaceAll(ytime,ddateTime);
+                    compensateList.add(conditions);
                 }
-                String ddateTime=format.format(startTime);
-                conditions=conditions.replaceAll(ytime,ddateTime);
+            }else{
                 compensateList.add(conditions);
-                if(!resultT.isSuccess()){
-                    return;
-                }
             }
-        }else{
-            compensateList.add(conditions);
+        } catch (Exception e) {
+            resultT.setErrorMessage("时间切割失败");
         }
     }
     public void moveExecute(MoveVo moveVo, MoveLogEntity moveLogEntity, ResultT<String> resultT){
@@ -121,7 +122,9 @@ public class MoveHandler implements BaseHandler {
         this.calculateCompensateList(compensateList,moveLogEntity,moveVo.getMoveConditions(),moveVo.getMoveTime(),resultT);
         for(String conditions:compensateList){
             this.moveAndClearLogic(0,conditions,moveVo,moveLogEntity,resultT);
-
+            if(!resultT.isSuccess()){
+                return;
+            }
         }
     }
     public void clearExecute(MoveVo moveVo, MoveLogEntity moveLogEntity, ResultT<String> resultT){
@@ -130,7 +133,9 @@ public class MoveHandler implements BaseHandler {
         this.calculateCompensateList(compensateList,moveLogEntity,moveVo.getClearConditions(),moveVo.getClearTime(),resultT);
         for(String conditions:compensateList){
             this.moveAndClearLogic(1,conditions,moveVo,moveLogEntity,resultT);
-
+            if(!resultT.isSuccess()){
+                return;
+            }
         }
     }
 
@@ -139,16 +144,25 @@ public class MoveHandler implements BaseHandler {
         if(!resultT.isSuccess()){
             return;
         }
-        List<Map<String,Object>> mapKList=databaseOperationService.selectByKCondition(moveLogEntity.getTableName(),conditions);
+        List<Map<String,Object>> mapKList=databaseOperationService.selectByKCondition(moveLogEntity.getParentId(),moveLogEntity.getTableName(),conditions,resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
         if(null==mapKList||mapKList.isEmpty()){
             return;
         }
         for(Map<String,Object> mapK:mapKList){
             if(type==0){
                 this.moveLogic(mapK,moveLogEntity,resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
             }
             if(type==1){
                 this.clearLogic(mapK,moveLogEntity,resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
             }
         }
 
@@ -179,7 +193,7 @@ public class MoveHandler implements BaseHandler {
         kIndexVo.setNewPath(targetPath);
         kIndexVo.setTable(moveLogEntity.getTableName());
         kIndexVo.setConditions(vconditions);
-        databaseOperationService.updateIndex(kIndexVo);
+        databaseOperationService.updateIndex(moveLogEntity.getParentId(),kIndexVo,resultT);
     }
     public void clearLogic(Map<String,Object> mapK,MoveLogEntity moveLogEntity,ResultT<String> resultT){
         SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -201,11 +215,14 @@ public class MoveHandler implements BaseHandler {
         IndexVo kIndexVo=new IndexVo();
         kIndexVo.setTable(moveLogEntity.getTableName());
         kIndexVo.setConditions(vconditions);
-        databaseOperationService.deleteIndex(kIndexVo);
+        databaseOperationService.deleteIndex(moveLogEntity.getParentId(),kIndexVo,resultT);
     }
 
     public void deleteVIndex(MoveLogEntity moveLogEntity,String vconditions ,ResultT<String> resultT){
-        List<Map<String,Object>> mapVList=databaseOperationService.selectByVCondition(moveLogEntity,vconditions);
+        List<Map<String,Object>> mapVList=databaseOperationService.selectByVCondition(moveLogEntity,vconditions,resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
         if(null==mapVList||mapVList.isEmpty()){
             return;
         }
@@ -220,6 +237,6 @@ public class MoveHandler implements BaseHandler {
         IndexVo vIndexVo=new IndexVo();
         vIndexVo.setTable(moveLogEntity.getVTableName());
         vIndexVo.setConditions(vconditions);
-        databaseOperationService.deleteIndex(vIndexVo);
+        databaseOperationService.deleteIndex(moveLogEntity.getParentId(),vIndexVo,resultT);
     }
 }
