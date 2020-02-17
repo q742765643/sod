@@ -1,9 +1,11 @@
 package com.piesat.schedule.rpc.dto.mmd;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import com.piesat.util.BaseDto;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /** 公共元数据同步记录
 *@description
@@ -12,17 +14,13 @@ import lombok.Data;
 *
 */
 @Data
-public class ComMetadataSyncRecordDto implements Serializable{
+@EqualsAndHashCode(callSuper = true)
+public class ComMetadataSyncRecordDto extends BaseDto{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3286392842561056997L;
-	
-	/**
-	 * id
-	 */
-	private String id;
 	/**
 	 * 开始时间
 	 */

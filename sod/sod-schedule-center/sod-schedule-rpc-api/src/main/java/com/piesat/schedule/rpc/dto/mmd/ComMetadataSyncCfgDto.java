@@ -7,22 +7,20 @@ package com.piesat.schedule.rpc.dto.mmd;
 *
 */
 
-import java.io.Serializable;
+import com.piesat.schedule.rpc.dto.JobInfoDto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ComMetadataSyncCfgDto implements Serializable{
+@EqualsAndHashCode(callSuper = true)
+public class ComMetadataSyncCfgDto extends JobInfoDto{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3281009586986033266L;
 	
-	/**
-	 *  id
-	 */
-	private String id;
 	/**
 	 * 任务名
 	 */

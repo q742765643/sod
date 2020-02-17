@@ -1,17 +1,14 @@
 package com.piesat.schedule.entity.mmd;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.GenericGenerator;
+import com.piesat.schedule.entity.JobInfoEntity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /** 公共元数据同步配置实体
 *@description
@@ -22,21 +19,13 @@ import lombok.Data;
 @Data
 @Table(name="t_sod_sync_commetadata_cfg")
 @Entity
-public class ComMetadataSyncCfgEntity implements Serializable{
+@EqualsAndHashCode(callSuper = true)
+public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2114752285073022365L;
-	
-	/**
-	 *  id
-	 */
-	@Id
-    @Column(name="ID",length=36)
-    @GeneratedValue(generator = "htht.uuid")
-    @GenericGenerator(name = "htht.uuid", strategy = "com.piesat.common.jpa.generator.UUIDStringGenerator")
-	private String id;
+	private static final long serialVersionUID = 2711537570477549135L;
 	/**
 	 * 任务名
 	 */
