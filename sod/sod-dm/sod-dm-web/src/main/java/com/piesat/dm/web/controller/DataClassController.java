@@ -129,7 +129,7 @@ public class DataClassController {
         }
     }
 
-    @ApiOperation(value = "按数据库查询资料分类树")
+    @ApiOperation(value = "查询资料分类树")
     @RequiresPermissions("dm:dataClass:getTree")
     @GetMapping(value = "/getTree")
     public ResultT getTree() {
