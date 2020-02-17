@@ -124,6 +124,10 @@ public class ResultT<T> implements Serializable {
         this.processMsg.append(message + "\n");
         logger.info(message);
     }
+    public void setSuccessMessage(String message) {
+        this.processMsg.append(message + "\n");
+        logger.info(message);
+    }
 
     public void setMessage(ReturnCodeEnum code, String message) {
         this.code = code.getKey();
