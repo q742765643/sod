@@ -129,7 +129,10 @@ public class GbaseBusiness extends BaseBusiness{
             long startTime=minDate.getTime();
             if(clearVo.getClearTime()==0){
                 resultT.setSuccessMessage("根据条件未按清除频率进行切割");
-                this.deleteGbase(clearLogEntity,clearLogEntity.getConditions());
+                this.deleteGbase(clearLogEntity,clearLogEntity.getConditions(),resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
                 resultT.setSuccessMessage("清除条件为{}成功",clearLogEntity.getConditions());
                 return;
             }
@@ -142,8 +145,10 @@ public class GbaseBusiness extends BaseBusiness{
                 }
                 String ddateTime=format.format(startTime);
                 String conditions=clearLogEntity.getConditions().replaceAll(ytime,ddateTime);
-                this.deleteGbase(clearLogEntity,conditions);
-                resultT.setSuccessMessage("清除条件为{}成功",conditions);
+                this.deleteGbase(clearLogEntity,conditions,resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
             }
         } catch (Exception e) {
             resultT.setErrorMessage("执行清除失败:{}", OwnException.get(e));
@@ -154,12 +159,20 @@ public class GbaseBusiness extends BaseBusiness{
 
     }
 
-    public void deleteGbase(ClearLogEntity clearLogEntity,String conditions){
-        DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
-        if(null!=clearLogEntity.getVTableName()){
-            databaseOperationService.deleteVtable(clearLogEntity,conditions);
+    public void deleteGbase(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){
+        try {
+            DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
+            if(null!=clearLogEntity.getVTableName()){
+                long vcount=databaseOperationService.deleteVtable(clearLogEntity,conditions);
+                resultT.setSuccessMessage("表{},条数{},执行清除成功条件:{},",clearLogEntity.getVTableName(),vcount,conditions);
+
+            }
+            long kcount =databaseOperationService.delteKtable(clearLogEntity,conditions);
+            resultT.setSuccessMessage("表{},条数{}执行清除成功条件:{}",clearLogEntity.getTableName(),kcount,conditions);
+        } catch (Exception e) {
+            resultT.setErrorMessage("执行清除失败:{}", OwnException.get(e));
+
         }
-        databaseOperationService.delteKtable(clearLogEntity,conditions);
     }
 
 
