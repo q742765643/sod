@@ -94,53 +94,5 @@ public class FileUtil {
             EiSendUtil.fileException(srcFile,resultT);
         }
     }
-
-    public static void  delete(String path,ResultT<String> resultT){
-        boolean isdelete=false;
-        File file=new File(path);
-        if(!file.exists()){
-            return;
-        }
-        try {
-            isdelete=file.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(!isdelete){
-            String dpcUser="";
-            String dpcPass="";
-            String cmd="echo \""+dpcPass+"\" |su -l "+dpcUser+" -c \"rm -rf "+path+"\"";
-            String[] commands = new String[]{"/bin/sh", "-c", cmd};
-            Runtime r = Runtime.getRuntime();
-            try {
-                Process proc = r.exec(commands);
-                int exitVal = proc.waitFor();
-                if (exitVal == 0) {
-                    isdelete = true;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if(!isdelete){
-            resultT.setErrorMessage("删除文件失败");
-            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_3_ERROR.getKey());
-            EiSendUtil.fileException(path,resultT);
-        }
-
-
-
-    }
-
-    public static void checkFile(String path,ResultT<String> resultT){
-        File file=new File(path);
-        if(!file.exists()){
-            resultT.setErrorMessage("{}不存在");
-
-        }
-
-    }
 }
 

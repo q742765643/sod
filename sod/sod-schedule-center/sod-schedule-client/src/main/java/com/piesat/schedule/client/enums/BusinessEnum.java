@@ -18,7 +18,7 @@ public enum BusinessEnum {
     //DRDS备份逻辑
     //ALI_DRDS("stdb", ""),
     //GBASE备份逻辑
-    GBASE8A("gbase8a", new GbaseBusiness());
+    GBASE8A("gabse8a", new GbaseBusiness());
     private String title;
     private BaseBusiness baseBusiness;
 
@@ -30,7 +30,7 @@ public enum BusinessEnum {
     public static BusinessEnum match(String name, BusinessEnum defaultItem) {
         if (name != null) {
             for (BusinessEnum item : BusinessEnum.values()) {
-                if (item.name().toUpperCase().equals(name.toUpperCase())) {
+                if (item.name().equals(name)) {
                     return item;
                 }
             }

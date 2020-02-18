@@ -43,7 +43,10 @@
         left join t_sod_database_define ee on e.database_define_id = ee.id
         left join t_sod_storage_configuration h on (a.DATA_CLASS_ID = h.DATA_CLASS_ID AND a.LOGIC_flag=h.LOGIC_ID AND e.id=h.DATABASE_ID)
         left join t_sod_logic_define c on a.logic_flag = c.logic_flag
-        left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID	AND b.DB_TABLE_TYPE = 'E')
+        left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID <if test="map.queryTable == true"> AND b.DB_TABLE_TYPE = 'E' </if>)
+        <if test="map.queryTable == false">
+        left join t_sod_data_table_column g on b.id = g.table_id
+        </if>
         <where>
             <if test="map.database_name != null and map.database_name  != ''">
                 AND ee.database_name like '${map.database_name}%'
@@ -73,6 +76,29 @@
     <select id="getByDatabaseIdAndTableName">
         select a.* from  t_sod_data_table a, t_sod_data_logic b where a.class_logic_id = b.id and a.table_name=#{tableName} and b.database_id = #{databaseId}
     </select>
+
+
+    <!--在线时间检索条件分页查询-->
+    <select id="onLineList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT AA.DATA_CLASS_ID DATA_CLASS_ID,AA.D_DATA_ID D_DATA_ID,AA.IF_STOP_USE,AA.CLASS_NAME,CC.BEGIN_TIME,CC.END_TIME,CC.RECORD_COUNT
+        FROM T_SOD_DATA_CLASS AA
+        INNER JOIN
+        (SELECT DATA_CLASS_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM T_SOD_TABLEDATA_STATISTICS A LEFT JOIN
+        T_SOD_DATA_TABLE B ON A.TABLE_ID = B.ID LEFT JOIN  T_SOD_DATA_LOGIC C ON B.class_logic_id = C.ID WHERE C.DATA_CLASS_ID IS NOT NULL GROUP BY C.DATA_CLASS_ID) BB ON
+        AA.DATA_CLASS_ID = BB.DATA_CLASS_ID
+        INNER JOIN (SELECT  distinct BEGIN_TIME,END_TIME,RECORD_COUNT,DATA_CLASS_ID,STATISTIC_TIME FROM T_SOD_TABLEDATA_STATISTICS A LEFT JOIN
+        T_SOD_DATA_TABLE B ON A.TABLE_ID = B.ID LEFT JOIN T_SOD_DATA_LOGIC C ON B.class_logic_id = C.ID) CC ON (BB.DATA_CLASS_ID = CC.DATA_CLASS_ID AND
+        BB.STATISTIC_TIME = CC.STATISTIC_TIME)
+        <where>
+            <if test="map.class_name != null and map.class_name != ''">
+                AA.CLASS_NAME like '%${map.class_name}%'
+            </if>
+            <if test="map.d_data_id != null and map.d_data_id != ''">
+                AND AA.D_DATA_ID like '%${map.d_data_id}%'
+            </if>
+        </where>
+    </select>
+
 
     <select id="getLogicClassTree" resultType="java.util.Map">
         SELECT LOGIC_NAME "name",CONCAT('0-',LOGIC_FLAG) "id",'0' "pId",'1' "type",'0' "metaDataId" FROM  T_SOD_LOGIC_DEFINE
@@ -129,4 +155,5 @@
         </foreach>
          ORDER BY id
     </select>
+
 </mapper>

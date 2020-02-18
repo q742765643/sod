@@ -43,39 +43,38 @@ public class SendThread {
             try {
                 redisLock.lock("custom");
                 objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
-                if(null==objects){
-                    redisLock.delete("custom");
-                    i=0;
-                    j=0;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                if(null!=objects){
-                    String key= (String) objects;
-                    JobInfoEntity jobInfo= (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL+key);
-                    if(jobInfo==null){
-                        redisUtil.zsetRemove(QUARTZ_HTHT_WAIT,objects);
-                        continue;
-                    }
-                    ResultT<String> resultT=this.execute(jobInfo);
-                    if(!resultT.isSuccess()){
-                        i++;
-                        j++;
-                    }
-                    if(resultT.isSuccess()){
-                        redisUtil.del(QUARTZ_HTHT_JOBDTEAIL+key);
-                        redisUtil.zsetRemove(QUARTZ_HTHT_WAIT,objects);
-                    }
-
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if(null==objects){
+                redisLock.delete("custom");
+                i=0;
+                j=0;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+            }
+            if(null!=objects){
+                String key= (String) objects;
+                JobInfoEntity jobInfo= (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL+key);
+                if(jobInfo==null){
+                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT,objects);
+                    continue;
+                }
+                ResultT<String> resultT=this.execute(jobInfo);
+                if(!resultT.isSuccess()){
+                    i++;
+                    j++;
+                }
+                if(resultT.isSuccess()){
+                    redisUtil.del(QUARTZ_HTHT_JOBDTEAIL+key);
+                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT,objects);
+                }
+
+            }
         }
     }
 

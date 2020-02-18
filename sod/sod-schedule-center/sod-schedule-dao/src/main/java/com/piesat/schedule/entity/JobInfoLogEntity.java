@@ -30,7 +30,7 @@ public class JobInfoLogEntity extends BaseEntity{
     private Date handleTime;
     @Column(name="handle_code",length = 1)
     private String handleCode;
-    @Column(name="handle_msg", columnDefinition="text")
+    @Column(name="handle_msg", length=5000)
     private String handleMsg;
     @Column(name="elapsed_time")
     private long elapsedTime;

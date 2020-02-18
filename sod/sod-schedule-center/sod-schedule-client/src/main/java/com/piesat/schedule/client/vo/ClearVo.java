@@ -12,8 +12,5 @@ import lombok.Data;
 public class ClearVo {
     private long clearTime=0;
     private String conditions;
-    private long startTime;
-    private long endTime;
-    private long count;
 }
 

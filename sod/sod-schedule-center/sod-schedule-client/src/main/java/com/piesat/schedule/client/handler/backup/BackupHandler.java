@@ -69,6 +69,15 @@ public class BackupHandler implements BaseHandler {
         mapDetail.put("COMPLETEDATA", "");
         mapDetail.put("DETAIL", "");
         diSendVo.setTaskDetail(mapDetail);
+        diSendVo.setEndTimeA(System.currentTimeMillis());
+        if (resultT.isSuccess()) {
+            diSendVo.setTaskState("成功");
+        } else {
+            diSendVo.setTaskState("失败");
+            diSendVo.setTaskErrorReason(resultT.getMsg());
+            diSendVo.setTaskErrorTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
+        }
+        diSendVo.setRecordTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
 
         this.preParam(backupEntity, resultT);
 
@@ -155,36 +164,29 @@ public class BackupHandler implements BaseHandler {
                     compensateList.add(backupLogEntity);
                 }
             }
-            this.calculateCompensateList(backupEntity,backupVo,backupLogEntity.getBackupTime(),compensateList,resultT);
+            long startTime = backupLogEntity.getBackupTime()+backupVo.getMistiming();
+            //isEnd 2为补偿备份
+            while (backupVo.getBackupTime() - startTime >0) {
+                startTime = startTime + backupVo.getMistiming();
 
-        }
-        if (backupLogEntity == null && backupVo.getMistiming() > 0&&null!=backupEntity.getBackupStartTime()) {
-            this.calculateCompensateList(backupEntity,backupVo,backupEntity.getBackupStartTime().getTime(),compensateList,resultT);
+                BackupLogEntity backupLogHisEntity = new BackupLogEntity();
+                BeanUtils.copyProperties(backupEntity, backupLogHisEntity);
+                BackupVo backupHisVo = this.calculateBackupTime(backupEntity, startTime, resultT);
+                backupLogHisEntity.setBackupTime(backupHisVo.getBackupTime());
+                backupLogHisEntity.setConditions(backupHisVo.getConditions());
+                backupLogHisEntity.setSecondConditions(backupHisVo.getSecondConditions());
+                backupLogHisEntity.setIsEnd(2);
+                if (backupHisVo.getBackupTime() >= backupVo.getBackupTime()) {
+                    break;
+                }
+                if(backupHisVo.getBackupTime()>backupLogEntity.getBackupTime()){
+                    compensateList.add(backupLogHisEntity);
+                }
+            }
+
         }
     }
 
-    public void  calculateCompensateList(BackupEntity backupEntity,BackupVo backupVo,long backTime
-            ,List<BackupLogEntity> compensateList,ResultT<String> resultT){
-        long startTime = backTime+backupVo.getMistiming();
-        //isEnd 2为补偿备份
-        while (backupVo.getBackupTime() - startTime >0) {
-            startTime = startTime + backupVo.getMistiming();
-
-            BackupLogEntity backupLogHisEntity = new BackupLogEntity();
-            BeanUtils.copyProperties(backupEntity, backupLogHisEntity);
-            BackupVo backupHisVo = this.calculateBackupTime(backupEntity, startTime, resultT);
-            backupLogHisEntity.setBackupTime(backupHisVo.getBackupTime());
-            backupLogHisEntity.setConditions(backupHisVo.getConditions());
-            backupLogHisEntity.setSecondConditions(backupHisVo.getSecondConditions());
-            backupLogHisEntity.setIsEnd(2);
-            if (backupHisVo.getBackupTime() >= backupVo.getBackupTime()) {
-                break;
-            }
-            if(backupHisVo.getBackupTime()>backTime){
-                compensateList.add(backupLogHisEntity);
-            }
-        }
-    }
 
     public BackupLogEntity insertBackupLog(BackupLogEntity backupLogEntity, BackupEntity backupEntity, ResultT<String> resultT) {
         ReplaceVo replaceVo = new ReplaceVo();

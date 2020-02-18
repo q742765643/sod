@@ -1,9 +1,7 @@
 package com.piesat.schedule.client.business;
 
-import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
-import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.util.ResultT;
 
 /**
@@ -18,7 +16,5 @@ public abstract class BaseBusiness {
 
     public abstract void backUpVtable(BackupLogEntity backupLogEntity,StrategyVo strategyVo,ResultT<String> resultT);
 
-
-    public abstract void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT);
 }
 

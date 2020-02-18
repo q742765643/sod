@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * @program: sod
@@ -46,8 +45,6 @@ public class BackupEntity extends JobInfoEntity{
     private String parentId;
     @Column(name="foreign_key", length=50)
     private String foreignKey;
-    @Column(name="backup_start_time", length=50)
-    private Date  backupStartTime;
 
 
 }

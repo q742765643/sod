@@ -2,7 +2,6 @@ package com.piesat.schedule.client.business;
 
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
-import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.Select2File;
@@ -75,8 +74,6 @@ public class XuguBusiness extends BaseBusiness{
     }
 
     public void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT){
-        DataSourceContextHolder.setDataSource(clearLogEntity.getParentId());
-
         try {
             if(null!=clearLogEntity.getVTableName()){
                 this.deleteXugu(clearLogEntity.getVTableName(),clearVo,clearLogEntity,resultT);
@@ -87,9 +84,6 @@ public class XuguBusiness extends BaseBusiness{
             this.deleteXugu(clearLogEntity.getTableName(),clearVo,clearLogEntity,resultT);
         } catch (Exception e) {
             resultT.setErrorMessage("执行虚谷删除分区失败:{}",OwnException.get(e));
-
-        }finally {
-            DataSourceContextHolder.clearDataSource();
 
         }
     }
@@ -118,7 +112,7 @@ public class XuguBusiness extends BaseBusiness{
                             resultT.setErrorMessage("删除表{},分区{}异常;错误原因{}",tableName,partiName,OwnException.get(e));
                             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_12_ERROR.getKey());
                             EiSendUtil.partitionException(partiName,clearLogEntity.getParentId(),resultT);
-                            Thread.sleep(18000);
+
                             break;
                         }
                     }

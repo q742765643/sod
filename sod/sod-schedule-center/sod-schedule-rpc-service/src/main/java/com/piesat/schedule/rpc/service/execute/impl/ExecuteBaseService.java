@@ -85,17 +85,7 @@ public abstract class ExecuteBaseService {
             List<Server> servers=new ArrayList<>();
             DiscoveryClient discoveryClient= SpringUtil.getBean(DiscoveryClient.class);
             Application application=discoveryClient.getApplication("schedule-client-server");
-            List<InstanceInfo> instanceInfos= null;
-            try {
-                  instanceInfos = application.getInstances();
-            } catch (Exception e) {
-                  try {
-                        Thread.sleep(6000);
-                  } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                  }
-                  log.error("调度未发现可用服务");
-            }
+            List<InstanceInfo> instanceInfos=application.getInstances();
             if(instanceInfos==null||instanceInfos.size()==0){
                   return servers;
             }

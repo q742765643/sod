@@ -1,6 +1,5 @@
 package com.piesat.schedule.client.util;
 
-import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
 import org.springframework.util.DigestUtils;
 
@@ -26,7 +25,8 @@ public class Md5Utils {
             String md5= DigestUtils.md5DigestAsHex( new FileInputStream(path));
             return md5;
         } catch (IOException e) {
-            resultT.setErrorMessage("Md5加密异常{}", OwnException.get(e));
+            resultT.setErrorMessage("Md5加密异常");
+            e.printStackTrace();
             return "";
         }
     }

@@ -1,7 +1,6 @@
 package com.piesat.schedule.mapper;
 
 import com.piesat.schedule.entity.DatabaseOperationVo;
-import com.piesat.schedule.entity.IndexVo;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,6 @@ import java.util.Map;
  */
 @Component
 public interface DatabaseOperationMapper {
-    public int selectTableCount(DatabaseOperationVo databaseOperationVo);
-
     public Date selectKtableMaxTime(DatabaseOperationVo databaseOperationVo);
 
     public int delteKtable(DatabaseOperationVo databaseOperationVo);
@@ -25,13 +22,4 @@ public interface DatabaseOperationMapper {
     public List<Map<String,Object>> selectXuguPartition(@Param("schemaName") String schemaName,@Param("tableName") String tableName);
 
     public int deletePartition(@Param("tableName") String tableName,@Param("partName") String partName);
-
-    public List<Map<String,Object>> selectByKCondition(DatabaseOperationVo databaseOperationVo);
-
-    public List<Map<String,Object>> selectByVCondition(DatabaseOperationVo databaseOperationVo);
-
-    public long updateIndex(IndexVo indexVo);
-
-    public long deleteIndex(IndexVo indexVo);
-
 }
