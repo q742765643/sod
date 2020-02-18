@@ -59,7 +59,9 @@ public class SyncTaskController {
     @RequiresPermissions("schedule:sync:list")
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(SyncTaskDto syncTaskDto, int pageNum, int pageSize) {
+    public ResultT<PageBean> list(SyncTaskDto syncTaskDto,
+                                  @RequestParam(value = "pageNum", defaultValue = "1")int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "10")int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<SyncTaskDto> pageForm = new PageForm<>(pageNum, pageSize, syncTaskDto);
         PageBean pageBean = syncTaskService.selectPageList(pageForm);
@@ -78,7 +80,9 @@ public class SyncTaskController {
     @RequiresPermissions("schedule:sync:listLog")
     @GetMapping("/listLog")
     @ApiOperation(value = "分页查询日志接口", notes = "分页查询日志接口")
-    public ResultT<PageBean> listLog(SyncTaskLogDto syncTaskLogDto, int pageNum, int pageSize) {
+    public ResultT<PageBean> listLog(SyncTaskLogDto syncTaskLogDto,
+                                     @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                     @RequestParam(value = "pageSize", defaultValue = "10")int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<SyncTaskLogDto> pageForm = new PageForm<>(pageNum, pageSize, syncTaskLogDto);
         PageBean pageBean = syncTaskService.selectLogPageList(pageForm);

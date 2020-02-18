@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.piesat.schedule.mapper.DatabaseOperationMapper">
+    <select id="selectTableCount" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.lang.Integer" >
+       SELECT COUNT(1)  from ${ktable}
+          where
+        ${conditions}
+    </select>
     <select id="selectKtableMaxTime" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Date">
       select min(d_datetime)
          from ${ktable}
@@ -45,5 +50,29 @@
     </select>
     <delete id="deletePartition">
         alter table ${tableName} drop partition ${partName} wait 120000
+    </delete>
+    <select id="selectByKCondition"  parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
+         SELECT *  from ${ktable}
+          where
+        ${conditions}
+    </select>
+    <select id="selectByVCondition" parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
+         SELECT *  FROM
+        ${vtable} where
+        ${fk} in
+        (
+        select ${fk}
+        from
+        ${ktable}
+        where
+        ${conditions}
+        )
+
+    </select>
+    <update id="updateIndex" parameterType="com.piesat.schedule.entity.IndexVo">
+        update ${table} set D_FILE_SAVE_HIERARCHY = '1',d_storage_site=#{newPath} where  ${conditions};
+    </update>
+    <delete id="deleteIndex">
+      delete from ${table} where  ${conditions};
     </delete>
 </mapper>
