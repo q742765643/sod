@@ -72,5 +72,41 @@
 		order by 
 			t1.table_name asc
     </select>
+    
+    <!-- 全量同步,清空表 -->
+    <update id="clearTable" parameterType="java.lang.String">
+    	truncate table ${tableName}
+    </update>
+    
+    <!-- 插入一行数据 -->
+    <insert id="insert1Row" parameterType="java.util.Map">
+    	insert into ${tableName}
+        <foreach collection="row.keys" item="key" open="(" close=")" separator=",">
+            ${key}
+        </foreach>
+        values
+        <foreach collection="row.values" item="value" open="(" close=")" separator=",">
+            #{value}
+        </foreach>
+    </insert>
+    
+    <!-- 更新一条数据 -->
+    <update id="update1Row" parameterType="java.util.Map">
+    	update ${tableName}
+        set
+        <foreach collection="row.entrySet()" index="key"  item="ent" separator=",">
+            ${key} = #{ent}
+        </foreach>
+        where ${pk} = #{pkValue}
+    </update>
+    <!-- 删除一条数据 -->
+    <delete id="del1Row" parameterType="java.util.Map">
+    	delete
+        from
+            ${tableName}
+        where
+            ${pk} = #{pkValue}
+    </delete>
+    
 
 </mapper>

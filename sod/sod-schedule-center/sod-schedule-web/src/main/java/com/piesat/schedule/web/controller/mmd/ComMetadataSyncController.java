@@ -201,5 +201,29 @@ public class ComMetadataSyncController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
+	/**
+	 *  立即同步公共元数据
+	 *  两个入口 : 1 公共元数据同步 立即同步按钮,传参数是ids
+	 *  2.新增数据注册 增量同步按钮 传参数是apiType
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月18日上午11:34:16
+	 * @param ids
+	 * @return
+	 */
+	@ApiOperation(value="立即同步公共元数据",notes="立即同步公共元数据接口")
+	@GetMapping(value="/syncDataNow")
+	@RequiresPermissions("restApi:comMetaData:syncDataNow")
+    @Log(title = "立即同步公共元数据接口", businessType = BusinessType.OTHER)
+	public ResultT syncDataNow(String ids,String apiType) {
+		log.info(">>>>>>立即执行公共元数据同步");
+		try {
+			//oprType 同步模式1 :自动同步 , 2 : 手动同步
+			return comMetadataSyncService.syncDataNow(ids, apiType,2);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
 
 }

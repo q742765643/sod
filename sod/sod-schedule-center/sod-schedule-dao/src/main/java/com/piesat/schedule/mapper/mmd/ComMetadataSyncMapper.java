@@ -1,6 +1,7 @@
 package com.piesat.schedule.mapper.mmd;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -33,5 +34,42 @@ public interface ComMetadataSyncMapper {
 	 * @throws Exception
 	 */
 	List<ComMetadataSyncRecordEntity> selectRecordList(ComMetadataSyncRecordEntity entity) throws Exception;
+	/**
+	 *  全量同步 ,清除表数据
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月18日下午1:33:36
+	 * @param tableName
+	 * @throws Exception
+	 */
+	void clearTable(String tableName) throws Exception;
+	/**
+	 *  插入一行数据
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月18日下午3:24:28
+	 * @param row
+	 * @param tableName
+	 * @throws Exception
+	 */
+	void insert1Row(Map<String,Object> param) throws Exception;
+	/**
+	 *  更新一行数据
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月18日下午3:32:47
+	 * @param param
+	 * @throws Exception
+	 */
+	void update1Row(Map<String,Object> param) throws Exception;
+	/**
+	 *  删除一行数据
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月18日下午3:33:19
+	 * @param param
+	 * @throws Exception
+	 */
+	void del1Row(Map<String,Object> param) throws Exception;
 	
 }

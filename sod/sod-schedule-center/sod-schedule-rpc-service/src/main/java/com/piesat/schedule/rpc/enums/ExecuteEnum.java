@@ -14,7 +14,8 @@ import com.piesat.schedule.entity.move.MoveEntity;
 public enum ExecuteEnum {
     BACKUP(HandleConstant.BACKUP,"executeBackupService"),
     MOVE(HandleConstant.MOVE,"executeMoveService"),
-    CLEAR(HandleConstant.CLEAR,"executeClearService");
+    CLEAR(HandleConstant.CLEAR,"executeClearService"),
+    MMD(HandleConstant.MMD,"executeMmdSyncService");
 
 
     private String name;

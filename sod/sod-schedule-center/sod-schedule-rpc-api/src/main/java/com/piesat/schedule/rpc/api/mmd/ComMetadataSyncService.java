@@ -4,6 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.schedule.rpc.dto.mmd.ComMetadataSyncCfgDto;
 import com.piesat.schedule.rpc.dto.mmd.ComMetadataSyncRecordDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
@@ -83,6 +84,16 @@ public interface ComMetadataSyncService {
 	 * @throws Exception
 	 */
 	void delRecord(String ids) throws Exception;
+	/**
+	 * 立即同步公共元数据
+	 * @description 
+	 * @author wlg
+	 * @date 2020年2月18日上午11:37:37
+	 * @param ids
+	 * @return
+	 * @throws Exception
+	 */
+	ResultT syncDataNow(String ids,String apiType,Integer oprType) throws Exception;
 	
 
 }
