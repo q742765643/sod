@@ -3,6 +3,7 @@ package com.piesat.schedule.client.util;
 import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author: zzj
  * @create: 2020-02-11 15:37
  **/
+@Slf4j
 public class FileUtil {
 
     public static void mkdirs(String path, ResultT<String> resultT){
@@ -46,9 +48,10 @@ public class FileUtil {
 
         try {
             delFiles(file);
-            resultT.setSuccessMessage("删除文件{}成功",file.getPath());
+            log.info("删除文件{}成功",file.getPath());
         } catch (Exception e) {
             resultT.setErrorMessage("删除文件{}失败{}",file.getPath(),OwnException.get(e));
+            log.error("删除文件{}失败{}",file.getPath(),OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_3_ERROR.getKey());
             EiSendUtil.fileException(file.getPath(),resultT);
         }
@@ -73,9 +76,10 @@ public class FileUtil {
                 if(file.exists()){
                     file.delete();
                 }
-                resultT.setSuccessMessage("删除文件{}成功",file.getPath());
+                log.info("删除文件{}成功",file.getPath());
             } catch (Exception e) {
                 resultT.setErrorMessage("删除文件{}失败{}",file.getPath(),OwnException.get(e));
+                log.error("删除文件{}失败{}",file.getPath(),OwnException.get(e));
                 resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_3_ERROR.getKey());
                 EiSendUtil.fileException(file.getPath(),resultT);
             }
@@ -85,11 +89,15 @@ public class FileUtil {
 
     public static void copyFile(String srcFile,String tagertFile,ResultT<String> resultT){
         try {
+            if(!new File(tagertFile).getParentFile().exists()){
+                mkdirs(new File(tagertFile).getParentFile().getPath(),resultT);
+            }
             FileUtils.copyFile(new File(srcFile), new File(tagertFile));
-            resultT.setSuccessMessage("移动文件{}到{}成功",srcFile,tagertFile);
+            log.info("移动文件{}到{}成功",srcFile,tagertFile);
 
         } catch (IOException e) {
             resultT.setErrorMessage("移动文件{}到{}失败,{}",srcFile,tagertFile,OwnException.get(e));
+            log.error("移动文件{}到{}失败,{}",srcFile,tagertFile,OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_4_ERROR.getKey());
             EiSendUtil.fileException(srcFile,resultT);
         }
@@ -104,7 +112,7 @@ public class FileUtil {
         try {
             isdelete=file.delete();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(OwnException.get(e));
         }
         if(!isdelete){
             String dpcUser="";
@@ -125,7 +133,7 @@ public class FileUtil {
             }
         }
         if(!isdelete){
-            resultT.setErrorMessage("删除文件失败");
+            resultT.setErrorMessage("删除文件失败{}",path);
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_3_ERROR.getKey());
             EiSendUtil.fileException(path,resultT);
         }
@@ -137,8 +145,8 @@ public class FileUtil {
     public static void checkFile(String path,ResultT<String> resultT){
         File file=new File(path);
         if(!file.exists()){
-            resultT.setErrorMessage("{}不存在");
-
+            resultT.setErrorMessage("{}不存在",path);
+            log.error("{}不存在",path);
         }
 
     }

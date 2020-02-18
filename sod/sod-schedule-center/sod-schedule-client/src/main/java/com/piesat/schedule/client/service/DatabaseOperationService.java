@@ -10,6 +10,7 @@ import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.mapper.DatabaseOperationMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.Map;
  * @author: zzj
  * @create: 2020-02-14 15:15
  **/
+@Slf4j
 @Service
 public class DatabaseOperationService {
     @Autowired
@@ -40,6 +42,7 @@ public class DatabaseOperationService {
             count= databaseOperationMapper.selectTableCount(databaseOperationVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}查询应删除条数失败,错误{}",ktable, OwnException.get(e));
+            log.error("表{}查询应删除条数失败,错误{}",ktable, OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
 
@@ -90,6 +93,7 @@ public class DatabaseOperationService {
             mapList= databaseOperationMapper.selectByKCondition(databaseOperationVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}查询失败,错误{}",table, OwnException.get(e));
+            log.error("表{}查询失败,错误{}",table, OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
 
@@ -112,6 +116,8 @@ public class DatabaseOperationService {
             return  databaseOperationMapper.selectByVCondition(databaseOperationVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}查询失败,错误{}",moveLogEntity.getVTableName(), OwnException.get(e));
+            log.error("表{}查询失败,错误{}",moveLogEntity.getVTableName(), OwnException.get(e));
+
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
 
@@ -128,6 +134,7 @@ public class DatabaseOperationService {
             count= databaseOperationMapper.updateIndex(indexVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}更新失败,错误{}",indexVo.getTable(), OwnException.get(e));
+            log.error("表{}更新失败,错误{}",indexVo.getTable(), OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
 
@@ -144,6 +151,7 @@ public class DatabaseOperationService {
             count= databaseOperationMapper.deleteIndex(indexVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}更新失败,错误{}",indexVo.getTable(), OwnException.get(e));
+            log.error("表{}更新失败,错误{}",indexVo.getTable(), OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
 

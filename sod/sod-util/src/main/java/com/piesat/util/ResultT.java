@@ -13,7 +13,6 @@ import java.io.Serializable;
  **/
 
 public class ResultT<T> implements Serializable {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private int code = ReturnCodeEnum.SUCCESS.getKey();
     private String msg;
     private T data;
@@ -112,7 +111,6 @@ public class ResultT<T> implements Serializable {
         String message = logInfo(format, args);
         this.msg = message;
         this.processMsg.append(message + "\n");
-        logger.error(message);
     }
 
     public void clearProcessMsg() {
@@ -122,11 +120,9 @@ public class ResultT<T> implements Serializable {
     public void setSuccessMessage(String format, Object... args) {
         String message = logInfo(format, args);
         this.processMsg.append(message + "\n");
-        logger.info(message);
     }
     public void setSuccessMessage(String message) {
         this.processMsg.append(message + "\n");
-        logger.info(message);
     }
 
     public void setMessage(ReturnCodeEnum code, String message) {

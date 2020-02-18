@@ -8,7 +8,7 @@
         ${conditions}
     </select>
     <select id="selectKtableMaxTime" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Date">
-      select min(d_datetime)
+      select min(create_time)
          from ${ktable}
           where
         ${conditions}
@@ -33,7 +33,7 @@
             ${conditions}
     </delete>
 
-    <select id="selectXuguPartition">
+    <select id="selectXuguPartition" resultType="java.util.Map">
         select
             parti_no,
             parti_name,
@@ -51,12 +51,12 @@
     <delete id="deletePartition">
         alter table ${tableName} drop partition ${partName} wait 120000
     </delete>
-    <select id="selectByKCondition"  parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
+    <select id="selectByKCondition"  parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Map">
          SELECT *  from ${ktable}
           where
         ${conditions}
     </select>
-    <select id="selectByVCondition" parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
+    <select id="selectByVCondition" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Map">
          SELECT *  FROM
         ${vtable} where
         ${fk} in
