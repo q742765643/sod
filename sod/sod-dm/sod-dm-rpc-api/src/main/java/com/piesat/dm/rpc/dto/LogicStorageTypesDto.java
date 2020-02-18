@@ -19,6 +19,8 @@ public class LogicStorageTypesDto {
 
     private String storageType;
 
+    private String name;
+
     private Date createTime;
 
     private Date updateTime;

@@ -17,6 +17,7 @@ import com.piesat.dm.rpc.mapper.DataClassMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         }
         if (l.size() > 0) {
             getParents(list, l, id);
-        }else {
+        } else {
             return;
         }
     }
@@ -177,6 +178,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    @Transactional
     public void deleteByDataClassId(String dataClassId) {
         List<DataLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
         for (DataLogicEntity dl : dll) {

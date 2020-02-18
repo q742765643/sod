@@ -4,27 +4,27 @@
 
     <!--根据目录查询资料-->
     <select id="getDataClassListBYIn" resultType="java.util.Map">
-        <bind name="pattern" value="'%' + className + '%'"/>
-        <bind name="pattern" value="'%' + dDataId + '%'"/>
         select
-        A.data_class_id,A.class_name,A.parent_id,A.type,A.d_data_id,A.meta_data_name,A.is_all_line,A.use_base_info,B.id
-        logic_id,B.logic_flag,B.storage_type,B.database_id,B.is_complete,C.database_name,C.schema_name,C.database_classify,C.stop_use,C.database_define_id,D.database_name
-        database_name_f,D.database_instance,D.database_type,E.logic_name
+        A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,B.ID
+        LOGIC_ID,B.LOGIC_FLAG,B.STORAGE_TYPE,B.DATABASE_ID,B.IS_COMPLETE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
+        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATA_LOGIC B on A.data_class_id = B.data_class_id
         left join T_SOD_LOGIC_DEFINE E on B.logic_flag=E.logic_flag
         left join T_SOD_DATABASE C on B.database_id=C.id
         left join T_SOD_DATABASE_DEFINE D on C.database_define_id = D.id
+        left join T_SOD_DICT_DATA F ON B.STORAGE_TYPE = F.dict_value
         WHERE
+        F.dict_type = 'sys_storage_type' AND
         A.data_class_id in
         <foreach collection="classIds" index="index" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         <if test="className != null and className != ''">
-            AND class_name like #{pattern}
+            AND class_name like CONCAT('%',#{className},'%')
         </if>
         <if test="dDataId != null and dDataId != ''">
-            AND A.d_data_id like #{pattern1}
+            AND A.d_data_id like CONCAT('%',#{dDataId},'%')
         </if>
     </select>
     <!--根据物理库查询dataLogic（MAP）-->

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
  * @date 2020/2/9 15:28
  */
 @Service
-public class StorageConfigurationGrpcService {
+public class GrpcService {
     @Autowired
     private StorageConfigurationDao storageConfigurationDao;
     @Autowired
