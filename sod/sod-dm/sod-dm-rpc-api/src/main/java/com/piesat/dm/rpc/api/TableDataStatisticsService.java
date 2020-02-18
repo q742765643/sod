@@ -28,5 +28,4 @@ public interface TableDataStatisticsService {
 
     PageBean list(PageForm pageForm);
 
-    PageBean onLineList(PageForm<Map<String,String>> pageForm);
 }

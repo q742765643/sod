@@ -70,13 +70,4 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
         return page;
     }
 
-    @Override
-    public PageBean onLineList(PageForm<Map<String,String>> pageForm) {
-        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        List<Map<String,Object>> lists = mybatisQueryMapper.onLineList(pageForm.getT());
-        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
-        //获取当前页数据
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
-        return  pageBean;
-    }
 }
