@@ -110,7 +110,7 @@ public class ClearHandler implements BaseHandler {
                 resultT.setSuccessMessage("清除条数为0条");
                 return;
             }
-            this.insertClearLog(clearEntity,clearLogEntity,resultT);
+            clearLogEntity=this.insertClearLog(clearEntity,clearLogEntity,resultT);
             if(!resultT.isSuccess()){
                 return;
             }
@@ -122,6 +122,7 @@ public class ClearHandler implements BaseHandler {
         } catch (BeansException e) {
             resultT.setErrorMessage("清除异常:{}",OwnException.get(e));
         }finally {
+            clearVo.setEndTime(System.currentTimeMillis());
             this.updateClearLog(clearVo,clearLogEntity,resultT);
         }
 
@@ -169,18 +170,20 @@ public class ClearHandler implements BaseHandler {
 
     }
 
-    public void insertClearLog(ClearEntity clearEntity,ClearLogEntity clearLogEntity,ResultT<String> resultT){
+    public ClearLogEntity insertClearLog(ClearEntity clearEntity,ClearLogEntity clearLogEntity,ResultT<String> resultT){
         try {
             clearLogEntity.setJobId(clearEntity.getId());
             clearLogEntity.setHandleCode("0");
             clearLogEntity.setTriggerCode(1);
             clearLogEntity.setHandleTime(new Date());
-            clearLogService.saveNotNull(clearLogEntity);
+            clearLogEntity=clearLogService.saveNotNull(clearLogEntity);
+            return clearLogEntity;
         }  catch (Exception e) {
             resultT.setErrorMessage("插入日志失败:{}", OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
         }
+        return null;
 
 
     }
