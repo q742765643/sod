@@ -8,7 +8,7 @@
         ${conditions}
     </select>
     <select id="selectKtableMaxTime" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Date">
-      select min(d_datetime)
+      select min(create_time)
          from ${ktable}
           where
         ${conditions}

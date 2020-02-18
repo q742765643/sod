@@ -2,26 +2,20 @@ package com.piesat.schedule.client.handler.move;
 
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
-import com.piesat.common.utils.StringUtils;
-import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.handler.base.BaseHandler;
 import com.piesat.schedule.client.service.DatabaseOperationService;
-import com.piesat.schedule.client.service.move.MoveLogService;
-import com.piesat.schedule.client.util.DiSendUtil;
-import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.ExtractMessage;
 import com.piesat.schedule.client.util.FileUtil;
-import com.piesat.schedule.client.vo.*;
+import com.piesat.schedule.client.vo.ClearVo;
+import com.piesat.schedule.client.vo.MoveVo;
+import com.piesat.schedule.client.vo.ReplaceVo;
 import com.piesat.schedule.entity.IndexVo;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
-import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
 import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.util.ResultT;
-import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +33,6 @@ import java.util.*;
 public class MoveHandler implements BaseHandler {
     @Autowired
     private DatabaseOperationService databaseOperationService;
-    @Autowired
-    private MoveLogService moveLogService;
     @Override
     public void execute(JobInfoEntity jobInfoEntity) {
         MoveEntity moveEntity = (MoveEntity) jobInfoEntity;
@@ -52,126 +44,11 @@ public class MoveHandler implements BaseHandler {
 
     public void preParam(MoveEntity moveEntity, ResultT<String> resultT) {
         MoveVo moveVo=new MoveVo();
-        moveVo.setStartTime(System.currentTimeMillis());
         MoveLogEntity moveLogEntity=new MoveLogEntity();
-        BeanUtils.copyProperties(moveEntity,moveLogEntity);
-        moveLogEntity.setId(null);
-
-        DiSendVo diSendVo = new DiSendVo();
-        long occurTime = System.currentTimeMillis();
-        diSendVo.setStartTimeS(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(moveEntity.getTriggerLastTime()));
-        diSendVo.setSendPhys(moveEntity.getParentId());
-        diSendVo.setTaskId(moveEntity.getId());
-        diSendVo.setDataType(moveEntity.getDdataId());
-        diSendVo.setTaskName(moveEntity.getProfileName());
-        diSendVo.setStartTimeA(System.currentTimeMillis());
-
-        try {
-           this.moveAndClearExecute(moveVo,moveEntity,moveLogEntity,resultT);
-        } catch (Exception e) {
-            resultT.setErrorMessage("迁移异常:{}",OwnException.get(e));
-
-        } finally {
-            Map mapDetail = new HashMap(10);
-            mapDetail.put("COMPLETEDATA", moveVo.getMoveCount());
-            mapDetail.put("DETAIL", resultT.getProcessMsg());
-            diSendVo.setTaskDetail(mapDetail);
-            diSendVo.setEndTimeA(System.currentTimeMillis());
-            if (resultT.isSuccess()) {
-                diSendVo.setTaskState("成功");
-            } else {
-                diSendVo.setTaskState("失败");
-                diSendVo.setTaskErrorReason(resultT.getMsg());
-                diSendVo.setTaskErrorTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
-            }
-            diSendVo.setRecordTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
-            DiSendUtil.send(moveEntity.getTriggerLastTime(), "迁移任务", diSendVo);
-
-            if(!resultT.isSuccess()){
-                EiSendVo eiSendVo=new EiSendVo();
-                EiSendUtil.send(eiSendVo,1,moveEntity.getProfileName(),occurTime,resultT);
-            }
-        }
-
-    }
-    public void moveAndClearExecute( MoveVo moveVo,MoveEntity moveEntity,MoveLogEntity moveLogEntity,ResultT<String> resultT){
-        try {
-            this.calculateTime(moveVo,moveEntity,resultT);
-            this.checkMoveLogEntity(moveLogEntity,resultT);
-            if(!resultT.isSuccess()){
-                return;
-            }
-            moveLogEntity=this.insertMoveLog(moveLogEntity,moveEntity,resultT);
-            if(!resultT.isSuccess()){
-                return;
-            }
-            long clearcount= databaseOperationService.selectTableCount(moveLogEntity.getParentId(),moveLogEntity.getTableName(),moveVo.getClearConditions(),resultT);
-            moveVo.setClearCount(clearcount);
-            resultT.setSuccessMessage("开始nas迁移");
-            this.moveExecute(moveVo,moveLogEntity,resultT);
-            if("1".equals(moveEntity.getIsClear())&&clearcount>0){
-
-                this.clearExecute(moveVo,moveLogEntity,resultT);
-            }
-        } catch (Exception e) {
-            resultT.setErrorMessage("迁移异常:{}",OwnException.get(e));
-
-        }finally {
-            moveVo.setEndTime(System.currentTimeMillis());
-            this.updateMoveLog(moveVo,moveLogEntity,resultT);
-        }
-    }
-    public MoveLogEntity insertMoveLog(MoveLogEntity moveLogEntity,MoveEntity moveEntity,ResultT<String> resultT){
-        try {
-            moveLogEntity.setJobId(moveEntity.getId());
-            moveLogEntity.setHandleCode("0");
-            moveLogEntity.setTriggerCode(1);
-            moveLogEntity.setHandleTime(new Date());
-            moveLogEntity=moveLogService.saveNotNull(moveLogEntity);
-            return moveLogEntity;
-        }  catch (Exception e) {
-            resultT.setErrorMessage("插入日志失败:{}", OwnException.get(e));
-            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
-            EiSendUtil.executeSqlException(resultT);
-        }
-        return null;
-
-
-    }
-    public void updateMoveLog(MoveVo moveVo, MoveLogEntity moveLogEntity, ResultT<String> resultT){
-        try {
-            moveLogEntity.setHandleCode("1");
-            moveLogEntity.setElapsedTime((moveVo.getEndTime()-moveVo.getStartTime())/1000);
-            if(!resultT.isSuccess()){
-                moveLogEntity.setHandleCode("2");
-            }
-            moveLogEntity.setMoveCount(moveVo.getMoveCount());
-            moveLogEntity.setClearCount(moveVo.getClearCount());
-            moveLogEntity.setHandleMsg(resultT.getProcessMsg().toString());
-            moveLogService.saveNotNull(moveLogEntity);
-        } catch (Exception e){
-            resultT.setErrorMessage("修改日志出错{}",OwnException.get(e));
-            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
-            EiSendUtil.executeSqlException(resultT);
-        }
-
-    }
-    public void checkMoveLogEntity(MoveLogEntity moveLogEntity, ResultT<String> resultT){
-        if(!StringUtils.isNotNullString(moveLogEntity.getParentId())){
-            resultT.setErrorMessage("物理库基础库ID不能为空");
-            return;
-        }
-        if(!StringUtils.isNotNullString(moveLogEntity.getDataClassId())){
-            resultT.setErrorMessage("存储编码不能为空");
-            return;
-        }
-        if(!StringUtils.isNotNullString(moveLogEntity.getDdataId())){
-            resultT.setErrorMessage("四级编码不能为空");
-            return;
-        }
-        if(!StringUtils.isNotNullString(moveLogEntity.getTableName())){
-            resultT.setErrorMessage("表名不能为空");
-
+        this.calculateTime(moveVo,moveEntity,resultT);
+        this.moveExecute(moveVo,moveLogEntity,resultT);
+        if("1".equals(moveEntity.getIsClear())){
+           this.clearExecute(moveVo,moveLogEntity,resultT);
         }
 
     }
@@ -195,7 +72,6 @@ public class MoveHandler implements BaseHandler {
             }
             replaceVo.setMsg(moveEntity.getClearConditions());
             ExtractMessage.getIndexOf(replaceVo, resultT);
-            moveVo.setClearConditions(replaceVo.getMsg());
             Set<Long> clearTimeSet=replaceVo.getTimeSet();
             if(timeSet.size()==1){
                 for (long time : clearTimeSet) {
@@ -218,13 +94,10 @@ public class MoveHandler implements BaseHandler {
 
     }
     public void calculateCompensateList(List<String> compensateList, MoveLogEntity moveLogEntity, String conditions, long time, ResultT<String> resultT){
-        DataSourceContextHolder.setDataSource(moveLogEntity.getParentId());
-
         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+        Date minDate=databaseOperationService.selectKtableMaxTime(moveLogEntity.getTableName(),conditions);
+        long startTime=minDate.getTime();
         try {
-            Date minDate=databaseOperationService.selectKtableMaxTime(moveLogEntity.getTableName(),conditions);
-            long startTime=minDate.getTime();
             if(time>0){
                 String ytime=format.format(time);
                 while (startTime<time){
@@ -239,22 +112,15 @@ public class MoveHandler implements BaseHandler {
             }else{
                 compensateList.add(conditions);
             }
-            resultT.setSuccessMessage("按迁移频率开始切割");
         } catch (Exception e) {
-            resultT.setErrorMessage("时间切割失败{}",OwnException.get(e));
-        }finally {
-            DataSourceContextHolder.clearDataSource();
+            resultT.setErrorMessage("时间切割失败");
         }
     }
     public void moveExecute(MoveVo moveVo, MoveLogEntity moveLogEntity, ResultT<String> resultT){
 
         List<String> compensateList=new ArrayList<>();
-        long movecount= databaseOperationService.selectTableCount(moveLogEntity.getParentId(),moveLogEntity.getTableName(),moveVo.getMoveConditions(),resultT);
-        moveVo.setMoveCount(movecount);
-
         this.calculateCompensateList(compensateList,moveLogEntity,moveVo.getMoveConditions(),moveVo.getMoveTime(),resultT);
         for(String conditions:compensateList){
-            resultT.setSuccessMessage("条件为{}",conditions);
             this.moveAndClearLogic(0,conditions,moveVo,moveLogEntity,resultT);
             if(!resultT.isSuccess()){
                 return;
@@ -265,9 +131,7 @@ public class MoveHandler implements BaseHandler {
 
         List<String> compensateList=new ArrayList<>();
         this.calculateCompensateList(compensateList,moveLogEntity,moveVo.getClearConditions(),moveVo.getClearTime(),resultT);
-        resultT.setSuccessMessage("开始nas清除");
         for(String conditions:compensateList){
-            resultT.setSuccessMessage("条件为{}",conditions);
             this.moveAndClearLogic(1,conditions,moveVo,moveLogEntity,resultT);
             if(!resultT.isSuccess()){
                 return;
@@ -280,7 +144,6 @@ public class MoveHandler implements BaseHandler {
         if(!resultT.isSuccess()){
             return;
         }
-
         List<Map<String,Object>> mapKList=databaseOperationService.selectByKCondition(moveLogEntity.getParentId(),moveLogEntity.getTableName(),conditions,resultT);
         if(!resultT.isSuccess()){
             return;
