@@ -283,10 +283,12 @@ export default {
       saveObj.dataServiceId = this.Info.dataServiceId;
       saveObj.tableDesc = this.Info.tableDesc;
       saveObj.version = this.Info.version;
+      saveObj.id = this.Info.id;
+      saveObj.createTime = this.Info.createTime;
       if (this.tableType == "E-show") {
-        saveObj.db_table_type = this.childTableType;
+        saveObj.dbTableType = this.childTableType;
       } else {
-        saveObj.db_table_type = this.tableType;
+        saveObj.dbTableType = this.tableType;
       }
       console.log(saveObj);
       dataTableSavle(saveObj).then(response => {
@@ -294,6 +296,11 @@ export default {
           this.$message({
             type: "success",
             message: "操作成功"
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: "操作失败"
           });
         }
       });

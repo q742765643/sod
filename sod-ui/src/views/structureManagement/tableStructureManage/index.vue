@@ -209,9 +209,11 @@ import {
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   getListBYIn,
-  delByClass
+  delByClass,
+  pasteTable,
+  dataLogicGet
 } from "@/api/structureManagement/tableStructureManage/index";
-
+import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   components: {
     StructureClassify,
@@ -368,7 +370,84 @@ export default {
         );
       }
     },
-    composeValue() {},
+    composeValue(item, row) {
+      return {
+        button: item,
+        row: row
+      };
+    },
+    async handleCommand(command) {
+      if (command.button == "copy") {
+        sessionStorage.setItem(
+          "copyIndexTableColumn",
+          JSON.stringify(command.row)
+        );
+        this.$message({
+          message: "复制成功",
+          type: "success"
+        });
+      } else if (command.button == "paste") {
+        let copyObj = JSON.parse(
+          sessionStorage.getItem("copyIndexTableColumn")
+        );
+        if (!copyObj) {
+          this.$message({
+            message: "请选择一条数据",
+            type: "error"
+          });
+        }
+        if (command.row.storage_type !== copyObj.storage_type) {
+          this.$message({
+            message: "复制与粘贴表存储类型不一致！",
+            type: "info"
+          });
+          return;
+        }
+        let msg = "";
+        let resulet = await gcl({ classLogic: command.row.LOGIC_ID }).then(
+          response => {
+            if (response.code == 200) {
+              return response.data;
+            } else {
+              this.$message({
+                message: res.msg,
+                type: "error"
+              });
+            }
+          }
+        );
+        if (resulet.length > 0) {
+          msg = "删除已有表结构并";
+        }
+        let pasteObj = {};
+        pasteObj.copyId = copyObj.LOGIC_ID;
+        pasteObj.pasteId = command.row.LOGIC_ID;
+        console.log(pasteObj);
+        this.$alert(
+          "确认" + msg + "粘贴表结构(" + copyObj.CLASS_NAME + ")?",
+          "温馨提示",
+          {
+            confirmButtonText: "确定",
+            callback: async action => {
+              pasteTable(pasteObj).then(res => {
+                if (res.code == 200) {
+                  this.$message({
+                    message: "粘贴成功",
+                    type: "success"
+                  });
+                  this.searchFun("search");
+                } else {
+                  this.$message({
+                    message: res.msg,
+                    type: "error"
+                  });
+                }
+              });
+            }
+          }
+        );
+      }
+    },
     //显示表结构管理
     showStructureManage(row) {
       this.rowData = row;
@@ -382,7 +461,6 @@ export default {
       this.structureManageVisible = false;
     },
     showSQLManage() {},
-    handleCommand() {},
     // 选中行
     handleCurrentChange(currentRow) {
       if (currentRow == null) {

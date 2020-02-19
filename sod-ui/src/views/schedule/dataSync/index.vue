@@ -203,7 +203,6 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
       this.getList();
     },
     /** 查询列表 */
@@ -239,7 +238,9 @@ export default {
         searchValue: "",
         runState: ""
       };
-      this.handleQuery();
+      this.handleDialog = false;
+      this.dailyDataDialog = false;
+      this.getList();
     },
     // 高级搜索
     superClick() {

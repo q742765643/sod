@@ -76,7 +76,7 @@ export function saveNorm(data) {
   })
 }
 
-// 要素表/键表新增
+// 要素表/键表
 export function dataTableSavle(data) {
   return request({
     url: baseUrl + '/dm/dataTable/save',
@@ -84,10 +84,20 @@ export function dataTableSavle(data) {
     data: data
   })
 }
-// 删除外键关联
-// export function tableColumnDel(id) {
-//   return request({
-//     url: baseUrl + '/dm/tableColumn/delIds?ids=' + id,
-//     method: 'delete',
-//   })
-// }
+// /字段新增
+export function tableColumnSave(data) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/save',
+    method: 'post',
+    data: data
+  })
+}
+
+// 字段批量新增
+export function tableColumnSaveList(data) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/saveList',
+    method: 'post',
+    data: data
+  })
+}

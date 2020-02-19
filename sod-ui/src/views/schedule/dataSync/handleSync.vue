@@ -602,7 +602,6 @@ export default {
     },
     //源数据库事件,根据数据库ID获取源表
     sourceDBChange(selectSourceDB) {
-      console.log(selectSourceDB);
       syncTableByDatabaseId({ databaseId: selectSourceDB }).then(res => {
         var resdata = res.data;
         var dataList = [];
@@ -610,7 +609,15 @@ export default {
           var obj = {};
           obj.value = resdata[i].id;
           obj.label = resdata[i].name_cn;
-          obj.sourceTableEnName = resdata[i].name_cn;
+          obj.sourceTableEnName = resdata[i].table_name;
+          obj.selectInfo =
+            resdata[i].id +
+            "|" +
+            resdata[i].db_table_type +
+            "|" +
+            resdata[i].table_name +
+            "|" +
+            resdata[i].data_class_id;
           if (
             resdata[i].storage_type == "K_E_table" &&
             resdata[i].db_table_type == "E"
@@ -638,7 +645,7 @@ export default {
       });
       console.log(table);
       //显示源表名
-      this.msgFormDialog.sourceTableEnName = table.value;
+      this.msgFormDialog.sourceTableEnName = table.sourceTableEnName;
     },
     //获取源表字段信息
     querySourceColumn(table_id) {
@@ -704,13 +711,21 @@ export default {
 
     //目标数据库事件,根据数据库ID获取表
     targetDBChange(selectTargetDB) {
-      syncTableByDatabaseId({ databaseId: selectSourceDB }).then(res => {
+      syncTableByDatabaseId({ databaseId: selectTargetDB }).then(res => {
         var resdata = res.data;
         var dataList = [];
         for (var i = 0; i < resdata.length; i++) {
           var obj = {};
           obj.value = resdata[i].id;
           obj.label = resdata[i].name_cn;
+          obj.selectInfo =
+            resdata[i].id +
+            "|" +
+            resdata[i].db_table_type +
+            "|" +
+            resdata[i].table_name +
+            "|" +
+            resdata[i].data_class_id;
           if (
             resdata[i].storage_type == "K_E_table" &&
             resdata[i].db_table_type == "E"
@@ -725,18 +740,21 @@ export default {
     },
     //目标表事件
     targetTableChange(selectTargetTable) {
-      console.log(selectTargetTable);
+      let obj = {};
+      obj = this.targetTableArray.find(item => {
+        return item.value === selectTargetTable; //筛选出匹配数据
+      });
       //查找目标表字段
-      this.queryTargetColumn(selectTargetTable, "");
+      this.queryTargetColumn(obj.selectInfo, "");
     },
     targetTableChange2(selectTargetTable) {
       //查找目标表字段2
       this.queryTargetColumn(selectTargetTable, "2");
     },
     //获取目标表字段信息
-    queryTargetColumn(table_id, tname) {
+    queryTargetColumn(selectTargetTable, tname) {
       debugger;
-      if (table_id == "") {
+      if (selectTargetTable == "") {
         return;
       }
       if (this.sourceColumnDetail.length == 0) {
@@ -746,8 +764,12 @@ export default {
         });
         return;
       }
-      var targetTableInfo = table_id;
-      if (this.msgFormDialog.sourceTableId != targetTableInfo[1]) {
+      var targetTableInfo = selectTargetTable.split("|");
+      let sourceTableInfo = {};
+      sourceTableInfo = this.sourceTableArray.find(item => {
+        return item.value === this.msgFormDialog.sourceTableId; //筛选出匹配数据
+      });
+      if (sourceTableInfo.selectInfo.split("|")[1] != targetTableInfo[1]) {
         this.$message({
           showClose: true,
           message: "源表和目标表的类型不一致"
@@ -780,7 +802,7 @@ export default {
           message: "您选择了键值表类型的键表，系统自动匹配值表"
         });
         //源表值表和目标表的值表映射
-        this.ETableMapping(targetTableInfo[0], table_id);
+        this.ETableMapping(targetTableInfo[0], selectTargetTable);
       }
       //源表键表/普通的要素表和目标表的键表/普通的要素表的映射
 
@@ -788,7 +810,7 @@ export default {
         targetTableInfo[0],
         targetTableInfo[2],
         targetTableInfo[3],
-        table_id
+        selectTargetTable
       );
       //显示目标表名
       this.msgFormDialog["target_table_name" + tname] = targetTableInfo[2];

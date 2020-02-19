@@ -85,18 +85,8 @@
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button
-        type="primary"
-        icon="el-icon-check"
-        size="small"
-        @click="saveUserInfo('formClass')"
-      >确定</el-button>
-      <el-button
-        type="primary"
-        icon="el-icon-close"
-        size="small"
-        @click="handleClose('formClass')"
-      >取消</el-button>
+      <el-button type="primary" @click="saveUserInfo('formClass')">确定</el-button>
+      <el-button @click="handleClose('formClass')">取消</el-button>
     </div>
   </div>
 </template>
