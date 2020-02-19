@@ -5,6 +5,7 @@ import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.util.constant.GrpcConstant;
 
+import javax.swing.table.TableColumn;
 import java.util.List;
 
 /**
@@ -30,4 +31,6 @@ public interface TableColumnService {
     int deleteByIdIn(List<String> ids);
 
     int updateDto(TableColumnDto tableColumnDto);
+
+    List<TableColumnDto> getPrimaryKey(String tableId);
 }

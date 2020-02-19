@@ -74,6 +74,12 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    public List<TableColumnDto> getPrimaryKey(String tableId) {
+        List<TableColumnEntity> tableColumnEntitys = this.tableColumnDao.findByTableIdAndIsPrimaryKeyTrue(tableId);
+        return this.tableColumnMapper.toDto(tableColumnEntitys);
+    }
+
+    @Override
     public TableColumnDto getDotById(String id) {
         TableColumnEntity tableColumnEntity = this.getById(id);
         return this.tableColumnMapper.toDto(tableColumnEntity);

@@ -1,5 +1,6 @@
 package com.piesat.dm.core.api;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.model.Column;
 import com.piesat.util.ResultT;
 
@@ -109,8 +110,16 @@ public abstract class DatabaseDclAbs implements DatabaseDcl {
     public ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn){
         List<String> sqlList = new ArrayList<>();
         if (oldColumn == null){
-            String sql = "alter table test1 add column name111 varchar(101) not null DEFAULT '1111'";
+//            alter table test1 add column name111 varchar(101) not null DEFAULT '1111'
+            String isNull = newColumn.getIsNull() ? "" : "NOT NULL";
+            String def =  StringUtils.isEmpty(newColumn.getDef()) ? "" : "DEFAULT '"+newColumn.getDef()+"'";
+            String sql = "alter table %s add column %s %s(%s) %s %s";
+            String formatSql = String.format(sql, schema + "." + tableName, newColumn.getName(), newColumn.getType(), newColumn.getPrecision(), isNull, def);
+            sqlList.add(formatSql);
+        }else {
+
         }
+
         return null;
     }
 }

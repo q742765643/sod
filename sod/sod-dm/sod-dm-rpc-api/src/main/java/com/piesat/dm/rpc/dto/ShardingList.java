@@ -13,5 +13,8 @@ import java.util.List;
  */
 @Data
 public class ShardingList {
-    private List<ShardingDto> shardingList = new ArrayList<>();
+
+    private static final long serialVersionUID = 1L;
+
+    private List<ShardingDto> shardingList;
 }

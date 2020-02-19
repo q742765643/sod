@@ -133,6 +133,12 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public ResultT paste(String copyId, String pasteId) {
         List<DataTableEntity> copys = this.dataTableDao.findByClassLogicId(copyId);
         DataLogicEntity paste = this.dataLogicDao.findById(pasteId).get();
+        List<DataTableEntity> pDataTableEntitys = this.dataTableDao.findByClassLogicId(pasteId);
+        for (DataTableEntity pd:pDataTableEntitys ) {
+            this.shardingDao.deleteByTableId(pd.getId());
+            this.dataTableDao.deleteById(pd.getId());
+        }
+
         DataClassEntity dataClassEntity = this.dataClassDao.findByDataClassId(paste.getDataClassId());
         for (DataTableEntity copy:copys) {
             copy.setClassLogic(paste);

@@ -142,4 +142,19 @@ public class TableColumnController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据tableId查询主键")
+    @RequiresPermissions("dm:tableColumn:getPrimaryKey")
+    @GetMapping(value = "/getPrimaryKey")
+    public ResultT getPrimaryKey(String tableId) {
+        try {
+            List<TableColumnDto> all = this.tableColumnService.getPrimaryKey(tableId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
 }

@@ -14,5 +14,8 @@ import java.util.List;
  */
 @Data
 public class TableColumnList {
-    private List<TableColumnDto> tableColumnList = new ArrayList<>();
+
+    private static final long serialVersionUID = 1L;
+
+    private List<TableColumnDto> tableColumnList;
 }
