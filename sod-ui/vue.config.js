@@ -55,7 +55,7 @@ module.exports = {
       },
       // 崔文慧
       [process.env.VUE_APP_DM]: {
-        target: `http://10.40.17.36:1221`,
+        target: `http://1.119.5.177:8007`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""
@@ -86,7 +86,7 @@ module.exports = {
       },
       //王亚娟
       [process.env.VUE_APP_SYNC]: {
-        target: `http://10.1.6.74:1237`,
+        target: `http://1.119.5.177:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYNC]: ""
