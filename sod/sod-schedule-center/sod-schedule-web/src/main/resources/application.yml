@@ -1,5 +1,5 @@
 server:
-  port: 1237
+  port: 8005
   servlet:
       context-path: /
 tomcat:
@@ -11,7 +11,7 @@ tomcat:
 
 grpc:
   server:
-    port: 6004
+    port: 8006
   client:
     ucenter-server:
       enableKeepAlive: true
@@ -80,6 +80,7 @@ spring:
     port: 8001
     timeout: 5000
     password:
+    #database: 1
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath:mapper/*.xml
@@ -95,8 +96,8 @@ pagehelper:
 
 eureka:
   instance:
-    prefer-ip-address: true
-    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    #prefer-ip-address: true
+    #instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
   client:
     register-with-eureka: true
     fetch-registry: true

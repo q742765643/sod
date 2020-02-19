@@ -33,6 +33,8 @@ public interface DataClassService {
 
     JSONArray getDatabaseClass();
 
+    JSONArray getDatabaseClassMysql();
+
     JSONArray getTree();
 
     List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId);

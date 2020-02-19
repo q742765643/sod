@@ -14,6 +14,7 @@ import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.Date;
  * @author: zzj
  * @create: 2020-02-13 16:23
  **/
+@Slf4j
 public class GbaseBusiness extends BaseBusiness{
     @Override
     public void backUpKtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT) {
@@ -103,8 +105,10 @@ public class GbaseBusiness extends BaseBusiness{
                 resultT.setErrorMessage("gbase备份表{}失败,cmd{},错误{}",tableName,cmd,msg);
                 resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_15_ERROR.getKey());
                 EiSendUtil.gbaseException(parentId,cmd.toString(),resultT);
+                log.error("gbase备份表{}失败,cmd{},错误{}",tableName,cmd,msg);
             }else{
                resultT.setSuccessMessage("gbase备份表{}成功,cmd{}",tableName,cmd);
+               log.info("gbase备份表{}成功,cmd{}",tableName,cmd);
             }
 
         }
@@ -129,24 +133,40 @@ public class GbaseBusiness extends BaseBusiness{
             long startTime=minDate.getTime();
             if(clearVo.getClearTime()==0){
                 resultT.setSuccessMessage("根据条件未按清除频率进行切割");
-                this.deleteGbase(clearLogEntity,clearLogEntity.getConditions());
+
+                this.deleteGbase(clearLogEntity,clearLogEntity.getConditions(),resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
                 resultT.setSuccessMessage("清除条件为{}成功",clearLogEntity.getConditions());
                 return;
             }
             String ytime=format.format(clearVo.getClearTime());
             resultT.setSuccessMessage("按清除频率进行切割{}",clearLogEntity.getClearLimit());
+            long num=0;
             while (startTime<clearVo.getClearTime()){
                  startTime=startTime+clearLogEntity.getClearLimit()*1000;
+
                 if(startTime>clearVo.getClearTime()){
                     startTime=clearVo.getClearTime();
                 }
                 String ddateTime=format.format(startTime);
                 String conditions=clearLogEntity.getConditions().replaceAll(ytime,ddateTime);
-                this.deleteGbase(clearLogEntity,conditions);
-                resultT.setSuccessMessage("清除条件为{}成功",conditions);
+                if(num==0){
+                    resultT.setSuccessMessage("开始清除条件{}",conditions);
+                    log.info("开始清除条件{}",conditions);
+                }
+                this.deleteGbase(clearLogEntity,conditions,resultT);
+                num++;
+                if(!resultT.isSuccess()){
+                    resultT.setErrorMessage("条件为{}时执行失败",conditions);
+                    log.error("条件为{}时执行失败",conditions);
+                    return;
+                }
             }
         } catch (Exception e) {
             resultT.setErrorMessage("执行清除失败:{}", OwnException.get(e));
+            log.error("执行清除失败:{}", OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
         }finally {
             DataSourceContextHolder.clearDataSource();
@@ -154,12 +174,18 @@ public class GbaseBusiness extends BaseBusiness{
 
     }
 
-    public void deleteGbase(ClearLogEntity clearLogEntity,String conditions){
-        DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
-        if(null!=clearLogEntity.getVTableName()){
-            databaseOperationService.deleteVtable(clearLogEntity,conditions);
+    public void deleteGbase(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){
+        try {
+            DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
+            if(null!=clearLogEntity.getVTableName()){
+                long vcount=databaseOperationService.deleteVtable(clearLogEntity,conditions);
+            }
+            long kcount =databaseOperationService.delteKtable(clearLogEntity,conditions);
+        } catch (Exception e) {
+            resultT.setErrorMessage("执行清除失败:{}", OwnException.get(e));
+            log.error("执行清除失败:{}", OwnException.get(e));
+
         }
-        databaseOperationService.delteKtable(clearLogEntity,conditions);
     }
 
 

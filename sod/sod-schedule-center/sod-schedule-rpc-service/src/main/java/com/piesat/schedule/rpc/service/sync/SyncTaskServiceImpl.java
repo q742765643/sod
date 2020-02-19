@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.UUID;
 import com.piesat.dm.rpc.api.DataTableService;
@@ -162,7 +163,6 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     public PageBean selectLogPageList(PageForm<SyncTaskLogDto> pageForm) {
         SyncTaskLogEntity syncTaskLogEntity = syncTaskLogMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        //根据条件查询所有
         List<SyncTaskLogEntity> syncTaskLogEntities = syncTaskMapper.selectLogPageList(syncTaskLogEntity);//自定义的接口
         PageInfo<SyncTaskLogEntity> pageInfo = new PageInfo<>(syncTaskLogEntities);
         //获取当前页数据

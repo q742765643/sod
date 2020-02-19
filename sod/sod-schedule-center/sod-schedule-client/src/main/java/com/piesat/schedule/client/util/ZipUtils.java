@@ -2,6 +2,7 @@ package com.piesat.schedule.client.util;
 import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,13 +20,17 @@ import java.util.zip.ZipOutputStream;
  * @author: zzj
  * @create: 2020-02-11 14:31
  **/
+@Slf4j
 public class ZipUtils {
     public static void doCompress(String srcFile, String zipFile,ResultT<String> resultT) {
         try {
             doCompress(new File(srcFile), new File(zipFile));
             resultT.setSuccessMessage("压缩文件{}成功",srcFile);
+            log.info("压缩文件{}成功",srcFile);
+
         } catch (IOException e) {
             resultT.setErrorMessage("压缩文件失败{},{},",srcFile,OwnException.get(e));
+            log.error("压缩文件失败{},{},",srcFile,OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_4_ERROR.getKey());
             EiSendUtil.fileException(srcFile,resultT);
         }

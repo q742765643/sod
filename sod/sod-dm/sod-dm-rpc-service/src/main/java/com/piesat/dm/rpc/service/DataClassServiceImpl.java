@@ -17,6 +17,7 @@ import com.piesat.dm.rpc.mapper.DataClassMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,23 +67,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getLogicClass() {
-        String sql = "SELECT LOGIC_NAME \"name\",CONCAT('0-',LOGIC_FLAG) \"id\",'0' \"pId\",'1' \"type\",'0' \"metaDataId\" FROM  T_SOD_LOGIC_DEFINE " +
-                " UNION " +
-                "SELECT DISTINCT CLASS_NAME \"name\", CONCAT(DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) \"id\",CONCAT(PARENT_ID,  CONCAT('-', LOGIC_FLAG)) \"pId\", '1' \"type\", '0' \"metaDataId\" " +
-                "FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID =  SUBSTR(B.DATA_CLASS_ID,0,1) " +
-                " UNION " +
-                "SELECT D.CLASS_NAME \"name\", CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) \"id\", CONCAT(D.PARENT_ID,  CONCAT('-', C.LOGIC_FLAG)) \"pId\",'1' \"type\",'0' \"metaDataId\" " +
-                "FROM (SELECT CLASS_NAME,DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A " +
-                " INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D where C.PARENT_ID = D.DATA_CLASS_ID " +
-                " UNION " +
-                "SELECT F.CLASS_NAME \"name\", CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) \"id\", CONCAT(F.PARENT_ID,  CONCAT('-', E.LOGIC_FLAG)) \"pId\",'1' \"type\",'0' \"metaDataId\"  FROM " +
-                "(SELECT D.CLASS_NAME,D.DATA_CLASS_ID,D.PARENT_ID,C.LOGIC_FLAG FROM " +
-                "(SELECT CLASS_NAME,DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B  ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D " +
-                "where C.PARENT_ID = D.DATA_CLASS_ID) E,T_SOD_DATA_CLASS F  where E.PARENT_ID = F.DATA_CLASS_ID " +
-                " UNION " +
-                "SELECT CLASS_NAME \"name\",DATA_CLASS_ID \"id\",CONCAT(PARENT_ID,CONCAT('-',LOGIC_FLAG)) \"pId\"," +
-                "'2' \"type\",'0' \"metaDataId\" FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE TYPE = 2";
-        List<Map<String, Object>> maps = this.queryByNativeSQL(sql);
+        List<Map<String, Object>> maps = this.mybatisQueryMapper.getLogicClassTree();
         List l = new ArrayList();
         for (Map<String, Object> m : maps) {
             TreeLevel tl = new TreeLevel();
@@ -104,24 +89,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public JSONArray getDatabaseClass() {
         List<DatabaseEntity> databaseList = this.databaseDao.findAll();
-        String sql =
-                "SELECT * FROM (SELECT CONCAT(ID,'-P') id,'999' pId,DATABASE_NAME name,'' DATA_CLASS_ID,1 type,true isParent FROM " +
-                        "T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1 ORDER BY ID)" +
-                        "UNION " +
-                        "SELECT * FROM (SELECT ID id,CONCAT(DATABASE_DEFINE_ID,'-P') pId," +
-                        "CONCAT(CONCAT(CONCAT(DATABASE_NAME,'('),SCHEMA_NAME),')') name,'' DATA_CLASS_ID,1 type,true isParent FROM " +
-                        "T_SOD_DATABASE WHERE STOP_USE = false AND DATABASE_DEFINE_ID IN (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1) ORDER BY ID)";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
         for (DatabaseEntity db : databaseList) {
             if (!db.getStopUse()) {
-                sql = "SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, '" + db.getId() + "') END id,CLASS_NAME name," +
-                        "CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, '" + db.getId() + "') pId," +
-                        "DATA_CLASS_ID,TYPE  type, " +
-                        "CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent " +
-                        "FROM T_SOD_DATA_CLASS " +
-                        "START WITH DATA_CLASS_ID IN (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATA_LOGIC WHERE DATABASE_ID = '" + db.getId() + "') " +
-                        "CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id ";
-                List<Map<String, Object>> dataList = this.queryByNativeSQL(sql);
+                List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTree(db.getId());
                 list.addAll(dataList);
             }
         }
@@ -135,6 +106,49 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             l.add(tl);
         }
         return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
+    }
+
+    @Override
+    public JSONArray getDatabaseClassMysql() {
+        List<DatabaseEntity> databaseList = this.databaseDao.findAll();
+        List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
+        for (DatabaseEntity db : databaseList) {
+            if (!db.getStopUse()) {
+                List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTreeMysql(db.getId());
+                list.addAll(dataList);
+                List<String> l = new ArrayList<>();
+                for (Map map : dataList) {
+                    l.add(map.get("PARENT_ID").toString());
+                }
+                if (l.size() > 0) {
+                    getParents(list, l, db.getId());
+                }
+            }
+        }
+        List l = new ArrayList();
+        for (Map<String, Object> m : list) {
+            TreeLevel tl = new TreeLevel();
+            tl.setId(m.get("ID").toString());
+            tl.setParentId(m.get("PID").toString());
+            tl.setName(m.get("NAME").toString());
+            tl.setType(m.get("TYPE").toString());
+            l.add(tl);
+        }
+        return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
+    }
+
+    public void getParents(List<Map<String, Object>> list, List<String> classIds, String id) {
+        List<Map<String, Object>> databaseClassTreePMysql = this.mybatisQueryMapper.getDatabaseClassTreePMysql(classIds, id);
+        list.addAll(databaseClassTreePMysql);
+        List<String> l = new ArrayList<>();
+        for (Map<String, Object> map : databaseClassTreePMysql) {
+            l.add(map.get("PARENT_ID").toString());
+        }
+        if (l.size() > 0) {
+            getParents(list, l, id);
+        } else {
+            return;
+        }
     }
 
     @Override
@@ -164,11 +178,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    @Transactional
     public void deleteByDataClassId(String dataClassId) {
         List<DataLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
         for (DataLogicEntity dl : dll) {
             List<DataTableEntity> dts = this.dataTableDao.findByClassLogic_Id(dl.getId());
-            for (DataTableEntity dt:dts ) {
+            for (DataTableEntity dt : dts) {
                 this.shardingDao.deleteByTableId(dt.getId());
             }
             this.dataTableDao.deleteByClassLogic_Id(dl.getId());
@@ -186,6 +201,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     /**
      * 获取所有目录
+     *
      * @return
      */
     @Override

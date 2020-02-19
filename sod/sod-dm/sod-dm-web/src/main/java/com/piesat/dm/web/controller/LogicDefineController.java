@@ -8,6 +8,7 @@ import com.piesat.dm.rpc.api.LogicDefineService;
 import com.piesat.dm.rpc.dto.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.LogicDefineDto;
 import com.piesat.dm.rpc.dto.LogicStorageTypesDto;
+import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
@@ -41,6 +42,8 @@ import java.util.Map;
 public class LogicDefineController {
     @Autowired
     private LogicDefineService logicDefineService;
+    @Autowired
+    private GrpcService grpcService;
     @GrpcHthtClient
     private DictDataService dictDataService;
 
@@ -164,4 +167,18 @@ public class LogicDefineController {
         }
         ExportTableUtil.exportTable(request, response, headList, lists , "逻辑库定义导出");
     }
+
+    @ApiOperation(value = "查询所有(升级版)")
+    @RequiresPermissions("dm:logicDefine:getAllLd")
+    @GetMapping(value = "/getAllLd")
+    public ResultT getAllLd() {
+        try {
+            List<LogicDefineDto> allLogicDefine = this.grpcService.getAllLogicDefine();
+            return ResultT.success(allLogicDefine);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

@@ -47,7 +47,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `http://127.0.0.1:1237`,
+        target: `http://1.119.5.177:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""

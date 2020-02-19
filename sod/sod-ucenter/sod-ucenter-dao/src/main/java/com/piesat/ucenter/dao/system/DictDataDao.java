@@ -15,5 +15,5 @@ import java.util.List;
 @Repository
 public interface DictDataDao extends BaseDao<DictDataEntity> {
     List<DictDataEntity> findByDictTypeAndStatusOrderByDictSortAsc(String dictType, String dictSort);
-
+    DictDataEntity findByDictTypeAndDictValue(String dictType,String dictValue);
 }

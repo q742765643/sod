@@ -1,6 +1,7 @@
 package com.piesat.dm.web.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.dto.DataClassDto;
 import com.piesat.sso.client.annotation.Log;
@@ -48,6 +49,19 @@ public class DataClassController {
     public ResultT get(String id) {
         try {
             DataClassDto dataClassDto = this.dataClassService.getDotById(id);
+            return ResultT.success(dataClassDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据DataClassId查询")
+    @RequiresPermissions("dm:dataClass:findByClassId")
+    @GetMapping(value = "/findByClassId")
+    public ResultT findByClassId(String id) {
+        try {
+            DataClassDto dataClassDto = this.dataClassService.findByDataClassId(id);
             return ResultT.success(dataClassDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,7 +128,13 @@ public class DataClassController {
     @GetMapping(value = "/databaseClass")
     public ResultT getDatabaseClass() {
         try {
-            JSONArray all = this.dataClassService.getDatabaseClass();
+            JSONArray all = null;
+            if (DatabaseType.databaseType.toLowerCase().equals("mysql")){
+                all = this.dataClassService.getDatabaseClassMysql();
+            }else {
+                all = this.dataClassService.getDatabaseClass();
+            }
+
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,7 +142,7 @@ public class DataClassController {
         }
     }
 
-    @ApiOperation(value = "按数据库查询资料分类树")
+    @ApiOperation(value = "查询资料分类树")
     @RequiresPermissions("dm:dataClass:getTree")
     @GetMapping(value = "/getTree")
     public ResultT getTree() {

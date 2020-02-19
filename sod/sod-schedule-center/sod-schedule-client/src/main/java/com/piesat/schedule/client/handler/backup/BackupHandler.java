@@ -55,6 +55,9 @@ public class BackupHandler implements BaseHandler {
     public void execute(JobInfoEntity jobInfoEntity) {
         log.info("备份调用成功");
         BackupEntity backupEntity = (BackupEntity) jobInfoEntity;
+        if(StringUtils.isNotNullString(backupEntity.getForeignKey())){
+            backupEntity.setForeignKey(backupEntity.getForeignKey().toUpperCase());
+        }
         long occurTime = System.currentTimeMillis();
         ResultT<String> resultT = new ResultT<>();
 
@@ -69,33 +72,31 @@ public class BackupHandler implements BaseHandler {
         mapDetail.put("COMPLETEDATA", "");
         mapDetail.put("DETAIL", "");
         diSendVo.setTaskDetail(mapDetail);
-        diSendVo.setEndTimeA(System.currentTimeMillis());
-        if (resultT.isSuccess()) {
-            diSendVo.setTaskState("成功");
-        } else {
-            diSendVo.setTaskState("失败");
-            diSendVo.setTaskErrorReason(resultT.getMsg());
-            diSendVo.setTaskErrorTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
-        }
-        diSendVo.setRecordTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
 
-        this.preParam(backupEntity, resultT);
+        try {
+            this.preParam(backupEntity, resultT);
+        } catch (Exception e) {
+            resultT.setErrorMessage("执行备份失败{}",OwnException.get(e));
+        } finally {
+            diSendVo.setEndTimeA(System.currentTimeMillis());
+            if (resultT.isSuccess()) {
+                diSendVo.setTaskState("成功");
+            } else {
+                log.error("备份任务ID{},任务名{},错误{}",backupEntity.getId(),backupEntity.getProfileName(),resultT);
+                diSendVo.setTaskState("失败");
+                diSendVo.setTaskErrorReason(resultT.getMsg());
+                diSendVo.setTaskErrorTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
+            }
+            diSendVo.setRecordTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
+            DiSendUtil.send(backupEntity.getTriggerLastTime(), "备份任务", diSendVo);
 
-        diSendVo.setEndTimeA(System.currentTimeMillis());
-        if (resultT.isSuccess()) {
-            diSendVo.setTaskState("成功");
-        } else {
-            diSendVo.setTaskState("失败");
-            diSendVo.setTaskErrorReason(resultT.getMsg());
-            diSendVo.setTaskErrorTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
+            if(!resultT.isSuccess()){
+                EiSendVo eiSendVo=new EiSendVo();
+                EiSendUtil.send(eiSendVo,0,backupEntity.getProfileName(),occurTime,resultT);
+            }
         }
-        diSendVo.setRecordTime(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())));
-        DiSendUtil.send(backupEntity.getTriggerLastTime(), "备份任务", diSendVo);
 
-        if(!resultT.isSuccess()){
-        EiSendVo eiSendVo=new EiSendVo();
-            EiSendUtil.send(eiSendVo,0,backupEntity.getProfileName(),occurTime,resultT);
-        }
+
     }
 
     public void preParam(BackupEntity backupEntity, ResultT<String> resultT) {
@@ -164,29 +165,36 @@ public class BackupHandler implements BaseHandler {
                     compensateList.add(backupLogEntity);
                 }
             }
-            long startTime = backupLogEntity.getBackupTime()+backupVo.getMistiming();
-            //isEnd 2为补偿备份
-            while (backupVo.getBackupTime() - startTime >0) {
-                startTime = startTime + backupVo.getMistiming();
+            this.calculateCompensateList(backupEntity,backupVo,backupLogEntity.getBackupTime(),compensateList,resultT);
 
-                BackupLogEntity backupLogHisEntity = new BackupLogEntity();
-                BeanUtils.copyProperties(backupEntity, backupLogHisEntity);
-                BackupVo backupHisVo = this.calculateBackupTime(backupEntity, startTime, resultT);
-                backupLogHisEntity.setBackupTime(backupHisVo.getBackupTime());
-                backupLogHisEntity.setConditions(backupHisVo.getConditions());
-                backupLogHisEntity.setSecondConditions(backupHisVo.getSecondConditions());
-                backupLogHisEntity.setIsEnd(2);
-                if (backupHisVo.getBackupTime() >= backupVo.getBackupTime()) {
-                    break;
-                }
-                if(backupHisVo.getBackupTime()>backupLogEntity.getBackupTime()){
-                    compensateList.add(backupLogHisEntity);
-                }
-            }
-
+        }
+        if (backupLogEntity == null && backupVo.getMistiming() > 0&&null!=backupEntity.getBackupStartTime()) {
+            this.calculateCompensateList(backupEntity,backupVo,backupEntity.getBackupStartTime().getTime(),compensateList,resultT);
         }
     }
 
+    public void  calculateCompensateList(BackupEntity backupEntity,BackupVo backupVo,long backTime
+            ,List<BackupLogEntity> compensateList,ResultT<String> resultT){
+        long startTime = backTime+backupVo.getMistiming();
+        //isEnd 2为补偿备份
+        while (backupVo.getBackupTime() - startTime >0) {
+            startTime = startTime + backupVo.getMistiming();
+
+            BackupLogEntity backupLogHisEntity = new BackupLogEntity();
+            BeanUtils.copyProperties(backupEntity, backupLogHisEntity);
+            BackupVo backupHisVo = this.calculateBackupTime(backupEntity, startTime, resultT);
+            backupLogHisEntity.setBackupTime(backupHisVo.getBackupTime());
+            backupLogHisEntity.setConditions(backupHisVo.getConditions());
+            backupLogHisEntity.setSecondConditions(backupHisVo.getSecondConditions());
+            backupLogHisEntity.setIsEnd(2);
+            if (backupHisVo.getBackupTime() >= backupVo.getBackupTime()) {
+                break;
+            }
+            if(backupHisVo.getBackupTime()>backTime){
+                compensateList.add(backupLogHisEntity);
+            }
+        }
+    }
 
     public BackupLogEntity insertBackupLog(BackupLogEntity backupLogEntity, BackupEntity backupEntity, ResultT<String> resultT) {
         ReplaceVo replaceVo = new ReplaceVo();
@@ -209,6 +217,7 @@ public class BackupHandler implements BaseHandler {
             backupLogEntity = backupLogService.saveNotNull(backupLogEntity);
         } catch (Exception e) {
             resultT.setErrorMessage("插入日志失败:{}",OwnException.get(e));
+            log.error("插入日志失败:{}",OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
         }
@@ -221,6 +230,7 @@ public class BackupHandler implements BaseHandler {
         strategyVo.setStartTime(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         resultT.setSuccessMessage("资料{}备份开始备份资料时间{}",backupEntity.getProfileName(),simpleDateFormat.format(new Date(backupLog.getBackupTime())));
+        log.info("资料{}备份开始备份资料时间{}",backupEntity.getProfileName(),simpleDateFormat.format(new Date(backupLog.getBackupTime())));
         BackupLogEntity backupLogEntityHis = this.findByJobId(backupLog, resultT);
         if(!resultT.isSuccess()){
             return;
@@ -238,9 +248,11 @@ public class BackupHandler implements BaseHandler {
                 return;
             }
             resultT.setSuccessMessage("参数校验成功");
+            log.info("参数校验成功");
             this.backUpTable(backupLogEntity,backupEntity,strategyVo,resultT);
         } catch (Exception e) {
             resultT.setErrorMessage("数据备份表过程失败,资料名称{},错误{}",backupEntity.getProfileName(),OwnException.get(e));
+            log.error("数据备份表过程失败,资料名称{},错误{}",backupEntity.getProfileName(),OwnException.get(e));
         }finally {
             FileUtil.delFile(new File(strategyVo.getTempZipPath()),resultT);
             FileUtil.delFileList(strategyVo.getDeleteFileList(),resultT);
@@ -248,7 +260,7 @@ public class BackupHandler implements BaseHandler {
             this.updateBackLog(strategyVo,backupLogEntity,resultT);
         }
         resultT.setSuccessMessage("资料{}备份结束备份资料时间{}",backupEntity.getProfileName(),simpleDateFormat.format(new Date(backupLog.getBackupTime())));
-
+        log.info("资料{}备份结束备份资料时间{}",backupEntity.getProfileName(),simpleDateFormat.format(new Date(backupLog.getBackupTime())));
 
 
 
@@ -256,19 +268,24 @@ public class BackupHandler implements BaseHandler {
     public void checkBackupLogEntity(BackupLogEntity backupLogEntity,ResultT<String> resultT){
         if(!StringUtils.isNotNullString(backupLogEntity.getParentId())){
             resultT.setErrorMessage("物理库基础库ID不能为空");
+            log.error("物理库基础库ID不能为空");
             return;
         }
         if(!StringUtils.isNotNullString(backupLogEntity.getDataClassId())){
             resultT.setErrorMessage("存储编码不能为空");
+            log.error("存储编码不能为空");
+
             return;
         }
         if(!StringUtils.isNotNullString(backupLogEntity.getDdataId())){
             resultT.setErrorMessage("四级编码不能为空");
+            log.error("四级编码不能为空");
+
             return;
         }
         if(!StringUtils.isNotNullString(backupLogEntity.getTableName())){
             resultT.setErrorMessage("表名不能为空");
-
+            log.error("表名不能为空");
         }
 
     }
@@ -284,6 +301,7 @@ public class BackupHandler implements BaseHandler {
         strategyVo.setTempPtah(backupTempPath + "/" + fileName);
         strategyVo.setIndexPath(strategyVo.getTempPtah() + "/" + "index.sql");
         resultT.setSuccessMessage("创建临时文件夹{}",strategyVo.getTempPtah());
+        log.info("创建临时文件夹{}",strategyVo.getTempPtah());
         FileUtil.mkdirs(strategyVo.getTempPtah(), resultT);
         //FileUtil.createFile(strategyVo.getTempPtah(), resultT);
         FileUtil.mkdirs(backupLogEntity.getStorageDirectory(),resultT);
@@ -402,6 +420,7 @@ public class BackupHandler implements BaseHandler {
             map.put(BACKUP_TIME, backupTime);
         } catch (Exception e) {
             resultT.setErrorMessage("计算历史时次出错{}",OwnException.get(e));
+            log.error("计算历史时次出错{}",OwnException.get(e));
             log.error(OwnException.get(e));
 
         }
@@ -442,8 +461,11 @@ public class BackupHandler implements BaseHandler {
             String realFileName = backupLogEntity.getParentId() + "--" + backupLogEntity.getTableName() + "--"+format.format(backupLogEntity.getBackupTime())+"--" + backupLogEntity.getDataClassId()+"--"+md5+".zip"+"."+sort;
             strategyVo.setRealFileName(realFileName);
             resultT.setSuccessMessage("计算文件名成功,文件名为{}",realFileName);
+            log.info("计算文件名成功,文件名为{}",realFileName);
         } catch (ParseException e) {
             resultT.setErrorMessage("正则匹配获取序号出错:{}",OwnException.get(e));
+            log.error("正则匹配获取序号出错:{}",OwnException.get(e));
+
         }
 
 
@@ -461,6 +483,7 @@ public class BackupHandler implements BaseHandler {
             backupLogService.saveNotNull(backupLogEntity);
         } catch (Exception e){
             resultT.setErrorMessage("修改日志出错{}",OwnException.get(e));
+            log.error("修改日志出错{}",OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
         }
@@ -476,6 +499,7 @@ public class BackupHandler implements BaseHandler {
             }
         } catch (Exception e) {
             resultT.setErrorMessage("获取最大时次出错{}",OwnException.get(e));
+            log.error("获取最大时次出错{}",OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
         }
@@ -492,6 +516,7 @@ public class BackupHandler implements BaseHandler {
             }
         } catch (Exception e) {
             resultT.setErrorMessage("获取日志出错{}",OwnException.get(e));
+            log.error("获取日志出错{}",OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_13_ERROR.getKey());
             EiSendUtil.executeSqlException(resultT);
         }

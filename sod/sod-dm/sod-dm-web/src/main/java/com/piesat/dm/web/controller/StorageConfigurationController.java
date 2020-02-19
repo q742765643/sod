@@ -4,7 +4,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.service.StorageConfigurationGrpcService;
+import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -34,7 +34,7 @@ public class StorageConfigurationController {
     @Autowired
     private StorageConfigurationService storageConfigurationService;
     @Autowired
-    private StorageConfigurationGrpcService storageConfigurationGrpcService;
+    private GrpcService storageConfigurationGrpcService;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -59,6 +59,9 @@ public class StorageConfigurationController {
         }
         if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
             map.put("logic_name",request.getParameter("logic_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("queryTable"))){
+            map.put("queryTable",request.getParameter("queryTable"));
         }
 
         ResultT<PageBean> resultT = new ResultT<>();

@@ -75,4 +75,12 @@ public interface DictDataService {
      * @return 结果
      */
     public DictDataDto updateDictData(DictDataDto dictData);
+
+    /**
+     *
+     * @param dictType
+     * @param dictValue
+     * @return
+     */
+    DictDataDto findByDictTypeAndDictValue(String dictType,String dictValue);
 }

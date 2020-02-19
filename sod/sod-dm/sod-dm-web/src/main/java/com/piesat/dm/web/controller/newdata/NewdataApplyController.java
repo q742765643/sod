@@ -6,7 +6,7 @@ import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.newdata.NewdataApplyService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.newdata.NewdataApplyDto;
-import com.piesat.dm.rpc.service.newdata.NewdataApplyGrpcService;
+import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import io.swagger.annotations.Api;
@@ -29,7 +29,7 @@ public class NewdataApplyController {
     @Autowired
     private NewdataApplyService newdataApplyService;
     @Autowired
-    private NewdataApplyGrpcService newdataApplyGrpcService;
+    private GrpcService grpcService;
     @Autowired
     private DataClassService dataClassService;
     @Autowired
@@ -136,7 +136,7 @@ public class NewdataApplyController {
     @GetMapping("/getLogicInfo")
     @ApiOperation(value = "查询逻辑库物理库信息", notes = "查询逻辑库物理库信息")
     public ResultT<List<Map<String,Object>>> getLogicInfo(){
-        List<Map<String,Object>> logicInfoList = this.newdataApplyGrpcService.getLogicInfo();
+        List<Map<String,Object>> logicInfoList = this.grpcService.getLogicInfo();
         return ResultT.success(logicInfoList);
     }
 

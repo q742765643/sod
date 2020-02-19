@@ -19,6 +19,8 @@ public class LogicDatabaseDto {
 
     private String databaseDefineId;
 
+    private String databaseName;
+
     private Date createTime;
 
     private Date updateTime;

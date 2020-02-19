@@ -135,4 +135,9 @@ public class DictDataServiceImpl extends BaseService<DictDataEntity> implements 
         return dictDataMapstruct.toDto(dictDataEntity);
     }
 
+    @Override
+    public DictDataDto findByDictTypeAndDictValue(String dictType, String dictValue) {
+        return dictDataMapstruct.toDto(this.dictDataDao.findByDictTypeAndDictValue(dictType,dictValue));
+    }
+
 }

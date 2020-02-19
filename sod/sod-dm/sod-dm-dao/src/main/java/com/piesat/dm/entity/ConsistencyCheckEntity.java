@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 /**
+ * 一致性检查
  * @author yaya
  * @description TODO
  * @date 2020/2/14 10:26

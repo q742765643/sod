@@ -11,6 +11,8 @@ import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskLogDto;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -18,10 +20,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -46,6 +45,8 @@ public class SyncTaskController {
     private DataTableService dataTableService;
     @GrpcHthtClient
     private TableColumnService tableColumnService;
+    @GrpcHthtClient
+    private DictDataService dictDataService;
 
     /**
      * 获取分页数据接口
@@ -58,7 +59,9 @@ public class SyncTaskController {
     @RequiresPermissions("schedule:sync:list")
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(SyncTaskDto syncTaskDto, int pageNum, int pageSize) {
+    public ResultT<PageBean> list(SyncTaskDto syncTaskDto,
+                                  @RequestParam(value = "pageNum", defaultValue = "1")int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "10")int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<SyncTaskDto> pageForm = new PageForm<>(pageNum, pageSize, syncTaskDto);
         PageBean pageBean = syncTaskService.selectPageList(pageForm);
@@ -77,7 +80,9 @@ public class SyncTaskController {
     @RequiresPermissions("schedule:sync:listLog")
     @GetMapping("/listLog")
     @ApiOperation(value = "分页查询日志接口", notes = "分页查询日志接口")
-    public ResultT<PageBean> listLog(SyncTaskLogDto syncTaskLogDto, int pageNum, int pageSize) {
+    public ResultT<PageBean> listLog(SyncTaskLogDto syncTaskLogDto,
+                                     @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                     @RequestParam(value = "pageSize", defaultValue = "10")int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<SyncTaskLogDto> pageForm = new PageForm<>(pageNum, pageSize, syncTaskLogDto);
         PageBean pageBean = syncTaskService.selectLogPageList(pageForm);
@@ -140,7 +145,7 @@ public class SyncTaskController {
 
     @ApiOperation(value = "新增同步任务")
     @RequiresPermissions("schedule:sync:syncSaveUpdate")
-    @GetMapping("/syncSaveUpdate")
+    @PostMapping("/syncSaveUpdate")
     public ResultT<SyncTaskDto> syncSaveUpdate(SyncTaskDto syncTaskDto, HttpServletRequest request) {
 
         //获取字段对应信息
@@ -231,6 +236,13 @@ public class SyncTaskController {
         JSONObject json=syncTaskService.getSyncJsonById(taskId);
         resultT.setData(json);
         return resultT;
+    }
+
+    @ApiOperation(value = "根据字典类型查询")
+    @GetMapping("/getDictDataByType/{type}")
+    public ResultT getDictDataByType(@PathVariable String type){
+        List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType(type);
+        return  ResultT.success(dictDataDtos);
     }
 
 }
