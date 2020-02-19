@@ -77,7 +77,7 @@ import {
   logicClass,
   datumTypeGetTree
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
-
+import { delByClass } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: { treeIdOfDR: String },
   data() {
@@ -106,7 +106,7 @@ export default {
       showNoCreat: "primary",
       showAll: "",
       myTreedata: [],
-      whichTree: "" //区分是哪颗树
+      whichTree: "资料分类树" //区分是哪颗树
     };
   },
 
@@ -127,7 +127,7 @@ export default {
       return data.name.indexOf(value) !== -1;
     },
     // 初始化树 同步
-    async initMethodsTree(whichTree, treeRefreshData) {
+    async initMethodsTree(whichTree) {
       this.loading = true;
       let classBox = document.getElementsByClassName("classifyTree");
       classBox[0].classList.remove("disActive");
@@ -168,13 +168,9 @@ export default {
       this.initMethodsTree(tab.label);
     },
     // 节点默认展开
-    defaultStyle(treeRefreshData) {
-      if (this.treeData.length !== 0) {
-        if (treeRefreshData) {
-          this.getDefaultNode(treeRefreshData);
-        } else {
-          this.getDefaultNode(this.treeData[0]);
-        }
+    defaultStyle() {
+      if (this.treeData.length != 0) {
+        this.getDefaultNode(this.treeData[0]);
       }
       this.$refs.elTree.setCurrentKey(this.checkNode.id);
       this.sourceNodeClick(this.checkNode);
@@ -253,29 +249,17 @@ export default {
     },
     // 删除资料分类
     deleteSourceNode() {
-      // 等待测试库  测试
-      this.axios
-        .post(interfaceObj.TableStructure_deleteData, {
-          data_class_id_str: this.editNodeId
-        })
-        .then(res => {
-          if (res.data.returnCode === "0") {
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-            //刷新资料树
-            this.initMethodsTree(this.initTreeUlr);
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        })
-        .catch(error => {
-          console.log("出错了，错误信息：" + error);
-        });
+      console.log(this.editNodeId);
+      delByClass({ dataClassId: this.editNodeId }).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+          //刷新资料树
+          this.initMethodsTree(this.whichTree);
+        }
+      });
     },
     // 显示未创建、显示全部
     handleShowTree(type) {

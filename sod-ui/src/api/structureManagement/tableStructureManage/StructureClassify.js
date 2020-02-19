@@ -42,7 +42,7 @@ export function dataClassById(id) {
     method: 'get',
   })
 }
-// 新增
+// 新增/编辑
 export function dataClassSave(data) {
   return request({
     url: baseUrl + '/dm/dataClass/save',

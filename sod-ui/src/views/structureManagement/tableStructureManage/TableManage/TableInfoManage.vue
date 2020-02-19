@@ -142,7 +142,7 @@
 //接口地址
 // 基础信息编辑
 import handleBaseMsg from "@/views/structureManagement/tableStructureManage/TableManage/handleBaseMsg";
-
+import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "TableInfoManage",
   components: {
@@ -255,6 +255,7 @@ export default {
   created() {},
   mounted() {
     this.Info = JSON.parse(JSON.stringify(this.tableInfo));
+    console.log(this.Info);
     // console.log(this.rowData);
     // console.log(this.tableInfo);
     // console.log(this.namehelp);
@@ -274,50 +275,28 @@ export default {
       this.isEdit = !this.isEdit;
     },
     save() {
-      debugger;
       this.isEdit = !this.isEdit;
       let saveObj = {};
-      saveObj = this.Info;
-      if (saveObj.table_id == undefined) {
-        saveObj.D_DATA_ID = this.rowData.D_DATA_ID;
-        saveObj.storage_type = this.rowData.storage_type;
-        saveObj.data_class_id = this.rowData.data_class_id;
-        saveObj.data_service_id = this.rowData.data_class_id;
-        saveObj.class_logic_id = this.rowData.class_logic_id;
-        saveObj.database_logic = this.rowData.logic_id;
-        saveObj.data_service_name = this.rowData.class_name;
-      }
-      saveObj.mark = 2;
+      saveObj.classLogic = this.Info.classLogic;
+      saveObj.tableName = this.Info.tableName;
+      saveObj.nameCn = this.Info.nameCn;
+      saveObj.dataServiceId = this.Info.dataServiceId;
+      saveObj.tableDesc = this.Info.tableDesc;
+      saveObj.version = this.Info.version;
       if (this.tableType == "E-show") {
         saveObj.db_table_type = this.childTableType;
       } else {
         saveObj.db_table_type = this.tableType;
       }
-
-      saveObj.physicals = this.rowData.database_id;
-      this.axios
-        .post(interfaceObj.TableStructure_addOrUpdateTable, saveObj)
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "操作成功"
-            });
-            this.Info.table_id = res.data.tableId;
-            this.$emit("reloadTableInfo");
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        })
-        .catch(error => {
+      console.log(saveObj);
+      dataTableSavle(saveObj).then(response => {
+        if (response.code == 200) {
           this.$message({
-            type: "error",
-            message: res.data.returnMessage
+            type: "success",
+            message: "操作成功"
           });
-        });
+        }
+      });
     },
     cel() {
       this.isEdit = !this.isEdit;

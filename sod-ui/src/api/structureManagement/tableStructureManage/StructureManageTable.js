@@ -57,6 +57,33 @@ export function foreignKeySave(data) {
     data: data
   })
 }
+
+// 查询规范
+export function getNorm(query) {
+  return request({
+    url: baseUrl + '/dm/dataclassnorm/get',
+    method: 'get',
+    params: query
+  })
+}
+
+// 新增规范
+export function saveNorm(data) {
+  return request({
+    url: baseUrl + '/dm/dataclassnorm/save',
+    method: 'post',
+    data: data
+  })
+}
+
+// 要素表/键表新增
+export function dataTableSavle(data) {
+  return request({
+    url: baseUrl + '/dm/dataTable/save',
+    method: 'post',
+    data: data
+  })
+}
 // 删除外键关联
 // export function tableColumnDel(id) {
 //   return request({

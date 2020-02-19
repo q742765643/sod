@@ -132,7 +132,6 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
-      indexNodeId: "",
       // 弹窗 字典
       DictDialog: false,
       handleDictObj: {}
@@ -156,7 +155,7 @@ export default {
         this.$refs.elTree.setCurrentKey(this.treeData[0].id);
         this.queryParams.menu = this.treeData[0].menu;
         this.queryParams.type = this.treeData[0].type;
-        this.indexNodeId = this.treeData[0].id;
+        this.checkNode = this.treeData[0];
         this.handleQuery();
       } else {
         this.loading = false;
@@ -175,7 +174,7 @@ export default {
     handleNodeClick(node) {
       this.queryParams.menu = node.menu;
       this.queryParams.type = node.type;
-      this.indexNodeId = node.id;
+      this.checkNode = node;
       this.handleQuery();
     },
     //查询表格数据
@@ -198,7 +197,15 @@ export default {
       this.dialogTitle = "添加类型";
       this.TreeDialog = true;
     },
-    editType() {},
+    editType() {
+      if (!this.checkNode.groupId) {
+        this.$message({ message: "请选中需要编辑的数据!", type: "error" });
+        return;
+      }
+      this.dialogTitle = "编辑管理字段分组";
+      this.handleTreeObj = this.checkNode;
+      this.TreeDialog = true;
+    },
     deleteAlert() {
       if (!this.checkNode.id) {
         this.$message({ message: "请选中需要删除的数据!", type: "warning" });
@@ -210,8 +217,9 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.rowData = this.checkNode;
-          this.deleteFun();
+          delManageGroup({ groupId: this.queryParams.groupId }).then(res => {
+            this.getTreeData();
+          });
         })
         .catch(() => {}); //一定别忘了这个
     },
@@ -230,7 +238,7 @@ export default {
                 message: res.msg
               });
         });
-        this.$refs.elTree.setCurrentKey(this.indexNodeId);
+        this.$refs.elTree.setCurrentKey(this.checkNode.id);
       }
       this.TreeDialog = false;
       this.DictDialog = false;

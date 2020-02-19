@@ -37,25 +37,25 @@
                 <el-option
                   v-for="(item,index) in dataSourceIdArray"
                   :key="index"
-                  :label="item.key_col"
-                  :value="item.key_col"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="源库" prop="sourceDB">
+            <el-form-item label="源库" prop="sourceDatabaseId">
               <el-select
                 size="medium"
                 filterable
-                v-model="msgFormDialog.sourceDB"
+                v-model="msgFormDialog.sourceDatabaseId"
                 @change="sourceDBChange"
               >
                 <el-option
                   v-for="(item,index) in databaseDetailArray"
                   :key="index"
-                  :label="item.database_name"
-                  :value="item.database_id"
+                  :label="item.DATABASE_NAME"
+                  :value="item.ID"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -64,11 +64,11 @@
 
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
-            <el-form-item label="源表" prop="sourceTable">
+            <el-form-item label="源表" prop="sourceTableId">
               <el-select
                 size="medium"
                 filterable
-                v-model="msgFormDialog.sourceTable"
+                v-model="msgFormDialog.sourceTableId"
                 @change="sourceTableChange"
               >
                 <el-option
@@ -82,11 +82,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="源表名" prop="source_table_name">
+            <el-form-item label="源表名" prop="sourceTableEnName">
               <el-input
                 :disabled="true"
                 size="medium"
-                v-model="msgFormDialog.source_table_name"
+                v-model="msgFormDialog.sourceTableEnName"
                 placeholder="源表名"
               ></el-input>
             </el-form-item>
@@ -156,10 +156,10 @@
           <el-col :span="24">
             <el-form-item
               label="源表查询字段"
-              prop="sourceQueryCol"
+              prop="sourceTableDatecolumn"
               v-if="this.msgFormDialog.syncType == 1"
             >
-              <el-select size="medium" filterable v-model="msgFormDialog.sourceQueryCol">
+              <el-select size="medium" filterable v-model="msgFormDialog.sourceTableDatecolumn">
                 <el-option
                   v-for="(item,index) in columnArray"
                   :key="index"
@@ -219,8 +219,8 @@
                 <el-option
                   v-for="(item,index) in ipAndPortArray"
                   :key="index"
-                  :label="item.key_col"
-                  :value="item.key_col"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -254,13 +254,13 @@
         </div>
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
-            <el-form-item label="数据流向" prop="flowDir">
-              <el-select size="medium" filterable v-model="msgFormDialog.flowDir">
+            <el-form-item label="数据流向" prop="dataFlowDirectionId">
+              <el-select size="medium" filterable v-model="msgFormDialog.dataFlowDirectionId">
                 <el-option
                   v-for="(item,index) in flowDirArray"
                   :key="index"
-                  :label="item.key_col"
-                  :value="item.key_col"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -276,18 +276,22 @@
         </el-row>
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="24">
-            <el-form-item label="目标库" prop="targetDB" v-if="this.msgFormDialog.targetType == 0">
+            <el-form-item
+              label="目标库"
+              prop="targetDatabaseId"
+              v-if="this.msgFormDialog.targetType == 0"
+            >
               <el-select
                 size="medium"
                 filterable
-                v-model="msgFormDialog.targetDB"
+                v-model="msgFormDialog.targetDatabaseId"
                 @change="targetDBChange"
               >
                 <el-option
                   v-for="(item,index) in databaseDetailArray"
                   :key="index"
-                  :label="item.database_name"
-                  :value="item.database_id"
+                  :label="item.DATABASE_NAME"
+                  :value="item.ID"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -397,6 +401,13 @@
   </section>
 </template>
 <script>
+import {
+  getDictDataByType,
+  syncDatabaseDetail,
+  syncTableByDatabaseId,
+  syncColumnByTableId,
+  syncSaveUpdate
+} from "@/api/schedule/dataSync";
 export default {
   name: "handleSyncDialog",
   props: {
@@ -464,14 +475,14 @@ export default {
         taskId: "", //任务ID
         taskName: "", //任务名
         dataSourceId: "", //数据来源
-        sourceDB: "", //源库
-        source_table_name: "", //源表名
+        sourceDatabaseId: "", //源库
+        sourceTableEnName: "", //源表名
         KandE: "E",
         sourceTableFilter: "", //源表过滤字段
         columnOper: "", //源表过滤字段操作符
         sourceTableFilterText: "", //源表过滤字段数值
         syncType: "", //同步类型
-        sourceQueryCol: "", //源表查询字段
+        sourceTableDatecolumn: "", //源表查询字段
         beginTime: "", //同步开始时间
         syncPeriod: "", //同步频率
         queueName: "", //DI过滤规则
@@ -480,7 +491,7 @@ export default {
         batchAmount: "", //批处理条数
         diOff: true, //DI/EI发送
         discardOnDuplicate: "false", //重复数据丢弃
-        targetDB: "", //目标库
+        targetDatabaseId: "", //目标库
         targetTable: "", //目标表
         target_table_name: "", //目标表名
         targetTableId: "", //目标表的值表的表ID
@@ -490,7 +501,7 @@ export default {
         targetTableId2: "", //目标表的值表的表2ID
 
         sourceTableId: "", //源表的值表的表ID
-        sourceTableName: "", //源表的值表的表名
+        sourceTableEnName: "", //源表的值表的表名
         sourceTableForeignKey: "", //源表的值表的外键
         targetTableName_K: "", //目标表的值表的表名
         tableIds: "", //目标表是键值表时为键表ID，普通要素表时可以有2个
@@ -505,17 +516,17 @@ export default {
         dataSourceId: [
           { required: true, message: "请选择数据来源", trigger: "change" }
         ],
-        sourceDB: [
+        sourceDatabaseId: [
           { required: true, message: "请选择源库", trigger: "change" }
         ],
-        sourceTable: [
+        sourceTableId: [
           { required: true, message: "请选择源表", trigger: "change" }
         ],
-        source_table_name: [
+        sourceTableEnName: [
           { required: true, message: "源表名", trigger: "blur" }
         ],
         syncType: [{ required: true, message: "同步类型", trigger: "change" }],
-        sourceQueryCol: [
+        sourceTableDatecolumn: [
           { required: true, message: "源表查询字段", trigger: "change" }
         ],
         beginTime: [
@@ -536,41 +547,138 @@ export default {
         discardOnDuplicate: [
           { required: true, message: "重复数据丢弃", trigger: "blur" }
         ],
-        flowDir: [{ required: true, message: "数据流向", trigger: "blur" }],
+        dataFlowDirectionId: [
+          { required: true, message: "数据流向", trigger: "blur" }
+        ],
         targetType: [
           { required: true, message: "目标存储类型", trigger: "change" }
         ],
-        targetDB: [{ required: true, message: "目标库", trigger: "change" }],
+        targetDatabaseId: [
+          { required: true, message: "目标库", trigger: "change" }
+        ],
         targetTable: [{ required: true, message: "目标表", trigger: "change" }]
       }
     };
   },
   created() {
-    //this.searchObj = this.handleObj;
-    //debugger;
-    this.getAllDataSource(); //获取数据来源
-    this.queryAllDatabase(); //获取数据库
-    this.queryIpAndPort(); //获取ip和端口
-    this.queryFlowDir(); //获取数据流向
-
+    this.searchObj = this.handleObj;
+    this.initView();
     if (this.handleObj.taskId) {
-      this.initView();
+      // 查详情
+      this.initDetail();
     }
-    // console.log( this.handleServerObj);
-    //this.initServerDetail();
   },
   methods: {
-    initView() {
+    // initView
+    async initView() {
+      // 数据来源
+      await getDictDataByType("data_source_identify").then(res => {
+        this.dataSourceIdArray = res.data;
+      });
+      // 源库，目标库
+      await syncDatabaseDetail().then(res => {
+        this.databaseDetailArray = res.data;
+      });
+      // 同步任务执行节点
+      await getDictDataByType("sync_run_host").then(res => {
+        this.ipAndPortArray = res.data;
+      });
+      // 数据流向
+      await getDictDataByType("data_flow_identify").then(res => {
+        this.flowDirArray = res.data;
+      });
+    },
+    initDetail() {
       console.log(this.handleObj);
       console.log(this.msgFormDialog);
-      console.log(this.databaseDetailArray);
       for (var ii in this.msgFormDialog) {
         if (this.handleObj[ii]) {
           this.msgFormDialog[ii] = this.handleObj[ii];
         }
       }
       if (this.handleObj.sourceDBId) {
-        this.msgFormDialog.sourceDB = this.handleObj.sourceDBId;
+        this.msgFormDialog.sourceDatabaseId = this.handleObj.sourceDBId;
+      }
+    },
+    //源数据库事件,根据数据库ID获取源表
+    sourceDBChange(selectSourceDB) {
+      console.log(selectSourceDB);
+      syncTableByDatabaseId({ databaseId: selectSourceDB }).then(res => {
+        var resdata = res.data;
+        var dataList = [];
+        for (var i = 0; i < resdata.length; i++) {
+          var obj = {};
+          obj.value = resdata[i].id;
+          obj.label = resdata[i].name_cn;
+          obj.sourceTableEnName = resdata[i].name_cn;
+          if (
+            resdata[i].storage_type == "K_E_table" &&
+            resdata[i].db_table_type == "E"
+          ) {
+            obj.disabled = true;
+          }
+          dataList.push(obj);
+        }
+        this.sourceTableArray = dataList;
+      });
+    },
+    //源表事件
+    sourceTableChange(selectSourceTable) {
+      //显示源表名
+      this.findColumnByValue(selectSourceTable);
+      this.querySourceColumn(selectSourceTable);
+    },
+    //显示源表名
+    findColumnByValue(selectSourceTable) {
+      // todo
+      console.log(selectSourceTable);
+      let table = {};
+      table = this.sourceTableArray.find(item => {
+        return item.value === selectSourceTable; //筛选出匹配数据
+      });
+      console.log(table);
+      //显示源表名
+      this.msgFormDialog.sourceTableEnName = table.value;
+    },
+    //获取源表字段信息
+    querySourceColumn(table_id) {
+      // todo
+      console.log(table_id);
+      if (table_id) {
+        var sourceTableInfo = table_id.split("|");
+        let searchParameter = {
+          tableId: sourceTableInfo[0]
+        };
+        //如果选择的是键值表的键表
+        if (sourceTableInfo[1] == "K") {
+          this.$message({
+            showClose: true,
+            message: "您选择了键值表类型的键表，系统自动匹配值表"
+          });
+          this.msgFormDialog.KandE = "K";
+          //先查询建表对应值表的字段信息
+          syncColumnByTableId(searchParameter).then(res => {
+            this.sourceVColumnDetail = res.data;
+          });
+        } else {
+          this.msgFormDialog.KandE = "E";
+        }
+
+        syncColumnByTableId(searchParameter).then(res => {
+          var resdata = res.data;
+          //源表字段暂存，会和目标字段进行映射
+          this.sourceColumnDetail = resdata;
+          //初始化源表查询字段，源表过滤字段
+          var dataList = [];
+          for (var i = 0; i < resdata.length; i++) {
+            var obj = {};
+            obj.value = resdata[i].celementCode;
+            obj.label =
+              resdata[i].celementCode + "[" + resdata[i].eleName + "]";
+            dataList.push(obj);
+          }
+          this.columnArray = dataList;
+        });
       }
     },
     deleteStableFilter(item) {
@@ -585,211 +693,35 @@ export default {
         key: Date.now()
       });
     },
-    //获取执行节点
-    queryIpAndPort() {
-      this.axios
-        .get(interfaceObj.databaseSync_getDictionaryByType + "?type=46")
-        .then(res => {
-          this.ipAndPortArray = res.data.data;
-        });
-    },
-    //获取数据流向
-    queryFlowDir() {
-      this.axios
-        .get(interfaceObj.databaseSync_getDictionaryByType + "?type=44")
-        .then(res => {
-          this.flowDirArray = res.data.data;
-        });
-    },
-    // 获取数据来源
-    getAllDataSource() {
-      this.axios
-        .get(interfaceObj.databaseSync_getDictionaryByType + "?type=43")
-        .then(res => {
-          this.dataSourceIdArray = res.data.data;
-        });
-    },
+
     //数据来源事件
     dataSourceChange(selectDataSourceId) {
       this.dataSourceIdArray.find(item => {
         //这里的dataSourceIdArray就是上面遍历的数据源
-        return item.key_col === selectDataSourceId; //筛选出匹配数据
+        return item.dictValue === selectDataSourceId; //筛选出匹配数据
       });
     },
 
-    //获取数据库
-    queryAllDatabase() {
-      this.axios.get(interfaceObj.databaseSync_databaseDetail).then(res => {
-        this.databaseDetailArray = res.data.data;
-        console.log(this.databaseDetailArray);
-      });
-    },
-    //源数据库事件,根据数据库ID获取表
-    sourceDBChange(selectSourceDB) {
-      let cellObj = {};
-      cellObj.database_id = selectSourceDB;
-      this.axios
-        .post(interfaceObj.databaseSync_queryTableByDBID, cellObj, {
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8"
-          }
-        })
-        .then(res => {
-          var resdata = res.data.data;
-          var dataList = [];
-          for (var i = 0; i < resdata.length; i++) {
-            var obj = {};
-            if (
-              resdata[i].storage_TYPE == "K_E_table" &&
-              resdata[i].db_TABLE_TYPE == "E"
-            ) {
-              obj.value =
-                resdata[i].table_ID +
-                "|" +
-                resdata[i].db_TABLE_TYPE +
-                "|" +
-                resdata[i].table_NAME +
-                "|" +
-                resdata[i].data_CLASS_ID;
-              obj.label = resdata[i].name_cn;
-              obj.d_data_id = resdata[i].d_data_id;
-              obj.disabled = true;
-            } else {
-              obj.value =
-                resdata[i].table_ID +
-                "|" +
-                resdata[i].db_TABLE_TYPE +
-                "|" +
-                resdata[i].table_NAME +
-                "|" +
-                resdata[i].data_CLASS_ID;
-              obj.label = resdata[i].name_cn;
-              obj.d_data_id = resdata[i].d_data_id;
-            }
-            dataList.push(obj);
-          }
-          this.sourceTableArray = dataList;
-        });
-    },
-
-    //源表事件
-    sourceTableChange(selectSourceTable) {
-      //debugger;
-      //查找源表字段
-      this.querySourceColumn(selectSourceTable);
-      //显示源表名
-      this.findColumnByValue(selectSourceTable);
-    },
-    //显示源表名
-    findColumnByValue(selectSourceTable) {
-      let table = {};
-      table = this.sourceTableArray.find(item => {
-        return item.value === selectSourceTable; //筛选出匹配数据
-      });
-
-      //var d_data_id = table.d_data_id;
-      //$("#d_data_id").textbox("setValue",d_data_id);
-
-      //显示源表名
-      var splits = selectSourceTable.split("|");
-      this.msgFormDialog.source_table_name = splits[2];
-    },
-    //获取源表字段信息
-    querySourceColumn(table_id) {
-      if (table_id != "") {
-        var sourceTableInfo = table_id.split("|");
-        let searchParameter = {
-          table_id: sourceTableInfo[0]
-        };
-        //如果选择的是键值表的键表
-        if (sourceTableInfo[1] == "K") {
-          this.$message({
-            showClose: true,
-            message: "您选择了键值表类型的键表，系统自动匹配值表"
-          });
-          this.msgFormDialog.KandE = "K";
-          //先查询建表对应值表的字段信息
-          this.axios
-            .post(
-              interfaceObj.databaseSync_queryEColumnByTBID,
-              searchParameter,
-              { headers: { "Content-Type": "application/json;charset=UTF-8" } }
-            )
-            .then(res => {
-              this.sourceVColumnDetail = res.data;
-            });
-        } else {
-          this.msgFormDialog.KandE = "E";
-        }
-        //查询建表或者普通的要素表的字段信息
-        this.axios
-          .post(interfaceObj.databaseSync_queryColumnByTBID, searchParameter, {
-            headers: { "Content-Type": "application/json;charset=UTF-8" }
-          })
-          .then(res => {
-            var resdata = res.data.data;
-            //源表字段暂存，会和目标字段进行映射
-            this.sourceColumnDetail = resdata;
-            //初始化源表查询字段，源表过滤字段
-            var dataList = [];
-            for (var i = 0; i < resdata.length; i++) {
-              var obj = {};
-              obj.value = resdata[i].c_element_code;
-              obj.label =
-                resdata[i].c_element_code + "[" + resdata[i].ele_name + "]";
-              dataList.push(obj);
-            }
-            this.columnArray = dataList;
-          });
-      }
-    },
     //目标数据库事件,根据数据库ID获取表
     targetDBChange(selectTargetDB) {
-      let cellObj = {};
-      cellObj.database_id = selectTargetDB;
-      this.axios
-        .post(interfaceObj.databaseSync_queryTableByDBID, cellObj, {
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8"
+      syncTableByDatabaseId({ databaseId: selectSourceDB }).then(res => {
+        var resdata = res.data;
+        var dataList = [];
+        for (var i = 0; i < resdata.length; i++) {
+          var obj = {};
+          obj.value = resdata[i].id;
+          obj.label = resdata[i].name_cn;
+          if (
+            resdata[i].storage_type == "K_E_table" &&
+            resdata[i].db_table_type == "E"
+          ) {
+            obj.disabled = true;
           }
-        })
-        .then(res => {
-          var resdata = res.data.data;
-          var dataList = [];
-          for (var i = 0; i < resdata.length; i++) {
-            var obj = {};
-            if (
-              resdata[i].storage_TYPE == "K_E_table" &&
-              resdata[i].db_TABLE_TYPE == "E"
-            ) {
-              obj.value =
-                resdata[i].table_ID +
-                "|" +
-                resdata[i].db_TABLE_TYPE +
-                "|" +
-                resdata[i].table_NAME +
-                "|" +
-                resdata[i].data_CLASS_ID;
-              obj.label = resdata[i].name_cn;
-              obj.d_data_id = resdata[i].d_data_id;
-              obj.disabled = true;
-            } else {
-              obj.value =
-                resdata[i].table_ID +
-                "|" +
-                resdata[i].db_TABLE_TYPE +
-                "|" +
-                resdata[i].table_NAME +
-                "|" +
-                resdata[i].data_CLASS_ID;
-              obj.label = resdata[i].name_cn;
-              obj.d_data_id = resdata[i].d_data_id;
-            }
-            dataList.push(obj);
-          }
-          //debugger;
-          this.targetTableArray = dataList;
-        });
+          dataList.push(obj);
+        }
+        //debugger;
+        this.targetTableArray = dataList;
+      });
     },
     //目标表事件
     targetTableChange(selectTargetTable) {
@@ -803,6 +735,7 @@ export default {
     },
     //获取目标表字段信息
     queryTargetColumn(table_id, tname) {
+      debugger;
       if (table_id == "") {
         return;
       }
@@ -813,8 +746,8 @@ export default {
         });
         return;
       }
-      var targetTableInfo = table_id.split("|");
-      if (this.msgFormDialog.sourceTable.split("|")[1] != targetTableInfo[1]) {
+      var targetTableInfo = table_id;
+      if (this.msgFormDialog.sourceTableId != targetTableInfo[1]) {
         this.$message({
           showClose: true,
           message: "源表和目标表的类型不一致"
@@ -863,57 +796,50 @@ export default {
     //值表映射
     ETableMapping(table_id, ttid) {
       let cellObj = {};
-      cellObj.table_id = table_id;
-      this.axios
-        .post(interfaceObj.databaseSync_queryEColumnByTBID, cellObj, {
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8"
-          }
-        })
-        .then(res => {
-          if (res.data.data.length > 0) {
-            //debugger;
-            //源表的值表字段信息
-            var sourceVColumnList = this.sourceVColumnDetail.data;
-            var sourceLength = sourceVColumnList.length;
-            var targetLength = res.data.data.length;
-            /* //目标表的值表的表名
+      cellObj.tableId = table_id;
+      syncColumnByTableId(cellObj).then(res => {
+        if (res.data.length > 0) {
+          //debugger;
+          //源表的值表字段信息
+          var sourceVColumnList = this.sourceVColumnDetail.data;
+          var sourceLength = sourceVColumnList.length;
+          var targetLength = res.data.length;
+          /* //目标表的值表的表名
             var targetTableNameCN = res.data.ETable.name_cn;
 
             //目标表的值表的表ID
-            this.msgFormDialog.targetTableId = res.data.ETable.table_ID;
+            this.msgFormDialog.targetTableId = res.data.ETable.id;
             //源表的值表的表ID
-            this.msgFormDialog.sourceTableId = this.sourceVColumnDetail.ETable.table_ID;
+            this.msgFormDialog.sourceTableId = this.sourceVColumnDetail.ETable.id;
             //源表的值表的表名
-            this.msgFormDialog.sourceTableName = this.sourceVColumnDetail.ETable.table_NAME;
+            this.msgFormDialog.sourceTableEnName = this.sourceVColumnDetail.ETable.table_name;
             //源表的值表的外键
             this.msgFormDialog.sourceTableForeignKey = this.sourceVColumnDetail.ETable.table_foreigh_field;
             //目标表的值表的表名
-            this.msgFormDialog.targetTableName_K = res.data.ETable.table_NAME; */
+            this.msgFormDialog.targetTableName_K = res.data.ETable.table_name; */
 
-            //组织值表映射
-            var dataList = [];
-            for (var i = 0; i < targetLength; i++) {
-              var sourceColumnName = "";
-              //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
-              for (var j = 0; j < sourceLength; j++) {
-                if (
-                  res.data.data[i].c_element_code ==
-                  sourceVColumnList[j].c_element_code
-                ) {
-                  sourceColumnName = sourceVColumnList[j].c_element_code;
-                  break;
-                }
+          //组织值表映射
+          var dataList = [];
+          for (var i = 0; i < targetLength; i++) {
+            var sourceColumnName = "";
+            //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
+            for (var j = 0; j < sourceLength; j++) {
+              if (
+                res.data[i].celementCode == sourceVColumnList[j].celementCode
+              ) {
+                sourceColumnName = sourceVColumnList[j].celementCode;
+                break;
               }
-              var obj = {};
-              obj.targetColumn_ = res.data.data[i].c_element_code;
-              obj.sourceColumn_ = sourceColumnName;
-              obj.index = i;
-              obj.isdelete = false;
-              dataList.push(obj);
             }
-            //组织表头
-            /* var tableDataType = [
+            var obj = {};
+            obj.targetColumn_ = res.data[i].celementCode;
+            obj.sourceColumn_ = sourceColumnName;
+            obj.index = i;
+            obj.isdelete = false;
+            dataList.push(obj);
+          }
+          //组织表头
+          /* var tableDataType = [
               //{ nameProp: "index", nameLable: "序号" },
               {
                 nameProp: "targetColumn_K_",
@@ -925,43 +851,38 @@ export default {
               }
             ]; */
 
-            this.editableTabs.push({
-              title: res.data.ETable.table_NAME,
-              name: res.data.ETable.table_NAME,
-              list: dataList,
-              //tableDataType: tableDataType,
-              tableId: res.data.ETable.table_ID, //组装变量名用
-              KandE: "K",
-              content: "",
-              stid: ttid,
-              namecn: res.data.ETable.name_cn,
-              targetTableName_K: res.data.ETable.table_NAME,
-              sourceTableId: this.sourceVColumnDetail.ETable.table_ID,
-              sourceTableName: this.sourceVColumnDetail.ETable.table_NAME,
-              sourceTableForeignKey: this.sourceVColumnDetail.ETable
-                .table_foreigh_field
-            });
-            this.editableTabsValue = res.data.ETable.table_NAME;
-            //debugger;
-          } //if end
-        });
+          this.editableTabs.push({
+            title: res.data.ETable.table_name,
+            name: res.data.ETable.table_name,
+            list: dataList,
+            //tableDataType: tableDataType,
+            tableId: res.data.ETable.id, //组装变量名用
+            KandE: "K",
+            content: "",
+            stid: ttid,
+            namecn: res.data.ETable.name_cn,
+            targetTableName_K: res.data.ETable.table_name,
+            sourceTableId: this.sourceVColumnDetail.ETable.id,
+            sourceTableEnName: this.sourceVColumnDetail.ETable.table_name,
+            sourceTableForeignKey: this.sourceVColumnDetail.ETable
+              .table_foreigh_field
+          });
+          this.editableTabsValue = res.data.ETable.table_name;
+          console.log(this.editableTabs);
+          //debugger;
+        } //if end
+      });
     },
     //键表或普通的要素表映射
     KTableMapping(table_id, table_name, data_class_id, ttid) {
       let cellObj = {};
-      cellObj.table_id = table_id;
-      this.axios
-        .post(interfaceObj.databaseSync_queryColumnByTBID, cellObj, {
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8"
-          }
-        })
-        .then(res => {
-          if (res.data.data.length > 0) {
-            //debugger;
-            var sourceLength = this.sourceColumnDetail.length;
-            var targetLength = res.data.data.length;
-            /*  //获取选中的目标资料名称
+      cellObj.tableId = table_id;
+      syncColumnByTableId(cellObj).then(res => {
+        if (res.data.length > 0) {
+          //debugger;
+          var sourceLength = this.sourceColumnDetail.length;
+          var targetLength = res.data.length;
+          /*  //获取选中的目标资料名称
             var targetTableNameCN = "";
             //目标表id
             this.msgFormDialog.tableIds.push(table_id);
@@ -972,29 +893,29 @@ export default {
             //目标资料名称
             this.msgFormDialog.tableNameCNs.push(targetTableNameCN);
  */
-            //组织键表映射
-            var dataList = [];
-            for (var i = 0; i < targetLength; i++) {
-              var sourceColumnName = "";
-              //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
-              for (var j = 0; j < sourceLength; j++) {
-                if (
-                  res.data.data[i].c_element_code ==
-                  this.sourceColumnDetail[j].c_element_code
-                ) {
-                  sourceColumnName = this.sourceColumnDetail[j].c_element_code;
-                  break;
-                }
+          //组织键表映射
+          var dataList = [];
+          for (var i = 0; i < targetLength; i++) {
+            var sourceColumnName = "";
+            //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
+            for (var j = 0; j < sourceLength; j++) {
+              if (
+                res.data[i].celementCode ==
+                this.sourceColumnDetail[j].celementCode
+              ) {
+                sourceColumnName = this.sourceColumnDetail[j].celementCode;
+                break;
               }
-              var obj = {};
-              obj.targetColumn_ = res.data.data[i].c_element_code;
-              obj.sourceColumn_ = sourceColumnName;
-              obj.index = i;
-              obj.isdelete = false;
-              dataList.push(obj);
             }
-            //组织表头
-            /*  var tableDataType = [
+            var obj = {};
+            obj.targetColumn_ = res.data[i].celementCode;
+            obj.sourceColumn_ = sourceColumnName;
+            obj.index = i;
+            obj.isdelete = false;
+            dataList.push(obj);
+          }
+          //组织表头
+          /*  var tableDataType = [
               //{ nameProp: "index", nameLable: "序号", width: "180" },
               {
                 nameProp: "targetColumn_",
@@ -1006,29 +927,29 @@ export default {
               }
               //{ nameProp: "", nameLable: "操作", width: "" }
             ]; */
-            //console.log(this.editableTabs);
-            let seleteobj = this.targetTableArray.find(item => {
-              return item.value == ttid;
-            });
-            //console.log(this.targetTableArray);
-            //console.log(table_id);
-            this.editableTabs.push({
-              title: table_name,
-              name: table_name,
-              list: dataList,
-              //tableDataType: tableDataType,
-              tableId: table_id, //组装变量名用
-              KandE: "",
-              content: "",
-              stid: ttid,
-              namecn: seleteobj.label,
-              data_class_ids: data_class_id
-            });
-            this.editableTabsValue = table_name;
+          //console.log(this.editableTabs);
+          let seleteobj = this.targetTableArray.find(item => {
+            return item.value == ttid;
+          });
+          //console.log(this.targetTableArray);
+          //console.log(table_id);
+          this.editableTabs.push({
+            title: table_name,
+            name: table_name,
+            list: dataList,
+            //tableDataType: tableDataType,
+            tableId: table_id, //组装变量名用
+            KandE: "",
+            content: "",
+            stid: ttid,
+            namecn: seleteobj.label,
+            data_class_ids: data_class_id
+          });
+          this.editableTabsValue = table_name;
 
-            //debugger;
-          } //if end
-        });
+          //debugger;
+        } //if end
+      });
     },
     removeTab(targetName) {
       let tabs = this.editableTabs;
@@ -1058,7 +979,7 @@ export default {
     trueDialog(formName) {
       if (this.isDetailStatus == true) {
         this.$refs[formName].resetFields();
-        this.$emit("cancelHandle");
+        this.$emit("resetQuery");
       } else {
         //组装映射
         //debugger;
@@ -1113,10 +1034,31 @@ export default {
           this.msgFormDialog.data_class_ids = data_class_ids.substr(1);
           this.msgFormDialog.tableNameCNs = tableNameCNs.substr(1);
         }
+
+        let ipAndPort = this.msgFormDialog.ipAndPort.split(":");
+        this.msgFormDialog.execIp = ipAndPort[0];
+        this.msgFormDialog.execPort = ipAndPort[2];
+        console.log(this.msgFormDialog);
         this.$refs[formName].validate(valid => {
           if (valid) {
+            if (this.handleObj.taskId) {
+            } else {
+              syncSaveUpdate(this.msgFormDialog).then(res => {
+                if (res.code == "200") {
+                  this.$message({
+                    type: "success",
+                    message: "新增成功"
+                  });
+                  this.$emit("resetQuery");
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: "新增失败"
+                  });
+                }
+              });
+            }
             //this.msgFormDialog[i_i] = v;
-            this.$emit("trueHandle", this.msgFormDialog);
           } else {
             // console.log("error submit!!");
             return false;
@@ -1127,7 +1069,7 @@ export default {
     //取消
     cancelDialog(formName) {
       this.$refs[formName].resetFields();
-      this.$emit("cancelHandle");
+      this.$emit("resetQuery");
     }
   } //method end
 };

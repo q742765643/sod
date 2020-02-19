@@ -6,7 +6,7 @@
           <template slot-scope="scope">
             <el-checkbox
               :checked="scope.row.logicIschecked"
-              :label="scope.row.logic_name"
+              :label="scope.row.logicName"
               @change="clickLogicName(scope.row)"
             ></el-checkbox>
           </template>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { logicDefineAll } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: {
     handleArry: {
@@ -85,73 +86,67 @@ export default {
   methods: {
     //获取编辑数据用途数据
     async getTableData() {
-      await this.axios
-        .get(interfaceObj.TableStructure_useInfoList)
-        // .then(async (res) => {
-        .then(res => {
-          if (res.data.returnCode === "0") {
-            this.tableData = res.data.data;
-            this.tableData.forEach((single, index) => {
-              this.$set(single, "selectModel", "");
-              this.$set(single, "specialArr", []);
-              this.$set(single, "checkType", false);
-              this.$set(single, "typeIschecked", "");
-              if (this.handleArry && this.handleArry.length > 0) {
-                this.handleArry.forEach(element => {
-                  let obj = {};
-                  if (single.logic_id == element.logic_id) {
-                    this.$set(single, "logicIschecked", true);
-                    obj.logic_id = single.logic_id;
-                    this.clickLogicName(single);
-                    single.tableType.forEach(item => {
-                      if (item.key == element.storage_type) {
-                        this.$set(single, "typeIschecked", item.name);
-                        this.tableTypeChange(single, item.name);
-                      }
-                    });
-                    single.physics.forEach(async item => {
-                      if (item.database_name == element.physicsName) {
-                        this.$set(
-                          single,
-                          "physicsNameIschecked",
-                          item.database_name
-                        );
-                        await this.getSpecialLib(
-                          single,
-                          item.database_id,
-                          item.database_name
-                        );
-                        this.$set(
-                          single,
-                          "selectModel",
+      await logicDefineAll().then(response => {
+        if (response.code == 200) {
+          this.tableData = response.data;
+          this.tableData.forEach((single, index) => {
+            this.$set(single, "selectModel", "");
+            this.$set(single, "specialArr", []);
+            this.$set(single, "checkType", false);
+            this.$set(single, "typeIschecked", "");
+            if (this.handleArry && this.handleArry.length > 0) {
+              this.handleArry.forEach(element => {
+                let obj = {};
+                if (single.logic_id == element.logic_id) {
+                  this.$set(single, "logicIschecked", true);
+                  obj.logic_id = single.logic_id;
+                  this.clickLogicName(single);
+                  single.tableType.forEach(item => {
+                    if (item.key == element.storage_type) {
+                      this.$set(single, "typeIschecked", item.name);
+                      this.tableTypeChange(single, item.name);
+                    }
+                  });
+                  single.physics.forEach(async item => {
+                    if (item.database_name == element.physicsName) {
+                      this.$set(
+                        single,
+                        "physicsNameIschecked",
+                        item.database_name
+                      );
+                      // await this.getSpecialLib(
+                      //   single,
+                      //   item.database_id,
+                      //   item.database_name
+                      // );
+                      this.$set(
+                        single,
+                        "selectModel",
+                        element.special_database_name
+                      );
+                      this.aboutHandleSpecial.forEach(s => {
+                        if (
+                          s.special_database_name ==
                           element.special_database_name
-                        );
-                        this.aboutHandleSpecial.forEach(s => {
-                          if (
-                            s.special_database_name ==
-                            element.special_database_name
-                          ) {
-                            obj.specialArr = [s];
+                        ) {
+                          obj.specialArr = [s];
 
-                            this.tableSpecialArrChange(obj, s.database_id);
-                          }
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        })
-        .catch(error => {
-          console.log("出错了，错误信息：" + error);
-        });
+                          this.tableSpecialArrChange(obj, s.database_id);
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
+      });
     },
 
     //数据用途可用不可用控制

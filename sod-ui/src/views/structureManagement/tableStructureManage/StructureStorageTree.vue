@@ -4,6 +4,7 @@
     <el-tree
       class="selScrollBar"
       :data="storageTree"
+      :props="defaultProps"
       node-key="id"
       :default-expanded-keys="expandedKeys"
       @node-click="handleNodeClick"
@@ -27,27 +28,26 @@
 </template>
 
 <script>
+import { dataClassAll } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 //接口地址
 export default {
   name: "structureStorageTree",
   data() {
     return {
+      //格式化tree数据
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
       storageTree: [], //公共元数据树
       expandedKeys: [], //默认展开节点
       checkNode: {} //要传输至父组件的值
     };
   },
   async created() {
-    await this.axios
-      .get(interfaceObj.TableStructure_dataTypeTree_add)
-      .then(res => {
-        if (res.data.returnCode == 0) {
-          this.storageTree = res.data.data;
-        }
-      })
-      .catch(error => {
-        console.log("出错了，错误信息" + error);
-      });
+    await dataClassAll().then(response => {
+      this.storageTree = response.data;
+    });
     if (this.storageTree.length !== 0) {
       this.getDefaultNode(this.storageTree[0]);
     }
@@ -61,20 +61,20 @@ export default {
         this.getDefaultNode(newNodeArr);
         this.expandedKeys.push(nodeArr.id);
       } else {
-        let { id, label } = nodeArr;
-        this.checkNode = { id, label };
+        let { id, name } = nodeArr;
+        this.checkNode = { id, name };
       }
     },
     mouseleave(data, $event) {
-      $event.currentTarget.innerHTML = data.label;
+      $event.currentTarget.innerHTML = data.name;
     },
     mouseover(data, $event) {
-      $event.currentTarget.innerHTML = data.label + "(" + data.id + ")";
+      $event.currentTarget.innerHTML = data.name + "(" + data.id + ")";
     },
     //点击树节点
     handleNodeClick(data) {
-      let { id, label } = data;
-      this.checkNode = { id, label };
+      let { id, name } = data;
+      this.checkNode = { id, name };
     },
     makeSureSave() {
       this.$emit("storageCheckedNode", this.checkNode);
@@ -100,6 +100,9 @@ export default {
   .custom-tree-node {
     width: 100%;
     padding: 6px;
+  }
+  .el-tree-node[aria-disabled="true"] {
+    display: none;
   }
 }
 </style>

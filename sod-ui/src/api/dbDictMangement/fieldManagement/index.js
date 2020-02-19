@@ -17,7 +17,7 @@ export function getTableData(query) {
     params: query
   });
 }
-//查询表格
+//删除
 export function deleteByIds(query) {
   return request({
     url: baseUrl + "/restApi/dicmgn/deleteByIds",

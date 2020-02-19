@@ -18,7 +18,7 @@
                         :disabled="!isDirEdit"
                         placeholder="目录规范"
                         size="small"
-                        v-model="dirRule.catalog"
+                        v-model="dirRule.dirNorm"
                       ></el-input>
                     </el-form-item>
                   </el-col>
@@ -314,7 +314,11 @@ import areaConfigManage from "@/views/structureManagement/tableStructureManage/T
 import productConfigManage from "@/views/structureManagement/tableStructureManage/TableManage/productList";
 // 数据服务
 import serveConfigManage from "@/views/structureManagement/tableStructureManage/TableManage/dataServeManage";
-import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  gcl,
+  getNorm,
+  saveNorm
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   components: {
     "v-column": ColumnManage,
@@ -415,7 +419,7 @@ export default {
       keyObj: { tableInfo: {}, keyColumnData: [] },
       elObj: { tableInfo: {}, elColumnData: [] },
       pubOptions: {},
-      dirRule: { catalog: "" },
+      dirRule: { dirNorm: "" },
       isDirEdit: false
     };
   },
@@ -430,6 +434,7 @@ export default {
       }
       gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {
+          console.log("表信息");
           console.log(response.data);
           let data = response.data;
           for (let i = 0; i < data.length; i++) {
@@ -498,46 +503,35 @@ export default {
     },
     saveDir() {
       this.isDirEdit = !this.isDirEdit;
-      this.axios
-        .post(interfaceObj.TableStructure_addDirRule, {
-          data_class_id: this.rowData.data_class_id,
-          catalog: this.dirRule.catalog
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "操作成功"
-            });
-          }
-        })
-        .catch(error => {
-          console.log("出错了，出错信息：" + error);
-        });
+      this.dirRule.id = this.rowData.DATA_CLASS_ID;
+      saveNorm(this.dirRule).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "操作成功"
+          });
+        }
+      });
     },
     celDir() {
       this.isDirEdit = !this.isDirEdit;
     },
     getDir() {
+      console.log(this.rowData.DATA_CLASS_ID);
       if (
         this.rowData.STORAGE_TYPE == "ME_table" ||
         this.rowData.STORAGE_TYPE == "MK_table" ||
         this.rowData.STORAGE_TYPE == "NF_table"
       ) {
-        this.axios
-          .get(interfaceObj.TableStructure_getDirRule, {
-            params: {
-              data_class_id: this.rowData.data_class_id
+        getNorm({ id: this.rowData.DATA_CLASS_ID }).then(response => {
+          if (response.code == 200) {
+            if (response.data == null) {
+              this.dirRule.dirNorm = "";
+            } else {
+              this.dirRule = response.data;
             }
-          })
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.dirRule.catalog = res.data.data.area_name;
-            }
-          })
-          .catch(error => {
-            console.log("出错了，出错信息：" + error);
-          });
+          }
+        });
       }
     },
     manageTabsClick(val) {
@@ -591,8 +585,9 @@ export default {
   },
   mounted() {
     this.getTableInfo();
+    this.getDir();
     // this.getOptionsData();
-    // this.getDir();
+    //
     // this.handleScroll();
   },
   beforeDestroy() {

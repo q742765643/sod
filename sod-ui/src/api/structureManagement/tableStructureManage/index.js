@@ -8,11 +8,38 @@ export function getListBYIn(query) {
     params: query
   })
 }
-// 删除表格
+// 删除资料/目录
 export function delByClass(data) {
   return request({
     url: baseUrl + '/dm/dataClass/delByClass',
     method: 'delete',
     params: data
+  })
+}
+
+// 新增资料或者目录 type = 1 资料，2 目录
+export function save(data) {
+  return request({
+    url: baseUrl + '/dm/dataClass/save',
+    method: 'post',
+    data: data
+  })
+}
+
+// 查询资料/目录
+export function getDetailById(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/findByClassId',
+    method: 'get',
+    params: query
+  })
+}
+
+// 数据用途选择
+export function logicDefineAll(query) {
+  return request({
+    url: baseUrl + '/dm/logicDefine/all',
+    method: 'get',
+    params: query
   })
 }

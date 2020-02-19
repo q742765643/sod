@@ -51,19 +51,25 @@
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column align="center" type="index" min-width="15" label=" "></el-table-column>
       <el-table-column align="center" type="selection" min-width="15"></el-table-column>
-      <el-table-column align="center" prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="dataSourceId" label="数据来源标识"></el-table-column>
-      <el-table-column align="center" prop="dataFlowDirectionId" label="数据流向标识"></el-table-column>
-      <el-table-column align="center" prop="sourceDatabaseId" label="源库"></el-table-column>
-      <el-table-column align="center" prop="execIp" label="执行主机"></el-table-column>
-      <el-table-column align="center" prop="execPort" label="执行端口"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="taskName"
+        width="120px"
+        label="任务名称"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column align="center" prop="dataSourceId" width="120px" label="数据来源标识"></el-table-column>
+      <el-table-column align="center" prop="dataFlowDirectionId" width="120px" label="数据流向标识"></el-table-column>
+      <el-table-column align="center" prop="sourceDatabaseId" width="120px" label="源库"></el-table-column>
+      <el-table-column align="center" prop="execIp" width="120px" label="执行主机"></el-table-column>
+      <el-table-column align="center" prop="execPort" width="120px" label="执行端口"></el-table-column>
       <el-table-column align="center" prop="updateTime" label="更新时间" width="160px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
-      <el-table-column align="center" label="操作" min-width="280">
+      <el-table-column align="center" label="操作" min-width="400">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -96,11 +102,12 @@
     <el-dialog title="日志列表" :visible.sync="dailyDataDialog" width="90%">
       <dailySync v-if="dailyDataDialog" :handletaskId="handletaskId" />
     </el-dialog>
+    <!-- 新增编辑 -->
     <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="80%">
       <handleSync
         v-if="handleDialog"
         :handleObj="handleObj"
-        @cancelHandle="cancelHandle"
+        @resetQuery="resetQuery"
         ref="myHandleServer"
       />
     </el-dialog>
@@ -242,32 +249,34 @@ export default {
     },
     // 状态
     getStatus: function(row) {
-      // var value = row.runState.split("|");
-      // var result = "";
-      // if (value[0] == "true") {
-      //   result = "运行中";
-      // } else if (value[0] == "false") {
-      //   if (value[1] == "") {
-      //     result = "停止中";
-      //   } else {
-      //     result = "<span>运行出错</span>";
-      //     value[1] = value[1].replace(/[\r\n]/g, ""); //去掉回车换行
-      //   }
-      // } else if (value[0] == "error") {
-      //   result = "未启动";
-      // }
-      // return result;
+      var value = row.runState.split("|");
+      var result = "";
+      if (value[0] == "true") {
+        result = "运行中";
+      } else if (value[0] == "false") {
+        if (value[1] == "") {
+          result = "停止中";
+        } else {
+          result = "<span>运行出错</span>";
+          value[1] = value[1].replace(/[\r\n]/g, ""); //去掉回车换行
+        }
+      } else if (value[0] == "error") {
+        result = "未启动";
+      }
+      return result;
     },
     handleAdd() {
       this.handleDialog = true;
     },
 
     viewDaiy(row) {
+      this.handletaskId = row.taskId;
       this.dailyDataDialog = true;
     },
     addSync() {
       this.dialogTitle = "新增";
       this.handleDialog = true;
+      this.handleObj = {};
     },
     closeSuperSearch() {
       this.resetQuery();

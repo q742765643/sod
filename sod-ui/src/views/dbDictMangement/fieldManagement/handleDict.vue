@@ -1,11 +1,8 @@
 <template>
   <section class="fileHandleDict">
     <el-form :model="ruleForm" ref="ruleForm" :rules="rules" label-width="100px">
-      <el-form-item label="字段编码:" prop="dbEleCode">
+      <el-form-item label="关键字:" prop="dbEleCode">
         <el-input v-model="ruleForm.dbEleCode" placeholder="请输入字段编码"></el-input>
-      </el-form-item>
-      <el-form-item label="服务代码:" prop="userEleCode">
-        <el-input v-model="ruleForm.userEleCode" placeholder="请输入服务代码"></el-input>
       </el-form-item>
       <el-form-item label="中文名:" prop="dbEleName">
         <el-input v-model="ruleForm.dbEleName"></el-input>
@@ -20,26 +17,16 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="组名称:" prop="dbEleName">
-        <el-select v-model="ruleForm.groupId">
-          <el-option
-            v-for="item in GroupNames"
-            :key="item.groupName"
-            :label="item.groupName"
-            :value="item.groupId"
-          ></el-option>
-        </el-select>
+      <el-form-item label="字典描述:" prop="userEleCode">
+        <el-input v-model="ruleForm.userEleCode" placeholder="请输入字典描述"></el-input>
       </el-form-item>
-      <el-form-item label="字段精度:">
-        <el-input v-model="ruleForm.dataPrecision"></el-input>
-      </el-form-item>
-      <el-form-item label="是否可为空:" prop="nullAble">
+      <el-form-item label="是否可删:" prop="nullAble">
         <el-select v-model="ruleForm.nullAble">
           <el-option label="是" value="true"></el-option>
           <el-option label="否" value="false"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="是否可更新:" prop="updateAble">
+      <el-form-item label="是否序号:" prop="updateAble">
         <el-select v-model="ruleForm.updateAble">
           <el-option label="是" value="true"></el-option>
           <el-option label="否" value="false"></el-option>

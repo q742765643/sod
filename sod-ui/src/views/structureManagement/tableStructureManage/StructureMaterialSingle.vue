@@ -15,17 +15,17 @@
             <i class="el-icon-price-tag"></i>公共元数据信息
           </div>
           <div class="publicInfo">
-            <el-form-item label="名称" prop="meta_data_name">
+            <el-form-item label="名称" prop="metaDataName">
               <el-input
                 placeholder="名称"
                 :readonly="true"
                 class="styleCursor"
-                v-model="materialData.meta_data_name"
+                v-model="materialData.metaDataName"
                 @click.native="showPublicTree"
               ></el-input>
             </el-form-item>
-            <el-form-item label="四级编码" prop="d_data_id">
-              <el-input placeholder="请选择公共元数据" :readonly="true" v-model="materialData.d_data_id"></el-input>
+            <el-form-item label="四级编码" prop="ddataId">
+              <el-input placeholder="请选择公共元数据" :readonly="true" v-model="materialData.ddataId"></el-input>
             </el-form-item>
           </div>
         </div>
@@ -35,45 +35,45 @@
             <i class="el-icon-price-tag"></i>存储元数据信息
           </div>
           <div class="storageInfo">
-            <el-form-item label="资料名称" prop="class_name">
-              <el-input placeholder="资料名称" v-model="materialData.class_name"></el-input>
+            <el-form-item label="资料名称" prop="className">
+              <el-input placeholder="资料名称" v-model="materialData.className"></el-input>
             </el-form-item>
-            <el-form-item label="存储编码" prop="data_class_id">
+            <el-form-item label="存储编码" prop="dataClassId">
               <el-input
                 :disabled="isDisabledEdit"
                 placeholder="存储编码"
-                v-model="materialData.data_class_id"
+                v-model="materialData.dataClassId"
               ></el-input>
             </el-form-item>
-            <el-form-item label="父节点" prop="parent_class_id">
+            <el-form-item label="父节点" prop="parentId">
               <el-input
                 placeholder="请选择存储元数据父节点"
                 :readonly="true"
-                v-model="materialData.parent_class_id"
+                v-model="materialData.parentId"
                 class="styleCursor"
                 @click.native="showStorageTree"
               ></el-input>
             </el-form-item>
             <el-form-item label="类型" v-if="isSourceTree">
-              <el-input v-model="materialData.meta_data_stor_type" :readonly="true"></el-input>
+              <el-input v-model="materialData.typeText" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="访问控制">
-              <el-select v-model="materialData.access_control">
+              <el-select v-model="materialData.isAccess">
                 <el-option :value="1" label="公开"></el-option>
                 <el-option :value="2" label="限制"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="排序" prop="serial_no">
-              <el-input type="number" v-model="materialData.serial_no"></el-input>
+            <el-form-item label="排序" prop="serialNo">
+              <el-input type="number" v-model="materialData.serialNo"></el-input>
             </el-form-item>
             <el-form-item label="是否发布">
-              <el-select v-model="materialData.if_stop_use">
-                <el-option :value="1" label="启用"></el-option>
-                <el-option :value="2" label="停用"></el-option>
+              <el-select v-model="materialData.ifStopUse">
+                <el-option :value="true" label="启用"></el-option>
+                <el-option :value="false" label="停用"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree">
-              <el-select v-model="materialData.use_base_info">
+              <el-select v-model="materialData.useBaseInfo">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
               </el-select>
@@ -149,6 +149,10 @@ import {
   databaseClass,
   logicClass
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
+import {
+  save,
+  getDetailById
+} from "@/api/structureManagement/tableStructureManage/index";
 // 公共元数据资料树
 import StructurePublicTree from "@/views/structureManagement/tableStructureManage/StructurePublicTree";
 // 存储元数据资料树
@@ -181,59 +185,58 @@ export default {
       editDataUseVisible: false, //编辑数据用途弹出层控制
       isDisabledEdit: false,
       materialData: {
-        d_data_id: "",
-        meta_data_name: "",
-        data_class_id: "",
-        class_name: "",
-        parent_class_id: "",
-        meta_data_stor_type: "资料",
-        if_stop_use: 1,
-        access_control: 1,
-        use_base_info: 0,
-        if_stop_use: 1,
-        serial_no: 0,
+        ddataId: "",
+        metaDataName: "",
+        dataClassId: "",
+        className: "",
+        parentId: "",
+        typeText: "资料",
+        ifStopUse: true,
+        isAccess: 1,
+        useBaseInfo: 0,
+        serialNo: 0,
         dataclasslogic: [] //数据用途回显的树
       },
       dataclasslogicOld: [],
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
       rules: {
-        meta_data_name: [
+        metaDataName: [
           {
             required: true,
             message: "名称不能为空",
             trigger: "change"
           }
         ],
-        d_data_id: [
+        ddataId: [
           {
             required: true,
             message: "四级编码不能为空",
             trigger: "change"
           }
         ],
-        parent_class_id: [
+        parentId: [
           {
             required: true,
             message: "父节点不能为空",
             trigger: "change"
           }
         ],
-        class_name: [
+        className: [
           {
             required: true,
             message: "资料名称不能为空",
             trigger: "change"
           }
         ],
-        data_class_id: [
+        dataClassId: [
           {
             required: true,
             message: "存储编码不能为空",
             trigger: "change"
           }
         ],
-        serial_no: [
+        serialNo: [
           {
             required: true,
             message: "排序不能为空",
@@ -250,10 +253,10 @@ export default {
     //初始化表单
     initMaterialForm() {
       if (this.isSourceTree) {
-        this.materialData.meta_data_stor_type = "目录";
+        this.materialData.typeText = "目录";
       }
       if (!this.isSourceTree) {
-        this.materialData.meta_data_stor_type = "资料";
+        this.materialData.typeText = "资料";
       }
       //资料树  初始化
       if (this.isSourceTree && this.editNodeId !== "") {
@@ -268,21 +271,27 @@ export default {
     },
     //获取资料树，资料的数据
     getMaterialForm(id) {
-      this.axios
-        .get(interfaceObj.TableStructure_getDataById, {
-          params: { data_class_id: id }
-        })
-        .then(res => {
-          this.materialData = res.data.data;
-          if (res.data.data.dataclasslogic.length > 0) {
+      console.log(id);
+      getDetailById({ id: id }).then(response => {
+        if (response.code == "200") {
+          this.materialData = response.data;
+          if (this.materialData.type == 1) {
+            this.materialData.typeText = "目录";
+          } else {
+            this.materialData.typeText = "资料";
+          }
+          if (
+            response.data.dataclasslogic &&
+            response.data.dataclasslogic.length > 0
+          ) {
             this.editUseShow = true;
             this.materialData.dataclasslogic = this.editMaterialArry;
           }
           console.log(this.editMaterialArry);
-        })
-        .catch(error => {
-          console.log("出错了，出错信息：" + error);
-        });
+        } else {
+          console.log("出错了，出错信息：" + response.msg);
+        }
+      });
     },
     // 显示公共元数据资料树
     showPublicTree() {
@@ -290,12 +299,13 @@ export default {
     },
     //从公共元数据获取数据
     getChildCheckNode(checkNode) {
+      console.log(checkNode);
       if (!this.isDisabledEdit) {
-        this.materialData.data_class_id = checkNode.id;
-        this.materialData.class_name = checkNode.label;
+        this.materialData.dataClassId = checkNode.id;
+        this.materialData.className = checkNode.name;
       }
-      this.materialData.d_data_id = checkNode.id;
-      this.materialData.meta_data_name = checkNode.label;
+      this.materialData.ddataId = checkNode.id;
+      this.materialData.metaDataName = checkNode.name;
       this.publicTreeVisible = false;
     },
     //关闭公共元数据弹出层
@@ -308,7 +318,7 @@ export default {
     },
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
-      this.materialData.parent_class_id = checkNode.id;
+      this.materialData.parentId = checkNode.id;
       this.storageTreeVisible = false;
     },
     //关闭存储元数据弹出层
@@ -336,91 +346,97 @@ export default {
     },
     // 保存数据
     makeSureSave(resForm) {
-      //提交的接口地址
-      let requestInterface;
-      //成功后的提示语
-      let successMessage = "";
-      //资料分类树新增或编辑
-      if (this.isSourceTree) {
-        // 编辑
-        if (this.editNodeId !== "") {
-          requestInterface = interfaceObj.TableStructure_updateData;
-          successMessage = "修改成功";
-        }
-        //新增
-        else {
-          requestInterface = interfaceObj.TableStructure_addData;
-          successMessage = "新增成功";
-        }
-      }
-      //资料的新增或编辑
-      else {
-        // 编辑
-        if (this.editMaterial !== "") {
-          requestInterface = interfaceObj.TableStructure_updateData;
-          successMessage = "修改成功";
-        }
-        //新增
-        else {
-          requestInterface = interfaceObj.TableStructure_addData;
-          successMessage = "新增成功";
-        }
-        if (this.materialData.dataclasslogic.length == 0) {
-          this.$message({
-            type: "error",
-            message: "请选择数据用途"
-          });
-          return false;
-        }
-        let dataclasslogic = this.materialData.dataclasslogic;
-        this.dataclasslogicOld = dataclasslogic;
-        let newDataclasslogic = [];
-        for (var i = 0; i < dataclasslogic.length; i++) {
-          let obj = {};
-          obj.class_logic_id =
-            this.materialData.data_class_id + "_" + dataclasslogic[i].logic_id; //存储编码和逻辑库ID拼接窜
-          obj.data_class_id = this.materialData.data_class_id; //存储编码
-          obj.logic_id = dataclasslogic[i].logic_id; //逻辑库ID
-          obj.storage_type = dataclasslogic[i].storage_type; //资料类型
-          obj.dlphysics = []; //专题库列表
-          let dlObj = {};
-          dlObj.database_id = dataclasslogic[i].special; //物理库ID
-          dlObj.dl_id =
-            this.materialData.data_class_id + "_" + dataclasslogic[i].logic_id; ///存储编码和逻辑库ID拼接窜
-          obj.dlphysics.push(dlObj);
-          newDataclasslogic.push(obj);
-        }
-        this.materialData.dataclasslogic = newDataclasslogic;
-      }
-      this.saveData(requestInterface, successMessage);
-    },
-    saveData(requestInterface, successMessage) {
       this.$refs["materialForm"].validate(valid => {
         if (valid) {
-          this.axios
-            .post(requestInterface, this.materialData)
-            .then(res => {
-              if (res.data.returnCode === "0") {
-                this.$message({
-                  type: "success",
-                  message: successMessage
-                });
-                //资料树节点 新增  编辑  isSourceTree:true   isSourceTree:false
-                this.$emit("addOrEditSuccess", this.isSourceTree);
-              } else {
-                this.$message({
-                  type: "error",
-                  message: res.data.returnMessage
-                });
-                this.materialData.dataclasslogic = this.dataclasslogicOld;
-              }
-            })
-            .catch(error => {
-              console.log("出错了，出错信息：" + error);
-            });
+          // 1为目录   2为资料
+          if (this.materialData.typeText == "目录") {
+            this.materialData.type = 1;
+          } else if (this.materialData.typeText == "资料") {
+            this.materialData.type = 2;
+          }
+          let handleMessage = "";
+          let refreshWhich = "";
+          //资料分类树新增或编辑
+          if (this.isSourceTree) {
+            refreshWhich = "tree";
+            // 编辑
+            if (this.editNodeId !== "") {
+              handleMessage = "编辑资料树节点成功";
+            }
+            //新增
+            else {
+              handleMessage = "新增资料树节点成功";
+            }
+          }
+          //资料的新增或编辑
+          else {
+            // 编辑
+            if (this.editMaterial !== "") {
+              handleMessage = "编辑资料成功";
+            }
+            //新增
+            else {
+              handleMessage = "新增资料成功";
+            }
+            if (this.materialData.dataclasslogic.length == 0) {
+              this.$message({
+                type: "error",
+                message: "请选择数据用途"
+              });
+              return false;
+            }
+            let dataclasslogic = this.materialData.dataclasslogic;
+            this.dataclasslogicOld = dataclasslogic;
+            let newDataclasslogic = [];
+            for (var i = 0; i < dataclasslogic.length; i++) {
+              let obj = {};
+              obj.class_logic_id =
+                this.materialData.dataClassId +
+                "_" +
+                dataclasslogic[i].logic_id; //存储编码和逻辑库ID拼接窜
+              obj.dataClassId = this.materialData.dataClassId; //存储编码
+              obj.logic_id = dataclasslogic[i].logic_id; //逻辑库ID
+              obj.storage_type = dataclasslogic[i].storage_type; //资料类型
+              obj.dlphysics = []; //专题库列表
+              let dlObj = {};
+              dlObj.database_id = dataclasslogic[i].special; //物理库ID
+              dlObj.dl_id =
+                this.materialData.dataClassId +
+                "_" +
+                dataclasslogic[i].logic_id; ///存储编码和逻辑库ID拼接窜
+              obj.dlphysics.push(dlObj);
+              newDataclasslogic.push(obj);
+            }
+            this.materialData.dataclasslogic = newDataclasslogic;
+          }
+          console.log(this.materialData);
+          this.saveData(handleMessage, refreshWhich);
         }
       });
     },
+    saveData(handleMessage, refreshWhich) {
+      save(this.materialData).then(response => {
+        if (response.success === true) {
+          this.$message({
+            type: "success",
+            message: handleMessage
+          });
+          if (refreshWhich == "tree") {
+            //资料树节点 新增  编辑  isSourceTree:true   isSourceTree:false
+            this.$emit("addOrEditSuccess", "handleTree");
+          } else {
+            this.$emit("addOrEditSuccess", "handleTable");
+          }
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+          this.materialData.dataclasslogic = this.dataclasslogicOld;
+        }
+      });
+    },
+
     cancleSave() {
       this.$emit("closeMaterialDialog");
     }
@@ -486,7 +502,7 @@ export default {
       width: 90px;
       border-bottom: 3px solid rgba(5, 138, 229, 1);
       position: absolute;
-      top: 39px;
+      top: 36px;
       left: 0px;
     }
     .editUseDiv {

@@ -4,6 +4,7 @@
     <el-tree
       class="selScrollBar"
       :data="publicTree"
+      :props="defaultProps"
       node-key="id"
       :default-expanded-keys="expandedKeys"
       :highlight-current="true"
@@ -27,10 +28,16 @@
 </template>
 
 <script>
+import { datumTypeGetTree } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 export default {
   name: "structurePublicTree",
   data() {
     return {
+      //格式化tree数据
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
       publicTree: [], //公共元数据树
       expandedKeys: [], //默认展开节点
       checkNode: {} //要传输至父组件的值
@@ -46,19 +53,14 @@ export default {
   methods: {
     async getPublicTree() {
       if (!localStorage.getItem("publicDatumTree")) {
-        await this.axios
-          .get(interfaceObj.TableStructure_publicDatumTree)
-          .then(res => {
-            this.publicTree = res.data.data || [];
-            //将数据存储在本地  提高效率
-            localStorage.setItem(
-              "publicDatumTree",
-              JSON.stringify(this.publicTree)
-            );
-          })
-          .catch(error => {
-            console.log("出错了，错误信息：" + error);
-          });
+        await datumTypeGetTree().then(response => {
+          this.publicTree = response.data || [];
+          //将数据存储在本地  提高效率
+          localStorage.setItem(
+            "publicDatumTree",
+            JSON.stringify(this.publicTree)
+          );
+        });
       } else {
         this.publicTree = JSON.parse(localStorage.getItem("publicDatumTree"));
       }
@@ -70,20 +72,20 @@ export default {
         this.getDefaultNode(newNodeArr);
         this.expandedKeys.push(nodeArr.id);
       } else {
-        let { id, label } = nodeArr;
-        this.checkNode = { id, label };
+        let { id, name } = nodeArr;
+        this.checkNode = { id, name };
       }
     },
     mouseleave(data, $event) {
-      $event.currentTarget.innerHTML = data.label;
+      $event.currentTarget.innerHTML = data.name;
     },
     mouseover(data, $event) {
-      $event.currentTarget.innerHTML = data.label + "(" + data.id + ")";
+      $event.currentTarget.innerHTML = data.name + "(" + data.id + ")";
     },
     //点击树节点
     handleNodeClick(data) {
-      let { id, label } = data;
-      this.checkNode = { id, label };
+      let { id, name } = data;
+      this.checkNode = { id, name };
     },
     makeSureSave() {
       this.$emit("returnCheckedNode", this.checkNode);

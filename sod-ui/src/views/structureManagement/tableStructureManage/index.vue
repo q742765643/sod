@@ -37,11 +37,12 @@
               </el-form>
             </div>
             <div class="sourceOperate">
-              <!-- <el-button
+              <el-button
                 type="primary"
+                size="small"
                 icon="el-icon-tickets"
                 @click="showMaterialList"
-              >资料概览</el-button>-->
+              >资料概览</el-button>
               <el-button
                 type="primary"
                 size="small"
@@ -92,19 +93,19 @@
               <el-table-column
                 align="center"
                 label="存储类型"
-                prop="name_cn"
+                prop="DICT_LABEL"
                 :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
                 align="center"
                 label="数据库"
-                prop="DATABASE_NAME"
+                prop="DATABASE_NAME_F"
                 :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
                 align="center"
                 label="专题名"
-                prop="special_database_name"
+                prop="DATABASE_NAME"
                 :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column align="center" label="操作" width="320px">
@@ -143,7 +144,15 @@
         />
       </el-main>
     </el-container>
-
+    <!-- 资料概览弹出层 -->
+    <el-dialog
+      title="资料概览"
+      :visible.sync="materialListVisible"
+      width="70%"
+      :close-on-click-modal="false"
+    >
+      <StructureMaterialList v-if="materialListVisible" />
+    </el-dialog>
     <!-- 新增、编辑资料  资料分类树 -->
     <el-dialog
       :title="materialSingleTitle"
@@ -185,6 +194,8 @@
 <script>
 //分类树
 import StructureClassify from "@/views/structureManagement/tableStructureManage/StructureClassify";
+//资料概览--弹出层
+import StructureMaterialList from "@/views/structureManagement/tableStructureManage/StructureMaterialList";
 //新增、编辑资料--弹出层
 import StructureMaterialSingle from "@/views/structureManagement/tableStructureManage/StructureMaterialSingle";
 //表结构管理--弹出层
@@ -206,7 +217,8 @@ export default {
     StructureClassify,
     StructureMaterialSingle,
     PublicDatumPage,
-    StructureManageTable
+    StructureManageTable,
+    StructureMaterialList
   },
   data() {
     return {
@@ -240,7 +252,7 @@ export default {
       handleSQLObj: {},
       handleSQLDialog: false,
       // treeUrl: interfaceObj.TableStructure_dataTypeTree, //区分刷新那颗树
-      whichTree: "", //区分刷新那颗树
+      whichTree: "资料分类树", //区分刷新那颗树
       treeRefreshData: {}
     };
   },
@@ -248,6 +260,7 @@ export default {
   methods: {
     //新增，编辑资料树  或者  资料
     showMaterialSingle(operateType) {
+      console.log(operateType);
       this.editMaterialArry = [];
       if (operateType.title === "新增资料树节点") {
         this.materialSingleTitle = operateType.title;
@@ -317,6 +330,7 @@ export default {
         } else if (checkedNodeStr == "" && checkedNodeStr != "search") {
           this.searchObj.classIds = [];
         }
+        console.log(this.searchObj);
         getListBYIn(this.searchObj).then(response => {
           this.tableData = response.data;
           if (this.tableData.length > 0) {
@@ -341,15 +355,17 @@ export default {
         });
       } else {
         console.log(this.currentRow);
-        delByClass({ id: this.currentRow[0].DATA_CLASS_ID }).then(response => {
-          if (response.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-            this.searchFun("search");
+        delByClass({ dataClassId: this.currentRow[0].DATA_CLASS_ID }).then(
+          response => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              this.searchFun("search");
+            }
           }
-        });
+        );
       }
     },
     composeValue() {},
@@ -423,13 +439,19 @@ export default {
         }
       });
     },
+    //资料概览
+    showMaterialList() {
+      this.materialListVisible = true;
+    },
     //新增、编辑后刷新数据
     addOrEditSuccess(operateType) {
       this.currentRow = [];
-      this.$refs.classifyTree.initMethodsTree(
-        this.treeUrl,
-        this.treeRefreshData
-      );
+      if (operateType == "handleTree") {
+        this.$refs.classifyTree.initMethodsTree(this.whichTree);
+      } else {
+        this.searchFun("search");
+      }
+
       this.materialSingleVisible = false;
     },
     //关闭新增或编辑资料弹出层
