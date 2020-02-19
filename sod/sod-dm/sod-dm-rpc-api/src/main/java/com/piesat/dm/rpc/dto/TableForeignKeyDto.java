@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 public class TableForeignKeyDto {
-    private String tableId;
+    private String classLogicId;
 
     private String keyColumn;
 

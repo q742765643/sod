@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.api.TableColumnService;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.TableColumnDto;
+import com.piesat.dm.rpc.dto.TableColumnList;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -111,10 +112,11 @@ public class TableColumnController {
 
     @ApiOperation(value = "批量添加")
     @RequiresPermissions("dm:tableColumn:saveList")
-    @GetMapping(value = "/saveList")
-    public ResultT saveDtoList(@RequestBody List<TableColumnDto> tableColumnDtoList) {
+    @Log(title = "表字段管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/saveList")
+    public ResultT saveDtoList(@RequestBody TableColumnList tableColumnList) {
         try {
-            List<TableColumnDto> save = this.tableColumnService.saveDtoList(tableColumnDtoList);
+            List<TableColumnDto> save = this.tableColumnService.saveDtoList(tableColumnList.getTableColumnList());
             DataTableDto dataTable = dataTableService.getDotById(save.get(0).getTableId());
             DataLogicDto dataLogic = dataTable.getClassLogic();
             if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {

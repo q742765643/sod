@@ -5,6 +5,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.model.Column;
 import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -250,6 +251,11 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn) {
         return null;
     }
 }

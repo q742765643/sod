@@ -2,6 +2,7 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.rpc.api.ShardingService;
 import com.piesat.dm.rpc.dto.ShardingDto;
+import com.piesat.dm.rpc.dto.ShardingList;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -44,9 +45,9 @@ public class ShardingController {
     @RequiresPermissions("dm:sharding:adds")
     @Log(title = "表分库分表键", businessType = BusinessType.INSERT)
     @PostMapping(value = "/saves")
-    public ResultT saves(@RequestBody List<ShardingDto> shardingDto) {
+    public ResultT saves(@RequestBody ShardingList shardingList) {
         try {
-            List<ShardingDto> save = this.shardingService.saveDto(shardingDto);
+            List<ShardingDto> save = this.shardingService.saveDto(shardingList.getShardingList());
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

@@ -93,4 +93,17 @@ public class DataLogicController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据存储编码查询")
+    @RequiresPermissions("dm:dataLogic:findByDataClassId")
+    @GetMapping(value = "/findByDataClassId")
+    public ResultT findByDataClassId(String dataClassId) {
+        try {
+            List<DataLogicDto> all = this.dataLogicService.findByDataClassId(dataClassId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

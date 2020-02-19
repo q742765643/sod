@@ -34,4 +34,6 @@ public interface DataLogicService {
 
     List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto);
 
+
+    List<DataLogicDto> findByDataClassId(String dataClassId);
 }

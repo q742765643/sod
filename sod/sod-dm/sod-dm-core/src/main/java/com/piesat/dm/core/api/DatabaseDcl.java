@@ -1,5 +1,6 @@
 package com.piesat.dm.core.api;
 
+import com.piesat.dm.core.model.Column;
 import com.piesat.util.ResultT;
 
 import java.util.List;
@@ -152,4 +153,6 @@ public interface DatabaseDcl {
      * @throws Exception
      */
     ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception;
+
+    ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn);
 }

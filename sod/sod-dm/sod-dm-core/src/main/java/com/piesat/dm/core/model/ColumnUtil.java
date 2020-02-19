@@ -11,30 +11,14 @@ import java.util.List;
  */
 public class ColumnUtil {
 
-    public ColumnUtil(String schema,String tableName,Boolean add, Column oldColumn, Column newColumn) {
+    public ColumnUtil(String schema,String tableName, Column oldColumn, Column newColumn) {
         sql = new ArrayList<>();
+        if(oldColumn==null){
+
+        }
+
+
     }
 
     private List<String> sql;
-
-    private String schema;
-    private String tableName;
-
-    private Boolean add;
-
-    private String oldName;
-    private String newName;
-
-    private String oldType;
-    private String newType;
-
-    private String oldPrecision;
-    private String newPrecision;
-
-    private String oldDef;
-    private String newDef;
-
-    private Boolean oldIsNull;
-    private Boolean newIsNull;
-
 }
