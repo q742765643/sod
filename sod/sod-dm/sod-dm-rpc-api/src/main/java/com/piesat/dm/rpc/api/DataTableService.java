@@ -40,4 +40,5 @@ public interface DataTableService {
 
     List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId,String tableName);
 
+    ResultT paste(String copyId,String pasteId);
 }

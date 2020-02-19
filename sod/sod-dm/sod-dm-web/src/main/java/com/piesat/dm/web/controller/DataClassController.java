@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.dto.DataClassDto;
+import com.piesat.dm.rpc.dto.DatabaseDefineDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -167,4 +170,20 @@ public class DataClassController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "查询资料概览")
+    @RequiresPermissions("dm:dataClass:getBaseData")
+    @GetMapping(value = "/getBaseData")
+    public ResultT getBaseData(DataClassDto dataClassDto,
+                               @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+        try {
+            PageBean all = this.dataClassService.getBaseData(new PageForm(pageNum, pageSize),dataClassDto);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

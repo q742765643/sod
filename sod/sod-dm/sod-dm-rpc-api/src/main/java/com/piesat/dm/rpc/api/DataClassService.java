@@ -5,6 +5,8 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.DataClassDto;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import java.util.List;
 import java.util.Map;
@@ -52,4 +54,6 @@ public interface DataClassService {
      * @return
      */
     public String getDataClassIdNum();
+
+    PageBean getBaseData(PageForm<Map<String,String>> pageForm,DataClassDto dataClassDto);
 }

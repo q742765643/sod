@@ -3,6 +3,8 @@ package com.piesat.dm.rpc.service;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.common.tree.BaseParser;
 import com.piesat.dm.common.tree.TreeLevel;
 import com.piesat.dm.dao.*;
@@ -14,8 +16,11 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.dto.DataClassDto;
 import com.piesat.dm.rpc.mapper.DataClassMapper;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -258,6 +263,20 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             num = ling.substring(0, a) + num;
         }
         return num;
+    }
+
+    @Override
+    public PageBean getBaseData(PageForm<Map<String, String>> pageForm,DataClassDto dataClassDto) {
+        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(dataClassDto.getClassName())) {
+            ssb.add("className", SpecificationOperator.Operator.likeAll.name(), dataClassDto.getClassName());
+        }
+        if (dataClassDto.getIsAccess()!=null) {
+            ssb.add("isAccess", SpecificationOperator.Operator.eq.name(), dataClassDto.getIsAccess());
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
+        return page;
     }
 
 }

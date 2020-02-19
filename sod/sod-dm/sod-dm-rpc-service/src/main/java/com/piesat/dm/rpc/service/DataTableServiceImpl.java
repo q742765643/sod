@@ -4,12 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.DataTableDao;
-import com.piesat.dm.dao.DatabaseDao;
-import com.piesat.dm.dao.ShardingDao;
-import com.piesat.dm.entity.DataTableEntity;
-import com.piesat.dm.entity.DatabaseEntity;
-import com.piesat.dm.entity.ShardingEntity;
+import com.piesat.dm.dao.*;
+import com.piesat.dm.entity.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataTableDto;
@@ -21,11 +17,9 @@ import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 表信息
@@ -51,6 +45,10 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     private DatabaseInfo databaseInfo;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private DataLogicDao dataLogicDao;
+    @Autowired
+    private DataClassDao dataClassDao;
     @Override
     public BaseDao<DataTableEntity> getBaseDao() {
         return dataTableDao;
@@ -128,5 +126,29 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Override
     public List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId, String tableName) {
        return mybatisQueryMapper.getByDatabaseIdAndTableName(databaseId,tableName);
+    }
+
+    @Override
+    @Transactional
+    public ResultT paste(String copyId, String pasteId) {
+        List<DataTableEntity> copys = this.dataTableDao.findByClassLogicId(copyId);
+        DataLogicEntity paste = this.dataLogicDao.findById(pasteId).get();
+        DataClassEntity dataClassEntity = this.dataClassDao.findByDataClassId(paste.getDataClassId());
+        for (DataTableEntity copy:copys) {
+            copy.setClassLogic(paste);
+            copy.setDataServiceId(dataClassEntity.getDataClassId());
+            copy.setDataServiceName(dataClassEntity.getClassName());
+            copy.setNameCn(dataClassEntity.getClassName());
+            copy.setCreateTime(new Date());
+            List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(copy.getId());
+            copy.setId("");
+            DataTableEntity save = this.dataTableDao.save(copy);
+            for (ShardingEntity se:shardingEntities) {
+                se.setTableId(save.getId());
+                this.shardingDao.save(se);
+            }
+
+        }
+        return ResultT.success();
     }
 }

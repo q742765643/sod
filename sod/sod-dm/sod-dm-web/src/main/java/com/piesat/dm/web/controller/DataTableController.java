@@ -145,4 +145,18 @@ public class DataTableController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "粘贴表结构")
+    @RequiresPermissions("dm:dataTable:paste")
+    @Log(title = "表信息管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/paste")
+    public ResultT paste(String copyId,String pasteId) {
+        try {
+            return this.dataTableService.paste(copyId,pasteId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }
