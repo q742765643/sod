@@ -51,5 +51,7 @@ public class MoveEntity extends JobInfoEntity {
     private String foreignKey;
     @Column(name="parent_id", length=50)
     private String parentId;
+    @Column(name="primary_key", length=50)
+    private String primaryKey;
 }
 

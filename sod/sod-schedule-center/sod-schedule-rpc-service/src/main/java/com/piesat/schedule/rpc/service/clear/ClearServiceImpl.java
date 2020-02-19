@@ -7,6 +7,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
+import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
@@ -70,6 +71,24 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         pageBean.setPageData(clearMapstruct.toDto(clearEntities));
         return pageBean;
 
+    }
+
+    public ClearDto selectClearByParam(String databaseId, String dataClassId){
+        PageForm pageForm=new PageForm(1,1);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(databaseId)){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
+        }
+        if(StringUtils.isNotNullString(dataClassId)){
+            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+        }
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,Sort.unsorted());
+        List<ClearEntity> clearEntities= (List<ClearEntity>) pageBean.getPageData();
+        if(null!=clearEntities&&!clearEntities.isEmpty()){
+            return clearMapstruct.toDto(clearEntities.get(0));
+        }
+        return null;
     }
     @Override
     public ClearDto findClearById(String clearId){

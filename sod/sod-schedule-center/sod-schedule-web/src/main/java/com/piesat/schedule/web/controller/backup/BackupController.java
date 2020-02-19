@@ -8,6 +8,8 @@ import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +25,14 @@ import java.util.List;
  * @create: 2019-12-23 11:37
  **/
 @RestController
+@Api(value="数据备份接口",tags = {"数据备份接口"})
 @RequestMapping("/schedule/backup")
 public class BackupController {
     @Autowired
     private BackupService backupService;
 
     @RequiresPermissions("schedule:backup:list")
+    @ApiOperation(value = "分页查询备份任务", notes = "分页查询备份任务")
     @GetMapping("/list")
     public ResultT<PageBean> list(BackUpDto backup, int pageNum, int pageSize)
     {
@@ -40,6 +44,7 @@ public class BackupController {
     }
 
     @RequiresPermissions("schedule:backup:query")
+    @ApiOperation(value = "根据ID查询备份任务", notes = "根据ID查询备份任务")
     @GetMapping(value = "/{backupId}")
     public ResultT<BackUpDto> getInfo(@PathVariable String backupId)
     {
@@ -49,6 +54,7 @@ public class BackupController {
         return resultT;
     }
     @RequiresPermissions("schedule:backup:add")
+    @ApiOperation(value = "添加备份任务", notes = "添加备份任务")
     @Log(title = "备份任务管理", businessType = BusinessType.INSERT)
     @PostMapping
     public ResultT<String> add(@RequestBody BackUpDto backup)
@@ -59,6 +65,7 @@ public class BackupController {
     }
 
     @RequiresPermissions("schedule:backup:edit")
+    @ApiOperation(value = "修改备份任务", notes = "修改备份任务")
     @Log(title = "备份任务管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultT<String> edit(@RequestBody BackUpDto backup)
@@ -71,6 +78,7 @@ public class BackupController {
      * 删除用户
      */
     @RequiresPermissions("schedule:backup:remove")
+    @ApiOperation(value = "删除备份任务", notes = "删除备份任务")
     @Log(title = "备份任务管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{backupIds}")
     public  ResultT<String> remove(@PathVariable String[] backupIds)

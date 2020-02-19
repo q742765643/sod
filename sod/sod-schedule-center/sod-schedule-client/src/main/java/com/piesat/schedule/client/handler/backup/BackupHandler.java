@@ -55,9 +55,6 @@ public class BackupHandler implements BaseHandler {
     public void execute(JobInfoEntity jobInfoEntity) {
         log.info("备份调用成功");
         BackupEntity backupEntity = (BackupEntity) jobInfoEntity;
-        if(StringUtils.isNotNullString(backupEntity.getForeignKey())){
-            backupEntity.setForeignKey(backupEntity.getForeignKey().toUpperCase());
-        }
         long occurTime = System.currentTimeMillis();
         ResultT<String> resultT = new ResultT<>();
 

@@ -63,14 +63,28 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
         if(StringUtils.isNotNullString((String) backupLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<BackupLogEntity> backupLogEntities= (List<BackupLogEntity>) pageBean.getPageData();
         pageBean.setPageData(backupLogMapstruct.toDto(backupLogEntities));
         return pageBean;
 
     }
+    public BackupLogDto selectBackupLoByJobId(String jobId){
+        PageForm pageForm=new PageForm(1,1);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(jobId)){
+            specificationBuilder.add("jobId", SpecificationOperator.Operator.eq.name(),jobId);
+        }
+        Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        List<BackupLogEntity> backupLogEntities= (List<BackupLogEntity>) pageBean.getPageData();
+        if(null!=backupLogEntities&&!backupLogEntities.isEmpty()){
+            return backupLogMapstruct.toDto(backupLogEntities.get(0));
+        }
+        return null;
 
+    }
     @Override
     public BackupLogDto findBackupLogById(String backupLogId){
         BackupLogEntity backupLogEntity=this.getById(backupLogId);

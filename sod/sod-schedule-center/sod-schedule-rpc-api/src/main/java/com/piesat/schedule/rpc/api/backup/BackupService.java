@@ -9,6 +9,7 @@ import com.piesat.util.page.PageForm;
  */
 public interface BackupService {
     public PageBean selectBackupList(PageForm<BackUpDto> pageForm);
+    public BackUpDto selectBackupByParam(String databaseId,String dataClassId);
     public BackUpDto findBackupById(String backupId);
     public void saveBackup(BackUpDto backUpDto);
     public void updateBackup(BackUpDto backUpDto);

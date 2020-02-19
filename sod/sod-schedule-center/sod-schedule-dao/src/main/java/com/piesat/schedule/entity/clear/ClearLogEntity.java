@@ -44,6 +44,8 @@ public class ClearLogEntity extends JobInfoLogEntity {
     private String databaseType;
     @Column(name="parent_id", length=50)
     private String parentId;
+    @Column(name="clear_time", length=50)
+    private long clearTime;
 
 }
 

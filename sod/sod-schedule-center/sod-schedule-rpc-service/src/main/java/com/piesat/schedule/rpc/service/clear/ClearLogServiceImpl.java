@@ -8,7 +8,9 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.clear.ClearLogDao;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
+import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.rpc.api.clear.ClearLogService;
+import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
 import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearLogMapstruct;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
@@ -68,6 +70,22 @@ public class ClearLogServiceImpl extends BaseService<ClearLogEntity> implements 
         List<ClearLogEntity> clearLogEntities= (List<ClearLogEntity>) pageBean.getPageData();
         pageBean.setPageData(clearLogMapstruct.toDto(clearLogEntities));
         return pageBean;
+
+    }
+
+    public ClearLogDto selectClearLoByJobId(String jobId){
+        PageForm pageForm=new PageForm(1,1);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(jobId)){
+            specificationBuilder.add("jobId", SpecificationOperator.Operator.eq.name(),jobId);
+        }
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        List<ClearLogEntity> clearLogEntities= (List<ClearLogEntity>) pageBean.getPageData();
+        if(null!=clearLogEntities&&!clearLogEntities.isEmpty()){
+            return clearLogMapstruct.toDto(clearLogEntities.get(0));
+        }
+        return null;
 
     }
     @Override

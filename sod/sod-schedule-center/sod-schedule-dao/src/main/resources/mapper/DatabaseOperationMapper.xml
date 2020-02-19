@@ -14,7 +14,7 @@
         ${conditions}
    </select>
     <delete id="deleteVtable" parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
-         DELETE  FROM
+         /*DELETE  FROM
          ${vtable} where
          ${fk} in
         (
@@ -24,6 +24,8 @@
         where
             ${conditions}
           )
+*/
+      DELETE a FROM ${vtable} a,(select * from  ${ktable} where  ${conditions} ) b where  ${fkconditions}
 
     </delete>
     <delete id="delteKtable" parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
@@ -57,7 +59,7 @@
         ${conditions}
     </select>
     <select id="selectByVCondition" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Map">
-         SELECT *  FROM
+        /* SELECT *  FROM
         ${vtable} where
         ${fk} in
         (
@@ -66,8 +68,13 @@
         ${ktable}
         where
         ${conditions}
-        )
-
+        )*/
+       select a.* from ${vtable} a,( select *
+        from
+        ${ktable}
+        where
+        ${conditions}
+        ) b where ${fkconditions}
     </select>
     <update id="updateIndex" parameterType="com.piesat.schedule.entity.IndexVo">
         update ${table} set D_FILE_SAVE_HIERARCHY = '1',d_storage_site=#{newPath} where  ${conditions};

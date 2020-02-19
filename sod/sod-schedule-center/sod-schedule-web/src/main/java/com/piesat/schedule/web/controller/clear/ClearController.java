@@ -7,6 +7,8 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
  * @create: 2019-12-24 11:40
  **/
 @RestController
+@Api(value="数据清除接口",tags = {"数据清除接口"})
 @RequestMapping("/schedule/clear")
 public class ClearController {
     @Autowired
     private ClearService clearService;
 
     @RequiresPermissions("schedule:clear:list")
+    @ApiOperation(value = "分页查询清除任务", notes = "分页查询清除任务")
     @GetMapping("/list")
     public ResultT<PageBean> list(ClearDto clear, int pageNum, int pageSize)
     {
@@ -35,6 +39,7 @@ public class ClearController {
     }
 
     @RequiresPermissions("schedule:clear:query")
+    @ApiOperation(value = "根据ID查询清除任务", notes = "根据ID查询清除任务")
     @GetMapping(value = "/{clearId}")
     public ResultT<ClearDto> getInfo(@PathVariable String clearId)
     {
@@ -44,6 +49,7 @@ public class ClearController {
         return resultT;
     }
     @RequiresPermissions("schedule:clear:add")
+    @ApiOperation(value = "添加清除任务", notes = "添加清除任务")
     @Log(title = "清除任务管理", businessType = BusinessType.INSERT)
     @PostMapping
     public ResultT<String> add(@RequestBody ClearDto clear)
@@ -54,6 +60,7 @@ public class ClearController {
     }
 
     @RequiresPermissions("schedule:clear:edit")
+    @ApiOperation(value = "修改清除任务", notes = "修改清除任务")
     @Log(title = "清除任务管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultT<String> edit(@RequestBody ClearDto clear)
@@ -66,6 +73,7 @@ public class ClearController {
      * 删除用户
      */
     @RequiresPermissions("schedule:clear:remove")
+    @ApiOperation(value = "删除清除任务", notes = "删除清除任务")
     @Log(title = "清除任务管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{clearIds}")
     public  ResultT<String> remove(@PathVariable String[] clearIds)

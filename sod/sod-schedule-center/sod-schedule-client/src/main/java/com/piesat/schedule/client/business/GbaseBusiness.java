@@ -7,6 +7,7 @@ import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.util.EiSendUtil;
+import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.StrategyVo;
@@ -49,9 +50,11 @@ public class GbaseBusiness extends BaseBusiness{
     public void backUpVtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT) {
         StringBuilder sql=new StringBuilder();
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".txt";
-        sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a inner join");
+        sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a,");
         sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
-        sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
+        sql.append(" where ").append(TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey()));
+
+        //sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
         this.executeCmd(sql,backupLogEntity.getVTableName(),backupLogEntity.getParentId(),tempFilePath,resultT);
         if(!resultT.isSuccess()){
             return;

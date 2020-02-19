@@ -8,7 +8,9 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.move.MoveLogDao;
 import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.entity.move.MoveLogEntity;
+import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.rpc.api.move.MoveLogService;
+import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveLogMapstruct;
 import com.piesat.util.page.PageBean;
@@ -67,6 +69,21 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
         List<MoveLogEntity> moveEntities= (List<MoveLogEntity>) pageBean.getPageData();
         pageBean.setPageData(moveLogMapstruct.toDto(moveEntities));
         return pageBean;
+
+    }
+    public MoveLogDto selectMoveLoByJobId(String jobId){
+        PageForm pageForm=new PageForm(1,1);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(jobId)){
+            specificationBuilder.add("jobId", SpecificationOperator.Operator.eq.name(),jobId);
+        }
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        List<MoveLogEntity> moveLogEntities= (List<MoveLogEntity>) pageBean.getPageData();
+        if(null!=moveLogEntities&&!moveLogEntities.isEmpty()){
+            return moveLogMapstruct.toDto(moveLogEntities.get(0));
+        }
+        return null;
 
     }
     @Override

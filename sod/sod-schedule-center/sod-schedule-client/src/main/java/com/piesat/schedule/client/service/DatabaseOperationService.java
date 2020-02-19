@@ -3,6 +3,7 @@ package com.piesat.schedule.client.service;
 import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.util.EiSendUtil;
+import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.entity.DatabaseOperationVo;
 import com.piesat.schedule.entity.IndexVo;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
@@ -72,6 +73,7 @@ public class DatabaseOperationService {
         databaseOperationVo.setConditions(conditions);
         databaseOperationVo.setVtable(clearLogEntity.getVTableName());
         databaseOperationVo.setFk(clearLogEntity.getForeignKey());
+        databaseOperationVo.setFkconditions(TableForeignKeyUtil.getBackupSql(clearLogEntity.getForeignKey()));
         return databaseOperationMapper.deleteVtable(databaseOperationVo);
     }
 
@@ -113,6 +115,7 @@ public class DatabaseOperationService {
             databaseOperationVo.setConditions(conditions);
             databaseOperationVo.setVtable(moveLogEntity.getVTableName());
             databaseOperationVo.setFk(moveLogEntity.getForeignKey());
+            databaseOperationVo.setFkconditions(TableForeignKeyUtil.getBackupSql(moveLogEntity.getForeignKey()));
             return  databaseOperationMapper.selectByVCondition(databaseOperationVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}查询失败,错误{}",moveLogEntity.getVTableName(), OwnException.get(e));

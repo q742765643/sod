@@ -15,5 +15,6 @@ public class DatabaseOperationVo {
     private String conditions;
     private long limit;
     private String fk;
+    private String fkconditions;
 }
 

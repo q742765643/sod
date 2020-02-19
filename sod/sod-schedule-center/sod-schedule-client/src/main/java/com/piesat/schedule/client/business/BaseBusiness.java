@@ -20,5 +20,6 @@ public abstract class BaseBusiness {
 
 
     public abstract void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT);
+
 }
 

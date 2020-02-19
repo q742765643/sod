@@ -71,6 +71,23 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         return pageBean;
 
     }
+    public MoveDto selectmoveByParam(String databaseId, String dataClassId){
+        PageForm pageForm=new PageForm(1,1);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(databaseId)){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
+        }
+        if(StringUtils.isNotNullString(dataClassId)){
+            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+        }
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,Sort.unsorted());
+        List<MoveEntity> moveEntities= (List<MoveEntity>) pageBean.getPageData();
+        if(null!=moveEntities&&!moveEntities.isEmpty()){
+            return moveMapstruct.toDto(moveEntities.get(0));
+        }
+        return null;
+    }
     @Override
     public MoveDto findMoveById(String moveId){
         MoveEntity moveEntity=this.getById(moveId);

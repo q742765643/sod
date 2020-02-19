@@ -22,6 +22,7 @@ public class ClearLogDto extends JobInfoLogDto{
     private long clearCount;
     private String databaseType;
     private String parentId;
-
+    private String foreignKey;
+    private long clearTime;
 }
 
