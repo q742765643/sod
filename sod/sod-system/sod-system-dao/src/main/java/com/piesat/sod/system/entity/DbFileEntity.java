@@ -20,7 +20,7 @@ import lombok.Data;
 *
 */
 @Data
-@Table(name = "DMIN_DB_FILE")
+@Table(name = "T_SOD_DB_FILE")
 @Entity
 //@MappedSuperclass
 public class DbFileEntity implements Serializable{

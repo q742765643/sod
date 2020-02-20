@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.sod.system.mapper.IndexMapper">
+	<!-- 获取数据库访问账户已审核数量 -->
+	<select id="findUpChecked" resultType="java.lang.Integer">
+		select 
+			count(*)
+		from 
+			t_sod_database_user
+		where
+			examine_status in ('1','2') 
+	</select>
+	<!-- 获取数据库访问账户未审核数量 -->
+	<select id="findUpUncheck" resultType="java.lang.Integer">
+		select 
+			count(*)
+		from 
+			t_sod_database_user
+		where
+			examine_status = '0'
+	</select>
+	<!-- 获取云数据库已审核数量 -->
+	<select id="findCloudBChecked" resultType="java.lang.Integer">
+		select
+			count(*)
+		from
+			t_sod_cldb_application
+		where 
+			examine_status in ('02','03')
+	</select>
+	<!-- 获取云数据库未审核数量 -->
+	<select id="findCloudBUnchecked" resultType="java.lang.Integer">
+		select
+			count(*)
+		from
+			t_sod_cldb_application
+		where
+			examine_status = '01'
+	</select>
+	<!-- 获取数据注册已审核数量 -->
+	<select id="findNewDataChecked" resultType="java.lang.Integer">
+		select
+			count(*)
+		from
+			t_sod_newdata_apply
+		where 
+			examine_status in ('2','3')
+	</select>
+	<!--获取数据注册未审核数量  -->
+	<select id="findNewDataUncheck" resultType="java.lang.Integer">
+		select
+			count(*)
+		from
+			t_sod_newdata_apply
+		where 
+			examine_status = '1'
+	</select>
+	<!-- 获取资料授权已审数量  -->
+	<select id="findDataAuthorChecked" resultType="java.lang.Integer">
+		select
+			count(*)
+		from 
+			t_sod_db_dataauthority_apply
+		where 
+			audit_status in ('2','3')
+	</select>
+	<!-- 获取资料授权待审数量 -->
+	<select id="findDataAuthorUncheck" resultType="java.lang.Integer">
+		select
+			count(*)
+		from 
+			t_sod_db_dataauthority_apply
+		where 
+			audit_status = '1'
+	</select>
+	<!-- 获取专题库已审核数量 -->
+	<select id="findSpecialDbChecked" resultType="java.lang.Integer">
+		select
+			count(*)
+		from
+			t_sod_database_special
+		where 
+			examine_status in ('2','3','4')
+	</select>
+	<!-- 获取专题库待审核数量  -->
+	<select id="findSpecialDbUncheck" resultType="java.lang.Integer">
+		select
+			count(*)
+		from
+			t_sod_database_special
+		where 
+			examine_status = '1'
+	</select>
+	<!-- 获取近12个月的资料访问数量 -->
+	<select id="findDataMonthCount" resultType="java.util.Map">
+		select
+			 * 
+		from 
+			t_sod_data_class_count 
+		order by 
+			year desc,month desc 
+		limit 12
+	</select>
+	<!--  获取文件列表 -->
+	<select id="findFileList" resultType="java.util.Map">
+		select 
+			file_type,file_name,file_stor_path,file_stor_name 
+		from 
+			t_sod_db_file 
+		order by 
+			update_time desc 
+		limit 12
+	</select>
+	
+	<!-- 根据资料分类获取统计数量 -->
+	<select id="findDataCount" resultType="java.util.Map">
+		select 
+			substr(data_class_id,0,1) as "CLASSID", count(data_class_id) as "NUM" 
+		from 
+			t_sod_data_class_table
+		where 
+			meta_data_stor_type = '资料'
+		group by 
+			substr(data_class_id,0,1)
+	</select>
+	
+	<!-- 获取逻辑库资料统计数量 -->
+	<select id="findLogicCountData" resultType="java.util.Map">
+		select 
+			count(data_class_id) as "num",logic_flag as "databaseLogic"
+		from 
+			t_sod_data_logic
+		group by 
+			logic_flag
+	</select>
+	<!-- 获取专题库信息 -->
+	<select id="findSpecialDbList" resultType="java.util.Map">
+		select
+			*
+		from
+			t_sod_database_special
+		where 
+			examine_status != '1'
+		order by
+			create_time desc
+	</select>
+	<!-- 获取数据用途信息 -->
+	<select id="findLogicInfo" resultType="java.util.Map">
+		select 
+			a.*,b.*,ii.num 
+		from 
+			t_sod_logic_define a 
+		left join 
+			t_sod_logic_database ab on a.logic_id = ab.logic_id  
+		left join 
+			(select da.*,db.* from t_sod_database_define da left join t_sod_db_capacity_info db on
+			da.database_id = db.database_id ) b
+			on ab.database_id = b.database_id
+		left join 
+			(select count(distinct data_class_id) num,logic_id from(
+	         select data_class_id,aa.database_logic logic_id 
+	         from t_sod_data_table aa,t_sod_logic_database bb where aa.database_logic = bb.logic_id) a
+	 		 group by a.logic_id) ii on ab.logic_id = ii.logic_id
+		 order by 
+		 	logic_id asc,database_id asc
+	</select>
+</mapper>
