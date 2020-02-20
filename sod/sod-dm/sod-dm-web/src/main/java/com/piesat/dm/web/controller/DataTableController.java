@@ -137,7 +137,7 @@ public class DataTableController {
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
     @GetMapping(value = "/sample")
-    public ResultT getSampleData(SampleData sampleData){
+    public ResultT getSampleData(@RequestBody SampleData sampleData){
         try {
             return this.dataTableService.getSampleData(sampleData);
         } catch (Exception e) {

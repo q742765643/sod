@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -65,9 +66,9 @@ public class DataTableDto {
     private String userId;
 
 
-    private Set<TableColumnDto> columns;
+    private LinkedHashSet<TableColumnDto> columns;
 
-    private Set<TableIndexDto> tableIndexList;
+    private LinkedHashSet<TableIndexDto> tableIndexList;
 
     private Date createTime;
 

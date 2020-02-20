@@ -26,6 +26,6 @@ public interface TableDataStatisticsService {
 
     List<TableDataStatisticsDto> all();
 
-    PageBean list(PageForm pageForm);
+    PageBean list(PageForm pageForm,String tableId);
 
 }

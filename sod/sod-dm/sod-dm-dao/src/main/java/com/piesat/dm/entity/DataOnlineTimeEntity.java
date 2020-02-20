@@ -46,6 +46,6 @@ public class DataOnlineTimeEntity extends BaseEntity {
     /**
      * 0:未使用，1：使用中
      */
-    @Column(name = "using", length = 1)
-    private Integer using;
+    @Column(name = "is_use", length = 1)
+    private Integer isUse;
 }

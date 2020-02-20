@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.dao.TableDataStatisticsDao;
 import com.piesat.dm.entity.TableDataStatisticsEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -13,6 +14,7 @@ import com.piesat.dm.rpc.dto.TableDataStatisticsDto;
 import com.piesat.dm.rpc.mapper.TableDataStatisticsMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -61,8 +63,11 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
     }
 
     @Override
-    public PageBean list(PageForm pageForm) {
+    public PageBean list(PageForm pageForm,String tableId) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(tableId)) {
+            ssb.add("tableId", SpecificationOperator.Operator.eq.name(), tableId);
+        }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
         List<TableDataStatisticsEntity> pageData = (List<TableDataStatisticsEntity>)page.getPageData();

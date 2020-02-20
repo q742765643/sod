@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -78,9 +79,10 @@ public class DataTableEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinColumn(name="table_id")
-    private Set<TableColumnEntity> columns = new HashSet<>();
+    @OrderBy("serialNumber ASC")
+    private Set<TableColumnEntity> columns = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinColumn(name="table_id")
-    private Set<TableIndexEntity> tableIndexList = new HashSet<>();
+    private Set<TableIndexEntity> tableIndexList = new LinkedHashSet<>();
 }

@@ -109,14 +109,20 @@ public abstract class DatabaseDclAbs implements DatabaseDcl {
     @Override
     public ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn){
         List<String> sqlList = new ArrayList<>();
+        String name = schema + "." + tableName;
         if (oldColumn == null){
 //            alter table test1 add column name111 varchar(101) not null DEFAULT '1111'
             String isNull = newColumn.getIsNull() ? "" : "NOT NULL";
             String def =  StringUtils.isEmpty(newColumn.getDef()) ? "" : "DEFAULT '"+newColumn.getDef()+"'";
-            String sql = "alter table %s add column %s %s(%s) %s %s";
-            String formatSql = String.format(sql, schema + "." + tableName, newColumn.getName(), newColumn.getType(), newColumn.getPrecision(), isNull, def);
-            sqlList.add(formatSql);
+            String format = "alter table %s add column %s %s(%s) %s %s";
+            String sql = String.format(format, name, newColumn.getName(), newColumn.getType(), newColumn.getPrecision(), isNull, def);
+            sqlList.add(sql);
         }else {
+            if (!oldColumn.getName().equals(newColumn.getName())){
+//                alter table test1 rename column name111 to bbbbb
+                String format = "alter table %s rename column %s to %s";
+                String.format(format,name,oldColumn.getName(),newColumn.getName());
+            }
 
         }
 

@@ -90,13 +90,13 @@ public class TableDataStatisticsController {
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     @RequiresPermissions("dm:datastatistics:list")
-    public ResultT<PageBean> list(HttpServletRequest request,
+    public ResultT<PageBean> list(String tableId,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         Map<String,String> map = new HashMap<String,String>();
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
-        PageBean pageBean = tableDataStatisticsService.list(pageForm);
+        PageBean pageBean = tableDataStatisticsService.list(pageForm,tableId);
         resultT.setData(pageBean);
         return resultT;
     }

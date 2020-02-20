@@ -88,13 +88,13 @@ public class GridAreaController {
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     @RequiresPermissions("dm:gridarea:list")
-    public ResultT<PageBean> list(HttpServletRequest request,
+    public ResultT<PageBean> list(String dataServiceId,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String, String> map = new HashMap<String, String>();
         ResultT<PageBean> resultT = new ResultT<>();
-        PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
-        PageBean pageBean = gridAreaService.list(pageForm);
+        PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = gridAreaService.list(pageForm, dataServiceId);
         resultT.setData(pageBean);
         return resultT;
     }

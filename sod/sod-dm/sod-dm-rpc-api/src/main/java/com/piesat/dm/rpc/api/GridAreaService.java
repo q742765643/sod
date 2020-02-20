@@ -25,5 +25,5 @@ public interface GridAreaService {
 
     List<GridAreaDto> all();
 
-    PageBean list(PageForm pageForm);
+    PageBean list(PageForm pageForm,String dataServiceId);
 }

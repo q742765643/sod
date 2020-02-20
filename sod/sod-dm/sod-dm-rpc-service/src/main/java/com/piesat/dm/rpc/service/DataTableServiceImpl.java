@@ -148,9 +148,26 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             copy.setCreateTime(new Date());
             List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(copy.getId());
             copy.setId("");
+            copy.setCreateTime(new Date());
+            copy.setVersion(0);
+            Set<TableColumnEntity> columns = copy.getColumns();
+            for (TableColumnEntity c:columns) {
+                c.setVersion(0);
+                c.setId("");
+                c.setCreateTime(new Date());
+            }
+            Set<TableIndexEntity> tableIndexList = copy.getTableIndexList();
+            for (TableIndexEntity index:tableIndexList) {
+                index.setId("");
+                index.setCreateTime(new Date());
+                index.setVersion(0);
+            }
             DataTableEntity save = this.dataTableDao.save(copy);
             for (ShardingEntity se:shardingEntities) {
                 se.setTableId(save.getId());
+                se.setId("");
+                se.setCreateTime(new Date());
+                se.setVersion(0);
                 this.shardingDao.save(se);
             }
 
