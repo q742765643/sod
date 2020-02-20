@@ -89,11 +89,6 @@ public abstract class ExecuteBaseService {
             try {
                   instanceInfos = application.getInstances();
             } catch (Exception e) {
-                  try {
-                        Thread.sleep(6000);
-                  } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                  }
                   log.error("调度未发现可用服务");
             }
             if(instanceInfos==null||instanceInfos.size()==0){

@@ -7,10 +7,7 @@ import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.handler.base.BaseHandler;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.service.move.MoveLogService;
-import com.piesat.schedule.client.util.DiSendUtil;
-import com.piesat.schedule.client.util.EiSendUtil;
-import com.piesat.schedule.client.util.ExtractMessage;
-import com.piesat.schedule.client.util.FileUtil;
+import com.piesat.schedule.client.util.*;
 import com.piesat.schedule.client.vo.*;
 import com.piesat.schedule.entity.IndexVo;
 import com.piesat.schedule.entity.JobInfoEntity;
@@ -107,6 +104,9 @@ public class MoveHandler implements BaseHandler {
             if(!resultT.isSuccess()){
                 return;
             }
+            moveLogEntity.setConditions(moveVo.getMoveConditions());
+            moveLogEntity.setClearConditions(moveVo.getClearConditions());
+            moveLogEntity.setMoveTime(moveVo.getMoveTime());
             moveLogEntity=this.insertMoveLog(moveLogEntity,moveEntity,resultT);
             if(!resultT.isSuccess()){
                 return;
@@ -347,7 +347,7 @@ public class MoveHandler implements BaseHandler {
     }
     public void moveLogic(Map<String,Object> mapK,MoveLogEntity moveLogEntity,ResultT<String> resultT){
         SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String fkValue = (String) mapK.get(moveLogEntity.getForeignKey());
+        //String fkValue = (String) mapK.get(moveLogEntity.getForeignKey());
         Date ddateTimed = (Date) mapK.get("D_DATETIME");
         String ddateTime=format.format(ddateTimed);
         String storageSite = (String) mapK.get("D_STORAGE_SITE");
@@ -356,7 +356,7 @@ public class MoveHandler implements BaseHandler {
             log.error("{}源目录错误",moveLogEntity.getSourceDirectory());
             return;
         }
-        String vconditions=moveLogEntity.getForeignKey()+"='"+fkValue+"' and d_datetime='"+ddateTime+"'";
+        String vconditions= TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK) +" d_datetime='"+ddateTime+"'";
         if(null!=moveLogEntity.getVTableName()){
             this.deleteVIndex(moveLogEntity,vconditions,resultT);
             if(!resultT.isSuccess()){
@@ -371,16 +371,16 @@ public class MoveHandler implements BaseHandler {
         IndexVo kIndexVo=new IndexVo();
         kIndexVo.setNewPath(targetPath);
         kIndexVo.setTable(moveLogEntity.getTableName());
-        kIndexVo.setConditions(vconditions);
+        String kconditions=TableForeignKeyUtil.getMoveKsql(moveLogEntity.getPrimaryKey(),mapK)+"' and d_datetime='"+ddateTime+"'";
+        kIndexVo.setConditions(kconditions);
         databaseOperationService.updateIndex(moveLogEntity.getParentId(),kIndexVo,resultT);
     }
     public void clearLogic(Map<String,Object> mapK,MoveLogEntity moveLogEntity,ResultT<String> resultT){
         SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String fkValue = (String) mapK.get(moveLogEntity.getForeignKey());
         Date ddateTimed = (Date) mapK.get("D_DATETIME");
         String ddateTime=format.format(ddateTimed);
         String storageSite = (String) mapK.get("D_STORAGE_SITE");
-        String vconditions=moveLogEntity.getForeignKey()+"='"+fkValue+"' and d_datetime='"+ddateTime+"'";
+        String vconditions= TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK) +" d_datetime='"+ddateTime+"'";
         if(null!=moveLogEntity.getVTableName()){
             this.deleteVIndex(moveLogEntity,vconditions,resultT);
             if(!resultT.isSuccess()){
@@ -393,7 +393,8 @@ public class MoveHandler implements BaseHandler {
         }
         IndexVo kIndexVo=new IndexVo();
         kIndexVo.setTable(moveLogEntity.getTableName());
-        kIndexVo.setConditions(vconditions);
+        String kconditions=TableForeignKeyUtil.getMoveKsql(moveLogEntity.getPrimaryKey(),mapK)+"' and d_datetime='"+ddateTime+"'";
+        kIndexVo.setConditions(kconditions);
         databaseOperationService.deleteIndex(moveLogEntity.getParentId(),kIndexVo,resultT);
     }
 

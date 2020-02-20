@@ -2,12 +2,12 @@ server:
   port: 8005
   servlet:
       context-path: /
-tomcat:
-    remote-ip-header: x-forward-for
-    uri-encoding: UTF-8
-    max-threads: 10
-    background-processor-delay: 30
-    basedir: ${user.home}/tomcat/
+  tomcat:
+      remote-ip-header: x-forward-for
+      uri-encoding: UTF-8
+      max-threads: 10
+      background-processor-delay: 30
+      basedir: ${user.home}/tomcat/
 
 grpc:
   server:
@@ -103,3 +103,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://1.119.5.177:8002/eureka/
+
+log:
+  path: E:/log
+  level: INFO

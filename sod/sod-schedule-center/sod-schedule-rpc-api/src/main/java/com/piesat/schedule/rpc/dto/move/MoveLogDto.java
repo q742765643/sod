@@ -27,6 +27,9 @@ public class MoveLogDto extends JobInfoLogDto{
     private long moveCount;
     private String databaseType;
     private String parentId;
+    private String foreignKey;
+    private long moveTime;
+
 
 }
 

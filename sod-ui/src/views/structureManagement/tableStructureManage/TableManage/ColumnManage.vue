@@ -358,39 +358,41 @@
       </span>
     </el-dialog>
     <el-dialog width="80%" title="字段排序" :visible.sync="dialogStatus.codeSortDialog" append-to-body>
-      <div class="dragBox selScrollBar">
-        <el-alert title="请拖动字段实现排序" type="success" :closable="false"></el-alert>
-        <draggable
-          class="list-group"
-          tag="ul"
-          v-model="dragList"
-          v-bind="dragOptions"
-          @start="isDragging = true"
-          @end="isDragging = false"
-        >
-          <transition-group type="transition" name="flip-list">
-            <li class="list-group-item" v-for="element in dragList" :key="element.column_id">
-              <i
-                :class="
+      <div class="dragBox">
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+          <el-alert title="请拖动字段实现排序" type="success" :closable="false"></el-alert>
+          <draggable
+            class="list-group"
+            tag="ul"
+            v-model="dragList"
+            v-bind="dragOptions"
+            @start="isDragging = true"
+            @end="isDragging = false"
+          >
+            <transition-group type="transition" name="flip-list">
+              <li class="list-group-item" v-for="(element,index) in dragList" :key="index">
+                <i
+                  :class="
                 element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
               "
-                @click="element.fixed = !element.fixed"
-                aria-hidden="true"
-              ></i>
-              <el-row class="sortRow">
-                <el-col :span="6">
-                  <span>{{'序号:'}}{{ element.serialNumber }}</span>
-                </el-col>
-                <el-col :span="9">
-                  <span>{{'字段名称:'}}{{ element.celementCode }}</span>
-                </el-col>
-                <el-col :span="9">
-                  <span>{{'中文简称:'}}{{ element.eleName }}</span>
-                </el-col>
-              </el-row>
-            </li>
-          </transition-group>
-        </draggable>
+                  @click="element.fixed = !element.fixed"
+                  aria-hidden="true"
+                ></i>
+                <el-row class="sortRow">
+                  <el-col :span="4">
+                    <span>{{'序号:'}}{{ element.serialNumber }}</span>
+                  </el-col>
+                  <el-col :span="10">
+                    <span>{{'字段名称:'}}{{ element.celementCode }}</span>
+                  </el-col>
+                  <el-col :span="10">
+                    <span>{{'中文简称:'}}{{ element.eleName }}</span>
+                  </el-col>
+                </el-row>
+              </li>
+            </transition-group>
+          </draggable>
+        </el-scrollbar>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="trueSort" size="small">确 定</el-button>
@@ -429,10 +431,11 @@
 <script>
 // 拖拽组件
 import draggable from "vuedraggable";
-
 import {
   findByTableId,
-  tableColumnDel
+  tableColumnDel,
+  tableColumnSave,
+  tableColumnSaveList
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object, tableType: String },
@@ -497,6 +500,19 @@ export default {
     };
   },
   methods: {
+    async getCodeTable() {
+      let flag = undefined;
+      if (this.tableType == "E-show") {
+        flag = "true";
+      }
+      console.log(this.tableInfo.id);
+      await findByTableId({ tableId: this.tableInfo.id }).then(response => {
+        if (response.code == 200) {
+          this.columnData = response.data;
+          this.$emit("reloadTableInfo");
+        }
+      });
+    },
     columnAdd() {
       if (!this.tableInfo.id) {
         this.$message({
@@ -559,21 +575,6 @@ export default {
         })
         .catch(error => {});
     },
-    getColumnInfo() {
-      //获取表字段信息
-      if (this.elObj.tableInfo) {
-      }
-      if (this.keyObj.tableInfo) {
-        this.axios
-          .get(interfaceObj.TableStructure_getColumnInfo, {
-            params: { id: this.keyObj.tableInfo.id }
-          })
-          .then(res => {
-            this.keyObj.keyColumnData = res.data.data;
-          })
-          .catch(error => {});
-      }
-    },
     getColumnTables() {
       this.getmatedata();
       this.getmmdata();
@@ -624,22 +625,14 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.columnEditData.id = this.tableInfo.id;
-          this.columnEditData.table_name = this.tableInfo.table_name;
           if (this.selColumnData.length > 0) {
             this.columnEditData.column_id = this.selColumnData[0].column_id;
           }
-          let url = "";
-          if (this.codeTitle == "新增字段") {
-            url = interfaceObj.TableStructure_addColumnList;
-          } else if (this.codeTitle == "编辑字段") {
-            url = interfaceObj.TableStructure_updateColumn;
-          }
-
           if (this.tableType == "E-show") {
             this.columnEditData.is_kv_k = "true";
           }
-          this.axios.post(url, this.columnEditData).then(res => {
-            if (res.data.returnCode == 0) {
+          dataTableSavle(this.columnEditData).then(response => {
+            if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.$refs[formName].resetFields();
               this.dialogStatus.columnDialog = false;
@@ -647,60 +640,44 @@ export default {
               this.columnEditData = [];
             } else {
               this.$message({
-                message: res.data.returnMessage,
-                type: "warning"
+                type: "error",
+                message: "操作失败"
               });
-              return;
             }
           });
         }
       });
     },
-    async getCodeTable() {
-      let flag = undefined;
-      if (this.tableType == "E-show") {
-        flag = "true";
-      }
-      console.log(this.tableInfo.id);
-      await findByTableId({ tableId: this.tableInfo.id }).then(response => {
-        if (response.code == 200) {
-          this.columnData = response.data;
-          this.$emit("reloadTableInfo");
-        }
-      });
-    },
+
     handleSort() {
+      if (this.columnData.length == 0) {
+        this.$message({
+          type: "error",
+          message: "当前没有字段，无法排序"
+        });
+      }
       this.dragList = this.columnData;
       this.dialogStatus.codeSortDialog = true;
     },
     trueSort() {
-      let ids = [];
-      this.dragList.forEach(element => {
-        ids.push(element.column_id);
+      this.dragList.forEach((item, index) => {
+        item.serialNumber = index;
       });
-      if (ids.length == 0) {
-        return;
-      }
-      this.axios
-        .post(interfaceObj.TableStructure_fieldSort, {
-          column_sort: ids.join(",")
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              message: "排序成功！",
-              type: "success"
-            });
-            this.getCodeTable();
-          } else {
-            this.$message({
-              message: res.data.returnMessage,
-              type: "error"
-            });
-          }
-        })
-        .catch(error => {});
-
+      console.log(this.dragList);
+      tableColumnSaveList({ tableColumnList: this.dragList }).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            message: "排序成功！",
+            type: "success"
+          });
+          this.getCodeTable();
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
       this.dialogStatus.codeSortDialog = false;
     },
     exportCode(type) {
@@ -767,10 +744,15 @@ export default {
           type: "warning"
         });
       } else {
-        sessionStorage.setItem(
-          "copyColumn",
-          JSON.stringify(this.selColumnData)
-        );
+        let copyArry = [];
+        this.selColumnData.forEach(element => {
+          let obj = {};
+          element.id = "";
+          element.tableId = "";
+          obj = element;
+          copyArry.push(obj);
+        });
+        sessionStorage.setItem("copyColumn", JSON.stringify(copyArry));
         this.$message({
           message: "复制成功",
           type: "success"
@@ -792,25 +774,25 @@ export default {
         this.$alert("是否插入" + pasteArry.length + "条复制字段", "温馨提示", {
           confirmButtonText: "确定",
           callback: action => {
-            this.axios
-              .post(interfaceObj.TableStructure_addManageColumn, {
-                manageColumnList: pasteArry
-              })
-              .then(res => {
-                if (res.data.returnCode == 0) {
-                  this.$message({
-                    message: "插入成功！",
-                    type: "success"
-                  });
-                  this.getCodeTable();
-                } else {
-                  this.$message({
-                    message: res.data.returnMessage,
-                    type: "error"
-                  });
-                }
-              })
-              .catch(error => {});
+            pasteArry.forEach(element => {
+              element.id = "";
+              element.tableId = this.tableInfo.id;
+            });
+            console.log(pasteArry);
+            tableColumnSaveList({ tableColumnList: pasteArry }).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  message: "插入成功！",
+                  type: "success"
+                });
+                this.getCodeTable();
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
+            });
           }
         });
       }
@@ -1062,7 +1044,13 @@ export default {
 .dragBox {
   max-height: 400px;
   overflow: hidden;
-  overflow-y: auto;
+  .el-scrollbar {
+    margin-top: 10px;
+    height: 400px;
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
   .sortRow {
     border-bottom: 1px solid #d3dce6;
     padding-bottom: 8px;
@@ -1090,6 +1078,7 @@ export default {
   }
   .list-group-item {
     cursor: move;
+    border: none;
   }
   .list-group-item i {
     cursor: pointer;

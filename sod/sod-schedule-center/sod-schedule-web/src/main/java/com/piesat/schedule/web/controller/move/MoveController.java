@@ -7,6 +7,8 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
  * @create: 2019-12-24 17:19
  **/
 @RestController
+@Api(value="数据迁移接口",tags = {"数据迁移接口"})
 @RequestMapping("/schedule/move")
 public class MoveController {
     @Autowired
     private MoveService moveService;
 
     @RequiresPermissions("schedule:move:list")
+    @ApiOperation(value = "分页查询迁移任务", notes = "分页查询迁移任务")
     @GetMapping("/list")
     public ResultT<PageBean> list(MoveDto move, int pageNum, int pageSize)
     {
@@ -35,6 +39,7 @@ public class MoveController {
     }
 
     @RequiresPermissions("schedule:move:query")
+    @ApiOperation(value = "根据ID查询迁移任务", notes = "根据ID查询迁移任务")
     @GetMapping(value = "/{moveId}")
     public ResultT<MoveDto> getInfo(@PathVariable String moveId)
     {
@@ -44,6 +49,7 @@ public class MoveController {
         return resultT;
     }
     @RequiresPermissions("schedule:move:add")
+    @ApiOperation(value = "添加迁移任务", notes = "添加迁移任务")
     @Log(title = "迁移任务管理", businessType = BusinessType.INSERT)
     @PostMapping
     public ResultT<String> add(@RequestBody MoveDto move)
@@ -54,6 +60,7 @@ public class MoveController {
     }
 
     @RequiresPermissions("schedule:move:edit")
+    @ApiOperation(value = "修改迁移任务", notes = "修改迁移任务")
     @Log(title = "迁移任务管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResultT<String> edit(@RequestBody MoveDto move)
@@ -66,6 +73,7 @@ public class MoveController {
      * 删除用户
      */
     @RequiresPermissions("schedule:move:remove")
+    @ApiOperation(value = "删除迁移任务", notes = "删除迁移任务")
     @Log(title = "迁移任务管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{moveIds}")
     public  ResultT<String> remove(@PathVariable String[] moveIds)

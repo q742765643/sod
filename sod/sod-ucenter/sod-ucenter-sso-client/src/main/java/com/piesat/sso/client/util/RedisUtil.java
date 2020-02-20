@@ -583,17 +583,11 @@ public class RedisUtil {
         }
         return zScore;
     }
-    public Object reverseRange(String key, int scoure, int scoure1) {
+    public Set<Object> reverseRange(String key, int scoure, int scoure1) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
         Set<Object> objects = zset.reverseRange(key, scoure, scoure1);
-        Object o = null;
-        if(objects.size()>0) {
-            for (Object t : objects) {
-               o=t;
-               break;
-            }
-        }
-        return o;
+
+        return objects;
     }
     public long  zsetCount(String key){
          long count=0;

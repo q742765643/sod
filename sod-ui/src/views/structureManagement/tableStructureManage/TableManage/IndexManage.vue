@@ -49,9 +49,9 @@
             >
               <el-option
                 v-for="item in columnData"
-                :key="item.db_ele_code"
-                :label="item.db_ele_code+'['+item.ele_name+']'"
-                :value="item.db_ele_code"
+                :key="item.dbEleCode"
+                :label="item.dbEleCode+'['+item.eleName+']'"
+                :value="item.dbEleCode"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { findByTableId } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object },
   data() {
@@ -190,8 +191,15 @@ export default {
     //   .catch(error => {});
   },
   watch: {
-    tableInfo(val) {
+    async tableInfo(val) {
       this.indexItem = this.tableInfo.tableIndexList;
+      // 获取字段信息
+      await findByTableId({ tableId: this.tableInfo.id }).then(response => {
+        if (response.code == 200) {
+          this.columnData = response.data;
+          console.log(this.columnData);
+        }
+      });
       // this.axios
       //   .get(interfaceObj.TableStructure_getColumnInfo, {
       //     params: { id: val.id }

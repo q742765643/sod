@@ -17,7 +17,7 @@ import java.util.Objects;
 @Component
 public class RedisLock {
     public static final String LOCK_PREFIX = "lock:";
-    public static final int LOCK_EXPIRE = 5000; // ms
+    public static final int LOCK_EXPIRE = 6000; // ms
 
     @Autowired
     @Qualifier("redisTemplate")
@@ -54,11 +54,12 @@ public class RedisLock {
         });
     }
 
-    public void tryLock(String key){
+    public boolean tryLock(String key){
         boolean result=false;
         while (!result){
             result = this.lock(key);
         }
+        return result;
     }
 
     /**

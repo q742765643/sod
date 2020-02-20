@@ -434,8 +434,6 @@ export default {
       }
       gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {
-          console.log("表信息");
-          console.log(response.data);
           let data = response.data;
           for (let i = 0; i < data.length; i++) {
             let row = data[i];
@@ -453,6 +451,11 @@ export default {
             this.elObj.tableInfo = obj;
             this.keyObj.tableInfo = obj;
           }
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
         }
       });
     },

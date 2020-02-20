@@ -10,6 +10,8 @@ import com.piesat.util.page.PageForm;
 public interface MoveLogService {
     public PageBean selectMoveLogList(PageForm<MoveLogDto> pageForm);
 
+    public MoveLogDto selectMoveLoByJobId(String jobId);
+
     public MoveLogDto findMoveLogById(String moveLogId);
 
     public void deleteMoveLogByIds(String[] moveLogIds);

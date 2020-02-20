@@ -71,6 +71,24 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         return pageBean;
 
     }
+
+    public BackUpDto selectBackupByParam(String databaseId,String dataClassId){
+        PageForm pageForm=new PageForm(1,1);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(databaseId)){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
+        }
+        if(StringUtils.isNotNullString(dataClassId)){
+            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+        }
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,Sort.unsorted());
+        List<BackupEntity> backupEntities= (List<BackupEntity>) pageBean.getPageData();
+        if(null!=backupEntities&&!backupEntities.isEmpty()){
+            return backupMapstruct.toDto(backupEntities.get(0));
+        }
+        return null;
+    }
     @Override
     public BackUpDto findBackupById(String backupId){
         BackupEntity backupEntity=this.getById(backupId);

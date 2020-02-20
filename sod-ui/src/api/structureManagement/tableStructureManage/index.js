@@ -43,3 +43,20 @@ export function logicDefineAll(query) {
     params: query
   })
 }
+
+// 粘贴
+export function pasteTable(data) {
+  return request({
+    url: baseUrl + '/dm/dataTable/paste',
+    method: 'post',
+    data: data
+  })
+}
+//粘贴前查询
+export function dataLogicGet(data) {
+  return request({
+    url: baseUrl + '/dm/dataLogic/get',
+    method: 'get',
+    data: data
+  })
+}

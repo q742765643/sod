@@ -56,6 +56,9 @@ public class MoveLogEntity extends JobInfoLogEntity {
     private String foreignKey;
     @Column(name="parent_id", length=50)
     private String parentId;
-
+    @Column(name="move_time", length=50)
+    private long moveTime;
+    @Column(name="primary_key", length=50)
+    private String primaryKey;
 }
 

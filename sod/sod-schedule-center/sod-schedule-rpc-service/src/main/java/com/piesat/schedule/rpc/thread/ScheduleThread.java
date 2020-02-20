@@ -85,7 +85,10 @@ public class ScheduleThread {
             boolean preReadSuc = true;
             try {
                 /********=======2.reis分布式锁========*******/
-                redisLock.lock(HTHT_LOCK);
+                boolean flag=redisLock.tryLock(HTHT_LOCK);
+                if(!flag){
+                    return;
+                }
                 long nowTime = System.currentTimeMillis();
 
                 Set<DefaultTypedTuple> scheduleList = redisUtil.rangeByScoreWithScores(QUARTZ_HTHT_JOB, nowTime + PRE_READ_MS, preReadCount);

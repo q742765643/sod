@@ -48,9 +48,6 @@ public class ClearHandler implements BaseHandler {
     public void execute(JobInfoEntity jobInfoEntity) {
         log.info("清除调用成功");
         ClearEntity clearEntity= (ClearEntity) jobInfoEntity;
-        if(StringUtils.isNotNullString(clearEntity.getForeignKey())){
-            clearEntity.setForeignKey(clearEntity.getForeignKey().toUpperCase());
-        }
         ResultT<String> resultT=new ResultT<>();
         this.preParam(clearEntity,resultT);
     }
@@ -103,6 +100,7 @@ public class ClearHandler implements BaseHandler {
 
             this.calculateTime(clearVo,clearEntity,resultT);
             clearLogEntity.setConditions(clearVo.getConditions());
+            clearLogEntity.setClearTime(clearVo.getClearTime());
             this.checkClearLogEntity(clearLogEntity,resultT);
             if(!resultT.isSuccess()){
                 return;

@@ -10,6 +10,8 @@ import com.piesat.util.page.PageForm;
 public interface BackupLogService {
     public PageBean selectBackupLogList(PageForm<BackupLogDto> pageForm);
 
+    public BackupLogDto selectBackupLoByJobId(String jobId);
+
     public BackupLogDto findBackupLogById(String backupLogId);
 
     public void deleteBackupLogByIds(String[] backupLogIds);

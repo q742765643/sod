@@ -13,6 +13,8 @@ import com.piesat.util.page.PageForm;
 public interface MoveService {
     public PageBean selectMoveList(PageForm<MoveDto> pageForm);
 
+    public MoveDto selectmoveByParam(String databaseId, String dataClassId);
+
     public MoveDto findMoveById(String moveId);
 
     public void saveMove(MoveDto moveDto);

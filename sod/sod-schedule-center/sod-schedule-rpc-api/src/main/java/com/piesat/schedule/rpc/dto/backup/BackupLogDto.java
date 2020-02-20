@@ -2,6 +2,7 @@ package com.piesat.schedule.rpc.dto.backup;
 
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.dto.JobInfoLogDto;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 /**
@@ -23,5 +24,9 @@ public class BackupLogDto extends JobInfoLogDto {
     private String vTableName;
     private String databaseType;
     private String parentId;
+    private String fileName;
+    private String foreignKey;
+    private long backupTime;
+    private Integer isEnd;
 }
 

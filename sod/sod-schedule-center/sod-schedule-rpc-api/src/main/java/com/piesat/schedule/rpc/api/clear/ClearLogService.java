@@ -11,6 +11,8 @@ public interface ClearLogService {
 
     public PageBean selectClearLogList(PageForm<ClearLogDto> pageForm);
 
+    public ClearLogDto selectClearLoByJobId(String jobId);
+
     public ClearLogDto findClearLogById(String clearLogId);
 
     public void deleteClearLogByIds(String[] clearLogIds);

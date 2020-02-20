@@ -6,6 +6,7 @@ import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.Select2File;
+import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
 import com.piesat.schedule.client.vo.ClearVo;
@@ -58,9 +59,10 @@ public class XuguBusiness extends BaseBusiness{
     @Override
     public void backUpVtable(BackupLogEntity backupLogEntity,StrategyVo strategyVo,ResultT<String> resultT){
         StringBuilder sql=new StringBuilder();
-        sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a inner join");
+        sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a ,");//inner join
         sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
-        sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
+        sql.append(" where ").append(TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey()));
+       // sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
         Select2File select2File=new Select2File();
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".exp";
         try {
@@ -81,6 +83,7 @@ public class XuguBusiness extends BaseBusiness{
         }
     }
 
+    @Override
     public void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT){
         DataSourceContextHolder.setDataSource(clearLogEntity.getParentId());
 

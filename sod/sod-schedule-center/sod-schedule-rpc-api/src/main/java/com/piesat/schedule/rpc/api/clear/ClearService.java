@@ -12,6 +12,9 @@ import com.piesat.util.page.PageForm;
  **/
 public interface ClearService {
     public PageBean selectClearList(PageForm<ClearDto> pageForm);
+
+    public ClearDto selectClearByParam(String databaseId, String dataClassId);
+
     public ClearDto findClearById(String clearId);
     public void saveClear(ClearDto clearDto);
     public void updateClear(ClearDto clearDto);
