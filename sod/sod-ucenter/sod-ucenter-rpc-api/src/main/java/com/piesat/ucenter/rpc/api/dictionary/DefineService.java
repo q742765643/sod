@@ -50,4 +50,7 @@ public interface DefineService {
      * @return
      */
     DefineDto getDotById(String id);
+
+
+    List<DefineDto> all();
 }

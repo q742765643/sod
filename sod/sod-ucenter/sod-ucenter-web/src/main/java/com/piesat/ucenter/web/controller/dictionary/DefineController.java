@@ -8,6 +8,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,6 +95,19 @@ public class DefineController {
         DefineDto defineDto=defineService.getDotById(defineId);
         resultT.setData(defineDto);
         return resultT;
+    }
+
+    @ApiOperation(value = "查询所有")
+    @RequiresPermissions("dictionary:define:all")
+    @GetMapping(value = "/all")
+    public ResultT all() {
+        try {
+            List<DefineDto> all = this.defineService.all();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }
 

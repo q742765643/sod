@@ -73,4 +73,10 @@ public class DefineServiceImpl extends BaseService<DefineEntity> implements Defi
         DefineEntity defineEntity = this.getById(id);
         return this.defineMapstruct.toDto(defineEntity);
     }
+
+    @Override
+    public List<DefineDto> all() {
+        List<DefineEntity> all = this.defineDao.findAll();
+        return this.defineMapstruct.toDto(all);
+    }
 }
