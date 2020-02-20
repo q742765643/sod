@@ -149,7 +149,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	@Transactional
 	public void editConfig(ComMetadataSyncCfgDto cd) throws Exception {
 		ComMetadataSyncCfgEntity ce = comMetadataSyncCfgMapstruct.toEntity(cd);
-		comMetadataSyncCfgDao.save(ce);
+		this.saveNotNull(ce);
 		try {
 			jobInfoService.start(cd);
 		} catch (Exception e) {
