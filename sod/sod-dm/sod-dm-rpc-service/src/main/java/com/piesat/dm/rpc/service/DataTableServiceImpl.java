@@ -49,6 +49,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     private DataLogicDao dataLogicDao;
     @Autowired
     private DataClassDao dataClassDao;
+    @Autowired
+    private TableColumnDao tableColumnDao;
+    @Autowired
+    private TableForeignKeyDao tableForeignKeyDao;
+
     @Override
     public BaseDao<DataTableEntity> getBaseDao() {
         return dataTableDao;
@@ -82,7 +87,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
         //List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
-        String sql = "select A.* ,B.data_class_id,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='"+databaseId+"'";
+        String sql = "select A.* ,B.data_class_id,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }
@@ -97,6 +102,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public int updateById(DataTableDto dataTableDto) {
         return dataTableDao.updateById(dataTableDto.getTableName(), dataTableDto.getId());
     }
+
     public Map<String, String> getSql(String tableId, String databaseId) {
         List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
         DataTableDto dataTableDto = this.getDotById(tableId);
@@ -104,15 +110,53 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         DatabaseEntity database = databaseEntity.get();
         String databaseType = database.getDatabaseDefine().getDatabaseType();
         Map<String, String> map = new HashMap<>();
-        if (this.databaseInfo.getXugu().equals(databaseType)){
+        if (this.databaseInfo.getXugu().equals(databaseType)) {
 //            this.databaseSqlService.getXuGuCreateSql()
-        }else if (this.databaseInfo.getGbase8a().equals(databaseType)){
+        } else if (this.databaseInfo.getGbase8a().equals(databaseType)) {
 
-        }else if (this.databaseInfo.getCassandra().equals(databaseType)){
+        } else if (this.databaseInfo.getCassandra().equals(databaseType)) {
 
         }
 
         return map;
+    }
+
+    @Override
+    public ResultT getOverview(String databaseId, String dataClassId) {
+        List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
+        if (tableEntities == null || tableEntities.size() == 0) {
+            return ResultT.failed("没有适应表");
+        } else {
+            Map<String, Object> map = new HashMap<>();
+            DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).get();
+            DataTableEntity keyTable = null;
+            if (tableEntities.size() == 1) {
+                keyTable = tableEntities.get(0);
+            } else {
+                if (tableEntities.get(0).getDbTableType().toUpperCase().equals("K")) {
+                    keyTable = tableEntities.get(0);
+                    map.put("K",keyTable.getTableName());
+                    map.put("E",tableEntities.get(1).getTableName());
+                } else {
+                    keyTable = tableEntities.get(1);
+                    map.put("K",keyTable.getTableName());
+                    map.put("E",tableEntities.get(0).getTableName());
+                }
+            }
+            List<TableForeignKeyEntity> foreignKeyEntities = this.tableForeignKeyDao.findByClassLogicId(keyTable.getClassLogic().getId());
+            if (foreignKeyEntities.size() > 0) {
+                map.put("foreignKey", foreignKeyEntities);
+            }
+            List<TableColumnEntity> primaryKey = this.tableColumnDao.findByTableIdAndIsPrimaryKeyTrue(keyTable.getId());
+            if (primaryKey.size() > 0) {
+                map.put("primaryKey", primaryKey.get(0).getDbEleCode());
+            }
+            map.put("database", databaseEntity);
+            DataClassEntity dataClass = this.dataClassDao.findByDataClassId(keyTable.getClassLogic().getDataClassId());
+            map.put("D_DATA_ID",dataClass.getDDataId());
+            map.put("CLASSNAME",dataClass.getClassName());
+            return ResultT.success(map);
+        }
     }
 
     @Override
@@ -125,7 +169,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId, String tableName) {
-       return mybatisQueryMapper.getByDatabaseIdAndTableName(databaseId,tableName);
+        return mybatisQueryMapper.getByDatabaseIdAndTableName(databaseId, tableName);
     }
 
     @Override
@@ -134,13 +178,13 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         List<DataTableEntity> copys = this.dataTableDao.findByClassLogicId(copyId);
         DataLogicEntity paste = this.dataLogicDao.findById(pasteId).get();
         List<DataTableEntity> pDataTableEntitys = this.dataTableDao.findByClassLogicId(pasteId);
-        for (DataTableEntity pd:pDataTableEntitys ) {
+        for (DataTableEntity pd : pDataTableEntitys) {
             this.shardingDao.deleteByTableId(pd.getId());
             this.dataTableDao.deleteById(pd.getId());
         }
 
         DataClassEntity dataClassEntity = this.dataClassDao.findByDataClassId(paste.getDataClassId());
-        for (DataTableEntity copy:copys) {
+        for (DataTableEntity copy : copys) {
             copy.setClassLogic(paste);
             copy.setDataServiceId(dataClassEntity.getDataClassId());
             copy.setDataServiceName(dataClassEntity.getClassName());
@@ -151,19 +195,19 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             copy.setCreateTime(new Date());
             copy.setVersion(0);
             Set<TableColumnEntity> columns = copy.getColumns();
-            for (TableColumnEntity c:columns) {
+            for (TableColumnEntity c : columns) {
                 c.setVersion(0);
                 c.setId("");
                 c.setCreateTime(new Date());
             }
             Set<TableIndexEntity> tableIndexList = copy.getTableIndexList();
-            for (TableIndexEntity index:tableIndexList) {
+            for (TableIndexEntity index : tableIndexList) {
                 index.setId("");
                 index.setCreateTime(new Date());
                 index.setVersion(0);
             }
             DataTableEntity save = this.dataTableDao.save(copy);
-            for (ShardingEntity se:shardingEntities) {
+            for (ShardingEntity se : shardingEntities) {
                 se.setTableId(save.getId());
                 se.setId("");
                 se.setCreateTime(new Date());

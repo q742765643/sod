@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.DataServerBaseInfoEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 解码配置
  *
@@ -12,4 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DataServerBaseInfoDao extends BaseDao<DataServerBaseInfoEntity> {
+    List<DataServerBaseInfoEntity> findByDataCLassId(String dataCLassId);
 }

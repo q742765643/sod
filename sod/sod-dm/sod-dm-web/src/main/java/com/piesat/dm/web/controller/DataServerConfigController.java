@@ -5,13 +5,17 @@ import com.piesat.dm.rpc.dto.DataServerConfigDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 服务信息配置
@@ -19,7 +23,7 @@ import java.util.List;
  * @author cwh
  * @date 2020年 02月12日 16:01:07
  */
-@Api(tags = "服务基础信息")
+@Api(tags = "服务信息配置")
 @RequestMapping("/dm/dataserverconfig")
 @RestController
 public class DataServerConfigController {
@@ -78,5 +82,19 @@ public class DataServerConfigController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @GetMapping("/list")
+    @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
+    @RequiresPermissions("dm:gridarea:list")
+    public ResultT<PageBean> list(String dataServiceId,
+                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String, String> map = new HashMap<String, String>();
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = dataServerConfigService.list(pageForm, dataServiceId);
+        resultT.setData(pageBean);
+        return resultT;
     }
 }

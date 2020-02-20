@@ -136,7 +136,7 @@ public class DataTableController {
 
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
-    @GetMapping(value = "/sample")
+    @PostMapping(value = "/sample")
     public ResultT getSampleData(@RequestBody SampleData sampleData){
         try {
             return this.dataTableService.getSampleData(sampleData);
@@ -158,5 +158,18 @@ public class DataTableController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "查询概览信息")
+    @RequiresPermissions("dm:dataTable:getOverview")
+    @GetMapping(value = "/getOverview")
+    public ResultT getOverview(String databaseId,String dataClassId){
+        try {
+            return this.dataTableService.getOverview(databaseId,dataClassId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 
 }

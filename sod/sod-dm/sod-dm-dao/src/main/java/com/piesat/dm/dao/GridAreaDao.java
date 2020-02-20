@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.GridAreaEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 区域信息
  *
@@ -12,4 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface GridAreaDao extends BaseDao<GridAreaEntity> {
+    List<GridAreaEntity> findByDataServiceId(String dataServiceId);
 }

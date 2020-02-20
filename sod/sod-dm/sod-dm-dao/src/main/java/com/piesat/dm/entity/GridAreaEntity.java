@@ -21,13 +21,13 @@ public class GridAreaEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     @Column(name = "data_service_id", length = 255)
-    private Integer dataServiceId;
+    private String dataServiceId;
 
 
     @Column(name = "area_id", length = 255)
-    private Integer areaId;
+    private String areaId;
 
     @Column(name = "area_region_desc", length = 255)
-    private Integer areaRegionDesc;
+    private String areaRegionDesc;
 
 }

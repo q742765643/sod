@@ -60,9 +60,9 @@ public class TableIndexController {
     @RequiresPermissions("dm:tableIndex:del")
     @Log(title = "表索引", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
-    public ResultT del(@PathVariable("id")String id) {
+    public ResultT del(@RequestBody TableIndexDto tableIndexDto) {
         try {
-            this.tableIndexService.delete(id);
+            this.tableIndexService.delete(tableIndexDto.getId());
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

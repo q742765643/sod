@@ -26,4 +26,6 @@ public interface GridAreaService {
     List<GridAreaDto> all();
 
     PageBean list(PageForm pageForm,String dataServiceId);
+
+    List<GridAreaDto> findByDataServiceId(String dataServiceId);
 }

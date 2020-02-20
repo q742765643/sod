@@ -49,4 +49,10 @@ public class DataServerBaseInfoServiceImpl extends BaseService<DataServerBaseInf
         List<DataServerBaseInfoEntity> all = this.getAll();
         return this.dataServerBaseInfoMapper.toDto(all);
     }
+
+    @Override
+    public List<DataServerBaseInfoDto> findByDataCLassId(String dataCLassId) {
+        List<DataServerBaseInfoEntity> all = this.dataServerBaseInfoDao.findByDataCLassId(dataCLassId);
+        return this.dataServerBaseInfoMapper.toDto(all);
+    }
 }

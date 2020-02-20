@@ -98,4 +98,17 @@ public class GridAreaController {
         resultT.setData(pageBean);
         return resultT;
     }
+
+    @ApiOperation(value = "根据存储编码查询")
+    @RequiresPermissions("dm:gridarea:findByDataServiceId")
+    @GetMapping(value = "/findByDataServiceId")
+    public ResultT findByDataServiceId(String dataServiceId) {
+        try {
+            List<GridAreaDto> all = this.gridAreaService.findByDataServiceId(dataServiceId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

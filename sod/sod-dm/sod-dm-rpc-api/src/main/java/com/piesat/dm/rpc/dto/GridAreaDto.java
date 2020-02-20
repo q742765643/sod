@@ -16,11 +16,11 @@ public class GridAreaDto {
 
     private String id;
 
-    private Integer dataServiceId;
+    private String dataServiceId;
 
-    private Integer areaId;
+    private String areaId;
 
-    private Integer areaRegionDesc;
+    private String areaRegionDesc;
 
     private Date createTime;
 

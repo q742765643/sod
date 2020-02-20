@@ -22,4 +22,6 @@ public interface DataServerBaseInfoService {
     void delete(String id);
 
     List<DataServerBaseInfoDto> all();
+
+    List<DataServerBaseInfoDto> findByDataCLassId(String dataCLassId);
 }

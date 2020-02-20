@@ -36,9 +36,12 @@ public interface DataTableService {
 
     Map<String,String> getSql(String tableId,String databaseId);
 
+    ResultT getOverview(String databaseId,String dataClassId);
+
     ResultT getSampleData(SampleData sampleData) throws Exception;
 
     List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId,String tableName);
 
     ResultT paste(String copyId,String pasteId);
+
 }

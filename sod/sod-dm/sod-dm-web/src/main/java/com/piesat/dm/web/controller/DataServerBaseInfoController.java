@@ -79,4 +79,17 @@ public class DataServerBaseInfoController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据存储编码查询")
+    @RequiresPermissions("dm:dataserverbaseinfo:findByDataCLassId")
+    @GetMapping(value = "/findByDataCLassId")
+    public ResultT findByDataCLassId(String dataCLassId) {
+        try {
+            List<DataServerBaseInfoDto> all = this.dataServerBaseInfoService.findByDataCLassId(dataCLassId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

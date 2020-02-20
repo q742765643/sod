@@ -25,5 +25,5 @@ public interface GridDecodingService {
 
     List<GridDecodingDto> all();
 
-    PageBean list(PageForm pageForm);
+    PageBean list(PageForm pageForm,String dataServiceId);
 }

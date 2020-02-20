@@ -68,4 +68,10 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
         page.setPageData(this.gridAreaMapper.toDto(pageData));
         return page;
     }
+
+    @Override
+    public List<GridAreaDto> findByDataServiceId(String dataServiceId) {
+        List<GridAreaEntity> all = this.gridAreaDao.findByDataServiceId(dataServiceId);
+        return this.gridAreaMapper.toDto(all);
+    }
 }
