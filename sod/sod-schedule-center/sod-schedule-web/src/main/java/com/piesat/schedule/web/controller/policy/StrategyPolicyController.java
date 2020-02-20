@@ -1,6 +1,7 @@
 package com.piesat.schedule.web.controller.policy;
 
 import com.alibaba.fastjson.JSONArray;
+import com.piesat.schedule.rpc.dto.policy.StrategyPolicyDto;
 import com.piesat.schedule.rpc.service.policy.StrategyPolicyService;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @program: sod
@@ -33,6 +36,16 @@ public class StrategyPolicyController {
         ResultT resultT=new ResultT();
         JSONArray json=strategyPolicyService.strategyTree();
         resultT.setData(json);
+        return resultT;
+    }
+
+    @RequiresPermissions("schedule:strategyPolicy:findData")
+    @GetMapping("/findData")
+    @ApiOperation(value = "查询策略", notes = "查询策略")
+    public ResultT findData(String classId){
+        ResultT resultT=new ResultT();
+        List<StrategyPolicyDto> strategyPolicyDtos=strategyPolicyService.findData(classId);
+        resultT.setData(strategyPolicyDtos);
         return resultT;
     }
 

@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.schedule.entity.sync.SyncTaskEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -11,4 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SyncTaskDao extends BaseDao<SyncTaskEntity> {
+
+    public List<SyncTaskEntity> findAllByTargetDatabaseIdAndSlaveTablesIsLike(String targetDatabaseId,String slaveTables);
 }

@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.schedule.entity.sync.SyncMappingEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -11,4 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SyncMappingDao extends BaseDao<SyncMappingEntity> {
+
+    public List<SyncMappingEntity> findAllByTargetTableIdIn(List<String> targetTableId);
 }

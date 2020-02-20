@@ -33,4 +33,6 @@ public interface SyncTaskService {
     public void deleteSync(String taskId);
 
     public JSONObject getSyncJsonById(String taskId);
+
+
 }
