@@ -20,13 +20,14 @@
 </template>
 
 <script>
+import { datastatisticsList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "DataStatistics",
   props: { rowData: Object, tableInfo: Object },
   components: {},
   data() {
     return {
-      searchObj: {},
+      searchObj: { pageNum: 1, pageSize: 10 },
       tableData: [],
       dataTotals: 0
     };
@@ -36,31 +37,16 @@ export default {
   }, */
   methods: {
     // table自增定义方法
+    // table自增定义方法
     table_index(index) {
-      return (this.searchObj.page - 1) * this.searchObj.rows + index + 1;
+      return (this.searchObj.pageNum - 1) * this.searchObj.pageSize + index + 1;
     },
     searchFun() {
-      let paginateObj = this.$refs.pagination.paginateObj;
-      this.searchObj = { ...this.searchObj, ...paginateObj };
-      this.axios
-        .get(interfaceObj.TableStructure_getCountData, {
-          params: {
-            table_id: this.tableInfo.table_id,
-            database_id: this.rowData.database_id,
-            tableName: this.tableInfo.table_name,
-            page: this.searchObj.page,
-            rows: this.searchObj.rows
-          }
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.tableData = res.data.data.records;
-            this.dataTotals = parseInt(res.data.data.rowCount);
-            parseInt(res.data.data.pageCount);
-            parseInt(res.data.data.pageNow);
-            parseInt(res.data.data.pageSize);
-          }
-        });
+      datastatisticsList(this.searchObj).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     countShow: function(row) {
       var str = parseFloat(row.record_count).toString();
@@ -68,10 +54,10 @@ export default {
     }
   },
   watch: {
-    // tableInfo(val) {
-    //   this.tableInfo = val;
-    //   this.searchFun();
-    // }
+    tableInfo(val) {
+      this.tableInfo = val;
+      this.searchFun();
+    }
   }
 };
 </script>

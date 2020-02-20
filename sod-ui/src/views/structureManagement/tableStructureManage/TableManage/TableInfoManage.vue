@@ -255,10 +255,6 @@ export default {
   created() {},
   mounted() {
     this.Info = JSON.parse(JSON.stringify(this.tableInfo));
-    console.log(this.Info);
-    // console.log(this.rowData);
-    // console.log(this.tableInfo);
-    // console.log(this.namehelp);
     this.isHelp();
   },
   methods: {
@@ -290,7 +286,6 @@ export default {
       } else {
         saveObj.dbTableType = this.tableType;
       }
-      console.log(saveObj);
       dataTableSavle(saveObj).then(response => {
         if (response.code == 200) {
           this.$message({

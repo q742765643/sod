@@ -520,7 +520,6 @@ export default {
       this.isDirEdit = !this.isDirEdit;
     },
     getDir() {
-      console.log(this.rowData.DATA_CLASS_ID);
       if (
         this.rowData.STORAGE_TYPE == "ME_table" ||
         this.rowData.STORAGE_TYPE == "MK_table" ||
@@ -555,14 +554,11 @@ export default {
         //绑定索引
         btns[i].index = i;
         btns[i].onclick = function() {
-          //                      console.log(this.index);
           //排他
           for (var j = 0; j < btns.length; j++) {
             btns[j].className = "";
           }
           this.className = "active";
-          // var ih = lous[this.index].offsetTop;
-          // window.scrollTo(0, ih);
         };
       }
     },

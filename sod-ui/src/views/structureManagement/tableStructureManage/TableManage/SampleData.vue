@@ -1,5 +1,5 @@
 <template>
-  <el-main>
+  <el-main style="padding-top:10px;">
     <el-table class="tb-edit" highlight-current-row :data="tableData" border style="width: 100%">
       <el-table-column
         v-for="(item, index) in cols"
@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { sampleList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "SampleData",
   props: { rowData: Object, tableInfo: Object },
@@ -27,41 +28,35 @@ export default {
       let arr = [];
       this.cols = [];
       for (let i = 0; i < this.columnData.length; i++) {
-        arr.push(this.columnData[i].db_ele_code.toLowerCase());
+        arr.push(this.columnData[i].dbEleCode.toLowerCase());
         let obj = {
-          label: this.columnData[i].ele_name,
-          prop: this.columnData[i].db_ele_code.toLowerCase()
+          label: this.columnData[i].eleName,
+          prop: this.columnData[i].dbEleCode.toLowerCase()
         };
         this.cols.push(obj);
       }
       let params = {};
-      params.rows = arr.join(",");
-      params.database_id = this.rowData.database_id;
-      params.tableName = this.tableInfo.table_name;
-      this.axios
-        .get(interfaceObj.TableStructure_getDemoData, { params: params })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.tableData = res.data.data;
-          } else {
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      params.column = arr;
+      params.databaseId = this.rowData.DATABASE_ID;
+      params.tableName = this.tableInfo.tableName;
+      console.log(params);
+      sampleList(params).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     }
   },
   watch: {
     tableInfo(val) {
-      // this.axios
-      //   .get(interfaceObj.TableStructure_getColumnInfo, {
-      //     params: { table_id: val.table_id }
-      //   })
-      //   .then(res => {
-      //     this.columnData = res.data.data;
-      //     this.getSampleData();
-      //   })
-      //   .catch(error => {});
+      this.columnData = this.tableInfo.columns;
+      // todo
+      // this.getSampleData();
     }
   }
 };

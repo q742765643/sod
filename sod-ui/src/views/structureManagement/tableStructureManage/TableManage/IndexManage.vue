@@ -66,7 +66,10 @@
 </template>
 
 <script>
-import { findByTableId } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  findTableIndex,
+  delTableIndex
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object },
   data() {
@@ -86,14 +89,17 @@ export default {
       this.dialogStatus.indexDialog = false;
     },
     getIndexTable() {
-      this.axios
-        .get(interfaceObj.TableStructure_getTableIndex, {
-          params: { id: this.tableInfo.id }
-        })
-        .then(res => {
-          this.indexItem = res.data.data;
-        })
-        .catch(error => {});
+      console.log(this.tableInfo.id);
+      findTableIndex({ tableId: this.tableInfo.id }).then(res => {
+        if (res.code == 200) {
+          this.indexItem = res.data;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     },
     addIndex() {
       if (!this.tableInfo.id) {
@@ -157,25 +163,20 @@ export default {
           type: "warning"
         });
       } else {
-        this.axios
-          .post(interfaceObj.TableStructure_deleteTableIndex, {
-            index_id: this.indexItemSel[0].index_id
-          })
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.getIndexTable();
-            } else {
-              this.$message({
-                type: "error",
-                message: res.data.returnMessage
-              });
-            }
-          })
-          .catch(error => {});
+        delTableIndex({ id: this.indexItemSel[0].id }).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.getIndexTable();
+          } else {
+            this.$message({
+              message: res.msg,
+              type: "error"
+            });
+          }
+        });
       }
     }
   },
@@ -193,23 +194,8 @@ export default {
   watch: {
     async tableInfo(val) {
       this.indexItem = this.tableInfo.tableIndexList;
-      // 获取字段信息
-      await findByTableId({ tableId: this.tableInfo.id }).then(response => {
-        if (response.code == 200) {
-          this.columnData = response.data;
-          console.log(this.columnData);
-        }
-      });
-      // this.axios
-      //   .get(interfaceObj.TableStructure_getColumnInfo, {
-      //     params: { id: val.id }
-      //   })
-      //   .then(res => {
-      //     this.columnData = res.data.data;
-      //     // console.log(this.columnData);
-      //   })
-      //   .catch(error => {});
-      // this.getIndexTable();
+      this.columnData = this.tableInfo.columns;
+      this.getIndexTable();
     }
   }
 };

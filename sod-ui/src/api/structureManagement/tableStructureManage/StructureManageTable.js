@@ -18,10 +18,11 @@ export function findByTableId(query) {
   })
 }
 // 删除字段
-export function tableColumnDel(id) {
+export function tableColumnDel(data) {
   return request({
-    url: baseUrl + '/dm/tableColumn/delIds?ids=' + id,
+    url: baseUrl + '/dm/tableColumn/delIds',
     method: 'delete',
+    data: data
   })
 }
 // 根据表id查询分库分表键
@@ -101,3 +102,58 @@ export function tableColumnSaveList(data) {
     data: data
   })
 }
+
+// 查索引
+export function findTableIndex(data) {
+  return request({
+    url: baseUrl + '/dm/tableIndex/findByTableId',
+    method: 'get',
+    data: data
+  })
+}
+
+// 删除索引
+export function delTableIndex(data) {
+  return request({
+    url: baseUrl + '/dm/tableIndex/del',
+    method: 'delete',
+    data: data
+  })
+}
+
+// 资料类型统计
+export function datastatisticsList(data) {
+  return request({
+    url: baseUrl + '/dm/datastatistics/list',
+    method: 'get',
+    data: data
+  })
+}
+
+// 样例数据查询
+export function sampleList(data) {
+  return request({
+    url: baseUrl + '/dm/dataTable/sample',
+    method: 'get',
+    data: data
+  })
+}
+
+// 区域信息新增
+export function gridareaSave(data) {
+  return request({
+    url: baseUrl + '/dm/gridarea/save',
+    method: 'post',
+    data: data
+  })
+}
+// 区域信息查询
+export function gridareaList(data) {
+  return request({
+    url: baseUrl + '/dm/gridarea/list',
+    method: 'get',
+    data: data
+  })
+}
+
+// 产品列表

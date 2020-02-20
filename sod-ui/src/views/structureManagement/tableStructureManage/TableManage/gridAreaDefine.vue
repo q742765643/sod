@@ -9,10 +9,10 @@
       <el-col :span="20">
         <el-select v-model="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
           <el-option
-            v-for="item in optionsArea"
-            :key="item.value"
-            :label="item.area_id"
-            :value="item.area_id"
+            v-for="(item,index) in optionsArea"
+            :key="index"
+            :label="item.areaId"
+            :value="item.areaId"
           ></el-option>
         </el-select>
       </el-col>
@@ -31,21 +31,39 @@
     >
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="area_id" label="区域代码">
-        <template slot-scope="scope">{{scope.row.area_id.split('[')[0]}}</template>
+      <el-table-column prop="areaId" label="区域代码">
+        <template slot-scope="scope">{{scope.row.areaId.split('[')[0]}}</template>
       </el-table-column>
       <el-table-column prop="area_region_desc" label="区域描述"></el-table-column>
     </el-table>
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="searchFun"
+    />
   </el-main>
 </template>
 
 <script>
+import {
+  gridareaSave,
+  gridareaList
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { defineList } from "@/api/GridDataDictionaryManagement/areaType";
 export default {
   name: "gridEreaDefine",
   props: { rowData: Object },
   components: {},
   data() {
     return {
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        id: ""
+      },
+      total: 0,
       tableData: [],
       optionsArea: [],
       isEdit: false,
@@ -56,25 +74,29 @@ export default {
 
   methods: {
     searchFun() {
-      this.axios
-        .get(interfaceObj.TableStructure_getGridArea, {
-          params: {
-            data_class_id: this.rowData.data_class_id
-          }
-        })
-        .then(res => {
-          this.tableData = res.data.data;
-        });
+      gridareaList(this.queryParams).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     getoptionsArea() {
-      this.axios
-        .get(interfaceObj.TableStructure_getGridAreaDefineDirList)
-        .then(res => {
-          this.optionsArea = res.data.data;
-        });
+      let obj = {
+        pageNum: 1,
+        pageSize: 10,
+        areaId: ""
+      };
+      defineList(obj).then(response => {
+        this.optionsArea = response.data.pageData;
+      });
     },
     add() {
       this.isEdit = !this.isEdit;
@@ -84,33 +106,31 @@ export default {
     },
     save() {
       this.isEdit = !this.isEdit;
-      let id = this.selectArea;
-      let flagbegin = id.indexOf("[");
-      let flagend = id.indexOf("]");
-      let area_id = id.substring(0, flagbegin);
-      let latdesc = "起止纬度：" + id.substring(flagbegin, flagend + 1);
-      let londesc = "起止经度：" + id.substring(flagend + 1);
-      let desc = latdesc + ";" + londesc;
-      this.axios
-        .post(interfaceObj.TableStructure_addGridArea, {
-          data_class_id: this.rowData.data_class_id,
-          area_id: this.selectArea,
-          area_region_desc: desc
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.searchFun();
-            this.$message({
-              type: "success",
-              message: "新增成功"
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        });
+      debugger;
+      var time = new Date();
+      let obj = {};
+      obj.areaId = this.selectArea;
+      this.optionsArea.forEach(element => {
+        if (element.areaId == this.selectArea) {
+          obj.areaRegionDesc = element.areaDesc;
+        }
+      });
+      obj.dataClassId = this.rowData.DATA_CLASS_ID;
+      console.log(obj);
+      gridareaSave(obj).then(res => {
+        if (res.code == 200) {
+          this.searchFun();
+          this.$message({
+            type: "success",
+            message: "新增成功"
+          });
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     },
     deleteArea() {
       let ids = [];
@@ -137,7 +157,7 @@ export default {
         });
     },
     forParent() {
-      this.searchFun();
+      // this.searchFun();
       this.getoptionsArea();
     }
   },

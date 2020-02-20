@@ -103,8 +103,8 @@ export default {
           tableId: this.tableInfo.id
         }
       ];
-
-      shardingSaves(arry).then(response => {
+      console.log(arry);
+      shardingSaves({ shardingList: arry }).then(response => {
         if (response.code == 200) {
           this.$message({
             type: "success",

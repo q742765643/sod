@@ -505,7 +505,6 @@ export default {
       if (this.tableType == "E-show") {
         flag = "true";
       }
-      console.log(this.tableInfo.id);
       await findByTableId({ tableId: this.tableInfo.id }).then(response => {
         if (response.code == 200) {
           this.columnData = response.data;
@@ -550,7 +549,7 @@ export default {
         this.selColumnData.forEach(element => {
           ids.push(element.id);
         });
-        tableColumnDel(ids.join(",")).then(response => {
+        tableColumnDel({ ids: ids.join(",") }).then(response => {
           if (response.code == 200) {
             this.$message({ message: "删除成功", type: "success" });
             this.getCodeTable();
@@ -663,7 +662,6 @@ export default {
       this.dragList.forEach((item, index) => {
         item.serialNumber = index;
       });
-      console.log(this.dragList);
       tableColumnSaveList({ tableColumnList: this.dragList }).then(res => {
         if (res.code == 200) {
           this.$message({
@@ -778,7 +776,6 @@ export default {
               element.id = "";
               element.tableId = this.tableInfo.id;
             });
-            console.log(pasteArry);
             tableColumnSaveList({ tableColumnList: pasteArry }).then(res => {
               if (res.code == 200) {
                 this.$message({
