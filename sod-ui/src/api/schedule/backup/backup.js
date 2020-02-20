@@ -40,14 +40,18 @@ export function delBackup(backupIds) {
 }
 export function findAllDataBase() {
   return request({
-    url: baseUrl+'/schedule/job/findAllDataBase',
+    url: baseUrl+'/schedule/backup/findDatabase',
     method: 'get'
   })
 }
-export function getByDatabaseId(databaseId) {
+export function getByDatabaseId(databaseId,dataClassId) {
   return request({
-    url: baseUrl+'/schedule/job/getByDatabaseId/'+databaseId,
-    method: 'get'
+    url: baseUrl+'/schedule/backup/findDataClassId',
+    method: 'get',
+    params: {
+      "databaseId":databaseId,
+      "dataClassId":dataClassId
+    }
   })
 }
 export function getByDatabaseIdAndClassId(databaseId,dataClassId) {

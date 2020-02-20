@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -85,6 +86,22 @@ public class BackupController {
     {
         ResultT<String> resultT=new ResultT<>();
         backupService.deleteBackupByIds(backupIds);
+        return resultT;
+    }
+    @ApiOperation(value = "查询备份任务物理库", notes = "查询备份任务物理库")
+    @GetMapping("/findDatabase")
+    public ResultT findDatabase(){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=backupService.findDatabase();
+        resultT.setData(mapList);
+        return resultT;
+    }
+    @ApiOperation(value = "查询需要备份资料列表", notes = "查询需要备份资料列表")
+    @GetMapping("/findDataClassId")
+    public ResultT findDataClassId(String databaseId,String dataClassId){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=backupService.findDataClassId(databaseId,dataClassId);
+        resultT.setData(mapList);
         return resultT;
     }
 }

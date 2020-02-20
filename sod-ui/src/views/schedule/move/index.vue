@@ -154,9 +154,9 @@
               <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')" placeholder="请选择物理库" style="width:100%">
                 <el-option
                   v-for="database in databaseOptions"
-                  :key="database.id"
-                  :label="database.databaseName+'_'+database.databaseClassify"
-                  :value="database.id"
+                  :key="database.KEY"
+                  :label="database.VALUE"
+                  :value="database.KEY"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -166,9 +166,9 @@
               <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
                 <el-option
                   v-for="dataClass in dataClassIdOptions"
-                  :key="dataClass.DATA_CLASS_ID"
-                  :label="dataClass.CLASS_NAME"
-                  :value="dataClass.DATA_CLASS_ID"
+                  :key="dataClass.KEY"
+                  :label="dataClass.VALUE"
+                  :value="dataClass.KEY"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -213,8 +213,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="迁移限制条数" prop="moveLimit">
-              <el-input v-model="form.moveLimit" placeholder="请输入限制条数单位为万"/>
+            <el-form-item label="迁移限制频率" prop="moveLimit">
+              <el-input v-model="form.moveLimit" placeholder="请输入迁移限制频率单位为秒"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -254,11 +254,11 @@
             <el-input v-model="form.clearConditions" placeholder="请输入二级nas清除条件" />
           </el-form-item>
           </el-col>
-          <el-col :span="24">
+         <!-- <el-col :span="24">
             <el-form-item v-if="form.isClear != '0'" label="归档清除条件"  prop="archiveConditions">
               <el-input v-model="form.archiveConditions" placeholder="请输入归档清除条件" />
             </el-form-item>
-          </el-col>
+          </el-col>-->
           <el-col :span="24">
             <el-form-item label="备注">
               <el-input v-model="form.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
@@ -368,9 +368,7 @@
       this.getDicts("move_target_directory").then(response => {
         this.targetDirectoryOptions = response.data;
       });
-      findAllDataBase().then(response => {
-        this.databaseOptions = response.data;
-      });
+
 
     },
     methods: {
@@ -425,6 +423,9 @@
       handleAdd() {
         this.reset();
         this.open = true;
+        findAllDataBase().then(response => {
+          this.databaseOptions = response.data;
+        });
         this.title = "添加数据迁移配置信息";
       },
       // 多选框选中数据
@@ -436,6 +437,9 @@
       /** 修改按钮操作 */
       handleUpdate(row) {
         this.reset();
+        findAllDataBase().then(response => {
+          this.databaseOptions = response.data;
+        });
         const id = row.id || this.ids
         getMove(id).then(response => {
           this.selectByDatabaseIds(response.data.databaseId,response.data.dataClassId);
@@ -500,24 +504,19 @@
         }).catch(function() {});
       },
       selectByDatabaseIds(databaseId,dataClassId) {
-        getByDatabaseId(databaseId).then(response => {
+        getByDatabaseId(databaseId,dataClassId).then(response => {
           this.dataClassIdOptions = response.data;
           this.form.dataClassId=dataClassId;
         });
       },
       selectTable(dataClassId){
-        let databaseObj={};
-        databaseObj=this.databaseOptions.find((item)=>{
-          return item.id === this.form.databaseId;
-        });
         let obj = {};
         obj = this.dataClassIdOptions.find((item)=>{
-          return item.DATA_CLASS_ID === dataClassId;
+          return item.KEY === dataClassId;
         });
-        this.form.profileName=databaseObj.databaseName+'_'+databaseObj.databaseClassify+'_'+obj.CLASS_NAME
         this.form.ddataId=obj.D_DATA_ID;
         this.form.tableName="";
-        this.findTable(databaseObj.id,obj.DATA_CLASS_ID)
+        this.findTable( this.form.databaseId, this.form.dataClassId)
 
       },
       findTable(databaseId,dataClassId){

@@ -170,9 +170,9 @@
               >
                 <el-option
                   v-for="database in databaseOptions"
-                  :key="database.id"
-                  :label="database.databaseName+'_'+database.databaseClassify"
-                  :value="database.id"
+                  :key="database.KEY"
+                  :label="database.VALUE"
+                  :value="database.KEY"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -188,9 +188,9 @@
               >
                 <el-option
                   v-for="dataClass in dataClassIdOptions"
-                  :key="dataClass.DATA_CLASS_ID"
-                  :label="dataClass.CLASS_NAME"
-                  :value="dataClass.DATA_CLASS_ID"
+                  :key="dataClass.KEY"
+                  :label="dataClass.VALUE"
+                  :value="dataClass.KEY"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -370,9 +370,7 @@ export default {
     this.getDicts("backup_storage_directory").then(response => {
       this.storageDirectoryOptions = response.data;
     });
-    findAllDataBase().then(response => {
-      this.databaseOptions = response.data;
-    });
+
   },
   methods: {
     /** 查询字典类型列表 */
@@ -426,6 +424,9 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      findAllDataBase().then(response => {
+        this.databaseOptions = response.data;
+      });
       this.title = "添加数据备份配置信息";
     },
     // 多选框选中数据
@@ -437,6 +438,9 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      findAllDataBase().then(response => {
+        this.databaseOptions = response.data;
+      });
       const id = row.id || this.ids;
       getBackup(id).then(response => {
         this.selectByDatabaseIds(
@@ -509,35 +513,24 @@ export default {
         })
         .catch(function() {});
     },
-    selectByDatabaseIds(databaseId, dataClassId) {
-      getByDatabaseId(databaseId).then(response => {
+    selectByDatabaseIds(databaseId,dataClassId) {
+      getByDatabaseId(databaseId,dataClassId).then(response => {
         this.dataClassIdOptions = response.data;
         this.form.dataClassId = dataClassId;
       });
     },
     selectTable(dataClassId) {
-      let databaseObj = {};
-      databaseObj = this.databaseOptions.find(item => {
-        return item.id === this.form.databaseId;
-      });
       let obj = {};
-      obj = this.dataClassIdOptions.find(item => {
-        return item.DATA_CLASS_ID === dataClassId;
+      obj = this.dataClassIdOptions.find((item)=>{
+        return item.KEY === dataClassId;
       });
-      this.form.profileName =
-        databaseObj.databaseName +
-        "_" +
-        databaseObj.databaseClassify +
-        "_" +
-        obj.CLASS_NAME;
       this.form.ddataId = obj.D_DATA_ID;
       this.form.tableName = "";
-      this.findTable(databaseObj.id, obj.DATA_CLASS_ID);
+      this.findTable( this.form.databaseId, this.form.dataClassId);
     },
     findTable(databaseId, dataClassId) {
       getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
         this.form.tableName = response.data.tableName;
-        this.form.vTableName = response.data.vTableName;
       });
     }
   }

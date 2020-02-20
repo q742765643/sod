@@ -28,6 +28,7 @@ public class DataBaseService
     @GrpcHthtClient
     private DataLogicService dataLogicService;
 
+
     public List<DatabaseDto> findAllDataBase(){
         List<DatabaseDto> databaseDtos=databaseService.all();
         return databaseDtos;
@@ -44,6 +45,8 @@ public class DataBaseService
             for(DataTableDto dataTableDto:dataTableDtos){
                 if("K".equals(dataTableDto.getDbTableType())){
                     map.put("tableName",dataTableDto.getTableName());
+                    map.put("logicId",dataTableDto.getClassLogic().getId());
+                    map.put("tableId",dataTableDto.getId());
                 }else{
                     map.put("vTableName",dataTableDto.getTableName());
                 }
@@ -52,10 +55,13 @@ public class DataBaseService
         if(dataTableDtos.size()==1)
         {
             map.put("tableName",dataTableDtos.get(0).getTableName());
+            map.put("logicId",dataTableDtos.get(0).getClassLogic().getId());
+            map.put("tableId",dataTableDtos.get(0).getId());
             map.put("vTableName","");
         }
         return map;
 
     }
+
 }
 

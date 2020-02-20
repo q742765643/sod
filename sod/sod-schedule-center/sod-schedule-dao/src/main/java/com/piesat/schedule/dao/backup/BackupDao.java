@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @description:
@@ -12,5 +14,6 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface BackupDao extends BaseDao<BackupEntity>{
+
 }
 

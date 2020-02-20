@@ -4,6 +4,9 @@ import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @program: sod
  * @description:
@@ -22,5 +25,8 @@ public interface MoveService {
     public void updateMove(MoveDto moveDto);
 
     public void deleteMoveByIds(String[] moveIds);
+
+    public List<Map<String,Object>> findDatabase();
+    public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
 }
 

@@ -15,5 +15,17 @@ import java.util.List;
 public interface JobInfoMapper {
 
     public List<JobInfoEntity> findJobList();
+
+    public String findTypeById(String id);
+
+    public JobInfoEntity findById(String id);
+
+    public List<String> selectBackupDataClassId();
+
+    public List<String> selectClearDataClassId();
+
+    public List<String> selectMoveDataClassId();
+
+
 }
 

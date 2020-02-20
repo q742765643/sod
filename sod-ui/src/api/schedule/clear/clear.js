@@ -41,14 +41,18 @@ export function delClear(clearIds) {
 
 export function findAllDataBase() {
   return request({
-    url: baseUrl+'/schedule/job/findAllDataBase',
+    url: baseUrl+'/schedule/clear/findDatabase',
     method: 'get'
   })
 }
-export function getByDatabaseId(databaseId) {
+export function getByDatabaseId(databaseId,dataClassId) {
   return request({
-    url: baseUrl+'/schedule/job/getByDatabaseId/'+databaseId,
-    method: 'get'
+    url: baseUrl+'/schedule/clear/findDataClassId',
+    method: 'get',
+    params: {
+      "databaseId":databaseId,
+      "dataClassId":dataClassId
+    }
   })
 }
 export function getByDatabaseIdAndClassId(databaseId,dataClassId) {

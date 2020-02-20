@@ -1,25 +1,30 @@
 package com.piesat.schedule.rpc.service.clear;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
+import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
+import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @program: sod
@@ -35,6 +40,12 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     private ClearDao clearDao;
     @Autowired
     private JobInfoService jobInfoService;
+    @Autowired
+    private DataBaseService dataBaseService;
+    @Autowired
+    private JobInfoMapper jobInfoMapper;
+    @GrpcHthtClient
+    private DictDataService dictDataService;
     @Override
     public BaseDao<ClearEntity> getBaseDao() {
         return clearDao;
@@ -113,6 +124,54 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     public void deleteClearByIds(String[] clearIds){
         this.deleteByIds(Arrays.asList(clearIds));
         jobInfoService.stopByIds(Arrays.asList(clearIds));
+
+    }
+
+    public List<Map<String,Object>> findDatabase(){
+        List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("clear_database");
+        List<String> dicts=new ArrayList<>();
+        for(DictDataDto dictDataDto:dictDataDtos) {
+            dicts.add(dictDataDto.getDictValue());
+        }
+
+        List<Map<String,Object>> databaseDtos=new ArrayList<>();
+        List<DatabaseDto> databaseListAll= dataBaseService.findAllDataBase();
+        for(DatabaseDto databaseDto:databaseListAll){
+            String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
+            String parentId=databaseDto.getDatabaseDefine().getId();
+            if(dicts.contains(parentId.toUpperCase())) {
+                LinkedHashMap<String,Object> map=new LinkedHashMap<>();
+                map.put("KEY",databaseDto.getId());
+                map.put("VALUE",databaseName);
+                databaseDtos.add(map);
+            }
+
+        }
+
+        return databaseDtos;
+
+    }
+
+    public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId){
+
+        List<Map<String,Object>> dataClassIds=new ArrayList<>();
+
+        List<Map<String, Object>> mapList=dataBaseService.getByDatabaseId(dataBaseId);
+        List<String> isHave=jobInfoMapper.selectClearDataClassId();
+        for(Map<String, Object> map:mapList){
+            String dataClass= (String) map.get("DATA_CLASS_ID");
+            String className= (String) map.get("CLASS_NAME");
+            String ddataId=(String)map.get("D_DATA_ID");
+            if(!isHave.contains(dataClass)||dataClass.equals(dataClassId)){
+                LinkedHashMap<String,Object> dataClassIdMap=new LinkedHashMap<>();
+                dataClassIdMap.put("KEY",dataClass);
+                dataClassIdMap.put("VALUE",className);
+                dataClassIdMap.put("D_DATA_ID",ddataId);
+                dataClassIds.add(dataClassIdMap);
+            }
+        }
+
+        return dataClassIds;
 
     }
 }
