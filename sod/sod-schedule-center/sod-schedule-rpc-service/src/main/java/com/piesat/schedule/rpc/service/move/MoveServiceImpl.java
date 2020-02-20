@@ -1,24 +1,29 @@
 package com.piesat.schedule.rpc.service.move;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.move.MoveEntity;
+import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
+import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @program: sod
@@ -34,6 +39,12 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     private MoveMapstruct moveMapstruct;
     @Autowired
     private JobInfoService jobInfoService;
+    @Autowired
+    private DataBaseService dataBaseService;
+    @Autowired
+    private JobInfoMapper jobInfoMapper;
+    @GrpcHthtClient
+    private DictDataService dictDataService;
     @Override
     public BaseDao<MoveEntity> getBaseDao() {
         return moveDao;
@@ -110,6 +121,54 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     public void deleteMoveByIds(String[] moveIds){
         this.deleteByIds(Arrays.asList(moveIds));
         jobInfoService.stopByIds(Arrays.asList(moveIds));
+    }
+
+    public List<Map<String,Object>> findDatabase(){
+        List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("move_database");
+        List<String> dicts=new ArrayList<>();
+        for(DictDataDto dictDataDto:dictDataDtos) {
+            dicts.add(dictDataDto.getDictValue());
+        }
+
+        List<Map<String,Object>> databaseDtos=new ArrayList<>();
+        List<DatabaseDto> databaseListAll= dataBaseService.findAllDataBase();
+        for(DatabaseDto databaseDto:databaseListAll){
+            String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
+            String parentId=databaseDto.getDatabaseDefine().getId();
+            if(dicts.contains(parentId.toUpperCase())) {
+                LinkedHashMap<String,Object> map=new LinkedHashMap<>();
+                map.put("KEY",databaseDto.getId());
+                map.put("VALUE",databaseName);
+                databaseDtos.add(map);
+            }
+
+        }
+
+        return databaseDtos;
+
+    }
+
+    public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId){
+
+        List<Map<String,Object>> dataClassIds=new ArrayList<>();
+
+        List<Map<String, Object>> mapList=dataBaseService.getByDatabaseId(dataBaseId);
+        List<String> isHave=jobInfoMapper.selectMoveDataClassId();
+        for(Map<String, Object> map:mapList){
+            String dataClass= (String) map.get("DATA_CLASS_ID");
+            String className= (String) map.get("CLASS_NAME");
+            String ddataId=(String)map.get("D_DATA_ID");
+            if(!isHave.contains(dataClass)||dataClass.equals(dataClassId)){
+                LinkedHashMap<String,Object> dataClassIdMap=new LinkedHashMap<>();
+                dataClassIdMap.put("KEY",dataClass);
+                dataClassIdMap.put("VALUE",className);
+                dataClassIdMap.put("D_DATA_ID",ddataId);
+                dataClassIds.add(dataClassIdMap);
+            }
+        }
+
+        return dataClassIds;
+
     }
 }
 

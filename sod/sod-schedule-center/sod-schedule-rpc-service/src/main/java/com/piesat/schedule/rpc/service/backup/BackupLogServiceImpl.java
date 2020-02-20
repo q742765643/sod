@@ -1,10 +1,12 @@
 package com.piesat.schedule.rpc.service.backup;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.schedule.dao.backup.BackupLogDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
@@ -12,6 +14,8 @@ import com.piesat.schedule.rpc.api.backup.BackupLogService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupLogMapstruct;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -33,6 +38,7 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
     private BackupLogDao backupLogDao;
     @Autowired
     private BackupLogMapstruct backupLogMapstruct;
+
     @Override
     public BaseDao<BackupLogEntity> getBaseDao() {
         return backupLogDao;
@@ -95,5 +101,9 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
     public void deleteBackupLogByIds(String[] backupLogIds){
         this.deleteByIds(Arrays.asList(backupLogIds));
     }
+
+
+
+
 }
 

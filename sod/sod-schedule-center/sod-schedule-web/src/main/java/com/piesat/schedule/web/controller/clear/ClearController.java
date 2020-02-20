@@ -13,6 +13,9 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @program: sod
  * @description:
@@ -80,6 +83,22 @@ public class ClearController {
     {
         ResultT<String> resultT=new ResultT<>();
         clearService.deleteClearByIds(clearIds);
+        return resultT;
+    }
+    @ApiOperation(value = "查询清除任务物理库", notes = "查询清除任务物理库")
+    @GetMapping("/findDatabase")
+    public ResultT findDatabase(){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=clearService.findDatabase();
+        resultT.setData(mapList);
+        return resultT;
+    }
+    @ApiOperation(value = "查询需要清除资料列表", notes = "查询需要清除资料列表")
+    @GetMapping("/findDataClassId")
+    public ResultT findDataClassId(String databaseId,String dataClassId){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=clearService.findDataClassId(databaseId,dataClassId);
+        resultT.setData(mapList);
         return resultT;
     }
 }

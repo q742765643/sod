@@ -6,6 +6,8 @@ import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.util.ResultT;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,7 @@ import java.util.Map;
  * @create: 2019-12-25 15:08
  **/
 @RestController
+@Api(value="迁移备份清除启停接口",tags = {"迁移备份清除启停接口"})
 @RequestMapping("/schedule/job")
 public class JobInfoController {
     @Autowired
@@ -48,6 +51,39 @@ public class JobInfoController {
         ResultT resultT=new ResultT();
         Map<String,String> map=dataBaseService.getByDatabaseIdAndClassId(databaseId,dataClassId);
         resultT.setData(map);
+        return resultT;
+    }
+    @GetMapping(value = "/startById")
+    @ApiOperation(value = "启动任务接口", notes = "启动任务接口")
+    public ResultT<String> startById(String id){
+        ResultT resultT=new ResultT();
+        try {
+            jobInfoService.startById(id);
+        } catch (Exception e) {
+            resultT.setErrorMessage("启动失败");
+        }
+        return resultT;
+    }
+    @GetMapping(value = "/stop")
+    @ApiOperation(value = "停止任务接口", notes = "停止任务接口")
+    public ResultT<String> stop(String id){
+        ResultT resultT=new ResultT();
+        try {
+            jobInfoService.startById(id);
+        } catch (Exception e) {
+            resultT.setErrorMessage("停止失败");
+        }
+        return resultT;
+    }
+    @GetMapping(value = "/execute")
+    @ApiOperation(value = "立即执行失败", notes = "立即执行失败")
+    public ResultT<String> execute(String id){
+        ResultT resultT=new ResultT();
+        try {
+            jobInfoService.execute(id);
+        } catch (Exception e) {
+            resultT.setErrorMessage("立即执行失败");
+        }
         return resultT;
     }
 }

@@ -4,6 +4,9 @@ import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by zzj on 2019/12/23.
  */
@@ -14,4 +17,6 @@ public interface BackupService {
     public void saveBackup(BackUpDto backUpDto);
     public void updateBackup(BackUpDto backUpDto);
     public void deleteBackupByIds(String[] backupIds);
+    public List<Map<String,Object>> findDatabase();
+    public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
 }

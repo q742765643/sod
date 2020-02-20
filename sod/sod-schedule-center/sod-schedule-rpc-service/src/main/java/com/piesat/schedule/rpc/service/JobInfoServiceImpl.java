@@ -1,6 +1,7 @@
 package com.piesat.schedule.rpc.service;
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.rpc.api.DataLogicService;
@@ -14,8 +15,11 @@ import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
+import com.piesat.schedule.rpc.enums.ExecuteEnum;
 import com.piesat.schedule.rpc.lock.RedisLock;
 import com.piesat.schedule.rpc.mapstruct.JobInfoMapstruct;
+import com.piesat.schedule.rpc.service.execute.ExecuteService;
+import com.piesat.schedule.rpc.thread.ScheduleThread;
 import com.piesat.schedule.util.CronExpression;
 import com.piesat.sso.client.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +50,10 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     private JobInfoMapper jobInfoMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private ScheduleThread scheduleThread;
+
+
 
 
 
@@ -126,6 +134,20 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         for(String id:ids){
             this.stop(id);
         }
+    }
+
+    public void execute(String id){
+        String type=jobInfoMapper.findTypeById(id);
+        String serviceName= ExecuteEnum.getService(type);
+        ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
+        JobInfoEntity jobInfoEntity=executeService.getById(id);
+        scheduleThread.trigger(jobInfoEntity);
+
+    }
+
+    public void startById(String id){
+        JobInfoEntity jobInfoEntity=jobInfoMapper.findById(id);
+        this.start(jobInfoMapstruct.toDto(jobInfoEntity));
     }
 }
 

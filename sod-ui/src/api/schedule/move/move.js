@@ -41,14 +41,18 @@ export function delMove(moveIds) {
 
 export function findAllDataBase() {
   return request({
-    url: baseUrl+'/schedule/job/findAllDataBase',
+    url: baseUrl+'/schedule/move/findDatabase',
     method: 'get'
   })
 }
-export function getByDatabaseId(databaseId) {
+export function getByDatabaseId(databaseId,dataClassId) {
   return request({
-    url: baseUrl+'/schedule/job/getByDatabaseId/'+databaseId,
-    method: 'get'
+    url: baseUrl+'/schedule/move/findDataClassId',
+    method: 'get',
+    params: {
+      "databaseId":databaseId,
+      "dataClassId":dataClassId
+    }
   })
 }
 export function getByDatabaseIdAndClassId(databaseId,dataClassId) {

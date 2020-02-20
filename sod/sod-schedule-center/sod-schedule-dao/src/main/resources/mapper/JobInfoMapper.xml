@@ -49,5 +49,24 @@
     <include refid="Base_Column_List" />
         from T_SOD_JOB_INFO where TRIGGER_STATUS=1
   </select>
-
+  <select id="findTypeById" resultType="java.lang.String">
+    SELECT TYPE FROM T_SOD_JOB_INFO WHERE ID=#{id}
+  </select>
+  <select id="findById" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    T_SOD_JOB_INFO FROM WHERE ID=#{id}
+  </select>
+  <select id="selectBackupDataClassId" resultType="java.lang.String">
+   SELECT  A.DATA_CLASS_ID FROM
+    T_SOD_JOB_BACKUP_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
+  </select>
+  <select id="selectClearDataClassId" resultType="java.lang.String">
+    SELECT  A.DATA_CLASS_ID FROM
+    T_SOD_JOB_CLEAR_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
+  </select>
+  <select id="selectMoveDataClassId" resultType="java.lang.String">
+    SELECT  A.DATA_CLASS_ID FROM
+    T_SOD_JOB_MOVE_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
+  </select>
 </mapper>

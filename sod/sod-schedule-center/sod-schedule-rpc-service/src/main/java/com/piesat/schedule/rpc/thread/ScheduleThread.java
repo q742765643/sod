@@ -201,7 +201,7 @@ public class ScheduleThread {
             Thread.currentThread().interrupt();
         }
     }
-    private void trigger(JobInfoEntity jobInfo) {
+    public void trigger(JobInfoEntity jobInfo) {
         threadPool.execute(() -> {
             try {
                 long count = redisUtil.zsetCount(QUARTZ_HTHT_WAIT);

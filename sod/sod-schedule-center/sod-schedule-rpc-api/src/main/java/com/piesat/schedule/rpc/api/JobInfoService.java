@@ -20,4 +20,8 @@ public interface JobInfoService {
     public void stop(String id);
 
     public void stopByIds(List<String> ids);
+
+    public void execute(String id);
+
+    public void startById(String id);
 }
