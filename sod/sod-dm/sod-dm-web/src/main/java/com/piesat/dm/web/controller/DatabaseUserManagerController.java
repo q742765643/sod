@@ -6,6 +6,8 @@ import com.piesat.dm.rpc.dto.*;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -44,17 +46,15 @@ public class DatabaseUserManagerController {
     @Value("${serverfile.filePath}")
     private String fileAddress;
 
-    @ApiOperation(value = "获取数据列表")
+    @ApiOperation(value = "分页获取数据列表")
     @RequiresPermissions("dm:databaseUser:all")
-    @GetMapping(value = "/all")
-    public ResultT all() {
-        try {
-            List<DatabaseUserDto> all = this.databaseUserService.all();
-            return ResultT.success(all);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
+    @GetMapping("/all")
+    public ResultT<PageBean> list(DatabaseUserDto databaseUserDto, int pageNum, int pageSize) {
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<DatabaseUserDto> pageForm = new PageForm<>(pageNum, pageSize, databaseUserDto);
+        PageBean pageBean = databaseUserService.selectPageList(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
     }
 
     @ApiOperation(value = "根据id查询")

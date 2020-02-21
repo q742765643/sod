@@ -5,6 +5,8 @@ import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DatabaseUserDto;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
@@ -62,4 +64,11 @@ public interface DatabaseUserService {
      * @return
      */
     boolean empower(DatabaseUserDto databaseUserDto);
+
+    /**
+     * 分页查询
+     * @param pageForm
+     * @return
+     */
+    PageBean selectPageList(PageForm<DatabaseUserDto> pageForm);
 }

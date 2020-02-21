@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
@@ -10,13 +11,12 @@ import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.DatabaseDao;
 import com.piesat.dm.dao.DatabaseDefineDao;
 import com.piesat.dm.dao.DatabaseUserDao;
-import com.piesat.dm.entity.DatabaseAdministratorEntity;
-import com.piesat.dm.entity.DatabaseDefineEntity;
-import com.piesat.dm.entity.DatabaseEntity;
-import com.piesat.dm.entity.DatabaseUserEntity;
+import com.piesat.dm.entity.*;
 import com.piesat.dm.rpc.api.DatabaseUserService;
 import com.piesat.dm.rpc.dto.DatabaseUserDto;
 import com.piesat.dm.rpc.mapper.DatabaseUserMapper;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +44,16 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public BaseDao<DatabaseUserEntity> getBaseDao() {
         return databaseUserDao;
+    }
+
+    @Override
+    public PageBean selectPageList(PageForm<DatabaseUserDto> pageForm) {
+        DatabaseUserEntity databaseUserEntity=databaseUserMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
+        List<DatabaseUserEntity> databaseUserEntityList= (List<DatabaseUserEntity>) pageBean.getPageData();
+        pageBean.setPageData(databaseUserMapper.toDto(databaseUserEntityList));
+        return pageBean;
     }
 
     @Override
