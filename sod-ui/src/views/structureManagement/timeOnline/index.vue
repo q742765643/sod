@@ -44,16 +44,7 @@
 </template>
 
 <script>
-import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+import { onLineList, update } from "@/api/structureManagement/timeOnline";
 import handleTime from "@/views/structureManagement/timeOnline/handleTime";
 export default {
   components: {
@@ -106,13 +97,11 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      onLineList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     resetQuery() {
       this.queryParams = {
@@ -123,7 +112,7 @@ export default {
         nameSourceDB: "",
         time: ["", ""]
       };
-      this.handleQuery();
+      this.getList();
     },
     handleAdd() {
       this.handleDialog = true;

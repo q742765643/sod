@@ -89,7 +89,6 @@ export default {
       this.dialogStatus.indexDialog = false;
     },
     getIndexTable() {
-      console.log(this.tableInfo.id);
       findTableIndex({ tableId: this.tableInfo.id }).then(res => {
         if (res.code == 200) {
           this.indexItem = res.data;
@@ -195,7 +194,6 @@ export default {
     async tableInfo(val) {
       this.indexItem = this.tableInfo.tableIndexList;
       this.columnData = this.tableInfo.columns;
-      this.getIndexTable();
     }
   }
 };
