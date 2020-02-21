@@ -63,6 +63,25 @@ public class StorageConfigurationController {
         if(StringUtils.isNotNullString(request.getParameter("queryTable"))){
             map.put("queryTable",request.getParameter("queryTable"));
         }
+        //存储字段检索
+        if(StringUtils.isNotNullString(request.getParameter("c_element_code"))){
+            map.put("c_element_code",request.getParameter("c_element_code"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("db_ele_code"))){
+            map.put("db_ele_code",request.getParameter("db_ele_code"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("user_ele_code"))){
+            map.put("user_ele_code",request.getParameter("user_ele_code"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("ele_name"))){
+            map.put("ele_name",request.getParameter("ele_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("type"))){
+            map.put("type",request.getParameter("type"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("accuracy"))){
+            map.put("accuracy",request.getParameter("accuracy"));
+        }
 
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);

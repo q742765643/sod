@@ -70,7 +70,7 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
                 DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeEntities.get(j);
                 if (dataOnlineTimeEntity.getDataClassId().equals(stringObjectMap.get("DATA_CLASS_ID"))) {
                     stringObjectMap.put("obj",dataOnlineTimeEntity);
-                    if ("0".equals(dataOnlineTimeEntity.getIsUse())) continue;
+                    if ("0".equals(String.valueOf(dataOnlineTimeEntity.getIsUse()))) continue;
                     if ("today".equals(dataOnlineTimeEntity.getEndTimeFlag())) {
                         Date date1 = new Date();
                         String format = sdf.format(date1);

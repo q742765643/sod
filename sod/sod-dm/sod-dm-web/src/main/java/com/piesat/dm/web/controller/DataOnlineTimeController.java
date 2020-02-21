@@ -31,15 +31,14 @@ public class DataOnlineTimeController {
 
     @GetMapping("/onLineList")
     @ApiOperation(value = "在线时间检索条件分页查询", notes = "在线时间检索条件分页查询")
-    public ResultT<PageBean> onLineList(HttpServletRequest request,
-                                        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    public ResultT<PageBean> onLineList(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, String class_name, String d_data_id) {
         Map<String,String> map = new HashMap<String,String>();
-        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
-            map.put("class_name",request.getParameter("class_name"));
+        if(StringUtils.isNotNullString(class_name)){
+            map.put("class_name",class_name);
         }
-        if(StringUtils.isNotNullString(request.getParameter("d_data_id"))){
-            map.put("d_data_id",request.getParameter("d_data_id"));
+        if(StringUtils.isNotNullString(d_data_id)){
+            map.put("d_data_id",d_data_id);
         }
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
