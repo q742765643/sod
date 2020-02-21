@@ -67,4 +67,31 @@ export function getByDatabaseIdAndClassId(databaseId,dataClassId) {
   })
 }
 
+export function startClear(id) {
+  return request({
+    url: baseUrl+'/schedule/job/startById',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
+export function stopClear(id) {
+  return request({
+    url: baseUrl+'/schedule/job/stop',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
+export function executeClear(id) {
+  return request({
+    url: baseUrl+'/schedule/job/execute',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
 

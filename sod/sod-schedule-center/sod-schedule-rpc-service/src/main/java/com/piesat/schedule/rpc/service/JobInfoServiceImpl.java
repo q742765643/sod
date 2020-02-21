@@ -124,7 +124,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     }
     @Override
     public void stop(String id){
-        if(redisUtil.hasKey(id)){
+        if(redisUtil.hasKey(QUARTZ_HTHT_CRON+id)){
             redisUtil.del(QUARTZ_HTHT_CRON+id);
         }
         redisUtil.zsetRemove(QUARTZ_HTHT_JOB,id);
@@ -141,6 +141,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         String serviceName= ExecuteEnum.getService(type);
         ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
         JobInfoEntity jobInfoEntity=executeService.getById(id);
+        jobInfoEntity.setTriggerLastTime(System.currentTimeMillis());
         scheduleThread.trigger(jobInfoEntity);
 
     }
@@ -148,6 +149,12 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     public void startById(String id){
         JobInfoEntity jobInfoEntity=jobInfoMapper.findById(id);
         this.start(jobInfoMapstruct.toDto(jobInfoEntity));
+        jobInfoMapper.updateTriggerStatus(1,id);
     }
+    public void stopById(String id){
+        this.stop(id);
+        jobInfoMapper.updateTriggerStatus(0,id);
+    }
+
 }
 

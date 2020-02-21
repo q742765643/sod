@@ -288,7 +288,7 @@ public class MoveHandler implements BaseHandler {
 
             this.moveAndClearLogic(0,conditions,moveVo,moveLogEntity,resultT);
             if(!resultT.isSuccess()){
-                resultT.setErrorMessage("条件为{}时执行失败",conditions);
+                resultT.setSuccessMessage("条件为{}时执行失败",conditions);
                 log.error("条件为{}时执行失败",conditions);
                 return;
             }
@@ -309,7 +309,7 @@ public class MoveHandler implements BaseHandler {
         for(String conditions:compensateList){
             this.moveAndClearLogic(1,conditions,moveVo,moveLogEntity,resultT);
             if(!resultT.isSuccess()){
-                resultT.setErrorMessage("条件为{}时执行失败",conditions);
+                resultT.setSuccessMessage("条件为{}时执行失败",conditions);
                 log.error("条件为{}时执行失败",conditions);
                 return;
             }
@@ -356,8 +356,12 @@ public class MoveHandler implements BaseHandler {
             log.error("{}源目录错误",moveLogEntity.getSourceDirectory());
             return;
         }
-        String vconditions= TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK) +" d_datetime='"+ddateTime+"'";
-        if(null!=moveLogEntity.getVTableName()){
+        String fkconditionsV=TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK,resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
+        String vconditions=  fkconditionsV+" and d_datetime='"+ddateTime+"'";
+        if(null!=moveLogEntity.getVTableName()&&StringUtils.isNotNullString(moveLogEntity.getVTableName())){
             this.deleteVIndex(moveLogEntity,vconditions,resultT);
             if(!resultT.isSuccess()){
                 return;
@@ -368,10 +372,15 @@ public class MoveHandler implements BaseHandler {
         if(!resultT.isSuccess()){
             return;
         }
+        FileUtil.delete(storageSite,resultT);
         IndexVo kIndexVo=new IndexVo();
         kIndexVo.setNewPath(targetPath);
         kIndexVo.setTable(moveLogEntity.getTableName());
-        String kconditions=TableForeignKeyUtil.getMoveKsql(moveLogEntity.getPrimaryKey(),mapK)+"' and d_datetime='"+ddateTime+"'";
+        String p=TableForeignKeyUtil.getMoveKsql(moveLogEntity.getPrimaryKey(),mapK,resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
+        String kconditions=p+" and d_datetime='"+ddateTime+"'";
         kIndexVo.setConditions(kconditions);
         databaseOperationService.updateIndex(moveLogEntity.getParentId(),kIndexVo,resultT);
     }
@@ -380,8 +389,12 @@ public class MoveHandler implements BaseHandler {
         Date ddateTimed = (Date) mapK.get("D_DATETIME");
         String ddateTime=format.format(ddateTimed);
         String storageSite = (String) mapK.get("D_STORAGE_SITE");
-        String vconditions= TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK) +" d_datetime='"+ddateTime+"'";
-        if(null!=moveLogEntity.getVTableName()){
+        String fkconditionsV=TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK,resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
+        String vconditions= fkconditionsV+"and  d_datetime='"+ddateTime+"'";
+        if(null!=moveLogEntity.getVTableName()&&StringUtils.isNotNullString(moveLogEntity.getVTableName())){
             this.deleteVIndex(moveLogEntity,vconditions,resultT);
             if(!resultT.isSuccess()){
                 return;
@@ -393,7 +406,11 @@ public class MoveHandler implements BaseHandler {
         }
         IndexVo kIndexVo=new IndexVo();
         kIndexVo.setTable(moveLogEntity.getTableName());
-        String kconditions=TableForeignKeyUtil.getMoveKsql(moveLogEntity.getPrimaryKey(),mapK)+"' and d_datetime='"+ddateTime+"'";
+        String p=TableForeignKeyUtil.getMoveKsql(moveLogEntity.getPrimaryKey(),mapK,resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
+        String kconditions=p+" and d_datetime='"+ddateTime+"'";
         kIndexVo.setConditions(kconditions);
         databaseOperationService.deleteIndex(moveLogEntity.getParentId(),kIndexVo,resultT);
     }

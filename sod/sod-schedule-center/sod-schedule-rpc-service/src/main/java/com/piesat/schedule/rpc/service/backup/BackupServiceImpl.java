@@ -19,6 +19,7 @@ import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
@@ -117,6 +118,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     @Override
     public void saveBackup(BackUpDto backUpDto){
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
+        this.getDataBaseAndClassId(backupEntity);
         backupEntity=this.saveNotNull(backupEntity);
         jobInfoService.start(backupMapstruct.toDto(backupEntity));
 
@@ -124,6 +126,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     @Override
     public void updateBackup(BackUpDto backUpDto){
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
+        this.getDataBaseAndClassId(backupEntity);
         this.saveNotNull(backupEntity);
         jobInfoService.start(backUpDto);
     }
@@ -167,12 +170,10 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         for(Map<String, Object> map:mapList){
             String dataClass= (String) map.get("DATA_CLASS_ID");
             String className= (String) map.get("CLASS_NAME");
-            String ddataId=(String)map.get("D_DATA_ID");
             if(!isHave.contains(dataClass)||dataClass.equals(dataClassId)){
                 LinkedHashMap<String,Object> dataClassIdMap=new LinkedHashMap<>();
                 dataClassIdMap.put("KEY",dataClass);
                 dataClassIdMap.put("VALUE",className);
-                dataClassIdMap.put("D_DATA_ID",ddataId);
                 dataClassIds.add(dataClassIdMap);
             }
         }
@@ -182,16 +183,14 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     }
 
     public void getDataBaseAndClassId(BackupEntity backupEntity){
-        DatabaseDto databaseDto= databaseService.getDotById(backupEntity.getDatabaseId());
-        Map<String,String> map =dataBaseService.getByDatabaseIdAndClassId(backupEntity.getDatabaseId(),backupEntity.getDataClassId());
-        String vTableName=map.get("vTableName");
-        String logicId=map.get("logicId");
-        String tableId=map.get("tableId");
-        if(StringUtils.isNotNullString(vTableName)){
-            backupEntity.setVTableName(databaseDto.getSchemaName()+"."+vTableName);
-            List<TableForeignKeyDto> tableForeignKeyDtos=tableForeignKeyService.findByClassLogicId(logicId);
-        }
-
+        DataRetrieval dataRetrieval= dataBaseService.getByDatabaseIdAndClassId(backupEntity.getDatabaseId(),backupEntity.getDataClassId());
+        backupEntity.setDdataId(dataRetrieval.getDdataId());
+        backupEntity.setTableName(dataRetrieval.getTableName());
+        backupEntity.setVTableName(dataRetrieval.getVTableName());
+        backupEntity.setDatabaseType(dataRetrieval.getDatabaseType());
+        backupEntity.setParentId(dataRetrieval.getParentId());
+        backupEntity.setProfileName(dataRetrieval.getProfileName());
+        backupEntity.setForeignKey(dataRetrieval.getForeignKey());
     }
 }
 

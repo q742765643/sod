@@ -76,7 +76,11 @@ public class ScheduleThread {
         }
         /********=======1.准备调度限制条数========*******/
         while (!scheduleThreadToStop) {
-            this.jobToTrrigerWhile();
+            try {
+                this.jobToTrrigerWhile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     public void jobToTrrigerWhile(){
@@ -85,10 +89,10 @@ public class ScheduleThread {
             boolean preReadSuc = true;
             try {
                 /********=======2.reis分布式锁========*******/
-                boolean flag=redisLock.tryLock(HTHT_LOCK);
-                if(!flag){
+                boolean flag=redisLock.lock(HTHT_LOCK);
+                /*if(!flag){
                     return;
-                }
+                }*/
                 long nowTime = System.currentTimeMillis();
 
                 Set<DefaultTypedTuple> scheduleList = redisUtil.rangeByScoreWithScores(QUARTZ_HTHT_JOB, nowTime + PRE_READ_MS, preReadCount);

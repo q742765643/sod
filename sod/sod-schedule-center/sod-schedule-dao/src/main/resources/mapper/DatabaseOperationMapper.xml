@@ -8,23 +8,12 @@
         ${conditions}
     </select>
     <select id="selectKtableMaxTime" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Date">
-      select min(create_time)
+      select min(d_datetime)
          from ${ktable}
           where
         ${conditions}
    </select>
     <delete id="deleteVtable" parameterType="com.piesat.schedule.entity.DatabaseOperationVo">
-         /*DELETE  FROM
-         ${vtable} where
-         ${fk} in
-        (
-            select ${fk}
-        from
-            ${ktable}
-        where
-            ${conditions}
-          )
-*/
       DELETE a FROM ${vtable} a,(select * from  ${ktable} where  ${conditions} ) b where  ${fkconditions}
 
     </delete>
@@ -59,16 +48,6 @@
         ${conditions}
     </select>
     <select id="selectByVCondition" parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Map">
-        /* SELECT *  FROM
-        ${vtable} where
-        ${fk} in
-        (
-        select ${fk}
-        from
-        ${ktable}
-        where
-        ${conditions}
-        )*/
        select a.* from ${vtable} a,( select *
         from
         ${ktable}

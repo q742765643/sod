@@ -1,5 +1,7 @@
 package com.piesat.schedule.rpc.lock;
 
+import com.piesat.common.utils.OwnException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisCallback;
@@ -14,10 +16,11 @@ import java.util.Objects;
  * @author: zzj
  * @create: 2019-12-18 17:45
  **/
+@Slf4j
 @Component
 public class RedisLock {
     public static final String LOCK_PREFIX = "lock:";
-    public static final int LOCK_EXPIRE = 6000; // ms
+    public static final int LOCK_EXPIRE = 60000; // ms
 
     @Autowired
     @Qualifier("redisTemplate")
@@ -57,7 +60,12 @@ public class RedisLock {
     public boolean tryLock(String key){
         boolean result=false;
         while (!result){
-            result = this.lock(key);
+            try {
+                result = this.lock(key);
+            } catch (Exception e) {
+               log.error(OwnException.get(e));
+               break;
+            }
         }
         return result;
     }
@@ -68,7 +76,11 @@ public class RedisLock {
      * @param key
      */
     public void delete(String key) {
-        redisTemplate.delete(key);
+        try {
+            redisTemplate.delete(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

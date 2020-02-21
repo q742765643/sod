@@ -66,3 +66,30 @@ export function getByDatabaseIdAndClassId(databaseId,dataClassId) {
     }
   })
 }
+export function startMove(id) {
+  return request({
+    url: baseUrl+'/schedule/job/startById',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
+export function stopMove(id) {
+  return request({
+    url: baseUrl+'/schedule/job/stop',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
+export function executeMove(id) {
+  return request({
+    url: baseUrl+'/schedule/job/execute',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}

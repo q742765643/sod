@@ -2,7 +2,7 @@ package com.piesat.schedule.mapper;
 
 import com.piesat.schedule.entity.DatabaseOperationVo;
 import com.piesat.schedule.entity.IndexVo;
-import org.springframework.data.repository.query.Param;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -22,7 +22,7 @@ public interface DatabaseOperationMapper {
 
     public int deleteVtable(DatabaseOperationVo databaseOperationVo);
 
-    public List<Map<String,Object>> selectXuguPartition(@Param("schemaName") String schemaName,@Param("tableName") String tableName);
+    public List<Map<String,Object>> selectXuguPartition(@Param("schemaName") String schemaName, @Param("tableName") String tableName);
 
     public int deletePartition(@Param("tableName") String tableName,@Param("partName") String partName);
 

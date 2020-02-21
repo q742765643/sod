@@ -16,5 +16,6 @@ public class DatabaseOperationVo {
     private long limit;
     private String fk;
     private String fkconditions;
+    private String minTime;
 }
 

@@ -73,7 +73,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['schedule:move:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -83,7 +84,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['schedule:move:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -93,7 +95,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['schedule:move:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -102,22 +105,23 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:dict:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="moveList" row-key="id" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true" />
-      <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true" />
-      <el-table-column label="状态" align="center" prop="triggerStatus" :formatter="statusFormat" />
-      <el-table-column label="任务描述" align="center" prop="jobDesc" :show-overflow-tooltip="true" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true"/>
+      <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true"/>
+      <el-table-column label="状态" align="center" prop="triggerStatus" :formatter="statusFormat"/>
+      <el-table-column label="任务描述" align="center" prop="jobDesc" :show-overflow-tooltip="true"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center"  width="300" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -125,14 +129,42 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['schedule:move:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['schedule:move:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            v-if="scope.row.triggerStatus==1"
+            icon="el-icon-delete"
+            @click="handleStop(scope.row)"
+            v-hasPermi="['schedule:job:stop']"
+          >停止
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            v-if="scope.row.triggerStatus==0"
+            icon="el-icon-delete"
+            @click="handleStart(scope.row)"
+            v-hasPermi="['schedule:job:start']"
+          >启动
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleExecute(scope.row)"
+            v-hasPermi="['schedule:job:execute']"
+          >立即执行
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -151,7 +183,8 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="物理库" prop="databaseId">
-              <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')" placeholder="请选择物理库" style="width:100%">
+              <el-select v-model="form.databaseId" filterable @change="selectByDatabaseIds($event,'')"
+                         placeholder="请选择物理库" style="width:100%">
                 <el-option
                   v-for="database in databaseOptions"
                   :key="database.KEY"
@@ -163,7 +196,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="资料名称" prop="dataClassId">
-              <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料" style="width:100%">
+              <el-select v-model="form.dataClassId" filterable @change="selectTable" placeholder="请选择资料"
+                         style="width:100%">
                 <el-option
                   v-for="dataClass in dataClassIdOptions"
                   :key="dataClass.KEY"
@@ -175,7 +209,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="迁移条件" prop="conditions">
-              <el-input v-model="form.conditions" placeholder="请输入迁移条件" />
+              <el-input v-model="form.conditions" placeholder="请输入迁移条件"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -219,7 +253,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="执行策略" prop="jobCron">
-              <el-input v-model="form.jobCron" placeholder="请输入执行策略" />
+              <el-input v-model="form.jobCron" placeholder="请输入执行策略"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -229,13 +263,14 @@
                   v-for="dict in alarmOptions"
                   :key="dict.dictValue"
                   :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                >{{dict.dictLabel}}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="超时时间" prop="executorTimeout">
-              <el-input v-model="form.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+              <el-input v-model="form.executorTimeout" placeholder="请输入超时时间单位为分钟"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -245,20 +280,21 @@
                   v-for="dict in isClearOptions"
                   :key="dict.dictValue"
                   :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                >{{dict.dictLabel}}
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-          <el-form-item v-if="form.isClear != '0'" label="二级nas清除条件"  prop="clearConditions">
-            <el-input v-model="form.clearConditions" placeholder="请输入二级nas清除条件" />
-          </el-form-item>
-          </el-col>
-         <!-- <el-col :span="24">
-            <el-form-item v-if="form.isClear != '0'" label="归档清除条件"  prop="archiveConditions">
-              <el-input v-model="form.archiveConditions" placeholder="请输入归档清除条件" />
+            <el-form-item v-if="form.isClear != '0'" label="二级nas清除条件" prop="clearConditions">
+              <el-input v-model="form.clearConditions" placeholder="请输入二级nas清除条件"/>
             </el-form-item>
-          </el-col>-->
+          </el-col>
+          <!-- <el-col :span="24">
+             <el-form-item v-if="form.isClear != '0'" label="归档清除条件"  prop="archiveConditions">
+               <el-input v-model="form.archiveConditions" placeholder="请输入归档清除条件" />
+             </el-form-item>
+           </el-col>-->
           <el-col :span="24">
             <el-form-item label="备注">
               <el-input v-model="form.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
@@ -275,7 +311,19 @@
 </template>
 
 <script>
-  import { listMove, getMove, addMove, updateMove, delMove,findAllDataBase,getByDatabaseId,getByDatabaseIdAndClassId  } from "@/api/schedule/move/move";
+  import {
+    listMove,
+    getMove,
+    addMove,
+    updateMove,
+    delMove,
+    findAllDataBase,
+    getByDatabaseId,
+    getByDatabaseIdAndClassId,
+    startMove,
+    stopMove,
+    executeMove
+  } from "@/api/schedule/move/move";
 
   export default {
     data() {
@@ -327,25 +375,25 @@
         // 表单校验
         rules: {
           databaseId: [
-            { required: true, message: "物理库不能为空", trigger: "blur" }
+            {required: true, message: "物理库不能为空", trigger: "blur"}
           ],
           dataClassId: [
-            { required: true, message: "资料名称不能为空", trigger: "blur" }
+            {required: true, message: "资料名称不能为空", trigger: "blur"}
           ],
           jobCron: [
-            { required: true, message: "执行策略不能为空", trigger: "blur" }
+            {required: true, message: "执行策略不能为空", trigger: "blur"}
           ],
           executorTimeout: [
-            { required: true, message: "超时时间不能为空", trigger: "blur" }
+            {required: true, message: "超时时间不能为空", trigger: "blur"}
           ],
           moveLimit: [
-            { required: true, message: "限制条数不能为空", trigger: "blur" }
+            {required: true, message: "限制条数不能为空", trigger: "blur"}
           ],
           sourceDirectory: [
-            { required: true, message: "迁移源目录不能为空", trigger: "blur" }
+            {required: true, message: "迁移源目录不能为空", trigger: "blur"}
           ],
           targetDirectory: [
-            { required: true, message: "迁移目标目录不能为空", trigger: "blur" }
+            {required: true, message: "迁移目标目录不能为空", trigger: "blur"}
           ]
         }
       };
@@ -398,12 +446,12 @@
           profileName: undefined,
           dataClassId: undefined,
           triggerStatus: undefined,
-          isAlarm:"1",
-          isClear:"1",
-          triggerStatus:1,
-          tableName:undefined,
-          vtableName:undefined,
-          ddataId:undefined,
+          isAlarm: "1",
+          isClear: "1",
+          triggerStatus: 1,
+          tableName: undefined,
+          vtableName: undefined,
+          ddataId: undefined,
 
         };
         this.resetForm("form");
@@ -431,7 +479,7 @@
       // 多选框选中数据
       handleSelectionChange(selection) {
         this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
+        this.single = selection.length != 1
         this.multiple = !selection.length
       },
       /** 修改按钮操作 */
@@ -442,14 +490,14 @@
         });
         const id = row.id || this.ids
         getMove(id).then(response => {
-          this.selectByDatabaseIds(response.data.databaseId,response.data.dataClassId);
+          this.selectByDatabaseIds(response.data.databaseId, response.data.dataClassId);
           this.form = response.data;
           this.open = true;
           this.title = "修改数据迁移配置信息";
         });
       },
       /** 提交按钮 */
-      submitForm: function() {
+      submitForm: function () {
         this.$refs["form"].validate(valid => {
           if (valid) {
             if (this.form.id != undefined) {
@@ -483,12 +531,61 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return delMove(ids);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        }).catch(function () {
+        });
+      },
+      handleStop(row) {
+        const id = row.id;
+        this.$confirm('是否确认停止任务编号为"' + id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(function() {
+            return stopMove(id);
+          })
+          .then(() => {
+            this.getList();
+            this.msgSuccess("停止成功");
+          })
+          .catch(function() {});
+      },
+      handleStart(row) {
+        const id = row.id;
+        this.$confirm('是否确认启动任务编号为"' + id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(function() {
+            return startMove(id);
+          })
+          .then(() => {
+            this.getList();
+            this.msgSuccess("启动成功");
+          })
+          .catch(function() {});
+      },
+      handleExecute(row) {
+        const id = row.id;
+        this.$confirm('是否立即执行任务编号为"' + id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(function() {
+            return executeMove(id);
+          })
+          .then(() => {
+            this.getList();
+            this.msgSuccess("执行成功");
+          })
+          .catch(function() {});
       },
       /** 导出按钮操作 */
       handleExport() {
@@ -497,32 +594,29 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }).then(function () {
           return exportType(queryParams);
         }).then(response => {
           this.download(response.msg);
-        }).catch(function() {});
+        }).catch(function () {
+        });
       },
-      selectByDatabaseIds(databaseId,dataClassId) {
-        getByDatabaseId(databaseId,dataClassId).then(response => {
+      selectByDatabaseIds(databaseId, dataClassId) {
+        getByDatabaseId(databaseId, dataClassId).then(response => {
           this.dataClassIdOptions = response.data;
-          this.form.dataClassId=dataClassId;
+          this.form.dataClassId = dataClassId;
         });
       },
       selectTable(dataClassId){
-        let obj = {};
-        obj = this.dataClassIdOptions.find((item)=>{
-          return item.KEY === dataClassId;
-        });
-        this.form.ddataId=obj.D_DATA_ID;
-        this.form.tableName="";
-        this.findTable( this.form.databaseId, this.form.dataClassId)
+        this.form.tableName = "";
+        this.findTable(this.form.databaseId, this.form.dataClassId)
 
       },
-      findTable(databaseId,dataClassId){
-        getByDatabaseIdAndClassId(databaseId,dataClassId).then(response => {
-          this.form.tableName=response.data.tableName;
-          this.form.vTableName=response.data.vTableName;
+      findTable(databaseId, dataClassId){
+        getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+          this.form.ddataId = response.data.ddataId;
+          this.form.tableName = response.data.tableName;
+          this.form.vTableName = response.data.vTableName;
         });
       }
     }

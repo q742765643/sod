@@ -44,7 +44,7 @@ public class BackupEntity extends JobInfoEntity{
     private String databaseType;
     @Column(name="parent_id", length=50)
     private String parentId;
-    @Column(name="foreign_key", length=50)
+    @Column(name="foreign_key", length=1000)
     private String foreignKey;
     @Column(name="backup_start_time", length=50)
     private Date  backupStartTime;

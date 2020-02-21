@@ -1,11 +1,16 @@
 package com.piesat.schedule.rpc.service;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.dto.TableForeignKeyDto;
+import com.piesat.schedule.rpc.vo.DataRetrieval;
+import com.piesat.util.ResultT;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -38,8 +43,8 @@ public class DataBaseService
         List<Map<String, Object>> mapList=dataLogicService.getByDatabaseId(databaseId);
         return mapList;
     }
-    public Map<String,String> getByDatabaseIdAndClassId(String databaseId,String dataClassId){
-        List<DataTableDto>  dataTableDtos=dataTableService.getByDatabaseIdAndClassId(databaseId,dataClassId);
+    public DataRetrieval getByDatabaseIdAndClassId(String databaseId,String dataClassId){
+     /*   List<DataTableDto>  dataTableDtos=dataTableService.getByDatabaseIdAndClassId(databaseId,dataClassId);
         Map<String,String> map=new HashMap<>();
         if(dataTableDtos.size()>1){
             for(DataTableDto dataTableDto:dataTableDtos){
@@ -58,8 +63,36 @@ public class DataBaseService
             map.put("logicId",dataTableDtos.get(0).getClassLogic().getId());
             map.put("tableId",dataTableDtos.get(0).getId());
             map.put("vTableName","");
+        }*/
+        DataRetrieval dataRetrieval=new DataRetrieval();
+        Map<String,String> map=new HashMap<>();
+        ResultT resultT=dataTableService.getOverview(databaseId,dataClassId);
+        Map<String,Object> mapResultT= (Map<String, Object>) resultT.getData();
+        DatabaseDto databaseDto= (DatabaseDto) mapResultT.get("database");
+        String schemaName=databaseDto.getSchemaName();
+        String parentId=databaseDto.getDatabaseDefine().getId();
+        String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
+        String tableName= (String) mapResultT.get("K");
+        String vTableName= (String)mapResultT.get("E");
+        String databaseType=databaseDto.getDatabaseDefine().getDatabaseType();
+        String ddataId= (String) mapResultT.get("D_DATA_ID");
+        String primaryKey= (String) mapResultT.get("primaryKey");
+        String dataName= (String) mapResultT.get("CLASSNAME");
+        TableForeignKeyDto tableForeignKeyDto= (TableForeignKeyDto) mapResultT.get("foreignKey");
+        dataRetrieval.setDatabaseType(databaseType);
+        dataRetrieval.setDdataId(ddataId);
+        dataRetrieval.setTableName(schemaName+"."+tableName);
+        if(StringUtils.isNotNullString(vTableName)){
+            dataRetrieval.setVTableName(schemaName+"."+vTableName);
         }
-        return map;
+        dataRetrieval.setProfileName(databaseName+"_"+dataName);
+        dataRetrieval.setParentId(parentId);
+        dataRetrieval.setPrimaryKey(primaryKey);
+        dataRetrieval.setVTableName("");
+        if(null!=tableForeignKeyDto){
+            dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDto));
+        }
+        return dataRetrieval;
 
     }
 

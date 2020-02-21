@@ -47,7 +47,7 @@ public class BackupLogEntity extends JobInfoLogEntity{
     private String parentId;
     @Column(name="file_name", length=200)
     private String fileName;
-    @Column(name="foreign_key", length=50)
+    @Column(name="foreign_key", length=1000)
     private String foreignKey;
     @Column(name="is_end", length=2)
     private Integer isEnd;

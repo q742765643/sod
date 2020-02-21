@@ -8,6 +8,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.dao.clear.ClearDao;
+import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
@@ -16,6 +17,7 @@ import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
@@ -110,12 +112,14 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     @Override
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
+        this.getDataBaseAndClassId(clearEntity);
         clearEntity=this.saveNotNull(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
     }
     @Override
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
+        this.getDataBaseAndClassId(clearEntity);
         this.saveNotNull(clearEntity);
         jobInfoService.start(clearDto);
 
@@ -173,6 +177,16 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
 
         return dataClassIds;
 
+    }
+    public void getDataBaseAndClassId(ClearEntity clearEntity){
+        DataRetrieval dataRetrieval= dataBaseService.getByDatabaseIdAndClassId(clearEntity.getDatabaseId(),clearEntity.getDataClassId());
+        clearEntity.setDdataId(dataRetrieval.getDdataId());
+        clearEntity.setTableName(dataRetrieval.getTableName());
+        clearEntity.setVTableName(dataRetrieval.getVTableName());
+        clearEntity.setDatabaseType(dataRetrieval.getDatabaseType());
+        clearEntity.setParentId(dataRetrieval.getParentId());
+        clearEntity.setProfileName(dataRetrieval.getProfileName());
+        clearEntity.setForeignKey(dataRetrieval.getForeignKey());
     }
 }
 

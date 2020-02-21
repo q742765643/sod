@@ -67,13 +67,17 @@ public class DatabaseOperationService {
         return databaseOperationMapper.delteKtable(databaseOperationVo);
     }
 
-    public int deleteVtable(ClearLogEntity clearLogEntity, String conditions){
+    public int deleteVtable(ClearLogEntity clearLogEntity, String conditions,ResultT<String> resultT){
         DatabaseOperationVo databaseOperationVo=new DatabaseOperationVo();
         databaseOperationVo.setKtable(clearLogEntity.getTableName());
         databaseOperationVo.setConditions(conditions);
         databaseOperationVo.setVtable(clearLogEntity.getVTableName());
         databaseOperationVo.setFk(clearLogEntity.getForeignKey());
-        databaseOperationVo.setFkconditions(TableForeignKeyUtil.getBackupSql(clearLogEntity.getForeignKey()));
+        String fkconditoins=TableForeignKeyUtil.getBackupSql(clearLogEntity.getForeignKey(),resultT);
+        if(!resultT.isSuccess()){
+            return 0;
+        }
+        databaseOperationVo.setFkconditions(fkconditoins);
         return databaseOperationMapper.deleteVtable(databaseOperationVo);
     }
 
@@ -115,7 +119,11 @@ public class DatabaseOperationService {
             databaseOperationVo.setConditions(conditions);
             databaseOperationVo.setVtable(moveLogEntity.getVTableName());
             databaseOperationVo.setFk(moveLogEntity.getForeignKey());
-            databaseOperationVo.setFkconditions(TableForeignKeyUtil.getBackupSql(moveLogEntity.getForeignKey()));
+            String fkconditoins=TableForeignKeyUtil.getBackupSql(moveLogEntity.getForeignKey(),resultT);
+            if(!resultT.isSuccess()){
+                return null;
+            }
+            databaseOperationVo.setFkconditions(fkconditoins);
             return  databaseOperationMapper.selectByVCondition(databaseOperationVo);
         } catch (Exception e) {
             resultT.setErrorMessage("表{}查询失败,错误{}",moveLogEntity.getVTableName(), OwnException.get(e));

@@ -1,6 +1,7 @@
 package com.piesat.schedule.mapper;
 
 import com.piesat.schedule.entity.JobInfoEntity;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface JobInfoMapper {
     public List<String> selectClearDataClassId();
 
     public List<String> selectMoveDataClassId();
+
+    public void updateTriggerStatus(@Param("triggerStatus")int triggerStatus, @Param("id")String id);
 
 
 }

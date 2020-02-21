@@ -41,8 +41,8 @@ public class SendThread {
     }
     public void start(){
         while (!sendThreadToStop) {
-            this.send();
             try {
+                this.send();
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -51,40 +51,44 @@ public class SendThread {
     }
     public void send() {
             try {
-                long startTime=System.currentTimeMillis();
                 int count=0;
                 int i=0;
                 int j=0;
-                boolean flag=redisLock.tryLock("custom");
-                while (flag) {
-                    long mis=System.currentTimeMillis()-startTime;
-                    Set<Object> objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
-                    if(objects==null||objects.isEmpty()||count>100||mis>5000){
-                        break;
-                    }
-                    if (null != objects && !objects.isEmpty()) {
-                        for (Object object : objects) {
-
-                            String key = (String) object;
-                            JobInfoEntity jobInfo = (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL + key);
-                            if (jobInfo == null) {
-                                redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, objects);
-                                continue;
-                            }
-
-
-                            ResultT<String> resultT = this.execute(jobInfo);
-                            if (resultT.isSuccess()) {
-                                count++;
-                                redisUtil.del(QUARTZ_HTHT_JOBDTEAIL + key);
-                                redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, objects);
-                            }
-                            if(!resultT.isSuccess()){
-                                i++;
-                                j++;
-                            }
-
+                boolean flag=redisLock.lock("custom");
+                long startTime=System.currentTimeMillis();
+                while (System.currentTimeMillis()-startTime<50000) {
+                    try {
+                        Set<Object> objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
+                        if(objects.isEmpty()||count>100){
+                            break;
                         }
+                        if (!objects.isEmpty()) {
+                            for (Object object : objects) {
+
+                                String key = (String) object;
+                                JobInfoEntity jobInfo = (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL + key);
+                                if (jobInfo == null) {
+                                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, key);
+                                    continue;
+                                }
+
+
+                                ResultT<String> resultT = this.execute(jobInfo);
+                                if (resultT.isSuccess()) {
+                                    count++;
+                                    redisUtil.del(QUARTZ_HTHT_JOBDTEAIL + key);
+                                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, objects);
+                                }
+                                if(!resultT.isSuccess()){
+                                    i++;
+                                    j++;
+                                    Thread.sleep(6000);
+                                }
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        break;
                     }
 
                 }

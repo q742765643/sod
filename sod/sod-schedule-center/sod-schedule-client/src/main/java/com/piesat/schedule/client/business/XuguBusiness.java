@@ -2,6 +2,7 @@ package com.piesat.schedule.client.business;
 
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.util.EiSendUtil;
@@ -61,7 +62,11 @@ public class XuguBusiness extends BaseBusiness{
         StringBuilder sql=new StringBuilder();
         sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a ,");//inner join
         sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
-        sql.append(" where ").append(TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey()));
+        String fkconditoins=TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey(),resultT);
+        if(!resultT.isSuccess()){
+            return;
+        }
+        sql.append(" where ").append(fkconditoins);
        // sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
         Select2File select2File=new Select2File();
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".exp";
@@ -88,7 +93,7 @@ public class XuguBusiness extends BaseBusiness{
         DataSourceContextHolder.setDataSource(clearLogEntity.getParentId());
 
         try {
-            if(null!=clearLogEntity.getVTableName()){
+            if(null!=clearLogEntity.getVTableName()&&StringUtils.isNotNullString(clearLogEntity.getVTableName())){
                 this.deleteXugu(clearLogEntity.getVTableName(),clearVo,clearLogEntity,resultT);
                 if(!resultT.isSuccess()){
                     return;
@@ -112,8 +117,8 @@ public class XuguBusiness extends BaseBusiness{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(partList!=null&&!partList.isEmpty()){
             for(Map<String,Object> map:partList){
-                String partiName= (String) map.get("parti_name");
-                String partiVal = (String) map.get("parti_val");
+                String partiName= (String) map.get("PARTI_NAME");
+                String partiVal = (String) map.get("PARTI_VAL");
                 long time = sdf.parse(partiVal.replace("'", "")).getTime();
                 if(time>clearVo.getClearTime()){
                     break;

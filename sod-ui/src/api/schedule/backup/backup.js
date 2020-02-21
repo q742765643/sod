@@ -65,5 +65,30 @@ export function getByDatabaseIdAndClassId(databaseId,dataClassId) {
     }
   })
 }
-
-
+export function startBackup(id) {
+  return request({
+    url: baseUrl+'/schedule/job/startById',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
+export function stopBackup(id) {
+  return request({
+    url: baseUrl+'/schedule/job/stop',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}
+export function executeBackup(id) {
+  return request({
+    url: baseUrl+'/schedule/job/execute',
+    method: 'get',
+    params: {
+      "id":id
+    }
+  })
+}

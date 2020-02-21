@@ -3,6 +3,7 @@ package com.piesat.schedule.client.business;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.service.DatabaseOperationService;
@@ -37,7 +38,7 @@ public class GbaseBusiness extends BaseBusiness{
         StringBuilder sql=new StringBuilder();
         String tempFilePath=strategyVo.getTempPtah()+"/"+backupLogEntity.getFileName()+".txt";
         sql.append("rmt:select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions());
-        this.executeCmd(sql,backupLogEntity.getVTableName(),backupLogEntity.getParentId(),tempFilePath,resultT);
+        this.executeCmd(sql,backupLogEntity.getTableName(),backupLogEntity.getParentId(),tempFilePath,resultT);
         if(!resultT.isSuccess()){
             return;
         }
@@ -52,7 +53,11 @@ public class GbaseBusiness extends BaseBusiness{
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".txt";
         sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a,");
         sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
-        sql.append(" where ").append(TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey()));
+        String fkconditoins=TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey(),resultT);
+        sql.append(" where ").append(fkconditoins);
+        if(!resultT.isSuccess()){
+            return;
+        }
 
         //sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
         this.executeCmd(sql,backupLogEntity.getVTableName(),backupLogEntity.getParentId(),tempFilePath,resultT);
@@ -126,7 +131,7 @@ public class GbaseBusiness extends BaseBusiness{
         ZipUtils.writetxt(indexPath,msg.toString(),resultT);
 
     }
-
+    @Override
     public void deleteKtable(ClearLogEntity clearLogEntity, ClearVo clearVo, ResultT<String> resultT){
         DataSourceContextHolder.setDataSource(clearLogEntity.getParentId());
         try {
@@ -162,7 +167,7 @@ public class GbaseBusiness extends BaseBusiness{
                 this.deleteGbase(clearLogEntity,conditions,resultT);
                 num++;
                 if(!resultT.isSuccess()){
-                    resultT.setErrorMessage("条件为{}时执行失败",conditions);
+                    resultT.setSuccessMessage("条件为{}时执行失败",conditions);
                     log.error("条件为{}时执行失败",conditions);
                     return;
                 }
@@ -180,8 +185,11 @@ public class GbaseBusiness extends BaseBusiness{
     public void deleteGbase(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){
         try {
             DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
-            if(null!=clearLogEntity.getVTableName()){
-                long vcount=databaseOperationService.deleteVtable(clearLogEntity,conditions);
+            if(null!=clearLogEntity.getVTableName()&&StringUtils.isNotNullString(clearLogEntity.getVTableName())){
+                long vcount=databaseOperationService.deleteVtable(clearLogEntity,conditions,resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
             }
             long kcount =databaseOperationService.delteKtable(clearLogEntity,conditions);
         } catch (Exception e) {

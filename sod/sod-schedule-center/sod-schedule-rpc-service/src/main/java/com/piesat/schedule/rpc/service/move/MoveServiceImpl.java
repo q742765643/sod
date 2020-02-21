@@ -8,6 +8,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.dao.move.MoveDao;
+import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
@@ -15,6 +16,7 @@ import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
@@ -108,12 +110,14 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     @Override
     public void saveMove(MoveDto moveDto){
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
+        this.getDataBaseAndClassId(moveEntity);
         moveEntity=this.saveNotNull(moveEntity);
         jobInfoService.start(moveMapstruct.toDto(moveEntity));
     }
     @Override
     public void updateMove(MoveDto moveDto){
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
+        this.getDataBaseAndClassId(moveEntity);
         this.saveNotNull(moveEntity);
         jobInfoService.start(moveDto);
     }
@@ -169,6 +173,17 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
 
         return dataClassIds;
 
+    }
+
+    public void getDataBaseAndClassId(MoveEntity moveEntity){
+        DataRetrieval dataRetrieval= dataBaseService.getByDatabaseIdAndClassId(moveEntity.getDatabaseId(),moveEntity.getDataClassId());
+        moveEntity.setDdataId(dataRetrieval.getDdataId());
+        moveEntity.setTableName(dataRetrieval.getTableName());
+        moveEntity.setVTableName(dataRetrieval.getVTableName());
+        moveEntity.setDatabaseType(dataRetrieval.getDatabaseType());
+        moveEntity.setParentId(dataRetrieval.getParentId());
+        moveEntity.setProfileName(dataRetrieval.getProfileName());
+        moveEntity.setForeignKey(dataRetrieval.getForeignKey());
     }
 }
 

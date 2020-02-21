@@ -54,8 +54,8 @@
   </select>
   <select id="findById" resultMap="BaseResultMap">
     SELECT
-    <include refid="Base_Column_List" />
-    T_SOD_JOB_INFO FROM WHERE ID=#{id}
+    <include refid="Base_Column_List" /> FROM
+    T_SOD_JOB_INFO  WHERE ID=#{id}
   </select>
   <select id="selectBackupDataClassId" resultType="java.lang.String">
    SELECT  A.DATA_CLASS_ID FROM
@@ -69,4 +69,7 @@
     SELECT  A.DATA_CLASS_ID FROM
     T_SOD_JOB_MOVE_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
   </select>
+  <update id="updateTriggerStatus">
+    update  T_SOD_JOB_INFO set TRIGGER_STATUS=#{triggerStatus} where ID=#{id}
+  </update>
 </mapper>

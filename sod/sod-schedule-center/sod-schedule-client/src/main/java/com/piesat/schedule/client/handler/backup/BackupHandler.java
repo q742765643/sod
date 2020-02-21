@@ -174,7 +174,7 @@ public class BackupHandler implements BaseHandler {
             ,List<BackupLogEntity> compensateList,ResultT<String> resultT){
         long startTime = backTime+backupVo.getMistiming();
         //isEnd 2为补偿备份
-        while (backupVo.getBackupTime() - startTime >0) {
+        while (backupVo.getBackupTime()+backupVo.getMistiming() - startTime >0) {
             startTime = startTime + backupVo.getMistiming();
 
             BackupLogEntity backupLogHisEntity = new BackupLogEntity();
@@ -312,7 +312,7 @@ public class BackupHandler implements BaseHandler {
         if(!resultT.isSuccess()){
             return;
         }
-        if (null != backupLogEntity.getVTableName()) {
+        if (null != backupLogEntity.getVTableName()&&StringUtils.isNotNullString(backupLogEntity.getVTableName())){
             String vfileName = backupLogEntity.getParentId() + "--" + backupLogEntity.getVTableName() + "--" + backupTime + "--" + backupLogEntity.getDataClassId();
             strategyVo.setVfileName(vfileName);
             baseBusiness.backUpVtable(backupLogEntity, strategyVo, resultT);
@@ -329,6 +329,7 @@ public class BackupHandler implements BaseHandler {
         this.calculateFileName(strategyVo,backupLogEntity,resultT);
         FileUtil.copyFile(strategyVo.getTempZipPath(), backupLogEntity.getStorageDirectory()+"/"+strategyVo.getRealFileName(),resultT);
         FileUtil.delFile(new File(strategyVo.getTempPtah()),resultT);
+        strategyVo.getDeleteFileList().remove(backupLogEntity.getStorageDirectory()+"/"+strategyVo.getRealFileName());
 
     }
     public BackupLogEntity getBackupLog(BackupLogEntity backupLog,BackupLogEntity backupLogEntityHis,

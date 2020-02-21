@@ -122,12 +122,12 @@
       <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true" />
       <el-table-column label="状态" align="center" prop="triggerStatus" :formatter="statusFormat" />
       <el-table-column label="任务描述" align="center" prop="jobDesc" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="200">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="300" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -143,6 +143,29 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['schedule:backup:remove']"
           >删除</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            v-if="scope.row.triggerStatus==1"
+            icon="el-icon-delete"
+            @click="handleStop(scope.row)"
+            v-hasPermi="['schedule:job:stop']"
+          >停止</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            v-if="scope.row.triggerStatus==0"
+            icon="el-icon-delete"
+            @click="handleStart(scope.row)"
+            v-hasPermi="['schedule:job:start']"
+          >启动</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleExecute(scope.row)"
+            v-hasPermi="['schedule:job:execute']"
+          >立即执行</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -287,7 +310,10 @@ import {
   delBackup,
   findAllDataBase,
   getByDatabaseId,
-  getByDatabaseIdAndClassId
+  getByDatabaseIdAndClassId,
+  startBackup,
+  stopBackup,
+  executeBackup
 } from "@/api/schedule/backup/backup";
 
 export default {
@@ -497,6 +523,54 @@ export default {
         })
         .catch(function() {});
     },
+    handleStop(row) {
+      const id = row.id;
+      this.$confirm('是否确认停止任务编号为"' + id + '"的数据项?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return stopBackup(id);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("停止成功");
+        })
+        .catch(function() {});
+    },
+    handleStart(row) {
+      const id = row.id;
+      this.$confirm('是否确认启动任务编号为"' + id + '"的数据项?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return startBackup(id);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("启动成功");
+        })
+        .catch(function() {});
+    },
+    handleExecute(row) {
+      const id = row.id;
+      this.$confirm('是否立即执行任务编号为"' + id + '"的数据项?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return executeBackup(id);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("执行成功");
+        })
+        .catch(function() {});
+    },
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
@@ -520,16 +594,12 @@ export default {
       });
     },
     selectTable(dataClassId) {
-      let obj = {};
-      obj = this.dataClassIdOptions.find((item)=>{
-        return item.KEY === dataClassId;
-      });
-      this.form.ddataId = obj.D_DATA_ID;
       this.form.tableName = "";
       this.findTable( this.form.databaseId, this.form.dataClassId);
     },
     findTable(databaseId, dataClassId) {
       getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+        this.form.ddataId=response.data.ddataId;
         this.form.tableName = response.data.tableName;
       });
     }
