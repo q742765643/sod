@@ -53,6 +53,16 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     }
 
     @Override
+    public PageBean storageFieldList(PageForm<Map<String,String>> pageForm) {
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<Map<String,Object>> lists = mybatisQueryMapper.storageFieldList(pageForm.getT());//自定义的接口
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
+        //获取当前页数据
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
+        return pageBean;
+    }
+
+    @Override
     public StorageConfigurationDto saveDto(StorageConfigurationDto storageConfigurationDto) {
         StorageConfigurationEntity storageConfigurationEntity = this.storageConfigurationMapper.toEntity(storageConfigurationDto);
         storageConfigurationEntity = this.storageConfigurationDao.save(storageConfigurationEntity);

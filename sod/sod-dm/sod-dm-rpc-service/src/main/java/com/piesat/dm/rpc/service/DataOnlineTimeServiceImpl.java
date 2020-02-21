@@ -14,6 +14,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -92,6 +93,7 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         return  pageBean;
     }
 
+    @Transactional(readOnly = false)
     @Override
     public void update(DataOnlineTimeDto dataOnlineTimeDto) {
         this.deleteByDataClassId(dataOnlineTimeDto.getDataClassId());

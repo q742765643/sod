@@ -60,8 +60,35 @@ public class StorageConfigurationController {
         if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
             map.put("logic_name",request.getParameter("logic_name"));
         }
-        if(StringUtils.isNotNullString(request.getParameter("queryTable"))){
-            map.put("queryTable",request.getParameter("queryTable"));
+        if(StringUtils.isNotNullString(request.getParameter("table_name"))){
+            map.put("table_name",request.getParameter("table_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("data_class_id"))){
+            map.put("data_class_id",request.getParameter("data_class_id"));
+        }
+
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = storageConfigurationService.selectPageList(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+
+
+    @GetMapping("/storageFieldList")
+    @ApiOperation(value = "存储字段检索条件分页查询", notes = "存储字段检索条件分页查询")
+    public ResultT<PageBean> storageFieldList(HttpServletRequest request,
+                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String,String> map = new HashMap<String,String>();
+        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
+            map.put("class_name",request.getParameter("class_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
+            map.put("logic_name",request.getParameter("logic_name"));
+        }
+        if(StringUtils.isNotNullString(request.getParameter("table_name"))){
+            map.put("table_name",request.getParameter("table_name"));
         }
         //存储字段检索
         if(StringUtils.isNotNullString(request.getParameter("c_element_code"))){
@@ -85,10 +112,13 @@ public class StorageConfigurationController {
 
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, map);
-        PageBean pageBean = storageConfigurationService.selectPageList(pageForm);
+        PageBean pageBean = storageConfigurationService.storageFieldList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
+
+
+
 
     @GetMapping("/getDataClassSuper")
     @ApiOperation(value = "查询资料顶级分类", notes = "查询资料顶级分类")

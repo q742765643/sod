@@ -15,6 +15,8 @@ public interface StorageConfigurationService {
 
     public PageBean selectPageList(PageForm<Map<String,String>> pageForm);
 
+    public PageBean storageFieldList(PageForm<Map<String,String>> pageForm);
+
     StorageConfigurationDto saveDto(StorageConfigurationDto storageConfigurationDto);
 
     Map<String,Object> exportTable(Map<String,String> map);
