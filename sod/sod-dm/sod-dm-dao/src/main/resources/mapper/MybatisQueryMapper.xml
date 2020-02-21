@@ -37,19 +37,13 @@
     <!--查询存储结构概览-->
     <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select * ,e.database_name special_database_name,ee.database_name database_name
-        <if test='map.queryTable == "false"'>
-            ,g.type column_type
-        </if>
         from t_sod_data_class f
         left join t_sod_data_logic a on (a.DATA_CLASS_ID = f.DATA_CLASS_ID AND f.type = 2 )
         left join t_sod_database e on a.DATABASE_ID = e.id
         left join t_sod_database_define ee on e.database_define_id = ee.id
         left join t_sod_storage_configuration h on (a.DATA_CLASS_ID = h.DATA_CLASS_ID AND a.LOGIC_flag=h.LOGIC_ID AND e.id=h.DATABASE_ID)
         left join t_sod_logic_define c on a.logic_flag = c.logic_flag
-        left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID <if test='map.queryTable == "true"'> AND b.DB_TABLE_TYPE = 'E' </if>)
-        <if test='map.queryTable == "false"'>
-        left join t_sod_data_table_column g on b.id = g.table_id
-        </if>
+        left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID  AND b.DB_TABLE_TYPE = 'E')
         <where>
             <if test="map.database_name != null and map.database_name  != ''">
                 AND ee.database_name like '${map.database_name}%'
@@ -57,41 +51,81 @@
             <if test="map.special_database_name != null and map.special_database_name  != ''">
                 AND e.database_name like '${map.special_database_name}%'
             </if>
+            <!-- 结构树 -->
             <if test="map.class_name != null and map.class_name  != ''">
                 AND f.class_name like '${map.class_name}%'
             </if>
             <if test="map.parent_id != null and map.parent_id  != ''">
                 AND f.data_class_id like '${map.parent_id}%'
             </if>
+            <!-- 表 -->
+            <if test="map.table_name != null and map.table_name != ''">
+                AND upper(b.table_name) like upper('%${map.table_name}%')
+            </if>
+            <if test="map.data_service_id != null and map.data_service_id != ''">
+                AND b.data_service_id like '%${map.data_service_id}%'
+            </if>
+            <if test="map.data_service_name != null and map.data_service_name != ''">
+                AND b.data_service_name like '%${map.data_service_name}%'
+            </if>
+            <!-- 存储编码 -->
+            <if test="map.data_class_id != null and map.data_class_id != ''">
+                AND upper(a.data_class_id) like upper('%${map.data_class_id}%')
+            </if>
+            <!-- 四级编码 -->
             <if test="map.d_data_id != null and map.d_data_id  != ''">
                 AND b.d_data_id like '${map.d_data_id}%'
             </if>
+            <!-- 逻辑库 -->
+            <if test="map.logic_name != null and map.logic_name  != ''">
+                AND c.logic_name like '${map.logic_name}%'
+            </if>
+        </where>
+    </select>
+    <!--存储字段检索-->
+    <select id="storageFieldList" parameterType="java.util.Map" resultType="java.util.Map">
+        select g.*, c.logic_name, f.class_name, b.table_name
+        from t_sod_data_class f
+        left join t_sod_data_logic a on (a.DATA_CLASS_ID = f.DATA_CLASS_ID AND f.type = 2 )
+        left join t_sod_logic_define c on a.logic_flag = c.logic_flag
+        left join t_sod_data_table b on a.id = b.CLASS_LOGIC_ID
+        left join t_sod_data_table_column g on b.id = g.table_id
+        <where>
+            <!-- 结构树 -->
+            <if test="map.class_name != null and map.class_name  != ''">
+                AND f.class_name like '${map.class_name}%'
+            </if>
+            <!-- 表 -->
+            <if test="map.table_name != null and map.table_name != ''">
+                AND upper(b.table_name) like upper('%${map.table_name}%')
+            </if>
+            <!-- 逻辑库 -->
             <if test="map.logic_name != null and map.logic_name  != ''">
                 AND c.logic_name like '${map.logic_name}%'
             </if>
             <!-- 字段查询条件 -->
-            <if test='map.queryTable == "false"'>
-                <if test="map.c_element_code != null and map.c_element_code != ''">
-                    AND upper(g.c_element_code) like upper('%${map.c_element_code}%')
-                </if>
-                <if test="map.db_ele_code != null and map.db_ele_code != ''">
-                    AND upper(g.db_ele_code) like upper('%${map.db_ele_code}%')
-                </if>
-                <if test="map.user_ele_code != null and map.user_ele_code != ''">
-                    AND upper(g.user_ele_code) like upper('%${map.user_ele_code}%')
-                </if>
-                <if test="map.ele_name != null and map.ele_name != ''">
-                    AND g.ele_name like '%${map.ele_name}%'
-                </if>
-                <if test="map.type != null and map.type != ''">
-                    AND upper(g.type) like upper('%${map.type}%')
-                </if>
-                <if test="map.accuracy != null and map.accuracy != ''">
-                    AND upper(g.accuracy) like upper('%${map.accuracy}%')
-                </if>
+            <if test="map.c_element_code != null and map.c_element_code != ''">
+                AND upper(g.c_element_code) like upper('%${map.c_element_code}%')
+            </if>
+            <if test="map.db_ele_code != null and map.db_ele_code != ''">
+                AND upper(g.db_ele_code) like upper('%${map.db_ele_code}%')
+            </if>
+            <if test="map.user_ele_code != null and map.user_ele_code != ''">
+                AND upper(g.user_ele_code) like upper('%${map.user_ele_code}%')
+            </if>
+            <if test="map.ele_name != null and map.ele_name != ''">
+                AND g.ele_name like '%${map.ele_name}%'
+            </if>
+            <if test="map.type != null and map.type != ''">
+                AND upper(g.type) like upper('%${map.type}%')
+            </if>
+            <if test="map.accuracy != null and map.accuracy != ''">
+                AND upper(g.accuracy) like upper('%${map.accuracy}%')
             </if>
         </where>
     </select>
+
+
     <!--修改存储结构概览状态-->
     <update id="updateStorageConfigurationStatus">
         update t_sod_storage_configuration set  ${column} = ${value} where  id = #{id}
