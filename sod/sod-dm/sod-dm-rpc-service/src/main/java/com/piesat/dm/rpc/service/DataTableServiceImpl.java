@@ -13,6 +13,7 @@ import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.dm.rpc.dto.SampleData;
 import com.piesat.dm.rpc.mapper.DataTableMapper;
 import com.piesat.dm.rpc.mapper.DatabaseMapper;
+import com.piesat.dm.rpc.mapper.TableForeignKeyMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     private TableColumnDao tableColumnDao;
     @Autowired
     private TableForeignKeyDao tableForeignKeyDao;
+    @Autowired
+    private TableForeignKeyMapper tableForeignKeyMapper;
 
     @Override
     public BaseDao<DataTableEntity> getBaseDao() {
@@ -130,28 +133,29 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             Map<String, Object> map = new HashMap<>();
             DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).get();
             DataTableEntity keyTable = null;
+            DataTableEntity eleTable = null;
             if (tableEntities.size() == 1) {
                 keyTable = tableEntities.get(0);
             } else {
                 if (tableEntities.get(0).getDbTableType().toUpperCase().equals("K")) {
                     keyTable = tableEntities.get(0);
-                    map.put("K",keyTable.getTableName());
-                    map.put("E",tableEntities.get(1).getTableName());
+                    eleTable = tableEntities.get(1);
                 } else {
                     keyTable = tableEntities.get(1);
-                    map.put("K",keyTable.getTableName());
-                    map.put("E",tableEntities.get(0).getTableName());
+                    eleTable = tableEntities.get(0);
                 }
             }
+            map.put("K",keyTable == null ? "":keyTable.getTableName());
+            map.put("E",eleTable == null ? "":eleTable.getTableName());
             List<TableForeignKeyEntity> foreignKeyEntities = this.tableForeignKeyDao.findByClassLogicId(keyTable.getClassLogic().getId());
             if (foreignKeyEntities.size() > 0) {
-                map.put("foreignKey", foreignKeyEntities);
+                map.put("foreignKey", this.tableForeignKeyMapper.toDto(foreignKeyEntities));
             }
             List<TableColumnEntity> primaryKey = this.tableColumnDao.findByTableIdAndIsPrimaryKeyTrue(keyTable.getId());
             if (primaryKey.size() > 0) {
                 map.put("primaryKey", primaryKey.get(0).getDbEleCode());
             }
-            map.put("database", databaseEntity);
+            map.put("database", this.databaseMapper.toDto(databaseEntity));
             DataClassEntity dataClass = this.dataClassDao.findByDataClassId(keyTable.getClassLogic().getDataClassId());
             map.put("D_DATA_ID",dataClass.getDDataId());
             map.put("CLASSNAME",dataClass.getClassName());
