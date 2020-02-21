@@ -53,10 +53,10 @@ export function pasteTable(data) {
   })
 }
 //粘贴前查询
-export function dataLogicGet(data) {
+export function dataLogicGet(query) {
   return request({
     url: baseUrl + '/dm/dataLogic/get',
     method: 'get',
-    data: data
+    params: query
   })
 }

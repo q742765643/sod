@@ -104,11 +104,11 @@ export function tableColumnSaveList(data) {
 }
 
 // 查索引
-export function findTableIndex(data) {
+export function findTableIndex(query) {
   return request({
     url: baseUrl + '/dm/tableIndex/findByTableId',
     method: 'get',
-    data: data
+    params: query
   })
 }
 
@@ -122,11 +122,11 @@ export function delTableIndex(data) {
 }
 
 // 资料类型统计
-export function datastatisticsList(data) {
+export function datastatisticsList(query) {
   return request({
     url: baseUrl + '/dm/datastatistics/list',
     method: 'get',
-    data: data
+    params: query
   })
 }
 
@@ -148,12 +148,36 @@ export function gridareaSave(data) {
   })
 }
 // 区域信息查询
-export function gridareaList(data) {
+export function gridareaList(query) {
   return request({
     url: baseUrl + '/dm/gridarea/list',
     method: 'get',
-    data: data
+    params: query
   })
 }
 
-// 产品列表
+// 服务配置
+export function dataserverbaseinfoGet(query) {
+  return request({
+    url: baseUrl + '/dm/dataserverbaseinfo/get',
+    method: 'get',
+    params: query
+  })
+}
+
+// 根据存储编码查询默认配置详情
+export function findByDataCLassId(query) {
+  return request({
+    url: baseUrl + '/dm/dataserverbaseinfo/findByDataCLassId',
+    method: 'get',
+    params: query
+  })
+}
+//保存
+export function saveBase(data) {
+  return request({
+    url: baseUrl + '/dm/dataserverbaseinfo/save',
+    method: 'post',
+    data: data
+  })
+}

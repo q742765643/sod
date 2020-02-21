@@ -8,10 +8,10 @@
             <el-form-item label="要素存储字段">
               <el-select filterable v-model="baseServe.eleField" placeholder="请选择" size="small">
                 <el-option
-                  v-for="item in optionsColumnList"
-                  :key="item.db_ele_code"
-                  :label="item.ele_name+'('+item.db_ele_code+')'"
-                  :value="item.db_ele_code"
+                  v-for="(item,index) in optionsColumnList"
+                  :key="index"
+                  :label="item.eleName+'('+item.dbEleCode+')'"
+                  :value="item.dbEleCode"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -20,10 +20,10 @@
             <el-form-item label="区域存储字段">
               <el-select filterable v-model="baseServe.regionField" placeholder="请选择" size="small">
                 <el-option
-                  v-for="item in optionsColumnList"
-                  :key="item.db_ele_code"
-                  :label="item.ele_name+'('+item.db_ele_code+')'"
-                  :value="item.db_ele_code"
+                  v-for="(item,index) in optionsColumnList"
+                  :key="index"
+                  :label="item.eleName+'('+item.dbEleCode+')'"
+                  :value="item.dbEleCode"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -118,7 +118,14 @@
       <el-table-column prop="level_list" label="层次列表"></el-table-column>
       <el-table-column prop="ele_long_name" label="要素长名"></el-table-column>
     </el-table>
-    <!-- <Pagination :total="dataTotal" @paginationChange="paginationChange" ref="pagination"></Pagination> -->
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="searchObj.pageNum"
+      :limit.sync="searchObj.pageSize"
+      @pagination="searchFun"
+    />
+
     <el-dialog
       class="dataServeDialog"
       width="80%"
@@ -273,13 +280,19 @@
 </template>
 
 <script>
+import {
+  gcl,
+  dataserverbaseinfoGet,
+  findByDataCLassId,
+  saveBase
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "dataServeManage",
   props: { rowData: Object },
   data() {
     return {
+      total: 0,
       tableData: [],
-      dataTotal: 0,
       baseAreaOptions: [],
       multipleSelection: [],
       optionsColumnList: [],
@@ -292,16 +305,16 @@ export default {
       },
       baseSet: {},
       searchObj: {
-        data_class_id: this.rowData.data_class_id,
-        page: 1,
-        rows: 10
+        dataClassId: this.rowData.DATA_CLASS_ID,
+        pageNum: 1,
+        pageSize: 10
       },
       dialogTitle: "新增数据服务信息",
       dataServeDialog: false,
       msgFormDialog: {
         field_type: "",
         ele_unit: "",
-        data_class_id: this.rowData.data_class_id
+        dataClassId: this.rowData.DATA_CLASS_ID
       },
       rules: {
         s_number: [{ required: true, message: "请输入序号", trigger: "blur" }],
@@ -328,44 +341,24 @@ export default {
   methods: {
     // table自增定义方法
     table_index(index) {
-      return (this.searchObj.page - 1) * this.searchObj.rows + index + 1;
+      return (this.searchObj.pageNum - 1) * this.searchObj.pageSize + index + 1;
     },
     searchFun() {
-      let paginateObj = this.$refs.pagination.paginateObj;
-      this.searchObj = { ...this.searchObj, ...paginateObj };
-      this.axios
-        .get(interfaceObj.TableStructure_getModeDef, {
-          params: this.searchObj
-        })
-        .then(res => {
-          this.tableData = res.data.data;
-          this.dataTotal = res.data.total;
-        });
-    },
-    //分页事件
-    paginationChange() {
-      this.searchFun();
+      defineList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
 
-    getBaseAreaOptions() {
-      this.axios
-        .get(interfaceObj.TableStructure_getGridArea, {
-          params: {
-            data_class_id: this.rowData.data_class_id
-          }
-        })
-        .then(res => {
-          this.baseAreaOptions = res.data.data;
-        });
-    },
     getFormDetail() {
       this.axios
         .get(interfaceObj.TableStructure_getServiceBase, {
           params: {
-            data_class_id: this.rowData.data_class_id
+            DATA_CLASS_ID: this.rowData.DATA_CLASS_ID
           }
         })
         .then(res => {
@@ -379,17 +372,6 @@ export default {
         });
     },
 
-    getServiceColumnList() {
-      this.axios
-        .get(interfaceObj.TableStructure_getServiceColumnList, {
-          params: {
-            data_class_id: this.rowData.data_class_id
-          }
-        })
-        .then(res => {
-          this.optionsColumnList = res.data.data;
-        });
-    },
     getAllLevel() {
       this.axios.get(interfaceObj.TableStructure_getAllLevel).then(res => {
         this.optionsLevels = res.data.data;
@@ -430,31 +412,28 @@ export default {
         });
     },
     addBase() {
-      this.baseSet.data_class_id = this.rowData.data_class_id;
-      this.baseSet.regionField = this.baseServe.regionField;
-      this.baseSet.eleField = this.baseServe.eleField;
-      this.axios
-        .post(interfaceObj.TableStructure_addServiceBase, this.baseSet)
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "保存成功"
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        });
+      let obj = Object.assign(this.baseSet, this.baseServe);
+      console.log(obj);
+      // saveBase(obj).then(response => {
+      //   if(response.code == 200){
+      //     this.$message({
+      //         type: "success",
+      //         message: "保存成功"
+      //       });
+      //   }else{
+      //     this.$message({
+      //         type: "error",
+      //         message:response.msg
+      //       });
+      //   }
+      // });
     },
     add() {
       this.msgFormDialog = {};
-      this.msgFormDialog.data_class_id = this.rowData.data_class_id;
+      this.msgFormDialog.dataClassId = this.rowData.DATA_CLASS_ID;
       this.dialogTitle = "新增数据服务信息";
-      this.getAllLevel();
-      this.modeEleQueryAll();
+      // this.getAllLevel();
+      // this.modeEleQueryAll();
       this.dataServeDialog = true;
     },
     edit() {
@@ -465,7 +444,7 @@ export default {
         });
       } else {
         this.msgFormDialog = {};
-        this.msgFormDialog.data_class_id = this.rowData.data_class_id;
+        this.msgFormDialog.DATA_CLASS_ID = this.rowData.DATA_CLASS_ID;
         this.getAllLevel();
         this.modeEleQueryAll();
         this.dialogTitle = "编辑数据服务信息";
@@ -560,7 +539,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.dialogTitle == "新增数据服务信息") {
-            this.msgFormDialog.data_class_id = this.rowData.data_class_id;
+            this.msgFormDialog.DATA_CLASS_ID = this.rowData.DATA_CLASS_ID;
             delete this.msgFormDialog.data_service_id;
             this.axios
               .post(interfaceObj.TableStructure_addModeDef, this.msgFormDialog)
@@ -581,7 +560,7 @@ export default {
                 }
               });
           } else {
-            this.msgFormDialog.data_class_id = this.msgFormDialog.data_service_id;
+            this.msgFormDialog.DATA_CLASS_ID = this.msgFormDialog.data_service_id;
             delete this.msgFormDialog.data_service_id;
             this.axios
               .post(
@@ -623,11 +602,59 @@ export default {
       }
       return a;
     },
-    forParent() {
-      this.searchFun();
-      this.getBaseAreaOptions();
-      this.getServiceColumnList();
-      this.getFormDetail();
+    async gettableInfo() {
+      await gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
+        if (response.code == 200) {
+          let data = response.data;
+          let tableInfo_k = [];
+          let tableInfo_e = [];
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].dbTableType == "K") {
+              let colArry = data[i].columns;
+              colArry.forEach(element => {
+                if (element.dbEleCode.slice(0, 1) == "V") {
+                  tableInfo_k.push(element);
+                }
+              });
+            } else if (data[i].dbTableType == "E") {
+              let colArry = data[i].columns;
+              colArry.forEach(element => {
+                if (element.dbEleCode.slice(0, 1) == "V") {
+                  tableInfo_e.push(element);
+                }
+              });
+            }
+          }
+          this.optionsColumnList = tableInfo_k.concat(tableInfo_e);
+          console.log(this.optionsColumnList);
+          if (data.length == 0) {
+            this.optionsColumnList = [];
+          }
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
+    },
+    getoptionsArea() {},
+    async getBaseAreaOptions() {
+      let obj = {
+        pageNum: 1,
+        pageSize: 100,
+        areaId: ""
+      };
+      // await defineList(obj).then(response => {
+      //   this.baseAreaOptions = response.data.pageData;
+      // });
+    },
+    async forParent() {
+      // this.searchFun();
+
+      // this.getFormDetail();
+      await this.gettableInfo(); //获取基本服务信息下拉框
+      await this.getBaseAreaOptions(); //获取区域下拉框
     }
   }
 };

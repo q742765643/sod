@@ -279,12 +279,12 @@
         <el-tab-pane v-if="tabs.rg" label="区域信息" name="rg">
           <area-config ref="areaRef" :rowData="rowData"></area-config>
         </el-tab-pane>
-        <el-tab-pane v-if="tabs.ds" label="数据服务" name="ds">
+        <el-tab-pane v-if="tabs.ds|| tabs.pl" label="数据服务" name="ds">
           <serve-config ref="serveRef" :rowData="rowData"></serve-config>
         </el-tab-pane>
-        <el-tab-pane v-if="tabs.pl" label="产品列表" name="pl">
+        <!-- <el-tab-pane v-if="tabs.pl" label="产品列表" name="pl">
           <product-config ref="productRef" :rowData="rowData"></product-config>
-        </el-tab-pane>
+        </el-tab-pane>-->
       </el-tabs>
       <el-backtop target=".el-dialog.is-fullscreen"></el-backtop>
     </el-scrollbar>
