@@ -69,4 +69,12 @@ public class StorageConfigurationDto {
      */
     private String backupId;
 
+
+    private DataClassDto dataClassDto;
+    private LogicDefineDto logicDefineDto;
+    private DatabaseDto databaseDto;
+    private DataLogicDto dataLogicDto;
+    private DataTableDto dataTableDto;
+    private TableColumnDto tableColumnDto;
+
 }

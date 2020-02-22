@@ -4,6 +4,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -38,33 +39,49 @@ public class StorageConfigurationController {
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(HttpServletRequest request,
+    public ResultT<PageBean> list(StorageConfigurationDto storageConfigurationDto,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         Map<String,String> map = new HashMap<String,String>();
-        if(StringUtils.isNotNullString(request.getParameter("database_name"))){
-            map.put("database_name",request.getParameter("database_name"));
+        if(storageConfigurationDto.getDatabaseDto() != null){
+            if(storageConfigurationDto.getDatabaseDto().getDatabaseDefine() != null){
+                if(StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())){
+                    map.put("database_name",storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+                }
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseName())){
+                map.put("special_database_name",storageConfigurationDto.getDatabaseDto().getDatabaseName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("special_database_name"))){
-            map.put("special_database_name",request.getParameter("special_database_name"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())){
+                map.put("class_name",storageConfigurationDto.getDataClassDto().getClassName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
-            map.put("class_name",request.getParameter("class_name"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())){
+                map.put("parent_id",storageConfigurationDto.getDataClassDto().getDataClassId());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("parent_id"))){
-            map.put("parent_id",request.getParameter("parent_id"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDDataId())){
+                map.put("d_data_id",storageConfigurationDto.getDataClassDto().getDDataId());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("d_data_id"))){
-            map.put("d_data_id",request.getParameter("d_data_id"));
+        if(storageConfigurationDto.getLogicDefineDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())){
+                map.put("logic_name",storageConfigurationDto.getLogicDefineDto().getLogicName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
-            map.put("logic_name",request.getParameter("logic_name"));
+        if(storageConfigurationDto.getDataTableDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())){
+                map.put("table_name",storageConfigurationDto.getDataTableDto().getTableName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("table_name"))){
-            map.put("table_name",request.getParameter("table_name"));
-        }
-        if(StringUtils.isNotNullString(request.getParameter("data_class_id"))){
-            map.put("data_class_id",request.getParameter("data_class_id"));
+        if(storageConfigurationDto.getDataLogicDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataLogicDto().getDataClassId())){
+                map.put("data_class_id",storageConfigurationDto.getDataLogicDto().getDataClassId());
+            }
         }
 
         ResultT<PageBean> resultT = new ResultT<>();
@@ -77,37 +94,44 @@ public class StorageConfigurationController {
 
     @GetMapping("/storageFieldList")
     @ApiOperation(value = "存储字段检索条件分页查询", notes = "存储字段检索条件分页查询")
-    public ResultT<PageBean> storageFieldList(HttpServletRequest request,
-                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    public ResultT<PageBean> storageFieldList(StorageConfigurationDto storageConfigurationDto,
+                                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         Map<String,String> map = new HashMap<String,String>();
-        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
-            map.put("class_name",request.getParameter("class_name"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())){
+                map.put("class_name",storageConfigurationDto.getDataClassDto().getClassName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
-            map.put("logic_name",request.getParameter("logic_name"));
+        if(storageConfigurationDto.getLogicDefineDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())){
+                map.put("logic_name",storageConfigurationDto.getLogicDefineDto().getLogicName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("table_name"))){
-            map.put("table_name",request.getParameter("table_name"));
+        if(storageConfigurationDto.getDataTableDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())){
+                map.put("table_name",storageConfigurationDto.getDataTableDto().getTableName());
+            }
         }
-        //存储字段检索
-        if(StringUtils.isNotNullString(request.getParameter("c_element_code"))){
-            map.put("c_element_code",request.getParameter("c_element_code"));
-        }
-        if(StringUtils.isNotNullString(request.getParameter("db_ele_code"))){
-            map.put("db_ele_code",request.getParameter("db_ele_code"));
-        }
-        if(StringUtils.isNotNullString(request.getParameter("user_ele_code"))){
-            map.put("user_ele_code",request.getParameter("user_ele_code"));
-        }
-        if(StringUtils.isNotNullString(request.getParameter("ele_name"))){
-            map.put("ele_name",request.getParameter("ele_name"));
-        }
-        if(StringUtils.isNotNullString(request.getParameter("type"))){
-            map.put("type",request.getParameter("type"));
-        }
-        if(StringUtils.isNotNullString(request.getParameter("accuracy"))){
-            map.put("accuracy",request.getParameter("accuracy"));
+        if(storageConfigurationDto.getTableColumnDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getCElementCode())){
+                map.put("c_element_code",storageConfigurationDto.getTableColumnDto().getCElementCode());
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getDbEleCode())){
+                map.put("db_ele_code",storageConfigurationDto.getTableColumnDto().getDbEleCode());
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getUserEleCode())){
+                map.put("user_ele_code",storageConfigurationDto.getTableColumnDto().getUserEleCode());
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getEleName())){
+                map.put("ele_name",storageConfigurationDto.getTableColumnDto().getEleName());
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getType())){
+                map.put("type",storageConfigurationDto.getTableColumnDto().getType());
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getAccuracy())){
+                map.put("accuracy",storageConfigurationDto.getTableColumnDto().getAccuracy());
+            }
         }
 
         ResultT<PageBean> resultT = new ResultT<>();
@@ -129,25 +153,47 @@ public class StorageConfigurationController {
 
     @PostMapping(value = "/exportTable")
     @ApiOperation(value = "导出", notes = "导出")
-    public void exportTable(HttpServletRequest request, HttpServletResponse response){
+    public void exportTable(StorageConfigurationDto storageConfigurationDto,HttpServletRequest request, HttpServletResponse response){
         Map<String,String> map = new HashMap<String,String>();
-        if(StringUtils.isNotNullString(request.getParameter("database_name"))){
-            map.put("database_name",request.getParameter("database_name"));
+        if(storageConfigurationDto.getDatabaseDto() != null){
+            if(storageConfigurationDto.getDatabaseDto().getDatabaseDefine() != null){
+                if(StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())){
+                    map.put("database_name",storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+                }
+            }
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseName())){
+                map.put("special_database_name",storageConfigurationDto.getDatabaseDto().getDatabaseName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("special_database_name"))){
-            map.put("special_database_name",request.getParameter("special_database_name"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())){
+                map.put("class_name",storageConfigurationDto.getDataClassDto().getClassName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("class_name"))){
-            map.put("class_name",request.getParameter("class_name"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())){
+                map.put("parent_id",storageConfigurationDto.getDataClassDto().getDataClassId());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("parent_id"))){
-            map.put("parent_id",request.getParameter("parent_id"));
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDDataId())){
+                map.put("d_data_id",storageConfigurationDto.getDataClassDto().getDDataId());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("d_data_id"))){
-            map.put("d_data_id",request.getParameter("d_data_id"));
+        if(storageConfigurationDto.getLogicDefineDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())){
+                map.put("logic_name",storageConfigurationDto.getLogicDefineDto().getLogicName());
+            }
         }
-        if(StringUtils.isNotNullString(request.getParameter("logic_name"))){
-            map.put("logic_name",request.getParameter("logic_name"));
+        if(storageConfigurationDto.getDataTableDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())){
+                map.put("table_name",storageConfigurationDto.getDataTableDto().getTableName());
+            }
+        }
+        if(storageConfigurationDto.getDataClassDto() != null){
+            if(StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())){
+                map.put("data_class_id",storageConfigurationDto.getDataClassDto().getDataClassId());
+            }
         }
         Map<String, Object> headAndData = storageConfigurationService.exportTable(map);
         ExportTableUtil.exportTable(request, response, (List<String>)headAndData.get("headList"),(List<List<String>>)headAndData.get("lists") , "存储数据概览导出");
