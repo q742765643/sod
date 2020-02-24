@@ -10,10 +10,10 @@ export function onLineList(query) {
   })
 }
 // 修改资料在线时间
-export function update(query) {
+export function update(data) {
   return request({
     url: baseUrl + '/dm/onlineTime/update',
-    method: 'get',
-    params: query
+    method: 'put',
+    data: data
   })
 }

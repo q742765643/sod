@@ -100,16 +100,7 @@
 </template>
 
 <script>
-import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+import { databaseUserAll } from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
   components: {
@@ -162,13 +153,11 @@ export default {
     /** 查询角色列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      databaseUserAll(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     addCell() {
       this.dialogTitle = "新增数据库账户审核";

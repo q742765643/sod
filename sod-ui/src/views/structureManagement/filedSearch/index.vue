@@ -22,28 +22,51 @@
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column
         align="center"
-        prop="db_ele_code"
+        prop="C_ELEMENT_CODE"
         label="公共元数据字段"
         width="140px"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column align="center" prop="db_ele_code" label="字段名称" width="120px"></el-table-column>
-      <el-table-column align="center" prop="user_ele_code" label="服务名称" width="120px"></el-table-column>
-      <el-table-column align="center" prop="ele_name" label="中文简称" width="170px"></el-table-column>
-
-      <el-table-column align="center" prop="type" label="数据类型" width="80px"></el-table-column>
-      <el-table-column align="center" prop="accuracy" label="数据精度" width="80px"></el-table-column>
-      <el-table-column align="center" prop="class_name" label="资料名称">
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        prop="DB_ELE_CODE"
+        label="字段名称"
+        width="120px"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        prop="USER_ELE_CODE"
+        label="服务名称"
+        width="120px"
+      ></el-table-column>
+      <el-table-column align="center" prop="ELE_NAME" label="中文简称" width="170px"></el-table-column>
+      <el-table-column align="center" prop="TYPE" label="数据类型" width="80px"></el-table-column>
+      <el-table-column align="center" prop="ACCURACY" label="数据精度" width="80px"></el-table-column>
+      <el-table-column align="center" prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-link
             :underline="false"
             type="primary"
             @click="viewCell(scope.row)"
-          >{{scope.row.class_name}}</el-link>
+          >{{scope.row.CLASS_NAME}}</el-link>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="table_name" label="表名称" width="160px"></el-table-column>
-      <el-table-column align="center" prop="logic_name" label="数据用途" width="100px"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="TABLE_NAME"
+        :show-overflow-tooltip="true"
+        label="表名称"
+        width="160px"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="LOGIC_NAME"
+        :show-overflow-tooltip="true"
+        label="数据用途"
+        width="100px"
+      ></el-table-column>
     </el-table>
 
     <pagination
@@ -58,7 +81,7 @@
       <super-search
         v-if="dialogSuperSearch"
         :superObj="superObj"
-        @searchFun="handleQuery"
+        @searchFun="getList"
         ref="supersearchinfo"
       />
     </el-dialog>
@@ -66,7 +89,7 @@
 </template>
 
 <script>
-import { storageConfigurationList } from "@/api/structureManagement/overviewStorage";
+import { storageFieldList } from "@/api/structureManagement/overviewStorage";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 export default {
@@ -98,12 +121,25 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      this.getList();
+      this.getList("");
     },
     /** 查询列表 */
-    getList() {
+    getList(superSearchForm) {
+      let queryObj = {};
+      if (superSearchForm) {
+        this.queryParams.pageNum = 1;
+        let superList = superSearchForm.domains;
+        let newSuperForm = {};
+        for (let i = 0; i < superList.length; i++) {
+          newSuperForm[superList[i].select] = superList[i].value;
+        }
+        queryObj = Object.assign(newSuperForm, this.queryParams);
+      } else {
+        queryObj = this.queryParams;
+      }
+      console.log(this.queryParams);
       this.loading = true;
-      storageConfigurationList(this.queryParams).then(response => {
+      storageFieldList(queryObj).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;

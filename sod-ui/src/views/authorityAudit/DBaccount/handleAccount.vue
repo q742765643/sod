@@ -205,7 +205,7 @@
 </template>
 
 <script>
-import { addTable } from "@/api/authorityAudit/DBaccount";
+import { databaseList, addTable } from "@/api/authorityAudit/DBaccount";
 export default {
   name: "handleAccountDialog",
   props: {
@@ -326,7 +326,7 @@ export default {
   },
   created() {
     this.searchObj = this.handleObj;
-    // this.getDBlist();
+    this.getDBlist();
     // this.getUserAll();
     // this.initServerDetail();
   },
@@ -409,17 +409,19 @@ export default {
       this.msgFormDialog.department = obj.deptName;
     },
     // 获取数据库
-    getDBlist() {
-      this.axios.get(interfaceObj.databaseUser_DatabaseList).then(res => {
-        var resdata = res.data.data;
+    async getDBlist() {
+      await databaseList().then(response => {
+        var resdata = response.data;
         var dataList = [];
         for (var i = 0; i < resdata.length; i++) {
           var obj = {};
-          obj.key = resdata[i].database_id;
-          obj.label = resdata[i].database_name;
+          obj.key = resdata[i].id;
+          obj.label = resdata[i].databaseName;
           dataList.push(obj);
         }
+
         this.dataBaseBox = dataList;
+        console.log(this.dataBaseBox);
       });
     },
     // 获取所有用户信息
@@ -603,9 +605,13 @@ export default {
 
   .el-transfer-panel__body {
     height: 166px;
+    overflow: auto;
   }
   .el-transfer-panel__item {
     display: block;
+  }
+  .el-checkbox-group.el-transfer-panel__list {
+    overflow: hidden;
   }
   .upload-demo {
     display: flex;

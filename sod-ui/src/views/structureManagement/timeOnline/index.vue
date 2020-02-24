@@ -3,10 +3,10 @@
     <!-- 在线时间检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="四级编码">
-        <el-input size="small" v-model="queryParams.nameUser"></el-input>
+        <el-input size="small" v-model="queryParams.d_data_id"></el-input>
       </el-form-item>
       <el-form-item label="资料名称">
-        <el-input size="small" v-model="queryParams.nameUser"></el-input>
+        <el-input size="small" v-model="queryParams.class_name"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -14,15 +14,18 @@
     </el-form>
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="application_unit" label="资料名称"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="四级编码"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="开始时间"></el-table-column>
-      <el-table-column align="center" prop="application_time" label="结束时间">
-        <!-- <template slot-scope="scope">{{scope.row.application_time.split('.')[0]}}</template> -->
+      <el-table-column align="center" prop="CLASS_NAME" label="资料名称"></el-table-column>
+      <el-table-column align="center" prop="D_DATA_ID" label="四级编码"></el-table-column>
+      <el-table-column align="center" prop="BEGIN_TIME" label="开始时间" width="120"></el-table-column>
+      <el-table-column align="center" prop="END_TIME" label="结束时间" width="120"></el-table-column>
+      <el-table-column align="center" prop="RECORD_COUNT" label="数据总量"></el-table-column>
+      <el-table-column align="center" prop="IF_STOP_USE" label="是否发布" width="80">
+        <template slot-scope="scope">
+          <div class="cell" v-if="scope.row.IF_STOP_USE==true">是</div>
+          <div class="cell" v-if="scope.row.IF_STOP_USE==false" type="text">否</div>
+        </template>
       </el-table-column>
-      <el-table-column align="center" prop="db_name" label="数据总量"></el-table-column>
-      <el-table-column align="center" prop="examine_status" label="是否发布"></el-table-column>
-      <el-table-column align="center" label="操作" width="260px">
+      <el-table-column align="center" label="操作" width="120">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-edit" @click="handleCell(scope.row)">编辑</el-button>
         </template>
@@ -38,13 +41,18 @@
     />
 
     <el-dialog title="权限配置" :visible.sync="handleDialog" width="650px">
-      <handleTime v-if="handleDialog" @cancelHandle="cancelHandle" ref="myHandleServer" />
+      <handleTime
+        v-if="handleDialog"
+        :handleObj="handleObj"
+        @cancelHandle="resetQuery"
+        ref="myHandleServer"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { onLineList, update } from "@/api/structureManagement/timeOnline";
+import { onLineList } from "@/api/structureManagement/timeOnline";
 import handleTime from "@/views/structureManagement/timeOnline/handleTime";
 export default {
   components: {
@@ -57,26 +65,14 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        d_data_id: "",
+        class_name: ""
       },
-      examineStatus: [
-        {
-          value: "01",
-          label: "待审核"
-        },
-        {
-          value: "02",
-          label: "已审核"
-        }
-      ],
       total: 0,
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
-      handleDialog: false
+      handleObj: {}
     };
   },
   created() {
@@ -97,6 +93,7 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
+      console.log(this.queryParams);
       onLineList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
@@ -104,6 +101,7 @@ export default {
       });
     },
     resetQuery() {
+      this.handleDialog = false;
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
@@ -114,25 +112,10 @@ export default {
       };
       this.getList();
     },
-    handleAdd() {
-      this.handleDialog = true;
-    },
-    downloadTable() {},
-    //查看原因
-    viewReason(row) {
-      this.$alert(row.failure_reason, "拒绝原因", {
-        confirmButtonText: "确定"
-      });
-    },
+
     handleCell(row) {
-      this.handleObj = {};
       this.handleDialog = true;
-    },
-    deleteCell(row) {},
-    analysisCell(row) {},
-    handleDialogClose() {
-      this.handleDialog = false;
-      this.handleObj = {};
+      this.handleObj = row;
     }
   }
 };

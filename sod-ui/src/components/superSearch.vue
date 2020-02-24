@@ -255,7 +255,7 @@ export default {
       });
     },
     submitSuperSearch(formName) {
-      this.$emit("getList", this.superSearchForm);
+      this.$emit("searchFun", this.superSearchForm);
     }
   }
 };

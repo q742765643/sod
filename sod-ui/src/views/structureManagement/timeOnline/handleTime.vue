@@ -1,14 +1,14 @@
 <template>
-  <section class="powerDialog">
+  <section class="timeOnlineDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="140px">
-      <el-form-item label="开始日期" prop="time">
-        <el-date-picker v-model="msgFormDialog.time" type="date" placeholder="yy-MM-dd"></el-date-picker>
+      <el-form-item label="开始日期" prop="beginTime">
+        <el-date-picker v-model="msgFormDialog.beginTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
       </el-form-item>
-      <el-form-item label="结束日期" prop="time">
-        <el-date-picker v-model="msgFormDialog.time" type="date" placeholder="yy-MM-dd"></el-date-picker>
+      <el-form-item label="结束日期" prop="endTime">
+        <el-date-picker v-model="msgFormDialog.endTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
       </el-form-item>
       <el-form-item label="结束日期（当天）" prop="sectionId">
-        <el-checkbox v-model="msgFormDialog.checked"></el-checkbox>
+        <el-checkbox v-model="msgFormDialog.checkFlag"></el-checkbox>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
@@ -19,95 +19,63 @@
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig.js";
+import { update } from "@/api/structureManagement/timeOnline";
 export default {
-  name: "powerDialog",
+  name: "timeOnlineDialog",
+  props: {
+    handleObj: {
+      type: Object
+    }
+  },
   data() {
     return {
       msgFormDialog: {
         // 这里定义弹框内的参数
-        name: "是否默认通过所有申请资料的读权限",
-        roleKey: "读权限",
-        sectionId: "",
-        enable: 1,
-        description: ""
+        beginTime: "",
+        endTime: "",
+        checkFlag: false,
+        endTimeFlag: "",
+        dataClassId: ""
       },
       rules: {
-        time: [{ required: true, message: "请选择时间", trigger: "blur" }]
+        beginTime: [{ required: true, message: "请选择时间", trigger: "blur" }],
+        endTime: [{ required: true, message: "请选择时间", trigger: "blur" }]
       }
     };
   },
   created() {
-    // this.getSectionList();
-    // this.initDetail();
+    this.msgFormDialog.beginTime = this.handleObj.BEGIN_TIME;
+    this.msgFormDialog.endTime = this.handleObj.END_TIME;
+    this.msgFormDialog.dataClassId = this.handleObj.DATA_CLASS_ID;
+    if (this.handleObj.obj && this.handleObj.obj.endTimeFlag == "today") {
+      this.msgFormDialog.checkFlag = true;
+    }
   },
   methods: {
     // 获取详情
-    initDetail() {
-      if (this.handleObj.id == undefined) {
-        // 是新增
-      } else {
-        // 是详情
-        this.msgFormDialog = this.handleObj;
-      }
-    },
-    getSectionList() {
-      this.axios.post(interfaceObj.roleManageApi_querySectionName).then(res => {
-        this.optionsList = res.data.data;
-      });
-    },
+    initDetail() {},
 
     trueDialog(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.handleObj.id == undefined) {
-            //判断用户名是否存在
-            this.axios
-              .post(interfaceObj.roleManageApi_queryRoleByRoleName, {
-                roleName: this.msgFormDialog.name
-              })
-              .then(res => {
-                if (res.data.data.length == 0) {
-                  this.axios
-                    .post(
-                      interfaceObj.roleManageApi_addRole,
-                      this.msgFormDialog
-                    )
-                    .then(res => {
-                      if (res.data.returnCode === "0") {
-                        this.$message({ message: "添加成功", type: "success" });
-                        this.$emit("cancelHandle");
-                      } else {
-                        this.$message({
-                          message: "添加失败！",
-                          type: "error"
-                        });
-                      }
-                    });
-                } else {
-                  this.$message({
-                    message: "用户名不能重复！！",
-                    type: "warning"
-                  });
-                  return;
-                }
-              });
-          } else {
-            // 编辑
-            this.axios
-              .post(interfaceObj.roleManageApi_updateRole, this.msgFormDialog)
-              .then(res => {
-                if (res.data.returnCode === "0") {
-                  this.$message({ message: "编辑成功", type: "success" });
-                  this.$emit("cancelHandle");
-                } else {
-                  this.$message({
-                    message: "编辑失败！",
-                    type: "error"
-                  });
-                }
-              });
+          if (this.msgFormDialog.checkFlag) {
+            this.msgFormDialog.endTimeFlag = "today";
           }
+          console.log(this.msgFormDialog);
+          update(this.msgFormDialog).then(res => {
+            if (res.code == 200) {
+              this.$message({
+                message: "操作成功",
+                type: "success"
+              });
+              this.$emit("cancelHandle");
+            } else {
+              this.$message({
+                message: res.msg,
+                type: "error"
+              });
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -121,7 +89,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.powerDialog {
+.timeOnlineDialog {
   .el-date-editor.el-input {
     width: 100%;
   }
