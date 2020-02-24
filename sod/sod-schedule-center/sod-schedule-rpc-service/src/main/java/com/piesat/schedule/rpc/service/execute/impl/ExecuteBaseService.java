@@ -100,7 +100,7 @@ public abstract class ExecuteBaseService {
                        server.setHost(instanceInfo.getIPAddr());
                        server.setHttpPort(instanceInfo.getPort());
                        server.setGrpcPort(Integer.valueOf(instanceInfo.getMetadata().get("gRPC.port")));
-                       long count=redisUtil.scanSize(QUARTZ_HTHT_PERFORM+":"+server.getHost()+"_"+server.getGrpcPort());
+                       long count=redisUtil.scanSize(QUARTZ_HTHT_PERFORM+":"+server.getHost()+":"+server.getGrpcPort());
                        if(count<server.getLimit()){
                              server.setUse(Integer.parseInt(String.valueOf(count)));
                              servers.add(server);
@@ -134,7 +134,7 @@ public abstract class ExecuteBaseService {
             //String logId="";
             try {
                   //logId=this.insertLog(jobInfoEntity,server,"0",null);
-                  redisUtil.set(QUARTZ_HTHT_PERFORM+":"+server.getHost()+"_"+server.getGrpcPort()+"_"+jobInfoEntity.getId(),jobInfoEntity.getId(),86400);
+                  redisUtil.set(QUARTZ_HTHT_PERFORM+":"+server.getHost()+":"+server.getGrpcPort()+":"+jobInfoEntity.getId(),jobInfoEntity.getId(),86400);
                   if((ExecutorBlockStrategyEnum.TASK_SERIAL.name()).equals(jobInfoEntity.getExecutorBlockStrategy())){
                         redisUtil.set(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfoEntity.getId(),jobInfoEntity.getId(),86400);
                   }
@@ -149,7 +149,7 @@ public abstract class ExecuteBaseService {
                   executorBiz.execute(jobInfoEntity);
             } catch (Exception e) {
                   resultT.setCode(302);
-                  redisUtil.del(QUARTZ_HTHT_PERFORM+":"+server.getHost()+"_"+server.getGrpcPort()+"_"+jobInfoEntity.getId());
+                  redisUtil.del(QUARTZ_HTHT_PERFORM+":"+server.getHost()+":"+server.getGrpcPort()+":"+jobInfoEntity.getId());
                   redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfoEntity.getId());
                   redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfoEntity.getId());
                   //this.insertLog(jobInfoEntity,server,"2",logId);

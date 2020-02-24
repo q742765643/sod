@@ -4,9 +4,11 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.service.DatabaseOperationService;
+import com.piesat.schedule.client.service.databse.GbaseService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
@@ -24,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: sod
@@ -180,6 +183,18 @@ public class GbaseBusiness extends BaseBusiness{
             DataSourceContextHolder.clearDataSource();
         }
 
+    }
+
+    @Override
+    public long selectTableCount(String parentId, String ktable, String conditions, ResultT<String> resultT) {
+        DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
+        return databaseOperationService.selectTableCount(parentId,ktable,conditions,resultT);
+    }
+
+    @Override
+    public List<TreeVo> findMeta(String parentId) {
+        GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
+        return gbaseService.findMeta();
     }
 
     public void deleteGbase(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){

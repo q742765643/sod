@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.piesat.schedule.mapper.database.XuguOperationMapper">
+    <select id="findXuguUsers" resultType="java.lang.String">
+        select user_name from dba_users;
+    </select>
+    <select id="findXuguRoles" resultType="java.lang.String">
+        select user_name from dba_roles;
+    </select>
+    <select id="findXuguInstance" resultType="java.lang.String">
+        select schema_name  from dba_schemas
+    </select>
+    <select id="findXuguTables" resultType="java.lang.String">
+        select A.TABLE_NAME   from   DBA_TABLES A,DBA_SCHEMAS B WHERE A.SCHEMA_ID = B.SCHEMA_ID AND B.SCHEMA_NAME=#{schemaName}
+    </select>
+    <select id="findXuguViews" resultType="java.lang.String">
+        select A.VIEW_NAME   from   DBA_VIEWS A,DBA_SCHEMAS B WHERE A.SCHEMA_ID = B.SCHEMA_ID AND B.SCHEMA_NAME=#{schemaName}
+    </select>
+    <select id="findXuguSeqs" resultType="java.lang.String">
+        select A.SEQ_NAME   from   DBA_SEQUENCES A,DBA_SCHEMAS B WHERE A.SCHEMA_ID = B.SCHEMA_ID AND B.SCHEMA_NAME=#{schemaName}
+    </select>
+    <select id="findXuguTrigs" resultType="java.lang.String">
+        select A.TRIG_NAME   from   DBA_TRIGGERS A,DBA_SCHEMAS B WHERE A.SCHEMA_ID = B.SCHEMA_ID AND B.SCHEMA_NAME=#{schemaName}
+    </select>
+    <select id="findXuguProcs" resultType="java.lang.String">
+        select A.PROC_NAME   from   DBA_PROCEDURES A,DBA_SCHEMAS B WHERE A.SCHEMA_ID = B.SCHEMA_ID AND B.SCHEMA_NAME=#{schemaName}
+    </select>
+</mapper>

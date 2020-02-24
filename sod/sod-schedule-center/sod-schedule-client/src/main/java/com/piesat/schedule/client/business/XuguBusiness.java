@@ -3,8 +3,10 @@ package com.piesat.schedule.client.business;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.service.DatabaseOperationService;
+import com.piesat.schedule.client.service.databse.XuguService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.Select2File;
 import com.piesat.schedule.client.util.TableForeignKeyUtil;
@@ -109,6 +111,13 @@ public class XuguBusiness extends BaseBusiness{
 
         }
     }
+
+    @Override
+    public long selectTableCount(String parentId, String ktable, String conditions, ResultT<String> resultT) {
+        DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
+        return databaseOperationService.selectTableCount(parentId,ktable,conditions,resultT);
+    }
+
     public void deleteXugu(String tableName,ClearVo clearVo,ClearLogEntity clearLogEntity,ResultT<String> resultT) throws Exception {
         String schemaName=tableName.split("\\.")[0];
         String table=tableName.split("\\.")[1];
@@ -145,6 +154,20 @@ public class XuguBusiness extends BaseBusiness{
 
             }
         }
+
+    }
+
+    public List<TreeVo> findMeta(String parentId){
+        DataSourceContextHolder.setDataSource(parentId);
+        try {
+            XuguService xuguService=SpringUtil.getBean(XuguService.class);
+            return xuguService.findMeta();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DataSourceContextHolder.clearDataSource();
+        }
+        return null;
 
     }
 }
