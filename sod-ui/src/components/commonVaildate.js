@@ -99,27 +99,27 @@ export function isArray(arg) {
   }
   return Array.isArray(arg)
 }
+//格式化时间
+// 格式化日期，如月、日、时、分、秒保证为2位数
+export function formatNumber(n) {
+  n = n.toString();
+  return n[1] ? n : "0" + n;
+}
+// 参数number为毫秒时间戳，format为需要转换成的日期格式
+export function formatTime(number, format) {
+  let time = new Date(number);
+  let newArr = [];
+  let formatArr = ["Y", "M", "D", "h", "m", "s"];
+  newArr.push(time.getFullYear());
+  newArr.push(formatNumber(time.getMonth() + 1));
+  newArr.push(formatNumber(time.getDate()));
 
-/**
- * 
- * 导出方法
- */
-export function testExport(fileurls) {
-  if (fileurls == "" || typeof fileurls == "unedfined") {
-    return;
-  }
+  newArr.push(formatNumber(time.getHours()));
+  newArr.push(formatNumber(time.getMinutes()));
+  newArr.push(formatNumber(time.getSeconds()));
 
-  var downiframe = document.querySelector("#downiframe");
-  if (downiframe) {
-    downiframe.parentNode.removeChild(downiframe);
+  for (let i in newArr) {
+    format = format.replace(formatArr[i], newArr[i]);
   }
-  try {
-    var elemIF = document.createElement("iframe");
-    elemIF.id = "downiframe";
-    elemIF.src = fileurls;
-    elemIF.style.display = "none";
-    document.body.appendChild(elemIF);
-  } catch (e) {
-    console.dir("error");
-  }
+  return format;
 }

@@ -35,29 +35,33 @@
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column
         align="center"
-        prop="databaseup_id"
+        prop="databaseUpId"
         label="账户ID"
         width="120px"
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column align="center" prop="userRealname" label="关联用户" width="100px"></el-table-column>
       <el-table-column align="center" prop="department" label="机构" width="140px"></el-table-column>
-      <el-table-column align="center" prop="userPhone" label="联系方式" width="120px"></el-table-column>
-      <el-table-column align="center" prop="create_time" label="创建时间" width="160px">
-        <!-- <template slot-scope="scope">{{scope.row.create_time.split('.')[0]}}</template> -->
-      </el-table-column>
+      <el-table-column align="center" prop="phoneNum" label="联系方式" width="120px"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="createTime"
+        label="创建时间"
+        width="160px"
+        :formatter="createTimeFormater"
+      ></el-table-column>
       <el-table-column align="center" prop="database_name" label="可用数据库"></el-table-column>
-      <el-table-column align="center" prop="examine_status" label="状态" width="100px">
+      <el-table-column align="center" prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.examine_status=='0'">待审核</span>
-          <span v-if="scope.row.examine_status=='1'">审核通过</span>
-          <el-link v-if="scope.row.examine_status=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
+          <span v-if="scope.row.examineStatus=='0'">待审核</span>
+          <span v-if="scope.row.examineStatus=='1'">审核通过</span>
+          <el-link v-if="scope.row.examineStatus=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.examine_status=='0'"
+            v-if="scope.row.examineStatus=='0'"
             type="text"
             size="mini"
             icon="el-icon-coordinate"
@@ -100,7 +104,8 @@
 </template>
 
 <script>
-import { databaseUserAll } from "@/api/authorityAudit/DBaccount";
+import { formatTime } from "@/components/commonVaildate.js";
+import { databaseUserAll, deleteList } from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
   components: {
@@ -150,7 +155,7 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 查询角色列表 */
+    /** 查询列表 */
     getList() {
       this.loading = true;
       databaseUserAll(this.queryParams).then(response => {
@@ -158,6 +163,9 @@ export default {
         this.total = response.data.totalCount;
         this.loading = false;
       });
+    },
+    createTimeFormater: function(row) {
+      return formatTime(row.createTime, "Y-M-D h-m-s");
     },
     addCell() {
       this.dialogTitle = "新增数据库账户审核";
@@ -176,10 +184,29 @@ export default {
       this.handleObj = row;
       this.handleDialog = true;
     },
-    deleteCell(row) {},
+    deleteCell(row) {
+      this.$confirm("确认删除" + row.databaseUpId + "吗?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteList({ id: row.id }).then(res => {
+            if (res.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              this.handleQuery();
+            }
+          });
+        })
+        .catch(() => {});
+    },
     handleDialogClose() {
       this.handleDialog = false;
       this.handleObj = {};
+      this.handleQuery();
     }
   }
 };

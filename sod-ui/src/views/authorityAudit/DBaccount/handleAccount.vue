@@ -3,10 +3,10 @@
     <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog" label-width="100px">
       <el-row>
         <el-col :span="7">
-          <el-form-item label="账户ID" prop="databaseup_id">
+          <el-form-item label="账户ID" prop="databaseUpId">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseup_id"
+              v-model="msgFormDialog.databaseUpId"
               :disabled="userDiasbled"
               placeholder="账户ID"
             ></el-input>
@@ -15,11 +15,11 @@
         <el-col :span="7">
           <el-row>
             <el-col :span="22">
-              <el-form-item label="密码" prop="databaseup_password">
+              <el-form-item label="密码" prop="databaseUpPassword">
                 <el-input
                   size="small"
                   :type="passwordType"
-                  v-model="msgFormDialog.databaseup_password"
+                  v-model="msgFormDialog.databaseUpPassword"
                   :disabled="userDiasbled"
                   placeholder="密码"
                 ></el-input>
@@ -31,44 +31,35 @@
           </el-row>
         </el-col>
         <el-col :span="7">
-          <el-form-item label="申请绑定IP" prop="databaseup_IP">
+          <el-form-item label="申请绑定IP" prop="databaseUpIp">
             <el-input
               size="small"
               disabled
-              v-model="msgFormDialog.databaseup_IP"
+              v-model="msgFormDialog.databaseUpIp"
               :placeholder="palceholderIp"
             ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="3">
           <el-form-item class="unitFormItem">
-            <!-- <el-select
-              size="small"
-              v-model="msgFormDialog.databaseup_IP_SEGMENT"
-              @change="ipChange"
-              :disabled="ipDisabled"
-            >
-              <el-option label="指定IP" value="1"></el-option>
-              <el-option label="IP段" value="2"></el-option>
-            </el-select>-->
             <el-button size="small" type="primary" @click="showEditIp">编辑</el-button>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="数据库选择" prop="database_id">
-            <el-transfer v-model="msgFormDialog.database_id" :data="dataBaseBox"></el-transfer>
+          <el-form-item label="数据库选择" prop="applyDatabaseId">
+            <el-transfer v-model="msgFormDialog.applyDatabaseId" :data="dataBaseBox"></el-transfer>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="7">
-          <el-form-item label="关联用户" prop="user_id">
+          <el-form-item label="关联用户" prop="userId">
             <el-select
               size="small"
               filterable
-              v-model="msgFormDialog.user_id"
+              v-model="msgFormDialog.userId"
               @change="userChange"
               :disabled="isDisabled"
               placeholder="请选择"
@@ -81,7 +72,6 @@
                 :disabled="item.disabled"
               ></el-option>
             </el-select>
-            <!-- <el-input v-model="msgFormDialog.user_id" :readonly="isreadonly" placeholder="关联用户"></el-input> -->
           </el-form-item>
         </el-col>
         <el-col :span="7">
@@ -108,10 +98,10 @@
       </el-row>
       <el-row>
         <el-col :span="21">
-          <el-form-item label="用途说明" prop="databaseup_desc">
+          <el-form-item label="用途说明" prop="databaseUpDesc">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseup_desc"
+              v-model="msgFormDialog.databaseUpDesc"
               :disabled="isDisabled"
               type="textarea"
               placeholder="用途说明"
@@ -132,6 +122,7 @@
               :action="upLoadUrl"
               :before-remove="beforeRemove"
               :on-success="successUpload"
+              name="filename"
               multiple
             >
               <i class="el-icon-upload"></i>
@@ -148,12 +139,11 @@
               @click="demoClick"
               v-show="isHideAdd"
             >模板下载</el-button>
-            <!-- <el-input type="file" v-model="msgFormDialog.serverdescribe" v-show="isHideAdd"></el-input> -->
             <el-input
               size="small"
               type="text"
               disabled
-              v-model="msgFormDialog.apply_material"
+              v-model="msgFormDialog.applyMaterial"
               v-show="isHide"
               style="width:92%;"
             ></el-input>
@@ -205,7 +195,21 @@
 </template>
 
 <script>
-import { databaseList, addTable } from "@/api/authorityAudit/DBaccount";
+import {
+  databaseList,
+  addTable,
+  ifUPExist,
+  getById,
+  download,
+  update
+} from "@/api/authorityAudit/DBaccount";
+var baseUrl = process.env.VUE_APP_WLEI;
+import {
+  unstartnumValidation,
+  englishAndNumValidation,
+  ipUrlValidation,
+  ipUrlValidation2
+} from "@/components/commonVaildate.js";
 export default {
   name: "handleAccountDialog",
   props: {
@@ -215,32 +219,26 @@ export default {
   },
   data() {
     const idValidate = (rule, value, callback) => {
-      if (value === "" || value == undefined) {
+      if (!value) {
         callback(new Error("请输入账户ID"));
       } else if (unstartnumValidation(value)) {
         callback(new Error("数据库账号不能以数字开头"));
-      } else if (this.handleObj.databaseup_id == undefined) {
-        this.axios
-          .get(
-            interfaceObj.databaseUser_ifUPExist +
-              "?databaseup_id=" +
-              this.msgFormDialog.databaseup_id
-          )
-          .then(res => {
-            if (res.data.ifExist == "YES") {
-              console.log("重复");
-              callback(new Error("数据库账号不能重复"));
-            } else {
-              console.log("不重复");
-              callback();
-            }
-          });
+      } else if (this.handleObj.databaseUpId == undefined) {
+        ifUPExist({ databaseUPId: value }).then(res => {
+          if (res.ifExist == "YES") {
+            console.log("重复");
+            callback(new Error("数据库账号不能重复"));
+          } else {
+            console.log("不重复");
+            callback();
+          }
+        });
       } else {
         callback();
       }
     };
     const passwordValidate = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入数据库密码"));
       } else if (!englishAndNumValidation(value)) {
         callback(new Error("密码必须由英文字母和数字组成"));
@@ -250,15 +248,15 @@ export default {
     };
 
     const ipValidate = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入IP地址"));
       } else if (
-        this.msgFormDialog.databaseup_IP_SEGMENT == 1 &&
+        this.msgFormDialog.databaseUpIpSegment == 1 &&
         !ipUrlValidation(value)
       ) {
         callback(new Error("请输入正确IP地址"));
       } else if (
-        this.msgFormDialog.databaseup_IP_SEGMENT == 2 &&
+        this.msgFormDialog.databaseUpIpSegment == 2 &&
         !ipUrlValidation2(value)
       ) {
         callback(new Error("请输入正确IP段地址"));
@@ -278,47 +276,46 @@ export default {
       },
       innerVisible: false,
       downUrl: "",
-      upLoadUrl: "",
+      upLoadUrl: baseUrl + "/dm/databaseUser/api/databaseUser/upload",
       isDisabled: false,
       userDiasbled: false,
-      ipDisabled: false,
       isHideAdd: true,
       isHide: false,
       passwordType: "password",
       searchObj: {},
       userBox: [], //获取所有用户
       msgFormDialog: {
-        databaseup_id: "USR_", //UP账户ID
-        databaseup_password: "", //UP账户密码
-        databaseup_IP: "", //UP账户IP
-        databaseup_IP_SEGMENT: "1", //UP账户IP可选区间
-        database_id: [], //物理库ID
-        user_id: "", //用户ID
-        databaseup_desc: "", //UP账户描述
-        apply_material: ""
+        databaseUpId: "USR_", //UP账户ID
+        databaseUpPassword: "", //UP账户密码
+        databaseUpIp: "", //UP账户IP
+        databaseUpIpSegment: "1", //UP账户IP可选区间
+        applyDatabaseId: [], //物理库ID
+        userId: "10", //用户ID
+        databaseUpDesc: "", //UP账户描述
+        applyMaterial: ""
       },
       palceholderIp: "指定IP样例:192.168.1.1",
       dataBaseBox: [],
       rules: {
-        databaseup_id: [
+        databaseUpId: [
           { required: true, validator: idValidate, trigger: "blur" }
         ],
-        databaseup_password: [
+        databaseUpPassword: [
           { required: true, validator: passwordValidate, trigger: "blur" }
         ],
-        databaseup_IP: [
+        databaseUpIp: [
           { required: true, validator: ipValidate, trigger: "blur" }
         ],
-        database_id: [
+        applyDatabaseId: [
           { required: true, message: "请选择数据库", trigger: "blur" }
         ],
-        databaseup_desc: [
+        databaseUpDesc: [
           { required: true, message: "请输入用途说明", trigger: "blur" }
         ],
-        user_id: [
+        userId: [
           { required: true, message: "请选择关联用户", trigger: "change" }
         ],
-        apply_material: [
+        applyMaterial: [
           { required: true, message: "请选择申请材料", trigger: "change" }
         ]
       }
@@ -328,9 +325,10 @@ export default {
     this.searchObj = this.handleObj;
     this.getDBlist();
     // this.getUserAll();
-    // this.initServerDetail();
+    this.initServerDetail();
   },
   methods: {
+    // 申请绑定IP
     removeDomain(item) {
       var index = this.ipArryForm.domains.indexOf(item);
       if (index !== 0) {
@@ -344,7 +342,6 @@ export default {
       });
     },
     ipcancelDialog(formName) {
-      debugger;
       this.$refs[formName].resetFields();
       this.innerVisible = false;
     },
@@ -355,7 +352,7 @@ export default {
       arrys.forEach(element => {
         ips.push(element.value);
       });
-      this.msgFormDialog.databaseup_IP = ips.join(",");
+      this.msgFormDialog.databaseUpIp = ips.join(",");
       this.$refs[formName].resetFields();
       this.innerVisible = false;
     },
@@ -381,23 +378,16 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.msgFormDialog.filepath = "";
+          this.msgFormDialog.applyMaterial = "";
         })
         .catch(() => {
           console.log("已取消删除");
         });
     },
     successUpload: function(response, file, fileList) {
-      this.msgFormDialog.filepath = response.filepath;
+      this.msgFormDialog.applyMaterial = response.msg;
     },
-    //
-    ipChange() {
-      if (this.msgFormDialog.databaseup_IP_SEGMENT == 1) {
-        this.palceholderIp = "指定IP样例:192.168.1.1";
-      } else {
-        this.palceholderIp = "IP段样例:192.168.1.%";
-      }
-    },
+
     // 关联用户
     userChange(selectUserId) {
       let obj = {};
@@ -421,7 +411,6 @@ export default {
         }
 
         this.dataBaseBox = dataList;
-        console.log(this.dataBaseBox);
       });
     },
     // 获取所有用户信息
@@ -432,7 +421,7 @@ export default {
           var disdata = res.data.data;
           for (var i = 0; i < allData.length; i++) {
             for (var d = 0; d < disdata.length; d++) {
-              if (allData[i].userId == disdata[d].user_id) {
+              if (allData[i].userId == disdata[d].userId) {
                 allData[i].disabled = true;
               }
             }
@@ -443,62 +432,41 @@ export default {
     },
     // 获取服务器详情
     async initServerDetail() {
-      if (this.searchObj.record_id == undefined) {
+      if (!this.searchObj.id) {
         // 新增
       } else {
         // 修改
         if (this.searchObj.examine_status == "0") {
           this.userDiasbled = false;
-          this.ipDisabled = true;
         } else if (this.searchObj.examine_status == "2") {
           this.userDiasbled = false;
-          this.ipDisabled = false;
         } else if (this.searchObj.examine_status == "1") {
           this.userDiasbled = true;
-          this.ipDisabled = true;
         }
         // this.isDisabled = true;
         this.isHide = true;
         this.isHideAdd = false;
-
-        await this.axios
-          .get(
-            interfaceObj.databaseUser_getById +
-              "?record_id=" +
-              this.searchObj.record_id
-          )
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.msgFormDialog = res.data.data.databaseobj;
+        await getById({ id: this.searchObj.id }).then(res => {
+          if (res.code == 200) {
+            let data = res.data;
+            data.applyDatabaseId = data.applyDatabaseId.split(",");
+            console.log(data.applyDatabaseId);
+            this.msgFormDialog = data;
+            /* this.msgFormDialog = res.data.data.databaseobj;
               // 回显数据库选择
               let transferDataList = res.data.data.databaseList;
               let transferarry = [];
               transferDataList.forEach(element => {
-                transferarry.push(element.database_id);
+                transferarry.push(element.applyDatabaseId);
               });
-              this.msgFormDialog.database_id = transferarry;
-              // 回显绑定IP;
-
-              /* if (
-                res.data.data.databaseobj.databaseup_IP != "" &&
-                res.data.data.databaseobj.databaseup_IP != null
-              ) {
-                this.msgFormDialog.databaseup_IP_SEGMENT = "1";
-              } else if (
-                res.data.data.databaseobj.databaseup_IP_SEGMENT != "" &&
-                res.data.data.databaseobj.databaseup_IP_SEGMENT != null
-              ) {
-                this.msgFormDialog.databaseup_IP_SEGMENT = "2";
-              } */
+              this.msgFormDialog.applyDatabaseId = transferarry;
               // 用户信息
-              this.userChange(this.msgFormDialog.user_id);
-              console.log(this.msgFormDialog.user_id);
-              // this.msgFormDialog.databaseup_IP_SEGMENT =
-              //   res.data.data.databaseobj.examine_status;
+              this.userChange(this.msgFormDialog.userId);
+              console.log(this.msgFormDialog.userId);
               this.downUrl =
-                interfaceObj.download + res.data.data.apply_material;
-            }
-          });
+                interfaceObj.download + res.data.data.applyMaterial; */
+          }
+        });
       }
     },
     demoClick() {
@@ -514,30 +482,27 @@ export default {
     },
     // 查看详情时的下载
     downloadWord() {
-      this.axios
-        .get(
-          interfaceObj.download +
-            "?filepath=" +
-            this.msgFormDialog.apply_material
-        )
-        .then(data => {
-          testExport(
-            interfaceObj.download +
-              "?filepath=" +
-              this.msgFormDialog.apply_material
-          );
+      let path = this.msgFormDialog.applyMaterial;
+      let flieData = Encrypt(JSON.stringify({ filepath: path }));
+      window.location.href =
+        baseUrl + "/dm/databaseUser/update?sign=111111&data" + flieData;
+      // window.location.href =
+      //   "http://localhost/wlei-api/dm/databaseUser/download?sign=111111&data=4Z6GeCj66999007osYVjANsii5KWv%2FmDQIvCktsQh2dDyCbPyNut0XQvCf%2B9%2BbaH";
+
+      /* download({
+        filepath: path
+      })
+        .then(response => {
+          testExport(baseUrl + "/dm/databaseUser/update" + "?filepath=" + path);
         })
         .catch(function(error) {
-          testExport(
-            interfaceObj.download +
-              "?filepath=" +
-              this.msgFormDialog.apply_material
-          );
-        });
+          testExport(baseUrl + "/dm/databaseUser/update" + "?filepath=" + path);
+        }); */
     },
 
     trueDialog(formName) {
-      if (this.isHide == false && !this.msgFormDialog.filepath) {
+      debugger;
+      if (this.isHideAdd && !this.msgFormDialog.applyMaterial) {
         this.$message({
           message: "请上传申请材料",
           type: "error",
@@ -547,10 +512,32 @@ export default {
       } else {
         this.$refs[formName].validate(valid => {
           if (valid) {
-            if (this.searchObj.record_id != undefined) {
-              this.msgFormDialog.record_id = this.searchObj.record_id;
+            if (this.isHideAdd) {
+              let obj = this.msgFormDialog;
+              obj.applyDatabaseId = obj.applyDatabaseId.join(",");
+              console.log(obj);
+              // 新增
+              addTable(obj).then(res => {
+                if (res.code == 200) {
+                  this.$message({
+                    type: "success",
+                    message: "增加成功"
+                  });
+                  this.$emit("handleDialogClose");
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: res.msg
+                  });
+                }
+              });
+            } else {
+              // 数据库账户审核 通过
+              this.auditMethods("");
             }
-            this.$emit("handleDialogClose", this.msgFormDialog);
+            /*  if (this.searchObj.record_id != undefined) {
+              this.msgFormDialog.record_id = this.searchObj.record_id;
+            } */
           } else {
             console.log("error submit!!");
             return false;
@@ -559,21 +546,49 @@ export default {
       }
     },
     cancelDialog(formName) {
-      if (this.searchObj.record_id == undefined) {
+      if (!this.searchObj.id) {
         this.$refs[formName].resetFields();
         this.$emit("handleDialogClose");
       } else {
-        this.$prompt("请输入拒绝原因", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消"
-        })
-          .then(({ value }) => {
-            this.msgFormDialog.record_id = this.searchObj.record_id;
-            this.msgFormDialog.failure_reason = value;
-            this.$emit("handleDialogClose", this.msgFormDialog);
-          })
-          .catch(() => {});
+        // 审核不通过
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            this.$prompt("请输入拒绝原因", "提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消"
+            })
+              .then(({ value }) => {
+                this.auditMethods(value);
+              })
+              .catch(() => {});
+          } else {
+            console.log("error submit!!");
+            return false;
+          }
+        });
       }
+    },
+    auditMethods(value) {
+      this.msgFormDialog.failureReason = value;
+      let obj = this.msgFormDialog;
+      obj.applyDatabaseId = obj.applyDatabaseId.join(",");
+      console.log(obj);
+      // 审核
+      update(obj).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: "操作成功"
+          });
+          this.$emit("handleDialogClose");
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          });
+        }
+      });
+      this.$emit("handleDialogClose");
     }
   }
 };

@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_WLEI;
 // 新增表格
 export function addTable(data) {
   return request({
@@ -24,5 +24,64 @@ export function databaseUserAll(query) {
     url: baseUrl + '/dm/databaseUser/all',
     method: 'get',
     params: query
+  })
+}
+
+
+// 申请上传文件接口
+export function upload(data) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/api/databaseUser/upload',
+    method: 'post',
+    data: data
+  })
+}
+
+// 判断UP账户是否已存在
+export function ifUPExist(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/ifUPExist',
+    async: true,
+    method: 'get',
+    params: query
+  })
+}
+
+// 删除
+export function deleteList(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/delete',
+    async: true,
+    method: 'delete',
+    params: query
+  })
+}
+
+// 根据ID查询
+export function getById(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/getById',
+    async: true,
+    method: 'get',
+    params: query
+  })
+}
+
+// 根据ID查询
+export function download(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/download',
+    async: true,
+    method: 'get',
+    params: query
+  })
+}
+
+// 审核
+export function update(data) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/update',
+    method: 'post',
+    data: data
   })
 }

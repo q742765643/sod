@@ -94,10 +94,10 @@ module.exports = {
       },
       // 吴磊
       [process.env.VUE_APP_WLEI]: {
-        target: `http://g2904p3425.qicp.vip/`,
+        target: `http://222.186.174.9:47751`,
         changeOrigin: true,
         pathRewrite: {
-          ["^" + process.env.VUE_LEI]: ""
+          ["^" + process.env.VUE_APP_WLEI]: ""
         }
       }
     },

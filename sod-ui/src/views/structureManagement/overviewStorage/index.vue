@@ -2,120 +2,115 @@
   <div class="app-container">
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
-       <el-form-item label="数据用途:">
-          <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入数据用途" />
-        </el-form-item>
-        <el-form-item label="数据库:">
-          <el-input size="small" v-model="queryParams.database_name" placeholder="请输入数据库" />
-        </el-form-item>
-        <el-form-item label="资料名称:">
-          <el-input size="small" v-model="queryParams.class_name" placeholder="请输入资料名称" />
-        </el-form-item>
-        <el-form-item label="表名称:">
-          <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
-        </el-form-item>
+      <el-form-item label="数据用途:">
+        <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入数据用途" />
+      </el-form-item>
+      <el-form-item label="数据库:">
+        <el-input size="small" v-model="queryParams.database_name" placeholder="请输入数据库" />
+      </el-form-item>
+      <el-form-item label="资料名称:">
+        <el-input size="small" v-model="queryParams.class_name" placeholder="请输入资料名称" />
+      </el-form-item>
+      <el-form-item label="表名称:">
+        <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
+      </el-form-item>
 
-        <el-form-item>
-          <el-button size="small"  type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-          <el-button size="small"  type="text" @click="superClick">
-            <i class="el-icon-share"></i>高级搜索
-          </el-button>
-        </el-form-item>
+      <el-form-item>
+        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" type="text" @click="superClick">
+          <i class="el-icon-share"></i>高级搜索
+        </el-button>
+      </el-form-item>
     </el-form>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column
-          prop="class_name"
-          label="资料名称"
-          width="180"
-          align="center"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column
-          prop="table_name"
-          label="表名称"
-          width="200"
-          align="center"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column prop="data_class_id" label="存储编码" width="140" align="center"></el-table-column>
-        <el-table-column prop="d_data_id" label="四级编码" width="140" align="center"></el-table-column>
-        <el-table-column prop="logic_name" label="数据用途" width="120" align="center"></el-table-column>
-        <el-table-column prop="database_name1" label="数据库" width="130" align="center"></el-table-column>
-        <el-table-column prop="p_special_database_name" label="专题名" width="100" align="center"></el-table-column>
-        <el-table-column label="参数配置" width="340" align="center">
-          <template slot-scope="scope">
-            <!-- 存储结构 -->
-            <el-button
-              v-if="scope.row.storage_define_identifier!='3'"
-              size="mini"
-              @click="databaseShow(scope.row)"
-            >
-              <i class="btnRound blueRound" v-if="scope.row.storage_define_identifier==1"></i>
-              <i class="btnRound orangRound" v-else></i>存储结构
-            </el-button>
+        prop="class_name"
+        label="资料名称"
+        width="180"
+        align="center"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        prop="table_name"
+        label="表名称"
+        width="200"
+        align="center"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column prop="data_class_id" label="存储编码" width="140" align="center"></el-table-column>
+      <el-table-column prop="d_data_id" label="四级编码" width="140" align="center"></el-table-column>
+      <el-table-column prop="logic_name" label="数据用途" width="120" align="center"></el-table-column>
+      <el-table-column prop="database_name1" label="数据库" width="130" align="center"></el-table-column>
+      <el-table-column prop="p_special_database_name" label="专题名" width="100" align="center"></el-table-column>
+      <el-table-column label="参数配置" width="340" align="center">
+        <template slot-scope="scope">
+          <!-- 存储结构 -->
+          <el-button
+            v-if="scope.row.storage_define_identifier!='3'"
+            size="mini"
+            @click="databaseShow(scope.row)"
+          >
+            <i class="btnRound blueRound" v-if="scope.row.storage_define_identifier==1"></i>
+            <i class="btnRound orangRound" v-else></i>存储结构
+          </el-button>
 
-            <el-button disabled v-else size="mini">
-              <i class="btnRound orangRound"></i>存储结构
-            </el-button>
+          <el-button disabled v-else size="mini">
+            <i class="btnRound orangRound"></i>存储结构
+          </el-button>
 
-            <!-- 迁移清除 -->
-            <el-button
-              v-if="scope.row.data_moveclean_identifier!='3'"
-              size="mini"
-              @click="handleCleanAndTransfer(scope.row)"
-            >
-              <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
-              <i class="btnRound blueRound" v-if="null!=scope.row.clear_id&&scope.row.clear_id!=''"></i>
-              <i class="btnRound orangRound" v-else></i>迁移清除
-            </el-button>
+          <!-- 迁移清除 -->
+          <el-button
+            v-if="scope.row.data_moveclean_identifier!='3'"
+            size="mini"
+            @click="handleCleanAndTransfer(scope.row)"
+          >
+            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+            <i class="btnRound blueRound" v-if="null!=scope.row.clear_id&&scope.row.clear_id!=''"></i>
+            <i class="btnRound orangRound" v-else></i>迁移清除
+          </el-button>
 
-            <el-button disabled v-else size="mini">
-              <i class="btnRound orangRound"></i>迁移清除
-            </el-button>
+          <el-button disabled v-else size="mini">
+            <i class="btnRound orangRound"></i>迁移清除
+          </el-button>
 
-            <!-- 备份 -->
-            <el-button
-              v-if="scope.row.data_backup_identifier!='3'"
-              size="mini"
-              @click="handleBackUp(scope.row)"
-            >
-              <i
-                class="btnRound blueRound"
-                v-if="scope.row.data_backup_identifier=='1'&&scope.row.backup_id!=null&&scope.row.backup_id!=''"
-              ></i>
-              <i class="btnRound orangRound" v-else></i>备份
-            </el-button>
+          <!-- 备份 -->
+          <el-button
+            v-if="scope.row.data_backup_identifier!='3'"
+            size="mini"
+            @click="handleBackUp(scope.row)"
+          >
+            <i
+              class="btnRound blueRound"
+              v-if="scope.row.data_backup_identifier=='1'&&scope.row.backup_id!=null&&scope.row.backup_id!=''"
+            ></i>
+            <i class="btnRound orangRound" v-else></i>备份
+          </el-button>
 
-            <el-button disabled v-else size="mini">
-              <i class="btnRound orangRound"></i>备份
-            </el-button>
+          <el-button disabled v-else size="mini">
+            <i class="btnRound orangRound"></i>备份
+          </el-button>
 
-            <!-- 恢复 -->
-            <el-button
-              v-if="scope.row.data_archiving_identifier!='3'"
-              size="mini"
-              @click="openRecoverDialog(scope.row)"
-            >恢复</el-button>
-            <el-button disabled v-else size="mini">恢复</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="130px">
-          <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="mini"
-              icon="el-icon-setting"
-              @click="settingCell(scope.row)"
-            >配置</el-button>
-            <el-button
-              type="text"
-              size="mini"
-              icon="el-icon-delete"
-              @click="deleteCell(scope.row)"
-            >删除</el-button>
-          </template>
-        </el-table-column>
+          <!-- 恢复 -->
+          <el-button
+            v-if="scope.row.data_archiving_identifier!='3'"
+            size="mini"
+            @click="openRecoverDialog(scope.row)"
+          >恢复</el-button>
+          <el-button disabled v-else size="mini">恢复</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="130px">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-setting"
+            @click="settingCell(scope.row)"
+          >配置</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -125,7 +120,7 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-     <!-- 高级搜索 -->
+    <!-- 高级搜索 -->
     <el-dialog title="筛选" :visible.sync="dialogSuperSearch" :before-close="closeSuperSearch">
       <super-search
         v-if="dialogSuperSearch"
@@ -134,7 +129,7 @@
         ref="supersearchinfo"
       />
     </el-dialog>
-     <!-- 配置 -->
+    <!-- 配置 -->
     <el-dialog
       title="选择需要配置的选项"
       :visible.sync="dialogSetting"
@@ -167,7 +162,7 @@
       ></el-checkbox>
     </el-dialog>
 
-     <!-- 数据恢复 -->
+    <!-- 数据恢复 -->
     <el-dialog
       title="结构化数据恢复"
       :visible.sync="handleDataRecoveryDialog"
@@ -187,12 +182,11 @@
         />
       </el-dialog>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, exportRole, dataScope, changeRoleStatus } from "@/api/system/role";
+import { storageFieldList } from "@/api/structureManagement/overviewStorage";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 // 数据恢复
@@ -207,7 +201,7 @@ export default {
   },
   data() {
     return {
-     // 遮罩层
+      // 遮罩层
       loading: true,
       queryParams: {
         pageNum: 1,
@@ -220,8 +214,8 @@ export default {
       total: 0,
       tableData: [],
       // 高级搜索
-      dialogSuperSearch:false,
-      superObj:{},
+      dialogSuperSearch: false,
+      superObj: {},
 
       // 设置
       dialogSetting: false,
@@ -229,18 +223,20 @@ export default {
       checked4: "",
       checked5: "",
       // 数据恢复
-      handleDataRecoveryDialog:false,
-      innerCheckMD5Visible:false,//md5校验
-      handlecheckObj:{},//md5校验
+      handleDataRecoveryDialog: false,
+      innerCheckMD5Visible: false, //md5校验
+      handlecheckObj: {} //md5校验
     };
   },
   created() {
     this.getList();
   },
   methods: {
-     // table自增定义方法
+    // table自增定义方法
     table_index(index) {
-      return (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -250,36 +246,34 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      storageFieldList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
-    superClick(){
+    superClick() {
       this.superObj = this.queryParams;
       this.superObj.pageName = "存储结构概览";
       this.dialogSuperSearch = true;
     },
-    databaseShow(){},
-    handleCleanAndTransfer(){},
-    handleBackUp(){},
-    openRecoverDialog(){
+    databaseShow() {},
+    handleCleanAndTransfer() {},
+    handleBackUp() {},
+    openRecoverDialog() {
       // handleObj
       this.handleDataRecoveryDialog = true;
     },
-    settingCell(row){
+    settingCell(row) {
       this.dialogSetting = true;
     },
-    deleteCell(){},
+    deleteCell() {},
     // 关闭高级搜索
     closeSuperSearch() {
       this.dialogSuperSearch = false;
     },
     // 关闭弹窗
-    handleClose(){
+    handleClose() {
       this.handleDataRecoveryDialog = false;
       this.dialogSetting = false;
       this.getList();
@@ -315,15 +309,13 @@ export default {
       console.log(settingObj);
     },
     // 数据恢复
-    handleRecover(msgFormDialog){
-      if(msgFormDialog){
-         
+    handleRecover(msgFormDialog) {
+      if (msgFormDialog) {
       }
-     this.handleDataRecoveryDialog = false
+      this.handleDataRecoveryDialog = false;
     },
     // md5
-    handleMd5(){}
-    
+    handleMd5() {}
   }
 };
 </script>
