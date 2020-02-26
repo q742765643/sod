@@ -2,6 +2,7 @@ package com.piesat.dm.web.controller.newdata;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.newdata.NewdataApplyService;
 import com.piesat.dm.rpc.dto.*;
@@ -9,6 +10,7 @@ import com.piesat.dm.rpc.dto.newdata.NewdataApplyDto;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +56,16 @@ public class NewdataApplyController {
     public ResultT<PageBean> list(NewdataApplyDto newdataApplyDto,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-        ResultT<PageBean> resultT=new ResultT<>();
-        PageBean pageBean = this.newdataApplyService.selectPageList(newdataApplyDto, pageNum, pageSize);
+        Map<String,Object> map = new HashMap<String,Object>();
+        if(StringUtils.isNotNullString(String.valueOf(newdataApplyDto.getExamineStatus()))){
+            map.put("status",newdataApplyDto.getExamineStatus());
+        }
+        if(StringUtils.isNotNullString(newdataApplyDto.getDDataId())){
+            map.put("dataType",newdataApplyDto.getDDataId());
+        }
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<Map<String,Object>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = newdataApplyService.selectPageList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }

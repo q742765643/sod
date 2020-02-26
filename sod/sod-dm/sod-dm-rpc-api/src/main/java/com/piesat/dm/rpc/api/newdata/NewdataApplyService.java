@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface NewdataApplyService {
 
-    public PageBean selectPageList(NewdataApplyDto newdataApplyDto, int pageNum, int pageSize);
+    public PageBean selectPageList(PageForm<Map<String,Object>> pageForm);
 
     public int updateStatus(NewdataApplyDto newdataApplyDto);
 

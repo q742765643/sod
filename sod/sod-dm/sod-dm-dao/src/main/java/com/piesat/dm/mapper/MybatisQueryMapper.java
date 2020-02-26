@@ -26,7 +26,7 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId")String databaseId, @Param("tableName")String tableName);
 
 
-
+    List<Map<String, Object>> selectNewdataApplyPageList(@Param("map")Map<String,Object> map);
     /**
      * 在线时间检索条件分页查询
      * @param map

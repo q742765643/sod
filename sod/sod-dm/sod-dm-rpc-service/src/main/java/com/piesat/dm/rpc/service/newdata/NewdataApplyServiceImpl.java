@@ -1,9 +1,12 @@
 package com.piesat.dm.rpc.service.newdata;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.newdata.NewdataApplyDao;
 import com.piesat.dm.entity.newdata.NewdataApplyEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.newdata.NewdataApplyService;
 import com.piesat.dm.rpc.dto.*;
@@ -52,6 +55,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     private DatabaseService databaseService;
     @Autowired
     private ShardingService shardingService;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
 
     @Override
@@ -59,28 +64,26 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         return newdataApplyDao;
     }
 
-    /*@Override
-    public PageBean selectPageList(NewdataApplyDto newdataApplyDto, int pageNum, int pageSize) {
-        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
-        if (newdataApplyDto.getExamineStatus() != null) {
-            ssb.add("examineStatus", SpecificationOperator.Operator.eq.name(), newdataApplyDto.getExamineStatus());
-        }
-        Sort sort = Sort.by(Sort.Direction.DESC, "applyTime");
-        PageBean page = this.getPage(ssb.generateSpecification(), new PageForm(pageNum, pageSize), sort);
-        List<NewdataApplyEntity> pageData = (List<NewdataApplyEntity>)page.getPageData();
-        page.setPageData(this.newdataApplyMapper.toDto(pageData));
-        return page;
-    }*/
-
     @Override
+    public PageBean selectPageList(PageForm<Map<String,Object>> pageForm) {
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<Map<String,Object>> lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
+        //获取当前页数据
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
+        return pageBean;
+    }
+
+    /*@Override
     public PageBean selectPageList(NewdataApplyDto newdataApplyDto, int pageNum, int pageSize) {
         String sql = "select a.*, b.c_datumtype as type_name, s.*, f.database_name from t_sod_newdata_apply a " +
                 "left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code " +
                 "left join t_sod_storage_configuration s on a.logic_id = s.logic_id and a.database_id = s.database_id and a.data_class_id = s.data_class_id" +
                 "left join t_sod_database_define f on a.database_id = f.id ";
         PageBean page = this.queryByNativeSQLPageMap(sql,null, new PageForm(pageNum, pageSize));
+        mybatisQueryMapper.selectNewdataApplyPageList();
         return page;
-    }
+    }*/
 
     @Override
     public int updateStatus(NewdataApplyDto newdataApplyDto) {
