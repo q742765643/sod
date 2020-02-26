@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.sod.system.dao.ManageFieldDao;
@@ -118,6 +119,8 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 		ManageFieldEntity mfe = manageFieldMapstruct.toEntity(pageForm.getT());
 		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
 		//获取结果集
+		if(!StringUtil.isEmpty(mfe.getDbEleCode())) mfe.setDbEleCode("%"+mfe.getDbEleCode()+"%");
+		
 		List<ManageFieldEntity> data = manageFieldMapper.findByConditions(mfe);
 		PageInfo<ManageFieldEntity> pageInfo = new PageInfo<>(data);
 		
@@ -230,7 +233,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 		for(String id:idArr) {
 			manageFieldDao.deleteById(id);
 			
-			manageFieldGroupDao.delByFieldId(ids);
+			manageFieldGroupDao.delByFieldId(id);
 		}
 		
 	}

@@ -29,7 +29,7 @@
 		where 
 			t1.group_id = #{groupId}
 		<if test="dbEleCode != null and dbEleCode != ''">
-			and upper(t2.DB_ELE_CODE) like upper('%'||#{dbEleCode}||'%')
+			and upper(t2.DB_ELE_CODE) like upper(#{dbEleCode})
 		</if>
 		order by t2.DB_ELE_CODE asc
     </select>
