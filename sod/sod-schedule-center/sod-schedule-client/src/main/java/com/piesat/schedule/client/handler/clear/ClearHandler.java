@@ -107,7 +107,10 @@ public class ClearHandler implements BaseHandler {
             }
             resultT.setSuccessMessage("参数校验成功");
             log.info("参数校验成功");
-            long count=databaseOperationService.selectTableCount(clearEntity.getParentId(),clearEntity.getTableName(),clearVo.getConditions(),resultT);
+
+            BusinessEnum businessEnum = BusinessEnum.match(clearEntity.getDatabaseType(), null);
+            BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
+            long count=baseBusiness.selectTableCount(clearEntity.getParentId(),clearEntity.getTableName(),clearVo.getConditions(),resultT);
             if(!resultT.isSuccess()){
                 return;
             }
@@ -124,8 +127,6 @@ public class ClearHandler implements BaseHandler {
             resultT.setSuccessMessage("插入日志成功");
             log.info("插入日志成功");
 
-            BusinessEnum businessEnum = BusinessEnum.match(clearEntity.getDatabaseType(), null);
-            BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
             baseBusiness.deleteKtable(clearLogEntity,clearVo,resultT);
         } catch (BeansException e) {
             resultT.setErrorMessage("清除异常:{}",OwnException.get(e));
