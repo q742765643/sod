@@ -3,7 +3,7 @@
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="数据用途:">
-        <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入数据用途" />
+        <el-input size="small" v-model="queryParams.LOGIC_NAME" placeholder="请输入数据用途" />
       </el-form-item>
       <el-form-item label="数据库:">
         <el-input size="small" v-model="queryParams.database_name" placeholder="请输入数据库" />
@@ -12,7 +12,7 @@
         <el-input size="small" v-model="queryParams.class_name" placeholder="请输入资料名称" />
       </el-form-item>
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
+        <el-input size="small" v-model="queryParams.TABLE_NAME" placeholder="请输入表名称" />
       </el-form-item>
 
       <el-form-item>
@@ -32,15 +32,15 @@
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column
-        prop="table_name"
+        prop="TABLE_NAME"
         label="表名称"
         width="200"
         align="center"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column prop="data_class_id" label="存储编码" width="140" align="center"></el-table-column>
-      <el-table-column prop="d_data_id" label="四级编码" width="140" align="center"></el-table-column>
-      <el-table-column prop="logic_name" label="数据用途" width="120" align="center"></el-table-column>
+      <el-table-column prop="DATA_CLASS_ID" label="存储编码" width="140" align="center"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" width="140" align="center"></el-table-column>
+      <el-table-column prop="LOGIC_NAME" label="数据用途" width="120" align="center"></el-table-column>
       <el-table-column prop="database_name1" label="数据库" width="130" align="center"></el-table-column>
       <el-table-column prop="p_special_database_name" label="专题名" width="100" align="center"></el-table-column>
       <el-table-column label="参数配置" width="340" align="center">
@@ -206,9 +206,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        logic_name: "",
+        LOGIC_NAME: "",
         database_name: "",
-        table_name: "",
+        TABLE_NAME: "",
         class_name: ""
       },
       total: 0,

@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
-    <!-- 云数据库审核 -->
+    <!-- 专题库审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="资料状态">
-        <el-select v-model="queryParams.data_status">
+        <el-select v-model="queryParams.examineStatus">
           <el-option label="全部" value></el-option>
           <el-option
             v-for="(item,index) in auditStatus"
@@ -14,36 +14,30 @@
         </el-select>
       </el-form-item>
       <el-form-item label="专题库名称">
-        <el-input v-model="queryParams.tdb_name" type="text" placeholder="专题库名称"></el-input>
+        <el-input v-model="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input v-model="queryParams.user_name" type="text" placeholder="申请用户"></el-input>
+        <el-input v-model="queryParams.userId" type="text" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['topicLibraryAudit:role:add']"
-        >添加</el-button>
-      </el-col>
-    </el-row>
-
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="tdb_name" label="专题名" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="database_schema_id" label="专题库简称"></el-table-column>
-      <el-table-column align="center" prop="USER_NAME" label="用户名"></el-table-column>
+      <el-table-column align="center" prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column align="center" prop="simpleName" label="专题库简称"></el-table-column>
+      <el-table-column align="center" prop="userId" label="用户名"></el-table-column>
       <el-table-column align="center" prop="department" label="部门"></el-table-column>
-      <el-table-column align="center" prop="userPhone" label="联系方式"></el-table-column>
-      <el-table-column align="center" prop="apply_time" label="申请时间" width="160px"></el-table-column>
+      <el-table-column align="center" prop="phoneNum" label="联系方式"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="createTime"
+        label="申请时间"
+        width="160px"
+        :formatter="createTimeFormater"
+      ></el-table-column>
       <el-table-column align="center" prop="serverStatus" label="用途" width="100px">
         <template slot-scope="scope">
           <el-popover
@@ -60,12 +54,12 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="examine_status" label="资料状态" width="120px">
+      <el-table-column align="center" prop="examineStatus" label="资料状态" width="120px">
         <template slot-scope="scope">
-          <span v-if="scope.row.examine_status=='1'">待审核</span>
-          <span v-if="scope.row.examine_status=='2'">审核通过</span>
-          <span v-if="scope.row.examine_status=='3'">审核不通过</span>
-          <span v-if="scope.row.examine_status=='4'">再次审核</span>
+          <span v-if="scope.row.examineStatus=='1'">待审核</span>
+          <span v-if="scope.row.examineStatus=='2'">审核通过</span>
+          <span v-if="scope.row.examineStatus=='3'">审核不通过</span>
+          <span v-if="scope.row.examineStatus=='4'">再次审核</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="160px">
@@ -98,16 +92,11 @@
 </template>
 
 <script>
+import { formatTime } from "@/components/commonVaildate.js";
 import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+  specialList,
+  deleteList
+} from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 创建专题库
@@ -124,9 +113,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        data_status: "",
-        tdb_name: "",
-        user_name: ""
+        examineStatus: "",
+        sdbName: "",
+        userId: ""
       },
       auditStatus: [
         {
@@ -157,6 +146,9 @@ export default {
     this.getList();
   },
   methods: {
+    createTimeFormater: function(row) {
+      return formatTime(row.createTime, "Y-M-D h-m-s");
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -168,46 +160,46 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 查询角色列表 */
+    /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      specialList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     resetQuery() {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        data_status: "",
-        tdb_name: "",
-        user_name: ""
+        examineStatus: "",
+        sdbName: "",
+        userId: ""
       };
       this.handleQuery();
     },
-    handleAdd() {
-      this.dialogTitle = "新增数据库账户审核";
-      this.handleObj = {};
-      this.handleDialog = true;
-    },
-    downloadTable() {},
-    //查看原因
-    viewReason(row) {
-      this.$alert(row.failure_reason, "拒绝原因", {
-        confirmButtonText: "确定"
+
+    deleteCell(row) {
+      deleteList({ id: row.id }).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+          this.resetQuery();
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          });
+        }
       });
     },
-    viewCell(row) {
-      this.dialogTitle = "数据库账户审核";
+    editCell(row) {
       this.handleObj = row;
       this.handleDialog = true;
     },
-    deleteCell(row) {},
-    analysisCell(row) {},
     closeeditDialog() {
       this.handleObj = {};
       this.handleDialog = false;

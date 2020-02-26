@@ -483,25 +483,16 @@ export default {
     // 查看详情时的下载
     downloadWord() {
       let path = this.msgFormDialog.applyMaterial;
-      let flieData = Encrypt(JSON.stringify({ filepath: path }));
-      window.location.href =
-        baseUrl + "/dm/databaseUser/update?sign=111111&data" + flieData;
-      // window.location.href =
-      //   "http://localhost/wlei-api/dm/databaseUser/download?sign=111111&data=4Z6GeCj66999007osYVjANsii5KWv%2FmDQIvCktsQh2dDyCbPyNut0XQvCf%2B9%2BbaH";
-
-      /* download({
+      let obj = {
         filepath: path
-      })
-        .then(response => {
-          testExport(baseUrl + "/dm/databaseUser/update" + "?filepath=" + path);
-        })
-        .catch(function(error) {
-          testExport(baseUrl + "/dm/databaseUser/update" + "?filepath=" + path);
-        }); */
+      };
+      let flieData = Encrypt(JSON.stringify(obj));
+      flieData = encodeURIComponent(flieData);
+      window.location.href =
+        baseUrl + "/dm/databaseUser/download?sign=111111&data=" + flieData;
     },
 
     trueDialog(formName) {
-      debugger;
       if (this.isHideAdd && !this.msgFormDialog.applyMaterial) {
         this.$message({
           message: "请上传申请材料",
@@ -569,6 +560,11 @@ export default {
       }
     },
     auditMethods(value) {
+      if (value) {
+        this.msgFormDialog.examineStatus = 1;
+      } else {
+        this.msgFormDialog.examineStatus = 2;
+      }
       this.msgFormDialog.failureReason = value;
       let obj = this.msgFormDialog;
       obj.applyDatabaseId = obj.applyDatabaseId.join(",");

@@ -67,7 +67,7 @@ export function getById(query) {
   })
 }
 
-// 根据ID查询
+// 下载
 export function download(query) {
   return request({
     url: baseUrl + '/dm/databaseUser/download',

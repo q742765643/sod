@@ -11,12 +11,9 @@
           style="width: 240px"
           @change="handleQuery"
         >
-          <el-option
-            v-for="(item,index) in examineStatus"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          />
+          <el-option label="待审核" value="0"></el-option>
+          <el-option label="审核未通过" value="1"></el-option>
+          <el-option label="审核通过" value="2"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -54,8 +51,8 @@
       <el-table-column align="center" prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='0'">待审核</span>
-          <span v-if="scope.row.examineStatus=='1'">审核通过</span>
-          <el-link v-if="scope.row.examineStatus=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
+          <el-link v-if="scope.row.examineStatus=='1'" @click="viewReason(scope.row)">审核未通过</el-link>
+          <span v-if="scope.row.examineStatus=='2'">审核通过</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" class-name="small-padding fixed-width">
@@ -118,22 +115,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examineStatus: 0
+        examineStatus: ""
       },
-      examineStatus: [
-        {
-          value: "0",
-          label: "待审核"
-        },
-        {
-          value: "2",
-          label: "审核未通过"
-        },
-        {
-          value: "1",
-          label: "审核通过"
-        }
-      ],
+
       total: 0,
       tableData: [],
       dialogTitle: "",
@@ -152,6 +136,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      console.log(this.queryParams);
       this.queryParams.pageNum = 1;
       this.getList();
     },
