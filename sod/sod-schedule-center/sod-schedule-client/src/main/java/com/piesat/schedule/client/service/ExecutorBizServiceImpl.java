@@ -30,7 +30,7 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
 
     @Override
     public void execute(JobInfoEntity jobInfo){
-        BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getType().toLowerCase()+"Handler");
+        BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getExecutorHandler());
         new Thread(()->{
             try {
                 baseHandler.execute(jobInfo);

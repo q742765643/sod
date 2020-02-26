@@ -12,7 +12,9 @@ import com.piesat.common.grpc.exception.GrpcException;
 import com.piesat.common.grpc.service.GrpcClientService;
 import com.piesat.common.grpc.service.GrpcRequest;
 import com.piesat.common.grpc.service.GrpcResponse;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.ExecutorBiz;
+import com.piesat.schedule.client.api.client.handler.base.BaseHandler;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
 import com.piesat.schedule.rpc.proxy.GrpcServiceProxy;
@@ -46,14 +48,31 @@ public abstract class ExecuteBaseService {
       private RedisUtil redisUtil;
 
       public  void executeBusiness(JobInfoEntity jobInfoEntity, ResultT<String> resultT){
-            List<Server> servers=this.findServer(jobInfoEntity);
 
-            Server server=this.operationalControl(jobInfoEntity,servers,resultT);
-            if(server==null){
-                  resultT.setCode(301);
-                  return;
+            String handler=jobInfoEntity.getType().toLowerCase()+"Handler";
+            if(null==jobInfoEntity.getExecutorHandler()|| !StringUtils.isNotNullString(jobInfoEntity.getExecutorHandler())){
+                  jobInfoEntity.setExecutorHandler(handler);
             }
-            this.remote(jobInfoEntity,server,resultT);
+
+            BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfoEntity.getExecutorHandler());
+
+            if(null==baseHandler){
+                  List<Server> servers=this.findServer(jobInfoEntity);
+
+                  Server server=this.operationalControl(jobInfoEntity,servers,resultT);
+                  if(server==null){
+                        resultT.setCode(301);
+                        return;
+                  }
+                  this.remote(jobInfoEntity,server,resultT);
+            }else{
+                  new Thread(()->{
+                        baseHandler.execute(jobInfoEntity,resultT);
+                  }).start();
+            }
+
+
+
       }
       public  Server operationalControl(JobInfoEntity jobInfoEntity,List<Server> servers,ResultT<String> resultT){
             if(servers.size()==0){

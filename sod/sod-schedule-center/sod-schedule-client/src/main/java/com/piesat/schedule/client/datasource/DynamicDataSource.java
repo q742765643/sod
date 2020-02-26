@@ -1,6 +1,7 @@
 package com.piesat.schedule.client.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.piesat.schedule.client.vo.CassandraConVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
@@ -24,15 +25,26 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         }
         return dataSourceName;
     }
-    private void selectDataSource(String dataSourceName) {
+    public void selectDataSource(String dataSourceName) {
         Object obj = _targetDataSources.get(dataSourceName);
         if (obj != null) {
             return;
         }
-        DataSource dataSource = this.getDataSource(dataSourceName);
-        if (null != dataSource) {
-            this.setDataSource(dataSourceName, dataSource);
+        if("RADB".equals(dataSourceName)){
+            CassandraConVo cassandraConVo=new CassandraConVo();
+            cassandraConVo.setIp("10.211.55.7");
+            cassandraConVo.setPort(9042);
+            cassandraConVo.setUserName("");
+            cassandraConVo.setPassWord("");
+            _targetDataSources.put("RADB",cassandraConVo);
+
+        }else{
+            DataSource dataSource = this.getDataSource(dataSourceName);
+            if (null != dataSource) {
+                this.setDataSource(dataSourceName, dataSource);
+            }
         }
+
 
     }
     public  DataSource getDataSourceByMap(String dataSourceName){

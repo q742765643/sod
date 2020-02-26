@@ -193,8 +193,16 @@ public class GbaseBusiness extends BaseBusiness{
 
     @Override
     public List<TreeVo> findMeta(String parentId) {
-        GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
-        return gbaseService.findMeta();
+        DataSourceContextHolder.setDataSource(parentId);
+        try {
+            GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
+            return gbaseService.findMeta();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            DataSourceContextHolder.clearDataSource();
+        }
+        return null;
     }
 
     public void deleteGbase(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){
