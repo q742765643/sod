@@ -1,8 +1,11 @@
 package com.piesat.schedule.rpc.api.backup;
 
+import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.rpc.dto.backup.MetaBackupDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+
+import java.util.List;
 
 /**
  * @program: sod
@@ -20,5 +23,7 @@ public interface MetaBackupService {
     public void updateBackup(MetaBackupDto metaBackupDto);
 
     public void deleteBackupByIds(String[] metaBackupIds);
+
+    public List<TreeVo> findMeta(String parentId, String databaseType);
 }
 

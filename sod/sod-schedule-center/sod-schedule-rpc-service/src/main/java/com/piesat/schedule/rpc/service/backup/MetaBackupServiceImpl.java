@@ -1,10 +1,13 @@
 package com.piesat.schedule.rpc.service.backup;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.schedule.client.api.ExecutorBiz;
+import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
@@ -34,6 +37,9 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     private MetaBackupMapstruct metaBackupMapstruct;
     @Autowired
     private JobInfoService jobInfoService;
+    @GrpcHthtClient
+    private ExecutorBiz executorBiz;
+
     @Override
     public BaseDao<MetaBackupEntity> getBaseDao() {
         return metaBackupDao;
@@ -84,6 +90,11 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     public void deleteBackupByIds(String[] metaBackupIds){
         this.deleteByIds(Arrays.asList(metaBackupIds));
         jobInfoService.stopByIds(Arrays.asList(metaBackupIds));
+    }
+
+
+    public List<TreeVo> findMeta(String parentId, String databaseType){
+        return executorBiz.findMeta(parentId,databaseType);
     }
 
 }
