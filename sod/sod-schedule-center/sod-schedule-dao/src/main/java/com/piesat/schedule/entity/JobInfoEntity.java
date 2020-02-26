@@ -20,6 +20,7 @@ import javax.persistence.*;
 @Table(name="T_SOD_JOB_INFO")
 @Inheritance(strategy= InheritanceType.JOINED)
 @DiscriminatorColumn(name="type")
+@DiscriminatorValue("JOB")
 public class JobInfoEntity extends BaseEntity{
     @Column(name="job_group", length=50)
     private String jobGroup;		// 执行器主键ID

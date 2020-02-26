@@ -26,7 +26,7 @@
 		where
 			t1.flag = 'D'
 		<if test="keyCol != null and keyCol != ''">
-			and upper(t1.key_col) like upper('%'||#{keyCol}||'%')
+			and upper(t1.key_col) like upper(#{keyCol})
 		</if>
 		<if test="type != null and type != ''">
 			and t1.type = #{type}

@@ -1,7 +1,10 @@
-package com.piesat.schedule.client.handler.base;
+package com.piesat.schedule.client.api.client.handler.base;
 
 import com.piesat.schedule.entity.JobInfoEntity;
+import com.piesat.util.ResultT;
 import org.springframework.stereotype.Service;
+
+import java.sql.ResultSet;
 
 /**
  * @program: sod
@@ -11,5 +14,5 @@ import org.springframework.stereotype.Service;
  */
 
 public interface BaseHandler {
-    public void execute(JobInfoEntity jobInfoEntity);
+    public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT);
 }

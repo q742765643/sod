@@ -24,7 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
-/** 字典表管理
+/** 字段与索引类型管理
 *@description
 *@author wlg
 *@date 2020年1月14日下午6:58:57
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 */
 @RestController
 @RequestMapping(value="/restApi/dicmgn")
-@Api(value="字典表管理Controller",tags = {"字段与索引类型管理接口"})
+@Api(value="字段与索引类型管理Controller",tags = {"字段与索引类型管理接口"})
 @Slf4j
 public class DictionaryController {
 	
@@ -40,7 +40,7 @@ public class DictionaryController {
 	private DictionaryService dictionaryService;
 	
 	/**
-	 *  字典表查询
+	 *  字段与索引类型查询
 	 * @description 
 	 * @author wlg
 	 * @date 2020年1月14日下午7:03:18
@@ -72,7 +72,7 @@ public class DictionaryController {
 	 * @return
 	 */
 	@RequiresPermissions("restApi:dicmgn:findMenu")
-	@ApiOperation(value="获取字典分组接口",notes="获取字典分组接口")
+	@ApiOperation(value="获取字段与索引类型分组接口",notes="获取字段与索引类型分组接口")
 	@GetMapping(value="/findMenu")
 	public ResultT findMenu(String menu) {
 		try {
@@ -94,7 +94,7 @@ public class DictionaryController {
 	 * @param dictionaryDto
 	 * @return
 	 */
-	@ApiOperation(value="新增字典分组",notes="新增字典分组接口")
+	@ApiOperation(value="新增字段与索引类型分组",notes="新增字段与索引类型分组")
 	@PostMapping(value="/addType")
 	@RequiresPermissions("restApi:dicmgn:addType")
     @Log(title = "字段与索引类型管理", businessType = BusinessType.INSERT)
@@ -189,7 +189,7 @@ public class DictionaryController {
 	 * @param type
 	 * @return
 	 */
-	@ApiOperation(value="根据type查询字典数据",notes="根据type查询字典数据")
+	@ApiOperation(value="根据type查询字段与索引类型数据",notes="根据type查询字段与索引类型数据")
 	@GetMapping(value="/findByType")
 	@RequiresPermissions("restApi:dicmgn:findByType")
 	public ResultT findByType(String type) {

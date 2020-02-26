@@ -1,6 +1,8 @@
 package com.piesat.schedule.client.business;
 
+import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.schedule.client.api.vo.TreeVo;
+import com.piesat.schedule.client.service.databse.CassandraService;
 import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
@@ -38,7 +40,8 @@ public class CassandraBusiness extends BaseBusiness{
 
     @Override
     public List<TreeVo> findMeta(String parentId) {
-        return null;
+            CassandraService cassandraService= SpringUtil.getBean(CassandraService.class);
+            return cassandraService.findMeta(parentId);
     }
 }
 

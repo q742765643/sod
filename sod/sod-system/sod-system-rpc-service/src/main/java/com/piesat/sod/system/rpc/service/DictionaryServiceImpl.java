@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.sod.system.dao.DictionaryDao;
@@ -58,6 +59,7 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 		DictionaryEntity de = dictionaryMapstruct.toEntity(pageForm.getT());
 		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
 		//获取结果集
+		if(!StringUtil.isEmpty(de.getKeyCol())) de.setKeyCol("%"+de.getKeyCol()+"%");
 		List<DictionaryEntity> data = dictionaryMapper.selectList(de);
 		PageInfo<DictionaryEntity> pageInfo = new PageInfo<>(data);
 		
@@ -96,13 +98,13 @@ public class DictionaryServiceImpl extends BaseService<DictionaryEntity> impleme
 	 */
 	@Override
 	public void addType(DictionaryDto dictionaryDto) throws Exception {
-		
-		Integer type = dictionaryMapper.selectMaxType();
-		if(null == type) type=0;
-		
+		Integer type = dictionaryDto.getType();
+		if(null == type) {
+			type = dictionaryMapper.selectMaxType();
+			if(null == type) type=0;
+			dictionaryDto.setType(++type);
+		}
 		DictionaryEntity de = dictionaryMapstruct.toEntity(dictionaryDto);
-		de.setType(++type);
-		
 		dictionaryDao.save(de);
 	}
 

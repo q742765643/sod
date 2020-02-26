@@ -18,7 +18,7 @@ public class TreeVo {
     private  boolean checked;
     private boolean isParent;
 
-    public TreeVo(String pId,String id,String name){
+    public TreeVo(String pId, String id, String name){
         this.pId=pId;
         this.id=id;
         this.name=name;

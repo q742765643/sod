@@ -2,6 +2,7 @@ package com.piesat.schedule.client.service.databse;
 
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.mapper.database.GbaseOperationMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.Map;
  **/
 @Service
 public class GbaseService {
+    @Autowired
     private GbaseOperationMapper gbaseOperationMapper;
     public List<TreeVo> findMeta(){
         List<TreeVo> treeVos=new ArrayList<>();
