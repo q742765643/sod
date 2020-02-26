@@ -28,13 +28,13 @@ public class NewdataApplyEntity extends BaseEntity {
      * 服务编码
      * MUSIC接口注册时提供
      */
-    @Column(name = "data_service_id", length = 20, nullable = false)
+    @Column(name = "data_service_id", length = 20, nullable = true)
     private String dataServiceId;
 
    /**
      * 存储编码
     */
-    @Column(name = "data_class_id", length = 20, nullable = false)
+    @Column(name = "data_class_id", length = 20, nullable = true)
     private String dataClassId;
 
    /**

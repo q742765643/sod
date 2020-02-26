@@ -98,14 +98,16 @@ public class NewdataApplyController {
         return resultT;
     }
 
-    @PostMapping(value = "/updateStatus")
+    @PutMapping(value = "/updateStatus")
     @ApiOperation(value = "存储资料审核接口", notes = "存储资料审核接口")
-    public ResultT<String> updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
-        int result = newdataApplyService.updateStatus(newdataApplyDto);
-        if(result > 0){
-            return ResultT.success();
+    public ResultT updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
+        try {
+            NewdataApplyDto save = newdataApplyService.updateStatus(newdataApplyDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
         }
-        return ResultT.failed();
     }
 
     @GetMapping("/getDataClassLogic/{classLogicIds}")

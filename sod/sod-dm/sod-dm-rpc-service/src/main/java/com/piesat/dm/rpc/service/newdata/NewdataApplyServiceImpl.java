@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.newdata.NewdataApplyDao;
 import com.piesat.dm.entity.newdata.NewdataApplyEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -17,6 +18,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -70,8 +72,10 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         List<Map<String,Object>> lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
         if(lists != null && lists.size()>0){
             for(int i=0;i<lists.size();i++){
-                List<StorageConfigurationDto> storageConfigurationDtos = storageConfigurationService.findByDataClassId((String) lists.get(i).get("DATA_CLASS_ID"));
-                lists.get(i).put("storageConfigurations",storageConfigurationDtos);
+                if(lists.get(i).get("DATA_CLASS_ID") != null && !"".equals(lists.get(i).get("DATA_CLASS_ID"))){
+                    List<StorageConfigurationDto> storageConfigurationDtos = storageConfigurationService.findByDataClassId((String) lists.get(i).get("DATA_CLASS_ID"));
+                    lists.get(i).put("storageConfigurations",storageConfigurationDtos);
+                }
             }
         }
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
@@ -81,8 +85,10 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
-    public int updateStatus(NewdataApplyDto newdataApplyDto) {
-        return newdataApplyDao.updateStatus(newdataApplyDto.getExamineStatus(),newdataApplyDto.getRemark(),newdataApplyDto.getExaminer(),newdataApplyDto.getId(),newdataApplyDto.getDDataId(),newdataApplyDto.getTableName());
+    public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto) {
+        NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
+        return newdataApplyMapper.toDto(newdataApplyEntity);
     }
 
     @Override
