@@ -68,22 +68,17 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     public PageBean selectPageList(PageForm<Map<String,Object>> pageForm) {
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
         List<Map<String,Object>> lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
+        if(lists != null && lists.size()>0){
+            for(int i=0;i<lists.size();i++){
+                List<StorageConfigurationDto> storageConfigurationDtos = storageConfigurationService.findByDataClassId((String) lists.get(i).get("DATA_CLASS_ID"));
+                lists.get(i).put("storageConfigurations",storageConfigurationDtos);
+            }
+        }
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
         //获取当前页数据
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
         return pageBean;
     }
-
-    /*@Override
-    public PageBean selectPageList(NewdataApplyDto newdataApplyDto, int pageNum, int pageSize) {
-        String sql = "select a.*, b.c_datumtype as type_name, s.*, f.database_name from t_sod_newdata_apply a " +
-                "left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code " +
-                "left join t_sod_storage_configuration s on a.logic_id = s.logic_id and a.database_id = s.database_id and a.data_class_id = s.data_class_id" +
-                "left join t_sod_database_define f on a.database_id = f.id ";
-        PageBean page = this.queryByNativeSQLPageMap(sql,null, new PageForm(pageNum, pageSize));
-        mybatisQueryMapper.selectNewdataApplyPageList();
-        return page;
-    }*/
 
     @Override
     public int updateStatus(NewdataApplyDto newdataApplyDto) {

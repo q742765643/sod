@@ -108,28 +108,28 @@ public class NewdataApplyDto {
 
     /**
      * 存储构建状态
-     */
+     *//*
     private Integer storageCreate;
 
-    /**
+    *//**
      * 同步配置状态
-     */
+     *//*
     private Integer syncCreate;
 
-    /**
+    *//**
      * 迁移清除状态
-     */
+     *//*
     private Integer moveCleanCreate;
 
-    /**
+    *//**
      * 备份恢复状态
-     */
+     *//*
     private Integer backupCreate;
 
-    /**
+    *//**
      * 数据归档状态
-     */
-    private Integer filedCreate;
+     *//*
+    private Integer filedCreate;*/
 
     /**
      * 资料属性

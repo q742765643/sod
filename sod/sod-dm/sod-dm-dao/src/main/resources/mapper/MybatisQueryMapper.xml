@@ -217,17 +217,15 @@
 
     <!--新增注册资料-->
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.*, b.c_datumtype as type_name, s.*, f.database_name from t_sod_newdata_apply a
+        select a.*, b.c_datumtype as type_name from t_sod_newdata_apply a
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
-        left join t_sod_storage_configuration s on a.logic_id = s.logic_id and a.database_id = s.database_id and a.data_class_id = s.data_class_id
-        left join t_sod_database_define f on a.database_id = f.id
         <where>
             <!-- 结构树 -->
             <if test="map.status != null and map.status  != ''">
                 a.examine_status = #{map.status}
             </if>
             <if test="map.dataType != null and map.dataType != ''">
-                AND SUBSTR(b.C_DATUM_CODE,0,1) = #{map.dataType}
+                AND SUBSTR(b.C_DATUM_CODE,1,1) = #{map.dataType}
             </if>
         </where>
     </select>

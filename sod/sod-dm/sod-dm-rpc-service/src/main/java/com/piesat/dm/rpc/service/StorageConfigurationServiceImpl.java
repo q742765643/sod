@@ -98,4 +98,10 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
         resultMap.put("lists",lists);
         return resultMap;
     }
+
+    @Override
+    public List<StorageConfigurationDto> findByDataClassId(String dataClassId) {
+        List<StorageConfigurationEntity> storageConfigurationEntities =  this.storageConfigurationDao.findByDataClassId(dataClassId);
+        return this.storageConfigurationMapper.toDto(storageConfigurationEntities);
+    }
 }

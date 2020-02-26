@@ -4,6 +4,7 @@ import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,5 +21,7 @@ public interface StorageConfigurationService {
     StorageConfigurationDto saveDto(StorageConfigurationDto storageConfigurationDto);
 
     Map<String,Object> exportTable(Map<String,String> map);
+
+    List<StorageConfigurationDto> findByDataClassId(String dataClassId);
 
 }

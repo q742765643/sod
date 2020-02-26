@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.StorageConfigurationEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -11,4 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface StorageConfigurationDao extends BaseDao<StorageConfigurationEntity> {
+
+    List<StorageConfigurationEntity> findByDataClassId(String dataClassId);
 }
