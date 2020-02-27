@@ -102,13 +102,9 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
-    public Map<String, Object> queryCheckByApplyId(NewdataApplyDto newdataApplyDto) {
-        String sql = "SELECT a.*, b.c_datum_code,b.c_datumtype,c.c_datum_code type_code,c.c_datumtype type_name "
-                + " FROM dmin_data_newdata_apply a,t_sod_data_datumtypeinfo b,t_sod_data_datumtypeinfo c "
-                + " WHERE a.id = '" + newdataApplyDto.getId() + "' AND a.d_data_id = b.c_datum_code"
-                + " AND SUBSTR(a.D_DATA_ID,0,1) = c.c_datum_code" + " AND a.d_data_id ='" + newdataApplyDto.getDDataId() + "' and a.table_name = '"+newdataApplyDto.getTableName() +"'";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        return list == null ? null : list.get(0);
+    public Map<String, Object> queryCheckByApplyId(String id) {
+        List<Map<String, Object>> maps = mybatisQueryMapper.queryNewdataApplyByApplyId(id);
+        return maps == null ? null : maps.get(0);
     }
 
     @Override

@@ -25,7 +25,7 @@ public interface NewdataApplyService {
 
     List<Map<String,Object>> getLogicInfo();
 
-    Map<String,Object> queryCheckByApplyId(NewdataApplyDto newdataApplyDto);
+    Map<String,Object> queryCheckByApplyId(String id);
 
     ResultT<String> addGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto);
 

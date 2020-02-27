@@ -78,9 +78,9 @@ public class NewdataApplyController {
    }
 
     @PostMapping(value = "/queryCheckByApplyId")
-    @ApiOperation(value = "根据申请id、四级编码和表名查待审核记录", notes = "根据申请id、四级编码和表名查待审核记录")
-    public ResultT<Map<String,Object>> queryCheckByApplyId(@RequestBody NewdataApplyDto newdataApplyDto){
-        Map<String, Object> list = newdataApplyService.queryCheckByApplyId(newdataApplyDto);
+    @ApiOperation(value = "根据申请id查询", notes = "根据申请id查询")
+    public ResultT<Map<String,Object>> queryCheckByApplyId(String id){
+        Map<String, Object> list = newdataApplyService.queryCheckByApplyId(id);
         return ResultT.success(list);
     }
 
@@ -100,7 +100,7 @@ public class NewdataApplyController {
 
     @PostMapping(value = "/updateStatus")
     @ApiOperation(value = "存储资料审核接口", notes = "存储资料审核接口")
-    public ResultT updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
+    public ResultT updateStatus(NewdataApplyDto newdataApplyDto){
         try {
             NewdataApplyDto save = newdataApplyService.updateStatus(newdataApplyDto);
             return ResultT.success(save);

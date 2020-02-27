@@ -30,6 +30,8 @@ public interface MybatisQueryMapper {
 
 
     List<Map<String, Object>> selectNewdataApplyPageList(@Param("map")Map<String,Object> map);
+
+    List<Map<String, Object>> queryNewdataApplyByApplyId(@Param("id")String id);
     /**
      * 在线时间检索条件分页查询
      * @param map
