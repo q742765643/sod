@@ -5,7 +5,21 @@
       <!-- 左侧树 -->
       <el-aside class="elAside">
         <div class="sourceTreeTopOp">
-          <el-button-group>
+          <el-input
+            size="mini"
+            style="width:150px;"
+            placeholder="输入关键字进行过滤"
+            v-model="filterText"
+            v-if="showFilter"
+          ></el-input>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="back()"
+            icon="el-icon-back"
+            v-if="showFilter"
+          ></el-button>
+          <el-button-group v-if="showTreeBtn">
             <el-button type="primary" size="mini" @click="addType()" icon="el-icon-plus"></el-button>
             <el-button type="primary" size="mini" @click="editType()" icon="el-icon-edit"></el-button>
             <el-button type="primary" size="mini" @click="deleteAlert()" icon="el-icon-delete"></el-button>
@@ -21,6 +35,7 @@
         <div class="treeTitle">字典分组</div>
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-tree
+            :filter-node-method="filterNode"
             class="el-tree elTree"
             :data="treeData"
             :props="defaultProps"
@@ -52,19 +67,19 @@
             <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" highlight-current-row @current-change="handleSelectionChange">
-          <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-          <el-table-column width="50">
+        <el-table :data="tableData" @selection-change="handleSelectionChange">
+          <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
+          <el-table-column align="center" type="selection" width="50"></el-table-column>
+          <el-table-column align="center" label="关键字" prop="keyCol"></el-table-column>
+          <el-table-column align="center" label="中文名" prop="nameCn"></el-table-column>
+          <el-table-column align="center" label="字典类型" prop="dataType"></el-table-column>
+          <el-table-column align="center" label="字典描述" prop="description"></el-table-column>
+          <el-table-column align="center" label="是否可删" prop="canDelete">
             <template slot-scope="scope">
-              <!-- 添加一个多选框,控制选中与否 -->
-              <el-checkbox v-model="scope.row.checked"></el-checkbox>
+              <span v-if="scope.row.canDelete=='Y'">是</span>
+              <span v-if="scope.row.canDelete=='N'">否</span>
             </template>
           </el-table-column>
-          <el-table-column label="关键字" prop="keyCol"></el-table-column>
-          <el-table-column label="中文名" prop="nameCn"></el-table-column>
-          <el-table-column label="字典类型" prop="dataType"></el-table-column>
-          <el-table-column label="字典描述" prop="description"></el-table-column>
-          <el-table-column label="是否可删" prop="canDelete"></el-table-column>
         </el-table>
         <pagination
           v-show="total>0"
@@ -84,7 +99,7 @@
     <el-dialog :title="dialogTitle" :visible.sync="DictDialog">
       <handleDict
         v-if="DictDialog"
-        :dictTypes="treeData"
+        :handleGroup="handleGroup"
         :handleDictObj="handleDictObj"
         @cancelDialog="cancelDialog"
       ></handleDict>
@@ -97,7 +112,7 @@ import {
   findMenu,
   getTableData,
   deleteByIds
-} from "@/api/dbDictMangement/fieldManagement/index";
+} from "@/api/dbDictMangement/fieldManagement";
 
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
 import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
@@ -109,6 +124,9 @@ export default {
   },
   data() {
     return {
+      showFilter: false,
+      showTreeBtn: true,
+      filterText: "",
       treeData: [], //字典分组
       loading: true,
       menuType: "2", //字典类型
@@ -127,20 +145,29 @@ export default {
       total: 0,
       queryParams: {
         keyCol: "",
-        pageNum: "",
-        pageSize: "",
         pageNum: 1,
         pageSize: 10
       },
       // 弹窗 字典
       DictDialog: false,
-      handleDictObj: {}
+      handleDictObj: {},
+      multipleSelection: []
     };
   },
   async created() {
     await this.getTreeData();
   },
+  watch: {
+    filterText(val) {
+      this.$refs.elTree.filter(val);
+    }
+  },
   methods: {
+    // 树过滤
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.keyCol.indexOf(value) !== -1;
+    },
     //初始化字典分组数据
     async getTreeData() {
       await findMenu({ menu: this.menuType }).then(res => {
@@ -180,7 +207,6 @@ export default {
     //查询表格数据
     handleQuery() {
       this.loading = true;
-      console.log(this.queryParams);
       getTableData(this.queryParams).then(res => {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
@@ -194,15 +220,16 @@ export default {
       );
     },
     addType() {
-      this.dialogTitle = "添加类型";
+      this.dialogTitle = "添加";
+      this.handleTreeObj = {};
       this.TreeDialog = true;
     },
     editType() {
-      if (!this.checkNode.groupId) {
+      if (!this.checkNode.id) {
         this.$message({ message: "请选中需要编辑的数据!", type: "error" });
         return;
       }
-      this.dialogTitle = "编辑管理字段分组";
+      this.dialogTitle = "编辑";
       this.handleTreeObj = this.checkNode;
       this.TreeDialog = true;
     },
@@ -217,39 +244,115 @@ export default {
         type: "warning"
       })
         .then(() => {
-          delManageGroup({ groupId: this.queryParams.groupId }).then(res => {
+          deleteByIds({ ids: this.checkNode.id }).then(res => {
+            if (res.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: res.msg
+              });
+            }
             this.getTreeData();
           });
         })
         .catch(() => {}); //一定别忘了这个
     },
-    showSearch() {},
-
+    showSearch() {
+      this.showFilter = true;
+      this.showTreeBtn = false;
+    },
+    back() {
+      this.showFilter = false;
+      this.showTreeBtn = true;
+    },
     async cancelDialog(msg) {
-      if (msg === "D") {
+      if (msg === "Dict") {
         this.handleQuery();
       }
-      if (msg === "T") {
-        await findMenu({ menu: this.menuType }).then(res => {
-          res.success
-            ? (this.treeData = res.data)
-            : this.$notify.error({
-                title: "错误",
-                message: res.msg
-              });
-        });
-        this.$refs.elTree.setCurrentKey(this.checkNode.id);
+      if (msg === "Tree") {
+        await this.getTreeData();
       }
       this.TreeDialog = false;
       this.DictDialog = false;
     },
     addRow() {
+      this.handleDictObj = {};
       this.dialogTitle = "新增字典";
+      this.handleGroup = this.treeData;
       this.DictDialog = true;
     },
-    editRow() {},
-    deleteRow() {},
-    handleSelectionChange() {}
+    editRow() {
+      if (this.multipleSelection.length != 1) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+        return;
+      }
+      this.handleGroup = this.treeData;
+      this.handleDictObj = this.multipleSelection[0];
+      this.dialogTitle = "编辑字典";
+      this.DictDialog = true;
+    },
+    deleteRow() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+        return;
+      }
+      let flag = false;
+      let nameArry = [];
+      this.multipleSelection.forEach(element => {
+        if (flag || element.canDelete == "N") {
+          flag = true;
+          nameArry.push(element.keyCol);
+        }
+      });
+      if (flag) {
+        this.$message({
+          type: "error",
+          message: nameArry.join(",") + "只能修改，不能删除"
+        });
+        return;
+      }
+      if (!flag) {
+        this.$confirm("确认删除吗", "提示", {
+          cancelButtonText: "取消",
+          confirmButtonText: "确定",
+          type: "warning"
+        })
+          .then(() => {
+            let ids = [];
+            this.multipleSelection.forEach(element => {
+              ids.push(element.id);
+            });
+            deleteByIds({ ids: ids.join(",") }).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功"
+                });
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
+              this.handleQuery();
+            });
+          })
+          .catch(() => {}); //一定别忘了这个
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    }
   }
 };
 </script>

@@ -23,8 +23,8 @@
       <el-form-item label="组名称:" prop="dbEleName">
         <el-select v-model="ruleForm.groupId">
           <el-option
-            v-for="item in GroupNames"
-            :key="item.groupName"
+            v-for="(item,index) in GroupNames"
+            :key="index"
             :label="item.groupName"
             :value="item.groupId"
           ></el-option>
@@ -55,7 +55,11 @@
 
 <script>
 import { codeVer, chinese, num } from "@/components/commonVaildate";
-import { addManageField, findByType } from "@/api/dbDictMangement/manageField";
+import {
+  addManageField,
+  findByType,
+  editManageField
+} from "@/api/dbDictMangement/manageField";
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -107,7 +111,7 @@ export default {
         dbEleName: "",
         nullAble: "",
         updateAble: "",
-        groupId: "164689ef62c449c691e6cf7f72281155",
+        groupId: "",
         type: ""
       },
       GroupNames: [],
@@ -138,8 +142,10 @@ export default {
   async created() {
     this.GroupNames = this.handleGroup;
     await this.getDict();
-    if (this.handleQuery.id) {
-      this.ruleForm = this.handleQuery;
+    if (this.handleDictObj && this.handleDictObj.id) {
+      this.handleDictObj.nullAble = this.handleDictObj.nullAble.toString();
+      this.handleDictObj.updateAble = this.handleDictObj.updateAble.toString();
+      this.ruleForm = this.handleDictObj;
     }
   },
   methods: {
@@ -181,20 +187,37 @@ export default {
       }
       this.$refs[formName].validate(valid => {
         if (valid) {
-          addManageField(this.ruleForm).then(res => {
-            if (res.code == "200") {
-              this.$message({
-                type: "success",
-                message: "新增成功"
-              });
-              this.$emit("cancelDialog", "Field");
-            } else {
-              this.$message({
-                type: "error",
-                message: "新增失败"
-              });
-            }
-          });
+          if (this.handleDictObj.id) {
+            editManageField(this.ruleForm).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "编辑成功"
+                });
+                this.$emit("cancelDialog", "Field");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "编辑失败"
+                });
+              }
+            });
+          } else {
+            addManageField(this.ruleForm).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "新增成功"
+                });
+                this.$emit("cancelDialog", "Field");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "新增失败"
+                });
+              }
+            });
+          }
         }
       });
     }

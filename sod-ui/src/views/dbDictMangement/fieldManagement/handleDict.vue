@@ -1,11 +1,11 @@
 <template>
   <section class="fileHandleDict">
     <el-form :model="ruleForm" ref="ruleForm" :rules="rules" label-width="100px">
-      <el-form-item label="关键字:" prop="dbEleCode">
-        <el-input v-model="ruleForm.dbEleCode" placeholder="请输入字段编码"></el-input>
+      <el-form-item label="关键字:" prop="keyCol">
+        <el-input v-model="ruleForm.keyCol" placeholder="请输入字段编码"></el-input>
       </el-form-item>
-      <el-form-item label="中文名:" prop="dbEleName">
-        <el-input v-model="ruleForm.dbEleName"></el-input>
+      <el-form-item label="中文名:">
+        <el-input v-model="ruleForm.nameCn"></el-input>
       </el-form-item>
       <el-form-item label="字段类型:" prop="type">
         <el-select v-model="ruleForm.type">
@@ -13,24 +13,21 @@
             v-for="item in dictTypes"
             :key="item.keyCol"
             :label="item.keyCol"
-            :value="item.keyCol"
+            :value="item.type"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="字典描述:" prop="userEleCode">
-        <el-input v-model="ruleForm.userEleCode" placeholder="请输入字典描述"></el-input>
+      <el-form-item label="字典描述:">
+        <el-input v-model="ruleForm.description" placeholder="请输入字典描述"></el-input>
       </el-form-item>
-      <el-form-item label="是否可删:" prop="nullAble">
-        <el-select v-model="ruleForm.nullAble">
-          <el-option label="是" value="true"></el-option>
-          <el-option label="否" value="false"></el-option>
+      <el-form-item label="是否可删:" prop="canDelete">
+        <el-select v-model="ruleForm.canDelete">
+          <el-option label="是" value="Y"></el-option>
+          <el-option label="否" value="N"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="是否序号:" prop="updateAble">
-        <el-select v-model="ruleForm.updateAble">
-          <el-option label="是" value="true"></el-option>
-          <el-option label="否" value="false"></el-option>
-        </el-select>
+      <el-form-item label="显示序号:" prop="serialNumber">
+        <el-input v-model="ruleForm.serialNumber" placeholder="请输入字典描述"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -41,8 +38,7 @@
 </template>
 
 <script>
-import { codeVer, chinese, num } from "@/components/commonVaildate";
-import { addManageField, findByType } from "@/api/dbDictMangement/manageField";
+import { addType, updateById } from "@/api/dbDictMangement/fieldManagement";
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -55,133 +51,77 @@ export default {
     }
   },
   data() {
-    var dbEleCodeValidate = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入字段编码"));
-      } else if (!codeVer(value)) {
-        callback(
-          new Error("字段编码不允许输入小写字母和中文，且需以大写字母开头")
-        );
-      } else {
-        callback();
-      }
-    };
-    var userEleCodeValidate = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入服务代码"));
-      } else if (!codeVer(value)) {
-        callback(
-          new Error("服务代码不允许输入小写字母和中文，且需以大写字母开头")
-        );
-      } else {
-        callback();
-      }
-    };
-    var dbEleNameValidate = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入中文名"));
-      } else if (!chinese(value)) {
-        callback(new Error("中文名称只能输入中文"));
-      } else {
-        callback();
-      }
-    };
-
     return {
       ruleForm: {
-        dbEleCode: "",
-        userEleCode: "",
-        dbEleName: "",
-        nullAble: "",
-        updateAble: "",
-        groupId: "164689ef62c449c691e6cf7f72281155",
-        type: ""
+        keyCol: "",
+        description: "",
+        nameCn: "",
+        canDelete: "",
+        serialNumber: "",
+        type: "",
+        flag: "D"
       },
       GroupNames: [],
       dictTypes: [],
       rules: {
-        dbEleCode: [
-          { required: true, validator: dbEleCodeValidate, trigger: "blur" }
+        keyCol: [{ required: true, message: "请输入关键字", trigger: "blur" }],
+        canDelete: [
+          { required: true, message: "请选择是否可删", trigger: "change" }
         ],
-        userEleCode: [
-          { required: true, validator: userEleCodeValidate, trigger: "blur" }
+        type: [
+          { required: true, message: "请选择字段类型", trigger: "change" }
         ],
-        dbEleName: [
-          { required: true, validator: dbEleNameValidate, trigger: "blur" }
-        ],
-        groupId: [
-          { required: true, message: "请选择组名称", trigger: "change" }
-        ],
-        nullAble: [
-          { required: true, message: "请选择是否可为空", trigger: "change" }
-        ],
-        updateAble: [
-          { required: true, message: "请选择是否可更新", trigger: "change" }
-        ],
-        type: [{ required: true, message: "请选择字段类型", trigger: "change" }]
+        serialNumber: [
+          { required: true, message: "请输入序号", trigger: "blur" }
+        ]
       }
     };
   },
   async created() {
-    this.GroupNames = this.handleGroup;
-    await this.getDict();
-    if (this.handleQuery.id) {
-      this.ruleForm = this.handleQuery;
+    this.dictTypes = this.handleGroup;
+    if (this.handleDictObj.id) {
+      this.ruleForm = this.handleDictObj;
     }
   },
   methods: {
     cancelDialog() {
       this.$emit("cancelDialog", false);
     },
-    async getDict() {
-      await findByType().then(res => {
-        if (res.code == "200") {
-          this.dictTypes = res.data;
-        }
-      });
-    },
     trueDialog(formName) {
       console.log(this.ruleForm);
-      if (
-        this.ruleForm.type == "varchar" ||
-        this.ruleForm.type == "char" ||
-        this.ruleForm.type == "numberic" ||
-        this.ruleForm.type == "number" ||
-        this.ruleForm.type == "int" ||
-        this.ruleForm.type == "float" ||
-        this.ruleForm.type == "decimal"
-      ) {
-        if (this.ruleForm.dataPrecision == "") {
-          this.$message({
-            type: "error",
-            message: "该类型字段必须填写数据精度"
-          });
-          return;
-        }
-        if (!num(this.ruleForm.dataPrecision)) {
-          this.$message({
-            type: "error",
-            message: "字段精度只能输入大于0"
-          });
-          return;
-        }
-      }
       this.$refs[formName].validate(valid => {
         if (valid) {
-          addManageField(this.ruleForm).then(res => {
-            if (res.code == "200") {
-              this.$message({
-                type: "success",
-                message: "新增成功"
-              });
-              this.$emit("cancelDialog", "Field");
-            } else {
-              this.$message({
-                type: "error",
-                message: "新增失败"
-              });
-            }
-          });
+          if (this.handleDictObj.id) {
+            updateById(this.ruleForm).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "编辑成功"
+                });
+                this.$emit("cancelDialog", "Dict");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "编辑失败"
+                });
+              }
+            });
+          } else {
+            addType(this.ruleForm).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "新增成功"
+                });
+                this.$emit("cancelDialog", "Dict");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "新增失败"
+                });
+              }
+            });
+          }
         }
       });
     }

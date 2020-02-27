@@ -78,7 +78,7 @@ module.exports = {
       },
       // 韦立国
       [process.env.VUE_APP_DB_API]: {
-        target: `http://pw29059549.wicp.vip`,
+        target: `http://222.186.174.9:44306`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DB_API]: ""

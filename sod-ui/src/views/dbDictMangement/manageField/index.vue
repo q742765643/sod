@@ -48,16 +48,16 @@
             <el-button size="small" type="success" icon="el-icon-download" @click="exportData()">导出</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" highlight-current-row @current-change="handleSelectionChange">
-          <el-table-column type="index" width="40" :index="table_index"></el-table-column>
-          <el-table-column type="selection" width="50"></el-table-column>
-          <el-table-column label=" " prop="id" v-if="false"></el-table-column>
-          <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
-          <el-table-column label="服务编码" prop="user_ele_code"></el-table-column>
-          <el-table-column label="中文名称" prop="db_ele_name"></el-table-column>
-          <el-table-column label="字段类型" prop="type"></el-table-column>
-          <el-table-column label="字段精度" prop="length"></el-table-column>
-          <el-table-column label="是否可为空" prop="is_null" :formatter="formatBoolean"></el-table-column>
+        <el-table :data="tableData" highlight-current-row @selection-change="handleSelectionChange">
+          <el-table-column align="center" type="index" width="40" :index="table_index"></el-table-column>
+          <el-table-column align="center" type="selection" width="50"></el-table-column>
+          <el-table-column align="center" label=" " prop="id" v-if="false"></el-table-column>
+          <el-table-column align="center" label="字段编码" prop="dbEleCode"></el-table-column>
+          <el-table-column align="center" label="服务编码" prop="userEleCode"></el-table-column>
+          <el-table-column align="center" label="中文名称" prop="dbEleName"></el-table-column>
+          <el-table-column align="center" label="字段类型" prop="type"></el-table-column>
+          <el-table-column align="center" label="字段精度" prop="dataPrecision"></el-table-column>
+          <el-table-column align="center" label="是否可为空" prop="nullAble" :formatter="formatBoolean"></el-table-column>
         </el-table>
         <pagination
           v-show="total>0"
@@ -201,6 +201,17 @@ export default {
       })
         .then(() => {
           delManageGroup({ groupId: this.queryParams.groupId }).then(res => {
+            if (res.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: res.msg
+              });
+            }
             this.getTreeData();
           });
         })
@@ -229,16 +240,17 @@ export default {
       this.DictDialog = true;
     },
     editRow() {
-      if (!this.multipleSelection.length != 1) {
+      if (this.multipleSelection.length != 1) {
         this.$message({ message: "请选中一条需要编辑的数据!", type: "error" });
         return;
       }
       this.dialogTitle = "编辑管理字段";
-      this.handleDictObj = this.multipleSelection;
+      this.handleDictObj = this.multipleSelection[0];
+      this.handleDictObj.groupId = this.checkNode.groupId;
       this.DictDialog = true;
     },
     deleteRow() {
-      if (!this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message({ message: "请选中需要删除的数据!", type: "error" });
         return;
       }
@@ -253,12 +265,23 @@ export default {
             ids.push(element.id);
           });
           delManageField({ ids: ids.join(",") }).then(res => {
+            if (res.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: res.msg
+              });
+            }
             this.handleQuery();
           });
         })
         .catch(() => {}); //一定别忘了这个
     },
-    handleSelectionChange() {
+    handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     exportData() {
@@ -270,7 +293,7 @@ export default {
     },
     formatBoolean(row, column, cellValue) {
       var ret = ""; //你想在页面展示的值
-      if (cellValue) {
+      if (row.nullAble) {
         ret = "是"; //根据自己的需求设定
       } else {
         ret = "否";

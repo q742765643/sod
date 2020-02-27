@@ -36,14 +36,7 @@ export function getSpecialDataList(query) {
   })
 }
 
-/* 数据库授权 */
-export function empowerDatabaseSperial(data) {
-  return request({
-    url: baseUrl + '/dm/databaseSpecial/empowerDatabaseSperial',
-    method: 'post',
-    data: data
-  })
-}
+/* 删除 */
 export function deleteList(query) {
   return request({
     url: baseUrl + '/dm/databaseSpecial/delete',
@@ -65,6 +58,24 @@ export function empowerDataBatch(data) {
 export function empowerDataOne(data) {
   return request({
     url: baseUrl + '/dm/databaseSpecial/empowerDataOne',
+    method: 'post',
+    data: data
+  })
+}
+
+// 数据库授权
+export function empowerDatabaseSpecial(data) {
+  return request({
+    url: baseUrl + '/dm/databaseSpecial/empowerDatabaseSpecial',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改专题库基本信息
+export function update(data) {
+  return request({
+    url: baseUrl + '/dm/databaseSpecial/update',
     method: 'post',
     data: data
   })

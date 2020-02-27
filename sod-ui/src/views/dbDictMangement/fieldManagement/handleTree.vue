@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { addType } from "@/api/dbDictMangement/fieldManagement/handleTree";
+import { addType, updateById } from "@/api/dbDictMangement/fieldManagement";
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -50,7 +50,9 @@ export default {
       }
     };
   },
-  created() {},
+  created() {
+    this.ruleForm = this.handleTreeObj;
+  },
   methods: {
     cancelDialog() {
       this.$emit("cancelDialog", false);
@@ -58,20 +60,37 @@ export default {
     trueDialog(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          addType(this.ruleForm).then(res => {
-            if (res.code == "200") {
-              this.$message({
-                type: "success",
-                message: "新增成功"
-              });
-              this.$emit("cancelDialog", "Tree");
-            } else {
-              this.$message({
-                type: "error",
-                message: "新增失败"
-              });
-            }
-          });
+          if (this.handleTreeObj.id) {
+            updateById(this.ruleForm).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "编辑成功"
+                });
+                this.$emit("cancelDialog", "Tree");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
+            });
+          } else {
+            addType(this.ruleForm).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "新增成功"
+                });
+                this.$emit("cancelDialog", "Tree");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "新增失败"
+                });
+              }
+            });
+          }
         }
       });
     }

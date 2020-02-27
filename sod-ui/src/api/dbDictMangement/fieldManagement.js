@@ -21,7 +21,23 @@ export function getTableData(query) {
 export function deleteByIds(query) {
   return request({
     url: baseUrl + "/restApi/dicmgn/deleteByIds",
-    method: "get",
+    method: "delete",
+    params: query
+  });
+}
+//新增
+export function addType(query) {
+  return request({
+    url: baseUrl + "/restApi/dicmgn/addType",
+    method: "post",
+    params: query
+  });
+}
+// 编辑
+export function updateById(query) {
+  return request({
+    url: baseUrl + "/restApi/dicmgn/updateById",
+    method: "put",
     params: query
   });
 }
