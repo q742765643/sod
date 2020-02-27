@@ -80,6 +80,8 @@ public class DecryptUtil {
                         parmFit+=String.valueOf(jsonArray.get(i))+"&&&";
                     }
                     parameterMap.put(entry.getKey(),parmFit.split("&&&"));
+                }else if(null == oo) {
+                	parameterMap.put(entry.getKey(), null);
                 }else{
                     String parmFit=String.valueOf(oo) ;
                     parameterMap.put(entry.getKey(),parmFit.split("&&&"));
