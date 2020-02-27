@@ -50,10 +50,10 @@
 
 <script>
 // import { interfaceObj } from "@/urlConfig.js";
-// import StructureMaterialSingle from "@/views/authorityAudit/DRegistration/review/StructureMaterialSingleDR";
-// import StructureManageTable from "@/views/authorityAudit/DRegistration/review/tableManagement";
-// import HandleMsg from "@/views/authorityAudit/DRegistration/review/handleMsgs";
-// import Backup from "@/views/authorityAudit/DRegistration/review/vhandlebackup";
+import StructureMaterialSingle from "@/views/authorityAudit/DRegistration/review/StructureMaterialSingleDR";
+import StructureManageTable from "@/views/authorityAudit/DRegistration/review/tableManagement";
+import HandleMsg from "@/views/authorityAudit/DRegistration/review/handleMsgs";
+import Backup from "@/views/authorityAudit/DRegistration/review/vhandlebackup";
 
 export default {
   name: "revieStepRegister",
