@@ -1,10 +1,25 @@
 package com.piesat.schedule.client.service.databse;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.schedule.client.api.vo.TreeVo;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
+import com.piesat.schedule.client.util.CmdUtil;
+import com.piesat.schedule.client.util.EiSendUtil;
+import com.piesat.schedule.client.util.ZipUtils;
+import com.piesat.schedule.client.util.fetl.type.Type;
+import com.piesat.schedule.client.vo.MetadataVo;
+import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.mapper.database.GbaseOperationMapper;
+import com.piesat.util.ResultT;
+import com.piesat.util.ReturnCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,5 +82,119 @@ public class GbaseService {
 
 
     }
+
+
+    public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT){
+        if(!metadataVo.getUsers().isEmpty()){
+           for(String user:metadataVo.getUsers()){
+               this.expUser(user,metadataVo,metaBackupEntity,resultT);
+           }
+        }
+        if(!metadataVo.getTable().isEmpty()){
+            for(String table:metadataVo.getTable()){
+                if(metaBackupEntity.getIsStructure().indexOf("0")!=-1){
+                   this.expTable(table,metadataVo,metaBackupEntity,resultT);
+                }
+                if(metadataVo.isExpData()){
+                    this.expData(table,metadataVo,metaBackupEntity,resultT);
+                }
+            }
+
+
+        }
+    }
+    public void expUser(String userAndUuid, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity,ResultT<String> resultT) {
+        DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
+        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
+        if (dataSource != null) {
+            try {
+                String user=userAndUuid.split("--")[0];
+                String path=metadataVo.getParentPath()+"USER_"+userAndUuid+".sql";
+                URL url=new URL(dataSource.getUrl());
+                StringBuilder sql = new StringBuilder();
+                sql.append("gccli -h ").append(url.getHost())
+                        .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
+                        .append(" -N -s ").append(" -e ").append("\"");
+                sql.append("show grants for " + user + "").append("\"").append(">>" + path);
+                String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
+                int exit=CmdUtil.expCmd(commands,resultT);
+                if(exit==0){
+                    StringBuilder writePath=new StringBuilder();
+                    writePath.append("---user ").append("USER_"+userAndUuid+".sql").append("---\r\n");
+                    writePath.append("USER_"+userAndUuid+".sql").append("\r\n");
+                    writePath.append("---end user---\r\n");
+                    ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    public void expTable(String tableInfo, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity,ResultT<String> resultT) {
+        DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
+        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
+        if (dataSource != null) {
+            try {
+                String path=metadataVo.getParentPath()+"TABLE_"+tableInfo+".txt";
+                String instance=tableInfo.split("\\.")[0];
+                String tableName=tableInfo.split("\\.")[1];
+                URL url=new URL(dataSource.getUrl());
+                StringBuilder sql = new StringBuilder();
+                sql.append("gcdump  -h ").append(url.getHost())
+                        .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
+                        .append(" "+instance + " ").append(tableName);
+                sql.append(">>" + path + "");
+                String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
+                int exit=CmdUtil.expCmd(commands,resultT);
+                if(exit==0){
+                    StringBuilder write=new StringBuilder();
+                    ZipUtils.readFile(path,write,resultT);
+                    ZipUtils.writeFile(path,write,resultT);
+                    StringBuilder writePath=new StringBuilder();
+                    writePath.append("---table ").append(instance).append(".").append(tableName).append("---\r\n");
+                    writePath.append("TABLE_"+tableInfo+".txt").append("\r\n");
+                    writePath.append("---end table---\r\n");
+                    ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    public void expData(String table, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity,ResultT<String> resultT) {
+        DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
+        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
+        if (dataSource != null) {
+            try {
+                URL url=new URL(dataSource.getUrl());
+                String path=metadataVo.getParentPath()+"DATA_"+table+".txt";
+                StringBuilder sql = new StringBuilder();
+                sql.append("gccli -h ").append(url.getHost())
+                        .append(" -u")
+                        .append(dataSource.getUsername())
+                        .append(" -p").append(dataSource.getPassword())
+                        .append(" -e ")
+                        .append("\"").append("rmt:select * from ").append(table).append(" where ").append(metaBackupEntity.getConditions())
+                        .append(" INTO OUTFILE '").append(path).append("'")
+                        .append(" WITH HEAD FIELDS TERMINATED BY ','")
+                        .append("\"");
+                String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
+                int exit= CmdUtil.expCmd(commands,resultT);
+                if(exit==0){
+                    StringBuilder writePath=new StringBuilder();
+                    writePath.append("---data "+table+"---").append("\r\n");
+                    writePath.append("DATA_"+table+".txt");
+                    writePath.append("---end data---");
+                    ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 }
 

@@ -831,23 +831,27 @@ public class ExpMetadata {
 		return columns.toString();
 	}
 	
-	public String expMetaData(String url, Map<Type, List<String>> expInfo, String filepath) throws Exception {
+	public String expMetaData(String parentId, Map<Type, List<String>> expInfo, String filepath) throws Exception {
 		Connection conn = null;
 		BufferedWriter writer = null;
 		StringBuffer sb = new StringBuffer();
+		DynamicDataSource dynamicDataSource=SpringUtil.getBean(DynamicDataSource.class);
 		try {
+			DataSourceContextHolder.setDataSource(parentId);
 			File file = new File(filepath);
 			if (file.isDirectory()) {
-				String db = null;
+				file=new File(file+"/index.sql");
+				/*String db = null;
 				int lastIndex = url.indexOf("?");
 				if(lastIndex != -1){
 					db = url.substring(url.lastIndexOf("/"), lastIndex);
 				}else{
 					db = url.substring(url.lastIndexOf("/"));
 				}
-				file = new File(filepath+ System.getProperty("file.separator") + db + "_metadata.sql");
+				file = new File(filepath+ System.getProperty("file.separator") + db + "_metadata.sql");*/
 			}
-			conn = FetlUtil.get_conn(url+"&char_set=utf8");
+			conn=dynamicDataSource.getConnection();
+			//conn = FetlUtil.get_conn(url+"&char_set=utf8");
 			writer = new BufferedWriter(new FileWriter(file, false));
 			if(expInfo == null){
 //				expSequence(writer, conn, null);
@@ -997,6 +1001,7 @@ public class ExpMetadata {
 		} finally {
 			FetlUtil.closeConn(conn);
 			FetlUtil.closeWriter(writer);
+			DataSourceContextHolder.clearDataSource();
 		}
 		return sb.toString();
 	}

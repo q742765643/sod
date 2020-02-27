@@ -1,12 +1,19 @@
 package com.piesat.schedule.client.service.databse;
 
 import com.piesat.schedule.client.api.vo.TreeVo;
+import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
+import com.piesat.schedule.client.util.fetl.type.Type;
+import com.piesat.schedule.client.vo.MetadataVo;
+import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.mapper.database.XuguOperationMapper;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -124,6 +131,49 @@ public class XuguService {
                 treeProc.setName(instance+"."+proc);
                 treeVos.add(treeProc);
             }
+        }
+
+
+    }
+
+    public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT){
+        ExpMetadata exp = new ExpMetadata();
+        Map<Type, List<String>> expInfo = new HashMap<>();
+        if(!metadataVo.getSchema().isEmpty()){
+            expInfo.put(Type.SCHEMA, metadataVo.getSchema());
+        }
+        if(!metadataVo.getUsers().isEmpty()){
+            expInfo.put(Type.USER, metadataVo.getUsers());
+        }
+        if(!metadataVo.getRoles().isEmpty()){
+            expInfo.put(Type.ROLE,metadataVo.getRoles());
+        }
+        if(!metadataVo.getView().isEmpty()){
+            expInfo.put(Type.VIEW,metadataVo.getView());
+        }
+        if(!metadataVo.getProcedure().isEmpty()){
+            expInfo.put(Type.PROCEDURE,metadataVo.getProcedure());
+        }
+        if(!metadataVo.getSequence().isEmpty()){
+            expInfo.put(Type.SEQUENCE,metadataVo.getSequence());
+        }
+        if(!metadataVo.getTrigger().isEmpty()){
+            expInfo.put(Type.TRIGGER,metadataVo.getTrigger());
+        }
+        if(!metadataVo.getTable().isEmpty()){
+            if(metaBackupEntity.getIsStructure().indexOf("0")!=-1){
+                expInfo.put(Type.TABLE,metadataVo.getTable());
+            }
+            if(metadataVo.isExpData()){
+                expInfo.put(Type.DATA,metadataVo.getTable());
+            }
+
+        }
+        try {
+            String reslut=exp.expMetaData(metaBackupEntity.getParentId(),expInfo,metaBackupEntity.getStorageDirectory());
+            resultT.setSuccessMessage(reslut);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 

@@ -32,7 +32,7 @@ public class JobInfoEntity extends BaseEntity{
     private String executorRouteStrategy;	// 执行器路由策略
     @Column(name="executor_handler", length=255)
     private String executorHandler;		    // 执行器，任务Handler名称
-    @Column(name="executor_param", length=5000)
+    @Column(name="executor_param", columnDefinition = "TEXT")
     private String executorParam;		    // 执行器，任务参数
     @Column(name="executor_block_strategy", length=50)
     private String executorBlockStrategy;	// 阻塞处理策略

@@ -23,12 +23,20 @@ public class MetaBackupEntity extends JobInfoEntity {
     private String databaseId;
     @Column(name="is_structure", length=50)
     private String isStructure;
-    @Column(name="back_content", length=5000)
+    @Column(name="back_content",columnDefinition = "TEXT")
     private String backContent;
     @Column(name="parent_id", length=50)
     private String parentId;
     @Column(name="datbase_name", length=200)
     private String databaseName;
+    @Column(name="storage_directory", length=200)
+    private String storageDirectory;
+    @Column(name="task_name", length=200)
+    private String taskName;
+    @Column(name="conditions", length=200)
+    private String conditions;
+    @Column(name="cansandra_template", length=200)
+    private String cansandraTemplate;
 
 }
 
