@@ -147,7 +147,7 @@ export default {
   },
   methods: {
     createTimeFormater: function(row) {
-      return formatTime(row.createTime, "Y-M-D h-m-s");
+      return formatTime(row.createTime, "Y-M-D h:m:s");
     },
     // table自增定义方法
     table_index(index) {
@@ -163,6 +163,7 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
+      console.log(this.queryParams);
       specialList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;

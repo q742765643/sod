@@ -3,7 +3,8 @@
     <!-- 数据注册审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="数据分类：">
-        <el-select v-model="queryParams.importName" placeholder>
+        <el-select v-model="queryParams.DDataId" placeholder>
+          <el-option key="index" label="全部" value></el-option>
           <el-option
             v-for="(item,index) in dbtypeselect"
             :key="index"
@@ -14,7 +15,7 @@
       </el-form-item>
 
       <el-form-item label="审核状态：">
-        <el-select v-model="queryParams.status" placeholder>
+        <el-select v-model="queryParams.examineStatus" placeholder>
           <el-option label="待审核" value="1"></el-option>
           <el-option label="通过" value="2"></el-option>
           <el-option label="不通过" value="3"></el-option>
@@ -40,37 +41,45 @@
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column align="center" type="index" :index="table_index" min-width="10" label=" "></el-table-column>
-      <el-table-column align="center" prop="d_data_id" label="四级编码" sortable min-width="100"></el-table-column>
+      <el-table-column align="center" prop="D_DATA_ID" label="四级编码" sortable min-width="100"></el-table-column>
       <el-table-column
         align="center"
-        prop="class_name"
+        prop="TYPE_NAME"
         label="数据名称"
-        min-width="100"
+        min-width="90"
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column align="center" prop="username" label="申请人" min-width="80"></el-table-column>
-      <el-table-column align="center" prop="deptName" label="机构" min-width="100"></el-table-column>
+      <el-table-column align="center" prop="deptName" label="机构" min-width="60"></el-table-column>
       <el-table-column align="center" prop="phone" label="联系方式" min-width="60"></el-table-column>
-      <el-table-column align="center" prop="apply_time" label="申请时间" sortable min-width="100"></el-table-column>
       <el-table-column
         align="center"
-        prop="examine_status"
+        prop="CREATE_TIME"
+        label="申请时间"
+        sortable
+        min-width="100"
+        :formatter="formatCreateTime"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="EXAMINE_STATUS"
         label="审核状态"
         min-width="60"
         v-if="datacell !==2 "
       >
         <template slot-scope="scope">
-          <span v-if="scope.row.examine_status==1">待审核</span>
-          <span v-if="scope.row.examine_status==3">审核不通过</span>
-          <span v-if="scope.row.examine_status==4">删除申请中</span>
-          <span v-if="scope.row.examine_status==5">已失效</span>
+          <span v-if="scope.row.EXAMINE_STATUS==1">待审核</span>
+          <span v-if="scope.row.EXAMINE_STATUS==3">审核不通过</span>
+          <span v-if="scope.row.EXAMINE_STATUS==4">删除申请中</span>
+          <span v-if="scope.row.EXAMINE_STATUS==5">已失效</span>
         </template>
       </el-table-column>
       <el-table-column
         align="center"
         prop="storage_define_identifier"
         label="存储构建"
-        min-width="55"
+        min-width="70"
         v-if="datacell===2"
       >
         <template slot-scope="scope2">
@@ -88,7 +97,7 @@
         align="center"
         prop="storage_define_identifier"
         label="迁移清除"
-        min-width="55"
+        min-width="70"
         v-if="datacell===2"
       >
         <template slot-scope="scope4">
@@ -109,7 +118,7 @@
         align="center"
         prop="storage_define_identifier"
         label="备份"
-        min-width="35"
+        min-width="55"
         v-if="datacell===2"
       >
         <template slot-scope="scope5">
@@ -131,7 +140,7 @@
         align="center"
         prop="storage_define_identifier"
         label="恢复"
-        min-width="35"
+        min-width="55"
         v-if="datacell===2"
       >
         <template slot-scope="scope6">
@@ -155,7 +164,7 @@
             type="text"
             plain
             size="mini"
-            v-if="scope1.row.examine_status===1"
+            v-if="scope1.row.EXAMINE_STATUS===1"
             @click="examineData(scope1.row)"
           >
             <i class="el-icon-s-management"></i>审核
@@ -164,7 +173,7 @@
             plain
             size="mini"
             type="text"
-            v-if="scope1.row.examine_status==2||scope1.row.examine_status==4"
+            v-if="scope1.row.EXAMINE_STATUS==2||scope1.row.EXAMINE_STATUS==4"
             @click="deleteList(scope1.row)"
           >
             <i class="el-icon-delete"></i>删除
@@ -173,7 +182,7 @@
             plain
             size="mini"
             type="text"
-            v-if="scope1.row.examine_status===3"
+            v-if="scope1.row.EXAMINE_STATUS===3"
             @click="showReason(scope1.row)"
           >
             <i class="el-icon-tickets"></i>原因
@@ -203,24 +212,34 @@
         ref="myHandleServer"
       />
     </el-dialog>
+    <!-- 数据注册审核-->
+    <el-dialog :visible.sync="reviewdataRegisterVisible" fullscreen title="存储资料审核">
+      <reviewDataRegister
+        v-if="reviewdataRegisterVisible"
+        :registerForm="reviewFormData"
+        @closeexamine="closeexamine"
+      />
+    </el-dialog>
+    <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
+      <revieStepRegister v-if="reviewStep" :materialObj="materialObj" @closeStep="closeStep" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+  getDataClassify,
+  getDataTable
+} from "@/api/authorityAudit/DRegistration/index";
+import { formatTime } from "@/components/commonVaildate";
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
+//数据注册审核
+import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataRegister";
+import revieStepRegister from "@/views/authorityAudit/DRegistration/review/index";
 export default {
   components: {
-    handleAccount
+    handleAccount,
+    reviewDataRegister
   },
   data() {
     return {
@@ -229,11 +248,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        examineStatus: "1",
+        DDataId: ""
       },
+      datacell: 1, //当前审核状态
       examineStatus: [
         {
           value: "0",
@@ -251,10 +269,19 @@ export default {
       total: 0,
       tableData: [],
       dialogTitle: "",
-      handleDialog: false
+      handleDialog: false,
+      dbtypeselect: [], //审核状态
+      reviewFormData: {},
+      reviewdataRegisterVisible: false,
+      materialObj: {}, //新增资料需要回显公共元数据信息
+      reviewStep: false
     };
   },
   created() {
+    //查询条件 -> 获取数据分类
+    getDataClassify().then(response => {
+      this.dbtypeselect = response.data;
+    });
     this.getList();
   },
   methods: {
@@ -269,16 +296,41 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 查询角色列表 */
+    /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
+      this.datacell = this.queryParams.examineStatus * 1;
+      getDataTable(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
+    },
+    //格式化申请时间
+    formatCreateTime(row) {
+      return formatTime(row.CREATE_TIME, "Y-M-D h:m:s");
+    },
+    //审核操作
+    examineData(row) {
+      this.reviewFormData = row;
+      this.reviewdataRegisterVisible = true;
+    },
+    closeexamine(registerForm) {
+      this.reviewdataRegisterVisible = false;
+      if (registerForm == 3) {
+        this.getList();
+      } else {
+        if (registerForm != undefined) {
+          this.materialObj = registerForm;
+        } else {
+          this.materialObj = {};
         }
-      );
+        this.reviewStep = true;
+      }
+    },
+    closeStep() {
+      this.reviewStep = false;
+      this.getList();
     },
     resetQuery() {
       this.queryParams = {

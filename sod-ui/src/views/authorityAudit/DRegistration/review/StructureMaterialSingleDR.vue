@@ -139,9 +139,9 @@
 
 <script>
 // 存储元数据资料树
-// import StructureStorageTree from "@/views/structureManagement/tableStructureManage/StructureStorageTree";
+import StructureStorageTree from "@/views/structureManagement/tableStructureManage/StructureStorageTree";
 // // 编辑数据用途
-// import EditDataUseDialog from "@/views/structureManagement/tableStructureManage/EditDataUseDialog";
+import EditDataUseDialog from "@/views/structureManagement/tableStructureManage/EditDataUseDialog";
 // //接口地址
 // import { interfaceObj } from "@/urlConfig";
 export default {

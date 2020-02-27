@@ -298,7 +298,7 @@
 // import { interfaceObj } from "@/urlConfig.js";
 // import { englishAndNumValidation } from "@/components/common.js";
 // // cron表达式
-// import Cron from "@/components/cron/Cron";
+import Cron from "@/components/cron/Cron";
 export default {
   name: "handleMsgDialog",
   components: {

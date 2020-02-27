@@ -58,7 +58,7 @@
 <script>
 // import { interfaceObj } from "@/urlConfig.js";
 // //表结构管理--弹出层
-// import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
+import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
 export default {
   name: "tableManagementDR",
   components: {

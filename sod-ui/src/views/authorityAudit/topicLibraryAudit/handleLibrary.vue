@@ -13,7 +13,7 @@
             <el-input size="small" v-model="msgFormDialog.uses"></el-input>
           </el-form-item>
           <el-form-item label="创建人">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.userRealname"></el-input>
+            <el-input size="small" :disabled="true" v-model="msgFormDialog.userId"></el-input>
           </el-form-item>
           <el-form-item label="机构">
             <el-input size="small" :disabled="true" v-model="msgFormDialog.department"></el-input>
@@ -100,7 +100,7 @@
         </section>
         <!-- 列表 -->
         <section class="loadTable">
-          <el-table :data="tableLibraryData" border stripe style="width: 100%;">
+          <el-table :data="tableLibraryData" border style="width: 100%;">
             <el-table-column align="center" type="index" width="50"></el-table-column>
             <el-table-column
               align="center"
@@ -108,15 +108,35 @@
               label="资料分类"
               :show-overflow-tooltip="true"
             ></el-table-column>
-            <el-table-column align="center" prop="dataName" label="资料名称"></el-table-column>
-            <el-table-column align="center" prop="dataClassId" label="四级编码"></el-table-column>
-            <el-table-column align="center" prop="tableName" label="表名称"></el-table-column>
-            <el-table-column align="center" prop="dataName" label="数据库"></el-table-column>
-            <el-table-column align="center" prop="sdbName" label="专题名"></el-table-column>
+            <el-table-column
+              align="center"
+              prop="dataName"
+              label="资料名称"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="ddataId"
+              label="四级编码"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="tableName"
+              label="表名称"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              align="center"
+              prop="databaseName"
+              label="数据库"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
             <el-table-column
               align="center"
               prop="applyAuthority"
               label="申请权限"
+              width="80"
               :formatter="applyAuthFormatter"
             ></el-table-column>
           </el-table>
@@ -163,14 +183,7 @@
         </section>
         <!-- 列表 -->
         <section class="loadTable">
-          <el-table
-            ref="multipleTable"
-            :data="baseTableLibraryData"
-            border
-            stripe
-            style="width: 100%;"
-            @selection-change="handleSelectionChange"
-          >
+          <el-table :data="baseTableLibraryData" border @selection-change="handleSelectionChange">
             <el-table-column align="center" type="selection" width="45"></el-table-column>
             <el-table-column
               align="center"
@@ -186,7 +199,7 @@
             ></el-table-column>
             <el-table-column
               align="center"
-              prop="dataClassId"
+              prop="ddataId"
               label="四级编码"
               :show-overflow-tooltip="true"
             ></el-table-column>
@@ -198,14 +211,8 @@
             ></el-table-column>
             <el-table-column
               align="center"
-              prop="dataName"
+              prop="databaseName"
               label="数据库"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="sdbName"
-              label="专题名"
               :show-overflow-tooltip="true"
             ></el-table-column>
             <el-table-column
@@ -216,12 +223,12 @@
               :formatter="applyAuthFormatter"
             ></el-table-column>
 
-            <el-table-column align="center" prop="authorize" label="审核状态">
+            <el-table-column align="center" prop="empowerAuthority" label="审核状态">
               <template slot-scope="scope">
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.authorize == '1'"
+                  v-if="scope.row.empowerAuthority == '1'"
                   type="success"
                   icon="el-icon-check"
                 >已授权</el-link>
@@ -275,9 +282,10 @@ import {
   getById,
   getAuthorityBySdbId,
   getSpecialDataList,
-  empowerDatabaseSperial,
   empowerDataBatch,
-  empowerDataOne
+  empowerDataOne,
+  empowerDatabaseSpecial,
+  update
 } from "@/api/authorityAudit/topicLibraryAudit";
 import { download } from "@/api/authorityAudit/DBaccount";
 var baseUrl = process.env.VUE_APP_WLEI;
@@ -371,8 +379,8 @@ export default {
         if (res.code == 200) {
           if (res.data && res.data.length > 0) {
             this.databaseList = res.data;
-            this.databaseList.forEach(element => {
-              element.checkList = [];
+            this.databaseList.forEach((element, index) => {
+              this.$set(element, "checkList", []);
               if (element.createTable == "2") {
                 element.checkList.push("createTable");
               }
@@ -388,13 +396,8 @@ export default {
       });
     },
     trueDialog(formName) {
-      let editDBobj = {};
-      editDBobj.tdbId = this.searchObj.tdb_id;
-      editDBobj.tdbName = this.msgFormDialog.sdbName;
-      editDBobj.Uses = this.msgFormDialog.uses;
-      editDBobj.sortNO = this.msgFormDialog.sortNO;
-      this.axios.post(interfaceObj.SpecialDB_update, editDBobj).then(res => {
-        if (res.data.returnCode == 0) {
+      update(this.msgFormDialog).then(response => {
+        if (res.code == 200) {
           this.$emit("closedialog");
           this.$message({
             type: "success",
@@ -403,10 +406,12 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: "修改失败，请稍后重试"
+            message: res.msg
           });
         }
       });
+      /* let editDBobj = {};
+      editDBobj.tdbId = this.searchObj.tdb_id; */
     },
     // 获取专题库资料列表
     searchLibraryFun() {
@@ -440,67 +445,32 @@ export default {
     },
     //数据库授权
     addPhysicsDefine() {
-      empowerDatabaseSperial().then(response => {
-        this.tableData = response.data.pageData;
-        this.total = response.data.totalCount;
-        this.loading = false;
-      });
-
-      let tdb_id = this.searchObj.tdb_id;
-      let sdbName = this.msgFormDialog.sdbName;
-      let simpleName = this.msgFormDialog.simpleName;
-      if (this.msgFormDialog.simpleName == "") {
-        this.$message({ type: "error", message: "数据不完整！" });
-        return;
-      }
-      let specialAuthority = [];
-      let checkedIds = "";
-      for (let i = 0; i < this.databaseList.length; i++) {
-        let sa = {};
-        sa.tdb_id = tdb_id;
-        sa.database_id = this.databaseList[i].id;
-        let crateObject = this.databaseList[i].checkList.find(item => {
-          return item == "crate";
-        });
-        sa.create_table = crateObject == null ? 1 : 2;
-        let deleteObject = this.databaseList[i].checkList.find(item => {
-          return item == "delete";
-        });
-        sa.delete_table = deleteObject == null ? 1 : 2;
-        let readwriteObject = this.databaseList[i].checkList.find(item => {
-          return item == "readwrite";
-        });
-        sa.table_data_access = readwriteObject == null ? 1 : 2;
-        specialAuthority.push(sa);
-        checkedIds += this.databaseList[i].id + ",";
-      }
-      if (checkedIds.length == 0) {
-        this.$message({ type: "error", message: "缺少物理库!" });
-        return;
-      } else {
-        checkedIds = checkedIds.substring(0, checkedIds.length - 1);
-      }
-      let database_id = checkedIds;
-      let physicsDefine = {
-        tdb_id: tdb_id,
-        sdbName: sdbName,
-        database_instance: simpleName,
-        database_schema_name: simpleName,
-        parent_id: database_id,
-        database_classify: "专题库",
-        user_id: this.msgFormDialog.user_id,
-        specialAuthority: specialAuthority
-      };
-      this.axios
-        .post(interfaceObj.SpecialDB_addPhysicsDefine, physicsDefine)
-        .then(res => {
-          if (res.data.returnCode == "0") {
-            this.$message({ type: "info", message: "添加成功" });
-            this.databaseList = [];
-            this.initDetail();
-            this.searchLibraryFun();
+      let obj = {};
+      let listArry = this.databaseList;
+      listArry.forEach(listele => {
+        let checkArry = listele.checkList;
+        checkArry.forEach(cele => {
+          if (listele[cele]) {
+            listele[cele] = 2;
           }
         });
+      });
+      obj.databaseSpecialAuthorityList = listArry;
+      obj.databaseId = this.msgFormDialog.databaseId;
+      obj.sdbId = this.msgFormDialog.id;
+      obj.sdbName = this.msgFormDialog.sdbName;
+      obj.simpleName = this.msgFormDialog.simpleName;
+      obj.userId = this.msgFormDialog.userId;
+      console.log(obj);
+      empowerDatabaseSpecial(obj).then(res => {
+        if (res.code == 200) {
+          this.$message({ type: "success", message: "授权成功" });
+          this.databaseList = [];
+          this.initDetail();
+          this.searchLibraryFun();
+          this.loadReadList();
+        }
+      });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -567,45 +537,7 @@ export default {
           this.$message({ type: "error", message: "授权失败" });
         }
       });
-    },
-    refuseCommit() {
-      this.refuseReasonDialog = false;
-      if (this.single) {
-        this.paramList.cause = this.refusereason;
-        this.axios
-          .post(interfaceObj.SpecialDB_oneUpdatePower, this.paramList)
-          .then(res => {
-            if (res.data.data.result == "success") {
-              this.$message({ type: "info", message: "拒绝成功" });
-              this.loadReadList();
-            } else {
-              this.$message({ type: "error", message: "拒绝失败" });
-            }
-          });
-      } else {
-        this.paramList.forEach(element => {
-          element.cause = this.refusereason;
-        });
-        let obj = {};
-        obj.paramList = this.paramList;
-        obj.cause = this.refusereason;
-        this.axios
-          .post(interfaceObj.SpecialDB_batchUpdatePower, obj)
-          .then(res => {
-            if (res.data.result) {
-              this.$alert(res.data.result, "温馨提示", {
-                dangerouslyUseHTMLString: true
-              });
-              // this.$message({ type: "info", message: res.data.result });
-              this.loadReadList();
-            } else {
-              this.$message({ type: "error", message: "拒绝失败" });
-            }
-          });
-      }
-    },
-    // 审核状态
-    statusShow() {}
+    }
   }
 };
 </script>

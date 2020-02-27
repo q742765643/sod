@@ -8,17 +8,17 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="四级编码">
-              <el-input v-model="registerForm.d_data_id" :disabled="true"></el-input>
+              <el-input v-model="registerForm.D_DATA_ID" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="资料名称">
-              <el-input v-model="registerForm.type_name" :disabled="true"></el-input>
+              <el-input v-model="registerForm.TYPE_NAME" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="用途描述">
-              <el-select disabled class="size-full" v-model="registerForm.logic_id">
+              <el-select disabled class="size-full" v-model="registerForm.LOGIC_ID">
                 <el-option
                   :key="index"
                   :label="item.name"
@@ -33,20 +33,20 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="服务权限">
-              <el-select class="size-full" disabled v-model="registerForm.ispublish">
-                <el-option label="公开" value="1"></el-option>
-                <el-option label="限制" value="0"></el-option>
+              <el-select class="size-full" disabled v-model="registerForm.IS_PUBLISH">
+                <el-option label="公开" :value="1"></el-option>
+                <el-option label="限制" :value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="表名称">
-              <el-input v-model="registerForm.table_name" :disabled="true"></el-input>
+              <el-input v-model="registerForm.TABLE_NAME" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="申请人">
-              <el-input v-model="registerForm.username" :disabled="true"></el-input>
+              <el-input v-model="registerForm.USER_NAME" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -87,13 +87,14 @@
     <div class="dialog-footer">
       <el-button type="primary" v-if="radio==1" @click="checkFuc(2)">通过</el-button>
       <el-button type="warning" v-if="radio==2" @click="checkFuc(3)">拒绝</el-button>
+      <el-button @click="closeFuc">取消</el-button>
     </div>
   </div>
 </template>
 
 <script>
 // import { interfaceObj } from "@/urlConfig";
-
+import { updateStatus } from "@/api/authorityAudit/DRegistration/reviewdataRegister";
 export default {
   name: "reviewDataRegister",
   props: {
@@ -133,11 +134,15 @@ export default {
     checkFuc(type) {
       //this.$emit("closeexamine", this.registerForm);
       const checkobj = {
-        apply_id: this.registerForm.apply_id,
-        d_data_id: this.registerForm.d_data_id,
-        status: type,
-        cause: this.registerForm.data_prop
+        id: this.registerForm.ID,
+        ddataId: this.registerForm.D_DATA_ID,
+        tableName: this.registerForm.TABLE_NAME
       };
+      console.log(checkobj);
+      updateStatus(checkobj).then(response => {
+        console.log(response);
+      });
+      return;
       this.axios
         .post(interfaceObj.DataRegister_powerCheck, checkobj)
         .then(res => {
@@ -156,10 +161,17 @@ export default {
             this.$message.error("操作失败，请联管理员");
           }
         });
+    },
+    closeFuc() {
+      this.$emit("closeexamine", 3);
     }
   }
 };
 </script>
 
 <style lang="scss">
+.dialog-footer {
+  margin-top: 10px;
+  text-align: center;
+}
 </style>

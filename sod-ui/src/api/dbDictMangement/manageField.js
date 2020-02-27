@@ -7,46 +7,46 @@ export function findAllManageGroup() {
     method: 'get',
   })
 }
-export function addManageGroup(query) {
+export function addManageGroup(data) {
   return request({
     url: baseUrl + "/managefield/addManageGroup",
     method: "post",
-    params: query
+    params: data
   });
 }
-export function editManageGroup(query) {
+export function editManageGroup(data) {
   return request({
     url: baseUrl + "/managefield/editManageGroup",
     method: "PUT",
-    params: query
+    params: data
   });
 }
 export function findManageFieldByPk(query) {
   return request({
     url: baseUrl + '/managefield/findManageFieldByPk',
     method: 'get',
-    data: query
+    params: query
   })
 }
 export function pageField(query) {
   return request({
     url: baseUrl + '/managefield/page',
     method: 'get',
-    data: query
+    params: query
   })
 }
-export function delManageGroup(data) {
+export function delManageGroup(query) {
   return request({
     url: baseUrl + '/managefield/delManageGroup',
     method: 'DELETE',
-    data: data
+    params: query
   })
 }
-export function addManageField(query) {
+export function addManageField(data) {
   return request({
     url: baseUrl + "/managefield/addManageField",
     method: "post",
-    params: query
+    params: data
   });
 }
 export function findByType() {
@@ -55,9 +55,18 @@ export function findByType() {
     method: "get",
   });
 }
-export function delManageField() {
+export function delManageField(data) {
   return request({
-    url: baseUrl + "/restApi/dicmgn/delManageField",
+    url: baseUrl + "/managefield/delManageField",
     method: "DELETE",
+    params: data
+  });
+}
+
+export function editManageField(data) {
+  return request({
+    url: baseUrl + "/managefield/editManageField",
+    method: "put",
+    params: data
   });
 }
