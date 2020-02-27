@@ -230,4 +230,28 @@
         </where>
     </select>
 
+    <update id="updateNewdataApplyStatus">
+        update t_sod_newdata_apply
+        <set>
+            <if test="entity.memo != null and entity.memo  != ''">
+                memo = #{entity.memo},
+            </if>
+            <if test="entity.examiner != null and entity.examiner  != ''">
+                examiner = #{entity.examiner},
+            </if>
+            <if test="entity.examineTime != null">
+                examine_time = #{entity.examineTime},
+            </if>
+            <if test="entity.isPublish != null and entity.isPublish  != ''">
+                is_publish = #{entity.isPublish},
+            </if>
+            <if test="entity.remark != null and entity.remark  != ''">
+                remark = #{entity.remark},
+            </if>
+            <if test="entity.examineStatus != null and entity.examineStatus  != ''">
+                examine_status = #{entity.examineStatus},
+            </if>
+        </set>
+             where  id = #{entity.id}
+    </update>
 </mapper>
