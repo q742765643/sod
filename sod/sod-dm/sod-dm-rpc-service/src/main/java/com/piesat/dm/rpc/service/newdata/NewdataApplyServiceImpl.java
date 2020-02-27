@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -84,10 +85,14 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         return pageBean;
     }
 
+    @Transactional
     @Override
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
-        newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
+        //newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
+        newdataApplyEntity.setExamineTime(new Date());
+        newdataApplyEntity.setExaminer("");
+        mybatisQueryMapper.updateNewdataApplyStatus(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
 

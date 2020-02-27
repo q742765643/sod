@@ -98,7 +98,7 @@ public class NewdataApplyController {
         return resultT;
     }
 
-    @PutMapping(value = "/updateStatus")
+    @PostMapping(value = "/updateStatus")
     @ApiOperation(value = "存储资料审核接口", notes = "存储资料审核接口")
     public ResultT updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
         try {

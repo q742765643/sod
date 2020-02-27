@@ -21,27 +21,27 @@ public class NewdataApplyEntity extends BaseEntity {
     /**
      * 四级编码
      */
-    @Column(name = "d_data_id", length = 20, nullable = false)
+    @Column(name = "d_data_id", length = 20)
     private String dDataId;
 
     /**
      * 服务编码
      * MUSIC接口注册时提供
      */
-    @Column(name = "data_service_id", length = 20, nullable = true)
+    @Column(name = "data_service_id", length = 20)
     private String dataServiceId;
 
    /**
      * 存储编码
     */
-    @Column(name = "data_class_id", length = 20, nullable = true)
+    @Column(name = "data_class_id", length = 20)
     private String dataClassId;
 
    /**
      * 逻辑库ID
     */
 
-    @Column(name = "logic_id", length = 64, nullable = false)
+    @Column(name = "logic_id", length = 64)
     private String logicId;
 
     /**
@@ -53,13 +53,13 @@ public class NewdataApplyEntity extends BaseEntity {
     /**
      * 表英文名称
      */
-    @Column(name = "table_name", length = 64, nullable = false)
+    @Column(name = "table_name", length = 64)
     private String tableName;
 
     /**
      * 数据采集频次
      */
-    @Column(name = "data_freq", length = 50, nullable = false)
+    @Column(name = "data_freq", length = 50)
     private String dataFreq;
 
     /**
@@ -73,7 +73,7 @@ public class NewdataApplyEntity extends BaseEntity {
      * 服务权限
      * 1公开,2限制
      */
-    @Column(name = "is_publish", nullable = false)
+    @Column(name = "is_publish")
     private Integer isPublish;
 
     /**
@@ -85,7 +85,7 @@ public class NewdataApplyEntity extends BaseEntity {
     /**
      * 申请用户ID
      */
-    @Column(name = "user_id", length = 50, nullable = false)
+    @Column(name = "user_id", length = 50)
     private String userId;
 
     /**
