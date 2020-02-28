@@ -170,7 +170,7 @@ public class XuguService {
 
         }
         try {
-            String reslut=exp.expMetaData(metaBackupEntity.getParentId(),expInfo,metaBackupEntity.getStorageDirectory());
+            String reslut=exp.expMetaData(metaBackupEntity.getParentId(),expInfo,metadataVo.getIndexPath());
             resultT.setSuccessMessage(reslut);
         } catch (Exception e) {
             e.printStackTrace();

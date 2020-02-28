@@ -5,8 +5,10 @@ import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.vo.ClearVo;
+import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.util.ResultT;
 
@@ -34,5 +36,7 @@ public abstract class BaseBusiness {
     public abstract long selectTableCount(String parentId,String ktable, String conditions, ResultT<String> resultT);
 
     public abstract List<TreeVo> findMeta(String parentId);
+
+    public abstract void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT);
 }
 

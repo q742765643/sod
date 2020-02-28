@@ -6,6 +6,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.service.DatabaseOperationService;
+import com.piesat.schedule.client.service.databse.GbaseService;
 import com.piesat.schedule.client.service.databse.XuguService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.Select2File;
@@ -13,8 +14,10 @@ import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
 import com.piesat.schedule.client.vo.ClearVo;
+import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
@@ -169,6 +172,12 @@ public class XuguBusiness extends BaseBusiness{
         }
         return null;
 
+    }
+
+    @Override
+    public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT) {
+        XuguService xuguService= SpringUtil.getBean(XuguService.class);
+        xuguService.metaBack(metaBackupEntity,metadataVo,resultT);
     }
 }
 

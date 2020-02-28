@@ -64,7 +64,7 @@ spring:
     open-in-view: false
   redis:
     host: 1.119.5.177
-    port: 8000
+    port: 8001
     timeout: 5000
     password:
 mybatis:

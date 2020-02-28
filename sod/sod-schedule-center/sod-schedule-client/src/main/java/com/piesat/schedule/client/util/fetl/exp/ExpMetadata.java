@@ -25,7 +25,9 @@ import com.xugu.cloudjdbc.Types;
 import com.piesat.schedule.client.util.fetl.permission.LoadPermission;
 import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.util.fetl.util.FetlUtil;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ExpMetadata {
 	
 	static{
@@ -664,8 +666,7 @@ public class ExpMetadata {
 	}
 	
 	public void expData(BufferedWriter writer, Connection conn, List<String> tableNames, File file) throws Exception{
-		String path = file.getParentFile().getAbsolutePath() + File.separator
-				+ file.getName().substring(0,file.getName().lastIndexOf("."));
+		String path = file.getParentFile().getPath();
 		if(tableNames == null){
 			Statement st = null;
 			ResultSet rs = null;
@@ -682,13 +683,15 @@ public class ExpMetadata {
 			}
 		} else{
 			for(String tableName:tableNames){
+				log.info("开始备份表{}数据",tableName);
 				expData(writer,conn,tableName,path);
 			}
 		}
 	}
 	
 	public void expData(BufferedWriter writer,Connection conn, String tableName,String path) throws Exception{
-		File expFile = new File(path +"-"+tableName+".exp");
+
+		File expFile = new File(path +"/DATA_"+tableName+".exp");
 		String columns = expData(conn, tableName, "select * from "+ tableName, expFile);
 		writer.write("---data "+tableName.toUpperCase()+"---\r\n");
 		writer.write(columns+"\r\n");
@@ -839,8 +842,8 @@ public class ExpMetadata {
 		try {
 			DataSourceContextHolder.setDataSource(parentId);
 			File file = new File(filepath);
-			if (file.isDirectory()) {
-				file=new File(file+"/index.sql");
+			//if (file.isDirectory()) {
+				//file=new File(file+"/index.sql");
 				/*String db = null;
 				int lastIndex = url.indexOf("?");
 				if(lastIndex != -1){
@@ -849,7 +852,7 @@ public class ExpMetadata {
 					db = url.substring(url.lastIndexOf("/"));
 				}
 				file = new File(filepath+ System.getProperty("file.separator") + db + "_metadata.sql");*/
-			}
+			//}
 			conn=dynamicDataSource.getConnection();
 			//conn = FetlUtil.get_conn(url+"&char_set=utf8");
 			writer = new BufferedWriter(new FileWriter(file, false));

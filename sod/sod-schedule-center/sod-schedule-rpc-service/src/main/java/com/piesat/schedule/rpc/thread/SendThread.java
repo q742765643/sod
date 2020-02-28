@@ -44,7 +44,7 @@ public class SendThread {
             try {
                 this.send();
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

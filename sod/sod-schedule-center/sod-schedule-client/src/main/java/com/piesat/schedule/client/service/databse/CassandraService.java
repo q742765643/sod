@@ -13,6 +13,7 @@ import com.piesat.schedule.client.vo.CassandraConVo;
 import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.util.ResultT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
  * @author: zzj
  * @create: 2020-02-25 10:34
  **/
+@Slf4j
 @Service
 public class CassandraService {
     public List<TreeVo> findMeta(String parenId) {
@@ -91,12 +93,13 @@ public class CassandraService {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         dynamicDataSource.selectDataSource(metaBackupEntity.getParentId());
         CassandraConVo cassandraConVo = (CassandraConVo) DynamicDataSource._targetDataSources.get(metaBackupEntity.getParentId());
-        String path=metadataVo.getParentPath()+"TABLE_"+tableInfo+".sql";
+        String path=metadataVo.getParentPath()+"/TABLE_"+tableInfo+".sql";
         StringBuilder sql=new StringBuilder();
         sql.append("cqlsh ").append(cassandraConVo.getIp()).append(" ").append(cassandraConVo.getPort());
-        sql.append(" -u").append(cassandraConVo.getUserName()).append(" -p").append(cassandraConVo.getPort());
+        sql.append(" -u").append(cassandraConVo.getUserName()).append(" -p").append(cassandraConVo.getPassWord());
         sql.append(" -e ").append("'describe table "+tableInfo+"'>>"+path);
         String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
+        log.info("开始备份表{}结构",tableInfo);
         int exit= CmdUtil.expCmd(commands,resultT);
         if(exit==0){
             StringBuilder writePath=new StringBuilder();
@@ -104,6 +107,9 @@ public class CassandraService {
             writePath.append("TABLE_"+tableInfo+".sql").append("\r\n");
             writePath.append("---end table---\r\n");
             ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+        }else{
+            resultT.setSuccessMessage("表结构{}备份失败",tableInfo);
+            log.error("表结构{}备份失败",tableInfo);
         }
     }
 }
