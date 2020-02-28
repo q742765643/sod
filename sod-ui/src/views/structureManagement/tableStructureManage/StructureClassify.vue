@@ -321,11 +321,7 @@ export default {
   .el-scrollbar__wrap {
     overflow-x: hidden;
   }
-  .el-tree--highlight-current
-    .el-tree-node.is-current
-    > .el-tree-node__content {
-    background-color: #c6e2ff;
-  }
+
   //树
   .classifyTree {
     width: 216px;

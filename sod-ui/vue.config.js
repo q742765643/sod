@@ -91,6 +91,13 @@ module.exports = {
           ["^" + process.env.VUE_APP_SYNC_WLG]: ""
         }
       },
+      [process.env.VUE_APP_DIC_WLG]: {
+        target: `http://27.155.87.89:24945`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_DIC_WLG]: ""
+        }
+      },
       //王亚娟
       [process.env.VUE_APP_SYNC]: {
         target: `http://1.119.5.177:8005`,

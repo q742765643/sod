@@ -226,7 +226,8 @@ import {
   delRecord,
   delConfig,
   syncDataNow
-} from "@/api/system/commonMetadataSync";
+} from "@/api/system/commonMetadataSync/index";
+import { getDictList } from "@/api/system/commonMetadataSync/select";
 import { formatTime } from "@/components/commonVaildate.js";
 //增加查看弹框
 import handleSod from "@/views/system/commonMetadataSync/handleTask";
