@@ -3,7 +3,7 @@
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="数据用途:">
-        <el-input size="small" v-model="queryParams.LOGIC_NAME" placeholder="请输入数据用途" />
+        <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入数据用途" />
       </el-form-item>
       <el-form-item label="数据库:">
         <el-input size="small" v-model="queryParams.database_name" placeholder="请输入数据库" />
@@ -12,7 +12,7 @@
         <el-input size="small" v-model="queryParams.class_name" placeholder="请输入资料名称" />
       </el-form-item>
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.TABLE_NAME" placeholder="请输入表名称" />
+        <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
       </el-form-item>
 
       <el-form-item>
@@ -206,9 +206,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        LOGIC_NAME: "",
+        logic_name: "",
         database_name: "",
-        TABLE_NAME: "",
+        table_name: "",
         class_name: ""
       },
       total: 0,

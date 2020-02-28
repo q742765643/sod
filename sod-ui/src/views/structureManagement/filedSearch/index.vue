@@ -137,7 +137,7 @@ export default {
       } else {
         queryObj = this.queryParams;
       }
-      console.log(this.queryParams);
+      console.log(queryObj);
       this.loading = true;
       storageFieldList(queryObj).then(response => {
         this.tableData = response.data.pageData;

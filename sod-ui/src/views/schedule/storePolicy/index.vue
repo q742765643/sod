@@ -14,7 +14,7 @@
             :props="defaultProps"
             :default-expanded-keys="expandedKeys"
             :filter-node-method="filterNode"
-            @node-click="handleNodeClick"
+            @node-click="sourceNodeClick"
             ref="elTree"
           ></el-tree>
         </el-scrollbar>
@@ -150,10 +150,12 @@ export default {
       groupList: [],
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "name"
       },
       checkNode: {}, //选中高亮的节点
       expandedKeys: [], //展开的节点
+      myTreedata: [],
+      checkedNodeArr: [],
       // 弹窗 树
       dialogTitle: "",
       TreeDialog: false,
@@ -189,12 +191,49 @@ export default {
               message: res.msg
             });
       });
-      if (this.treeData.length > 0) {
-        this.$refs.elTree.setCurrentKey(this.treeData[0].groupId);
-        this.checkNode = this.treeData[0];
+      if (this.treeData.length != 0) {
+        this.getDefaultNode(this.treeData[0]);
+      }
+      this.$refs.elTree.setCurrentKey(this.checkNode.id);
+      this.sourceNodeClick(this.checkNode);
+    },
+    //获取默认选中的节点
+    getDefaultNode(nodeArr) {
+      if (nodeArr.children) {
+        let newNodeArr = nodeArr.children[0];
+        this.getDefaultNode(newNodeArr);
+      } else {
+        this.checkNode = nodeArr;
+      }
+      this.expandedKeys.push(nodeArr.id);
+    },
+    //节点点击
+    sourceNodeClick(data) {
+      this.myTreedata = [];
+      this.checkedNodeArr = {};
+      this.resetData(data);
+      let treeIds = [];
+      this.myTreedata.forEach(single => {
+        if (single.disabled) {
+          treeIds.push(single.id);
+        }
+      });
+    },
+    //获取父节点下的子节点
+    resetData(dataArr) {
+      var that = this;
+      that.myTreedata.push({
+        label: dataArr.label,
+        id: dataArr.id,
+        disabled: dataArr.disabled
+      });
+      if (dataArr.children) {
+        var child = dataArr.children;
+        for (var i = 0; i < child.length; i++) {
+          that.resetData(child[i]);
+        }
       }
     },
-    handleNodeClick() {},
     cancelDialog(msg) {
       if (!msg) {
         this.TreeDialog = false;

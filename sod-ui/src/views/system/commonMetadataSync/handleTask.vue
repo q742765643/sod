@@ -6,7 +6,12 @@
       </el-form-item>
       <el-form-item prop="tableName" label="表名:">
         <el-select size="small" filterable v-model="msgFormDialog.tableName">
-          <el-option v-for="item in tableNames" :key="item" :label="item" :value="item"></el-option>
+          <el-option
+            v-for="(item,index) in tableNames"
+            :key="index"
+            :label="item.dictValue"
+            :value="item.dictValue"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item prop="apiUrl" label="接口url:">
@@ -54,7 +59,9 @@ import {
   editConfig,
   addConfig,
   findCfgByPk
-} from "@/api/system/commonMetadataSync";
+} from "@/api/system/commonMetadataSync/index";
+import { getDictList } from "@/api/system/commonMetadataSync/select";
+
 // cron表达式
 import Cron from "@/components/cron/Cron";
 export default {
@@ -74,7 +81,7 @@ export default {
       msgFormDialog: {
         // 这里定义弹框内的参数
         taskName: "",
-        tableName: "tab_omin_cm_cc_dddidpocinfo_test", //todo
+        tableName: "", //todo
         apiUrl: "",
         apiType: "",
         apiDataKey: "",
@@ -100,12 +107,12 @@ export default {
       }
     };
   },
-  created() {
+  async created() {
     // this.msgFormDialog = this.handleObj;
-    // this.selectAllTaskName();
+    await this.selectAllTaskName();
     // this.initDetail();
     if (this.handleObj.id) {
-      findCfgByPk({ id: this.handleObj.id }).then(res => {
+      await findCfgByPk({ id: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
         } else {
@@ -163,17 +170,11 @@ export default {
       this.$emit("cancelHandle");
     },
     selectAllTaskName() {
-      let obj = { type: 41 };
-      this.axios
-        .post(interfaceObj.dictionaryManage_getByType, obj)
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            // this.database_name = dataBaseNames;
-            for (var i = 0; i < res.data.data.length; i++) {
-              this.tableNames.push(res.data.data[i].key_col);
-            }
-          }
-        });
+      getDictList(this.queryParams).then(res => {
+        if (res.code == 200) {
+          this.tableNames = res.data;
+        }
+      });
     },
     //配置策略按钮点击事件
     showStrategyDialog() {

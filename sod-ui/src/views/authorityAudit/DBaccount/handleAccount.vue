@@ -195,6 +195,7 @@
 </template>
 
 <script>
+import { Encrypt } from "@/utils/htencrypt";
 import {
   databaseList,
   addTable,
@@ -488,6 +489,9 @@ export default {
       };
       let flieData = Encrypt(JSON.stringify(obj));
       flieData = encodeURIComponent(flieData);
+      console.log(
+        baseUrl + "/dm/databaseUser/download?sign=111111&data=" + flieData
+      );
       window.location.href =
         baseUrl + "/dm/databaseUser/download?sign=111111&data=" + flieData;
     },

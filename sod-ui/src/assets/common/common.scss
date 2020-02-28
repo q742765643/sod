@@ -16,6 +16,10 @@
   padding: 10px 2px;
 }
 
+.el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+  background-color: #c6e2ff;
+}
+
 // 蓝色
 $blueMenuBg:rgba(43, 131, 233, 1);
 $blueMenuHover:rgba(22, 102, 197, 1);
