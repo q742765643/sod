@@ -1,6 +1,6 @@
 <template>
   <div class="reviewDataRegister">
-    <el-card class="box-card">
+    <el-card class="box-card" shadow="never">
       <div slot="header" class="clearfix">
         <span>新增资料基本信息</span>
       </div>
@@ -18,7 +18,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="用途描述">
-              <el-select disabled class="size-full" v-model="registerForm.LOGIC_ID">
+              <el-select disabled class="size-full" v-model="registerForm.LOGIC_NAME">
                 <el-option
                   :key="index"
                   :label="item.name"
@@ -65,7 +65,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 4}"
                 placeholder="请输入内容"
-                v-model="registerForm.data_prop"
+                v-model="registerForm.DATA_PROP"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -77,7 +77,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 4}"
                 placeholder="请输入内容"
-                v-model="registerForm.data_prop"
+                v-model="registerForm.DATA_PROP"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -109,58 +109,28 @@ export default {
       radio: "1"
     };
   },
-  created() {
-    // this.initLogicDB();
-  },
+  created() {},
   methods: {
-    //初始化数据用途
-    initLogicDB() {
-      this.axios
-        .get(interfaceObj.getLogicDB)
-        .then(({ data }) => {
-          if (data.returnCode == "0") {
-            this.logicDBArr = data.DS;
-          } else {
-            this.$message({
-              type: "error",
-              message: data.returnMessage
-            });
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
     checkFuc(type) {
-      //this.$emit("closeexamine", this.registerForm);
       const checkobj = {
         id: this.registerForm.ID,
-        ddataId: this.registerForm.D_DATA_ID,
-        tableName: this.registerForm.TABLE_NAME
+        examineStatus: this.radio * 1,
+        remark: this.registerForm.DATA_PROP
       };
-      console.log(checkobj);
       updateStatus(checkobj).then(response => {
-        console.log(response);
-      });
-      return;
-      this.axios
-        .post(interfaceObj.DataRegister_powerCheck, checkobj)
-        .then(res => {
-          if (res.data.returnCode == "0") {
-            this.$message({
-              showClose: true,
-              message: "操作成功",
-              type: "success"
-            });
-            if (type == 2) {
-              this.$emit("closeexamine", this.registerForm);
-            } else if (type == 3) {
-              this.$emit("closeexamine", type);
-            }
-          } else {
-            this.$message.error("操作失败，请联管理员");
+        if (response.code == 200) {
+          this.$message({
+            showClose: true,
+            message: "操作成功",
+            type: "success"
+          });
+          if (type == 2) {
+            this.$emit("closeexamine", this.registerForm);
+          } else if (type == 3) {
+            this.$emit("closeexamine", type);
           }
-        });
+        }
+      });
     },
     closeFuc() {
       this.$emit("closeexamine", 3);
