@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库基础库专题库
@@ -84,5 +85,19 @@ public class DatabaseController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+
+    /**
+     * 数据库_专题库
+     * @return
+     */
+    @GetMapping("/getDatabaseName")
+    @ApiOperation(value = "获取全部物理库_专题库", notes = "获取全部物理库_专题库")
+    public ResultT<List<Map<String, Object>>> getDatabaseName() {
+        ResultT<List<Map<String, Object>>> resultT = new ResultT<>();
+        List<Map<String, Object>> databaseNames = databaseService.getDatabaseName();
+        resultT.setData(databaseNames);
+        return resultT;
     }
 }
