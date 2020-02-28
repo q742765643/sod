@@ -9,3 +9,11 @@ export function strategyTree(query) {
     params: query
   })
 }
+// 获取存储策略
+export function findData(query) {
+  return request({
+    url: baseUrl + '/strategyPolicy/findData',
+    method: 'get',
+    params: query
+  })
+}
