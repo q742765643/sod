@@ -219,7 +219,7 @@
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select a.*, b.c_datumtype as type_name,c.logic_name from t_sod_newdata_apply a
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
-        left join t_sod_data_logic c on a.logic_id = c.logic_flag
+        left join t_sod_logic_define c on a.logic_id = c.logic_flag
         <where>
             <if test="map.status != null and map.status  != ''">
                 a.examine_status = #{map.status}

@@ -64,7 +64,7 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item label="访问控制">
+            <el-form-item class="selectFull" label="访问控制">
               <el-select size="small" v-model="materialData.access_control">
                 <el-option :value="1" label="公开"></el-option>
                 <el-option :value="2" label="限制"></el-option>
@@ -73,13 +73,13 @@
             <el-form-item label="排序" prop="serial_no">
               <el-input size="small" type="number" v-model="materialData.serial_no"></el-input>
             </el-form-item>
-            <el-form-item label="是否发布">
+            <el-form-item class="selectFull" label="是否发布">
               <el-select size="small" v-model="materialData.if_stop_use">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="2" label="停用"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="基础信息配置">
+            <el-form-item class="selectFull" label="基础信息配置">
               <el-select size="small" v-model="materialData.use_base_info">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
@@ -102,7 +102,7 @@
     </div>
     <div class="dialog-footer" v-if="isShow">
       <el-button type="primary" @click="makeSureSave">确认</el-button>
-      <!-- <el-button @click="cancleSave">取消</el-button> -->
+      <el-button @click="cancleSave">取消</el-button>
     </div>
 
     <!-- 存储元数据资料树 -->
@@ -235,10 +235,9 @@ export default {
   methods: {
     initDetail() {
       this.isDisabledEdit = true;
-      // debugger;
       this.detailObj = this.editMaterialObj;
       //this.detailObj.data_class_id = "A.0001.0001.D002"; //测试
-      // console.log(this.detailObj);
+      console.log(this.detailObj);
       if (!this.detailObj.data_class_id) {
         this.materialData.meta_data_name = this.detailObj.c_datumtype;
         this.materialData.d_data_id = this.detailObj.c_datum_code;
@@ -386,7 +385,10 @@ export default {
                   obj.dataClassId = this.materialData.data_class_id;
                   this.editNewDataApplyMethods(obj);
                 }
-                this.$emit("addOrEditSuccess", this.materialData);
+                this.$emit("addOrEditSuccess", {
+                  materialData: this.materialData,
+                  type: true
+                });
                 // 新增成功后将信息提交给表格页面，表格回显
               } else {
                 this.$message({
@@ -414,7 +416,7 @@ export default {
         });
     },
     cancleSave() {
-      this.$emit("closeMaterialDialog");
+      this.$emit("addOrEditSuccess", { type: false });
     }
   }
 };
@@ -467,8 +469,8 @@ export default {
       font-weight: bold;
       color: #333;
       position: relative;
-      // background: url("~@/views/structureManagement/tableStructureManage/images/editDataUse.png")
-      //   no-repeat left center;
+      background: url("~@/views/structureManagement/tableStructureManage/images/editDataUse.png")
+        no-repeat left center;
       text-indent: 28px;
     }
     h4:before {
@@ -476,7 +478,7 @@ export default {
       width: 90px;
       border-bottom: 3px solid rgba(5, 138, 229, 1);
       position: absolute;
-      top: 39px;
+      top: 36px;
       left: 0px;
     }
     .editUseDiv {
@@ -492,6 +494,9 @@ export default {
   .materialCon {
     overflow-y: auto;
     margin-bottom: 10px;
+  }
+  .selectFull .el-select {
+    width: 100%;
   }
 }
 </style>

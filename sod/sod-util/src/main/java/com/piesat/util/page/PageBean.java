@@ -9,7 +9,7 @@ import java.util.List;
  * @create: 2019-11-18 22:09
  **/
 
-public class PageBean {
+public class PageBean<T> {
     /**
      * 当前页
      */
@@ -20,12 +20,12 @@ public class PageBean {
      */
     //private int pageSize = 10;
 
-    private List<?> pageData;
+    private List<T> pageData;
 
     private long totalCount;
 
     private Integer totalPage;
-    public PageBean(long totalCount,Integer totalPage,List<?> pageData){
+    public PageBean(long totalCount,Integer totalPage,List<T> pageData){
         this.totalCount=totalCount;
         this.totalPage=totalPage;
         this.pageData=pageData;
@@ -50,11 +50,11 @@ public class PageBean {
         this.pageSize = pageSize;
     }*/
 
-    public List<?> getPageData() {
+    public List<T> getPageData() {
         return pageData;
     }
 
-    public void setPageData(List<?> pageData) {
+    public void setPageData(List<T> pageData) {
         this.pageData = pageData;
     }
 

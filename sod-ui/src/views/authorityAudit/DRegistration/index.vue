@@ -25,6 +25,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
@@ -39,7 +40,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
       <el-table-column align="center" type="index" :index="table_index" min-width="10" label=" "></el-table-column>
       <el-table-column align="center" prop="D_DATA_ID" label="四级编码" sortable min-width="100"></el-table-column>
       <el-table-column
@@ -77,15 +78,15 @@
       </el-table-column>
       <el-table-column
         align="center"
-        prop="storage_define_identifier"
+        prop="storageDefineIdentifier"
         label="存储构建"
         min-width="70"
         v-if="datacell===2"
       >
         <template slot-scope="scope2">
-          <el-button size="mini" @click="showMaterialSingle(scope2.row)">
-            <!-- <i class="btnRound blueRound" v-if="scope2.row.storage_define_identifier==1"></i>
-            <i class="btnRound orangRound" v-else></i>-->
+          <el-button class="opBtn" size="mini" @click="showMaterialSingle(scope2.row)">
+            <i class="btnRound blueRound" v-if="scope2.row.storageDefineIdentifier==1"></i>
+            <i class="btnRound orangRound" v-else></i>
             存储结构
           </el-button>
           <!-- <el-button disabled v-else size="mini">
@@ -95,18 +96,18 @@
       </el-table-column>
       <el-table-column
         align="center"
-        prop="storage_define_identifier"
+        prop="storageDefineIdentifier"
         label="迁移清除"
         min-width="70"
         v-if="datacell===2"
       >
         <template slot-scope="scope4">
-          <el-button size="mini" @click="handleCleanAndTransfer(scope4.row)">
-            <!-- <i
-                class="btnRound blueRound"
-                v-if="null!=scope4.row.clear_id&&scope4.row.clear_id!=''"
-              ></i>
-            <i class="btnRound orangRound" v-else></i>-->
+          <el-button class="opBtn" size="mini" @click="handleCleanAndTransfer(scope4.row)">
+            <i
+              class="btnRound blueRound"
+              v-if="null!=scope4.row.movecleanIdentifier&&scope4.row.movecleanIdentifier!=''"
+            ></i>
+            <i class="btnRound orangRound" v-else></i>
             迁移清除
           </el-button>
           <!-- <el-button disabled v-else size="mini">
@@ -116,18 +117,18 @@
       </el-table-column>
       <el-table-column
         align="center"
-        prop="storage_define_identifier"
+        prop="storageDefineIdentifier"
         label="备份"
         min-width="55"
         v-if="datacell===2"
       >
         <template slot-scope="scope5">
-          <el-button size="mini" @click="handleBackUp(scope5.row)">
-            <!--  <i
-                class="btnRound blueRound"
-                v-if="scope5.row.storage_define_identifier=='1'&&scope5.row.backup_id!=null&&scope5.row.backup_id!=''"
-              ></i>
-            <i class="btnRound orangRound" v-else></i>-->
+          <el-button class="opBtn" size="mini" @click="handleBackUp(scope5.row)">
+            <i
+              class="btnRound blueRound"
+              v-if="scope5.row.storageDefineIdentifier=='1'&&scope5.row.backupIdentifier!=null&&scope5.row.backupIdentifier!=''"
+            ></i>
+            <i class="btnRound orangRound" v-else></i>
             备份
           </el-button>
 
@@ -138,14 +139,14 @@
       </el-table-column>
       <el-table-column
         align="center"
-        prop="storage_define_identifier"
+        prop="storageDefineIdentifier"
         label="恢复"
         min-width="55"
         v-if="datacell===2"
       >
         <template slot-scope="scope6">
           <el-button
-            v-if="scope6.row.storage_define_identifier!='3'"
+            v-if="scope6.row.storageDefineIdentifier!='3'"
             size="mini"
             @click="openRecoverDialog(scope6.row)"
           >恢复</el-button>
@@ -223,6 +224,24 @@
     <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
       <revieStepRegister v-if="reviewStep" :materialObj="materialObj" @closeStep="closeStep" />
     </el-dialog>
+
+    <!-- 存储结构 与表结构管理的 新增、编辑资料一致 -->
+    <el-dialog
+      title="存储资料配置"
+      :visible.sync="materialSingleVisible"
+      width="90%"
+      :close-on-click-modal="false"
+      top="5vh"
+    >
+      <StructureMaterialSingle
+        v-if="materialSingleVisible"
+        :editMaterial="editMaterial"
+        :editMaterialObj="editMaterialObj"
+        :editMaterialArry="editMaterialArry"
+        @addOrEditSuccess="addOrEditSuccess"
+        ref="myHandleMaterial"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -235,11 +254,16 @@ import { formatTime } from "@/components/commonVaildate";
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
 //数据注册审核
 import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataRegister";
+//存储资料审核步骤
 import revieStepRegister from "@/views/authorityAudit/DRegistration/review/index";
+//存储结构
+import StructureMaterialSingle from "@/views/authorityAudit/DRegistration/review/StructureMaterialSingleDR";
 export default {
   components: {
     handleAccount,
-    reviewDataRegister
+    reviewDataRegister,
+    revieStepRegister,
+    StructureMaterialSingle
   },
   data() {
     return {
@@ -274,7 +298,8 @@ export default {
       reviewFormData: {},
       reviewdataRegisterVisible: false,
       materialObj: {}, //新增资料需要回显公共元数据信息
-      reviewStep: false
+      reviewStep: false,
+      materialSingleVisible: false //存储构建
     };
   },
   created() {
@@ -282,21 +307,26 @@ export default {
     getDataClassify().then(response => {
       this.dbtypeselect = response.data;
     });
+    //查询数据列表
     this.getList();
   },
   methods: {
-    // table自增定义方法
-    table_index(index) {
-      return (
-        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
-      );
-    },
-    /** 搜索按钮操作 */
+    // 查询
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    /** 查询列表 */
+    // 重置
+    resetQuery() {
+      this.queryParams = {
+        pageNum: 1,
+        pageSize: 10,
+        examineStatus: "1",
+        DDataId: ""
+      };
+      this.handleQuery();
+    },
+    // 查询列表
     getList() {
       this.loading = true;
       this.datacell = this.queryParams.examineStatus * 1;
@@ -304,7 +334,58 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        //通过状态显示
+        if (this.queryParams.examineStatus == 2) {
+          this.formatterTableData();
+        }
       });
+    },
+    //通过的数据进行预处理  根据storageConfigurations将数据处理成多条
+    formatterTableData() {
+      //1 如果是审核通过的数据
+      let newTableData = [];
+      this.tableData.forEach(item => {
+        if ("storageConfigurations" in item) {
+          let storageConfigurations = item.storageConfigurations;
+          //根据storageConfigurations长度进行条数增加\
+          if (storageConfigurations.length >= 1) {
+            storageConfigurations.forEach(scItem => {
+              let newItem = {};
+              newItem = { ...item, ...scItem };
+              newTableData.push(newItem);
+            });
+          } else {
+            let newItem = {};
+            let notCreate = {
+              storageDefineIdentifier: 2,
+              syncIdentifier: 2,
+              movecleanIdentifier: 2,
+              backupIdentifier: 2,
+              archivingIdentifier: 2
+            };
+            newItem = { ...item, ...notCreate };
+            newTableData.push(newItem);
+          }
+        } else {
+          let newItem = {};
+          let notCreate = {
+            storageDefineIdentifier: 2,
+            syncIdentifier: 2,
+            movecleanIdentifier: 2,
+            backupIdentifier: 2,
+            archivingIdentifier: 2
+          };
+          newItem = { ...item, ...notCreate };
+          newTableData.push(newItem);
+        }
+      });
+      this.tableData = newTableData;
+    },
+    // table自增定义方法
+    table_index(index) {
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     //格式化申请时间
     formatCreateTime(row) {
@@ -315,12 +396,16 @@ export default {
       this.reviewFormData = row;
       this.reviewdataRegisterVisible = true;
     },
+    // 审核通过  审核取消
     closeexamine(registerForm) {
       this.reviewdataRegisterVisible = false;
       if (registerForm == 3) {
         this.getList();
-      } else {
+      }
+      //审核步骤
+      else {
         if (registerForm != undefined) {
+          console.log(registerForm);
           this.materialObj = registerForm;
         } else {
           this.materialObj = {};
@@ -328,20 +413,39 @@ export default {
         this.reviewStep = true;
       }
     },
+    // 存储构建
+    showMaterialSingle(row) {
+      console.log(row);
+      this.editMaterialObj = row;
+      this.editMaterial = row.D_DATA_ID;
+      this.editMaterialArry = [];
+      let obj = {};
+      obj.logic_id = row.D_DATA_ID;
+      obj.logic_name = row.class_name;
+      obj.storage_name = row.TYPE_NAME;
+      obj.storage_type = row.D_DATA_ID;
+      obj.physicsName = "";
+      obj.special = row.ID;
+      obj.special_database_name = row.special_database_name;
+      this.editMaterialArry.push(obj);
+      this.materialSingleVisible = true;
+    },
+    //新增、编辑后刷新数据
+    addOrEditSuccess(operateType) {
+      if (operateType.type) {
+        console.log(operateType);
+        this.getDataBasePage("1");
+        // this.$refs.classifyTree.initMethodsTree(this.treeUrl);
+        this.$router.push({
+          name: "表结构管理",
+          params: { treeIdOfDR: operateType.parent_class_id }
+        });
+      }
+      this.materialSingleVisible = false;
+    },
     closeStep() {
       this.reviewStep = false;
       this.getList();
-    },
-    resetQuery() {
-      this.queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
-      };
-      this.handleQuery();
     },
     handleAdd() {
       // this.dialogTitle = "新增数据库账户审核";
@@ -369,3 +473,33 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.tableList {
+  .cell {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+.opBtn {
+  & > span {
+    display: flex;
+    align-items: center;
+  }
+  .orangRound {
+    background: #ff5722;
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .blueRound {
+    background: #057afe;
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+}
+</style>
