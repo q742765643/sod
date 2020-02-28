@@ -1,6 +1,6 @@
 <template>
   <div class="app-container dictionaryOther">
-    <!-- 管理字段管理 -->
+    <!--  -->
     <el-container>
       <!-- 左侧树 -->
       <el-aside class="elAside">

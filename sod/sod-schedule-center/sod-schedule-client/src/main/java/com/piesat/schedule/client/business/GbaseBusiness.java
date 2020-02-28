@@ -128,7 +128,6 @@ public class GbaseBusiness extends BaseBusiness{
     public void writeTxt(String indexPath,String tableName,String fileName,ResultT<String> resultT){
         StringBuilder msg=new StringBuilder();
         msg.append("---data "+tableName+"---").append("\r\n");
-        msg.append("gabse").append("\r\n");
         msg.append(fileName);
         msg.append("---end data---");
         ZipUtils.writetxt(indexPath,msg.toString(),resultT);

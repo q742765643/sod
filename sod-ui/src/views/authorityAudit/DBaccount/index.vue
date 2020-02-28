@@ -2,9 +2,9 @@
   <div class="app-container">
     <!-- 数据库访问账户 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
-      <el-form-item label="审核状态" prop="status">
+      <el-form-item label="审核状态" prop="examineStatus">
         <el-select
-          v-model="queryParams.status"
+          v-model="queryParams.examineStatus"
           placeholder="审核状态"
           clearable
           size="small"
@@ -47,7 +47,7 @@
         width="160px"
         :formatter="createTimeFormater"
       ></el-table-column>
-      <el-table-column align="center" prop="database_name" label="可用数据库"></el-table-column>
+      <el-table-column align="center" prop="applyDatabaseName" label="可用数据库"></el-table-column>
       <el-table-column align="center" prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='0'">待审核</span>

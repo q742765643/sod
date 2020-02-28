@@ -90,7 +90,6 @@ import day from "./day";
 import month from "./month";
 import week from "./week";
 import year from "./year";
-// import { interfaceObj } from "@/urlConfig";
 
 export default {
   props: {
@@ -168,8 +167,9 @@ export default {
     },
     // cron表达式确定
     cronSure() {
+      this.$emit("setCron", this.cronExpression);
       //对特殊字符进行编码
-      this.axios
+      /* this.axios
         .get(interfaceObj.listNext5Val, {params: {cron: this.cronExpression}})
         .then(res => {
           if (res.data&&res.data.data.length > 0) {
@@ -208,7 +208,7 @@ export default {
         })
         .catch(error => {
           console.log("出错了，这是错误信息：" + error);
-        });
+        }); */
     },
     // cron表达式取消
     cronCancel() {

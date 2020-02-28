@@ -2,6 +2,7 @@ package com.piesat.schedule.rpc.dto.mmd;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.piesat.util.BaseDto;
 
 import lombok.Data;
@@ -24,10 +25,12 @@ public class ComMetadataSyncRecordDto extends BaseDto{
 	/**
 	 * 开始时间
 	 */
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date startTime;
 	/**
 	 * 结束时间
 	 */
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date stopTime;
 	/**
 	 * 同步表名

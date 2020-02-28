@@ -1,5 +1,7 @@
 package com.piesat.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,16 +13,21 @@ import java.io.Serializable;
  * @描述 返回信息公共类
  * @创建时间 2019/4/8 14:25
  **/
-
 public class ResultT<T> implements Serializable {
     private int code = ReturnCodeEnum.SUCCESS.getKey();
     private String msg;
     private T data;
+    @JsonIgnore
     private int eiCode;
+    @JsonIgnore
     private StringBuilder processMsg = new StringBuilder();
+    @JsonIgnore
     private String kObject;
+    @JsonIgnore
     private String kEvent;
+    @JsonIgnore
     private String eventTrag;
+    @JsonIgnore
     private String eventSuggest;
     public ResultT() {
     }

@@ -24,7 +24,7 @@ public class DeptEntity extends BaseEntity {
     private String parentId;
 
     /** 祖级列表 */
-    @Column(name="ancestors", length=5000)
+    @Column(name="ancestors", columnDefinition = "TEXT")
     private String ancestors;
 
     /** 部门名称 */

@@ -1,37 +1,33 @@
 <template>
   <section class="handleTaskCommonDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="100px">
-      <el-form-item prop="task_name" label="任务名称:">
-        <el-input size="small" v-model="msgFormDialog.task_name" placeholder="请输入" />
+      <el-form-item prop="taskName" label="任务名称:">
+        <el-input size="small" v-model="msgFormDialog.taskName" placeholder="请输入" />
       </el-form-item>
-      <el-form-item prop="table_name" label="表名:">
-        <el-select size="small" filterable v-model="msgFormDialog.table_name">
+      <el-form-item prop="tableName" label="表名:">
+        <el-select size="small" filterable v-model="msgFormDialog.tableName">
           <el-option v-for="item in tableNames" :key="item" :label="item" :value="item"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="interface_url" label="接口url:">
-        <el-input size="small" v-model="msgFormDialog.interface_url" placeholder="请输入" />
+      <el-form-item prop="apiUrl" label="接口url:">
+        <el-input size="small" v-model="msgFormDialog.apiUrl" placeholder="请输入" />
       </el-form-item>
-      <el-form-item prop="interface_type" label="同步类型:">
-        <el-select size="small" filterable v-model="msgFormDialog.interface_type">
-          <el-option
-            v-for="item in interfaceTypes"
-            :key="item.key"
-            :label="item.value"
-            :value="item.key"
-          ></el-option>
+      <el-form-item prop="apiType" label="同步类型:">
+        <el-select size="small" filterable v-model="msgFormDialog.apiType">
+          <el-option label="全量同步" value="1"></el-option>
+          <el-option label="增量同步" value="2"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="interface_dataKey" label="接口关键字:">
-        <el-input size="small" v-model="msgFormDialog.interface_dataKey" placeholder="请输入" />
+      <el-form-item prop="apiDataKey" label="接口关键字:">
+        <el-input size="small" v-model="msgFormDialog.apiDataKey" placeholder="请输入" />
       </el-form-item>
-      <el-form-item prop="primary_key" label="同步主键:">
-        <el-input size="small" v-model="msgFormDialog.primary_key" placeholder="请输入" />
+      <el-form-item prop="primaryKey" label="同步主键:">
+        <el-input size="small" v-model="msgFormDialog.primaryKey" placeholder="请输入" />
       </el-form-item>
-      <el-form-item prop="start_time" label="执行策略:">
+      <el-form-item prop="startTime" label="执行策略:">
         <el-row>
           <el-col :span="18">
-            <el-input size="small" v-model="msgFormDialog.start_time" placeholder="请输入" />
+            <el-input size="small" v-model="msgFormDialog.startTime" placeholder="请输入" />
           </el-col>
           <el-col :span="4">
             <el-button type="primary" size="small" @click="showStrategyDialog()">配置策略</el-button>
@@ -54,7 +50,11 @@
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig.js";
+import {
+  editConfig,
+  addConfig,
+  findCfgByPk
+} from "@/api/system/commonMetadataSync";
 // cron表达式
 import Cron from "@/components/cron/Cron";
 export default {
@@ -70,106 +70,88 @@ export default {
   data() {
     return {
       cronDialogVisible: false,
-      interfaceTypes: [
-        {
-          key: "1",
-          value: "全量同步"
-        },
-        {
-          key: "2",
-          value: "增量同步"
-        }
-      ],
+
       msgFormDialog: {
         // 这里定义弹框内的参数
-        task_name: "",
-        table_name: "",
-        interface_url: "",
-        interface_type: "",
-        interface_dataKey: "",
-        primary_key: "",
-        start_time: ""
+        taskName: "",
+        tableName: "tab_omin_cm_cc_dddidpocinfo_test", //todo
+        apiUrl: "",
+        apiType: "",
+        apiDataKey: "",
+        primaryKey: "",
+        startTime: ""
       },
       tableNames: [],
       rules: {
-        task_name: [
+        taskName: [
           { required: true, message: "请输入任务名称", trigger: "blur" }
         ],
-        table_name: [
-          { required: true, message: "选择表名", trigger: "change" }
-        ],
-        interface_url: [
-          { required: true, message: "请输入接口url", trigger: "blur" }
-        ],
-        interface_type: [
+        tableName: [{ required: true, message: "选择表名", trigger: "change" }],
+        apiUrl: [{ required: true, message: "请输入接口url", trigger: "blur" }],
+        apiType: [
           { required: true, message: "请选择同步类型", trigger: "change" }
         ],
-        interface_dataKey: [
+        apiDataKey: [
           { required: true, message: "请输入接口关键字", trigger: "blur" }
         ],
-        start_time: [
+        startTime: [
           { required: true, message: "请输入执行策略", trigger: "blur" }
         ]
       }
     };
   },
   created() {
+    // this.msgFormDialog = this.handleObj;
     // this.selectAllTaskName();
     // this.initDetail();
+    if (this.handleObj.id) {
+      findCfgByPk({ id: this.handleObj.id }).then(res => {
+        if (res.code == 200) {
+          this.msgFormDialog = res.data;
+        } else {
+          this.$message({
+            type: "error",
+            message: "查询失败"
+          });
+        }
+      });
+    }
   },
   methods: {
-    // 获取详情
-    initDetail() {
-      if (this.handleObj.id == undefined) {
-        // 是新增
-      } else {
-        // 是详情
-        this.msgFormDialog = this.handleObj;
-      }
-    },
     trueDialog(formName) {
+      console.log(this.msgFormDialog);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.handleObj.id == undefined) {
-            this.axios
-              .post(
-                interfaceObj.commonMetadata_insertMetadata,
-                this.msgFormDialog
-              )
-              .then(res => {
-                if (res.data.returnCode == 0) {
-                  this.$message({
-                    type: "success",
-                    message: "新增成功"
-                  });
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: "新增失败"
-                  });
-                }
-                this.$emit("cancelHandle");
-              });
+          if (!this.handleObj.id) {
+            addConfig(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "新增成功"
+                });
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "新增失败"
+                });
+              }
+              this.$emit("cancelHandle");
+            });
           } else {
-            this.axios
-              .post(
-                interfaceObj.commonMetadata_updateMetadata,
-                this.msgFormDialog
-              )
-              .then(res => {
-                if (res.data.returnCode == 0) {
-                  this.$message({
-                    type: "success",
-                    message: "编辑成功"
-                  });
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: "编辑失败"
-                  });
-                }
-                this.$emit("cancelHandle");
-              });
+            editConfig(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "编辑成功"
+                });
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "编辑失败"
+                });
+              }
+              this.$emit("cancelHandle");
+            });
           }
         } else {
           console.log("error submit!!");
@@ -199,7 +181,7 @@ export default {
     },
     //设置cron表达式
     setCron(cronExpression) {
-      this.msgFormDialog.start_time = cronExpression;
+      this.msgFormDialog.startTime = cronExpression;
       this.cronDialogVisible = false;
     },
     // 关闭cron表达式

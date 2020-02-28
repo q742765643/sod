@@ -57,7 +57,7 @@ public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 	 *  启动时间
 	 */
 	@Column(name="START_TIME",length=5)
-	private Integer startTime;
+	private String startTime;
 	/**
 	 *  启动时间单位
 	 */

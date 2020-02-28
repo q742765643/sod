@@ -46,7 +46,7 @@ public class ComMetadataSyncCfgDto extends JobInfoDto{
 	/**
 	 *  启动时间
 	 */
-	private Integer startTime;
+	private String startTime;
 	/**
 	 *  启动时间单位
 	 */

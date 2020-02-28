@@ -35,9 +35,9 @@ public class BackupController {
     @RequiresPermissions("schedule:backup:list")
     @ApiOperation(value = "分页查询备份任务", notes = "分页查询备份任务")
     @GetMapping("/list")
-    public ResultT<PageBean> list(BackUpDto backup, int pageNum, int pageSize)
+    public ResultT<PageBean<BackUpDto>> list(BackUpDto backup, int pageNum, int pageSize)
     {
-        ResultT<PageBean> resultT=new ResultT<>();
+        ResultT<PageBean<BackUpDto>> resultT=new ResultT<>();
         PageForm<BackUpDto> pageForm=new PageForm<>(pageNum,pageSize,backup);
         PageBean pageBean=backupService.selectBackupList(pageForm);
         resultT.setData(pageBean);
