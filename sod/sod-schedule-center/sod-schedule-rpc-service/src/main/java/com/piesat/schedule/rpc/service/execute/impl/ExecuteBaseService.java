@@ -54,7 +54,7 @@ public abstract class ExecuteBaseService {
                   jobInfoEntity.setExecutorHandler(handler);
             }
 
-            BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfoEntity.getExecutorHandler());
+            BaseHandler baseHandler= (BaseHandler) SpringUtil.getBeanOrNull(jobInfoEntity.getExecutorHandler());
 
             if(null==baseHandler){
                   List<Server> servers=this.findServer(jobInfoEntity);

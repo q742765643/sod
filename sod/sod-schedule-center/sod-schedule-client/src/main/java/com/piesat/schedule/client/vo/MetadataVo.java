@@ -24,7 +24,11 @@ public class MetadataVo {
 
     private String indexPath="";
     private String parentPath="";
+    private String zipPath="";
+    private boolean isExpData=true;
 
-    private boolean isExpData=false;
+    private long startTime;
+
+    private long endTime;
 }
 

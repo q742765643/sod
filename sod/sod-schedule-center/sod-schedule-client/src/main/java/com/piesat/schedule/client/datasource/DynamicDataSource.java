@@ -34,8 +34,8 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
             CassandraConVo cassandraConVo=new CassandraConVo();
             cassandraConVo.setIp("10.211.55.7");
             cassandraConVo.setPort(9042);
-            cassandraConVo.setUserName("");
-            cassandraConVo.setPassWord("");
+            cassandraConVo.setUserName("cassandra");
+            cassandraConVo.setPassWord("cassandra");
             _targetDataSources.put("RADB",cassandraConVo);
 
         }else{

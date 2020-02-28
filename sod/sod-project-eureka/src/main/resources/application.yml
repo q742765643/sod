@@ -7,7 +7,7 @@ spring:
 
 eureka:
   instance:
-    hostname: 1.119.5.177
+    hostname: desktop-2vav0fh
     prefer-ip-address: true
     status-page-url-path: /actuator/info
     health-check-url-path: /actuator/health
@@ -17,7 +17,7 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://1.119.5.177:8002/eureka/
+      defaultZone: http://desktop-2vav0fh:8002/eureka/
   server:
     enable-self-preservation: false
 

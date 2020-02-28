@@ -1,6 +1,8 @@
 package com.piesat.schedule.client.util;
 
+import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ import java.io.InputStreamReader;
  * @author: zzj
  * @create: 2020-02-27 18:09
  **/
+@Slf4j
 public class CmdUtil {
     public static int expCmd(String[] commands, ResultT<String> resultT){
         StringBuilder cmd=new StringBuilder();
@@ -36,10 +39,12 @@ public class CmdUtil {
             while ((line = bufrError.readLine()) != null) {
                 msg.append(line).append('\n');
             }
-
+            if(null!=msg) {
+                log.info(msg.toString());
+            }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(OwnException.get(e));
         }
         return exitVal;
     }

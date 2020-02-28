@@ -2,6 +2,7 @@ package com.piesat.schedule.client.service.databse;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.CmdUtil;
@@ -13,6 +14,7 @@ import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.mapper.database.GbaseOperationMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ import java.util.Map;
  * @author: zzj
  * @create: 2020-02-24 17:21
  **/
+@Slf4j
 @Service
 public class GbaseService {
     @Autowired
@@ -108,8 +111,9 @@ public class GbaseService {
         DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
         if (dataSource != null) {
             try {
+                log.info("开始备份用户{}",userAndUuid);
                 String user=userAndUuid.split("--")[0];
-                String path=metadataVo.getParentPath()+"USER_"+userAndUuid+".sql";
+                String path=metadataVo.getParentPath()+"/USER_"+userAndUuid+".sql";
                 URL url=new URL(dataSource.getUrl());
                 StringBuilder sql = new StringBuilder();
                 sql.append("gccli -h ").append(url.getHost())
@@ -124,9 +128,13 @@ public class GbaseService {
                     writePath.append("USER_"+userAndUuid+".sql").append("\r\n");
                     writePath.append("---end user---\r\n");
                     ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+                }else{
+                    resultT.setSuccessMessage("用户{}备份失败",userAndUuid);
+                    log.error("用户{}备份失败",userAndUuid);
+
                 }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                log.error(OwnException.get(e));
             }
 
         }
@@ -136,7 +144,8 @@ public class GbaseService {
         DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
         if (dataSource != null) {
             try {
-                String path=metadataVo.getParentPath()+"TABLE_"+tableInfo+".txt";
+                log.info("开始备份表{}结构",tableInfo);
+                String path=metadataVo.getParentPath()+"/TABLE_"+tableInfo+".sql";
                 String instance=tableInfo.split("\\.")[0];
                 String tableName=tableInfo.split("\\.")[1];
                 URL url=new URL(dataSource.getUrl());
@@ -153,12 +162,15 @@ public class GbaseService {
                     ZipUtils.writeFile(path,write,resultT);
                     StringBuilder writePath=new StringBuilder();
                     writePath.append("---table ").append(instance).append(".").append(tableName).append("---\r\n");
-                    writePath.append("TABLE_"+tableInfo+".txt").append("\r\n");
+                    writePath.append("TABLE_"+tableInfo+".sql").append("\r\n");
                     writePath.append("---end table---\r\n");
                     ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+                }else{
+                    resultT.setSuccessMessage("表结构{}备份失败",tableInfo);
+                    log.error("表结构{}备份失败",tableInfo);
                 }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                log.error(OwnException.get(e));
             }
 
         }
@@ -169,7 +181,7 @@ public class GbaseService {
         if (dataSource != null) {
             try {
                 URL url=new URL(dataSource.getUrl());
-                String path=metadataVo.getParentPath()+"DATA_"+table+".txt";
+                String path=metadataVo.getParentPath()+"/DATA_"+table+".txt";
                 StringBuilder sql = new StringBuilder();
                 sql.append("gccli -h ").append(url.getHost())
                         .append(" -u")
@@ -188,9 +200,12 @@ public class GbaseService {
                     writePath.append("DATA_"+table+".txt");
                     writePath.append("---end data---");
                     ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
+                }else{
+                    resultT.setSuccessMessage("表数据{}备份失败",table);
+                    log.error("表数据{}备份失败",table);
                 }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                log.error(OwnException.get(e));
             }
 
         }
