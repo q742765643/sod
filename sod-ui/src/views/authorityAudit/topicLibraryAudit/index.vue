@@ -43,7 +43,7 @@
           <el-popover
             placement="top"
             effect="dark"
-            trigger="click"
+            trigger="hover"
             width="200"
             popper-class="darkPopover"
           >
