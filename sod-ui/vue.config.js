@@ -84,6 +84,13 @@ module.exports = {
           ["^" + process.env.VUE_APP_DB_API]: ""
         }
       },
+      [process.env.VUE_APP_SYNC_WLG]: {
+        target: `http://27.155.87.89:23873`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_SYNC_WLG]: ""
+        }
+      },
       //王亚娟
       [process.env.VUE_APP_SYNC]: {
         target: `http://1.119.5.177:8005`,
@@ -94,7 +101,7 @@ module.exports = {
       },
       // 吴磊
       [process.env.VUE_APP_WLEI]: {
-        target: `http://222.186.174.9:47751`,
+        target: `http://27.155.87.89:12206`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_WLEI]: ""

@@ -136,7 +136,7 @@
 <script>
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
 import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
-//分类树
+import { strategyTree } from "@/api/schedule/storePolicy";
 export default {
   components: {
     handleTree,
@@ -148,10 +148,6 @@ export default {
       highlight: true,
       treeData: [],
       groupList: [],
-      // defaultProps: {
-      //   children: "children",
-      //   label: "key_col"
-      // },
       defaultProps: {
         children: "children",
         label: "label"
@@ -175,41 +171,29 @@ export default {
       handleDictObj: {}
     };
   },
-  created() {},
+  async created() {
+    await this.getTreeData();
+  },
   watch: {
     filterText(val) {
       this.$refs.elTree.filter(val);
     }
   },
   methods: {
-    // table自增定义方法
-    table_index(index) {
-      return (
-        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
-      );
-    },
-    addType() {
-      this.dialogTitle = "添加管理字段分组";
-      this.TreeDialog = true;
-    },
-    rowType() {},
-    deleteAlert() {
-      if (!this.checkNode.id) {
-        this.$message({ message: "请选中需要删除的数据!", type: "warning" });
-        return;
+    async getTreeData() {
+      await strategyTree().then(res => {
+        res.success
+          ? (this.treeData = res.data)
+          : this.$message({
+              type: "error",
+              message: res.msg
+            });
+      });
+      if (this.treeData.length > 0) {
+        this.$refs.elTree.setCurrentKey(this.treeData[0].groupId);
+        this.checkNode = this.treeData[0];
       }
-      this.$confirm("数据和类型都会被删除，确认删除", "提示", {
-        cancelButtonText: "取消",
-        confirmButtonText: "确定",
-        type: "warning"
-      })
-        .then(() => {
-          this.rowData = this.checkNode;
-          this.deleteFun();
-        })
-        .catch(() => {}); //一定别忘了这个
     },
-    showSearch() {},
     handleNodeClick() {},
     cancelDialog(msg) {
       if (!msg) {
@@ -217,36 +201,17 @@ export default {
         this.DictDialog = false;
       }
     },
-    handleQuery() {},
     addRow() {
       this.dialogTitle = "新增字典";
       this.DictDialog = true;
     },
     editRow() {},
-    rowRow() {},
     startJob() {},
     deleteJob() {},
-    handleSelectionChange() {},
-    getList() {},
-    exportData() {
-      // let url =
-      //   interfaceObj.manageFieldApi_export +
-      //   "?group_id=" +
-      //   this.searchObj.group_id;
-      // testExport(url);
-    },
+
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
-    },
-    formatBoolean(row, column, cellValue) {
-      var ret = ""; //你想在页面展示的值
-      if (cellValue) {
-        ret = "是"; //根据自己的需求设定
-      } else {
-        ret = "否";
-      }
-      return ret;
     }
   }
 };
