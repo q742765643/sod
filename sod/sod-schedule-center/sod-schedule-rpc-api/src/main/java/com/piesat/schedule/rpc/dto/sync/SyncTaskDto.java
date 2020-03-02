@@ -129,9 +129,9 @@ public class SyncTaskDto extends BaseDto {
     private String sourceTableId;
 
     /**
-     * 目标表ids
+     * 目标表ids，用逗号分隔
      */
-    private String[] targetTableIds;
+    private String targetTableIds;
 
     /**
      * 目标表值表id
@@ -142,6 +142,7 @@ public class SyncTaskDto extends BaseDto {
      * 源表值表id
      */
     private String sourceVTableId;
+
 
     /**
      * 目标表（键变/要素表） 与源表（键变/要素表）映射关系
