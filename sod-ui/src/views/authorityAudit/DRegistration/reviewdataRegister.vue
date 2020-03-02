@@ -114,7 +114,7 @@ export default {
     checkFuc(type) {
       const checkobj = {
         id: this.registerForm.ID,
-        examineStatus: this.radio * 1,
+        examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
       updateStatus(checkobj).then(response => {
