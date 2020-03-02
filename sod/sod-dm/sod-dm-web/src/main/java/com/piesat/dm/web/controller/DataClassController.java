@@ -186,4 +186,17 @@ public class DataClassController {
         }
     }
 
+
+    @ApiOperation(value = "获取新增存储编码")
+    @RequiresPermissions("dm:dataClass:getNewDataClassId")
+    @GetMapping(value = "/getNewDataClassId")
+    public ResultT getNewDataClassId(String parentId){
+        try {
+            String all = this.dataClassService.findByParentId(parentId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

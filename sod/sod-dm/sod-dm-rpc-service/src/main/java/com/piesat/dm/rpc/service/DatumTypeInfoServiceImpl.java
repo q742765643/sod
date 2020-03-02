@@ -78,6 +78,33 @@ public class DatumTypeInfoServiceImpl extends BaseService<DatumTypeInfoEntity> i
     }
 
     @Override
+    public JSONArray getSimpleTree() {
+        String sql = "SELECT C_DATUM_CODE ID,C_DATUMTYPE NAME,C_DATUMPARENT_CODE PID  " +
+                " FROM T_SOD_DATA_DATUMTYPEINFO A " +
+                " WHERE  (SUBSTR(C_DATUM_CODE,13,1) NOT IN ('P','R') AND C_DATUMPARENT_CODE != 'G.0019.0001' " +
+                " AND C_DATUMPARENT_CODE != 'G.0019.0002' AND EXISTS( SELECT 1 FROM T_SOD_DATA_DATUMTYPEINFO B " +
+                "WHERE B.C_DATUM_CODE = A.C_DATUMPARENT_CODE)) " +
+                " OR C_DATUMPARENT_CODE = 1 ORDER BY C_DATUM_CODE";
+        List<Map<String, Object>> maps = this.queryByNativeSQL(sql);
+        List l = new ArrayList();
+        for (Map<String, Object> m : maps) {
+            TreeLevel tl = new TreeLevel();
+            tl.setId(m.get("ID").toString());
+            tl.setParentId(m.get("PID").toString());
+            tl.setName(m.get("NAME").toString());
+            if (m.get("ICON") == null) {
+                tl.setType("1");
+                tl.setIcon("");
+            } else {
+                tl.setType("0");
+                tl.setIcon(m.get("ICON").toString());
+            }
+            l.add(tl);
+        }
+        return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
+    }
+
+    @Override
     public DatumTypeInfoDto getDotById(String id) {
         DatumTypeInfoEntity datumTypeInfoEntity = this.getById(id);
         return this.datumTypeInfoMapper.toDto(datumTypeInfoEntity);

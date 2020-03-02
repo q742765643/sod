@@ -93,4 +93,17 @@ public class DatumTypeInfoController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "查询资料分类树(简化)")
+    @RequiresPermissions("dm:datumType:getSimpleTree")
+    @GetMapping(value = "/getSimpleTree")
+    public ResultT getSimpleTree() {
+        try {
+            JSONArray tree = this.datumTypeInfoService.getSimpleTree();
+            return ResultT.success(tree);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

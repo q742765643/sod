@@ -56,4 +56,6 @@ public interface DataClassService {
     public String getDataClassIdNum();
 
     PageBean getBaseData(PageForm<Map<String,String>> pageForm,DataClassDto dataClassDto);
+
+    String findByParentId(String parentId);
 }
