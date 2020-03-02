@@ -60,3 +60,19 @@ export function dataLogicGet(query) {
     params: query
   })
 }
+
+// 产品配置启用
+export function enable() {
+  return request({
+    url: baseUrl + '/dm/product/enable',
+    method: 'get',
+  })
+}
+// 产品获取新增存储编码
+export function getNewDataClassId(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/getNewDataClassId',
+    method: 'get',
+    params: query
+  })
+}

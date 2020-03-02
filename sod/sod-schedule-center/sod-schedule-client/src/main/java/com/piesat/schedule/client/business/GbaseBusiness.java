@@ -13,12 +13,15 @@ import com.piesat.schedule.client.service.databse.GbaseService;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
+import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.MetadataVo;
+import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
+import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @program: sod
@@ -211,6 +216,19 @@ public class GbaseBusiness extends BaseBusiness{
     public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT) {
         GbaseService gbaseService= SpringUtil.getBean(GbaseService.class);
         gbaseService.metaBack(metaBackupEntity,metadataVo,resultT);
+    }
+
+    @Override
+    public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
+        DataSourceContextHolder.setDataSource(recoverLogEntity.getParentId());
+        try {
+            GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
+            gbaseService.recoverMeta(recoverMetaVo,impInfo,recoverLogEntity,resultT);
+        } catch (Exception e) {
+            resultT.setErrorMessage("恢复失败{}",OwnException.get(e));
+        }finally {
+            DataSourceContextHolder.clearDataSource();
+        }
     }
 
     public void deleteGbase(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){

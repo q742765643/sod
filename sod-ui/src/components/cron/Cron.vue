@@ -168,6 +168,7 @@ export default {
     // cron表达式确定
     cronSure() {
       this.$emit("setCron", this.cronExpression);
+      console.log(this.cronExpression);
       //对特殊字符进行编码
       /* this.axios
         .get(interfaceObj.listNext5Val, {params: {cron: this.cronExpression}})

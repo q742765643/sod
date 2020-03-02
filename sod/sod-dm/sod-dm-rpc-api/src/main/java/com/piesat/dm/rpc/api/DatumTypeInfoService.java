@@ -25,4 +25,7 @@ public interface DatumTypeInfoService {
     List<DatumTypeInfoDto> all();
 
     JSONArray getTree();
+
+    JSONArray getSimpleTree();
+
 }

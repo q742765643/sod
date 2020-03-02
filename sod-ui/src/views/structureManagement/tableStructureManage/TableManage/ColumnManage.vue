@@ -6,19 +6,32 @@
         size="small"
         icon="el-icon-c-scale-to-original"
         @click="getColumnTables"
+        v-if="tableStructureManageContral"
       >复用字段</el-button>
       <el-button type="primary" size="small" icon="el-icon-plus" @click="columnAdd">新增</el-button>
       <el-button type="primary" size="small" icon="el-icon-edit" @click="columnEdit">编辑</el-button>
       <el-button type="primary" size="small" icon="el-icon-delete" @click="columnDelete">删除</el-button>
       <el-button type="primary" size="small" icon="el-icon-document-copy" @click="columnCopy">复制</el-button>
       <el-button type="primary" size="small" icon="el-icon-document-add" @click="columnPaste">粘贴</el-button>
-      <el-button type="primary" size="small" icon="el-icon-s-order" @click="columnControl">质控字段</el-button>
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-s-order"
+        @click="columnControl"
+        v-if="tableStructureManageContral"
+      >质控字段</el-button>
     </el-button-group>
     <el-button-group style="float: right;padding: 8px;">
       <el-button type="primary" size="small" icon="el-icon-sort" @click="handleSort">排序</el-button>
       <el-button type="primary" size="small" icon="el-icon-download" @click="exportCode('code')">导出</el-button>
       <el-button type="primary" size="small" icon="el-icon-upload2" @click="importTelplate">导入</el-button>
-      <el-button type="primary" size="small" icon="el-icon-s-operation" @click="syncServe">同步服务名称</el-button>
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-s-operation"
+        @click="syncServe"
+        v-if="tableStructureManageContral"
+      >同步服务名称</el-button>
     </el-button-group>
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-table :data="columnData" border @selection-change="res=>selColumnData=res">
@@ -59,6 +72,7 @@
           prop="dbEleCode"
           width="200px"
           align="center"
+          v-if="tableStructureManageContral"
           :show-overflow-tooltip="true"
         ></el-table-column>
         <el-table-column
@@ -73,6 +87,7 @@
           prop="userEleCode"
           width="200px"
           align="center"
+          v-if="tableStructureManageContral"
           :show-overflow-tooltip="true"
         ></el-table-column>
         <el-table-column label="中文简称" prop="eleName" align="center" :show-overflow-tooltip="true"></el-table-column>
@@ -370,7 +385,7 @@
             @end="isDragging = false"
           >
             <transition-group type="transition" name="flip-list">
-              <li class="list-group-item" v-for="(element,index) in dragList" :key="index">
+              <li class="list-group-item" v-for="element in dragList" :key="element.celementCode">
                 <i
                   :class="
                 element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
@@ -437,6 +452,7 @@ import {
   tableColumnSave,
   tableColumnSaveList
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { enable } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: { tableInfo: Object, tableType: String },
   components: {
@@ -444,6 +460,7 @@ export default {
   },
   data() {
     return {
+      tableStructureManageContral: false,
       codeTitle: "新增字段",
       dialogStatus: {
         columnDialog: false,
@@ -1003,6 +1020,13 @@ export default {
     }
   },
   mounted() {
+    enable().then(res => {
+      if (res.data == "true") {
+        this.tableStructureManageContral = true;
+      } else {
+        this.tableStructureManageContral = false;
+      }
+    });
     // this.getOptionsData();
   },
   computed: {

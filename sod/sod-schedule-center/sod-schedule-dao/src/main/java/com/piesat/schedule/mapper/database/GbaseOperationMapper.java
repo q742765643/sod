@@ -20,6 +20,12 @@ public interface GbaseOperationMapper {
     public List<String> findGbaseTables(String schemaName);
 
 
+    public  void createGbaseSchema(String schemaName);
+
+
+    public  void createGbaseUser(String sql);
+
+
 
 }
 

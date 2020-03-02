@@ -447,6 +447,14 @@ export default {
       this.reviewStep = false;
       this.getList();
     },
+    //审核不通过  原因
+    showReason(row) {
+      this.$message({
+        type: "info",
+        center: "true",
+        message: row.REMARK
+      });
+    },
     handleAdd() {
       // this.dialogTitle = "新增数据库账户审核";
       // this.handleObj = {};

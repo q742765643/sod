@@ -1,56 +1,54 @@
 <template>
-  <div class="app-container storePolicy">
-    <!-- 资料存储策略 -->
-    <el-container>
-      <!-- 左侧树 -->
-      <el-aside class="elAside">
-        <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText" class="filterText"></el-input>
-        <el-scrollbar wrap-class="scrollbar-wrapper">
-          <el-tree
-            class="el-tree"
-            :highlight-current="highlight"
-            node-key="type"
-            :data="treeData"
-            :props="defaultProps"
-            :default-expanded-keys="expandedKeys"
-            :filter-node-method="filterNode"
-            @node-click="sourceNodeClick"
-            ref="elTree"
-          ></el-tree>
-        </el-scrollbar>
-      </el-aside>
-      <el-main class="elMain">
-        <el-row v-for="(row,rowIndex) in groupList" :key="rowIndex" :gutter="18">
+  <!-- 资料存储策略 -->
+  <el-container class="app-container storePolicy">
+    <!-- 左侧树 -->
+    <el-aside class="elAside">
+      <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText" class="filterText"></el-input>
+      <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-tree
+          class="el-tree"
+          :highlight-current="highlight"
+          node-key="id"
+          :data="treeData"
+          :props="defaultProps"
+          :default-expanded-keys="expandedKeys"
+          :filter-node-method="filterNode"
+          @node-click="sourceNodeClick"
+          ref="elTree"
+        ></el-tree>
+      </el-scrollbar>
+    </el-aside>
+    <el-main class="elMain" style="padding:0 0 20px 0;">
+      <div class="headName">{{checkNode.name}}</div>
+      <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-row v-for="(row,rowIndex) in groupList" :key="rowIndex" :gutter="18" class="cardBox">
           <p class="el-p">
             <i class="el-icon-s-management"></i>
             {{row.databaseName}}
           </p>
-          <el-col :span="12" v-for="(item,index) in  row.mapList" :key="index">
+          <el-col :span="12" v-for="(item,index) in  row.policyDtos" :key="index">
             <el-card class="box-cards">
               <div slot="header">
-                <span>{{item.name}}</span>
+                <span>{{item.policyName}}</span>
               </div>
-              <p class="item">
+              <p>
                 是否配置：
                 <span
-                  v-if="item.detailMap.ifConfig=='已配置'"
+                  v-if="item.isConfiguration=='已配置'"
                   style="color:#67C23A;"
-                >{{item.detailMap.ifConfig}}</span>
+                >{{item.isConfiguration}}</span>
                 <span
-                  v-else-if="item.detailMap.ifConfig=='未配置'"
+                  v-else-if="item.isConfiguration=='未配置'"
                   style="color:#F56C6C;"
-                >{{item.detailMap.ifConfig}}</span>
-                <span v-else-if="item.detailMap.ifConfig=='不需配置'">{{item.detailMap.ifConfig}}</span>
+                >{{item.isConfiguration}}</span>
+                <span v-else-if="item.isConfiguration=='不需配置'">{{item.isConfiguration}}</span>
               </p>
-              <p class="item" v-if="item.name=='同步'">源库：{{item.detailMap.sourceDatabase}}</p>
-              <p class="item" v-if="item.name=='同步'">源表：{{item.detailMap.sourceTable}}</p>
-              <p class="item">任务状态：{{item.detailMap.taskState}}</p>
-              <p class="item" v-if="item.name=='备份'">备份观测时间：{{item.detailMap.backupWatch}}</p>
-              <p
-                class="item"
-                v-if="item.name=='清除'||item.name=='迁移'"
-              >清除观测时间：{{item.detailMap.clearWatch}}</p>
-              <p class="item" v-if="item.name!='同步'">执行耗时：{{item.detailMap.excuteTime}}</p>
+              <p v-if="item.policyName=='同步'">源库：{{item.sourceRepository}}</p>
+              <p v-if="item.policyName=='同步'">源表：{{item.sourceTable}}</p>
+              <p>任务状态：{{item.triggerStatus}}</p>
+              <p v-if="item.policyName=='备份'">备份观测时间：{{item.ddateTime}}</p>
+              <p v-if="item.policyName=='清除'||item.policyName=='迁移'">清除观测时间：{{item.ddateTime}}</p>
+              <p v-if="item.policyName!='同步'">执行耗时：{{item.elapsedTime}}</p>
               <el-popover placement="bottom" trigger="hover" popper-class="cornBox">
                 <div>
                   <ul class="ulInfoBox" style="color:#67C23A;">
@@ -62,85 +60,78 @@
                     </li>
                   </ul>
                 </div>
-                <el-button type="text" slot="reference" class="cornText" v-if="item.name!='同步'">
+                <p type="text" slot="reference" class="cornText" v-if="item.policyName!='同步'">
                   <span>执行策略：</span>
-                  <span style="color:#409EFF;">{{item.detailMap.excutePolicy}}</span>
-                </el-button>
+                  <span style="color:#409EFF;">{{item.jobCron}}</span>
+                </p>
               </el-popover>
-              <p class="item">
+              <p>
                 操作：
                 <el-button
                   size="mini"
-                  type="warning"
-                  icon="el-icon-circle-plus"
-                  @click="addRow(row,item.name)"
+                  type="success"
+                  icon="el-icon-plus"
+                  @click="addRow(row)"
                   title="添加"
-                  v-if="item.detailMap.ifConfig=='未配置'"
+                  v-if="item.isConfiguration=='未配置'"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="primary"
                   icon="el-icon-row"
                   title="修改"
-                  v-if="item.detailMap.ifConfig=='已配置'"
-                  @click="editRow(item.detailMap,item.name, row.dataClassId,row.dataClassName)"
+                  v-if="item.isConfiguration=='已配置'"
+                  @click="editRow(row)"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="warning"
                   icon="el-icon-delete"
                   title="删除"
-                  v-if="item.detailMap.ifConfig=='已配置'"
-                  @click="deleteJob(item.detailMap,item.name,row.dataClassId,row.dataClassName)"
+                  v-if="item.isConfiguration=='已配置'"
+                  @click="deleteJob(row)"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="warning"
                   icon="el-icon-caret-right"
                   title="启动"
-                  v-if="item.detailMap.ifConfig=='已配置'&&item.detailMap.taskState=='停止'"
-                  @click="startJob(item.detailMap,item.name,row.dataClassId,row.dataClassName)"
+                  v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='停止'"
+                  @click="startJob(row)"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="warning"
                   icon="el-icon-video-play"
                   title="重启"
-                  v-if="item.name=='同步'&&item.detailMap.ifConfig=='已配置'&&item.detailMap.taskState=='运行中'"
+                  v-if="item.policyName=='同步'&&item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="warning"
                   icon="el-icon-video-pause"
                   title="停止"
-                  @click="stopJob(item.detailMap,item.name,row.dataClassId,row.dataClassName)"
-                  v-if="item.detailMap.ifConfig=='已配置'&&item.detailMap.taskState=='运行中'"
+                  @click="stopJob(row)"
+                  v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
                 ></el-button>
               </p>
             </el-card>
           </el-col>
         </el-row>
-      </el-main>
-    </el-container>
-    <!-- 弹窗 树-->
-    <el-dialog :title="dialogTitle" :visible.sync="TreeDialog">
-      <handleTree v-if="TreeDialog" :handleTreeObj="handleTreeObj" @cancelDialog="cancelDialog"></handleTree>
+      </el-scrollbar>
+    </el-main>
+    <!-- 弹窗 清除-->
+    <el-dialog :title="dialogTitle" :visible.sync="clearDialog" width="800px">
+      <handleClear @cancelHandle="cancelHandle" v-if="clearDialog" :handleObj="handleObj"></handleClear>
     </el-dialog>
-
-    <!-- 弹窗 字典-->
-    <el-dialog :title="dialogTitle" :visible.sync="DictDialog">
-      <handleDict v-if="DictDialog" :handleDictObj="handleDictObj" @cancelDialog="cancelDialog"></handleDict>
-    </el-dialog>
-  </div>
+  </el-container>
 </template>
 <script>
-import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
-import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
-import { strategyTree } from "@/api/schedule/storePolicy";
+import handleClear from "@/views/schedule/clear/handleClear";
+import { strategyTree, findData } from "@/api/schedule/storePolicy";
 export default {
   components: {
-    handleTree,
-    handleDict
+    handleClear
   },
   data() {
     return {
@@ -168,9 +159,8 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
-      // 弹窗 字典
-      DictDialog: false,
-      handleDictObj: {}
+      clearDialog: false,
+      handleObj: {}
     };
   },
   async created() {
@@ -218,6 +208,75 @@ export default {
           treeIds.push(single.id);
         }
       });
+      console.log(this.checkNode);
+      this.getfindData(this.checkNode.id);
+    },
+    getfindData(classId) {
+      findData({ classId: classId }).then(res => {
+        if (res.code == "200") {
+          this.groupList = res.data;
+          this.groupList = [
+            {
+              databaseName: "历史分析库_基础库",
+              databaseId: "7f9b7480f9874cca942c0e3910ab714a",
+              dataClassId: "D.0004.0001.M001",
+              policyDtos: [
+                {
+                  taskId: "",
+                  policyName: "备份",
+                  jobCron: "",
+                  isConfiguration: "未配置",
+                  triggerStatus: "",
+                  elapsedTime: "",
+                  ddateTime: "",
+                  sourceRepository: "",
+                  sourceTable: null
+                },
+                {
+                  taskId: "",
+                  policyName: "清除",
+                  jobCron: "",
+                  isConfiguration: "未配置",
+                  triggerStatus: "",
+                  elapsedTime: "",
+                  ddateTime: "",
+                  sourceRepository: "",
+                  sourceTable: null
+                },
+                {
+                  taskId: "",
+                  policyName: "迁移",
+                  jobCron: "",
+                  isConfiguration: "未配置",
+                  triggerStatus: "",
+                  elapsedTime: "",
+                  ddateTime: "",
+                  sourceRepository: "",
+                  sourceTable: null
+                },
+                {
+                  taskId: "",
+                  policyName: "同步",
+                  jobCron: "",
+                  isConfiguration: "未配置",
+                  triggerStatus: "",
+                  elapsedTime: "",
+                  ddateTime: "",
+                  sourceRepository: "",
+                  sourceTable: null
+                }
+              ]
+            },
+            {
+              databaseName: "结构化数据库_基础库",
+              databaseId: "f499a19d5d0743899dfe74ef724be865",
+              dataClassId: "D.0004.0001.M001",
+              policyDtos: []
+            }
+          ];
+        } else {
+        }
+      });
     },
     //获取父节点下的子节点
     resetData(dataArr) {
@@ -240,9 +299,12 @@ export default {
         this.DictDialog = false;
       }
     },
-    addRow() {
-      this.dialogTitle = "新增字典";
-      this.DictDialog = true;
+
+    addRow(row) {
+      console.log(row);
+      this.handleObj = {};
+      this.dialogTitle = "添加迁移清除配置信息";
+      this.clearDialog = true;
     },
     editRow() {},
     startJob() {},
@@ -250,7 +312,10 @@ export default {
 
     filterNode(value, data) {
       if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      return data.name.indexOf(value) !== -1;
+    },
+    cancelHandle() {
+      this.clearDialog = false;
     }
   }
 };
@@ -276,12 +341,51 @@ export default {
       height: calc(100% - 80px);
     }
     .el-scrollbar__wrap {
-      overflow: auto;
+      overflow-x: hidden;
+    }
+    .el-tree {
+      min-width: 100%;
+      display: inline-block !important;
     }
   }
   .elMain {
     border: 1px solid #ebeef5;
     overflow: hidden;
+    height: calc(100vh - 130px);
+    .el-scrollbar {
+      height: calc(100% - 40px);
+      .el-scrollbar__wrap {
+        overflow-x: hidden;
+      }
+    }
+    .el-scrollbar__bar.is-horizontal {
+      display: none;
+    }
+  }
+  .headName {
+    width: 100%;
+    height: 44px;
+    line-height: 44px;
+    padding-left: 20px;
+    background-color: #f4f4f5;
+    color: #909399;
+  }
+  .el-card {
+    height: 308px;
+    margin-top: 20px;
+  }
+  .cardBox {
+    padding: 0 20px;
+  }
+  .handleIcon {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background: #67c23a;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 2px;
   }
 }
 </style>

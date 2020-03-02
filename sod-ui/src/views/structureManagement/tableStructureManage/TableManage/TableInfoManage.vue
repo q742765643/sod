@@ -81,7 +81,12 @@
         </div>
         <div class="el-col el-col-4">
           <el-form-item class="buttonCon">
-            <el-button type="primary" size="small" @click="baseMsgEdit">基础信息编辑</el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="baseMsgEdit"
+              v-if="tableStructureManageContral"
+            >基础信息编辑</el-button>
           </el-form-item>
         </div>
       </div>
@@ -141,6 +146,7 @@
 <script>
 //接口地址
 // 基础信息编辑
+import { enable } from "@/api/structureManagement/tableStructureManage/index";
 import handleBaseMsg from "@/views/structureManagement/tableStructureManage/TableManage/handleBaseMsg";
 import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
@@ -155,6 +161,7 @@ export default {
   },
   data() {
     return {
+      tableStructureManageContral: false,
       Info: {
         table_name: "",
         name_cn: "",
@@ -252,7 +259,15 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    enable().then(res => {
+      if (res.data == "true") {
+        this.tableStructureManageContral = true;
+      } else {
+        this.tableStructureManageContral = false;
+      }
+    });
+  },
   mounted() {
     this.Info = JSON.parse(JSON.stringify(this.tableInfo));
     this.isHelp();

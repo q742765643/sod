@@ -21,9 +21,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.schedule.client.datasource.DataSourceContextHolder;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.util.fetl.util.FetlUtil;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
+@Slf4j
 public class ImpMetaData{
 	
 	static{
@@ -52,15 +59,20 @@ public class ImpMetaData{
 		this.taskNum = taskNum;
 	}
 	
-	public String impMetaData(String url, Map<Type, Set<String>> impInfo, String filepath) throws Exception{
-		Connection con = FetlUtil.get_conn(url+"&char_set=utf8");
-		
+	public String impMetaData(String parentId, Map<Type, Set<String>> impInfo, String filepath) {
+		//Connection con = FetlUtil.get_conn(url+"&char_set=utf8");
+		Connection con=null;
 		StringBuffer sql = new StringBuffer();
 		StringBuffer sb = new StringBuffer();
 		Statement st = null;
 		BufferedReader br = null;
 		String line = null;
+		DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+
 		try{
+			DataSourceContextHolder.setDataSource(parentId);
+			con=dynamicDataSource.getConnection();
+			DruidDataSource dataSource= (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
 			st = con.createStatement();
 			File file  = new File(filepath);
 			br = new BufferedReader(new FileReader(file),64*1024);
@@ -82,7 +94,7 @@ public class ImpMetaData{
 //							if(database != null && !"null".equalsIgnoreCase(database)) {
 //								url = url.replace("SYSTEM", database);
 //							}
-							impDataReadFile(url, fileName, tableName, columns);
+							impDataReadFile(dataSource.getUrl(), fileName, tableName, columns);
 							continue;
 						}
 						if(line.equalsIgnoreCase("---end foreign key---")){
@@ -107,7 +119,7 @@ public class ImpMetaData{
 					  } catch (SQLException e) {
 						  sql.setLength(0);
 						  if(e.getErrorCode() != 7003 && e.getErrorCode() != 12008 && e.getErrorCode() != 21060){
-							  throw e;
+							  e.printStackTrace();
 						  }
 					  }
 				  }
@@ -213,7 +225,8 @@ public class ImpMetaData{
 //							if(database != null && "null".equalsIgnoreCase("null")) {
 //								url = url.replace("SYSTEM", database);
 //							}
-						impDataReadFile(url, fileName, tableName, columns);
+						log.info("恢复表{}数据",tableName);
+						impDataReadFile(dataSource.getUrl(), fileName, tableName, columns);
 					}
 				}
 				for(String foreign : foreigns){
@@ -234,11 +247,12 @@ public class ImpMetaData{
 				}
 			}
 		} catch (Exception e){
-			throw e;
+			e.printStackTrace();
 		} finally {
 			FetlUtil.closeSt(st);
 			FetlUtil.closeConn(con);
 			FetlUtil.closeReader(br);
+			DataSourceContextHolder.clearDataSource();
 		}
 		return sb.toString();
  	}

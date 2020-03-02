@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -266,12 +267,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
-    public PageBean getBaseData(PageForm<Map<String, String>> pageForm,DataClassDto dataClassDto) {
+    public PageBean getBaseData(PageForm<Map<String, String>> pageForm, DataClassDto dataClassDto) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
         if (StringUtils.isNotBlank(dataClassDto.getClassName())) {
             ssb.add("className", SpecificationOperator.Operator.likeAll.name(), dataClassDto.getClassName());
         }
-        if (dataClassDto.getIsAccess()!=null) {
+        if (dataClassDto.getIsAccess() != null) {
             ssb.add("isAccess", SpecificationOperator.Operator.eq.name(), dataClassDto.getIsAccess());
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
@@ -279,4 +280,42 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         return page;
     }
 
+    @Override
+    public String findByParentId(String parentId) {
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdDesc(parentId);
+        List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
+        if (parentId.length() > 8) {
+            if (dataClassDtos.size() > 0) {
+                String dataClassId = dataClassDtos.get(0).getDataClassId();
+                int no;
+                try {
+                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 3));
+                } catch (Exception e) {
+                    return parentId + ".M";
+                }
+                no++;
+                DecimalFormat df = new DecimalFormat("000");
+                String str = df.format(no);
+                return parentId + ".M" + str;
+            } else {
+                return parentId + ".M001";
+            }
+        } else {
+            if (dataClassDtos.size() > 0) {
+                String dataClassId = dataClassDtos.get(0).getDataClassId();
+                int no;
+                try {
+                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 4));
+                } catch (Exception e) {
+                    return parentId + ".";
+                }
+                no++;
+                DecimalFormat df = new DecimalFormat("0000");
+                String str = df.format(no);
+                return parentId + "." + str;
+            } else {
+                return parentId + ".0001";
+            }
+        }
+    }
 }

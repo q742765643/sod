@@ -99,10 +99,10 @@ public class StrategyPolicyService {
                 String parentId=databaseDto.getDatabaseDefine().getId();
                 String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
                 strategyPolicyDto.setDatabaseName(databaseName);
-                this.findBackup(dataLogicDto.getId(),dataClassId,parentId,policyDtos);
-                this.findClear(dataLogicDto.getId(),dataClassId,parentId,policyDtos);
-                this.findMove(dataLogicDto.getId(),dataClassId,parentId,policyDtos);
-                this.findSync(dataLogicDto.getId(),dataClassId,parentId,policyDtos);
+                this.findBackup(databaseDto.getId(),dataClassId,parentId,policyDtos);
+                this.findClear(databaseDto.getId(),dataClassId,parentId,policyDtos);
+                this.findMove(databaseDto.getId(),dataClassId,parentId,policyDtos);
+                this.findSync(databaseDto.getId(),dataClassId,parentId,policyDtos);
                 strategyPolicyDto.setPolicyDtos(policyDtos);
                 strategyPolicyDtos.add(strategyPolicyDto);
             } catch (Exception e) {

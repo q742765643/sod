@@ -14,9 +14,9 @@ import javax.persistence.Table;
  * @date 2019年 11月21日 19:00:28
  */
 @Data
-@Table(name = "T_SOD_DATABASE_NODE")
 @Entity
-//@Proxy(lazy = false)
+@Table(name = "t_sod_database_node")
+@org.hibernate.annotations.Table(appliesTo = "t_sod_database_node",comment = "数据库节点信息表")
 public class DatabaseNodesEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -24,31 +24,28 @@ public class DatabaseNodesEntity extends BaseEntity {
      * 数据库id
      * database_id
      */
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinColumn(name = "database_id1")
-//    private DatabaseDefineEntity databaseId;
-    @Column(name = "database_id")
+    @Column(name = "database_id", nullable = false,columnDefinition = "varchar(225) default '' comment '数据库表关联id'")
     private String databaseId;
 
     /**
      * 节点ip
      * database_node
      */
-    @Column(name = "database_node", length = 255)
+    @Column(name = "database_node",columnDefinition = "varchar(225) default '' comment '节点ip'")
     private String databaseNode;
 
     /**
      * 节点状态
      * node_state
      */
-    @Column(name = "node_state", length = 36)
+    @Column(name = "node_state", columnDefinition = "varchar(36) default '' comment '节点状态'")
     private String nodeState;
 
     /**
      * 节点角色
      * node_role
      */
-    @Column(name = "node_role", length = 36)
+    @Column(name = "node_role", columnDefinition = "varchar(36) default '' comment '节点角色'")
     private String nodeRole;
 
 }

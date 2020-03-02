@@ -1,5 +1,6 @@
 package com.piesat.schedule.client.util;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class CmdUtil {
         int exitVal=-1;
         try {
 
-
+            log.info("执行cmd {}", JSON.toJSONString(commands));
             Process proc = r.exec(commands);
             exitVal = proc.waitFor();
             // 获取命令执行结果, 有两个结果: 正常的输出 和 错误的输出（PS: 子进程的输出就是主进程的输入）

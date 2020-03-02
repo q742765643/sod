@@ -23,6 +23,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -58,9 +59,10 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         if(StringUtils.isNotNullString(moveEntity.getDatabaseId())){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),moveEntity.getDatabaseId());
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(moveEntity.getDataClassId())){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),moveEntity.getDataClassId());
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),moveEntity.getDataClassId());
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),moveEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),moveEntity.getDataClassId());
         }
         if(StringUtils.isNotNullString(moveEntity.getProfileName())){
             specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),moveEntity.getProfileName());
@@ -77,8 +79,9 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         if(StringUtils.isNotNullString((String) moveEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) moveEntity.getParamt().get("endTime"));
         }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
         Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<MoveEntity> moveEntities= (List<MoveEntity>) pageBean.getPageData();
         pageBean.setPageData(moveMapstruct.toDto(moveEntities));
         return pageBean;
@@ -90,11 +93,13 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         if(StringUtils.isNotNullString(databaseId)){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(dataClassId)){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
         }
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,Sort.unsorted());
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        PageBean pageBean=this.getPage(specification,pageForm,Sort.unsorted());
         List<MoveEntity> moveEntities= (List<MoveEntity>) pageBean.getPageData();
         if(null!=moveEntities&&!moveEntities.isEmpty()){
             return moveMapstruct.toDto(moveEntities.get(0));
