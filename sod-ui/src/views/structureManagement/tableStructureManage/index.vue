@@ -42,6 +42,7 @@
                 size="small"
                 icon="el-icon-tickets"
                 @click="showMaterialList"
+                v-if="tableStructureManageContral"
               >资料概览</el-button>
               <el-button
                 type="primary"
@@ -82,6 +83,7 @@
                 align="center"
                 label="四级编码"
                 prop="D_DATA_ID"
+                v-if="tableStructureManageContral"
                 :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
@@ -211,7 +213,8 @@ import {
   getListBYIn,
   delByClass,
   pasteTable,
-  dataLogicGet
+  dataLogicGet,
+  enable
 } from "@/api/structureManagement/tableStructureManage/index";
 import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
@@ -224,6 +227,7 @@ export default {
   },
   data() {
     return {
+      tableStructureManageContral: false,
       treeIdOfDR: this.$route.params.treeIdOfDR,
       searchObj: {
         classIds: "",
@@ -258,7 +262,15 @@ export default {
       treeRefreshData: {}
     };
   },
-  created() {},
+  created() {
+    enable().then(res => {
+      if (res.data == "true") {
+        this.tableStructureManageContral = true;
+      } else {
+        this.tableStructureManageContral = false;
+      }
+    });
+  },
   methods: {
     //新增，编辑资料树  或者  资料
     showMaterialSingle(operateType) {

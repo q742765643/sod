@@ -601,7 +601,10 @@ export default {
             type: "pie",
             center: ["40%", "50%"],
             radius: ["50%", "70%"],
-            data: [{ value: 310, name: "DRC" }, { value: 635, name: "NAS" }],
+            data: [
+              { value: 310, name: "DRC" },
+              { value: 635, name: "NAS" }
+            ],
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,

@@ -1,0 +1,258 @@
+<template>
+  <section class="handleClearDialog">
+    <el-form ref="ruleForm" :model="msgFormDialog" :rules="rules" label-width="120px">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="物理库" prop="databaseId">
+            <el-select
+              v-model="msgFormDialog.databaseId"
+              filterable
+              @change="selectByDatabaseIds($event,'')"
+              placeholder="请选择物理库"
+              style="width:100%"
+            >
+              <el-option
+                v-for="database in databaseOptions"
+                :key="database.KEY"
+                :label="database.VALUE"
+                :value="database.KEY"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="资料名称" prop="dataClassId">
+            <el-select
+              v-model="msgFormDialog.dataClassId"
+              filterable
+              @change="selectTable"
+              placeholder="请选择资料"
+              style="width:100%"
+            >
+              <el-option
+                v-for="dataClass in dataClassIdOptions"
+                :key="dataClass.KEY"
+                :label="dataClass.VALUE"
+                :value="dataClass.KEY"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="清除条件" prop="conditions">
+            <el-input v-model="msgFormDialog.conditions" placeholder="请输入清除条件" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="表名" prop="tableName">
+            <el-input v-model="msgFormDialog.tableName" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="四级编码" prop="ddataId">
+            <el-input v-model="msgFormDialog.ddataId" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="清除限制频率" prop="clearLimit">
+            <el-input v-model="msgFormDialog.clearLimit" placeholder="请输入清除限制频率单位为秒" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" style="width:174px;" />
+            <el-button size="small" type="primary" @click="cronDialogVisible = true">执行策略</el-button>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否告警" prop="isAlarm">
+            <el-radio-group v-model="msgFormDialog.isAlarm">
+              <el-radio
+                v-for="dict in alarmOptions"
+                :key="dict.dictValue"
+                :label="dict.dictValue"
+              >{{dict.dictLabel}}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="超时时间" prop="executorTimeout">
+            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="备注">
+            <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
+    </div>
+    <Cron
+      append-to-body
+      v-if="cronDialogVisible"
+      :cronDialogVisible="cronDialogVisible"
+      @closeCron="closeCron"
+      @setCron="setCron"
+    />
+  </section>
+</template>
+
+<script>
+import Cron from "@/components/cron/Cron";
+import {
+  getByDatabaseId,
+  getByDatabaseIdAndClassId,
+  updateClear,
+  addClear,
+  findAllDataBase,
+  getClear
+} from "@/api/schedule/clear/clear";
+export default {
+  name: "handleClearDialog",
+  props: {
+    handleObj: {
+      type: Object
+    }
+  },
+  components: {
+    Cron
+  },
+  data() {
+    return {
+      alarmOptions: [],
+      databaseOptions: [],
+      dataClassIdOptions: [],
+      msgFormDialog: {
+        databaseId: "",
+        dataClassId: "",
+        conditions: "",
+        tableName: "",
+        ddataId: "",
+        clearLimit: "",
+        jobCron: "",
+        isAlarm: "",
+        executorTimeout: "",
+        jobDesc: ""
+      },
+      rules: {
+        databaseId: [
+          { required: true, message: "物理库不能为空", trigger: "blur" }
+        ],
+        dataClassId: [
+          { required: true, message: "资料名称不能为空", trigger: "blur" }
+        ],
+        jobCron: [
+          { required: true, message: "执行策略不能为空", trigger: "blur" }
+        ],
+        executorTimeout: [
+          { required: true, message: "超时时间不能为空", trigger: "blur" }
+        ],
+        clearLimit: [
+          { required: true, message: "限制条数不能为空", trigger: "blur" }
+        ]
+      },
+      // cron表达式
+      cronDialogVisible: false
+    };
+  },
+
+  created() {
+    this.getDicts("job_is_alarm").then(response => {
+      this.alarmOptions = response.data;
+    });
+    findAllDataBase().then(response => {
+      this.databaseOptions = response.data;
+    });
+    if (this.handleObj.id) {
+      getClear(this.handleObj.id).then(response => {
+        this.selectByDatabaseIds(
+          response.data.databaseId,
+          response.data.dataClassId
+        );
+        this.msgFormDialog = response.data;
+      });
+    }
+  },
+  methods: {
+    selectTable(dataClassId) {
+      this.msgFormDialog.tableName = "";
+      this.findTable(
+        this.msgFormDialog.databaseId,
+        this.msgFormDialog.dataClassId
+      );
+    },
+    findTable(databaseId, dataClassId) {
+      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+        this.msgFormDialog.ddataId = response.data.ddataId;
+        this.msgFormDialog.tableName = response.data.tableName;
+        this.msgFormDialog.vTableName = response.data.vTableName;
+      });
+    },
+    selectByDatabaseIds(databaseId, dataClassId) {
+      getByDatabaseId(databaseId, dataClassId).then(response => {
+        this.dataClassIdOptions = response.data;
+        this.msgFormDialog.dataClassId = dataClassId;
+      });
+    },
+    /** 提交按钮 */
+    trueDialog(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.msgFormDialog.id != undefined) {
+            updateClear(this.msgFormDialog).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("修改成功");
+                this.$emit("cancelHandle");
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          } else {
+            addClear(this.msgFormDialog).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("新增成功");
+                this.$emit("cancelHandle");
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          }
+        }
+      });
+    },
+    cancelDialog(formName) {
+      debugger;
+      this.$emit("cancelHandle");
+    },
+    //设置cron表达式
+    setCron(cronExpression) {
+      this.msgFormDialog.jobCron = cronExpression;
+      this.cronDialogVisible = false;
+    },
+    closeCron() {
+      this.cronDialogVisible = false;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.handleClearDialog {
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+  }
+  .treeBox {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .el-tree {
+    margin-top: 12px;
+  }
+}
+</style>
