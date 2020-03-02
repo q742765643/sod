@@ -284,9 +284,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public String findByParentId(String parentId) {
         List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdDesc(parentId);
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
-        String dataClassId = dataClassDtos.get(0).getDataClassId();
         if (parentId.length() > 8) {
             if (dataClassDtos.size() > 0) {
+                String dataClassId = dataClassDtos.get(0).getDataClassId();
                 int no;
                 try {
                     no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 3));
@@ -302,6 +302,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             }
         } else {
             if (dataClassDtos.size() > 0) {
+                String dataClassId = dataClassDtos.get(0).getDataClassId();
                 int no;
                 try {
                     no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 4));
