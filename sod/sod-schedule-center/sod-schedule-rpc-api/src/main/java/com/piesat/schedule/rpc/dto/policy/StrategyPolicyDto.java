@@ -1,5 +1,6 @@
 package com.piesat.schedule.rpc.dto.policy;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -12,8 +13,11 @@ import java.util.List;
  **/
 @Data
 public class StrategyPolicyDto {
+    @ApiModelProperty("物理库名称")
     private String databaseName;
+    @ApiModelProperty("物理库ID")
     private String databaseId;
+    @ApiModelProperty("存储编码")
     private String dataClassId;
     List<PolicyDto> policyDtos;
 

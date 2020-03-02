@@ -2,18 +2,19 @@ package com.piesat.schedule.client.service.databse;
 
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
+import com.piesat.schedule.client.util.fetl.imp.ImpMetaData;
 import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.vo.MetadataVo;
+import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
+import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.schedule.mapper.database.XuguOperationMapper;
 import com.piesat.util.ResultT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: sod
@@ -21,6 +22,7 @@ import java.util.Map;
  * @author: zzj
  * @create: 2020-02-24 14:27
  **/
+@Slf4j
 @Service
 public class XuguService {
     @Autowired
@@ -177,6 +179,13 @@ public class XuguService {
         }
 
 
+    }
+
+    public void recoverMeta(RecoverMetaVo recoverMetaVo,Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT){
+        ImpMetaData imp = new ImpMetaData();
+        log.info("路径:{}",recoverMetaVo.getIndexPath());
+        String detail=imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
+        resultT.setSuccessMessage(detail);
     }
 }
 

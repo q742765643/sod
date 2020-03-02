@@ -10,21 +10,27 @@ import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.vo.MetadataVo;
+import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
+import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.schedule.mapper.database.GbaseOperationMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @program: sod
@@ -35,50 +41,57 @@ import java.util.Map;
 @Slf4j
 @Service
 public class GbaseService {
+    @Value("#{server.ip}")
+    private String serverIp;
+    @Value("#{server.user}")
+    private String serverUser;
+    @Value("#{server.pass}")
+    private String serverPass;
     @Autowired
     private GbaseOperationMapper gbaseOperationMapper;
-    public List<TreeVo> findMeta(){
-        List<TreeVo> treeVos=new ArrayList<>();
-        TreeVo pUserTreeVo=new TreeVo("","用户","用户",true);
+
+    public List<TreeVo> findMeta() {
+        List<TreeVo> treeVos = new ArrayList<>();
+        TreeVo pUserTreeVo = new TreeVo("", "用户", "用户", true);
         treeVos.add(pUserTreeVo);
-        List<Map<String,Object>> users=gbaseOperationMapper.findGbaseUsers();
-        if(!users.isEmpty()){
-            for(Map<String,Object> user:users){
-                TreeVo treeUser=new TreeVo();
-                treeUser.setId(user.get("USER")+"--"+user.get("UUID"));
+        List<Map<String, Object>> users = gbaseOperationMapper.findGbaseUsers();
+        if (!users.isEmpty()) {
+            for (Map<String, Object> user : users) {
+                TreeVo treeUser = new TreeVo();
+                treeUser.setId(user.get("USER") + "--" + user.get("UUID"));
                 treeUser.setPId("用户");
-                treeUser.setName(user.get("USER")+"--"+user.get("UUID"));
+                treeUser.setName(user.get("USER") + "--" + user.get("UUID"));
                 treeVos.add(treeUser);
             }
         }
 
-        TreeVo pInstanceTreeVo=new TreeVo("","数据库","数据库",true);
+        TreeVo pInstanceTreeVo = new TreeVo("", "数据库", "数据库", true);
         treeVos.add(pInstanceTreeVo);
-        List<String> instances=gbaseOperationMapper.findGbaseInstance();
-        if(!instances.isEmpty()){
-            for(String instance:instances){
-                TreeVo treeInstance=new TreeVo();
+        List<String> instances = gbaseOperationMapper.findGbaseInstance();
+        if (!instances.isEmpty()) {
+            for (String instance : instances) {
+                TreeVo treeInstance = new TreeVo();
                 treeInstance.setId(instance);
                 treeInstance.setPId("数据库");
                 treeInstance.setName(instance);
                 treeVos.add(treeInstance);
-                this.getInstanceMeta(instance,treeVos);
+                this.getInstanceMeta(instance, treeVos);
             }
         }
 
         return treeVos;
     }
 
-    public void getInstanceMeta(String instance,List<TreeVo> treeVos){
-        TreeVo pTableTreeVo=new TreeVo(instance,"表"+instance,"表",true);
+    public void getInstanceMeta(String instance, List<TreeVo> treeVos) {
+        TreeVo pTableTreeVo = new TreeVo(instance, "表" + instance, "表", true);
         treeVos.add(pTableTreeVo);
-        List<String> tables=gbaseOperationMapper.findGbaseTables(instance);
-        if(!tables.isEmpty()){
-            for(String table:tables){
-                TreeVo treeTable=new TreeVo();
-                treeTable.setId(instance+"."+table);
-                treeTable.setPId("表"+instance);
-                treeTable.setName(instance+"."+table);
+        List<String> tables = gbaseOperationMapper.findGbaseTables(instance);
+        if (!tables.isEmpty()) {
+            for (String table : tables) {
+                TreeVo treeTable = new TreeVo();
+                treeTable.setId(instance + "." + table);
+                treeTable.setPId("表" + instance);
+                treeTable.setName(instance + "." + table);
                 treeVos.add(treeTable);
             }
         }
@@ -87,50 +100,51 @@ public class GbaseService {
     }
 
 
-    public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT){
-        if(!metadataVo.getUsers().isEmpty()){
-           for(String user:metadataVo.getUsers()){
-               this.expUser(user,metadataVo,metaBackupEntity,resultT);
-           }
+    public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT) {
+        if (!metadataVo.getUsers().isEmpty()) {
+            for (String user : metadataVo.getUsers()) {
+                this.expUser(user, metadataVo, metaBackupEntity, resultT);
+            }
         }
-        if(!metadataVo.getTable().isEmpty()){
-            for(String table:metadataVo.getTable()){
-                if(metaBackupEntity.getIsStructure().indexOf("0")!=-1){
-                   this.expTable(table,metadataVo,metaBackupEntity,resultT);
+        if (!metadataVo.getTable().isEmpty()) {
+            for (String table : metadataVo.getTable()) {
+                if (metaBackupEntity.getIsStructure().indexOf("0") != -1) {
+                    this.expTable(table, metadataVo, metaBackupEntity, resultT);
                 }
-                if(metadataVo.isExpData()){
-                    this.expData(table,metadataVo,metaBackupEntity,resultT);
+                if (metadataVo.isExpData()) {
+                    this.expData(table, metadataVo, metaBackupEntity, resultT);
                 }
             }
 
 
         }
     }
-    public void expUser(String userAndUuid, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity,ResultT<String> resultT) {
+
+    public void expUser(String userAndUuid, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
         if (dataSource != null) {
             try {
-                log.info("开始备份用户{}",userAndUuid);
-                String user=userAndUuid.split("--")[0];
-                String path=metadataVo.getParentPath()+"/USER_"+userAndUuid+".sql";
-                URL url=new URL(dataSource.getUrl());
+                log.info("开始备份用户{}", userAndUuid);
+                String user = userAndUuid.split("--")[0];
+                String path = metadataVo.getParentPath() + "/USER_" + userAndUuid + ".sql";
+                URL url = new URL(dataSource.getUrl());
                 StringBuilder sql = new StringBuilder();
                 sql.append("gccli -h ").append(url.getHost())
                         .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
                         .append(" -N -s ").append(" -e ").append("\"");
                 sql.append("show grants for " + user + "").append("\"").append(">>" + path);
                 String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
-                int exit=CmdUtil.expCmd(commands,resultT);
-                if(exit==0){
-                    StringBuilder writePath=new StringBuilder();
-                    writePath.append("---user ").append("USER_"+userAndUuid+".sql").append("---\r\n");
-                    writePath.append("USER_"+userAndUuid+".sql").append("\r\n");
+                int exit = CmdUtil.expCmd(commands, resultT);
+                if (exit == 0) {
+                    StringBuilder writePath = new StringBuilder();
+                    writePath.append("---user ").append("USER_" + userAndUuid + ".sql").append("---\r\n");
+                    writePath.append("USER_" + userAndUuid + ".sql").append("\r\n");
                     writePath.append("---end user---\r\n");
-                    ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
-                }else{
-                    resultT.setSuccessMessage("用户{}备份失败",userAndUuid);
-                    log.error("用户{}备份失败",userAndUuid);
+                    ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
+                } else {
+                    resultT.setSuccessMessage("用户{}备份失败", userAndUuid);
+                    log.error("用户{}备份失败", userAndUuid);
 
                 }
             } catch (MalformedURLException e) {
@@ -139,35 +153,36 @@ public class GbaseService {
 
         }
     }
-    public void expTable(String tableInfo, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity,ResultT<String> resultT) {
+
+    public void expTable(String tableInfo, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
         if (dataSource != null) {
             try {
-                log.info("开始备份表{}结构",tableInfo);
-                String path=metadataVo.getParentPath()+"/TABLE_"+tableInfo+".sql";
-                String instance=tableInfo.split("\\.")[0];
-                String tableName=tableInfo.split("\\.")[1];
-                URL url=new URL(dataSource.getUrl());
+                log.info("开始备份表{}结构", tableInfo);
+                String path = metadataVo.getParentPath() + "/TABLE_" + tableInfo + ".sql";
+                String instance = tableInfo.split("\\.")[0];
+                String tableName = tableInfo.split("\\.")[1];
+                URL url = new URL(dataSource.getUrl());
                 StringBuilder sql = new StringBuilder();
                 sql.append("gcdump  -h ").append(url.getHost())
                         .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
-                        .append(" "+instance + " ").append(tableName);
+                        .append(" " + instance + " ").append(tableName);
                 sql.append(">>" + path + "");
                 String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
-                int exit=CmdUtil.expCmd(commands,resultT);
-                if(exit==0){
-                    StringBuilder write=new StringBuilder();
-                    ZipUtils.readFile(path,write,resultT);
-                    ZipUtils.writeFile(path,write,resultT);
-                    StringBuilder writePath=new StringBuilder();
+                int exit = CmdUtil.expCmd(commands, resultT);
+                if (exit == 0) {
+                    StringBuilder write = new StringBuilder();
+                    ZipUtils.readFile(path, write, resultT);
+                    ZipUtils.writeFile(path, write, resultT);
+                    StringBuilder writePath = new StringBuilder();
                     writePath.append("---table ").append(instance).append(".").append(tableName).append("---\r\n");
-                    writePath.append("TABLE_"+tableInfo+".sql").append("\r\n");
+                    writePath.append("TABLE_" + tableInfo + ".sql").append("\r\n");
                     writePath.append("---end table---\r\n");
-                    ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
-                }else{
-                    resultT.setSuccessMessage("表结构{}备份失败",tableInfo);
-                    log.error("表结构{}备份失败",tableInfo);
+                    ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
+                } else {
+                    resultT.setSuccessMessage("表结构{}备份失败", tableInfo);
+                    log.error("表结构{}备份失败", tableInfo);
                 }
             } catch (MalformedURLException e) {
                 log.error(OwnException.get(e));
@@ -175,13 +190,14 @@ public class GbaseService {
 
         }
     }
-    public void expData(String table, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity,ResultT<String> resultT) {
+
+    public void expData(String table, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
         if (dataSource != null) {
             try {
-                URL url=new URL(dataSource.getUrl());
-                String path=metadataVo.getParentPath()+"/DATA_"+table+".txt";
+                URL url = new URL(dataSource.getUrl());
+                String path = metadataVo.getParentPath() + "/DATA_" + table + ".txt";
                 StringBuilder sql = new StringBuilder();
                 sql.append("gccli -h ").append(url.getHost())
                         .append(" -u")
@@ -193,16 +209,16 @@ public class GbaseService {
                         .append(" WITH HEAD FIELDS TERMINATED BY ','")
                         .append("\"");
                 String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
-                int exit= CmdUtil.expCmd(commands,resultT);
-                if(exit==0){
-                    StringBuilder writePath=new StringBuilder();
-                    writePath.append("---data "+table+"---").append("\r\n");
-                    writePath.append("DATA_"+table+".txt");
+                int exit = CmdUtil.expCmd(commands, resultT);
+                if (exit == 0) {
+                    StringBuilder writePath = new StringBuilder();
+                    writePath.append("---data " + table + "---").append("\r\n");
+                    writePath.append("DATA_" + table + ".txt");
                     writePath.append("---end data---");
-                    ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
-                }else{
-                    resultT.setSuccessMessage("表数据{}备份失败",table);
-                    log.error("表数据{}备份失败",table);
+                    ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
+                } else {
+                    resultT.setSuccessMessage("表数据{}备份失败", table);
+                    log.error("表数据{}备份失败", table);
                 }
             } catch (MalformedURLException e) {
                 log.error(OwnException.get(e));
@@ -211,5 +227,109 @@ public class GbaseService {
         }
     }
 
-}
+    public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
+        Set<String> schemas=impInfo.get(Type.SCHEMA);
+        Map<String, String> map = ZipUtils.readFile(recoverMetaVo.getIndexPath(), resultT);
+        List<String> schemaList=gbaseOperationMapper.findGbaseInstance();
+        if(null!=schemas&&!schemas.isEmpty()){
+            for(String schema:schemas){
+                if(!schemaList.contains(schema)){
+                    this.recoverGbaseSchema(schema,resultT);
+                }
+            }
+        }
+        Set<String> users=impInfo.get(Type.USER);
+        if(null!=users&&!users.isEmpty()){
+            for(String user:users){
+                String realPath = recoverMetaVo.getUnzipPath() + "/" + map.get("---user " + user + "---");
+                this.recoverGbaseUser(user,realPath,resultT);
+            }
+        }
+        Set<String> tables=impInfo.get(Type.TABLE);
+        if(null!=tables&&!tables.isEmpty()){
+            for(String table:tables){
+                String realPath = recoverMetaVo.getUnzipPath() + "/" + map.get("---table " + table + "---");
+                this.recoverGbaseTable(recoverLogEntity.getParentId(),table,realPath,resultT);
+            }
+        }
+        Set<String> datas=impInfo.get(Type.DATA);
+        if(null!=datas&&!datas.isEmpty()){
+            for(String data:datas){
+                String realPath = recoverMetaVo.getUnzipPath() + "/" + map.get("---data " + data + "---");
+                this.recoverGbaseData(data,realPath,resultT);
+            }
+        }
 
+
+    }
+    public void recoverGbaseSchema(String instance,ResultT<String> resultT){
+        try {
+            gbaseOperationMapper.createGbaseSchema(instance);
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
+           resultT.setSuccessMessage("数据库{}创建失败",instance);
+        }
+
+    }
+    public void recoverGbaseUser(String user,String path, ResultT<String> resultT) {
+        try (FileReader reader = new FileReader(path);
+             BufferedReader br = new BufferedReader(reader) // 建立一个对象，它把文件内容转成计算机能读懂的语言
+        ) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if(!"".equals(line)){
+                    gbaseOperationMapper.createGbaseUser(line);
+                }
+
+            }
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
+            resultT.setSuccessMessage("用户{}创建失败",user);
+        }
+
+    }
+    public void recoverGbaseTable(String parentId,String table,String path, ResultT<String> resultT) {
+        DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
+        if(null==dataSource){
+            log.error("{}数据为空",parentId);
+            resultT.setSuccessMessage("表{}结构恢复失败",table);
+            return;
+        }
+        int exit=-1;
+        try {
+            URL url=new URL(dataSource.getUrl());
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("gccli -h ").append(url.getHost())
+                    .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
+                    .append(" -N -s ").append(" -f");
+            sql.append("<" + path + "");
+            String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
+            exit=CmdUtil.expCmd(commands,resultT);
+        } catch (MalformedURLException e) {
+            log.error(OwnException.get(e));
+        }
+        if(exit!=0){
+            resultT.setSuccessMessage("表结构{}恢复失败",table);
+            log.error("表结构{}备份失败",table);
+        }
+
+
+    }
+    public void recoverGbaseData(String tableName,String path, ResultT<String> resultT) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("load data infile ");
+            sql.append("'sftp://").append(serverUser).append(":").append(serverPass);
+            sql.append("@").append(serverIp).append(path).append("'");
+            sql.append(" into table ").append(tableName);
+            sql.append(" NULL_VALUE '\\\\N' DATETIME FORMAT '%Y-%m-%d %H:%i:%s.%f'   FIELDS TERMINATED BY ',' ");
+            gbaseOperationMapper.createGbaseUser(sql.toString());
+        } catch (Exception e) {
+            resultT.setSuccessMessage("表{}数据恢复失败",tableName);
+           log.error(OwnException.get(e));
+        }
+
+    }
+}

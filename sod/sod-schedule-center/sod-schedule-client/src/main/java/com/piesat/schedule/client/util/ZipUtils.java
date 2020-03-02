@@ -391,8 +391,7 @@ public class ZipUtils {
             resultT.setErrorMessage("读取文件失败:"+OwnException.get(e));
             e.printStackTrace();
         }finally {
-            File file=new File(path);
-            file.delete();
+           FileUtil.delete(path,resultT);
         }
     }
     public static void readFileCansandraFile(String path,StringBuilder stringBuilder,ResultT<String> resultT) {

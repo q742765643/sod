@@ -51,6 +51,9 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         if(StringUtils.isNotNullString(metaBackupEntity.getDatabaseName())){
             specificationBuilder.add("databaseName", SpecificationOperator.Operator.likeAll.name(),metaBackupEntity.getDatabaseName());
         }
+        if(StringUtils.isNotNullString(metaBackupEntity.getTaskName())){
+            specificationBuilder.add("taskName", SpecificationOperator.Operator.likeAll.name(),metaBackupEntity.getTaskName());
+        }
         if(null!=metaBackupEntity.getTriggerStatus()){
             specificationBuilder.add("triggerStatus",SpecificationOperator.Operator.eq.name(),metaBackupEntity.getTriggerStatus());
         }

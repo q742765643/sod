@@ -42,8 +42,8 @@ public class StrategyPolicyController {
     @RequiresPermissions("schedule:strategyPolicy:findData")
     @GetMapping("/findData")
     @ApiOperation(value = "查询策略", notes = "查询策略")
-    public ResultT findData(String classId){
-        ResultT resultT=new ResultT();
+    public ResultT<List<StrategyPolicyDto>> findData(String classId){
+        ResultT<List<StrategyPolicyDto>> resultT=new ResultT();
         List<StrategyPolicyDto> strategyPolicyDtos=strategyPolicyService.findData(classId);
         resultT.setData(strategyPolicyDtos);
         return resultT;

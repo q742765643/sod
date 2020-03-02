@@ -24,6 +24,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -59,9 +60,10 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         if(StringUtils.isNotNullString(clearEntity.getDatabaseId())){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),clearEntity.getDatabaseId());
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(clearEntity.getDataClassId())){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),clearEntity.getDataClassId());
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),clearEntity.getDataClassId());
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),clearEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),clearEntity.getDataClassId());
         }
         if(StringUtils.isNotNullString(clearEntity.getProfileName())){
             specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),clearEntity.getProfileName());
@@ -78,8 +80,9 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         if(StringUtils.isNotNullString((String) clearEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) clearEntity.getParamt().get("endTime"));
         }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
         Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<ClearEntity> clearEntities= (List<ClearEntity>) pageBean.getPageData();
         pageBean.setPageData(clearMapstruct.toDto(clearEntities));
         return pageBean;
