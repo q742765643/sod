@@ -16,6 +16,7 @@ public class TreeVo {
     private String id;
     private String name;
     private  boolean checked;
+    @JsonProperty
     private boolean isParent;
 
     public TreeVo(String pId, String id, String name){

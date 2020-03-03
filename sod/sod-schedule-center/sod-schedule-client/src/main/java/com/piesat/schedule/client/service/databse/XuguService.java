@@ -1,5 +1,6 @@
 package com.piesat.schedule.client.service.databse;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
 import com.piesat.schedule.client.util.fetl.imp.ImpMetaData;
@@ -173,7 +174,9 @@ public class XuguService {
         }
         try {
             String reslut=exp.expMetaData(metaBackupEntity.getParentId(),expInfo,metadataVo.getIndexPath());
-            resultT.setSuccessMessage(reslut);
+            if(!StringUtils.isNotNullString(reslut)){
+                resultT.setErrorMessage(reslut);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -185,7 +188,9 @@ public class XuguService {
         ImpMetaData imp = new ImpMetaData();
         log.info("路径:{}",recoverMetaVo.getIndexPath());
         String detail=imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
-        resultT.setSuccessMessage(detail);
+        if(!StringUtils.isNotNullString(detail)){
+            resultT.setErrorMessage(detail);
+        }
     }
 }
 

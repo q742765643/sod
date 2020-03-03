@@ -1,10 +1,12 @@
 package com.piesat.schedule.rpc.service.backup;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.dao.backup.BackupLogDao;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
 import com.piesat.schedule.dao.backup.MetaBackupLogDao;
@@ -39,6 +41,8 @@ public class MetaBackupLogServiceImpl extends BaseService<MetaBackupLogEntity> i
     private MetaBackupLogDao metaBackupLogDao;
     @Autowired
     private MetaBackupLogMapstruct metaBackupLogMapstruct;
+    @GrpcHthtClient
+    private ExecutorBiz executorBiz;
 
     @Override
     public BaseDao<MetaBackupLogEntity> getBaseDao() {
@@ -81,6 +85,13 @@ public class MetaBackupLogServiceImpl extends BaseService<MetaBackupLogEntity> i
     public void deleteMetaBackupLogByIds(String[] metaBackupLogIds){
         this.deleteByIds(Arrays.asList(metaBackupLogIds));
     }
+
+    @Override
+    public byte[] downFile(String path){
+        byte[] bytes= (byte[]) executorBiz.downFile(path);
+        return bytes;
+    }
+
 
 
 

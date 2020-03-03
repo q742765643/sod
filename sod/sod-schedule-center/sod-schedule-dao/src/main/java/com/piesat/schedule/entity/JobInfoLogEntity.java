@@ -20,6 +20,8 @@ import java.util.Date;
 public class JobInfoLogEntity extends BaseEntity{
     @Column(name="job_id", length=50)
     private String jobId;
+    @Column(name="task_name", length=255)
+    private String taskName;
     @Column(name="executor_address", length=100)
     private String executorAddress;
     @Column(name="trigger_time")

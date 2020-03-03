@@ -93,7 +93,7 @@ eureka:
 backup:
   temp-path: /zzj/CMADASS
 
-server:
+gbaseserver:
   ip: 127.0.0.1
   user: gbase
   pass: gbase

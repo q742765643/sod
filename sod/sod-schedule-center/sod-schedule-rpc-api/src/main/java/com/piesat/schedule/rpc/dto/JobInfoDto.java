@@ -17,6 +17,8 @@ public class JobInfoDto extends BaseDto {
     private String jobCron;		// 任务执行CRON表达式
     @ApiModelProperty("任务描述")
     private String jobDesc;
+    @ApiModelProperty("任务名称")
+    private String taskName;
     private String executorRouteStrategy;	// 执行器路由策略
     private String executorHandler;		    // 执行器，任务Handler名称
     private String executorParam;		    // 执行器，任务参数

@@ -18,7 +18,7 @@ public class CustomConfig implements ApplicationRunner {
     private SendThread sendThread;
     @Override
     public void run(ApplicationArguments applicationArguments) throws Exception {
-        sendThread.init();
+       // sendThread.init();
     }
 }
 

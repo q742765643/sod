@@ -41,11 +41,11 @@ import java.util.Set;
 @Slf4j
 @Service
 public class GbaseService {
-    @Value("#{server.ip}")
+    @Value("${gbaseserver.ip}")
     private String serverIp;
-    @Value("#{server.user}")
+    @Value("${gbaseserver.user}")
     private String serverUser;
-    @Value("#{server.pass}")
+    @Value("${gbaseserver.pass}")
     private String serverPass;
     @Autowired
     private GbaseOperationMapper gbaseOperationMapper;
@@ -143,11 +143,12 @@ public class GbaseService {
                     writePath.append("---end user---\r\n");
                     ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
                 } else {
-                    resultT.setSuccessMessage("用户{}备份失败", userAndUuid);
+                    resultT.setErrorMessage("用户{}备份失败", userAndUuid);
                     log.error("用户{}备份失败", userAndUuid);
 
                 }
-            } catch (MalformedURLException e) {
+            } catch (Exception e) {
+                resultT.setErrorMessage("用户{}备份失败", userAndUuid);
                 log.error(OwnException.get(e));
             }
 
@@ -181,10 +182,11 @@ public class GbaseService {
                     writePath.append("---end table---\r\n");
                     ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
                 } else {
-                    resultT.setSuccessMessage("表结构{}备份失败", tableInfo);
+                    resultT.setErrorMessage("表结构{}备份失败", tableInfo);
                     log.error("表结构{}备份失败", tableInfo);
                 }
-            } catch (MalformedURLException e) {
+            } catch (Exception e) {
+                resultT.setErrorMessage("表结构{}备份失败", tableInfo);
                 log.error(OwnException.get(e));
             }
 
@@ -217,10 +219,11 @@ public class GbaseService {
                     writePath.append("---end data---");
                     ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
                 } else {
-                    resultT.setSuccessMessage("表数据{}备份失败", table);
+                    resultT.setErrorMessage("表数据{}备份失败", table);
                     log.error("表数据{}备份失败", table);
                 }
-            } catch (MalformedURLException e) {
+            } catch (Exception e) {
+                resultT.setErrorMessage("表数据{}备份失败", table);
                 log.error(OwnException.get(e));
             }
 
@@ -267,7 +270,7 @@ public class GbaseService {
             gbaseOperationMapper.createGbaseSchema(instance);
         } catch (Exception e) {
             log.error(OwnException.get(e));
-           resultT.setSuccessMessage("数据库{}创建失败",instance);
+           resultT.setErrorMessage("数据库{}创建失败",instance);
         }
 
     }
@@ -284,7 +287,7 @@ public class GbaseService {
             }
         } catch (Exception e) {
             log.error(OwnException.get(e));
-            resultT.setSuccessMessage("用户{}创建失败",user);
+            resultT.setErrorMessage("用户{}创建失败",user);
         }
 
     }
@@ -293,7 +296,7 @@ public class GbaseService {
         DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
         if(null==dataSource){
             log.error("{}数据为空",parentId);
-            resultT.setSuccessMessage("表{}结构恢复失败",table);
+            resultT.setErrorMessage("表{}结构恢复失败",table);
             return;
         }
         int exit=-1;
@@ -307,11 +310,12 @@ public class GbaseService {
             sql.append("<" + path + "");
             String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
             exit=CmdUtil.expCmd(commands,resultT);
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
+            resultT.setErrorMessage("表结构{}恢复失败",table);
             log.error(OwnException.get(e));
         }
         if(exit!=0){
-            resultT.setSuccessMessage("表结构{}恢复失败",table);
+            resultT.setErrorMessage("表结构{}恢复失败",table);
             log.error("表结构{}备份失败",table);
         }
 
@@ -327,7 +331,7 @@ public class GbaseService {
             sql.append(" NULL_VALUE '\\\\N' DATETIME FORMAT '%Y-%m-%d %H:%i:%s.%f'   FIELDS TERMINATED BY ',' ");
             gbaseOperationMapper.createGbaseUser(sql.toString());
         } catch (Exception e) {
-            resultT.setSuccessMessage("表{}数据恢复失败",tableName);
+            resultT.setErrorMessage("表{}数据恢复失败",tableName);
            log.error(OwnException.get(e));
         }
 

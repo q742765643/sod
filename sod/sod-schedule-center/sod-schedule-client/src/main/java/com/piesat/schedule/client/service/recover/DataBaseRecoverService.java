@@ -18,9 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.io.*;
 import java.sql.ResultSet;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
  * @program: sod
@@ -165,6 +168,155 @@ public class DataBaseRecoverService {
             log.error("修改日志出错{}",OwnException.get(e));
         }
 
+    }
+    public  List<TreeVo> getFileList(String parentId,String storageDirectory){
+        List<TreeVo> list=new ArrayList<>();
+        String path = storageDirectory+"/"+parentId;
+        this.getFileFistChidren(path,list);
+        return list;
+
+    }
+    public  void getFileFistChidren(String childrenPath,List<TreeVo> list){
+        File childrenFile=new File(childrenPath);
+        File [] children = childrenFile.listFiles();
+        Arrays.sort(children, new Comparator<File>() {
+            @Override
+            public int compare(File f1, File f2) {
+                long diff = f1.lastModified() - f2.lastModified();
+                if (diff > 0){
+                    return 1;
+                }
+
+                else if (diff == 0){
+                    return 0;
+                }
+
+                else {
+                    return -1;
+                }
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return true;
+            }
+
+        });
+        if(children.length==0){
+            return ;
+        }
+        int i=0;
+        for(File file:children){
+            TreeVo treeVo=new TreeVo();
+            treeVo.setId(file.getPath().replace("\\","/"));
+            treeVo.setName(file.getName());
+            treeVo.setPId(childrenPath);
+            if(file.isDirectory()){
+                treeVo.setParent(true);
+                list.add(treeVo);
+                if(i==0){
+                  this.getFileFistChidren(treeVo.getId(),list);
+                }
+                i++;
+            }
+            if(file.isFile()){
+                treeVo.setParent(false);
+                list.add(treeVo);
+            }
+
+        }
+
+    }
+
+    public List<TreeVo> getFileChidren(String childrenPath){
+        List<TreeVo> list=new ArrayList<>();
+        File childrenFile=new File(childrenPath);
+        File [] children = childrenFile.listFiles();
+        if(children.length==0){
+            return list;
+        }
+        for(File file:children){
+            TreeVo treeVo=new TreeVo();
+            treeVo.setId(file.getPath().replace("\\","/"));
+            treeVo.setName(file.getName());
+            treeVo.setPId(childrenPath);
+            if(file.isDirectory()){
+                treeVo.setParent(true);
+            }
+            if(file.isFile()){
+                treeVo.setParent(false);
+            }
+            list.add(treeVo);
+
+        }
+        return list;
+
+    }
+
+
+
+
+
+    public  Map<String,Object> parsingPath(String path){
+        Map<String,Object> map=new HashMap<>();
+        StringBuilder stringBuilder=new StringBuilder();
+        StringBuilder structure=new StringBuilder();
+        ZipFile zipFile=null;
+        InputStream in=null;
+        ZipInputStream zin=null;
+        try {
+            zipFile=new ZipFile(path);
+            Enumeration zipEnum = zipFile.entries();
+            in = new BufferedInputStream(new FileInputStream(path));
+            zin = new ZipInputStream(in);
+            while(zipEnum.hasMoreElements ()) {
+                ZipEntry ze = (ZipEntry) zipEnum.nextElement();
+                if(ze.getName().indexOf("tree.txt")!=-1){
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader(zipFile.getInputStream(ze)));
+                    String str;
+                    while ((str = br.readLine()) != null) {
+                        stringBuilder.append(str);
+                    }
+                    br.close();
+
+                }
+                if(ze.getName().indexOf("structure.txt")!=-1){
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader(zipFile.getInputStream(ze)));
+                    String str;
+                    while ((str = br.readLine()) != null) {
+                        structure.append(str);
+                    }
+                    br.close();
+                }
+
+            }
+            List<TreeVo> treeVos=JSON.parseArray(stringBuilder.toString(),TreeVo.class);
+            map.put("tree",treeVos);
+            map.put("isStructure",structure.toString());
+            return map;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if(in!=null){
+                    in.close();
+                }
+                if(zin!=null){
+                    zin.closeEntry();
+                    zin.close();
+                }
+                if(zipFile!=null){
+                    zipFile.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return map;
     }
 }
 

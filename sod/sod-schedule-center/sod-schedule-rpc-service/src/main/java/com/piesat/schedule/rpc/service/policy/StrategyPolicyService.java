@@ -3,10 +3,7 @@ package com.piesat.schedule.rpc.service.policy;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.DataLogicService;
-import com.piesat.dm.rpc.api.DataTableService;
-import com.piesat.dm.rpc.api.DatabaseService;
-import com.piesat.dm.rpc.api.DatumTypeInfoService;
+import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
@@ -36,6 +33,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -64,6 +62,8 @@ public class StrategyPolicyService {
     private DatabaseService databaseService;
     @GrpcHthtClient
     private DataTableService dataTableService;
+    @GrpcHthtClient
+    private DataClassService dataClassService;
     @Autowired
     private BackupService backupService;
     @Autowired
@@ -83,7 +83,7 @@ public class StrategyPolicyService {
     @Autowired
     private SyncTaskService syncTaskService;
     public JSONArray strategyTree(){
-       return datumTypeInfoService.getTree();
+       return dataClassService.getTree();
     }
 
     public List<StrategyPolicyDto>  findData(String dataClassId){
@@ -92,10 +92,10 @@ public class StrategyPolicyService {
         for(DataLogicDto dataLogicDto:dataLogicDtos){
             try {
                 StrategyPolicyDto strategyPolicyDto=new StrategyPolicyDto();
-                strategyPolicyDto.setDatabaseId(dataLogicDto.getId());
                 strategyPolicyDto.setDataClassId(dataClassId);
                 List<PolicyDto> policyDtos=new ArrayList<>();
                 DatabaseDto databaseDto= databaseService.getDotById(dataLogicDto.getDatabaseId());
+                strategyPolicyDto.setDatabaseId(databaseDto.getId());
                 String parentId=databaseDto.getDatabaseDefine().getId();
                 String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
                 strategyPolicyDto.setDatabaseName(databaseName);
@@ -134,6 +134,7 @@ public class StrategyPolicyService {
                 policyDto.setTaskId(backup.getId());
                 policyDto.setIsConfiguration("已配置");
                 policyDto.setJobCron(backup.getJobCron());
+                policyDto.setNextTime(this.getNextTime(backup.getJobCron()));
                 if(backup.getTriggerStatus()==1){
                     policyDto.setTriggerStatus("已启动");
                 }else{
@@ -176,6 +177,7 @@ public class StrategyPolicyService {
                 policyDto.setTaskId(clearDto.getId());
                 policyDto.setIsConfiguration("已配置");
                 policyDto.setJobCron(clearDto.getJobCron());
+                policyDto.setNextTime(this.getNextTime(clearDto.getJobCron()));
                 if(clearDto.getTriggerStatus()==1){
                     policyDto.setTriggerStatus("已启动");
                 }else{
@@ -218,6 +220,7 @@ public class StrategyPolicyService {
                 policyDto.setTaskId(moveDto.getId());
                 policyDto.setIsConfiguration("已配置");
                 policyDto.setJobCron(moveDto.getJobCron());
+                policyDto.setNextTime(this.getNextTime(moveDto.getJobCron()));
                 if(moveDto.getTriggerStatus()==1){
                     policyDto.setTriggerStatus("已启动");
                 }else{
@@ -331,6 +334,22 @@ public class StrategyPolicyService {
             }
         }
         return buffer.toString();
+    }
+
+    public List<String> getNextTime(String cronExpression){
+        List<String> cronTimeList = new ArrayList<>();
+        try {
+            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cronExpression);
+            Date nextTimePoint = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (int i = 0; i < 5; i++) {
+                nextTimePoint = cronSequenceGenerator.next(nextTimePoint);
+                cronTimeList.add(sdf.format(nextTimePoint));
+            }
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+        return cronTimeList;
     }
 }
 

@@ -6,6 +6,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -24,6 +25,8 @@ public interface MetaBackupService {
 
     public void deleteBackupByIds(String[] metaBackupIds);
 
-    public List<TreeVo> findMeta(String parentId, String databaseType);
+    public List<TreeVo> findMeta(String databaseId);
+
+    public List<Map<String,String>> findDataBase();
 }
 

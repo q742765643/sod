@@ -35,7 +35,6 @@ public class MetaRecoverLogEntity extends JobInfoLogEntity {
     private String databaseName;
     @Column(name="storage_directory", length=200)
     private String storageDirectory;
-    @Column(name="task_name", length=200)
-    private String taskName;
+
 }
 
