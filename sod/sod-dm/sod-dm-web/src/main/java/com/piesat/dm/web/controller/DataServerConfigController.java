@@ -44,6 +44,20 @@ public class DataServerConfigController {
         }
     }
 
+    @ApiOperation(value = "新增多个")
+    @RequiresPermissions("dm:dataserverbaseinfo:addList")
+    @Log(title = "服务基础信息管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/addList")
+    public ResultT addList(@RequestBody List<DataServerConfigDto> dataServerConfigDto) {
+        try {
+            List<DataServerConfigDto> save = this.dataServerConfigService.saveDtoList(dataServerConfigDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据id查询")
     @RequiresPermissions("dm:dataserverbaseinfo:get")
     @GetMapping(value = "/get")

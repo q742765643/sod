@@ -27,4 +27,6 @@ public interface DatabaseService {
     List<Map<String,Object>> getDatabaseName();
 
     List<Map<String,Object>> getByDatabaseDefineId(String id);
+
+    List<DatabaseDto> findByLevel(int level);
 }

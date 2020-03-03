@@ -21,4 +21,6 @@ public interface DatabaseDao extends BaseDao<DatabaseEntity> {
      * @return
      */
     List<DatabaseEntity> findByTdbId(String tdbId);
+
+    List<DatabaseEntity> findByLevel(int level);
 }

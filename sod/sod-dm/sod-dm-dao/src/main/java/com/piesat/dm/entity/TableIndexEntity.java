@@ -23,7 +23,7 @@ public class TableIndexEntity extends BaseEntity {
      * 对应表id
      * table_id
      */
-    @Column(name = "table_id", length = 255, nullable = false)
+    @Column(name = "table_id", length = 255)
     private String tableId;
 
     /**

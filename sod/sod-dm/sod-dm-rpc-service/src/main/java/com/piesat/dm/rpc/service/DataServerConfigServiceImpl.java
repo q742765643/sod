@@ -6,7 +6,6 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.dao.DataServerConfigDao;
 import com.piesat.dm.entity.DataServerConfigEntity;
-import com.piesat.dm.entity.GridAreaEntity;
 import com.piesat.dm.rpc.api.DataServerConfigService;
 import com.piesat.dm.rpc.dto.DataServerConfigDto;
 import com.piesat.dm.rpc.mapper.DataServerConfigMapper;
@@ -41,6 +40,13 @@ public class DataServerConfigServiceImpl extends BaseService<DataServerConfigEnt
     public DataServerConfigDto saveDto(DataServerConfigDto dataServerConfigDto) {
         DataServerConfigEntity dataServerConfigEntity = this.dataServerConfigMapper.toEntity(dataServerConfigDto);
         dataServerConfigEntity = this.save(dataServerConfigEntity);
+        return this.dataServerConfigMapper.toDto(dataServerConfigEntity);
+    }
+
+    @Override
+    public List<DataServerConfigDto> saveDtoList(List<DataServerConfigDto> dataServerConfigDtos) {
+        List<DataServerConfigEntity> dataServerConfigEntity = this.dataServerConfigMapper.toEntity(dataServerConfigDtos);
+        dataServerConfigEntity = this.dataServerConfigDao.saveAll(dataServerConfigEntity);
         return this.dataServerConfigMapper.toDto(dataServerConfigEntity);
     }
 

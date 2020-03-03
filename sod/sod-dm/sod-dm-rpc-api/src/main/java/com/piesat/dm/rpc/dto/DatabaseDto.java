@@ -64,5 +64,7 @@ public class DatabaseDto {
      */
     private String userId;
 
+    private Integer level;
+
     private List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList;
 }
