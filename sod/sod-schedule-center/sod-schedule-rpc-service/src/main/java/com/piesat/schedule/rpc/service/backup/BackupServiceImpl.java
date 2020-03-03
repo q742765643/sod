@@ -26,6 +26,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -65,9 +66,10 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         if(StringUtils.isNotNullString(backupEntity.getDatabaseId())){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),backupEntity.getDatabaseId());
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(backupEntity.getDataClassId())){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
         }
         if(StringUtils.isNotNullString(backupEntity.getProfileName())){
             specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),backupEntity.getProfileName());
@@ -84,8 +86,9 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         if(StringUtils.isNotNullString((String) backupEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupEntity.getParamt().get("endTime"));
         }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
         Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<BackupEntity> backupEntities= (List<BackupEntity>) pageBean.getPageData();
         pageBean.setPageData(backupMapstruct.toDto(backupEntities));
         return pageBean;
@@ -98,11 +101,13 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         if(StringUtils.isNotNullString(databaseId)){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),databaseId);
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(dataClassId)){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),dataClassId);
         }
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,Sort.unsorted());
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        PageBean pageBean=this.getPage(specification,pageForm,Sort.unsorted());
         List<BackupEntity> backupEntities= (List<BackupEntity>) pageBean.getPageData();
         if(null!=backupEntities&&!backupEntities.isEmpty()){
             return backupMapstruct.toDto(backupEntities.get(0));

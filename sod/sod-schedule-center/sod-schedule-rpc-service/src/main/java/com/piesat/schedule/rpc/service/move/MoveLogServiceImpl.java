@@ -17,6 +17,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -45,9 +46,10 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
         if(StringUtils.isNotNullString(moveLogEntity.getDatabaseId())){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),moveLogEntity.getDatabaseId());
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(moveLogEntity.getDataClassId())){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getDataClassId());
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getDataClassId());
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getDataClassId());
         }
         if(StringUtils.isNotNullString(moveLogEntity.getProfileName())){
             specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getProfileName());
@@ -64,8 +66,9 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
         if(StringUtils.isNotNullString((String) moveLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) moveLogEntity.getParamt().get("endTime"));
         }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
         Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<MoveLogEntity> moveEntities= (List<MoveLogEntity>) pageBean.getPageData();
         pageBean.setPageData(moveLogMapstruct.toDto(moveEntities));
         return pageBean;

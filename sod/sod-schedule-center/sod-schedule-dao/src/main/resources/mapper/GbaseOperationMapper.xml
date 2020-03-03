@@ -11,4 +11,10 @@
     <select id="findGbaseTables" resultType="java.lang.String">
         select table_name from information_schema.tables where table_schema=#{schemaName}
    </select>
+    <update id="createGbaseSchema">
+        create database ${schemaName}
+    </update>
+    <update id="createGbaseUser">
+        ${sql}
+    </update>
 </mapper>

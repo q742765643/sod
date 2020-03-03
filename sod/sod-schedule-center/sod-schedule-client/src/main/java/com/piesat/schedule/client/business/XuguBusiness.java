@@ -13,12 +13,15 @@ import com.piesat.schedule.client.util.Select2File;
 import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
+import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.MetadataVo;
+import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
+import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @program: sod
@@ -159,7 +163,7 @@ public class XuguBusiness extends BaseBusiness{
         }
 
     }
-
+    @Override
     public List<TreeVo> findMeta(String parentId){
         DataSourceContextHolder.setDataSource(parentId);
         try {
@@ -178,6 +182,12 @@ public class XuguBusiness extends BaseBusiness{
     public void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT) {
         XuguService xuguService= SpringUtil.getBean(XuguService.class);
         xuguService.metaBack(metaBackupEntity,metadataVo,resultT);
+    }
+
+    @Override
+    public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
+        XuguService xuguService=SpringUtil.getBean(XuguService.class);
+        xuguService.recoverMeta(recoverMetaVo,impInfo,recoverLogEntity,resultT);
     }
 }
 

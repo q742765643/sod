@@ -48,6 +48,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
 
     }
     public  DataSource getDataSourceByMap(String dataSourceName){
+        this.selectDataSource(dataSourceName);
         Object obj = _targetDataSources.get(dataSourceName);
         if (obj != null) {
             return (DataSource) obj;

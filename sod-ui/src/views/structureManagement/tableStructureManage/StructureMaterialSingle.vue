@@ -10,7 +10,7 @@
         :label-width="labelWidth"
       >
         <!-- 公共元数据信息 -->
-        <div class="publicData">
+        <div class="publicData" v-if="tableStructureManageContral">
           <div class="publicDataTitle">
             <i class="el-icon-price-tag"></i>公共元数据信息
           </div>
@@ -66,13 +66,13 @@
             <el-form-item label="排序" prop="serialNo">
               <el-input type="number" v-model="materialData.serialNo"></el-input>
             </el-form-item>
-            <el-form-item label="是否发布">
+            <el-form-item label="是否发布" v-if="tableStructureManageContral">
               <el-select v-model="materialData.ifStopUse">
                 <el-option :value="true" label="启用"></el-option>
                 <el-option :value="false" label="停用"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="基础信息配置" v-if="!isSourceTree">
+            <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
               <el-select v-model="materialData.useBaseInfo">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
@@ -149,9 +149,12 @@ import {
   databaseClass,
   logicClass
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
+
 import {
   save,
-  getDetailById
+  getDetailById,
+  enable,
+  getNewDataClassId
 } from "@/api/structureManagement/tableStructureManage/index";
 // 公共元数据资料树
 import StructurePublicTree from "@/views/structureManagement/tableStructureManage/StructurePublicTree";
@@ -179,6 +182,7 @@ export default {
   },
   data() {
     return {
+      tableStructureManageContral: false,
       handleArry: [],
       labelWidth: "100px",
       editUseShow: false, //数据用途树默认不显示
@@ -246,7 +250,14 @@ export default {
       }
     };
   },
-  created() {
+  async created() {
+    await enable().then(res => {
+      if (res.data == "true") {
+        this.tableStructureManageContral = true;
+      } else {
+        this.tableStructureManageContral = false;
+      }
+    });
     this.initMaterialForm();
   },
   methods: {
@@ -319,6 +330,13 @@ export default {
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
       this.materialData.parentId = checkNode.id;
+      if (this.tableStructureManageContral == false) {
+        getNewDataClassId({ parentId: checkNode.id }).then(res => {
+          if (res.code == 200) {
+            this.materialData.dataClassId = res.data;
+          }
+        });
+      }
       this.storageTreeVisible = false;
     },
     //关闭存储元数据弹出层

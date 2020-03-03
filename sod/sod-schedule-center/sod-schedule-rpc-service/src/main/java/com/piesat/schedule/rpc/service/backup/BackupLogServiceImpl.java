@@ -20,6 +20,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -50,9 +51,10 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
         if(StringUtils.isNotNullString(backupLogEntity.getDatabaseId())){
             specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),backupLogEntity.getDatabaseId());
         }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(backupLogEntity.getDataClassId())){
-            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getDataClassId());
-            specificationBuilder.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getDataClassId());
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getDataClassId());
         }
         if(StringUtils.isNotNullString(backupLogEntity.getProfileName())){
             specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getProfileName());
@@ -69,8 +71,9 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
         if(StringUtils.isNotNullString((String) backupLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupLogEntity.getParamt().get("endTime"));
         }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
         Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<BackupLogEntity> backupLogEntities= (List<BackupLogEntity>) pageBean.getPageData();
         pageBean.setPageData(backupLogMapstruct.toDto(backupLogEntities));
         return pageBean;

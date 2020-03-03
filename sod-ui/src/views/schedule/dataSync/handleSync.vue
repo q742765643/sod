@@ -500,11 +500,13 @@ export default {
         sourceTableEnName: "", //源表的值表的表名
         sourceTableForeignKey: "", //源表的值表的外键
         targetTableName_K: "", //目标表的值表的表名
-        tableIds: "", //目标表是键值表时为键表ID，普通要素表时可以有2个
+        targetTableIds: "", //目标表是键值表时为键表ID，普通要素表时可以有2个
         tableNames: "", //目标表是键值表时为键表表名，普通要素表时可以有2个
         data_class_ids: "", //目标资料存储编码
         tableNameCNs: "", //目标资料名称
-        targetColumnDetail: [] //目标表字段
+        targetColumnDetail: [], //目标表字段
+        targetRelation:[],//源表和目标表的映射关系
+        slaveRelation:{}//源表值表和目标表值表的映射关系
       },
       rules: {
         taskName: [
@@ -917,10 +919,12 @@ export default {
         //组装映射
         //debugger;
         //console.log(editableTabs);
-        let tableIds = "",
+        let targetTableIds = "",
           tableNames = "",
           data_class_ids = "",
-          tableNameCNs = "";
+          tableNameCNs = "",
+          targetRelation = [],
+          slaveRelation = {};
         for (var i = 0; i < this.editableTabs.length; i++) {
           var obj = this.editableTabs[i];
           var list = obj.list;
@@ -929,6 +933,7 @@ export default {
             //值表映射
             this.msgFormDialog["targetColumn_K_" + tableId] = [];
             this.msgFormDialog["sourceColumn_K_" + tableId] = [];
+            let mapping = "";
             for (var j = 0; j < list.length; j++) {
               if (!list.isdelete) {
                 this.msgFormDialog["targetColumn_K_" + tableId].push(
@@ -937,23 +942,32 @@ export default {
                 this.msgFormDialog["sourceColumn_K_" + tableId].push(
                   list[j]["sourceColumn_K_"]
                 );
+                mapping = mapping + "<" + list[j]["targetColumn_"] + ">" + list[j]["sourceColumn_"] + "</" + list[j]["targetColumn_"] + ">";
+                mapping = mapping + "\r\n";
               }
             }
+            slaveRelation.mapping = mapping;
+
           } else {
-            tableIds = tableIds + "," + tableId;
+            targetTableIds = targetTableIds + "," + tableId;
             tableNames = tableNames + "," + obj.name;
             data_class_ids = data_class_ids + "," + obj.data_class_ids;
             tableNameCNs = tableNameCNs + "," + obj.namecn;
 
             let tfield = "",
               sfield = "";
+            let mapping = "";
             for (var j = 0; j < list.length; j++) {
               if (!list.isdelete) {
                 tfield = tfield + "," + list[j]["targetColumn_"];
                 sfield = sfield + "," + list[j]["sourceColumn_"];
+                mapping = mapping + "<" + list[j]["targetColumn_"] + ">" + list[j]["sourceColumn_"] + "</" + list[j]["targetColumn_"] + ">";
+                mapping = mapping + "\r\n";
               }
             }
+            targetRelation.push({targetTable:tableId,mapping:mapping})
             //console.log(tfield);
+
             debugger;
             if (tfield.length > 0) {
               this.msgFormDialog["targetColumn_" + tableId] = tfield.substr(1);
@@ -961,11 +975,13 @@ export default {
             }
           }
         }
-        if (tableIds.length > 0) {
-          this.msgFormDialog.tableIds = tableIds.substr(1);
+        if (targetTableIds.length > 0) {
+          this.msgFormDialog.targetTableIds = targetTableIds.substr(1);
           this.msgFormDialog.tableNames = tableNames.substr(1);
           this.msgFormDialog.data_class_ids = data_class_ids.substr(1);
           this.msgFormDialog.tableNameCNs = tableNameCNs.substr(1);
+          this.msgFormDialog.targetRelation = targetRelation;
+          this.msgFormDialog.slaveRelation = slaveRelation;
         }
 
         let ipAndPort = this.msgFormDialog.ipAndPort.split(":");

@@ -201,7 +201,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //值表映射关系入库
         StringBuffer slaveIds = new StringBuffer();
         Map<String,Object> slaveRelation = syncTaskDto.getSlaveRelation();
-        if(slaveRelation != null){
+        if(slaveRelation != null && slaveRelation.size() >0){
             String sourceVTableId = (String) slaveRelation.get("sourceTable");
             String targetVTableId = (String) slaveRelation.get("targetTable");
             String mapping = (String)slaveRelation.get("mapping");

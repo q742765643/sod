@@ -2,9 +2,9 @@
   <el-aside class="asideTreeStructure">
     <el-tabs :tab-position="tabPosition" @tab-click="handleTabClick">
       <el-tab-pane label="资料分类树"></el-tab-pane>
-      <el-tab-pane label="数据用途分类树"></el-tab-pane>
-      <el-tab-pane label="数据库分类树"></el-tab-pane>
-      <el-tab-pane label="公共元数据结构树"></el-tab-pane>
+      <el-tab-pane label="数据用途分类树" v-if="tableStructureManageContral"></el-tab-pane>
+      <el-tab-pane label="数据库分类树" v-if="tableStructureManageContral"></el-tab-pane>
+      <el-tab-pane label="公共元数据结构树" v-if="tableStructureManageContral"></el-tab-pane>
     </el-tabs>
     <div class="classifyTree">
       <!-- 资料分类树操作 -->
@@ -77,11 +77,15 @@ import {
   logicClass,
   datumTypeGetTree
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
-import { delByClass } from "@/api/structureManagement/tableStructureManage/index";
+import {
+  delByClass,
+  enable
+} from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: { treeIdOfDR: String },
   data() {
     return {
+      tableStructureManageContral: false,
       loading: true,
       //格式化tree数据
       defaultProps: {
@@ -117,6 +121,13 @@ export default {
     }
   },
   mounted() {
+    enable().then(res => {
+      if (res.data == "true") {
+        this.tableStructureManageContral = true;
+      } else {
+        this.tableStructureManageContral = false;
+      }
+    });
     //初始化资料分类树
     this.initMethodsTree("资料分类树");
   },

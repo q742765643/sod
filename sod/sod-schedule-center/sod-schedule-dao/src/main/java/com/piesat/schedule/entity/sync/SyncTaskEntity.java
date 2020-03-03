@@ -153,5 +153,5 @@ public class SyncTaskEntity extends BaseEntity {
      * 目标表ids
      */
     @Transient
-    private String[] targetTableIds;
+    private String targetTableIds;
 }

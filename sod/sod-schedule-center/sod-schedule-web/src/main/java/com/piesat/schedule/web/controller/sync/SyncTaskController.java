@@ -3,11 +3,10 @@ package com.piesat.schedule.web.controller.sync;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.DataTableService;
-import com.piesat.dm.rpc.api.DatabaseService;
-import com.piesat.dm.rpc.api.TableColumnService;
+import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.TableColumnDto;
+import com.piesat.dm.rpc.dto.TableForeignKeyDto;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskLogDto;
@@ -47,6 +46,8 @@ public class SyncTaskController {
     private TableColumnService tableColumnService;
     @GrpcHthtClient
     private DictDataService dictDataService;
+    @GrpcHthtClient
+    private TableForeignKeyService tableForeignKeyService;
 
     /**
      * 获取分页数据接口
@@ -146,68 +147,31 @@ public class SyncTaskController {
     @ApiOperation(value = "新增同步任务")
     @RequiresPermissions("schedule:sync:syncSaveUpdate")
     @PostMapping("/syncSaveUpdate")
-    public ResultT<SyncTaskDto> syncSaveUpdate(SyncTaskDto syncTaskDto, HttpServletRequest request) {
-
-        //获取字段对应信息
-        String[] targetTableIds = syncTaskDto.getTargetTableIds();
-        List<Map<String, Object>> targets = new ArrayList<>();
-        for (int i = 0; i < targetTableIds.length; i++) {
-            String targetTableId = targetTableIds[i];
-            String[] targetColumns = request.getParameterValues("targetColumn_" + targetTableId);// 第i组映射关系的目标字段
-            String[] sourceColumns = request.getParameterValues("sourceColumn_" + targetTableId);// 第i组映射关系的源表字段
-            // 拼接源表目标表映射关系
-            StringBuffer mapping = new StringBuffer();
-            for (int j = 0; j < targetColumns.length; j++) {
-                String targetColumn = targetColumns[j];
-                mapping.append("<" + targetColumn + ">" + sourceColumns[j] + "</" + targetColumn + ">");
-                if (j < targetColumns.length - 1) {
-                    mapping.append("\r\n");
-                }
-            }
-            Map<String, Object> relation = new HashMap<>();
-            relation.put("targetTable", targetTableId);
-            relation.put("mapping", mapping.toString());
-            targets.add(relation);
-        }
-        syncTaskDto.setTargetRelation(targets);
+    public ResultT<SyncTaskDto> syncSaveUpdate(@RequestBody SyncTaskDto syncTaskDto, HttpServletRequest request) {
 
         //获取值表字段对应信息
         String targetVTableId = syncTaskDto.getTargetVTableId();
         String sourceVTableId = syncTaskDto.getSourceVTableId();
         if(StringUtils.isNotNullString(targetVTableId)){
-            String[] targetColumns = request.getParameterValues("targetColumn_V_" + targetVTableId);// 值表目标表字段
-            String[] sourceColumns = request.getParameterValues("sourceColumn_V_" + targetVTableId);// 值表源表字段
-            //拼接源表目标表映射关系
-            StringBuffer mapping = new StringBuffer();
-            for (int j = 0; j < targetColumns.length; j++) {
-                String targetColumn = targetColumns[j];
-                mapping.append("<" + targetColumn + ">" + sourceColumns[j] + "</" + targetColumn + ">");
-                if (j < targetColumns.length - 1) {
-                    mapping.append("\r\n");
-                }
-            }
-
-            //与键表之间的外键（两个表之间的外键必须保证字段名称一样）
+            //获取目标表值表信息
             DataTableDto targetVTable = dataTableService.getDotById(targetVTableId);
-            String linkKey = syncTaskDto.getLinkKey();
+
+            //键值表外键
             String linkKeys = "";
-            if(StringUtils.isNotNullString(linkKey)){
-                linkKeys = "<" + targetVTable.getTableName() + ">";
-                String[] fkeys = linkKey.split(",");
-                for(int i = 0;i < fkeys.length;i++){
-                    if(fkeys[i].contains("&")){
-                        fkeys[i] = fkeys[i].split("&")[0];
+            if(targetVTable.getClassLogic() != null){
+                List<TableForeignKeyDto> tableForeignKeyDtos = tableForeignKeyService.findByClassLogicId(targetVTable.getClassLogic().getId());
+                if(tableForeignKeyDtos != null && tableForeignKeyDtos.size()>0){
+                    linkKeys = "<" + targetVTable.getTableName() + ">";
+                    for(int i = 0;i < tableForeignKeyDtos.size();i++){
+                        String eleColumn = tableForeignKeyDtos.get(i).getEleColumn();
+                        linkKeys +=  "<" + eleColumn + ">" + eleColumn + "</" + eleColumn + ">";
                     }
-                    linkKeys +=  "<" + fkeys[i] + ">" + fkeys[i] + "</" + fkeys[i] + ">";
+                    linkKeys += "</" + targetVTable.getTableName() + ">";
                 }
-                linkKeys += "</" + targetVTable.getTableName() + ">";
             }
-            Map<String, Object> relation = new HashMap<>();
-            relation.put("sourceTable", sourceVTableId);
-            relation.put("targetTable", targetVTableId);
-            relation.put("mapping", mapping.toString());
-            relation.put("linkKey", linkKeys);
-            syncTaskDto.setSlaveRelation(relation);
+            syncTaskDto.getSlaveRelation().put("sourceTable", sourceVTableId);
+            syncTaskDto.getSlaveRelation().put("targetTable", targetVTableId);
+            syncTaskDto.getSlaveRelation().put("linkKey", linkKeys);
         }
         if(StringUtils.isNotNullString(syncTaskDto.getId())){
             syncTaskDto = syncTaskService.updateDto(syncTaskDto);
