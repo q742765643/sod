@@ -39,8 +39,30 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="清除条件" prop="conditions">
-            <el-input v-model="msgFormDialog.conditions" placeholder="请输入清除条件" />
+          <el-form-item label="近时备份条件" prop="conditions">
+            <el-input v-model="msgFormDialog.conditions" placeholder="请输入近时备份条件" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="远时备份条件" prop="secondConditions">
+            <el-input v-model="msgFormDialog.secondConditions" placeholder="请输入远时备份条件" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="存储目录" prop="storageDirectory">
+            <el-select
+              v-model="msgFormDialog.storageDirectory"
+              placeholder="请选择"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in storageDirectoryOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -53,16 +75,18 @@
             <el-input v-model="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
-          <el-form-item label="清除限制频率" prop="clearLimit">
-            <el-input v-model="msgFormDialog.clearLimit" placeholder="请输入清除限制频率单位为秒" />
+        <el-col :span="20">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
-          <el-form-item label="执行策略" prop="jobCron">
-            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" style="width:174px;" />
-            <el-button size="small" type="primary" @click="cronDialogVisible = true">执行策略</el-button>
-          </el-form-item>
+        <el-col :span="4">
+          <el-button
+            size="small"
+            type="primary"
+            @click="cronDialogVisible = true"
+            style="margin-left:10px;"
+          >执行策略</el-button>
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
@@ -78,6 +102,16 @@
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
             <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="失败重试次数" prop="executorFailRetryCount">
+            <el-input v-model="msgFormDialog.executorFailRetryCount" placeholder="请输入失败重试次数" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="重试间隔时间" prop="retryInterval">
+            <el-input v-model="msgFormDialog.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -104,13 +138,13 @@
 <script>
 import Cron from "@/components/cron/Cron";
 import {
-  getByDatabaseId,
-  getByDatabaseIdAndClassId,
-  updateClear,
-  addClear,
+  getBackup,
+  addBackup,
+  updateBackup,
   findAllDataBase,
-  getClear
-} from "@/api/schedule/clear/clear";
+  getByDatabaseId,
+  getByDatabaseIdAndClassId
+} from "@/api/schedule/backup/backup";
 export default {
   name: "handleClearDialog",
   props: {
@@ -126,24 +160,32 @@ export default {
       alarmOptions: [],
       databaseOptions: [],
       dataClassIdOptions: [],
+      storageDirectoryOptions: [],
       msgFormDialog: {
-        databaseId: "",
+        ddataId: "",
         dataClassId: "",
         conditions: "",
+        secondConditions: "",
+        storageDirectory: "",
         tableName: "",
         ddataId: "",
-        clearLimit: "",
         jobCron: "",
         isAlarm: "",
         executorTimeout: "",
+        executorFailRetryCount: "",
+        retryInterval: "",
         jobDesc: ""
       },
+      // 表单校验
       rules: {
         databaseId: [
-          { required: true, message: "物理库不能为空", trigger: "blur" }
+          { required: true, message: "物理库不能为空", trigger: "change" }
         ],
         dataClassId: [
-          { required: true, message: "资料名称不能为空", trigger: "blur" }
+          { required: true, message: "资料名称不能为空", trigger: "change" }
+        ],
+        storageDirectory: [
+          { required: true, message: "存储目录不能为空", trigger: "change" }
         ],
         jobCron: [
           { required: true, message: "执行策略不能为空", trigger: "blur" }
@@ -151,8 +193,11 @@ export default {
         executorTimeout: [
           { required: true, message: "超时时间不能为空", trigger: "blur" }
         ],
-        clearLimit: [
-          { required: true, message: "限制条数不能为空", trigger: "blur" }
+        executorFailRetryCount: [
+          { required: true, message: "重试次数不能为空", trigger: "blur" }
+        ],
+        retryInterval: [
+          { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
         ]
       },
       // cron表达式
@@ -167,18 +212,22 @@ export default {
     await findAllDataBase().then(response => {
       this.databaseOptions = response.data;
     });
+    await this.getDicts("backup_storage_directory").then(response => {
+      this.storageDirectoryOptions = response.data;
+    });
     // 匹配数据库和资料名称
     if (this.handleObj.pageName == "资料存储策略") {
-      this.msgFormDialog.databaseId = this.handleObj.databaseId;
+      this.msgFormDialog = this.handleObj;
       await this.selectByDatabaseIds(
         this.handleObj.databaseId,
         this.handleObj.dataClassId
       );
+      // this.msgFormDialog.databaseId = this.handleObj.databaseId;
       await this.selectTable(this.handleObj.dataClassId);
     }
     // 查看详情
     if (this.handleObj.id) {
-      await getClear(this.handleObj.id).then(response => {
+      await getBackup(this.handleObj.id).then(response => {
         this.selectByDatabaseIds(
           response.data.databaseId,
           response.data.dataClassId
@@ -199,7 +248,6 @@ export default {
       getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
         this.msgFormDialog.ddataId = response.data.ddataId;
         this.msgFormDialog.tableName = response.data.tableName;
-        this.msgFormDialog.vTableName = response.data.vTableName;
       });
     },
     async selectByDatabaseIds(databaseId, dataClassId) {
@@ -215,7 +263,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.msgFormDialog.id != undefined) {
-            updateClear(this.msgFormDialog).then(response => {
+            updateBackup(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.$emit("cancelHandle");
@@ -224,7 +272,7 @@ export default {
               }
             });
           } else {
-            addClear(this.msgFormDialog).then(response => {
+            addBackup(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.$emit("cancelHandle");
@@ -237,7 +285,6 @@ export default {
       });
     },
     cancelDialog(formName) {
-      debugger;
       this.$emit("cancelHandle");
     },
     //设置cron表达式

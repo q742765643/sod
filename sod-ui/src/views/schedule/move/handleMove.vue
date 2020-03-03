@@ -1,6 +1,6 @@
 <template>
-  <section class="handleClearDialog">
-    <el-form ref="ruleForm" :model="msgFormDialog" :rules="rules" label-width="120px">
+  <section class="handleMoveDialog">
+    <el-form ref="ruleForm" :model="msgFormDialog" :rules="rules" label-width="140px">
       <el-row>
         <el-col :span="12">
           <el-form-item label="物理库" prop="databaseId">
@@ -39,8 +39,40 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="清除条件" prop="conditions">
-            <el-input v-model="msgFormDialog.conditions" placeholder="请输入清除条件" />
+          <el-form-item label="迁移条件" prop="conditions">
+            <el-input v-model="msgFormDialog.conditions" placeholder="请输入迁移条件" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="迁移源目录" prop="sourceDirectory">
+            <el-select
+              v-model="msgFormDialog.sourceDirectory"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in sourceDirectoryOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="迁移目标目录" prop="targetDirectory">
+            <el-select
+              v-model="msgFormDialog.targetDirectory"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in targetDirectoryOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -54,16 +86,16 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="清除限制频率" prop="clearLimit">
-            <el-input v-model="msgFormDialog.clearLimit" placeholder="请输入清除限制频率单位为秒" />
+          <el-form-item label="迁移限制频率" prop="moveLimit">
+            <el-input v-model="msgFormDialog.moveLimit" placeholder="请输入迁移限制频率单位为秒" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="执行策略" prop="jobCron">
-            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" style="width:174px;" />
-            <el-button size="small" type="primary" @click="cronDialogVisible = true">执行策略</el-button>
+          <el-form-item label="超时时间" prop="executorTimeout">
+            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
           </el-form-item>
         </el-col>
+
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
             <el-radio-group v-model="msgFormDialog.isAlarm">
@@ -75,11 +107,45 @@
             </el-radio-group>
           </el-form-item>
         </el-col>
+
         <el-col :span="12">
-          <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+          <el-form-item label="是否清除" prop="isClear">
+            <el-radio-group v-model="msgFormDialog.isClear">
+              <el-radio
+                v-for="dict in isClearOptions"
+                :key="dict.dictValue"
+                :label="dict.dictValue"
+              >{{dict.dictLabel}}</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-col>
+        <el-col :span="20">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-button
+            size="small"
+            type="primary"
+            @click="cronDialogVisible = true"
+            style="margin-left:10px;"
+          >执行策略</el-button>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item
+            v-if="msgFormDialog.isClear != '0'"
+            label="二级nas清除条件"
+            prop="clearConditions"
+          >
+            <el-input v-model="msgFormDialog.clearConditions" placeholder="请输入二级nas清除条件" />
+          </el-form-item>
+        </el-col>
+        <!-- <el-col :span="24">
+             <el-form-item v-if="msgFormDialog.isClear != '0'" label="归档清除条件"  prop="archiveConditions">
+               <el-input v-model="msgFormDialog.archiveConditions" placeholder="请输入归档清除条件" />
+             </el-form-item>
+        </el-col>-->
         <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
@@ -104,15 +170,16 @@
 <script>
 import Cron from "@/components/cron/Cron";
 import {
-  getByDatabaseId,
-  getByDatabaseIdAndClassId,
-  updateClear,
-  addClear,
+  getMove,
+  addMove,
+  updateMove,
+  delMove,
   findAllDataBase,
-  getClear
-} from "@/api/schedule/clear/clear";
+  getByDatabaseId,
+  getByDatabaseIdAndClassId
+} from "@/api/schedule/move/move";
 export default {
-  name: "handleClearDialog",
+  name: "handleMoveDialog",
   props: {
     handleObj: {
       type: Object
@@ -123,6 +190,9 @@ export default {
   },
   data() {
     return {
+      targetDirectoryOptions: [],
+      sourceDirectoryOptions: [],
+      isClearOptions: [],
       alarmOptions: [],
       databaseOptions: [],
       dataClassIdOptions: [],
@@ -138,6 +208,7 @@ export default {
         executorTimeout: "",
         jobDesc: ""
       },
+      // 表单校验
       rules: {
         databaseId: [
           { required: true, message: "物理库不能为空", trigger: "blur" }
@@ -151,8 +222,14 @@ export default {
         executorTimeout: [
           { required: true, message: "超时时间不能为空", trigger: "blur" }
         ],
-        clearLimit: [
+        moveLimit: [
           { required: true, message: "限制条数不能为空", trigger: "blur" }
+        ],
+        sourceDirectory: [
+          { required: true, message: "迁移源目录不能为空", trigger: "blur" }
+        ],
+        targetDirectory: [
+          { required: true, message: "迁移目标目录不能为空", trigger: "blur" }
         ]
       },
       // cron表达式
@@ -167,6 +244,15 @@ export default {
     await findAllDataBase().then(response => {
       this.databaseOptions = response.data;
     });
+    await this.getDicts("move_is_clear").then(response => {
+      this.isClearOptions = response.data;
+    });
+    await this.getDicts("move_source_directory").then(response => {
+      this.sourceDirectoryOptions = response.data;
+    });
+    await this.getDicts("move_target_directory").then(response => {
+      this.targetDirectoryOptions = response.data;
+    });
     // 匹配数据库和资料名称
     if (this.handleObj.pageName == "资料存储策略") {
       this.msgFormDialog.databaseId = this.handleObj.databaseId;
@@ -178,7 +264,7 @@ export default {
     }
     // 查看详情
     if (this.handleObj.id) {
-      await getClear(this.handleObj.id).then(response => {
+      await getMove(this.handleObj.id).then(response => {
         this.selectByDatabaseIds(
           response.data.databaseId,
           response.data.dataClassId
@@ -197,6 +283,7 @@ export default {
     },
     findTable(databaseId, dataClassId) {
       getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+        console.log(response);
         this.msgFormDialog.ddataId = response.data.ddataId;
         this.msgFormDialog.tableName = response.data.tableName;
         this.msgFormDialog.vTableName = response.data.vTableName;
@@ -215,7 +302,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.msgFormDialog.id != undefined) {
-            updateClear(this.msgFormDialog).then(response => {
+            updateMove(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.$emit("cancelHandle");
@@ -224,7 +311,7 @@ export default {
               }
             });
           } else {
-            addClear(this.msgFormDialog).then(response => {
+            addMove(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.$emit("cancelHandle");
@@ -237,7 +324,6 @@ export default {
       });
     },
     cancelDialog(formName) {
-      debugger;
       this.$emit("cancelHandle");
     },
     //设置cron表达式
@@ -253,7 +339,7 @@ export default {
 </script>
 
 <style lang="scss">
-.handleClearDialog {
+.handleMoveDialog {
   .dialog-footer {
     display: flex;
     justify-content: flex-end;

@@ -150,7 +150,7 @@ export default {
       });
     },
     createTimeFormater: function(row) {
-      return formatTime(row.createTime, "Y-M-D h-m-s");
+      return formatTime(row.createTime, "Y-M-D h:m:s");
     },
     addCell() {
       this.dialogTitle = "新增数据库账户审核";

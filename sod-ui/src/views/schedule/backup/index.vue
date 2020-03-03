@@ -179,124 +179,8 @@
     />
 
     <!-- 添加或修改备份配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="物理库" prop="databaseId">
-              <el-select
-                v-model="form.databaseId"
-                filterable
-                @change="selectByDatabaseIds($event,'')"
-                placeholder="请选择物理库"
-                style="width:100%"
-              >
-                <el-option
-                  v-for="database in databaseOptions"
-                  :key="database.KEY"
-                  :label="database.VALUE"
-                  :value="database.KEY"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="资料名称" prop="dataClassId">
-              <el-select
-                v-model="form.dataClassId"
-                filterable
-                @change="selectTable"
-                placeholder="请选择资料"
-                style="width:100%"
-              >
-                <el-option
-                  v-for="dataClass in dataClassIdOptions"
-                  :key="dataClass.KEY"
-                  :label="dataClass.VALUE"
-                  :value="dataClass.KEY"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="近时备份条件" prop="conditions">
-              <el-input v-model="form.conditions" placeholder="请输入近时备份条件" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="远时备份条件" prop="secondConditions">
-              <el-input v-model="form.secondConditions" placeholder="请输入远时备份条件" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="存储目录" prop="storageDirectory">
-              <el-select
-                v-model="form.storageDirectory"
-                placeholder="请选择"
-                filterable
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="dict in storageDirectoryOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="表名" prop="tableName">
-              <el-input v-model="form.tableName" disabled />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="四级编码" prop="ddataId">
-              <el-input v-model="form.ddataId" disabled />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="执行策略" prop="jobCron">
-              <el-input v-model="form.jobCron" placeholder="请输入执行策略" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否告警" prop="isAlarm">
-              <el-radio-group v-model="form.isAlarm">
-                <el-radio
-                  v-for="dict in alarmOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="超时时间" prop="executorTimeout">
-              <el-input v-model="form.executorTimeout" placeholder="请输入超时时间单位为分钟" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="失败重试次数" prop="executorFailRetryCount">
-              <el-input v-model="form.executorFailRetryCount" placeholder="请输入失败重试次数" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="重试间隔时间" prop="retryInterval">
-              <el-input v-model="form.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="备注">
-              <el-input v-model="form.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+    <el-dialog :title="title" :visible.sync="openDialog" width="800px">
+      <handleBackUp @cancelHandle="cancelHandle" v-if="openDialog" :handleObj="handleObj"></handleBackUp>
     </el-dialog>
   </div>
 </template>
@@ -315,8 +199,12 @@ import {
   stopBackup,
   executeBackup
 } from "@/api/schedule/backup/backup";
+import handleBackUp from "@/views/schedule/backup/handleBackUp";
 
 export default {
+  components: {
+    handleBackUp
+  },
   data() {
     return {
       // 遮罩层
@@ -334,18 +222,9 @@ export default {
       // 弹出层标题
       title: "",
       // 是否显示弹出层
-      open: false,
+      openDialog: false,
       // 状态数据字典
       statusOptions: [],
-
-      alarmOptions: [],
-
-      storageDirectoryOptions: [],
-
-      databaseOptions: [],
-
-      dataClassIdOptions: [],
-
       // 日期范围
       dateRange: [],
       // 查询参数
@@ -357,32 +236,7 @@ export default {
         triggerStatus: undefined,
         tableName: undefined
       },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-        databaseId: [
-          { required: true, message: "物理库不能为空", trigger: "blur" }
-        ],
-        dataClassId: [
-          { required: true, message: "资料名称不能为空", trigger: "blur" }
-        ],
-        storageDirectory: [
-          { required: true, message: "存储目录不能为空", trigger: "blur" }
-        ],
-        jobCron: [
-          { required: true, message: "执行策略不能为空", trigger: "blur" }
-        ],
-        executorTimeout: [
-          { required: true, message: "超时时间不能为空", trigger: "blur" }
-        ],
-        executorFailRetryCount: [
-          { required: true, message: "重试次数不能为空", trigger: "blur" }
-        ],
-        retryInterval: [
-          { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
-        ]
-      }
+      handleObj: {}
     };
   },
   created() {
@@ -390,13 +244,6 @@ export default {
     this.getDicts("job_trigger_status").then(response => {
       this.statusOptions = response.data;
     });
-    this.getDicts("job_is_alarm").then(response => {
-      this.alarmOptions = response.data;
-    });
-    this.getDicts("backup_storage_directory").then(response => {
-      this.storageDirectoryOptions = response.data;
-    });
-
   },
   methods: {
     /** 查询字典类型列表 */
@@ -415,26 +262,11 @@ export default {
       return this.selectDictLabel(this.statusOptions, row.triggerStatus);
     },
     // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
+    cancelHandle() {
+      this.openDialog = false;
+      this.getList();
     },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: undefined,
-        profileName: undefined,
-        dataClassId: undefined,
-        triggerStatus: undefined,
-        isAlarm: "1",
-        triggerStatus: 1,
-        tableName: undefined,
-        vtableName: undefined,
-        ddataId: undefined
-      };
-      this.dataClassIdOptions = [];
-      this.resetForm("form");
-    },
+
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -448,11 +280,8 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      findAllDataBase().then(response => {
-        this.databaseOptions = response.data;
-      });
+      this.handleObj = {};
+      this.openDialog = true;
       this.title = "添加数据备份配置信息";
     },
     // 多选框选中数据
@@ -463,48 +292,10 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      findAllDataBase().then(response => {
-        this.databaseOptions = response.data;
-      });
       const id = row.id || this.ids;
-      getBackup(id).then(response => {
-        this.selectByDatabaseIds(
-          response.data.databaseId,
-          response.data.dataClassId
-        );
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改数据备份配置信息";
-      });
-    },
-    /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != undefined) {
-            updateBackup(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess("修改成功");
-                this.open = false;
-                this.getList();
-              } else {
-                this.msgError(response.msg);
-              }
-            });
-          } else {
-            addBackup(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess("新增成功");
-                this.open = false;
-                this.getList();
-              } else {
-                this.msgError(response.msg);
-              }
-            });
-          }
-        }
-      });
+      this.handleObj.id = id;
+      this.openDialog = true;
+      this.title = "修改数据备份配置信息";
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -586,22 +377,6 @@ export default {
           this.download(response.msg);
         })
         .catch(function() {});
-    },
-    selectByDatabaseIds(databaseId,dataClassId) {
-      getByDatabaseId(databaseId,dataClassId).then(response => {
-        this.dataClassIdOptions = response.data;
-        this.form.dataClassId = dataClassId;
-      });
-    },
-    selectTable(dataClassId) {
-      this.form.tableName = "";
-      this.findTable( this.form.databaseId, this.form.dataClassId);
-    },
-    findTable(databaseId, dataClassId) {
-      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
-        this.form.ddataId=response.data.ddataId;
-        this.form.tableName = response.data.tableName;
-      });
     }
   }
 };
