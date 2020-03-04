@@ -45,6 +45,32 @@ export function stopTask(id) {
     }
   })
 }
+// 查询数据库元数据
+export function findMeta(query) {
+  return request({
+    url: baseUrl + '/schedule/metaBackup/findMeta',
+    method: 'get',
+    params: query
+  })
+}
+// 添加
+
+export function addMetaBackup(data) {
+  return request({
+    url: baseUrl + '/schedule/metaBackup',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改
+export function editMetaBackup(data) {
+  return request({
+    url: baseUrl + '/schedule/metaBackup',
+    method: 'put',
+    data: data
+  })
+}
 
 
 /* 元数据备份监控 */
@@ -54,5 +80,12 @@ export function listLog(query) {
     url: baseUrl + '/schedule/metaBackupLog/list',
     method: 'get',
     params: query
+  })
+}
+
+export function listLogDatail(id) {
+  return request({
+    url: baseUrl + '/schedule/metaBackupLog/' + id,
+    method: 'get',
   })
 }

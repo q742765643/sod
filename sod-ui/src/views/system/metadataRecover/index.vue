@@ -7,47 +7,41 @@
           <el-form-item label="任务名称">
             <el-input size="small" v-model="queryParams.taskName"></el-input>
           </el-form-item>
-          <el-form-item label="执行主机和端口">
+
+          <el-form-item label="数据库IP">
             <el-select size="small" filterable v-model="queryParams.databaseId">
               <el-option
-                v-for="(item,index) in ipandPortList"
+                v-for="(item,index) in ipList"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.VAULE"
+                :value="item.KEY"
               ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="数据库IP">
-            <el-select size="small" style="width:200px" filterable v-model="queryParams.databaseId">
-              <el-option v-for="(item,index) in ipList" :key="index" :label="item" :value="item"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item label="目录">
-            <el-select size="small" filterable style="width:200px" v-model="queryParams.cronStatus">
-              <el-option value="-1" label="全部"></el-option>
-              <el-option value="0" label="运行中"></el-option>
-              <el-option value="1" label="停止"></el-option>
+            <el-select size="small" filterable v-model="queryParams.storageDirectory">
+              <el-option
+                v-for="dict in storageDirectoryOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button
-              size="small"
-              type="primary"
-              @click="dataBaseExpandForm"
-              icon="el-icon-search"
-            >查询</el-button>
-            <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+            <el-button size="small" type="primary" @click="getList" icon="el-icon-search">查询</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/">
+              <el-button icon="el-icon-upload2" size="small" type="primary">上传</el-button>
+            </el-upload>
           </el-form-item>
         </el-form>
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/">
-              <el-button size="small" type="primary">上传</el-button>
-            </el-upload>
-          </el-col>
-        </el-row>
         <p style="font-size:14px">恢复文件</p>
+        <div class="treeBox">
+          <el-tree ref="eltree" node-key="id" show-checkbox :data="treedata" :props="defaultProps"></el-tree>
+        </div>
       </el-tab-pane>
       <el-tab-pane label="元数据恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
@@ -140,24 +134,16 @@
 </template>
 
 <script>
-import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+import { findDataBase, getFileList } from "@/api/system/metadataRecover";
 //增加查看弹框
-import handleExport from "@/views/system/metadataBackup/handleExport";
+import handleExport from "@/views/system/metadataRecover/handleExport";
 export default {
   components: {
     handleExport
   },
   data() {
     return {
+      storageDirectoryOptions: [],
       activeName: "first",
       // 遮罩层
       loading: true,
@@ -165,10 +151,7 @@ export default {
         pageNum: 1,
         pageSize: 10
       },
-      ipList: ["10.20.64.41", "10.40.17.34", "10.20.64.29"],
-      tableData: [],
-      total: 0,
-      ipandPortList: ["10.40.17.35:8080", "10.40.17.36:8080", "127.0.0.1:8081"],
+      ipList: [],
       // 新增/编辑同步任务
       dialogTitle: "",
       handleDialog: false,
@@ -180,17 +163,26 @@ export default {
       //同步记录查询
       loadingHis: false,
       rowlogForm: {
-        time: "",
-        name: "",
-        status: "同步成功"
+        pageNum: 1,
+        pageSize: 10
       },
       logTableData: [], //同步表格数据
       logDataTotal: 0,
-      tableNames: []
+      tableNames: [],
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      treedata: []
     };
   },
   created() {
-    this.getList();
+    findDataBase().then(response => {
+      this.ipList = response.data;
+    });
+    this.getDicts("metabackup_storage_directory").then(response => {
+      this.storageDirectoryOptions = response.data;
+    });
   },
   methods: {
     // table自增定义方法
@@ -203,21 +195,26 @@ export default {
     table_index_log(index) {
       return (this.rowlogForm.page - 1) * this.rowlogForm.rows + index + 1;
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
+      getFileList(this.queryParams).then(res => {
+        var json = res.data;
+        var newjson = [];
+        for (var i = 0; i < json.length; i++) {
+          if (!json[i].pId) newjson.push(json[i]);
+          for (var j = i + 1; j < json.length; j++) {
+            if (json[i].id == json[j].pId) {
+              json[i].children = json[i].children || [];
+              json[i].children.push(json[j]);
+            } else if (json[j].id == json[i].pId) {
+              json[j].children = json[j].children || [];
+              json[j].children.push(json[i]);
+            }
+          }
         }
-      );
+        this.treedata = newjson;
+      });
     },
     handleExport(type) {
       this.handleObj = {};

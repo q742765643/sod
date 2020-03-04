@@ -216,12 +216,17 @@
           <el-table-column label="状态" align="center" prop="handleCode" :formatter="statusFormat"></el-table-column>
           <el-table-column align="center" label="操作" width="240px">
             <template slot-scope="scope">
-              <el-button type="text" size="mini" icon="el-icon-reading">查看详情</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-reading"
+                @click="showDetailDialog(scope.row)"
+              >查看详情</el-button>
               <el-button
                 type="text"
                 size="mini"
                 icon="el-icon-download"
-                @click="showEditDialog(scope.row)"
+                @click="download(scope.row)"
               >下载</el-button>
             </template>
           </el-table-column>
@@ -265,7 +270,8 @@ import {
   metaBackupDel,
   stopTask,
   startTask,
-  listLog
+  listLog,
+  listLogDatail
 } from "@/api/system/metadataBackup";
 //增加查看弹框
 import handleExport from "@/views/system/metadataBackup/handleExport";
@@ -423,7 +429,13 @@ export default {
     statusFormat(row, column) {
       return this.selectDictLabel(this.statusOptions, row.handleCode);
     },
-    showEditDialog(row) {},
+    // 编辑
+    showEditDialog(row) {
+      this.dialogTitle = "编辑";
+      this.handleObj = row;
+      this.handleObj.handleType = "add";
+      this.handleDialog = true;
+    },
     viewDaily(row) {
       this.activeName = "second";
       this.rowlogForm.taskName = row.taskName;
@@ -443,8 +455,7 @@ export default {
       this.handleDialog = false;
       this.handleQuery();
     },
-    //
-
+    //日志列表
     getListLog() {
       this.loading = true;
       console.log(this.rowlogForm);
@@ -456,10 +467,23 @@ export default {
         }
       );
     },
+    // 查看详情
+    showDetailDialog(row) {
+      listLogDatail(row.id).then(res => {
+        console.log(res);
+      });
+    },
+    download() {},
     handleClick() {
       if (this.activeName == "first") {
-        this.handleQuery();
+        this.resetQuery();
       } else {
+        this.rowlogForm = {
+          pageNum: 1,
+          pageSize: 10,
+          taskName: "",
+          databaseId: ""
+        };
         this.queryListLog();
       }
     }
