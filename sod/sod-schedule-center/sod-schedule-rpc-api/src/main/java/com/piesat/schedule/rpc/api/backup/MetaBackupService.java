@@ -28,5 +28,7 @@ public interface MetaBackupService {
     public List<TreeVo> findMeta(String databaseId);
 
     public List<Map<String,String>> findDataBase();
+
+    public void handExecute(MetaBackupDto metaBackupDto);
 }
 

@@ -32,5 +32,4 @@ public interface ExecutorBiz {
 
     public void handMetaBack(JobInfoEntity jobInfoEntity);
 
-    public Object downFile(String path);
 }

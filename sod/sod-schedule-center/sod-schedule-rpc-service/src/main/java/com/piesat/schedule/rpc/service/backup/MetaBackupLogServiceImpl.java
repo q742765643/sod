@@ -88,8 +88,8 @@ public class MetaBackupLogServiceImpl extends BaseService<MetaBackupLogEntity> i
 
     @Override
     public byte[] downFile(String path){
-        byte[] bytes= (byte[]) executorBiz.downFile(path);
-        return bytes;
+
+        return null;
     }
 
 

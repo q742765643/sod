@@ -106,6 +106,14 @@ public class MetaBackupController {
         resultT.setData(mapList);
         return resultT;
     }
+    @RequiresPermissions("schedule:metaBackup:handExecute")
+    @ApiOperation(value = "手工执行元数据备份", notes = "手工执行元数据备份")
+    @GetMapping(value = "/handExecute")
+    public ResultT<String> handExecute(MetaBackupDto metaBackupDto){
+        ResultT<String> resultT=new ResultT<>();
+        metaBackupService.handExecute(metaBackupDto);
+        return resultT;
+    }
 
 
 }

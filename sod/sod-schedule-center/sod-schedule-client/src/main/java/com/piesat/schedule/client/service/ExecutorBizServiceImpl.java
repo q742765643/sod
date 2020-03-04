@@ -103,10 +103,5 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
         });
     }
 
-    @Override
-    public Object downFile(String path){
-        byte[] bytes=FileUtil.File2byte(new File(path));
-        System.out.println(bytes.length);
-        return bytes;
-    }
+
 }

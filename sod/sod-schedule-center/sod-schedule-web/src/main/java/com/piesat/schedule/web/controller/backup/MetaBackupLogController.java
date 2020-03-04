@@ -67,50 +67,6 @@ public class MetaBackupLogController {
         metaBackupLogService.deleteMetaBackupLogByIds(metaBackupLogIds);
         return resultT;
     }
-    @RequiresPermissions("schedule:metaBackupLog:downFile")
-    @ApiOperation(value = "元数据备份文件下载", notes = "元数据备份文件下载")
-    @GetMapping("/downFile")
-    public String downFile(HttpServletResponse response, String path) {
-        OutputStream os = null;
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        try {
-            byte[] bytes=metaBackupLogService.downFile(path);
-            File file=new File(path);
-            InputStream inputStream =new ByteArrayInputStream(bytes);
-            bis = new BufferedInputStream(inputStream);
-            os = response.getOutputStream();
-            bos = new BufferedOutputStream(os);
-            response.setContentType("application/octet-stream;charset=utf-8" );
-            response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "utf-8"));
-            byte[] buffer = new byte[1024];
-            int len = bis.read(buffer);
-            while (len != -1) {
-                bos.write(buffer, 0, len);
-                len = bis.read(buffer);
-            }
 
-            bos.flush();
-        } catch (IOException e) {
-            return "备份失败,没有备份文件,下载出错";
-        } finally {
-
-            try {
-                if (os != null) {
-                    os.close();
-                }
-                if (bis != null) {
-                    bis.close();
-                }
-                if (bos != null) {
-                    bos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
 }
 

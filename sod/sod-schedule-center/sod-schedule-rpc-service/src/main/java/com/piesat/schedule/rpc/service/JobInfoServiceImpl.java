@@ -4,6 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.api.DatabaseService;
@@ -101,7 +102,12 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     public void start(JobInfoDto jobInfoDto){
         if(jobInfoDto.getTriggerStatus()==1){
             Map<String,Object> map=new HashMap<>();
-            map.put("type",jobInfoDto.getType());
+            if(StringUtils.isNotNullString(jobInfoDto.getType())){
+                map.put("type",jobInfoDto.getType());
+            }else{
+                String type=jobInfoMapper.findTypeById(jobInfoDto.getId());
+                map.put("type",type);
+            }
             map.put("cron",jobInfoDto.getJobCron());
             redisUtil.hmset(QUARTZ_HTHT_CRON+jobInfoDto.getId(),map,-1);            double score=0;
             if(!redisUtil.hasKey(QUARTZ_HTHT_JOB)){
@@ -142,18 +148,19 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
         JobInfoEntity jobInfoEntity=executeService.getById(id);
         jobInfoEntity.setTriggerLastTime(System.currentTimeMillis());
-        scheduleThread.trigger(jobInfoEntity);
+        jobInfoEntity.setType(type);
+        scheduleThread.handT(jobInfoEntity);
 
     }
 
     public void startById(String id){
+        jobInfoMapper.updateTriggerStatus(1,id);
         JobInfoEntity jobInfoEntity=jobInfoMapper.findById(id);
         this.start(jobInfoMapstruct.toDto(jobInfoEntity));
-        jobInfoMapper.updateTriggerStatus(1,id);
     }
     public void stopById(String id){
-        this.stop(id);
         jobInfoMapper.updateTriggerStatus(0,id);
+        this.stop(id);
     }
 
 }
