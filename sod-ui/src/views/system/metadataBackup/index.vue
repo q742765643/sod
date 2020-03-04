@@ -210,13 +210,11 @@
             label="数据库"
             :show-overflow-tooltip="true"
           ></el-table-column>
-          <el-table-column
-            width="200px"
-            prop="handleTime"
-            align="center"
-            label="运行开始时间"
-            :formatter="createTimeFormater"
-          ></el-table-column>
+          <el-table-column width="200px" prop="handleTime" align="center" label="运行开始时间">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.handleTime) }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="dysnc_type" align="center" label="类型"></el-table-column>
           <el-table-column prop="dysnc_model" align="center" label="操作类型"></el-table-column>
           <el-table-column label="状态" align="center" prop="handleCode" :formatter="statusFormat"></el-table-column>
@@ -269,7 +267,6 @@
 </template>
 
 <script>
-import { formatTime } from "@/components/commonVaildate.js";
 import {
   findDataBase,
   metaBackupList,
@@ -331,9 +328,6 @@ export default {
     this.getMetaBackupList();
   },
   methods: {
-    createTimeFormater: function(row) {
-      return formatTime(row.createTime, "Y-M-D h:m:s");
-    },
     // table自增定义方法
     table_index(index) {
       return (

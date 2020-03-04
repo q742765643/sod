@@ -108,6 +108,7 @@ export default {
   },
   data() {
     return {
+      treeJson: [],
       storageDirectoryOptions: [],
       cronDialogVisible: false,
       defaultChecked: [],
@@ -163,7 +164,11 @@ export default {
       });
       await this.findTree(this.msgFormDialog.databaseId);
       // 获取树的选中节点
-      this.defaultChecked = this.msgFormDialog.backContent.split(",");
+      let checkedTree = JSON.parse(this.msgFormDialog.backContent);
+      this.defaultChecked = [];
+      checkedTree.forEach(element => {
+        this.defaultChecked.push(element.id);
+      });
     }
   },
   methods: {
@@ -171,6 +176,7 @@ export default {
     findTree(val) {
       findMeta({ databaseId: val }).then(res => {
         var json = res.data;
+        this.treeJson = res.data;
         var newjson = [];
         for (var i = 0; i < json.length; i++) {
           if (!json[i].pId) newjson.push(json[i]);
@@ -191,10 +197,21 @@ export default {
     trueDialog(formName) {
       this.msgFormDialog.triggerStatus = 1;
       let checkedArry = this.$refs.eltree.getCheckedKeys();
-      this.msgFormDialog.backContent = checkedArry.join(",");
-      if (this.msgFormDialog.backContent.length == 0) {
+      if (checkedArry.length == 0) {
         this.msgError("请选择数据库对象");
+        return;
       }
+      let newArry = [];
+      checkedArry.forEach(element => {
+        this.treeJson.forEach(t => {
+          if (element == t.id) {
+            let obj = {};
+            obj = t;
+            newArry.push(obj);
+          }
+        });
+      });
+      this.msgFormDialog.backContent = JSON.stringify(newArry);
       this.msgFormDialog.isStructure = [];
       this.msgFormDialog.checked.forEach(element => {
         if (element == "结构") {
