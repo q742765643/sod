@@ -35,6 +35,16 @@ export function startTask(id) {
     }
   })
 }
+// 立即执行
+export function execute(id) {
+  return request({
+    url: baseUrl + '/schedule/job/execute',
+    method: 'get',
+    params: {
+      "id": id
+    }
+  })
+}
 // /停止
 export function stopTask(id) {
   return request({

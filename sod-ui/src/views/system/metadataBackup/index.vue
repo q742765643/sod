@@ -126,9 +126,15 @@
               <el-button
                 type="text"
                 size="mini"
-                icon="el-icon-video-play"
+                icon="el-icon-video-pause"
                 :disabled="scope.row.triggerStatus==1"
                 @click="handleTask(scope.row,'启动')"
+              >启动</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-thumb"
+                @click="handleTask(scope.row,'立即执行')"
               >立即执行</el-button>
               <el-button
                 type="text"
@@ -268,8 +274,9 @@ import {
   findDataBase,
   metaBackupList,
   metaBackupDel,
-  stopTask,
   startTask,
+  stopTask,
+  execute,
   listLog,
   listLogDatail
 } from "@/api/system/metadataBackup";
@@ -381,8 +388,10 @@ export default {
         .then(function() {
           if (type == "启动") {
             return startTask(row.id);
-          } else {
+          } else if (type == "停止") {
             return stopTask(row.id);
+          } else if (type == "立即执行") {
+            return execute(row.id);
           }
         })
         .then(() => {
