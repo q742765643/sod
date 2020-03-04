@@ -11,11 +11,11 @@ export function findDataBase() {
 }
 /* 元数据恢复 */
 // 查询列表
-export function getFileList(query) {
+export function getFileList(data) {
   return request({
     url: baseUrl + '/metaRecoverLog/getFileList',
-    method: 'get',
-    params: query
+    method: 'post',
+    params: data
   })
 }
 /* 元数据恢复日志 */

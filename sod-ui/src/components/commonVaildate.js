@@ -99,27 +99,19 @@ export function isArray(arg) {
   }
   return Array.isArray(arg)
 }
-//格式化时间
-// 格式化日期，如月、日、时、分、秒保证为2位数
-export function formatNumber(n) {
-  n = n.toString();
-  return n[1] ? n : "0" + n;
-}
-// 参数number为毫秒时间戳，format为需要转换成的日期格式
-export function formatTime(number, format) {
-  let time = new Date(number);
-  let newArr = [];
-  let formatArr = ["Y", "M", "D", "h", "m", "s"];
-  newArr.push(time.getFullYear());
-  newArr.push(formatNumber(time.getMonth() + 1));
-  newArr.push(formatNumber(time.getDate()));
 
-  newArr.push(formatNumber(time.getHours()));
-  newArr.push(formatNumber(time.getMinutes()));
-  newArr.push(formatNumber(time.getSeconds()));
-
-  for (let i in newArr) {
-    format = format.replace(formatArr[i], newArr[i]);
+export function newTeam(data, parentId) {
+  let itemArr = [];
+  for (let i = 0; i < data.length; i++) {
+    let node = data[i];
+    if (node.pid === parentId) {
+      let newNode = {};
+      newNode.id = node.id;
+      newNode.name = node.name;
+      newNode.pid = node.pid;
+      newNode.children = newTeam(data, node.id);
+      itemArr.push(newNode);
+    }
   }
-  return format;
+  return itemArr;
 }

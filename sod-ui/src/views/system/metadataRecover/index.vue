@@ -56,7 +56,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="任务名称">
-            <el-input size="small" v-model="queryParams.taskName"></el-input>
+            <el-input size="small" v-model="rowlogForm.taskName"></el-input>
           </el-form-item>
           <el-form-item label="时间范围">
             <el-date-picker
@@ -134,6 +134,7 @@
 </template>
 
 <script>
+import { newTeam } from "@/components/commonVaildate";
 import { findDataBase, getFileList } from "@/api/system/metadataRecover";
 //增加查看弹框
 import handleExport from "@/views/system/metadataRecover/handleExport";
@@ -148,8 +149,9 @@ export default {
       // 遮罩层
       loading: true,
       queryParams: {
-        pageNum: 1,
-        pageSize: 10
+        taskName: "",
+        databaseId: "",
+        storageDirectory: ""
       },
       ipList: [],
       // 新增/编辑同步任务
@@ -173,7 +175,8 @@ export default {
         children: "children",
         label: "name"
       },
-      treedata: []
+      treedata: [],
+      treeJson: []
     };
   },
   created() {
@@ -186,12 +189,6 @@ export default {
   },
   methods: {
     // table自增定义方法
-    table_index(index) {
-      return (
-        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
-      );
-    },
-    // table自增定义方法
     table_index_log(index) {
       return (this.rowlogForm.page - 1) * this.rowlogForm.rows + index + 1;
     },
@@ -199,21 +196,10 @@ export default {
     getList() {
       this.loading = true;
       getFileList(this.queryParams).then(res => {
-        var json = res.data;
-        var newjson = [];
-        for (var i = 0; i < json.length; i++) {
-          if (!json[i].pId) newjson.push(json[i]);
-          for (var j = i + 1; j < json.length; j++) {
-            if (json[i].id == json[j].pId) {
-              json[i].children = json[i].children || [];
-              json[i].children.push(json[j]);
-            } else if (json[j].id == json[i].pId) {
-              json[j].children = json[j].children || [];
-              json[j].children.push(json[i]);
-            }
-          }
-        }
-        this.treedata = newjson;
+        this.treeJson = res.data;
+        // 第一级的pid为空
+        this.treedata = newTeam(res.data, "");
+        console.log(this.treedata);
       });
     },
     handleExport(type) {

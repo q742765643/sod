@@ -90,6 +90,7 @@
 
 <script>
 import Cron from "@/components/cron/Cron";
+import { newTeam } from "@/components/commonVaildate";
 import {
   findDataBase,
   findMeta,
@@ -167,30 +168,22 @@ export default {
       let checkedTree = JSON.parse(this.msgFormDialog.backContent);
       this.defaultChecked = [];
       checkedTree.forEach(element => {
-        this.defaultChecked.push(element.id);
+        this.treeJson.forEach(t => {
+          if (element.id == t.id) {
+            this.defaultChecked.push(element.id);
+          }
+        });
       });
     }
   },
   methods: {
     // 获取数据库对象
-    findTree(val) {
-      findMeta({ databaseId: val }).then(res => {
-        var json = res.data;
+    async findTree(val) {
+      await findMeta({ databaseId: val }).then(res => {
         this.treeJson = res.data;
-        var newjson = [];
-        for (var i = 0; i < json.length; i++) {
-          if (!json[i].pId) newjson.push(json[i]);
-          for (var j = i + 1; j < json.length; j++) {
-            if (json[i].id == json[j].pId) {
-              json[i].children = json[i].children || [];
-              json[i].children.push(json[j]);
-            } else if (json[j].id == json[i].pId) {
-              json[j].children = json[j].children || [];
-              json[j].children.push(json[i]);
-            }
-          }
-        }
-        this.treedata = newjson;
+        // 第一级的pid为空
+        this.treedata = newTeam(res.data, "");
+        console.log(this.treedata);
       });
     },
 

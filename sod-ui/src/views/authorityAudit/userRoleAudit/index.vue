@@ -28,12 +28,11 @@
       <el-table-column align="center" prop="account" label="账户名称"></el-table-column>
       <el-table-column align="center" prop="username" label="用户名称"></el-table-column>
       <el-table-column align="center" prop="post" label="部门"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="updateTime"
-        label="申请时间"
-        :formatter="createTimeFormater"
-      ></el-table-column>
+      <el-table-column align="center" prop="updateTime" label="申请时间">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" prop="status" label="审核状态">
         <template slot-scope="scope">
           <el-link
@@ -98,7 +97,6 @@
 <script>
 import { page, delByIds, update } from "@/api/authorityAudit/userRoleAudit";
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
-import { formatTime } from "@/components/commonVaildate.js";
 export default {
   components: {
     handleAccount
@@ -126,9 +124,6 @@ export default {
     this.getList();
   },
   methods: {
-    createTimeFormater: function(row) {
-      return formatTime(row.updateTime, "Y-M-D h-m-s");
-    },
     // table自增定义方法
     table_index(index) {
       return (

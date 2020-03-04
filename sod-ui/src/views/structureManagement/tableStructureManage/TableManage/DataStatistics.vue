@@ -3,18 +3,32 @@
     <fieldset>
       <legend>{{rowData.database_name}}</legend>
       <el-table :data="tableData" stripe style="width: 100%;">
-        <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-        <el-table-column prop="statistic_date" label="统计日期"></el-table-column>
-        <el-table-column prop="begin_time" label="开始时间">
-          <template slot-scope="scope">{{scope.row.begin_time.split('.')[0]}}</template>
+        <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
+        <el-table-column align="center" prop="statisticDate" label="统计日期">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.statisticDate) }}</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="end_time" label="结束时间">
-          <template slot-scope="scope">{{scope.row.end_time.split('.')[0]}}</template>
+        <el-table-column align="center" prop="beginTime" label="开始时间">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.beginTime) }}</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="record_count" label="总量" :formatter="countShow"></el-table-column>
-        <el-table-column prop="day_total" label="日增量"></el-table-column>
+        <el-table-column align="center" prop="endTime" label="结束时间">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.endTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="recordCount" label="总量"></el-table-column>
+        <el-table-column align="center" prop="dayTotal" label="日增量"></el-table-column>
       </el-table>
-      <!-- <Pagination :total="dataTotals" @paginationChange="paginationChange" ref="pagination"></Pagination> -->
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="searchObj.pageNum"
+        :limit.sync="searchObj.pageSize"
+        @pagination="searchFun"
+      />
     </fieldset>
   </el-main>
 </template>
@@ -29,7 +43,7 @@ export default {
     return {
       searchObj: { pageNum: 1, pageSize: 10 },
       tableData: [],
-      dataTotals: 0
+      total: 0
     };
   },
   /*  mounted() {
@@ -47,10 +61,6 @@ export default {
         this.total = response.data.totalCount;
         this.loading = false;
       });
-    },
-    countShow: function(row) {
-      var str = parseFloat(row.record_count).toString();
-      return str;
     }
   },
   watch: {
