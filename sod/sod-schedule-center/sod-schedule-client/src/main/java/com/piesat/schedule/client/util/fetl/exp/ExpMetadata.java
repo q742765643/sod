@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.xugu.cloudjdbc.Types;
@@ -699,35 +700,47 @@ public class ExpMetadata {
 		writer.write("---end data---\r\n");
 	}
 	
-	public String expData(String file,String tableName,List<String> cols,String where,String url) throws Exception{
+	public String expData(String file,String tableName,List<String> cols,String where,String parentId) throws Exception{
 		Connection conn = null;
-		conn = FetlUtil.get_conn(url+"&char_set=utf8");
-		StringBuffer sql = new StringBuffer();
-		StringBuffer sb = new StringBuffer();
-		if(cols == null || cols.size() == 0){
-			sb.append("*");
-		}else{
-			for(int i = 0;i < cols.size();i++){
-				if(i == 0){
-					sb.append(cols.get(i));
-				}else{
-					sb.append(",").append(cols.get(i));
-				}
+		DynamicDataSource dynamicDataSource=SpringUtil.getBean(DynamicDataSource.class);
+		try {
+			DataSourceContextHolder.setDataSource(parentId);
+			conn=dynamicDataSource.getConnection();
+			StringBuffer sql = new StringBuffer();
+			StringBuffer sb = new StringBuffer();
+			if(cols == null || cols.size() == 0){
+                sb.append("*");
+            }else{
+                for(int i = 0;i < cols.size();i++){
+                    if(i == 0){
+                        sb.append(cols.get(i));
+                    }else{
+                        sb.append(",").append(cols.get(i));
+                    }
+                }
+            }
+			sql.append("select ").append(sb.toString()).append(" from ").append(tableName);
+			if(where != null && where.length()>0){
+                sql.append(" where ").append(where);
+            }
+			File file1= new File(file);
+			StringBuffer returnString = new StringBuffer();
+			String columns = expData(conn, tableName, sql.toString(), file1);
+			returnString.append("---data ").append(tableName.toUpperCase()).append("---\r\n")
+                        .append(columns).append("\r\n")
+                        .append(file1.getName()).append("\r\n")
+                        .append("---end data---\r\n");
+			return returnString.toString();
+		} catch (Exception e){
+			log.error(OwnException.get(e));
+
+		} finally{
+			DataSourceContextHolder.clearDataSource();
+			if(null!=conn){
+				conn.close();
 			}
 		}
-		sql.append("select ").append(sb.toString()).append(" from ").append(tableName);
-		if(where != null && where.length()>0){
-			sql.append(" ").append(where);
-		}
-		File file1= new File(file);
-		StringBuffer returnString = new StringBuffer();
-		String columns = expData(conn, tableName, sql.toString(), file1);
-		returnString.append("---data ").append(tableName.toUpperCase()).append("---\r\n")
-		            .append(columns).append("\r\n")
-		            .append(file1.getName()).append("\r\n")
-		            .append("---end data---\r\n");
-		conn.close();
-		return returnString.toString();
+		return "";
 	}
 	
 	public String expData(String fileName,String tableName,String sql,String parentId) throws SQLException{

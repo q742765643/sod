@@ -3,6 +3,7 @@ package com.piesat.schedule.client.service.databse;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.CmdUtil;
@@ -206,8 +207,11 @@ public class GbaseService {
                         .append(dataSource.getUsername())
                         .append(" -p").append(dataSource.getPassword())
                         .append(" -e ")
-                        .append("\"").append("rmt:select * from ").append(table).append(" where ").append(metaBackupEntity.getConditions())
-                        .append(" INTO OUTFILE '").append(path).append("'")
+                        .append("\"").append("rmt:select * from ").append(table);
+                        if(StringUtils.isNotNullString(metaBackupEntity.getConditions())){
+                           sql.append(" where ").append(metaBackupEntity.getConditions());
+                        }
+                        sql.append(" INTO OUTFILE '").append(path).append("'")
                         .append(" WITH HEAD FIELDS TERMINATED BY ','")
                         .append("\"");
                 String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};

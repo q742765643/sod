@@ -17,6 +17,7 @@ import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.backup.MetaBackupService;
 import com.piesat.schedule.rpc.dto.backup.MetaBackupDto;
 import com.piesat.schedule.rpc.mapstruct.backup.MetaBackupMapstruct;
+import com.piesat.schedule.rpc.thread.ScheduleThread;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -42,6 +43,8 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     private MetaBackupMapstruct metaBackupMapstruct;
     @Autowired
     private JobInfoService jobInfoService;
+    @Autowired
+    private ScheduleThread scheduleThread;
     @GrpcHthtClient
     private ExecutorBiz executorBiz;
     @GrpcHthtClient
@@ -138,6 +141,15 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         metaBackupEntity.setDatabaseName(databaseName);
         metaBackupEntity.setParentId(parentId);
         metaBackupEntity.setDatabaseType(databaseDto.getDatabaseDefine().getDatabaseType());
+    }
+
+    @Override
+    public void handExecute(MetaBackupDto metaBackupDto){
+        MetaBackupEntity metaBackupEntity=metaBackupMapstruct.toEntity(metaBackupDto);
+        metaBackupEntity.setType("METABACKUP");
+        metaBackupEntity.setTriggerLastTime(System.currentTimeMillis());
+        scheduleThread.handT(metaBackupEntity);
+
     }
 }
 
