@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * 10以内的中文
  */
 export function chineseLengthTenValidation(str) {
@@ -7,7 +7,7 @@ export function chineseLengthTenValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 手机号码
  */
 export function telphoneNumValidation(str) {
@@ -15,7 +15,7 @@ export function telphoneNumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 端口号
  */
 export function portNumValidation(str) {
@@ -23,7 +23,7 @@ export function portNumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * ip地址
  */
 export function ipUrlValidation(str) {
@@ -31,7 +31,7 @@ export function ipUrlValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * ip地址 IP段样例:192.168.1.%
  */
 export function ipUrlValidation2(str) {
@@ -39,7 +39,7 @@ export function ipUrlValidation2(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 数据库账号不能以数字开头
  */
 export function unstartnumValidation(str) {
@@ -47,7 +47,7 @@ export function unstartnumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 密码 必须以英文数字组成
  */
 export function englishAndNumValidation(str) {
@@ -55,7 +55,7 @@ export function englishAndNumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 不允许输入小写字母和中文，且需以大写字母开头
  */
 export function codeVer(str) {
@@ -63,7 +63,7 @@ export function codeVer(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 验证由中文组成：
  */
 export function chinese(str) {
@@ -71,7 +71,7 @@ export function chinese(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 验证由大于0正整数组成：
  */
 export function num(info) {
@@ -99,27 +99,23 @@ export function isArray(arg) {
   }
   return Array.isArray(arg)
 }
-//格式化时间
-// 格式化日期，如月、日、时、分、秒保证为2位数
-export function formatNumber(n) {
-  n = n.toString();
-  return n[1] ? n : "0" + n;
-}
-// 参数number为毫秒时间戳，format为需要转换成的日期格式
-export function formatTime(number, format) {
-  let time = new Date(number);
-  let newArr = [];
-  let formatArr = ["Y", "M", "D", "h", "m", "s"];
-  newArr.push(time.getFullYear());
-  newArr.push(formatNumber(time.getMonth() + 1));
-  newArr.push(formatNumber(time.getDate()));
 
-  newArr.push(formatNumber(time.getHours()));
-  newArr.push(formatNumber(time.getMinutes()));
-  newArr.push(formatNumber(time.getSeconds()));
-
-  for (let i in newArr) {
-    format = format.replace(formatArr[i], newArr[i]);
+export function newTeam(data, parentId) {
+  let itemArr = [];
+  let temp = [];
+  for (let i = 0; i < data.length; i++) {
+    let node = data[i];
+    if (node.pid === parentId ) {
+      let newNode = {};
+      newNode.id = node.id;
+      newNode.name = node.name;
+      newNode.pid = node.pid;
+      temp=newTeam(data, node.id);
+      if (temp.length > 0&& node.isParent) {
+        newNode.children = temp
+      }
+      itemArr.push(newNode);
+    }
   }
-  return format;
+  return itemArr;
 }

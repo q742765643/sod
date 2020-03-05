@@ -59,4 +59,11 @@ public class DatabaseEntity extends BaseEntity {
      */
     @Column(name = "stop_use", columnDefinition = "Boolean default false")
     private Boolean stopUse;
+
+    /**
+     * 数据库等级 （1.基础数据库（适用于备份等操作））
+     * database_level
+     */
+    @Column(name = "level")
+    private Integer level;
 }

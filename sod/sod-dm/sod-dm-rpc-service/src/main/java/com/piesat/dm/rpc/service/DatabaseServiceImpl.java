@@ -59,6 +59,12 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
+    public List<DatabaseDto> findByLevel(int level) {
+        List<DatabaseEntity> all = this.databaseDao.findByLevel(level);
+        return this.databaseMapper.toDto(all);
+    }
+
+    @Override
     public DatabaseDto getDotById(String id) {
         DatabaseEntity databaseEntity = this.getById(id);
         return this.databaseMapper.toDto(databaseEntity);

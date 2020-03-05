@@ -590,7 +590,7 @@ export default {
     // this.handleScroll();
   },
   beforeDestroy() {
-    window.removeEventListener("scroll", this.scrollEvent);
+    // window.removeEventListener("scroll", this.scrollEvent);
   }
 };
 </script>

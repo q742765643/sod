@@ -45,7 +45,7 @@ spring:
       #username: sod5
       #password: 123456
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://1.119.5.177:8000/sod
+      url: jdbc:mysql://10.1.6.117:8000/sod
       username: root
       password: root
       type: com.alibaba.druid.pool.DruidDataSource
@@ -76,7 +76,7 @@ spring:
     #database: mysql
     open-in-view: false
   redis:
-    host: 1.119.5.177
+    host: 10.1.6.117
     port: 8001
     timeout: 5000
     password:
@@ -96,7 +96,7 @@ pagehelper:
 
 eureka:
   instance:
-    #hostname: desktop-2vav0fh
+    hostname: desktop-2vav0fh
 
     #prefer-ip-address: true
     #instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
@@ -104,7 +104,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://1.119.5.177:8002/eureka/
+      defaultZone: http://10.1.6.117:8002/eureka/
 
 log:
   path: E:/log

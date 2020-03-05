@@ -121,11 +121,11 @@ public class CassandraService {
                 writePath.append("---end instance---\r\n");
                 ZipUtils.writetxt(metadataVo.getIndexPath(),writePath.toString(),resultT);
             }else{
-                resultT.setSuccessMessage("数据库模式{}备份失败", instance);
+                resultT.setErrorMessage("数据库模式{}备份失败", instance);
 
             }
         } catch (Exception e) {
-            resultT.setSuccessMessage("数据库模式{}备份失败", instance);
+            resultT.setErrorMessage("数据库模式{}备份失败", instance);
             log.error(OwnException.get(e));
         }
 
@@ -152,11 +152,11 @@ public class CassandraService {
                 writePath.append("---end table---\r\n");
                 ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
             } else {
-                resultT.setSuccessMessage("表结构{}备份失败", tableInfo);
+                resultT.setErrorMessage("表结构{}备份失败", tableInfo);
                 log.error("表结构{}备份失败", tableInfo);
             }
         } catch (Exception e) {
-            resultT.setSuccessMessage("表结构{}备份失败", tableInfo);
+            resultT.setErrorMessage("表结构{}备份失败", tableInfo);
             log.error(OwnException.get(e));
         }
     }
@@ -195,7 +195,7 @@ public class CassandraService {
         String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
         int  exit=CmdUtil.expCmd(commands,resultT);
         if(exit!=0){
-            resultT.setSuccessMessage("表或者模式{}恢复失败",tableOrInstance);
+            resultT.setErrorMessage("表或者模式{}恢复失败",tableOrInstance);
         }
 
     }

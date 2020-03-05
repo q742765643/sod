@@ -26,8 +26,8 @@ public class MetaBackupDto extends JobInfoDto{
     private String databaseName;
     @ApiModelProperty("存储目录")
     private String storageDirectory;
-    @ApiModelProperty("任务名称")
-    private String taskName;
+    @ApiModelProperty("where条件")
+    private String conditions;
 
 }
 

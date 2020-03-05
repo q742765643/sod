@@ -53,6 +53,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Autowired
     private TableColumnDao tableColumnDao;
     @Autowired
+    private TableIndexDao tableIndexDao;
+    @Autowired
     private TableForeignKeyDao tableForeignKeyDao;
     @Autowired
     private TableForeignKeyMapper tableForeignKeyMapper;
@@ -184,17 +186,19 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         List<DataTableEntity> pDataTableEntitys = this.dataTableDao.findByClassLogicId(pasteId);
         for (DataTableEntity pd : pDataTableEntitys) {
             this.shardingDao.deleteByTableId(pd.getId());
-            this.dataTableDao.deleteById(pd.getId());
+            this.tableColumnDao.deleteByTableId(pd.getId());
+            this.tableIndexDao.deleteByTableId(pd.getId());
+            this.delete(pd.getId());
         }
 
         DataClassEntity dataClassEntity = this.dataClassDao.findByDataClassId(paste.getDataClassId());
         for (DataTableEntity copy : copys) {
+            List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(copy.getId());
             copy.setClassLogic(paste);
             copy.setDataServiceId(dataClassEntity.getDataClassId());
             copy.setDataServiceName(dataClassEntity.getClassName());
             copy.setNameCn(dataClassEntity.getClassName());
             copy.setCreateTime(new Date());
-            List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(copy.getId());
             copy.setId("");
             copy.setCreateTime(new Date());
             copy.setVersion(0);

@@ -51,7 +51,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private ShardingDao shardingDao;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
-
+    @Autowired
+    private TableColumnDao tableColumnDao;
+    @Autowired
+    private TableIndexDao tableIndexDao;
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
         return dataClassDao;
@@ -191,6 +194,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             List<DataTableEntity> dts = this.dataTableDao.findByClassLogic_Id(dl.getId());
             for (DataTableEntity dt : dts) {
                 this.shardingDao.deleteByTableId(dt.getId());
+                this.tableColumnDao.deleteByTableId(dt.getId());
+                this.tableIndexDao.deleteByTableId(dt.getId());
             }
             this.dataTableDao.deleteByClassLogic_Id(dl.getId());
         }

@@ -424,15 +424,18 @@
       <el-row :v-if="exportInnerVisible">
         <el-col :span="12">
           <el-upload
-            v-model="filepath"
             class="upload-demo"
-            :limit="1"
+            action
+            :on-change="handleChange"
             :on-exceed="handleExceed"
-            :action="upLoadUrl"
             :on-remove="handleRemove"
-            :on-success="successUpload"
+            :file-list="fileListUpload"
+            :limit="1"
+            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            :auto-upload="false"
           >
             <el-button size="small" type="primary">导入数据</el-button>
+            <div slot="tip" class="el-upload__tip">只 能 上 传 xlsx / xls 文 件</div>
           </el-upload>
         </el-col>
         <el-col :span="12">
@@ -469,7 +472,6 @@ export default {
       },
       exportInnerVisible: false,
       filepath: "",
-      upLoadUrl: "",
       columnEditData: { unitCn: "N" },
       columnData: [],
       selColumnData: [],
@@ -513,7 +515,10 @@ export default {
         serialNumber: [
           { required: true, message: "请输入序号", trigger: "blur" }
         ]
-      }
+      },
+      // 字段导入
+      fileTemp: null,
+      fileListUpload: []
     };
   },
   methods: {
@@ -703,27 +708,43 @@ export default {
         });
         return;
       }
-      let url;
+
       if (type == "code") {
-        url =
-          interfaceObj.TableStructure_columnExport + "?id=" + this.tableInfo.id;
+        window.location.href = "?id=" + this.tableInfo.id;
       } else {
-        url = interfaceObj.TableStructure_importTelplate;
+        window.location.href = "";
       }
-      this.axios
-        .get(url)
-        .then(data => {
-          testExport(url);
-        })
-        .catch(function(error) {
-          testExport(url);
+    },
+    handleChange(file, fileList) {
+      this.fileTemp = file.raw;
+      if (this.fileTemp) {
+        if (
+          this.fileTemp.type ==
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+          this.fileTemp.type == "application/vnd.ms-excel"
+        ) {
+          this.importfxx(this.fileTemp);
+        } else {
+          this.$message({
+            type: "warning",
+            message: "附件格式错误，请删除后重新上传！"
+          });
+        }
+      } else {
+        this.$message({
+          type: "warning",
+          message: "请上传附件！"
         });
+      }
+    },
+
+    handleRemove(file, fileList) {
+      this.fileTemp = null;
     },
     // 上传限制
     handleExceed() {
       this.$message.warning("当前限制选择1个文件");
     },
-    handleRemove(file, fileList) {},
     successUpload: function(response, file, fileList) {
       if (response.returnCode == 0) {
         this.$message({
@@ -746,9 +767,6 @@ export default {
         return;
       }
       this.handleRemove();
-      this.upLoadUrl =
-        interfaceObj.TableStructure_importColumn + "?id=" + this.tableInfo.id;
-
       this.exportInnerVisible = true;
     },
 
@@ -1017,6 +1035,61 @@ export default {
         }
       });
       return newRows;
+    },
+    // 导入函数
+    importfxx(obj) {
+      debugger;
+      let _this = this;
+      // 通过DOM取文件数据
+      this.file = obj;
+      var rABS = false; //是否将文件读取为二进制字符串
+      var f = this.file;
+      var reader = new FileReader();
+      //if (!FileReader.prototype.readAsBinaryString) {
+      FileReader.prototype.readAsBinaryString = function(f) {
+        var binary = "";
+        var rABS = false; //是否将文件读取为二进制字符串
+        var pt = this;
+        var wb; //读取完成的数据
+        var outdata;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var bytes = new Uint8Array(reader.result);
+          var length = bytes.byteLength;
+          for (var i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          var XLSX = require("xlsx");
+          if (rABS) {
+            wb = XLSX.read(btoa(fixdata(binary)), {
+              //手动转化
+              type: "base64"
+            });
+          } else {
+            wb = XLSX.read(binary, {
+              type: "binary"
+            });
+          }
+          outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); //outdata就是你想要的东西
+          this.da = [...outdata];
+          let arr = [];
+          this.da.map(v => {
+            let obj = {};
+            obj.code = v["公共元数据字段"];
+            obj.type = v["字段名称"];
+            arr.push(obj);
+          });
+          return arr;
+          console.log(arr);
+        };
+        reader.readAsArrayBuffer(f);
+      };
+
+      if (rABS) {
+        reader.readAsArrayBuffer(f);
+      } else {
+        reader.readAsBinaryString(f);
+      }
     }
   },
   mounted() {

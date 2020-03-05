@@ -16,5 +16,7 @@ public interface MetaBackupLogService {
     public MetaBackupLogDto findMetaBackupLogById(String metaBackupLogId);
 
     public void deleteMetaBackupLogByIds(String[] metaBackupLogIds);
+
+    public byte[] downFile(String path);
 }
 

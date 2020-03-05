@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -89,13 +90,31 @@ public class MetaBackupController {
     @RequiresPermissions("schedule:metaBackup:findMeta")
     @ApiOperation(value = "查询数据库元数据", notes = "查询数据库元数据")
     @GetMapping(value = "/findMeta")
-    public ResultT findMeta(String parentId,String dataBaseType)
+    public ResultT findMeta(String databaseId)
     {
         ResultT resultT=new ResultT<>();
-        List<TreeVo> treeVos= metaBackupService.findMeta(parentId,dataBaseType);
+        List<TreeVo> treeVos= metaBackupService.findMeta(databaseId);
         resultT.setData(treeVos);
         return resultT;
     }
+    @RequiresPermissions("schedule:metaBackup:findDataBase")
+    @ApiOperation(value = "查询物理库IP", notes = "查询物理库IP")
+    @GetMapping(value = "/findDataBase")
+    public ResultT<List<Map<String,String>>> findDataBase(){
+        ResultT<List<Map<String,String>>> resultT=new ResultT<>();
+        List<Map<String,String>> mapList=metaBackupService.findDataBase();
+        resultT.setData(mapList);
+        return resultT;
+    }
+    @RequiresPermissions("schedule:metaBackup:handExecute")
+    @ApiOperation(value = "手工执行元数据备份", notes = "手工执行元数据备份")
+    @GetMapping(value = "/handExecute")
+    public ResultT<String> handExecute(MetaBackupDto metaBackupDto){
+        ResultT<String> resultT=new ResultT<>();
+        metaBackupService.handExecute(metaBackupDto);
+        return resultT;
+    }
+
 
 }
 

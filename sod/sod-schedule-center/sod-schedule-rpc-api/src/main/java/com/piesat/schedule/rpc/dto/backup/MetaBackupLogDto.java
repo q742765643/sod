@@ -14,8 +14,6 @@ import lombok.Data;
 public class MetaBackupLogDto extends JobInfoLogDto {
     @ApiModelProperty("物理库id")
     private String databaseId;
-    @ApiModelProperty("任务名称")
-    private String taskName;
     @ApiModelProperty("0 结构 1数据")
     private String isStructure;
     @ApiModelProperty("备份内容")

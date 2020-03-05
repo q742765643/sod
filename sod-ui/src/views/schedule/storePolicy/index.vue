@@ -53,7 +53,7 @@
                 <div>
                   <ul class="ulInfoBox" style="color:#67C23A;">
                     <span>下五次执行时间：</span>
-                    <li v-for="(item_a,index_a) in item.cronDiv" :key="index_a">
+                    <li v-for="(item_a,index_a) in item.nextTime" :key="index_a">
                       <p class="rowInfo">
                         <span>{{item_a}}</span>
                       </p>
@@ -71,25 +71,25 @@
                   size="mini"
                   type="success"
                   icon="el-icon-plus"
-                  @click="addRow(row)"
+                  @click="addRow(row,item.policyName)"
                   title="添加"
                   v-if="item.isConfiguration=='未配置'"
                 ></el-button>
                 <el-button
                   size="mini"
                   type="primary"
-                  icon="el-icon-row"
+                  icon="el-icon-edit"
                   title="修改"
                   v-if="item.isConfiguration=='已配置'"
-                  @click="editRow(row)"
+                  @click="editRow(item,item.policyName)"
                 ></el-button>
                 <el-button
                   size="mini"
-                  type="warning"
+                  type="danger"
                   icon="el-icon-delete"
                   title="删除"
                   v-if="item.isConfiguration=='已配置'"
-                  @click="deleteJob(row)"
+                  @click="deleteJob(item,item.policyName)"
                 ></el-button>
                 <el-button
                   size="mini"
@@ -97,7 +97,7 @@
                   icon="el-icon-caret-right"
                   title="启动"
                   v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='停止'"
-                  @click="startJob(row)"
+                  @click="startJob(row,item.policyName)"
                 ></el-button>
                 <el-button
                   size="mini"
@@ -111,7 +111,7 @@
                   type="warning"
                   icon="el-icon-video-pause"
                   title="停止"
-                  @click="stopJob(row)"
+                  @click="stopJob(row,item.policyName)"
                   v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
                 ></el-button>
               </p>
@@ -120,18 +120,33 @@
         </el-row>
       </el-scrollbar>
     </el-main>
+    <!-- 弹窗 备份 -->
+    <el-dialog :title="dialogTitle" :visible.sync="backUpDialog" width="800px">
+      <handleBackUp @cancelHandle="cancelHandle" v-if="backUpDialog" :handleObj="handleObj"></handleBackUp>
+    </el-dialog>
     <!-- 弹窗 清除-->
     <el-dialog :title="dialogTitle" :visible.sync="clearDialog" width="800px">
       <handleClear @cancelHandle="cancelHandle" v-if="clearDialog" :handleObj="handleObj"></handleClear>
+    </el-dialog>
+    <!-- 弹窗 迁移 -->
+    <el-dialog :title="dialogTitle" :visible.sync="moveDialog" width="800px">
+      <handleMove @cancelHandle="cancelHandle" v-if="moveDialog" :handleObj="handleObj"></handleMove>
     </el-dialog>
   </el-container>
 </template>
 <script>
 import handleClear from "@/views/schedule/clear/handleClear";
+import handleBackUp from "@/views/schedule/backup/handleBackUp";
+import handleMove from "@/views/schedule/move/handleMove";
 import { strategyTree, findData } from "@/api/schedule/storePolicy";
+import { delBackup } from "@/api/schedule/backup/backup";
+import { delClear } from "@/api/schedule/clear/clear";
+import { delMove } from "@/api/schedule/move/move";
 export default {
   components: {
-    handleClear
+    handleBackUp,
+    handleClear,
+    handleMove
   },
   data() {
     return {
@@ -160,6 +175,8 @@ export default {
         pageSize: 10
       },
       clearDialog: false,
+      backUpDialog: false,
+      moveDialog: false,
       handleObj: {}
     };
   },
@@ -199,82 +216,16 @@ export default {
     },
     //节点点击
     sourceNodeClick(data) {
-      this.myTreedata = [];
-      this.checkedNodeArr = {};
-      this.resetData(data);
-      let treeIds = [];
-      this.myTreedata.forEach(single => {
-        if (single.disabled) {
-          treeIds.push(single.id);
-        }
-      });
-      console.log(this.checkNode);
-      this.getfindData(this.checkNode.id);
+      console.log(data);
+      this.checkNode = nodeArr;
+      this.getfindData(data.id);
     },
     getfindData(classId) {
       findData({ classId: classId }).then(res => {
         if (res.code == "200") {
           this.groupList = res.data;
-          this.groupList = [
-            {
-              databaseName: "历史分析库_基础库",
-              databaseId: "7f9b7480f9874cca942c0e3910ab714a",
-              dataClassId: "D.0004.0001.M001",
-              policyDtos: [
-                {
-                  taskId: "",
-                  policyName: "备份",
-                  jobCron: "",
-                  isConfiguration: "未配置",
-                  triggerStatus: "",
-                  elapsedTime: "",
-                  ddateTime: "",
-                  sourceRepository: "",
-                  sourceTable: null
-                },
-                {
-                  taskId: "",
-                  policyName: "清除",
-                  jobCron: "",
-                  isConfiguration: "未配置",
-                  triggerStatus: "",
-                  elapsedTime: "",
-                  ddateTime: "",
-                  sourceRepository: "",
-                  sourceTable: null
-                },
-                {
-                  taskId: "",
-                  policyName: "迁移",
-                  jobCron: "",
-                  isConfiguration: "未配置",
-                  triggerStatus: "",
-                  elapsedTime: "",
-                  ddateTime: "",
-                  sourceRepository: "",
-                  sourceTable: null
-                },
-                {
-                  taskId: "",
-                  policyName: "同步",
-                  jobCron: "",
-                  isConfiguration: "未配置",
-                  triggerStatus: "",
-                  elapsedTime: "",
-                  ddateTime: "",
-                  sourceRepository: "",
-                  sourceTable: null
-                }
-              ]
-            },
-            {
-              databaseName: "结构化数据库_基础库",
-              databaseId: "f499a19d5d0743899dfe74ef724be865",
-              dataClassId: "D.0004.0001.M001",
-              policyDtos: []
-            }
-          ];
         } else {
+          this.msgError(res.msg);
         }
       });
     },
@@ -293,29 +244,81 @@ export default {
         }
       }
     },
-    cancelDialog(msg) {
-      if (!msg) {
-        this.TreeDialog = false;
-        this.DictDialog = false;
-      }
-    },
 
-    addRow(row) {
+    addRow(row, name) {
       console.log(row);
       this.handleObj = {};
-      this.dialogTitle = "添加迁移清除配置信息";
-      this.clearDialog = true;
+      this.handleObj = row;
+      this.handleObj.pageName = "资料存储策略";
+      if (name == "备份") {
+        this.dialogTitle = "添加数据备份配置信息";
+        this.backUpDialog = true;
+      } else if (name == "清除") {
+        this.dialogTitle = "添加迁移清除配置信息";
+        this.clearDialog = true;
+      } else if (name == "迁移") {
+        this.dialogTitle = "添加迁移清除配置信息";
+        this.moveDialog = true;
+      } else if (name == "同步") {
+        this.dialogTitle = "添加迁移清除配置信息";
+        this.clearDialog = true;
+      }
     },
-    editRow() {},
+    editRow(item, name) {
+      console.log(item);
+      this.handleObj = {};
+      this.handleObj.id = item.taskId;
+      if (name == "备份") {
+        this.dialogTitle = "添加数据备份配置信息";
+        this.backUpDialog = true;
+      } else if (name == "清除") {
+        this.dialogTitle = "添加迁移清除配置信息";
+        this.clearDialog = true;
+      } else if (name == "迁移") {
+        this.dialogTitle = "添加迁移清除配置信息";
+        this.moveDialog = true;
+      } else if (name == "同步") {
+        this.dialogTitle = "添加迁移清除配置信息";
+        this.clearDialog = true;
+      }
+    },
     startJob() {},
-    deleteJob() {},
+    deleteJob(item, name) {
+      this.$confirm(
+        '是否确认删除任务编号为"' + item.taskId + '"的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(function() {
+          if (name == "备份") {
+            return delBackup(item.taskId);
+          } else if (name == "清除") {
+            return delClear(item.taskId);
+          } else if (name == "迁移") {
+            return delMove(item.taskId);
+          } else if (name == "同步") {
+          }
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("删除成功");
+        })
+        .catch(function() {});
+    },
 
     filterNode(value, data) {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
     },
     cancelHandle() {
+      this.backUpDialog = false;
       this.clearDialog = false;
+      this.moveDialog = false;
+      this.getfindData(this.checkNode.id);
     }
   }
 };
