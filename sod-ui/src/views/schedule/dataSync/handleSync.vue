@@ -497,8 +497,6 @@ export default {
         targetTableId2: "", //目标表的值表的表2ID
 
         sourceTableId: "", //源表的值表的表ID
-        sourceTableEnName: "", //源表的值表的表名
-        sourceTableForeignKey: "", //源表的值表的外键
         targetTableName_K: "", //目标表的值表的表名
         targetTableIds: "", //目标表是键值表时为键表ID，普通要素表时可以有2个
         tableNames: "", //目标表是键值表时为键表表名，普通要素表时可以有2个
@@ -506,7 +504,10 @@ export default {
         tableNameCNs: "", //目标资料名称
         targetColumnDetail: [], //目标表字段
         targetRelation:[],//源表和目标表的映射关系
-        slaveRelation:{}//源表值表和目标表值表的映射关系
+        slaveRelation:{},//源表值表和目标表值表的映射关系
+        sourceVTableId:"",//源表值表id
+        targetVTableId:"",//目标表值表id
+
       },
       rules: {
         taskName: [
@@ -649,10 +650,6 @@ export default {
           });
           this.msgFormDialog.KandE = "K";
           //先查询建表对应值表的字段信息
-          syncColumnByTableId(searchParameter).then(res => {
-            this.sourceVColumnDetail = res.data;
-            this.columnArray = res.data;
-          });
           // 过滤出e表的tableID,查出E表的字段信息
           // data_class_id,storage_type相同的
           var ETableId = "";
@@ -663,11 +660,16 @@ export default {
               element.id != tableInfo.id
             ) {
               ETableId = element.id;
+              this.msgFormDialog.sourceVTableId = element.id;
             }
           });
           syncColumnByTableId({ tableId: ETableId }).then(res => {
             //源表字段暂存，会和目标字段进行映射
+            this.sourceVColumnDetail = res.data;
+          });
+          syncColumnByTableId(searchParameter).then(res => {
             this.sourceColumnDetail = res.data;
+            this.columnArray = res.data;
           });
         } else {
           this.msgFormDialog.KandE = "E";
@@ -774,12 +776,27 @@ export default {
           showClose: true,
           message: "您选择了键值表类型的键表，系统自动匹配值表"
         });
+        var element_obj = "";
+        this.targetTableArray.forEach(element => {
+          if (
+            element.data_class_id == targetTableInfo.data_class_id &&
+            element.storage_type == targetTableInfo.storage_type &&
+            element.id != targetTableInfo.id
+          ) {
+            element_obj = element;
+            this.msgFormDialog.targetVTableId = element.id;
+          }
+        });
+        await syncColumnByTableId({ tableId: element_obj.id }).then(res => {
+          //目标表字段暂存，会和源表字段进行映射
+          this.targetVColumnDetail = res.data;
+        });
         //源表值表和目标表的值表映射
-        this.ETableMapping();
+        this.ETableMapping(element_obj);
       }
       // 目标表字段
       await syncColumnByTableId({ tableId: selectTargetTableID }).then(res => {
-        this.targetVColumnDetail = res.data;
+        this.targetColumnDetail = res.data;
       });
       //源表键表/普通的要素表和目标表的键表/普通的要素表的映射
       this.KTableMapping(
@@ -792,10 +809,10 @@ export default {
     // tab
     //键表或普通的要素表映射
     KTableMapping(table_id, table_name, data_class_id, ttid) {
-      if (this.targetVColumnDetail.length > 0) {
+      if (this.targetColumnDetail.length > 0) {
         //debugger;
         var sourceLength = this.sourceColumnDetail.length;
-        var targetLength = this.targetVColumnDetail.length;
+        var targetLength = this.targetColumnDetail.length;
         //组织键表映射
         var dataList = [];
         for (var i = 0; i < targetLength; i++) {
@@ -803,7 +820,7 @@ export default {
           //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
           for (var j = 0; j < sourceLength; j++) {
             if (
-              this.targetVColumnDetail[i].celementCode ==
+              this.targetColumnDetail[i].celementCode ==
               this.sourceColumnDetail[j].celementCode
             ) {
               sourceColumnName = this.sourceColumnDetail[j].celementCode;
@@ -811,7 +828,7 @@ export default {
             }
           }
           var obj = {};
-          obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
+          obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
           obj.sourceColumn_ = sourceColumnName;
           obj.index = i;
           obj.isdelete = false;
@@ -839,7 +856,8 @@ export default {
     },
 
     //值表映射
-    ETableMapping() {
+    ETableMapping(element_obj) {
+      debugger
       //源表的值表字段信息
       var sourceVColumnList = this.sourceVColumnDetail;
       var sourceLength = sourceVColumnList.length;
@@ -852,15 +870,15 @@ export default {
         //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
         for (var j = 0; j < sourceLength; j++) {
           if (
-            this.targetVColumnDetail[i].c_element_code ==
-            sourceVColumnList[j].c_element_code
+            this.targetVColumnDetail[i].celementCode ==
+            sourceVColumnList[j].celementCode
           ) {
-            sourceColumnName = sourceVColumnList[j].c_element_code;
+            sourceColumnName = sourceVColumnList[j].celementCode;
             break;
           }
         }
         var obj = {};
-        obj.targetColumn_ = this.targetVColumnDetail[i].c_element_code;
+        obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
         obj.sourceColumn_ = sourceColumnName;
         obj.index = i;
         obj.isdelete = false;
@@ -868,22 +886,20 @@ export default {
       }
 
       this.editableTabs.push({
-        title: this.targetVColumnDetail.ETable.table_NAME,
-        name: this.targetVColumnDetail.ETable.table_NAME,
+        title: element_obj.table_name,
+        name: element_obj.table_name,
         list: dataList,
         //tableDataType: tableDataType,
-        tableId: this.targetVColumnDetail.ETable.table_ID, //组装变量名用
+        tableId: element_obj.id, //组装变量名用
         KandE: "K",
         content: "",
-        stid: ttid,
-        namecn: this.targetVColumnDetail.ETable.name_cn,
-        targetTableName_K: this.targetVColumnDetail.ETable.table_NAME,
-        sourceTableId: this.sourceVColumnDetail.ETable.table_ID,
-        sourceTableName: this.sourceVColumnDetail.ETable.table_NAME,
-        sourceTableForeignKey: this.sourceVColumnDetail.ETable
-          .table_foreigh_field
+        stid: element_obj.id,
+        namecn: element_obj.name_cn,
+        targetTableName_K: element_obj.table_name,
+        sourceTableId: element_obj.id,
+        sourceTableName: element_obj.table_name
       });
-      this.editableTabsValue = this.targetVColumnDetail.ETable.table_NAME;
+      this.editableTabsValue = element_obj.table_name;
     },
 
     removeTab(targetName) {
@@ -965,7 +981,7 @@ export default {
                 mapping = mapping + "\r\n";
               }
             }
-            targetRelation.push({targetTable:tableId,mapping:mapping})
+            targetRelation.push({targetTableId:tableId,mapping:mapping})
             //console.log(tfield);
 
             debugger;
@@ -986,7 +1002,7 @@ export default {
 
         let ipAndPort = this.msgFormDialog.ipAndPort.split(":");
         this.msgFormDialog.execIp = ipAndPort[0];
-        this.msgFormDialog.execPort = ipAndPort[2];
+        this.msgFormDialog.execPort = ipAndPort[1];
 
         let arryDomains = this.stableFilterForm.domains;
         this.msgFormDialog.sourceTableFilterText = [];

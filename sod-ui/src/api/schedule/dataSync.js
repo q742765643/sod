@@ -56,3 +56,16 @@ export function syncSaveUpdate(data) {
     data: data
   })
 }
+export function delSync(id) {
+  return request({
+    url: baseUrl+'/schedule/sync/deleteSync/'+id,
+    method: 'delete'
+  })
+}
+
+export function getSyncInfo(id) {
+  return request({
+    url: baseUrl+'/schedule/sync/getSyncById/' + id,
+    method: 'get'
+  })
+}

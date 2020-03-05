@@ -79,7 +79,8 @@
           >启动</el-button>
           <el-button type="text" size="mini" icon="el-icon-video-pause">停止</el-button>
           <el-button type="text" size="mini" icon="el-icon-s-marketing">重启</el-button>
-          <el-button type="text" size="mini" icon="el-icon-edit">编辑</el-button>
+          <el-button type="text" size="mini" icon="el-icon-edit"  @click="handleUpdate(scope.row)"  v-hasPermi="['schedule:backup:edit']">编辑</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete"  @click="handleDelete(scope.row)"  v-hasPermi="['schedule:sync:deleteSync']">删除</el-button>
           <el-button type="text" size="mini" icon="el-icon-view">查看</el-button>
           <el-button
             type="text"
@@ -124,7 +125,11 @@
 </template>
 
 <script>
-import { syncList } from "@/api/schedule/dataSync";
+import {
+  syncList,
+  delSync,
+  getSyncInfo
+} from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
 // 增加查看
@@ -282,7 +287,35 @@ export default {
     closeSuperSearch() {
       this.resetQuery();
       this.dialogSuperSearch = false;
-    }
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const id = row.id;
+      this.$confirm('是否确认删除任务编号为"' + id + '"的数据项?', "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return delSync(id);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("删除成功");
+        })
+        .catch(function() {});
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.resetQuery();
+      const id = row.id;
+      getSyncInfo(id).then(response => {
+        debugger
+        this.dialogTitle = "修改";
+        this.handleDialog = true;
+        this.handleObj = response.data;
+      });
+    },
   }
 };
 </script>
