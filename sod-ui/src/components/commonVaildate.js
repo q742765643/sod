@@ -105,13 +105,14 @@ export function newTeam(data, parentId) {
   let temp = [];
   for (let i = 0; i < data.length; i++) {
     let node = data[i];
-    if (node.pid === parentId ) {
+    if (node.pid === parentId) {
       let newNode = {};
       newNode.id = node.id;
       newNode.name = node.name;
       newNode.pid = node.pid;
-      temp=newTeam(data, node.id);
-      if (temp.length > 0&& node.isParent) {
+      newNode.nodeKey = node.nodeKey;
+      temp = newTeam(data, node.id);
+      if (temp.length > 0 && node.isParent) {
         newNode.children = temp
       }
       itemArr.push(newNode);

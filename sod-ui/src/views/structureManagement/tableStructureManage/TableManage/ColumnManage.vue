@@ -423,20 +423,7 @@
     >
       <el-row :v-if="exportInnerVisible">
         <el-col :span="12">
-          <el-upload
-            class="upload-demo"
-            action
-            :on-change="handleChange"
-            :on-exceed="handleExceed"
-            :on-remove="handleRemove"
-            :file-list="fileListUpload"
-            :limit="1"
-            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-            :auto-upload="false"
-          >
-            <el-button size="small" type="primary">导入数据</el-button>
-            <div slot="tip" class="el-upload__tip">只 能 上 传 xlsx / xls 文 件</div>
-          </el-upload>
+          <input-excel @getResult="getMyExcelData"></input-excel>
         </el-col>
         <el-col :span="12">
           <el-button type="success" size="small" @click="exportCode('demo')">下载模板</el-button>
@@ -447,6 +434,10 @@
 </template>
 
 <script>
+// 上传
+import inputExcel from "@/components/excelXlsx/upload";
+// 下载
+import { exportExcel } from "@/components/excelXlsx/js/download";
 // 拖拽组件
 import draggable from "vuedraggable";
 import {
@@ -459,7 +450,8 @@ import { enable } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: { tableInfo: Object, tableType: String },
   components: {
-    draggable
+    draggable,
+    inputExcel
   },
   data() {
     return {
@@ -710,37 +702,44 @@ export default {
       }
 
       if (type == "code") {
-        window.location.href = "?id=" + this.tableInfo.id;
+        let theader = [
+          "公共元数据字段",
+          "字段编码",
+          "服务代码",
+          "中文简称",
+          "数据精度",
+          "要素单位",
+          "是否可空",
+          "是否可改",
+          "是否显示",
+          "是否主键",
+          "中文描述",
+          "是否管理字段",
+          "默认值",
+          "序号"
+        ];
+        let tableProp = [
+          "dbEleCode",
+          "celementCode",
+          "userEleCode",
+          "eleName",
+          "accuracy",
+          "unitCn",
+          "isNull",
+          "isUpdate",
+          "isShow",
+          "isPrimaryKey",
+          "nameCn",
+          "isManager",
+          "defaultValue",
+          "serialNumber"
+        ];
+        exportExcel(theader, tableProp, this.columnData);
       } else {
         window.location.href = "";
       }
     },
-    handleChange(file, fileList) {
-      this.fileTemp = file.raw;
-      if (this.fileTemp) {
-        if (
-          this.fileTemp.type ==
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-          this.fileTemp.type == "application/vnd.ms-excel"
-        ) {
-          this.importfxx(this.fileTemp);
-        } else {
-          this.$message({
-            type: "warning",
-            message: "附件格式错误，请删除后重新上传！"
-          });
-        }
-      } else {
-        this.$message({
-          type: "warning",
-          message: "请上传附件！"
-        });
-      }
-    },
 
-    handleRemove(file, fileList) {
-      this.fileTemp = null;
-    },
     // 上传限制
     handleExceed() {
       this.$message.warning("当前限制选择1个文件");
@@ -766,7 +765,6 @@ export default {
         });
         return;
       }
-      this.handleRemove();
       this.exportInnerVisible = true;
     },
 
@@ -986,6 +984,11 @@ export default {
         })
         .catch(error => {});
     },
+    getMyExcelData(data) {
+      // data 为读取的excel数据，在这里进行处理该数据
+      console.log(data);
+    },
+
     array_diff(a, b, tabActive) {
       for (var i = 0; i < b.length; i++) {
         for (var j = 0; j < a.length; j++) {
@@ -1035,61 +1038,6 @@ export default {
         }
       });
       return newRows;
-    },
-    // 导入函数
-    importfxx(obj) {
-      debugger;
-      let _this = this;
-      // 通过DOM取文件数据
-      this.file = obj;
-      var rABS = false; //是否将文件读取为二进制字符串
-      var f = this.file;
-      var reader = new FileReader();
-      //if (!FileReader.prototype.readAsBinaryString) {
-      FileReader.prototype.readAsBinaryString = function(f) {
-        var binary = "";
-        var rABS = false; //是否将文件读取为二进制字符串
-        var pt = this;
-        var wb; //读取完成的数据
-        var outdata;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var bytes = new Uint8Array(reader.result);
-          var length = bytes.byteLength;
-          for (var i = 0; i < length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-          }
-          var XLSX = require("xlsx");
-          if (rABS) {
-            wb = XLSX.read(btoa(fixdata(binary)), {
-              //手动转化
-              type: "base64"
-            });
-          } else {
-            wb = XLSX.read(binary, {
-              type: "binary"
-            });
-          }
-          outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); //outdata就是你想要的东西
-          this.da = [...outdata];
-          let arr = [];
-          this.da.map(v => {
-            let obj = {};
-            obj.code = v["公共元数据字段"];
-            obj.type = v["字段名称"];
-            arr.push(obj);
-          });
-          return arr;
-          console.log(arr);
-        };
-        reader.readAsArrayBuffer(f);
-      };
-
-      if (rABS) {
-        reader.readAsArrayBuffer(f);
-      } else {
-        reader.readAsBinaryString(f);
-      }
     }
   },
   mounted() {

@@ -81,7 +81,14 @@ export function editMetaBackup(data) {
     data: data
   })
 }
-
+// 手工执行元数据备份
+export function handExecute(data) {
+  return request({
+    url: baseUrl + '/schedule/metaBackup/handExecute',
+    method: 'get',
+    params: query
+  })
+}
 
 /* 元数据备份监控 */
 // 查询列表

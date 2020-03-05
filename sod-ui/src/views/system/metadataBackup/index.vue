@@ -36,28 +36,7 @@
         </el-form>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button
-              size="small"
-              type="success"
-              @click="handleExport('server')"
-              icon="el-icon-download"
-            >服务库数据导出</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              size="small"
-              type="success"
-              @click="handleExport('base')"
-              icon="el-icon-download"
-            >元数据数据导出</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              size="small"
-              type="primary"
-              @click="handleExport('add')"
-              icon="el-icon-plus"
-            >添加</el-button>
+            <el-button size="small" type="primary" @click="handleExport" icon="el-icon-plus">添加</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button size="small" type="danger" @click="deleteShow()" icon="el-icon-delete">删除同步任务</el-button>
@@ -91,7 +70,13 @@
             :show-overflow-tooltip="true"
           ></el-table-column>
           <el-table-column align="center" prop="jobCron" label="执行策略" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column align="center" prop="type" label="类型" width="100"></el-table-column>
+          <el-table-column align="center" prop="isStructure" label="类型" width="100">
+            <template slot-scope="scope">
+              <span v-if="scope.row.isStructure==0">数据</span>
+              <span v-if="scope.row.isStructure==1">结构</span>
+              <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
+            </template>
+          </el-table-column>
           <el-table-column align="center" prop="triggerStatus" label="状态">
             <template slot-scope="scope">
               <el-link
@@ -360,16 +345,7 @@ export default {
     },
     handleExport(type) {
       this.handleObj = {};
-      if (type == "server") {
-        this.dialogTitle = "执行服务库数据备份";
-        this.handleObj.handleType = "server";
-      } else if (type == "add") {
-        this.dialogTitle = "添加";
-        this.handleObj.handleType = "add";
-      } else {
-        this.dialogTitle = "执行元数据备份";
-        this.handleObj.handleType = "base";
-      }
+      this.dialogTitle = "添加";
       this.handleDialog = true;
     },
     // 启动/停止
@@ -436,7 +412,6 @@ export default {
     showEditDialog(row) {
       this.dialogTitle = "编辑";
       this.handleObj = row;
-      this.handleObj.handleType = "add";
       this.handleDialog = true;
     },
     viewDaily(row) {

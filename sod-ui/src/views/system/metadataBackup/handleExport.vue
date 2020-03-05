@@ -27,7 +27,7 @@
               <el-checkbox label="数据">数据</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-row v-show="msgFormDialog.handleType=='add'">
+          <el-row>
             <el-col :span="20">
               <el-form-item label="执行策略" prop="jobCron">
                 <el-input size="small" v-model="msgFormDialog.jobCron"></el-input>
@@ -56,11 +56,11 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="数据库对象" prop="taskName">
+          <el-form-item label="数据库对象">
             <el-scrollbar wrap-class="scrollbar-wrapper">
               <el-tree
                 ref="eltree"
-                node-key="id"
+                node-key="nodeKey"
                 show-checkbox
                 :data="treedata"
                 :props="defaultProps"
@@ -70,12 +70,13 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="where条件" prop="taskName" v-show="msgFormDialog.handleType=='server'">
-        <el-input size="small" v-model="msgFormDialog.taskName"></el-input>
+      <el-form-item label="where条件" v-show="msgFormDialog.conditions">
+        <el-input size="small" v-model="msgFormDialog.conditions" :disabled="true"></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm','handExe')">手工执行元数据备份</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm','handtrue')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
     <Cron
@@ -95,7 +96,8 @@ import {
   findDataBase,
   findMeta,
   addMetaBackup,
-  editMetaBackup
+  editMetaBackup,
+  handExecute
 } from "@/api/system/metadataBackup";
 export default {
   name: "handleExport",
@@ -118,7 +120,8 @@ export default {
         databaseId: "",
         checked: [],
         jobCron: "",
-        storageDirectory: ""
+        storageDirectory: "",
+        conditions: ""
       },
       ipList: [],
       defaultProps: {
@@ -144,7 +147,6 @@ export default {
     };
   },
   async created() {
-    this.msgFormDialog.handleType = this.handleObj.handleType;
     await findDataBase().then(response => {
       this.ipList = response.data;
     });
@@ -169,8 +171,8 @@ export default {
       this.defaultChecked = [];
       checkedTree.forEach(element => {
         this.treeJson.forEach(t => {
-          if (element.id == t.id) {
-            this.defaultChecked.push(element.id);
+          if (element.nodeKey == t.nodeKey) {
+            this.defaultChecked.push(element.nodeKey);
           }
         });
       });
@@ -181,13 +183,18 @@ export default {
     async findTree(val) {
       await findMeta({ databaseId: val }).then(res => {
         this.treeJson = res.data;
+        this.treeJson.forEach(element => {
+          element.nodeKey = element.pid + "+" + element.id;
+        });
         // 第一级的pid为空
-        this.treedata = newTeam(res.data, "");
+        this.treedata = newTeam(this.treeJson, "");
         console.log(this.treedata);
       });
     },
-
-    trueDialog(formName) {
+    handExe(formName) {
+      this.msgFormDialog.triggerStatus = 1;
+    },
+    trueDialog(formName, type) {
       this.msgFormDialog.triggerStatus = 1;
       let checkedArry = this.$refs.eltree.getCheckedKeys();
       if (checkedArry.length == 0) {
@@ -197,7 +204,7 @@ export default {
       let newArry = [];
       checkedArry.forEach(element => {
         this.treeJson.forEach(t => {
-          if (element == t.id) {
+          if (element == t.nodeKey) {
             let obj = {};
             obj = t;
             newArry.push(obj);
@@ -218,24 +225,43 @@ export default {
       console.log(this.msgFormDialog);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.handleObj.id) {
-            editMetaBackup(this.msgFormDialog).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess("修改成功");
-                this.$emit("cancelHandle");
-              } else {
-                this.msgError(response.msg);
-              }
-            });
+          if (type == "handtrue") {
+            if (this.handleObj.id) {
+              editMetaBackup(this.msgFormDialog).then(response => {
+                if (response.code === 200) {
+                  this.msgSuccess("修改成功");
+                  this.$emit("cancelHandle");
+                } else {
+                  this.msgError(response.msg);
+                }
+              });
+            } else {
+              addMetaBackup(this.msgFormDialog).then(response => {
+                if (response.code === 200) {
+                  this.msgSuccess("新增成功");
+                  this.$emit("cancelHandle");
+                } else {
+                  this.msgError(response.msg);
+                }
+              });
+            }
           } else {
-            addMetaBackup(this.msgFormDialog).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess("新增成功");
-                this.$emit("cancelHandle");
-              } else {
-                this.msgError(response.msg);
-              }
-            });
+            this.$prompt("请输入where条件", "温馨提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消"
+            })
+              .then(({ value }) => {
+                this.msgFormDialog.conditions = value;
+                handExecute(this.msgFormDialog).then(response => {
+                  if (response.code === 200) {
+                    this.msgSuccess("新增成功");
+                    this.$emit("cancelHandle");
+                  } else {
+                    this.msgError(response.msg);
+                  }
+                });
+              })
+              .catch(function() {});
           }
         } else {
           console.log("error submit!!");

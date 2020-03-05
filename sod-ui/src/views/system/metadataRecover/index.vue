@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container metaRecTem">
     <!-- 系统元数据恢复 -->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="元数据恢复" name="first">
@@ -30,28 +30,40 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" type="primary" @click="getList" icon="el-icon-search">查询</el-button>
+            <el-button size="small" type="primary" @click="getTreeList" icon="el-icon-search">查询</el-button>
           </el-form-item>
           <el-form-item>
-            <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/">
+            <el-upload class="upload-demo" action=" ">
               <el-button icon="el-icon-upload2" size="small" type="primary">上传</el-button>
             </el-upload>
           </el-form-item>
         </el-form>
         <p style="font-size:14px">恢复文件</p>
-        <div class="treeBox">
-          <el-tree ref="eltree" node-key="id" show-checkbox :data="treedata" :props="defaultProps"></el-tree>
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+          <el-tree
+            ref="eltree"
+            node-key="id"
+            show-checkbox
+            :data="treedata"
+            :props="defaultProps"
+            :load="loadNode"
+            @check="setSelectedNode"
+            lazy
+          ></el-tree>
+        </el-scrollbar>
+        <div class="footer">
+          <el-button size="small" type="primary" @click="handleExe">执行</el-button>
         </div>
       </el-tab-pane>
       <el-tab-pane label="元数据恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
           <el-form-item label="数据库ip">
-            <el-select style="width:200px" filterable v-model="rowlogForm.name">
+            <el-select size="small" filterable v-model="rowlogForm.databaseId">
               <el-option
-                v-for="(item,index) in tableNames"
+                v-for="(item,index) in ipList"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.VAULE"
+                :value="item.KEY"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -61,7 +73,7 @@
           <el-form-item label="时间范围">
             <el-date-picker
               style="width:300px"
-              v-model="rowlogForm.time"
+              v-model="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -69,12 +81,7 @@
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button
-              size="small"
-              type="primary"
-              @click="dataBaseExpandForm"
-              icon="el-icon-search"
-            >查询</el-button>
+            <el-button size="small" type="primary" @click="queryListLog" icon="el-icon-search">查询</el-button>
           </el-form-item>
         </el-form>
         <el-table
@@ -84,20 +91,49 @@
           ref="multipleTable"
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="start_time" label="任务名称"></el-table-column>
-          <el-table-column prop="stop_time" label="恢复文件"></el-table-column>
-          <el-table-column prop="dysnc_tablename" label="数据库"></el-table-column>
-          <el-table-column prop="dysnc_recordnum" label="运行开始时间"></el-table-column>
-          <el-table-column prop="run_state" label="状态"></el-table-column>
+          <el-table-column align="center" type="index" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column align="center" type="selection" width="55"></el-table-column>
+          <el-table-column
+            align="center"
+            prop="taskName"
+            label="任务名称"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            prop="storageDirectory"
+            label="恢复文件"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column align="center" prop="databaseName" label="数据库"></el-table-column>
+          <el-table-column align="center" prop="handleTime" label="运行开始时间">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.handleTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="triggerCode" label="状态">
+            <template slot-scope="scope">
+              <el-link
+                icon="el-icon-circle-close"
+                type="danger"
+                :underline="false"
+                v-if="scope.row.triggerStatus==0"
+              >停止</el-link>
+              <el-link
+                icon="el-icon-circle-check"
+                type="success"
+                :underline="false"
+                v-if="scope.row.triggerStatus==1"
+              >启动</el-link>
+            </template>
+          </el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button
                 type="text"
                 size="mini"
                 icon="el-icon-reading"
-                @click="showEditDialog(scope.row)"
+                @click="viewDetail(scope.row)"
               >查看详情</el-button>
             </template>
           </el-table-column>
@@ -107,40 +143,37 @@
           :total="logDataTotal"
           :page.sync="rowlogForm.pageNum"
           :limit.sync="rowlogForm.pageSize"
-          @pagination="dataBaseExpandForm"
+          @pagination="getListLog"
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="50%">
-      <handleExport @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExport>
-    </el-dialog>
-    <el-dialog title="同步详情" :visible.sync="syncDescDialogVisible" v-if="syncDescDialogVisible">
-      <div v-for="(item,index) in syncDescList" :key="index">
-        <div v-if="item.run_state=='同步成功'">
-          <span>同步表名{{index}}:{{item.dysnc_tablename}}</span>
-          <span>同步记录数{{index}}:{{item.dysnc_recordnum}}</span>
-        </div>
-        <div v-else>
-          <span>同步表名{{index}}:{{item.dysnc_tablename}}</span>
-          <span>同步状态:{{item.run_state}}</span>
-          <span>失败原因:{{item.fail_reason}}</span>
-        </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="closeSyncDesc()">确 定</el-button>
-      </span>
+    <!-- 恢复 -->
+    <el-dialog :title="dialogTitle" :visible.sync="handeleRecoverDialog" width="50%">
+      <handeleRecover
+        @cancelHandle="cancelHandle"
+        v-if="handeleRecoverDialog"
+        :handleObj="handleObj"
+      ></handeleRecover>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { newTeam } from "@/components/commonVaildate";
-import { findDataBase, getFileList } from "@/api/system/metadataRecover";
+import {
+  findDataBase,
+  getFileList,
+  getFileChidren,
+  parsingPath,
+  listLog,
+  logDetail
+} from "@/api/system/metadataRecover";
 //增加查看弹框
-import handleExport from "@/views/system/metadataRecover/handleExport";
+import handeleRecover from "@/views/system/metadataRecover/handeleRecover";
+
 export default {
   components: {
-    handleExport
+    handeleRecover
   },
   data() {
     return {
@@ -156,27 +189,23 @@ export default {
       ipList: [],
       // 新增/编辑同步任务
       dialogTitle: "",
-      handleDialog: false,
       handleObj: {},
-      // 立即同步元数据
-      syncDescDialogVisible: false,
-      syncDescList: [],
       currentRow: [],
-      //同步记录查询
       loadingHis: false,
       rowlogForm: {
+        dateRange: [],
         pageNum: 1,
         pageSize: 10
       },
       logTableData: [], //同步表格数据
       logDataTotal: 0,
-      tableNames: [],
       defaultProps: {
         children: "children",
         label: "name"
       },
       treedata: [],
-      treeJson: []
+      treeJson: [],
+      handeleRecoverDialog: false
     };
   },
   created() {
@@ -190,10 +219,20 @@ export default {
   methods: {
     // table自增定义方法
     table_index_log(index) {
-      return (this.rowlogForm.page - 1) * this.rowlogForm.rows + index + 1;
+      return (
+        (this.rowlogForm.pageNum - 1) * this.rowlogForm.pageSize + index + 1
+      );
     },
     /** 查询列表 */
-    getList() {
+    getTreeList() {
+      if (!this.queryParams.databaseId) {
+        this.msgError("请选择数据库IP");
+        return;
+      }
+      if (!this.queryParams.storageDirectory) {
+        this.msgError("请选择目录");
+        return;
+      }
       this.loading = true;
       getFileList(this.queryParams).then(res => {
         this.treeJson = res.data;
@@ -202,80 +241,106 @@ export default {
         console.log(this.treedata);
       });
     },
-    handleExport(type) {
-      this.handleObj = {};
-      if (type == "server") {
-        this.dialogTitle = "执行服务库数据备份";
-        this.handleObj.handleType = "server";
-      } else if (type == "add") {
-        this.dialogTitle = "添加";
-        this.handleObj.handleType = "add";
+
+    loadNode(node, resolve) {
+      if (node.level === 0 || node.data.isParent == false) {
+        return resolve([]);
       } else {
-        this.dialogTitle = "执行元数据备份";
-        this.handleObj.handleType = "base";
+        getFileChidren({ childrenPath: node.data.id }).then(res => {
+          resolve(res.data);
+        });
       }
-      this.handleDialog = true;
     },
-    syncCommonMetadata() {
-      let ids = [];
-      if (this.currentRow.length == 0) {
-        this.$message({ type: "info", message: "请选择一行数据" });
+    setSelectedNode(data, obj) {
+      this.$refs.eltree.setCheckedNodes([data]);
+    },
+    handleExe() {
+      let checkedArry = this.$refs.eltree.getCheckedKeys();
+      if (checkedArry.length != 1) {
+        this.msgError("请选择一条数据");
         return;
       }
-      for (var row in this.currentRow) {
-        ids.push(this.currentRow[row].id);
-      }
-      //显示延迟加载
-      const loading = this.$loading({
-        lock: true,
-        text: "执行同步任务中,请勿有其他操作！",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-      // this.axios
-      //   .post(interfaceObj.commonMetadata_totalinterface, { ids })
-      //   .then(res => {
-      //     if (res.data.returnCode == 0) {
-      //       this.axios
-      //         .post(interfaceObj.commonMetadata_records, { ids })
-      //         .then(res => {
-      //           loading.close(); //关闭延迟加载
-      //           this.syncDescList = res.data.data;
-      //           this.syncDescDialogVisible = true;
-      //         });
-      //     }
-      //   });
+
+      this.dialogTitle = "恢复";
+      this.handleObj = this.queryParams;
+      this.handleObj.storageDirectory = checkedArry[0];
+
+      this.handeleRecoverDialog = true;
     },
-    deleteShow() {},
-    handleClick() {},
-    statusFormat(row, column, value) {
-      if (value == 1) {
-        return "全量同步";
-      } else if (value == 2) {
-        return "增量同步";
+
+    handleClick() {
+      if (this.activeName == "first") {
+        this.queryParams = {
+          taskName: "",
+          databaseId: "",
+          storageDirectory: ""
+        };
+        this.treedata = [];
       } else {
-        return value;
+        this.rowlogForm = {
+          pageNum: 1,
+          pageSize: 10,
+          taskName: "",
+          databaseId: ""
+        };
+        this.queryListLog();
       }
     },
-    showEditDialog(row) {},
-    viewDaily(row) {},
-    //选中行
-    handleTaskSelectionChange(val) {
-      this.currentRow = val;
+    queryListLog() {
+      this.rowlogForm.pageNum = 1;
+      this.getListLog();
     },
-    handleHistorySelectionChange() {
-      this.currentRow = val;
+    //日志列表
+    getListLog() {
+      this.loading = true;
+      console.log(this.rowlogForm);
+      listLog(
+        this.addDateRange(this.rowlogForm, this.rowlogForm.dateRange)
+      ).then(response => {
+        this.logTableData = response.data.pageData;
+        this.logDataTotal = response.data.totalCount;
+        this.loading = false;
+      });
     },
     // 弹框取消
     cancelHandle(msgFormDialog) {
       this.handleObj = {};
       this.currentRow = [];
-      this.handleDialog = false;
-      this.handleQuery();
+      this.handeleRecoverDialog = false;
+      this.handleClick();
     },
-    //
-    resetQuery() {},
-    dataBaseExpandForm() {}
+    //选中行
+    handleHistorySelectionChange() {
+      this.currentRow = val;
+    },
+
+    viewDetail(row) {
+      logDetail(row.id).then(res => {
+        console.log(res);
+      });
+    }
   }
 };
 </script>
+<style scope lang='scss'>
+.metaRecTem {
+  .el-scrollbar {
+    margin-top: 10px;
+    padding-top: 10px;
+    height: 300px;
+    border: 1px solid #c0c4cc;
+    border-radius: 2px;
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+  .el-tree {
+    min-width: 100%;
+    display: inline-block !important;
+  }
+  .footer {
+    text-align: center;
+    margin: 10px;
+  }
+}
+</style>
