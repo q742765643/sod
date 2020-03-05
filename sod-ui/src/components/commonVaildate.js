@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * 10以内的中文
  */
 export function chineseLengthTenValidation(str) {
@@ -7,7 +7,7 @@ export function chineseLengthTenValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 手机号码
  */
 export function telphoneNumValidation(str) {
@@ -15,7 +15,7 @@ export function telphoneNumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 端口号
  */
 export function portNumValidation(str) {
@@ -23,7 +23,7 @@ export function portNumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * ip地址
  */
 export function ipUrlValidation(str) {
@@ -31,7 +31,7 @@ export function ipUrlValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * ip地址 IP段样例:192.168.1.%
  */
 export function ipUrlValidation2(str) {
@@ -39,7 +39,7 @@ export function ipUrlValidation2(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 数据库账号不能以数字开头
  */
 export function unstartnumValidation(str) {
@@ -47,7 +47,7 @@ export function unstartnumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 密码 必须以英文数字组成
  */
 export function englishAndNumValidation(str) {
@@ -55,7 +55,7 @@ export function englishAndNumValidation(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 不允许输入小写字母和中文，且需以大写字母开头
  */
 export function codeVer(str) {
@@ -63,7 +63,7 @@ export function codeVer(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 验证由中文组成：
  */
 export function chinese(str) {
@@ -71,7 +71,7 @@ export function chinese(str) {
   return reg.test(str)
 }
 /**
- * 
+ *
  * 验证由大于0正整数组成：
  */
 export function num(info) {
@@ -102,14 +102,18 @@ export function isArray(arg) {
 
 export function newTeam(data, parentId) {
   let itemArr = [];
+  let temp = [];
   for (let i = 0; i < data.length; i++) {
     let node = data[i];
-    if (node.pid === parentId) {
+    if (node.pid === parentId ) {
       let newNode = {};
       newNode.id = node.id;
       newNode.name = node.name;
       newNode.pid = node.pid;
-      newNode.children = newTeam(data, node.id);
+      temp=newTeam(data, node.id);
+      if (temp.length > 0&& node.isParent) {
+        newNode.children = temp
+      }
       itemArr.push(newNode);
     }
   }
