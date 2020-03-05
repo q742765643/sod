@@ -423,17 +423,7 @@
     >
       <el-row :v-if="exportInnerVisible">
         <el-col :span="12">
-          <el-upload
-            v-model="filepath"
-            class="upload-demo"
-            :limit="1"
-            :on-exceed="handleExceed"
-            :action="upLoadUrl"
-            :on-remove="handleRemove"
-            :on-success="successUpload"
-          >
-            <el-button size="small" type="primary">导入数据</el-button>
-          </el-upload>
+          <input-excel @getResult="getMyExcelData"></input-excel>
         </el-col>
         <el-col :span="12">
           <el-button type="success" size="small" @click="exportCode('demo')">下载模板</el-button>
@@ -444,6 +434,10 @@
 </template>
 
 <script>
+// 上传
+import inputExcel from "@/components/excelXlsx/upload";
+// 下载
+import { exportExcel } from "@/components/excelXlsx/js/download";
 // 拖拽组件
 import draggable from "vuedraggable";
 import {
@@ -456,7 +450,8 @@ import { enable } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: { tableInfo: Object, tableType: String },
   components: {
-    draggable
+    draggable,
+    inputExcel
   },
   data() {
     return {
@@ -469,7 +464,6 @@ export default {
       },
       exportInnerVisible: false,
       filepath: "",
-      upLoadUrl: "",
       columnEditData: { unitCn: "N" },
       columnData: [],
       selColumnData: [],
@@ -513,7 +507,10 @@ export default {
         serialNumber: [
           { required: true, message: "请输入序号", trigger: "blur" }
         ]
-      }
+      },
+      // 字段导入
+      fileTemp: null,
+      fileListUpload: []
     };
   },
   methods: {
@@ -703,27 +700,50 @@ export default {
         });
         return;
       }
-      let url;
+
       if (type == "code") {
-        url =
-          interfaceObj.TableStructure_columnExport + "?id=" + this.tableInfo.id;
+        let theader = [
+          "公共元数据字段",
+          "字段编码",
+          "服务代码",
+          "中文简称",
+          "数据精度",
+          "要素单位",
+          "是否可空",
+          "是否可改",
+          "是否显示",
+          "是否主键",
+          "中文描述",
+          "是否管理字段",
+          "默认值",
+          "序号"
+        ];
+        let tableProp = [
+          "dbEleCode",
+          "celementCode",
+          "userEleCode",
+          "eleName",
+          "accuracy",
+          "unitCn",
+          "isNull",
+          "isUpdate",
+          "isShow",
+          "isPrimaryKey",
+          "nameCn",
+          "isManager",
+          "defaultValue",
+          "serialNumber"
+        ];
+        exportExcel(theader, tableProp, this.columnData);
       } else {
-        url = interfaceObj.TableStructure_importTelplate;
+        window.location.href = "";
       }
-      this.axios
-        .get(url)
-        .then(data => {
-          testExport(url);
-        })
-        .catch(function(error) {
-          testExport(url);
-        });
     },
+
     // 上传限制
     handleExceed() {
       this.$message.warning("当前限制选择1个文件");
     },
-    handleRemove(file, fileList) {},
     successUpload: function(response, file, fileList) {
       if (response.returnCode == 0) {
         this.$message({
@@ -745,10 +765,6 @@ export default {
         });
         return;
       }
-      this.handleRemove();
-      this.upLoadUrl =
-        interfaceObj.TableStructure_importColumn + "?id=" + this.tableInfo.id;
-
       this.exportInnerVisible = true;
     },
 
@@ -968,6 +984,11 @@ export default {
         })
         .catch(error => {});
     },
+    getMyExcelData(data) {
+      // data 为读取的excel数据，在这里进行处理该数据
+      console.log(data);
+    },
+
     array_diff(a, b, tabActive) {
       for (var i = 0; i < b.length; i++) {
         for (var j = 0; j < a.length; j++) {

@@ -79,6 +79,7 @@ public class MetaBackupHandler implements BaseHandler{
                 return;
             }
             ZipUtils.writetxt(metadataVo.getParentPath()+"/tree.txt",metaBackupEntity.getBackContent(),resultT);
+            ZipUtils.writetxt(metadataVo.getParentPath()+"/structure.txt",metaBackupEntity.getIsStructure(),resultT);
             metadataVo.setIndexPath(replaceVo.getMsg()+"/index.sql");
             BusinessEnum businessEnum = BusinessEnum.match(metaBackupEntity.getDatabaseType(), null);
             BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
@@ -155,7 +156,7 @@ public class MetaBackupHandler implements BaseHandler{
             metaBackupLogEntity.setStorageDirectory(metadataVo.getZipPath());
             if(!resultT.isSuccess()){
                 metaBackupLogEntity.setHandleCode("2");
-                metaBackupLogEntity.setStorageDirectory("");
+                //metaBackupLogEntity.setStorageDirectory("");
             }
             metaBackupLogEntity.setHandleMsg(resultT.getProcessMsg().toString());
             metaBackupLogService.saveNotNull(metaBackupLogEntity);

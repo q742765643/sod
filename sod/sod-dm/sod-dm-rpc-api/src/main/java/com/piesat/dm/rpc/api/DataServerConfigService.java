@@ -19,6 +19,8 @@ import java.util.List;
 public interface DataServerConfigService {
     DataServerConfigDto saveDto(DataServerConfigDto dataServerConfigDto);
 
+    List<DataServerConfigDto> saveDtoList(List<DataServerConfigDto> dataServerConfigDtos);
+
     DataServerConfigDto getDotById(String id);
 
     void delete(String id);

@@ -28,6 +28,8 @@ public class JobInfoEntity extends BaseEntity{
     private String jobCron;		// 任务执行CRON表达式
     @Column(name="job_desc", length=255)
     private String jobDesc;
+    @Column(name="task_name", length=255)
+    private String taskName;
     @Column(name="executor_route_strategy", length=50)
     private String executorRouteStrategy;	// 执行器路由策略
     @Column(name="executor_handler", length=255)

@@ -31,13 +31,11 @@
       <el-table-column align="center" prop="userId" label="用户名"></el-table-column>
       <el-table-column align="center" prop="department" label="部门"></el-table-column>
       <el-table-column align="center" prop="phoneNum" label="联系方式"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="createTime"
-        label="申请时间"
-        width="160px"
-        :formatter="createTimeFormater"
-      ></el-table-column>
+      <el-table-column align="center" prop="createTime" label="申请时间" width="160px">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" prop="serverStatus" label="用途" width="100px">
         <template slot-scope="scope">
           <el-popover
@@ -92,7 +90,6 @@
 </template>
 
 <script>
-import { formatTime } from "@/components/commonVaildate.js";
 import {
   specialList,
   deleteList
@@ -146,9 +143,6 @@ export default {
     this.getList();
   },
   methods: {
-    createTimeFormater: function(row) {
-      return formatTime(row.createTime, "Y-M-D h:m:s");
-    },
     // table自增定义方法
     table_index(index) {
       return (

@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.dm.entity.DatabaseEntity;
 import com.piesat.dm.rpc.api.DatabaseDefineService;
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.dto.DatabaseDefineDto;
@@ -99,5 +100,13 @@ public class DatabaseController {
         List<Map<String, Object>> databaseNames = databaseService.getDatabaseName();
         resultT.setData(databaseNames);
         return resultT;
+    }
+
+    @ApiOperation(value = "根据level查询")
+    @RequiresPermissions("dm:database:findByLevel")
+    @GetMapping(value = "/findByLevel")
+    public ResultT findByLevel(int level) {
+        List<DatabaseDto> all = this.databaseService.findByLevel(level);
+        return ResultT.success(all);
     }
 }

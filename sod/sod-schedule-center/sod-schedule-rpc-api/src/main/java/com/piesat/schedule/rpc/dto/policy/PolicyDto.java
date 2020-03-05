@@ -3,6 +3,9 @@ package com.piesat.schedule.rpc.dto.policy;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @program: sod
  * @description:
@@ -25,10 +28,12 @@ public class PolicyDto {
     private String elapsedTime="";
     @ApiModelProperty("资料时间")
     private String ddateTime="";
+    @ApiModelProperty("下5次执行时间")
+    private List<String> nextTime=new ArrayList<>();
     @ApiModelProperty("源库 同步专有")
     private String sourceRepository="";
     @ApiModelProperty("源表 同步专有")
-    private String sourceTable;
+    private String sourceTable="";
 
 
 

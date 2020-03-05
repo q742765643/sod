@@ -6,8 +6,7 @@ import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,6 +148,28 @@ public class FileUtil {
             log.error("{}不存在",path);
         }
 
+    }
+    public static byte[] File2byte(File tradeFile){
+        byte[] buffer = null;
+        try
+        {
+            FileInputStream fis = new FileInputStream(tradeFile);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[1024];
+            int n;
+            while ((n = fis.read(b)) != -1)
+            {
+                bos.write(b, 0, n);
+            }
+            fis.close();
+            bos.close();
+            buffer = bos.toByteArray();
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return buffer;
     }
 }
 

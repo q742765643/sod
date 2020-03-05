@@ -3,6 +3,7 @@ package com.piesat.schedule.rpc.thread;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.enums.ExecuteEnum;
@@ -213,7 +214,7 @@ public class ScheduleThread {
                     log.info("积压条数超过2万,放弃调度");
                     return;
                 }
-                String type = (String) redisUtil.hget(QUARTZ_HTHT_CRON + jobInfo.getId(), "type");
+                String  type = (String) redisUtil.hget(QUARTZ_HTHT_CRON + jobInfo.getId(), "type");
                 String serviceName = ExecuteEnum.getService(type);
                 ExecuteService executeService = (ExecuteService) SpringUtil.getBean(serviceName);
                 JobInfoEntity newJob = executeService.getById(jobInfo.getId());
@@ -232,6 +233,23 @@ public class ScheduleThread {
         });
 
 
+    }
+
+    public void handT(JobInfoEntity jobInfo){
+        threadPool.execute(() -> {
+            try {
+                String serviceName = ExecuteEnum.getService(jobInfo.getType());
+                ExecuteService executeService = (ExecuteService) SpringUtil.getBean(serviceName);
+                JobInfoEntity newJob = executeService.getById(jobInfo.getId());
+                newJob.setType(jobInfo.getType());
+                newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
+                newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
+                this.pushRedis(newJob);
+                log.info("执行成功:{}" ,jobInfo.getId());
+            } catch (Exception e) {
+                log.error(OwnException.get(e));
+            }
+        });
     }
 
     public void pushRedis(JobInfoEntity newJob) {

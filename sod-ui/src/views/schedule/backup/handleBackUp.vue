@@ -1,0 +1,317 @@
+<template>
+  <section class="handleClearDialog">
+    <el-form ref="ruleForm" :model="msgFormDialog" :rules="rules" label-width="120px">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="物理库" prop="databaseId">
+            <el-select
+              v-model="msgFormDialog.databaseId"
+              filterable
+              @change="selectByDatabaseIds($event,'')"
+              placeholder="请选择物理库"
+              style="width:100%"
+            >
+              <el-option
+                v-for="database in databaseOptions"
+                :key="database.KEY"
+                :label="database.VALUE"
+                :value="database.KEY"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="资料名称" prop="dataClassId">
+            <el-select
+              v-model="msgFormDialog.dataClassId"
+              filterable
+              @change="selectTable"
+              placeholder="请选择资料"
+              style="width:100%"
+            >
+              <el-option
+                v-for="dataClass in dataClassIdOptions"
+                :key="dataClass.KEY"
+                :label="dataClass.VALUE"
+                :value="dataClass.KEY"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="近时备份条件" prop="conditions">
+            <el-input v-model="msgFormDialog.conditions" placeholder="请输入近时备份条件" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="远时备份条件" prop="secondConditions">
+            <el-input v-model="msgFormDialog.secondConditions" placeholder="请输入远时备份条件" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="存储目录" prop="storageDirectory">
+            <el-select
+              v-model="msgFormDialog.storageDirectory"
+              placeholder="请选择"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in storageDirectoryOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="表名" prop="tableName">
+            <el-input v-model="msgFormDialog.tableName" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="四级编码" prop="ddataId">
+            <el-input v-model="msgFormDialog.ddataId" disabled />
+          </el-form-item>
+        </el-col>
+        <el-col :span="20">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-button
+            size="small"
+            type="primary"
+            @click="cronDialogVisible = true"
+            style="margin-left:10px;"
+          >执行策略</el-button>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否告警" prop="isAlarm">
+            <el-radio-group v-model="msgFormDialog.isAlarm">
+              <el-radio
+                v-for="dict in alarmOptions"
+                :key="dict.dictValue"
+                :label="dict.dictValue"
+              >{{dict.dictLabel}}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="超时时间" prop="executorTimeout">
+            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="失败重试次数" prop="executorFailRetryCount">
+            <el-input v-model="msgFormDialog.executorFailRetryCount" placeholder="请输入失败重试次数" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="重试间隔时间" prop="retryInterval">
+            <el-input v-model="msgFormDialog.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="备注">
+            <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
+    </div>
+    <Cron
+      append-to-body
+      v-if="cronDialogVisible"
+      :cronDialogVisible="cronDialogVisible"
+      @closeCron="closeCron"
+      @setCron="setCron"
+    />
+  </section>
+</template>
+
+<script>
+import Cron from "@/components/cron/Cron";
+import {
+  getBackup,
+  addBackup,
+  updateBackup,
+  findAllDataBase,
+  getByDatabaseId,
+  getByDatabaseIdAndClassId
+} from "@/api/schedule/backup/backup";
+export default {
+  name: "handleClearDialog",
+  props: {
+    handleObj: {
+      type: Object
+    }
+  },
+  components: {
+    Cron
+  },
+  data() {
+    return {
+      alarmOptions: [],
+      databaseOptions: [],
+      dataClassIdOptions: [],
+      storageDirectoryOptions: [],
+      msgFormDialog: {
+        ddataId: "",
+        dataClassId: "",
+        conditions: "",
+        secondConditions: "",
+        storageDirectory: "",
+        tableName: "",
+        ddataId: "",
+        jobCron: "",
+        isAlarm: "",
+        executorTimeout: "",
+        executorFailRetryCount: "",
+        retryInterval: "",
+        jobDesc: ""
+      },
+      // 表单校验
+      rules: {
+        databaseId: [
+          { required: true, message: "物理库不能为空", trigger: "change" }
+        ],
+        dataClassId: [
+          { required: true, message: "资料名称不能为空", trigger: "change" }
+        ],
+        storageDirectory: [
+          { required: true, message: "存储目录不能为空", trigger: "change" }
+        ],
+        jobCron: [
+          { required: true, message: "执行策略不能为空", trigger: "blur" }
+        ],
+        executorTimeout: [
+          { required: true, message: "超时时间不能为空", trigger: "blur" }
+        ],
+        executorFailRetryCount: [
+          { required: true, message: "重试次数不能为空", trigger: "blur" }
+        ],
+        retryInterval: [
+          { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
+        ]
+      },
+      // cron表达式
+      cronDialogVisible: false
+    };
+  },
+
+  async created() {
+    this.getDicts("job_is_alarm").then(response => {
+      this.alarmOptions = response.data;
+    });
+    await findAllDataBase().then(response => {
+      this.databaseOptions = response.data;
+    });
+    await this.getDicts("backup_storage_directory").then(response => {
+      this.storageDirectoryOptions = response.data;
+    });
+    // 匹配数据库和资料名称
+    if (this.handleObj.pageName == "资料存储策略") {
+      this.msgFormDialog = this.handleObj;
+      await this.selectByDatabaseIds(
+        this.handleObj.databaseId,
+        this.handleObj.dataClassId
+      );
+      // this.msgFormDialog.databaseId = this.handleObj.databaseId;
+      await this.selectTable(this.handleObj.dataClassId);
+    }
+    // 查看详情
+    if (this.handleObj.id) {
+      await getBackup(this.handleObj.id).then(response => {
+        this.selectByDatabaseIds(
+          response.data.databaseId,
+          response.data.dataClassId
+        );
+        this.msgFormDialog = response.data;
+      });
+    }
+  },
+  methods: {
+    selectTable(dataClassId) {
+      this.msgFormDialog.tableName = "";
+      this.findTable(
+        this.msgFormDialog.databaseId,
+        this.msgFormDialog.dataClassId
+      );
+    },
+    findTable(databaseId, dataClassId) {
+      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+        this.msgFormDialog.ddataId = response.data.ddataId;
+        this.msgFormDialog.tableName = response.data.tableName;
+      });
+    },
+    async selectByDatabaseIds(databaseId, dataClassId) {
+      await getByDatabaseId(databaseId, dataClassId).then(response => {
+        this.dataClassIdOptions = response.data;
+        this.msgFormDialog.dataClassId = dataClassId;
+      });
+    },
+    /** 提交按钮 */
+    trueDialog(formName) {
+      this.msgFormDialog.triggerStatus = 1;
+      console.log(this.msgFormDialog);
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.msgFormDialog.id != undefined) {
+            updateBackup(this.msgFormDialog).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("修改成功");
+                this.$emit("cancelHandle");
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          } else {
+            addBackup(this.msgFormDialog).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("新增成功");
+                this.$emit("cancelHandle");
+              } else {
+                this.msgError(response.msg);
+              }
+            });
+          }
+        }
+      });
+    },
+    cancelDialog(formName) {
+      this.$emit("cancelHandle");
+    },
+    //设置cron表达式
+    setCron(cronExpression) {
+      this.msgFormDialog.jobCron = cronExpression;
+      this.cronDialogVisible = false;
+    },
+    closeCron() {
+      this.cronDialogVisible = false;
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.handleClearDialog {
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+  }
+  .treeBox {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .el-tree {
+    margin-top: 12px;
+  }
+}
+</style>

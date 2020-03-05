@@ -40,13 +40,11 @@
       <el-table-column align="center" prop="userRealname" label="关联用户" width="100px"></el-table-column>
       <el-table-column align="center" prop="department" label="机构" width="140px"></el-table-column>
       <el-table-column align="center" prop="phoneNum" label="联系方式" width="120px"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="createTime"
-        label="创建时间"
-        width="160px"
-        :formatter="createTimeFormater"
-      ></el-table-column>
+      <el-table-column align="center" prop="createTime" label="创建时间" width="160px">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" prop="applyDatabaseName" label="可用数据库"></el-table-column>
       <el-table-column align="center" prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
@@ -101,7 +99,6 @@
 </template>
 
 <script>
-import { formatTime } from "@/components/commonVaildate.js";
 import { databaseUserAll, deleteList } from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
@@ -149,9 +146,7 @@ export default {
         this.loading = false;
       });
     },
-    createTimeFormater: function(row) {
-      return formatTime(row.createTime, "Y-M-D h-m-s");
-    },
+
     addCell() {
       this.dialogTitle = "新增数据库账户审核";
       this.handleObj = {};

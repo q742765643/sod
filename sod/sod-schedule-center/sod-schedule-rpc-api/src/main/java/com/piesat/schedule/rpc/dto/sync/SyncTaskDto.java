@@ -129,11 +129,6 @@ public class SyncTaskDto extends BaseDto {
     private String sourceTableId;
 
     /**
-     * 目标表ids，用逗号分隔
-     */
-    private String targetTableIds;
-
-    /**
      * 目标表值表id
      */
     private String targetVTableId;

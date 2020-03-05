@@ -1,6 +1,8 @@
 package com.piesat.schedule.client.service.databse;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
+import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
 import com.piesat.schedule.client.util.fetl.imp.ImpMetaData;
 import com.piesat.schedule.client.util.fetl.type.Type;
@@ -166,14 +168,24 @@ public class XuguService {
             if(metaBackupEntity.getIsStructure().indexOf("0")!=-1){
                 expInfo.put(Type.TABLE,metadataVo.getTable());
             }
-            if(metadataVo.isExpData()){
+            if(metadataVo.isExpData()&&!StringUtils.isNotNullString(metaBackupEntity.getConditions())){
                 expInfo.put(Type.DATA,metadataVo.getTable());
             }
 
         }
         try {
             String reslut=exp.expMetaData(metaBackupEntity.getParentId(),expInfo,metadataVo.getIndexPath());
-            resultT.setSuccessMessage(reslut);
+            if(!StringUtils.isNotNullString(reslut)){
+                resultT.setErrorMessage(reslut);
+            }
+            if(metadataVo.isExpData()&&StringUtils.isNotNullString(metaBackupEntity.getConditions())){
+                for(String tableName:metadataVo.getTable()){
+                    String path=metadataVo.getParentPath() +"/DATA_"+tableName+".exp";
+                    String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), metaBackupEntity.getParentId());
+                    ZipUtils.writetxt(metadataVo.getIndexPath(), result, resultT);
+                }
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -185,7 +197,9 @@ public class XuguService {
         ImpMetaData imp = new ImpMetaData();
         log.info("路径:{}",recoverMetaVo.getIndexPath());
         String detail=imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
-        resultT.setSuccessMessage(detail);
+        if(!StringUtils.isNotNullString(detail)){
+            resultT.setErrorMessage(detail);
+        }
     }
 }
 

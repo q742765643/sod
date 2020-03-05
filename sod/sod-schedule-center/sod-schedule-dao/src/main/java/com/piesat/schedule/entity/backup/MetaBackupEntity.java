@@ -27,12 +27,10 @@ public class MetaBackupEntity extends JobInfoEntity {
     private String backContent;
     @Column(name="parent_id", length=50)
     private String parentId;
-    @Column(name="datbase_name", length=200)
+    @Column(name="database_name", length=200)
     private String databaseName;
     @Column(name="storage_directory", length=200)
     private String storageDirectory;
-    @Column(name="task_name", length=200)
-    private String taskName;
     @Column(name="conditions", length=200)
     private String conditions;
     @Column(name="database_type", length=50)

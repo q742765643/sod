@@ -77,12 +77,12 @@ public class DataTableEntity extends BaseEntity {
     @Column(name = "user_id", length = 255)
     private String userId;
 
-    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name="table_id")
     @OrderBy("serialNumber ASC")
     private Set<TableColumnEntity> columns = new LinkedHashSet<>();
 
-    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name="table_id")
     private Set<TableIndexEntity> tableIndexList = new LinkedHashSet<>();
 }

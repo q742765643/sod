@@ -193,7 +193,10 @@ public class DataClassController {
     public ResultT getNewDataClassId(String parentId){
         try {
             String all = this.dataClassService.findByParentId(parentId);
-            return ResultT.success(all);
+            ResultT r = new ResultT();
+            r.isSuccess();
+            r.setData(all);
+            return r;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

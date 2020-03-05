@@ -160,18 +160,16 @@
         >
           <el-table-column align="center" type="index" width="40" :index="table_index_log"></el-table-column>
           <el-table-column align="center" type="selection" width="55"></el-table-column>
-          <el-table-column
-            align="center"
-            prop="startTime"
-            label="开始时间"
-            :formatter="startTimeFormater"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            prop="stopTime"
-            label="结束时间"
-            :formatter="stopTimeFormater"
-          ></el-table-column>
+          <el-table-column align="center" prop="startTime" label="开始时间">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.startTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="stopTime" label="结束时间">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.stopTime) }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
             align="center"
             prop="syncTableName"
@@ -228,7 +226,6 @@ import {
   syncDataNow
 } from "@/api/system/commonMetadataSync/index";
 import { getDictList } from "@/api/system/commonMetadataSync/select";
-import { formatTime } from "@/components/commonVaildate.js";
 //增加查看弹框
 import handleSod from "@/views/system/commonMetadataSync/handleTask";
 export default {
@@ -385,12 +382,7 @@ export default {
         this.dataBaseExpandForm();
       }
     },
-    stopTimeFormater: function(row) {
-      return formatTime(row.stopTime, "Y-M-D h:m:s");
-    },
-    startTimeFormater: function(row) {
-      return formatTime(row.startTime, "Y-M-D h:m:s");
-    },
+
     statusFormat(row, column, value) {
       if (value == 1) {
         return "全量同步";

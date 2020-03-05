@@ -11,4 +11,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SyncConfigDao extends BaseDao<SyncConfigEntity> {
+    public void deleteById(Integer id);
+
+    public SyncConfigEntity findById(Integer id);
 }

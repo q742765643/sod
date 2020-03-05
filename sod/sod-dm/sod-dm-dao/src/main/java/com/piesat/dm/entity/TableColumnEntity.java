@@ -22,7 +22,7 @@ public class TableColumnEntity extends BaseEntity {
     /**
      * table_id
      */
-    @Column(name = "table_id", length = 255, nullable = false)
+    @Column(name = "table_id", length = 255)
     private String tableId;
 
     /**

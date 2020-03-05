@@ -33,8 +33,6 @@ public class MetaBackupLogEntity extends JobInfoLogEntity {
     private String storageDirectory;
     @Column(name="conditions", length=200)
     private String conditions;
-    @Column(name="task_name", length=200)
-    private String taskName;
 
 }
 

@@ -59,9 +59,12 @@
         label="申请时间"
         sortable
         min-width="100"
-        :formatter="formatCreateTime"
         :show-overflow-tooltip="true"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.CREATE_TIME) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         prop="EXAMINE_STATUS"
@@ -250,7 +253,6 @@ import {
   getDataClassify,
   getDataTable
 } from "@/api/authorityAudit/DRegistration/index";
-import { formatTime } from "@/components/commonVaildate";
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
 //数据注册审核
 import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataRegister";
@@ -387,10 +389,7 @@ export default {
         (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
       );
     },
-    //格式化申请时间
-    formatCreateTime(row) {
-      return formatTime(row.CREATE_TIME, "Y-M-D h:m:s");
-    },
+
     //审核操作
     examineData(row) {
       this.reviewFormData = row;

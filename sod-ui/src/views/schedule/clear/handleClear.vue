@@ -160,15 +160,25 @@ export default {
     };
   },
 
-  created() {
+  async created() {
     this.getDicts("job_is_alarm").then(response => {
       this.alarmOptions = response.data;
     });
-    findAllDataBase().then(response => {
+    await findAllDataBase().then(response => {
       this.databaseOptions = response.data;
     });
+    // 匹配数据库和资料名称
+    if (this.handleObj.pageName == "资料存储策略") {
+      this.msgFormDialog.databaseId = this.handleObj.databaseId;
+      await this.selectByDatabaseIds(
+        this.handleObj.databaseId,
+        this.handleObj.dataClassId
+      );
+      await this.selectTable(this.handleObj.dataClassId);
+    }
+    // 查看详情
     if (this.handleObj.id) {
-      getClear(this.handleObj.id).then(response => {
+      await getClear(this.handleObj.id).then(response => {
         this.selectByDatabaseIds(
           response.data.databaseId,
           response.data.dataClassId
@@ -192,14 +202,16 @@ export default {
         this.msgFormDialog.vTableName = response.data.vTableName;
       });
     },
-    selectByDatabaseIds(databaseId, dataClassId) {
-      getByDatabaseId(databaseId, dataClassId).then(response => {
+    async selectByDatabaseIds(databaseId, dataClassId) {
+      await getByDatabaseId(databaseId, dataClassId).then(response => {
         this.dataClassIdOptions = response.data;
         this.msgFormDialog.dataClassId = dataClassId;
       });
     },
     /** 提交按钮 */
     trueDialog(formName) {
+      this.msgFormDialog.triggerStatus = 1;
+      console.log(this.msgFormDialog);
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.msgFormDialog.id != undefined) {
