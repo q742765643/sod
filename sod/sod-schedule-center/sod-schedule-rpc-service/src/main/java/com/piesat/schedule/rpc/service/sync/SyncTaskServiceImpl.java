@@ -33,6 +33,7 @@ import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -178,6 +179,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
+    @Transactional(readOnly = false)
     public SyncTaskDto saveDto(SyncTaskDto syncTaskDto) {
         //将源表过滤字段信息存到sync_filter表中，
         String filterRecordIds = syncFilterSaveDto(syncTaskDto);
@@ -187,7 +189,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         StringBuffer sourceIds = new StringBuffer();
         for(int i=0;i<targetRelationList.size();i++) {
             Map<String, Object>  targetRelation = targetRelationList.get(i);
-            String targetTableId = (String) targetRelation.get("targetTable");
+            String targetTableId = (String) targetRelation.get("targetTableId");
             String mapping = (String)targetRelation.get("mapping");
 
             String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(),targetTableId,mapping,filterRecordIds,StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
@@ -201,9 +203,9 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //值表映射关系入库
         StringBuffer slaveIds = new StringBuffer();
         Map<String,Object> slaveRelation = syncTaskDto.getSlaveRelation();
-        if(slaveRelation != null && slaveRelation.size() >0){
-            String sourceVTableId = (String) slaveRelation.get("sourceTable");
-            String targetVTableId = (String) slaveRelation.get("targetTable");
+        if(slaveRelation != null && !slaveRelation.isEmpty()){
+            String sourceVTableId = (String) slaveRelation.get("sourceVTableId");
+            String targetVTableId = (String) slaveRelation.get("targetVTableId");
             String mapping = (String)slaveRelation.get("mapping");
             String linkKey = (String)slaveRelation.get("linkKey");
             syncTaskDto.setLinkKey(linkKey);
@@ -220,6 +222,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
+    @Transactional(readOnly = false)
     public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
         this.deleteSync(syncTaskDto.getId());
         this.saveDto(syncTaskDto);
@@ -263,6 +266,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
      * @param isKV
      * @return
      */
+
     public String syncConfigAndMappingSaveDto(String sourceTableId,String targetTableId,String mapping,String filterRecordIds,boolean isKV){
         //获取源表信息
         DataTableDto sourceTableDto = dataTableService.getDotById(sourceTableId);
@@ -270,6 +274,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
 
         SyncConfigEntity tti = new SyncConfigEntity();
+        tti.setTargetTableId(targetTableId);
         //获取目标表的唯一索引
         List<TableIndexDto> tableIndexDtos = tableIndexService.findByTableId(targetTableId);
         String unique_index = findUniqueIndex(tableIndexDtos);
@@ -399,6 +404,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void deleteSync(String taskId) {
         SyncTaskDto syncTaskDto = this.getDtoById(taskId);
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
@@ -408,26 +414,30 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //删除filter和config表
         String so = syncTaskDto.getSourceTable();//键表对的mapper的id，可能有多个用逗号分隔
         String sl = syncTaskDto.getSlaveTables();//值表对的mapper的id
-        List<String> mapperList = Arrays.asList(so.split(","));
+        List<Integer> mapperList = new ArrayList<Integer>();
+        for(int i=0;i<so.split(",").length;i++){
+            mapperList.add(Integer.valueOf(so.split(",")[i]));
+        }
         if(StringUtils.isNotNullString(sl)){
-            mapperList.add(sl);
+            mapperList.add(Integer.valueOf(sl));
         }
         //查找所有的mapper
-        List<SyncMappingEntity> syncMappingLists = syncMappingDao.findAllById((Iterable<String>) mapperList.iterator());
+        List<SyncMappingEntity> syncMappingLists = syncMappingDao.findAllByIdIn(mapperList);
         //查filter和config的id
         for(SyncMappingEntity syncMappingEntity : syncMappingLists){
+            //删除filter
             if(StringUtils.isNotNullString(syncMappingEntity.getSourceTableId())){
                 for(String filterId:syncMappingEntity.getSourceTableId().split(",")){
-                    syncFilterDao.deleteById(filterId);
+                    syncFilterDao.deleteById(Integer.valueOf(filterId));
                 }
             }
+            //删除config
             if(StringUtils.isNotNullString(syncMappingEntity.getTargetTableId())){
-                syncConfigDao.deleteById(syncMappingEntity.getTargetTableId());
+                syncConfigDao.deleteById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
             }
+            //删除mapping表
+            syncMappingDao.deleteById(syncMappingEntity.getId());
         }
-
-        //删除mapping表
-        syncMappingDao.deleteInBatch((Iterable<SyncMappingEntity>) syncMappingLists.iterator());
 
         //删除dimessage表
 
@@ -438,25 +448,53 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @Override
     public JSONObject getSyncJsonById(String taskId) {
         SyncTaskEntity syncTaskEntity = this.getById(taskId);
+
+        String sourceTable = syncTaskEntity.getSourceTable();
+        List<Integer> mappingKIds = new ArrayList<Integer>();
+        for(int i = 0; i < sourceTable.split(",").length; i++){
+            mappingKIds.add(Integer.valueOf(sourceTable.split(",")[i]));
+        }
+        List<SyncMappingEntity> syncMappingEntitys = syncMappingDao.findAllByIdIn(mappingKIds);
+
+        //源表过滤字段
+        String sourceTableFilter = "";
+        String columnOper = "";
+        String sourceTableFilterText = "";
+        SyncMappingEntity syncMappingEntit = syncMappingEntitys.get(0);
+        String filterIds = syncMappingEntit.getSourceTableId();
+        if(StringUtils.isNotNullString(filterIds)){
+            for(int i=0;i<filterIds.split(",").length;i++){
+                SyncFilterEntity syncFilterEntity = syncFilterDao.findById(Integer.valueOf(filterIds.split(",")[i]));
+                if(StringUtils.isNotNullString(sourceTableFilter)){
+                    sourceTableFilter = ","+syncFilterEntity.getColumnName();
+                    columnOper = ","+syncFilterEntity.getColumnOper();
+                    sourceTableFilterText = ","+syncFilterEntity.getFilterValues();
+
+                }else{
+                    sourceTableFilter = syncFilterEntity.getColumnName();
+                    columnOper = syncFilterEntity.getColumnOper();
+                    sourceTableFilterText = syncFilterEntity.getFilterValues();
+                }
+            }
+        }
+        syncTaskEntity.setSourceTableFilter(sourceTableFilter.split(","));
+        syncTaskEntity.setColumnOper(columnOper.split(","));
+        syncTaskEntity.setSourceTableFilterText(sourceTableFilterText.split(","));
+
         String syncTaskJson = JSONObject.toJSONString(syncTaskEntity);
         JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
 
-        //键表mapping的ids
-        String sourceTable = syncTaskEntity.getSourceTable();
-        List<String> mappingKIds = Arrays.asList(sourceTable.split(","));
-        List<SyncMappingEntity> syncMappingEntitys = syncMappingDao.findAllById((Iterable<String>) mappingKIds.iterator());
+        //目标表
         List<Map<String, Object>> targets = new ArrayList<>();
         for(SyncMappingEntity syncMappingEntity :syncMappingEntitys){
-            Map<String, Object> relation = new HashMap<>();
 
+            //目标表
+            Map<String, Object> relation = new HashMap<>();
             //获取config的id
             String configId = syncMappingEntity.getTargetTableId();
-            String d_data_id = syncConfigDao.findById(configId).get().getDDataId();
-
-            //根据物理库id，表名称，存储编码查找表id
-
-            relation.put("dataCode", d_data_id);
-            relation.put("targetTableName", syncMappingEntity.getTargetTableName());
+            //目标表的编码
+            SyncConfigEntity syncConfigEntity = syncConfigDao.findById(Integer.valueOf(configId));
+            relation.put("targetTableId", syncConfigEntity.getTargetTableId());
             relation.put("mapping", syncMappingEntity.getMapping());
             targets.add(relation);
         }
@@ -467,13 +505,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         String slaveTable = syncTaskEntity.getSlaveTables();
         if(StringUtils.isNotNullString(slaveTable)){
             Map<String, Object> relation = new HashMap<>();
-            SyncMappingEntity syncMappingEntity = syncMappingDao.findById(slaveTable).get();
+            SyncMappingEntity syncMappingEntity = syncMappingDao.findById(Integer.valueOf(slaveTable));
 
             //获取config的id
             String configId = syncMappingEntity.getTargetTableId();
-            String d_data_id = syncConfigDao.findById(configId).get().getDDataId();
-
-
             relation.put("mapping",syncMappingEntity.getMapping());
             jsonObject.put("slaveTables",relation);
         }

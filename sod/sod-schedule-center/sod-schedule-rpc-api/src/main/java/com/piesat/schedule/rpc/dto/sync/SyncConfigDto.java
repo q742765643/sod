@@ -40,4 +40,9 @@ public class SyncConfigDto {
      * 存储管理定义的四级编码，与表名一一对应
      */
     private String dDataId;
+
+    /**
+     * 目标表id
+     */
+    private String targetTableId;
 }

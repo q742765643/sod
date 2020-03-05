@@ -169,8 +169,8 @@ public class SyncTaskController {
                     linkKeys += "</" + targetVTable.getTableName() + ">";
                 }
             }
-            syncTaskDto.getSlaveRelation().put("sourceTable", sourceVTableId);
-            syncTaskDto.getSlaveRelation().put("targetTable", targetVTableId);
+            syncTaskDto.getSlaveRelation().put("sourceVTableId", sourceVTableId);
+            syncTaskDto.getSlaveRelation().put("targetVTableId", targetVTableId);
             syncTaskDto.getSlaveRelation().put("linkKey", linkKeys);
         }
         if(StringUtils.isNotNullString(syncTaskDto.getId())){
@@ -186,7 +186,7 @@ public class SyncTaskController {
 
     @ApiOperation(value = "删除同步任务")
     @RequiresPermissions("schedule:sync:deleteSync")
-    @GetMapping("/deleteSync/{taskId}")
+    @DeleteMapping("/deleteSync/{taskId}")
     public ResultT<String> deleteSync(@PathVariable String taskId) {
         ResultT<String> resultT=new ResultT<>();
         this.syncTaskService.deleteSync(taskId);

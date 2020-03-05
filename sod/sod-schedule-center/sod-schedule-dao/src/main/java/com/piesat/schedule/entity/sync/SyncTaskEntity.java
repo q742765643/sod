@@ -141,6 +141,13 @@ public class SyncTaskEntity extends BaseEntity {
     private Integer execPort;
 
     /**
+     * 源表id
+     * 键值表时为键表id
+     */
+    @Column(name="source_table_id", length = 50)
+    private String sourceTableId;
+
+    /**
      * 运行状态
      * true---------运行中
      * false|xxx----xxx为空为停止中，xxx不为空为出错且xxx为出错原因
@@ -150,8 +157,20 @@ public class SyncTaskEntity extends BaseEntity {
     private String runState;
 
     /**
-     * 目标表ids
+     * 源表过滤字段
      */
     @Transient
-    private String targetTableIds;
+    private String[] sourceTableFilter;
+
+    /**
+     * 源表过滤字段使用的操作符
+     */
+    @Transient
+    private String[] columnOper;
+
+    /**
+     * 源表过滤字段对应的值
+     */
+    @Transient
+    private String[]  sourceTableFilterText;
 }

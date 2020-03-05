@@ -11,4 +11,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SyncFilterDao extends BaseDao<SyncFilterEntity> {
+
+    public void deleteById(Integer id);
+
+    public SyncFilterEntity findById(Integer id);
 }

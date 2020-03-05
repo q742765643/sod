@@ -54,4 +54,10 @@ public class SyncConfigEntity {
      */
     @Column(name="d_data_id", length = 20)
     private String dDataId;
+
+    /**
+     * 目标表id
+     */
+    @Column(name="target_table_id", length = 50)
+    private String targetTableId;
 }
