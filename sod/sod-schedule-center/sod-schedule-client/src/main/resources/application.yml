@@ -11,13 +11,13 @@ tomcat:
 
 grpc:
   server:
-    port: 6005
+    port: 6007
 spring:
   #aop:
   #auto: true
   #proxy-target-class: true
   application:
-    name: schedule-client-server1
+    name: schedule-client-server
   sleuth:
     sampler:
       probability: 1
@@ -26,9 +26,10 @@ spring:
       force: true
       charset: utf-8
       enabled: true
-    multipart:
-      maxFileSize: 1000Mb
-      maxRequestSize: 1000Mb
+  servlet:
+     multipart:
+      max-file-size: 1000000000
+      max-request-size: 1000000000
   datasource:
       #driver-class-name: com.xugu.cloudjdbc.Driver
       #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8

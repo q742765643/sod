@@ -22,6 +22,7 @@ import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -248,6 +249,10 @@ public class GbaseBusiness extends BaseBusiness{
         }
     }
 
-
+    @Override
+    public void recoverStructedData(RecoverMetaVo recoverMetaVo, RecoverLogEntity recoverLogEntity, ResultT<String> resultT){
+        GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
+        gbaseService.recoverStructedData(recoverMetaVo,recoverLogEntity,resultT);
+    }
 }
 

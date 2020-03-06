@@ -13,6 +13,7 @@ import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.backup.MetaBackupLogEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class DataBaseRecoverService {
             String fileName=file.getName().substring(0,file.getName().lastIndexOf("."));
             String unzipPath=file.getParentFile().getPath()+'/'+fileName;
             recoverMetaVo.setUnzipPath(unzipPath);
+            recoverMetaVo.setIndexPath(unzipPath+"/index.sql");
             ZipUtils.unZip(new File(recoverLogEntity.getStorageDirectory()),unzipPath);
             if(!resultT.isSuccess()){
                 return;
@@ -59,7 +61,6 @@ public class DataBaseRecoverService {
             BusinessEnum businessEnum = BusinessEnum.match(recoverLogEntity.getDatabaseType(), null);
             BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
             baseBusiness.recoverMeta(recoverMetaVo,impInfo,recoverLogEntity,resultT);
-            recoverMetaVo.setIndexPath(unzipPath+"/index.sql");
         } catch (Exception e) {
             resultT.setErrorMessage(OwnException.get(e));
             log.error(OwnException.get(e));
@@ -171,7 +172,33 @@ public class DataBaseRecoverService {
     }
     public  List<TreeVo> getFileList(String parentId,String storageDirectory){
         List<TreeVo> list=new ArrayList<>();
+        TreeVo treeVo=new TreeVo();
+        treeVo.setId(storageDirectory);
+        treeVo.setName(storageDirectory);
+        treeVo.setPId("");
+        treeVo.setParent(true);
+        list.add(treeVo);
+
         String path = storageDirectory+"/"+parentId;
+        TreeVo treeVo1=new TreeVo();
+        treeVo1.setId(path);
+        treeVo1.setName(parentId);
+        treeVo1.setPId(storageDirectory);
+        treeVo1.setParent(true);
+        list.add(treeVo1);
+        this.getFileFistChidren(path,list);
+        return list;
+
+    }
+    public  List<TreeVo> getDataFileList(RecoverLogEntity recoverLogEntity){
+        List<TreeVo> list=new ArrayList<>();
+        String path = recoverLogEntity.getStorageDirectory()+"/"+recoverLogEntity.getParentId()+"/"+recoverLogEntity.getDataClassId();
+        TreeVo treeVo=new TreeVo();
+        treeVo.setId(path);
+        treeVo.setName(path);
+        treeVo.setPId("");
+        treeVo.setParent(true);
+        list.add(treeVo);
         this.getFileFistChidren(path,list);
         return list;
 
@@ -184,7 +211,7 @@ public class DataBaseRecoverService {
             public int compare(File f1, File f2) {
                 long diff = f1.lastModified() - f2.lastModified();
                 if (diff > 0){
-                    return 1;
+                    return -1;
                 }
 
                 else if (diff == 0){
@@ -192,7 +219,7 @@ public class DataBaseRecoverService {
                 }
 
                 else {
-                    return -1;
+                    return 1;
                 }
             }
 
