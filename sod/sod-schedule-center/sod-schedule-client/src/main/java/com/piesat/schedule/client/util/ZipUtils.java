@@ -74,7 +74,9 @@ public class ZipUtils {
                 }
             }
         } else {
-            ZipUtils.doZip(inFile, out, dir);
+            //ZipUtils.doZip(inFile, out, dir);
+            ZipUtils.doZip(inFile, out, "");
+
         }
     }
 
@@ -411,7 +413,8 @@ public class ZipUtils {
         }
     }
     public static void main(String[] args) throws IOException {
-        Map<String,String> map=readFile("/Users/zzj/Downloads/HADB-20190717011554/HADB-20190717011554.sql",new ResultT<>());
+        doCompress("/zzj/data/RADB/虚谷备份_20200306132300","/zzj/data/RADB/虚谷备份_202003061323001.zip",new ResultT<>());
+
     }
 }
 

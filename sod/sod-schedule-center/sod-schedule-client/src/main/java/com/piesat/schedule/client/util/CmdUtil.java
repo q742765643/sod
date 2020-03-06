@@ -19,7 +19,7 @@ public class CmdUtil {
     public static int expCmd(String[] commands, ResultT<String> resultT){
         StringBuilder cmd=new StringBuilder();
         Runtime r = Runtime.getRuntime();
-        StringBuilder msg=null;
+        StringBuilder msg=new StringBuilder();
         BufferedReader bufrIn = null;
         BufferedReader bufrError = null;
         int exitVal=-1;

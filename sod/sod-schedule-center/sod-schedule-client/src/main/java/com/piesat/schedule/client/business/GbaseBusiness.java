@@ -82,7 +82,7 @@ public class GbaseBusiness extends BaseBusiness{
     public void executeCmd(StringBuilder sql,String tableName,String parentId,String tempFilePath,ResultT<String> resultT){
         StringBuilder cmd=new StringBuilder();
         Runtime r = Runtime.getRuntime();
-        StringBuilder msg=null;
+        StringBuilder msg=new StringBuilder();
         BufferedReader bufrIn = null;
         BufferedReader bufrError = null;
         int exitVal=-1;

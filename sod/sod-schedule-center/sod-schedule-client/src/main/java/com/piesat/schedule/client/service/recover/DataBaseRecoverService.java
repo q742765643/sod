@@ -47,6 +47,7 @@ public class DataBaseRecoverService {
             if(!resultT.isSuccess()){
                 return;
             }
+            resultT.setSuccessMessage("开始解析备份内容");
             this.parsingMetadata(recoverMetaVo,recoverLogEntity,resultT);
             Map<Type, Set<String>> impInfo= this.toMap(recoverMetaVo,recoverLogEntity,resultT);
             File file=new File(recoverLogEntity.getStorageDirectory());
@@ -54,6 +55,7 @@ public class DataBaseRecoverService {
             String unzipPath=file.getParentFile().getPath()+'/'+fileName;
             recoverMetaVo.setUnzipPath(unzipPath);
             recoverMetaVo.setIndexPath(unzipPath+"/index.sql");
+            resultT.setSuccessMessage("开始解压缩文件{}",recoverLogEntity.getStorageDirectory());
             ZipUtils.unZip(new File(recoverLogEntity.getStorageDirectory()),unzipPath);
             if(!resultT.isSuccess()){
                 return;

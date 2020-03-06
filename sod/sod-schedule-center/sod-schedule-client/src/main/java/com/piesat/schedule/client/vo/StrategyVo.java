@@ -17,13 +17,13 @@ import java.util.List;
 @Data
 public class StrategyVo {
 
-    private String tempPtah;
-    private String vfileName;
-    private String kfilePath;
-    private String vfilePath;
-    private String indexPath;
-    private String tempZipPath;
-    private String realFileName;
+    private String tempPtah="";
+    private String vfileName="";
+    private String kfilePath="";
+    private String vfilePath="";
+    private String indexPath="";
+    private String tempZipPath="";
+    private String realFileName="";
     private long startTime;
     private long endTime;
     private StringBuilder handMsg=new StringBuilder();

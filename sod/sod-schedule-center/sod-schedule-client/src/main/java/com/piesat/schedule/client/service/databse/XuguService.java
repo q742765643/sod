@@ -177,14 +177,20 @@ public class XuguService {
         }
         try {
             String reslut = exp.expMetaData(metaBackupEntity.getParentId(), expInfo, metadataVo.getIndexPath());
-            if (!StringUtils.isNotNullString(reslut)) {
+            if (reslut.length()>0) {
                 resultT.setErrorMessage(reslut);
             }
             if (metadataVo.isExpData() && StringUtils.isNotNullString(metaBackupEntity.getConditions())) {
                 for (String tableName : metadataVo.getTable()) {
                     String path = metadataVo.getParentPath() + "/DATA_" + tableName + ".exp";
-                    String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), metaBackupEntity.getParentId());
-                    ZipUtils.writetxt(metadataVo.getIndexPath(), result, resultT);
+
+                    try {
+                        String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), metaBackupEntity.getParentId());
+                        ZipUtils.writetxt(metadataVo.getIndexPath(), result, resultT);
+                    } catch (Exception e) {
+                       resultT.setErrorMessage("表数据{}备份失败",tableName);
+                    }
+
                 }
 
             }
@@ -199,7 +205,7 @@ public class XuguService {
         ImpMetaData imp = new ImpMetaData();
         log.info("路径:{}", recoverMetaVo.getIndexPath());
         String detail = imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
-        if (!StringUtils.isNotNullString(detail)) {
+        if (detail.length()>0) {
             resultT.setErrorMessage(detail);
         }
     }
@@ -217,7 +223,7 @@ public class XuguService {
         });
         impInfo.put(Type.DATA,datas);
         String detail = imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
-        if (!StringUtils.isNotNullString(detail)) {
+        if (detail.length()>0) {
             resultT.setErrorMessage(detail);
         }
     }

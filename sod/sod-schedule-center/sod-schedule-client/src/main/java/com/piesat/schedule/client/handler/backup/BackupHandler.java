@@ -297,6 +297,7 @@ public class BackupHandler implements BaseHandler {
         BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
         strategyVo.setTempPtah(backupTempPath + "/" + fileName);
         strategyVo.setIndexPath(strategyVo.getTempPtah() + "/" + "index.sql");
+        strategyVo.setTempZipPath(strategyVo.getTempPtah() + ".zip");
         resultT.setSuccessMessage("创建临时文件夹{}",strategyVo.getTempPtah());
         log.info("创建临时文件夹{}",strategyVo.getTempPtah());
         FileUtil.mkdirs(strategyVo.getTempPtah(), resultT);
@@ -320,7 +321,6 @@ public class BackupHandler implements BaseHandler {
         if(!resultT.isSuccess()){
             return;
         }
-        strategyVo.setTempZipPath(strategyVo.getTempPtah() + ".zip");
         /*****========5.压缩备份文件  ============***/
         ZipUtils.doCompress(strategyVo.getTempPtah(), strategyVo.getTempZipPath(), resultT);
         if(!resultT.isSuccess()){
