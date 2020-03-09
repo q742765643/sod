@@ -1,9 +1,9 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SERVER_API;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 // 查询表格
 export function gridEleServiceDefineAll(query) {
   return request({
-    url: baseUrl + '/system/api/gridEleServiceDefine/all',
+    url: baseUrl + '/system/serviceCodeDefine/list',
     method: 'get',
     params: query
   })
@@ -11,7 +11,7 @@ export function gridEleServiceDefineAll(query) {
 // 添加
 export function gridEleServiceDefineAdd(data) {
   return request({
-    url: baseUrl + '/system/api/gridEleServiceDefine/add',
+    url: baseUrl + '/system/serviceCodeDefine/save',
     method: 'post',
     data: data
   })
@@ -19,16 +19,17 @@ export function gridEleServiceDefineAdd(data) {
 // 编辑
 export function gridEleServiceDefineEdit(data) {
   return request({
-    url: baseUrl + '/system/api/gridEleServiceDefine/edit',
-    method: 'post',
+    url: baseUrl + '/system/serviceCodeDefine/edit',
+    method: 'put',
     data: data
   })
 }
 // 删除
 export function gridEleServiceDefineDelete(ids) {
   return request({
-    url: baseUrl + '/system/api/gridEleServiceDefine/deleteByIds',
-    method: 'get',
-    params: ids
+    url: baseUrl + '/system/serviceCodeDefine/deleteByIds/'+ids,
+    method: 'delete'
   })
+
+
 }

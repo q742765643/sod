@@ -1,5 +1,6 @@
 package com.piesat.sod.system.rpc.dto;
 
+import com.piesat.util.BaseDto;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -10,7 +11,7 @@ import javax.persistence.Column;
  * @date 2020/2/13 15:11
  */
 @Data
-public class ServiceCodeDto {
+public class ServiceCodeDto extends BaseDto {
 
     /**
      * 服务代码

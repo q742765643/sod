@@ -20,9 +20,9 @@ import java.util.List;
  * @date 2020/2/13 15:22
  */
 @RestController
-@RequestMapping("/sys/serviceCode")
+@RequestMapping("/system/serviceCodeManagement")
 @Api(value="服务代码管理",tags= {"服务代码管理接口"})
-public class ServiceCodeController {
+public class ServiceCodeManagementController {
 
     @Autowired
     private ServiceCodeService serviceCodeService;
@@ -87,7 +87,7 @@ public class ServiceCodeController {
         List<String> list=new ArrayList();
         if(ids.length>0){
             list= Arrays.asList(ids);
-            this.serviceCodeService.deleteByIds(list);
+            this.serviceCodeService.deleteRecordByIds(list);
         }
         return resultT;
     }

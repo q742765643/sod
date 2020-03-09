@@ -21,7 +21,7 @@ public interface ServiceCodeService {
 
     ServiceCodeDto getDotById(String id);
 
-    public void deleteByIds(List<String> ids);
+    public void deleteRecordByIds(List<String> ids);
 
     public void deleteById(String id);
 }

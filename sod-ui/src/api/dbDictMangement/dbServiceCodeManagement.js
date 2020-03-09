@@ -1,9 +1,9 @@
 import request from "@/utils/request";
-const baseUrl = process.env.VUE_APP_SERVER_API;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 // 查询表格
 export function defineList(query) {
   return request({
-    url: baseUrl + "/system/api/apiDataEleDefine/queryAllDataEle",
+    url: baseUrl + "/system/serviceCodeManagement/list",
     method: "get",
     params: query
   });

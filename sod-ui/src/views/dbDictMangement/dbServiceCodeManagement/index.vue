@@ -41,7 +41,7 @@
       </el-table-column>-->
       <el-table-column prop="user_ele_code" label="服务代码" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="db_ele_code" label="字段编码"></el-table-column>
-      <el-table-column prop="ele_name" label="要素中文名称" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleName" label="要素中文名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="ele_unit" label="单位" width="120"></el-table-column>
       <el-table-column prop="is_code_param" label="是否有标识代码表"></el-table-column>
       <el-table-column prop="code_table_id" label="标识代码表"></el-table-column>

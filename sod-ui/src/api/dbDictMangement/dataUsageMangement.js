@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SERVER_API;
+const baseUrl = process.env.VUE_APP_DM;
 // 查询表格
 export function queryDataBaseLogicAll(query) {
   return request({

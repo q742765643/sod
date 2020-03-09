@@ -53,7 +53,7 @@ module.exports = {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
         }
       },
-      // 崔文慧
+      // dm模块
       [process.env.VUE_APP_DM]: {
         target: `http://10.1.6.117:8007`,
         changeOrigin: true,
@@ -61,7 +61,7 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
-      // 姜海峰 服务代码定义
+      // 姜海峰
       [process.env.VUE_APP_SERVER_API]: {
         target: `http://10.1.6.117:8007`,
         changeOrigin: true,
@@ -82,6 +82,14 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DB_API]: ""
+        }
+      },
+      //system模块
+      [process.env.VUE_APP_SYSTEM]: {
+        target: `http://localhost:2345`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_SYSTEM]: ""
         }
       },
       //公共元数据同步
