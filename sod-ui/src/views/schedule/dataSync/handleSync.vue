@@ -464,7 +464,6 @@ export default {
       editableTabs: [], //源表和目标表的映射tab
       editableTabsValue: "", //当前tab名称
 
-      searchObj: {},
       contantTaskChose: [],
       addnewtargettable: 0,
       msgFormDialog: {
@@ -503,11 +502,10 @@ export default {
         data_class_ids: "", //目标资料存储编码
         tableNameCNs: "", //目标资料名称
         targetColumnDetail: [], //目标表字段
-        targetRelation:[],//源表和目标表的映射关系
-        slaveRelation:{},//源表值表和目标表值表的映射关系
-        sourceVTableId:"",//源表值表id
-        targetVTableId:"",//目标表值表id
-
+        targetRelation: [], //源表和目标表的映射关系
+        slaveRelation: {}, //源表值表和目标表值表的映射关系
+        sourceVTableId: "", //源表值表id
+        targetVTableId: "" //目标表值表id
       },
       rules: {
         taskName: [
@@ -560,12 +558,11 @@ export default {
       }
     };
   },
-  created() {
-    this.searchObj = this.handleObj;
-    this.initView();
-    if (this.handleObj.taskId) {
+  async created() {
+    await this.initView();
+    if (this.handleObj.id) {
       // 查详情
-      this.initDetail();
+      await this.initDetail();
     }
   },
   methods: {
@@ -588,21 +585,17 @@ export default {
         this.flowDirArray = res.data;
       });
     },
-    initDetail() {
-      console.log(this.handleObj);
-      console.log(this.msgFormDialog);
-      for (var ii in this.msgFormDialog) {
-        if (this.handleObj[ii]) {
-          this.msgFormDialog[ii] = this.handleObj[ii];
-        }
-      }
+    async initDetail() {
+      this.msgFormDialog = this.handleObj;
+      await this.sourceDBChange(this.handleObj.sourceDatabaseId);
+      await this.sourceTableChange(this.handleObj.sourceTableId);
       if (this.handleObj.sourceDBId) {
         this.msgFormDialog.sourceDatabaseId = this.handleObj.sourceDBId;
       }
     },
     //源数据库事件,根据数据库ID获取源表
-    sourceDBChange(selectSourceDB) {
-      syncTableByDatabaseId({ databaseId: selectSourceDB }).then(res => {
+    async sourceDBChange(selectSourceDB) {
+      await syncTableByDatabaseId({ databaseId: selectSourceDB }).then(res => {
         var resdata = res.data;
         for (var i = 0; i < resdata.length; i++) {
           if (
@@ -616,10 +609,10 @@ export default {
       });
     },
     //源表事件
-    sourceTableChange(selectSourceTableID) {
+    async sourceTableChange(selectSourceTableID) {
       //显示源表名
       this.findColumnByValue(selectSourceTableID);
-      this.querySourceColumn(selectSourceTableID);
+      await this.querySourceColumn(selectSourceTableID);
     },
     //显示源表名
     findColumnByValue(selectSourceTableID) {
@@ -632,7 +625,7 @@ export default {
       this.msgFormDialog.sourceTableEnName = tableInfo.table_name;
     },
     //获取源表字段信息
-    querySourceColumn(selectSourceTableID) {
+    async querySourceColumn(selectSourceTableID) {
       if (selectSourceTableID) {
         let tableInfo = {};
         tableInfo = this.sourceTableArray.find(item => {
@@ -663,17 +656,17 @@ export default {
               this.msgFormDialog.sourceVTableId = element.id;
             }
           });
-          syncColumnByTableId({ tableId: ETableId }).then(res => {
+          await syncColumnByTableId({ tableId: ETableId }).then(res => {
             //源表字段暂存，会和目标字段进行映射
             this.sourceVColumnDetail = res.data;
           });
-          syncColumnByTableId(searchParameter).then(res => {
+          await syncColumnByTableId(searchParameter).then(res => {
             this.sourceColumnDetail = res.data;
             this.columnArray = res.data;
           });
         } else {
           this.msgFormDialog.KandE = "E";
-          syncColumnByTableId(searchParameter).then(res => {
+          await syncColumnByTableId(searchParameter).then(res => {
             //源表字段暂存，会和目标字段进行映射
             this.sourceColumnDetail = res.data;
             //初始化源表查询字段，源表过滤字段
@@ -857,7 +850,7 @@ export default {
 
     //值表映射
     ETableMapping(element_obj) {
-      debugger
+      debugger;
       //源表的值表字段信息
       var sourceVColumnList = this.sourceVColumnDetail;
       var sourceLength = sourceVColumnList.length;
@@ -958,12 +951,19 @@ export default {
                 this.msgFormDialog["sourceColumn_K_" + tableId].push(
                   list[j]["sourceColumn_K_"]
                 );
-                mapping = mapping + "<" + list[j]["targetColumn_"] + ">" + list[j]["sourceColumn_"] + "</" + list[j]["targetColumn_"] + ">";
+                mapping =
+                  mapping +
+                  "<" +
+                  list[j]["targetColumn_"] +
+                  ">" +
+                  list[j]["sourceColumn_"] +
+                  "</" +
+                  list[j]["targetColumn_"] +
+                  ">";
                 mapping = mapping + "\r\n";
               }
             }
             slaveRelation.mapping = mapping;
-
           } else {
             targetTableIds = targetTableIds + "," + tableId;
             tableNames = tableNames + "," + obj.name;
@@ -977,11 +977,19 @@ export default {
               if (!list.isdelete) {
                 tfield = tfield + "," + list[j]["targetColumn_"];
                 sfield = sfield + "," + list[j]["sourceColumn_"];
-                mapping = mapping + "<" + list[j]["targetColumn_"] + ">" + list[j]["sourceColumn_"] + "</" + list[j]["targetColumn_"] + ">";
+                mapping =
+                  mapping +
+                  "<" +
+                  list[j]["targetColumn_"] +
+                  ">" +
+                  list[j]["sourceColumn_"] +
+                  "</" +
+                  list[j]["targetColumn_"] +
+                  ">";
                 mapping = mapping + "\r\n";
               }
             }
-            targetRelation.push({targetTableId:tableId,mapping:mapping})
+            targetRelation.push({ targetTableId: tableId, mapping: mapping });
             //console.log(tfield);
 
             debugger;

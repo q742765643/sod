@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container metadataBackupTem">
     <!-- 系统元数据备份 -->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="元数据备份配置" name="first">
@@ -51,12 +51,7 @@
         >
           <el-table-column align="center" type="index" width="40" :index="table_index"></el-table-column>
           <el-table-column align="center" type="selection" width="55"></el-table-column>
-          <el-table-column
-            align="center"
-            prop="taskName"
-            label="任务名称"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
+          <el-table-column align="center" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column
             align="center"
             prop="storageDirectory"
@@ -72,8 +67,8 @@
           <el-table-column align="center" prop="jobCron" label="执行策略" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column align="center" prop="isStructure" label="类型" width="100">
             <template slot-scope="scope">
-              <span v-if="scope.row.isStructure==0">数据</span>
-              <span v-if="scope.row.isStructure==1">结构</span>
+              <span v-if="scope.row.isStructure==0">结构</span>
+              <span v-if="scope.row.isStructure==1">数据</span>
               <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
             </template>
           </el-table-column>
@@ -177,12 +172,7 @@
         >
           <el-table-column type="index" align="center" width="40" :index="table_index_log"></el-table-column>
           <el-table-column type="selection" align="center" width="55"></el-table-column>
-          <el-table-column
-            prop="taskName"
-            align="center"
-            label="任务名称"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
+          <el-table-column align="center" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column
             prop="storageDirectory"
             align="center"
@@ -217,6 +207,12 @@
                 icon="el-icon-download"
                 @click="download(scope.row)"
               >下载</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-delete"
+                @click="deleteLog(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -232,26 +228,65 @@
     <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="50%">
       <handleExport @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExport>
     </el-dialog>
-    <el-dialog title="同步详情" :visible.sync="syncDescDialogVisible" v-if="syncDescDialogVisible">
-      <div v-for="(item,index) in syncDescList" :key="index">
-        <div v-if="item.run_state=='同步成功'">
-          <span>同步表名{{index}}:{{item.dysnc_tablename}}</span>
-          <span>同步记录数{{index}}:{{item.dysnc_recordnum}}</span>
-        </div>
-        <div v-else>
-          <span>同步表名{{index}}:{{item.dysnc_tablename}}</span>
-          <span>同步状态:{{item.run_state}}</span>
-          <span>失败原因:{{item.fail_reason}}</span>
-        </div>
-      </div>
+    <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
+      <el-form ref="ruleForm" :model="logFormDialog" label-width="140px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="任务名称">
+              <el-input size="small" v-model="logFormDialog.taskName"></el-input>
+            </el-form-item>
+            <el-form-item label="数据库IP">
+              <el-select size="small" filterable v-model="logFormDialog.databaseId">
+                <el-option
+                  v-for="(item,index) in ipList"
+                  :key="index"
+                  :label="item.VAULE"
+                  :value="item.KEY"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="类型">
+              <el-checkbox-group v-model="logFormDialog.checked">
+                <el-checkbox label="结构">结构</el-checkbox>
+                <el-checkbox label="数据">数据</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="存储目录">
+              <el-input size="small" v-model="logFormDialog.storageDirectory"></el-input>
+            </el-form-item>
+            <el-form-item label="执行地址">
+              <el-input size="small" v-model="logFormDialog.executorAddress"></el-input>
+            </el-form-item>
+            <el-form-item label="执行耗时">
+              <el-input size="small" v-model="logFormDialog.elapsedTime"></el-input>
+            </el-form-item>
+            <el-form-item label="应触发时间">
+              <el-input size="small" v-model="logFormDialog.triggerTime"></el-input>
+            </el-form-item>
+            <el-form-item label="实际触发时间">
+              <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
+            </el-form-item>
+            <el-form-item label="执行过程">
+              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-scrollbar wrap-class="scrollbar-wrapper">
+              <el-tree ref="eltree" node-key="nodeKey" :data="treedata" :props="defaultProps"></el-tree>
+            </el-scrollbar>
+          </el-col>
+        </el-row>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="closeSyncDesc()">确 定</el-button>
+        <el-button @click="logDetailDialog = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { newTeam } from "@/components/commonVaildate";
+import { formatDate } from "@/utils/index";
 import {
   findDataBase,
   metaBackupList,
@@ -260,6 +295,7 @@ import {
   stopTask,
   execute,
   listLog,
+  deleteLogById,
   listLogDatail
 } from "@/api/system/metadataBackup";
 //增加查看弹框
@@ -285,7 +321,7 @@ export default {
       handleDialog: false,
       handleObj: {},
       // 立即同步元数据
-      syncDescDialogVisible: false,
+      logDetailDialog: false,
       syncDescList: [],
       currentRow: [],
       //同步记录查询
@@ -300,7 +336,15 @@ export default {
       logTableData: [], //同步表格数据
       logDataTotal: 0,
       tableNames: [],
-      statusOptions: []
+      statusOptions: [],
+      logFormDialog: {
+        checked: []
+      },
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      treedata: []
     };
   },
   created() {
@@ -423,11 +467,11 @@ export default {
     handleTaskSelectionChange(val) {
       this.currentRow = val;
     },
-    handleHistorySelectionChange() {
+    handleHistorySelectionChange(val) {
       this.currentRow = val;
     },
     // 弹框取消
-    cancelHandle(msgFormDialog) {
+    cancelHandle(logFormDialog) {
       this.handleObj = {};
       this.currentRow = [];
       this.handleDialog = false;
@@ -449,9 +493,44 @@ export default {
     showDetailDialog(row) {
       listLogDatail(row.id).then(res => {
         console.log(res);
+        this.logFormDialog = res.data;
+        this.logDetailDialog = true;
+        this.logFormDialog.checked = [];
+        let checkedArry = this.logFormDialog.isStructure.split(",");
+        checkedArry.forEach(element => {
+          if (element == "0") {
+            this.logFormDialog.checked.push("结构");
+          }
+          if (element == "1") {
+            this.logFormDialog.checked.push("数据");
+          }
+        });
+        this.logFormDialog.triggerTime = formatDate(
+          this.logFormDialog.triggerTime
+        );
+        this.logFormDialog.handleTime = formatDate(
+          this.logFormDialog.handleTime
+        );
+        let checkedTree = JSON.parse(res.data.backContent);
+        this.treedata = newTeam(checkedTree, "");
       });
     },
     download() {},
+    deleteLog(row) {
+      this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return deleteLogById(row.id);
+        })
+        .then(() => {
+          this.handleClick();
+          this.msgSuccess("删除成功");
+        })
+        .catch(function() {});
+    },
     handleClick() {
       if (this.activeName == "first") {
         this.resetQuery();
@@ -468,3 +547,20 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.metadataBackupTem {
+  .el-select {
+    width: 100%;
+  }
+  .el-scrollbar {
+    height: 510px;
+    .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+  }
+  .el-tree {
+    min-width: 100%;
+    display: inline-block !important;
+  }
+}
+</style>

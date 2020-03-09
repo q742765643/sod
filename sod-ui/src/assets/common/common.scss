@@ -1,6 +1,10 @@
 /* 主色调 */
 // $themeColor: #409eff;
 // $boderColor: #ebebeb;
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+
 // 没有labelwidth的formitem
 .unitFormItem {
   .el-form-item__content {

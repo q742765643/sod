@@ -54,9 +54,9 @@ export default {
     };
   },
   created() {
-    this.msgFormDialog = this.handleObj;
-    this.msgFormDialog.checked = [];
-    console.log(this.msgFormDialog);
+    this.msgFormDialog.databaseId = this.handleObj.databaseId;
+    this.msgFormDialog.storageDirectory = this.handleObj.storageDirectory;
+    this.msgFormDialog.taskName = this.handleObj.taskName;
     parsingPath({ path: this.handleObj.storageDirectory }).then(res => {
       this.treeJson = res.data.tree;
       this.treeJson.forEach(element => {
@@ -64,7 +64,6 @@ export default {
       });
       // 第一级的pid为空
       this.treedata = newTeam(this.treeJson, "");
-      console.log(this.treedata);
       this.msgFormDialog.checked = [];
       let checkedArry = res.data.isStructure.split(",");
       checkedArry.forEach(element => {

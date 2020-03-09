@@ -58,9 +58,27 @@
         label="任务名称"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column align="center" prop="dataSourceId" width="120px" label="数据来源标识"></el-table-column>
-      <el-table-column align="center" prop="dataFlowDirectionId" width="120px" label="数据流向标识"></el-table-column>
-      <el-table-column align="center" prop="sourceDatabaseId" width="120px" label="源库"></el-table-column>
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        prop="dataSourceId"
+        width="120px"
+        label="数据来源标识"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        prop="dataFlowDirectionId"
+        width="120px"
+        label="数据流向标识"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        prop="sourceDatabaseId"
+        width="120px"
+        label="源库"
+      ></el-table-column>
       <el-table-column align="center" prop="execIp" width="120px" label="执行主机"></el-table-column>
       <el-table-column align="center" prop="execPort" width="120px" label="执行端口"></el-table-column>
       <el-table-column align="center" prop="updateTime" label="更新时间" width="160px">
@@ -69,18 +87,30 @@
         </template>
       </el-table-column>
       <el-table-column align="center" prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
-      <el-table-column align="center" label="操作" min-width="400">
+      <el-table-column align="center" label="操作" min-width="450">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="mini"
-            icon="el-icon-s-marketing"
+            icon="el-icon-video-play"
             v-if="scope.row.runState=='error'"
           >启动</el-button>
           <el-button type="text" size="mini" icon="el-icon-video-pause">停止</el-button>
           <el-button type="text" size="mini" icon="el-icon-s-marketing">重启</el-button>
-          <el-button type="text" size="mini" icon="el-icon-edit"  @click="handleUpdate(scope.row)"  v-hasPermi="['schedule:backup:edit']">编辑</el-button>
-          <el-button type="text" size="mini" icon="el-icon-delete"  @click="handleDelete(scope.row)"  v-hasPermi="['schedule:sync:deleteSync']">删除</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['schedule:backup:edit']"
+          >编辑</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['schedule:sync:deleteSync']"
+          >删除</el-button>
           <el-button type="text" size="mini" icon="el-icon-view">查看</el-button>
           <el-button
             type="text"
@@ -125,11 +155,7 @@
 </template>
 
 <script>
-import {
-  syncList,
-  delSync,
-  getSyncInfo
-} from "@/api/schedule/dataSync";
+import { syncList, delSync, getSyncInfo } from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
 // 增加查看
@@ -307,15 +333,14 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.resetQuery();
       const id = row.id;
       getSyncInfo(id).then(response => {
-        debugger
         this.dialogTitle = "修改";
         this.handleDialog = true;
         this.handleObj = response.data;
+        console.log(this.handleObj);
       });
-    },
+    }
   }
 };
 </script>

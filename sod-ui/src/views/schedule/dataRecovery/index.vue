@@ -5,85 +5,79 @@
       <el-tab-pane label="结构化数据恢复" name="first">
         <el-form :model="queryParams" :inline="true">
           <el-form-item label="数据库名称">
-            <el-select size="small" filterable v-model="queryParams.databaseId">
+            <el-select
+              v-model="queryParams.databaseId"
+              filterable
+              @change="selectByDatabaseIds"
+              placeholder="请选择物理库"
+              style="width:100%"
+            >
               <el-option
-                v-for="(item,index) in ipandPortList"
-                :key="index"
-                :label="item"
-                :value="item"
+                v-for="database in databaseOptions"
+                :key="database.KEY"
+                :label="database.VALUE"
+                :value="database.KEY"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="资料名称">
-            <el-select size="small" filterable v-model="queryParams.databaseId">
+            <el-select v-model="queryParams.dataClassId" filterable placeholder="请选择资料">
               <el-option
-                v-for="(item,index) in ipandPortList"
-                :key="index"
-                :label="item"
-                :value="item"
+                v-for="dataClass in dataClassIdOptions"
+                :key="dataClass.DATA_CLASS_ID"
+                :label="dataClass.CLASS_NAME"
+                :value="dataClass.DATA_CLASS_ID"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="目录">
-            <el-select size="small" filterable v-model="queryParams.databaseId">
+            <el-select size="small" filterable v-model="queryParams.path">
               <el-option
-                v-for="(item,index) in ipandPortList"
-                :key="index"
-                :label="item"
-                :value="item"
+                v-for="dict in storageDirectoryOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="执行端口和IP">
-            <el-select size="small" style="width:200px" filterable v-model="queryParams.databaseId">
-              <el-option v-for="(item,index) in ipList" :key="index" :label="item" :value="item"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="时间范围">
-            <el-date-picker
-              style="width:300px"
-              v-model="rowlogForm.time"
-              type="datetimerange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
-          </el-form-item>
           <el-form-item>
-            <el-button
-              size="small"
-              type="primary"
-              @click="dataBaseExpandForm"
-              icon="el-icon-search"
-            >查询</el-button>
+            <el-button size="small" type="primary" @click="getTreeList" icon="el-icon-search">查询</el-button>
             <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
           </el-form-item>
         </el-form>
         <p style="font-size:14px">恢复文件列表</p>
-        <div class="treeBox"></div>
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+          <el-tree
+            ref="eltree"
+            node-key="id"
+            show-checkbox
+            :data="treedata"
+            :props="defaultProps"
+            :load="loadNode"
+            lazy
+          ></el-tree>
+        </el-scrollbar>
+        <div class="footer">
+          <el-button size="small" type="primary" @click="handleExe">md5校验</el-button>
+        </div>
       </el-tab-pane>
       <el-tab-pane label="恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
           <el-form-item label="资料名称">
-            <el-input size="small" v-model="queryParams.taskName"></el-input>
+            <el-input size="small" v-model="queryParams.profileName"></el-input>
           </el-form-item>
           <el-form-item label="运行状态">
-            <el-select style="width:200px" filterable v-model="rowlogForm.name">
+            <el-select style="width:200px" filterable v-model="rowlogForm.handleCode">
               <el-option
-                v-for="(item,index) in tableNames"
+                v-for="(item,index) in statusOptions"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.dictLabel"
+                :value="item.dictValue"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button
-              size="small"
-              type="primary"
-              @click="dataBaseExpandForm"
-              icon="el-icon-search"
-            >查询</el-button>
+            <el-button size="small" type="primary" @click="queryListLog" icon="el-icon-search">查询</el-button>
           </el-form-item>
         </el-form>
         <el-table
@@ -91,24 +85,36 @@
           :data="logTableData"
           highlight-current-row
           ref="multipleTable"
-          @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="start_time" label="数据库名称"></el-table-column>
-          <el-table-column prop="stop_time" label="专题名"></el-table-column>
-          <el-table-column prop="dysnc_tablename" label="资料名称"></el-table-column>
-          <el-table-column prop="dysnc_recordnum" label="运行开始时间"></el-table-column>
-          <el-table-column prop="run_state" label="耗时"></el-table-column>
-          <el-table-column prop="run_state" label="状态"></el-table-column>
+          <el-table-column align="center" type="index" width="40" :index="table_index_log"></el-table-column>
+
+          <el-table-column
+            align="center"
+            prop="profileName"
+            label="资料名称"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column align="center" prop="handleTime" label="运行开始时间">
+            <template slot-scope="scope">
+              <span>{{ parseTime(scope.row.handleTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" prop="elapsedTime" label="耗时（秒）"></el-table-column>
+          <el-table-column align="center" prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button
                 type="text"
                 size="mini"
                 icon="el-icon-reading"
-                @click="showEditDialog(scope.row)"
+                @click="viewDetail(scope.row)"
               >查看详情</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-delete"
+                @click="deleteCell(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -117,173 +123,214 @@
           :total="logDataTotal"
           :page.sync="rowlogForm.pageNum"
           :limit.sync="rowlogForm.pageSize"
-          @pagination="dataBaseExpandForm"
+          @pagination="getListLog"
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="50%">
-      <handleExport @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExport>
-    </el-dialog>
-    <el-dialog title="同步详情" :visible.sync="syncDescDialogVisible" v-if="syncDescDialogVisible">
-      <div v-for="(item,index) in syncDescList" :key="index">
-        <div v-if="item.run_state=='同步成功'">
-          <span>同步表名{{index}}:{{item.dysnc_tablename}}</span>
-          <span>同步记录数{{index}}:{{item.dysnc_recordnum}}</span>
-        </div>
-        <div v-else>
-          <span>同步表名{{index}}:{{item.dysnc_tablename}}</span>
-          <span>同步状态:{{item.run_state}}</span>
-          <span>失败原因:{{item.fail_reason}}</span>
-        </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="closeSyncDesc()">确 定</el-button>
-      </span>
+    <el-dialog width="90%" title="MD5校验" :visible.sync="innerCheckMD5Visible" append-to-body>
+      <chechExe
+        v-if="innerCheckMD5Visible"
+        :handlecheckObj="handlecheckObj"
+        @handleMd5Cancel="handleMd5Cancel"
+        ref="myHandleChild"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
+// 树转换
+import { newTeam } from "@/components/commonVaildate";
+// md5校验
+import chechExe from "@/views/structureManagement/overviewStorage/handelchechExe";
+// 接口
+import { findAllDataBase } from "@/api/schedule/backup/backup";
 import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+  getByDatabaseId,
+  getDataFileList,
+  getFileChidren,
+  md5Check,
+  recoverStructedData,
+  recoverLogList,
+  deleteLogById,
+  detailLogById
+} from "@/api/schedule/dataRecovery";
 //增加查看弹框
-import handleExport from "@/views/system/metadataBackup/handleExport";
 export default {
   components: {
-    handleExport
+    chechExe
   },
   data() {
     return {
       activeName: "first",
-      // 遮罩层
       loading: true,
       queryParams: {
-        pageNum: 1,
-        pageSize: 10
+        dataClassId: "",
+        databaseId: "",
+        path: ""
       },
-      ipList: ["10.20.64.41", "10.40.17.34", "10.20.64.29"],
-      tableData: [],
-      total: 0,
-      ipandPortList: ["10.40.17.35:8080", "10.40.17.36:8080", "127.0.0.1:8081"],
+      databaseOptions: [],
+      dataClassIdOptions: [],
+      storageDirectoryOptions: [],
+      // 树
+      treedata: [],
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      // md5
+      innerCheckMD5Visible: false,
+      handlecheckObj: {},
       // 新增/编辑同步任务
       dialogTitle: "",
       handleDialog: false,
       handleObj: {},
-      // 立即同步元数据
-      syncDescDialogVisible: false,
-      syncDescList: [],
       currentRow: [],
       //同步记录查询
       loadingHis: false,
       rowlogForm: {
-        time: "",
-        name: "",
-        status: "同步成功"
+        profileName: "",
+        handleCode: ""
       },
-      logTableData: [], //同步表格数据
+      logTableData: [],
       logDataTotal: 0,
-      tableNames: []
+      tableNames: [],
+      statusOptions: []
     };
   },
   created() {
-    this.getList();
+    findAllDataBase().then(response => {
+      this.databaseOptions = response.data;
+    });
+    this.getDicts("backup_storage_directory").then(response => {
+      this.storageDirectoryOptions = response.data;
+    });
+    this.getDicts("job_handle_status").then(response => {
+      this.statusOptions = response.data;
+      console.log(this.statusOptions);
+    });
   },
   methods: {
-    // table自增定义方法
-    table_index(index) {
-      return (
-        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
-      );
+    //数据库名称change事件
+    selectByDatabaseIds(val) {
+      getByDatabaseId(val).then(response => {
+        this.dataClassIdOptions = response.data;
+      });
+    },
+    /** 搜索按钮操作 */
+    getTreeList() {
+      this.loading = true;
+      console.log(this.queryParams);
+      getDataFileList(this.queryParams).then(res => {
+        this.treeJson = res.data;
+        // 第一级的pid为空
+        this.treedata = newTeam(res.data, "");
+        console.log(this.treedata);
+      });
+    },
+    // 重置
+    resetQuery() {
+      this.queryParams = {
+        dataClassId: "",
+        databaseId: "",
+        path: ""
+      };
+      this.treedata = [];
+    },
+    // 树的懒加载
+    loadNode(node, resolve) {
+      if (node.level === 0 || node.data.isParent == false) {
+        return resolve([]);
+      } else {
+        getFileChidren({ childrenPath: node.data.id }).then(res => {
+          resolve(res.data);
+        });
+      }
+    },
+
+    // mds校验
+    handleExe() {
+      let checkedArry = this.$refs.eltree.getCheckedKeys();
+      if (checkedArry.length == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      let obj = {};
+      obj.databaseId = this.queryParams.databaseId;
+      obj.paths = checkedArry;
+      console.log(obj);
+      md5Check(obj).then(res => {
+        if (res.code == 200) {
+          this.handlecheckObj = {};
+          this.handlecheckObj = this.queryParams;
+          this.handlecheckObj.pathList = res.data;
+          this.innerCheckMD5Visible = true;
+        }
+      });
+    },
+    // 确认 md5
+    handleMd5Cancel() {
+      this.innerCheckMD5Visible = false;
+    },
+    // tab点击
+    handleClick() {
+      if (this.activeName == "first") {
+        this.resetQuery();
+      } else {
+        this.rowlogForm = {
+          pageNum: 1,
+          pageSize: 10,
+          taskName: "",
+          databaseId: ""
+        };
+        this.queryListLog();
+      }
+    },
+    queryListLog() {
+      this.rowlogForm.pageNum = 1;
+      this.getListLog();
     },
     // table自增定义方法
     table_index_log(index) {
-      return (this.rowlogForm.page - 1) * this.rowlogForm.rows + index + 1;
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 查询列表 */
-    getList() {
-      this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
+      return (
+        (this.rowlogForm.pageNum - 1) * this.rowlogForm.pageSize + index + 1
       );
     },
-    handleExport(type) {
-      this.handleObj = {};
-      if (type == "server") {
-        this.dialogTitle = "执行服务库数据备份";
-        this.handleObj.handleType = "server";
-      } else if (type == "add") {
-        this.dialogTitle = "添加";
-        this.handleObj.handleType = "add";
-      } else {
-        this.dialogTitle = "执行元数据备份";
-        this.handleObj.handleType = "base";
-      }
-      this.handleDialog = true;
-    },
-    syncCommonMetadata() {
-      let ids = [];
-      if (this.currentRow.length == 0) {
-        this.$message({ type: "info", message: "请选择一行数据" });
-        return;
-      }
-      for (var row in this.currentRow) {
-        ids.push(this.currentRow[row].id);
-      }
-      //显示延迟加载
-      const loading = this.$loading({
-        lock: true,
-        text: "执行同步任务中,请勿有其他操作！",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
+    //日志列表
+    getListLog() {
+      this.loading = true;
+      console.log(this.rowlogForm);
+      recoverLogList(this.rowlogForm).then(response => {
+        this.logTableData = response.data.pageData;
+        this.logDataTotal = response.data.totalCount;
+        this.loading = false;
       });
-      // this.axios
-      //   .post(interfaceObj.commonMetadata_totalinterface, { ids })
-      //   .then(res => {
-      //     if (res.data.returnCode == 0) {
-      //       this.axios
-      //         .post(interfaceObj.commonMetadata_records, { ids })
-      //         .then(res => {
-      //           loading.close(); //关闭延迟加载
-      //           this.syncDescList = res.data.data;
-      //           this.syncDescDialogVisible = true;
-      //         });
-      //     }
-      //   });
     },
-    deleteShow() {},
-    handleClick() {},
-    statusFormat(row, column, value) {
-      if (value == 1) {
-        return "全量同步";
-      } else if (value == 2) {
-        return "增量同步";
-      } else {
-        return value;
-      }
+    // 字典状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.statusOptions, row.handleCode);
     },
-    showEditDialog(row) {},
-    viewDaily(row) {},
+
+    deleteCell(row) {
+      this.$confirm("是否确认删除该数据?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return deleteLogById(row.id);
+        })
+        .then(() => {
+          this.handleClick();
+          this.msgSuccess("删除成功");
+        })
+        .catch(function() {});
+    },
+
+    viewDetail(row) {
+      detailLogById(row.id).then(res => {});
+    },
     //选中行
-    handleTaskSelectionChange(val) {
-      this.currentRow = val;
-    },
     handleHistorySelectionChange() {
       this.currentRow = val;
     },
@@ -293,20 +340,29 @@ export default {
       this.currentRow = [];
       this.handleDialog = false;
       this.handleQuery();
-    },
-    //
-    resetQuery() {},
-    dataBaseExpandForm() {}
+    }
   }
 };
 </script>
 <style lang="scss">
 .dataRecoveryTem {
-  .treeBox {
-    width: 100%;
-    margin: auto;
+  .el-scrollbar {
+    margin-top: 10px;
+    padding-top: 10px;
+    height: 300px;
     border: 1px solid #c0c4cc;
+    border-radius: 2px;
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+  .el-tree {
+    min-width: 100%;
+    display: inline-block !important;
+  }
+  .footer {
+    text-align: center;
+    margin: 10px;
   }
 }
 </style>
-
