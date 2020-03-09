@@ -30,10 +30,6 @@ public class ExecuteMoveServiceImpl extends ExecuteBaseService implements Execut
 
     @Autowired
     private JobInfoLogService jobInfoLogService;
-    @Override
-    public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId) {
-        return null;
-    }
 
     @Override
     public JobInfoEntity getById(String id) {

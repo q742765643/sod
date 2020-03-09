@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.api.TableForeignKeyService;
 import com.piesat.dm.rpc.dto.DataTableDto;
@@ -22,6 +23,7 @@ import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +159,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
                     LinkedHashMap<String,Object> map=new LinkedHashMap<>();
                     map.put("KEY",databaseDto.getId());
                     map.put("VALUE",databaseName);
+                    map.put("parentId",databaseDto.getDatabaseDefine().getId());
                     databaseDtos.add(map);
                 }
 
@@ -166,7 +169,8 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
 
     }
 
-    public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId){
+    @Override
+    public List<Map<String,Object>> findDataClassId(String dataBaseId, String dataClassId){
 
         List<Map<String,Object>> dataClassIds=new ArrayList<>();
 
@@ -196,6 +200,45 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         backupEntity.setParentId(dataRetrieval.getParentId());
         backupEntity.setProfileName(dataRetrieval.getProfileName());
         backupEntity.setForeignKey(dataRetrieval.getForeignKey());
+    }
+
+    public List<BackupEntity> selectBackupList(BackUpDto backUpDto){
+        BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(backupEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),backupEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(backupEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(backupEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),backupEntity.getProfileName());
+        }
+        if(null!=backupEntity.getTriggerStatus()){
+            specificationBuilder.add("triggerStatus",SpecificationOperator.Operator.eq.name(),backupEntity.getTriggerStatus());
+        }
+        if(StringUtils.isNotNullString(backupEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),backupEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) backupEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) backupEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) backupEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        List<BackupEntity> backupEntities=this.getAll(specification,sort);
+        return backupEntities;
+    }
+
+    @Override
+    public void exportExcel(BackUpDto backUpDto){
+        List<BackupEntity> entities=this.selectBackupList(backUpDto);
+        ExcelUtil<BackupEntity> util=new ExcelUtil(BackupEntity.class);
+        util.exportExcel(entities,"数据备份配置");
     }
 }
 

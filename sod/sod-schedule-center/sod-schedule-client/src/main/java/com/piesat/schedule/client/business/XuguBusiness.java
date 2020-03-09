@@ -196,5 +196,19 @@ public class XuguBusiness extends BaseBusiness{
         XuguService xuguService=SpringUtil.getBean(XuguService.class);
         xuguService.recoverStructedData(recoverMetaVo,recoverLogEntity,resultT);
     }
+
+    @Override
+    public List<TreeVo> findAllTableByIp(String parentId) {
+        DataSourceContextHolder.setDataSource(parentId);
+        try {
+            XuguService xuguService=SpringUtil.getBean(XuguService.class);
+            return xuguService.findAllTableByIp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            DataSourceContextHolder.clearDataSource();
+        }
+        return null;
+    }
 }
 

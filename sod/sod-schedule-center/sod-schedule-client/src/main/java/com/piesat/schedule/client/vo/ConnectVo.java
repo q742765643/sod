@@ -9,7 +9,7 @@ import lombok.Data;
  * @create: 2020-02-26 13:53
  **/
 @Data
-public class CassandraConVo {
+public class ConnectVo {
     private String ip;
     private int port;
     private String userName;

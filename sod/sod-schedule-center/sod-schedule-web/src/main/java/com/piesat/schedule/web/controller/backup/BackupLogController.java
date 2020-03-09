@@ -8,6 +8,7 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,13 @@ public class BackupLogController {
         ResultT<String> resultT=new ResultT<>();
         backupLogService.deleteBackupLogByIds(backupLogIds);
         return resultT;
+    }
+
+    @ApiOperation(value = "数据备份日志导出", notes = "数据备份日志导出")
+    @RequiresPermissions("schedule:backupLog:export")
+    @GetMapping("/export")
+    public void exportExcel(BackupLogDto backupLogDto){
+        backupLogService.exportExcel(backupLogDto);
     }
 }
 

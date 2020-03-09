@@ -1,5 +1,6 @@
 package com.piesat.schedule.entity;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 import lombok.Getter;
@@ -24,6 +25,7 @@ import javax.persistence.*;
 public class JobInfoEntity extends BaseEntity{
     @Column(name="job_group", length=50)
     private String jobGroup;		// 执行器主键ID
+    @Excel(name = "执行策略")
     @Column(name="job_cron", length=255)
     private String jobCron;		// 任务执行CRON表达式
     @Column(name="job_desc", length=255)
@@ -44,6 +46,7 @@ public class JobInfoEntity extends BaseEntity{
     private Integer executorFailRetryCount;		// 失败重试次数
     @Column(name="retry_interval", length=50)
     private Integer retryInterval;
+    @Excel(name = "任务状态", readConverterExp = "0=启动,1=未启动")
     @Column(name="trigger_status", length=50)
     private Integer triggerStatus;		// 调度状态：0-停止，1-运行
     @Column(name="trigger_last_time", length=50)

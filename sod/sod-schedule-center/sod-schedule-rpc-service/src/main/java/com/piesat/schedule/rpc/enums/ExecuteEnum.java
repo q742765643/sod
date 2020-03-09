@@ -16,6 +16,7 @@ public enum ExecuteEnum {
     MOVE(HandleConstant.MOVE,"executeMoveService"),
     CLEAR(HandleConstant.CLEAR,"executeClearService"),
     METABACKUP(HandleConstant.METABACKUP,"executeMetaBackupService"),
+    METACLEAR(HandleConstant.METACLEAR,"executeMetaClearService"),
     MMD(HandleConstant.MMD,"executeMmdSyncService");
 
 

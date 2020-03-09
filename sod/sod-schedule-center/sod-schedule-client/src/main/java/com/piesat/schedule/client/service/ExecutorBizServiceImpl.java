@@ -82,6 +82,26 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
         });
         return treeVos;
     }
+    @Override
+    public List<TreeVo> findAllTableByIp(String parentId, String databaseType){
+        BusinessEnum businessEnum = BusinessEnum.match(databaseType, null);
+        BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
+        List<TreeVo> treeVos=baseBusiness.findAllTableByIp(parentId);
+        Collections.sort(treeVos, new Comparator<TreeVo>() {
+            @Override
+            public int compare(TreeVo o1, TreeVo o2) {
+                //这里俩个是对属性判null处理，为null的都放到列表最下面
+                if (null==o1.getName()){
+                    return 1;
+                }
+                if (null==o2.getName()){
+                    return -1;
+                }
+                return Collator.getInstance(Locale.CHINESE).compare(o1.getName(),o2.getName());
+            }
+        });
+        return treeVos;
+    }
 
     @Override
     public void recover(MetaRecoverLogEntity recoverLogEntity){

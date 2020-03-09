@@ -31,10 +31,7 @@ public class ExecuteClearServiceImpl extends ExecuteBaseService implements Execu
 
     @Autowired
     private JobInfoLogService jobInfoLogService;
-    @Override
-    public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId) {
-        return null;
-    }
+
 
     @Override
     public JobInfoEntity getById(String id) {

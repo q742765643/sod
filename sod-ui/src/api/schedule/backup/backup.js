@@ -92,3 +92,14 @@ export function executeBackup(id) {
     }
   })
 }
+
+export function exportBackup() {
+  return request({
+    url: baseUrl+'/schedule/backup/export',
+    method: 'get',
+    params: {
+      "vTableName":"1"
+    },
+    responseType: "arraybuffer"
+  })
+}

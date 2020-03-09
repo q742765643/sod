@@ -104,5 +104,12 @@ public class BackupController {
         resultT.setData(mapList);
         return resultT;
     }
+    @ApiOperation(value = "数据备份配置导出", notes = "数据备份配置导出")
+    @RequiresPermissions("schedule:backup:export")
+    @GetMapping("/export")
+    public void exportExcel(BackUpDto backUpDto){
+         backupService.exportExcel(backUpDto);
+
+    }
 }
 

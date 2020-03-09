@@ -17,7 +17,7 @@ spring:
   #auto: true
   #proxy-target-class: true
   application:
-    name: schedule-client-server
+    name: schedule-client-server1
   sleuth:
     sampler:
       probability: 1
