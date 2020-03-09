@@ -111,22 +111,7 @@
               <span>{{ parseTime(scope.row.handleTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="triggerCode" label="状态">
-            <template slot-scope="scope">
-              <el-link
-                icon="el-icon-circle-close"
-                type="danger"
-                :underline="false"
-                v-if="scope.row.triggerStatus==0"
-              >停止</el-link>
-              <el-link
-                icon="el-icon-circle-check"
-                type="success"
-                :underline="false"
-                v-if="scope.row.triggerStatus==1"
-              >启动</el-link>
-            </template>
-          </el-table-column>
+          <el-table-column align="center" prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button
@@ -135,6 +120,12 @@
                 icon="el-icon-reading"
                 @click="viewDetail(scope.row)"
               >查看详情</el-button>
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-delete"
+                @click="deleteLog(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -155,18 +146,67 @@
         :handleObj="handleObj"
       ></handeleRecover>
     </el-dialog>
+
+    <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
+      <el-form ref="ruleForm" :model="logFormDialog" label-width="120px" class="logDetailBox">
+        <el-row>
+          <el-col :span="12" style="padding-right:12px;">
+            <el-form-item label="任务名称">
+              <el-input size="small" v-model="logFormDialog.taskName"></el-input>
+            </el-form-item>
+            <el-form-item label="数据库IP">
+              <el-select size="small" filterable v-model="logFormDialog.databaseId">
+                <el-option
+                  v-for="(item,index) in ipList"
+                  :key="index"
+                  :label="item.VAULE"
+                  :value="item.KEY"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="类型">
+              <el-checkbox-group v-model="logFormDialog.checked">
+                <el-checkbox label="结构">结构</el-checkbox>
+                <el-checkbox label="数据">数据</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="恢复文件">
+              <el-input size="small" v-model="logFormDialog.storageDirectory"></el-input>
+            </el-form-item>
+            <el-form-item label="数据库">
+              <el-input size="small" v-model="logFormDialog.databaseName"></el-input>
+            </el-form-item>
+            <el-form-item label="运行开始时间">
+              <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-input size="small" v-model="logFormDialog.handleCode"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-scrollbar wrap-class="scrollbar-wrapper">
+              <el-tree ref="eltree" node-key="nodeKey" :data="TreeDetaildata" :props="defaultProps"></el-tree>
+            </el-scrollbar>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="logDetailDialog = false">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { newTeam } from "@/components/commonVaildate";
+import { formatDate } from "@/utils/index";
 import {
   findDataBase,
   getFileList,
   getFileChidren,
-  parsingPath,
   listLog,
-  logDetail
+  logDetail,
+  deleteLogById
 } from "@/api/system/metadataRecover";
 //增加查看弹框
 import handeleRecover from "@/views/system/metadataRecover/handeleRecover";
@@ -205,18 +245,31 @@ export default {
       },
       treedata: [],
       treeJson: [],
-      handeleRecoverDialog: false
+      handeleRecoverDialog: false,
+      // 详情
+      logDetailDialog: false,
+      logFormDialog: {
+        checked: []
+      },
+      TreeDetaildata: [],
+      statusOptions: []
     };
   },
   created() {
     findDataBase().then(response => {
       this.ipList = response.data;
     });
+    this.getDicts("job_handle_status").then(response => {
+      this.statusOptions = response.data;
+    });
     this.getDicts("metabackup_storage_directory").then(response => {
       this.storageDirectoryOptions = response.data;
     });
   },
   methods: {
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.statusOptions, row.handleCode);
+    },
     // table自增定义方法
     table_index_log(index) {
       return (
@@ -260,11 +313,9 @@ export default {
         this.msgError("请选择一条数据");
         return;
       }
-
       this.dialogTitle = "恢复";
       this.handleObj = this.queryParams;
       this.handleObj.storageDirectory = checkedArry[0];
-
       this.handeleRecoverDialog = true;
     },
 
@@ -313,10 +364,43 @@ export default {
     handleHistorySelectionChange() {
       this.currentRow = val;
     },
-
+    deleteLog(row) {
+      this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return deleteLogById(row.id);
+        })
+        .then(() => {
+          this.handleClick();
+          this.msgSuccess("删除成功");
+        })
+        .catch(function() {});
+    },
     viewDetail(row) {
       logDetail(row.id).then(res => {
         console.log(res);
+        this.logFormDialog = res.data;
+        this.logDetailDialog = true;
+        this.logFormDialog.checked = [];
+        let checkedArry = this.logFormDialog.isStructure.split(",");
+        checkedArry.forEach(element => {
+          if (element == "0") {
+            this.logFormDialog.checked.push("结构");
+          }
+          if (element == "1") {
+            this.logFormDialog.checked.push("数据");
+          }
+        });
+        this.logFormDialog.handleTime = formatDate(
+          this.logFormDialog.handleTime
+        );
+        this.logFormDialog.handleCode = this.statusFormat(this.logFormDialog);
+
+        let checkedTree = JSON.parse(res.data.backContent);
+        this.treedata = newTeam(checkedTree, "");
       });
     }
   }
@@ -341,6 +425,11 @@ export default {
   .footer {
     text-align: center;
     margin: 10px;
+  }
+}
+.logDetailBox {
+  .el-select {
+    width: 100%;
   }
 }
 </style>

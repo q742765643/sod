@@ -106,3 +106,12 @@ export function listLogDatail(id) {
     method: 'get',
   })
 }
+
+// 删除
+
+export function deleteLogById(id) {
+  return request({
+    url: baseUrl + '/schedule/metaBackupLog/' + id,
+    method: 'delete',
+  })
+}

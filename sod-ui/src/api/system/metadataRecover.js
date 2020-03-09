@@ -59,3 +59,11 @@ export function logDetail(id) {
     method: 'get',
   })
 }
+
+//删除
+export function deleteLogById(id) {
+  return request({
+    url: baseUrl + '/metaRecoverLog/' + id,
+    method: 'delete',
+  })
+}

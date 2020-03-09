@@ -14,7 +14,7 @@
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig.js";
+import { recoverStructedData } from "@/api/schedule/dataRecovery";
 export default {
   name: "handleMD5Dialog",
   props: {
@@ -49,8 +49,17 @@ export default {
             files += this.checkList[i] + ",";
           }
         }
-        this.msgFormObj.nasPath = files;
-        this.$emit("trueExe", this.msgFormObj);
+        this.msgFormObj.storageDirectory = files;
+        console.log(this.msgFormObj);
+        recoverStructedData(this.msgFormObj).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: "执行成功"
+            });
+            this.$emit("handleMd5Cancel");
+          }
+        });
       } else {
         this.$message({
           type: "error",
@@ -69,6 +78,7 @@ export default {
 .handleMD5Dialog {
   .el-checkbox-group {
     overflow-x: auto;
+    margin-bottom: 20px;
   }
 }
 </style>
