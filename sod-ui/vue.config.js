@@ -40,14 +40,14 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://1.119.5.177:8003`,
+        target: `http://10.1.6.117:8003`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
         }
       },
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `http://1.119.5.177:8005`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -55,7 +55,7 @@ module.exports = {
       },
       // 崔文慧
       [process.env.VUE_APP_DM]: {
-        target: `http://1.119.5.177:8007`,
+        target: `http://10.1.6.117:8007`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""
@@ -70,7 +70,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_DICT]: {
-        target: `http://1.119.5.177:8003`,
+        target: `http://10.1.6.117:8003`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DICT]: ""
@@ -100,7 +100,7 @@ module.exports = {
       },
       //王亚娟
       [process.env.VUE_APP_SYNC]: {
-        target: `http://1.119.5.177:8005`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYNC]: ""

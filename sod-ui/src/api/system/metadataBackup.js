@@ -82,7 +82,7 @@ export function editMetaBackup(data) {
   })
 }
 // 手工执行元数据备份
-export function handExecute(data) {
+export function handExecute(query) {
   return request({
     url: baseUrl + '/schedule/metaBackup/handExecute',
     method: 'get',
@@ -113,5 +113,14 @@ export function deleteLogById(id) {
   return request({
     url: baseUrl + '/schedule/metaBackupLog/' + id,
     method: 'delete',
+  })
+}
+// 下载
+
+export function downFile(query) {
+  return request({
+    url: baseUrl + '/api/schedule/uploadDown/downFile',
+    method: 'get',
+    params: query
   })
 }
