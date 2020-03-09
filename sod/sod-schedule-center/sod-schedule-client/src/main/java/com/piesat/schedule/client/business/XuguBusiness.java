@@ -22,6 +22,7 @@ import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -188,6 +189,12 @@ public class XuguBusiness extends BaseBusiness{
     public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
         XuguService xuguService=SpringUtil.getBean(XuguService.class);
         xuguService.recoverMeta(recoverMetaVo,impInfo,recoverLogEntity,resultT);
+    }
+
+    @Override
+    public void recoverStructedData(RecoverMetaVo recoverMetaVo, RecoverLogEntity recoverLogEntity, ResultT<String> resultT){
+        XuguService xuguService=SpringUtil.getBean(XuguService.class);
+        xuguService.recoverStructedData(recoverMetaVo,recoverLogEntity,resultT);
     }
 }
 

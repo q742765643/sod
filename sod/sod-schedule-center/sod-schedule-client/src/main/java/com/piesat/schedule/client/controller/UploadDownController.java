@@ -1,11 +1,12 @@
 package com.piesat.schedule.client.controller;
 
+import com.piesat.util.ResultT;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -45,5 +46,24 @@ public class UploadDownController{
             }
         }
     }
+
+    @RequestMapping(value = "/api/uploadFile",method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResultT<String> handleFileUpload(@RequestPart(value = "file") MultipartFile file,String path) {
+        ResultT<String> resultT=new ResultT<>();
+        String fileName=file.getOriginalFilename();
+        File filenew = new File(path+"/"+fileName);
+        if (! filenew.getParentFile().exists()){
+            filenew.getParentFile().mkdirs();
+        }
+        try {
+            file.transferTo(filenew);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        resultT.setData(filenew.getPath().replace("\\","/"));
+
+        return resultT;
+    }
+
 }
 

@@ -53,6 +53,7 @@ public class CassandraService {
                     treeInstance.setId(keyspaceMetadata.getName());
                     treeInstance.setPId("数据库");
                     treeInstance.setName(keyspaceMetadata.getName());
+                    treeInstance.setParent(true);
                     treeVos.add(treeInstance);
                     this.getInstanceMeta(keyspaceMetadata, treeVos);
                 }

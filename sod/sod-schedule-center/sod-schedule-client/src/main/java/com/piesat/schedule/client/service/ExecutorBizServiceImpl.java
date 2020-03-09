@@ -8,16 +8,20 @@ import com.piesat.schedule.client.enums.BusinessEnum;
 import com.piesat.schedule.client.handler.backup.MetaBackupHandler;
 import com.piesat.schedule.client.handler.base.BaseHandler;
 import com.piesat.schedule.client.service.recover.DataBaseRecoverService;
+import com.piesat.schedule.client.service.recover.DataRecoverService;
 import com.piesat.schedule.client.util.FileUtil;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.sso.client.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.text.Collator;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @program: sod
@@ -37,11 +41,15 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
     private DataBaseRecoverService dataBaseRecoverService;
     @Autowired
     private MetaBackupHandler metaBackupHandler;
+    @Autowired
+    private DataRecoverService dataRecoverService;
+    @Autowired
+    private ExecutorService executorService;
 
     @Override
     public void execute(JobInfoEntity jobInfo){
         BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getExecutorHandler());
-        new Thread(()->{
+        executorService.execute(()->{
             try {
                 baseHandler.execute(jobInfo);
             } catch (Exception e) {
@@ -52,7 +60,7 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
                 redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfo.getId());
                 redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfo.getId());
             }
-        }).start();
+        });
     }
     @Override
     public List<TreeVo> findMeta(String parentId, String databaseType){
@@ -77,9 +85,10 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
 
     @Override
     public void recover(MetaRecoverLogEntity recoverLogEntity){
-        new Thread(()-> {
-            dataBaseRecoverService.recover(recoverLogEntity);
-        });
+        executorService.execute(()->{
+                dataBaseRecoverService.recover(recoverLogEntity);
+            });
+
     }
 
     @Override
@@ -90,7 +99,10 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
     public List<TreeVo> getFileChidren(String childrenPath){
         return dataBaseRecoverService.getFileChidren(childrenPath);
     }
-
+    @Override
+    public  List<TreeVo> getDataFileList(RecoverLogEntity recoverLogEntity){
+        return dataBaseRecoverService.getDataFileList(recoverLogEntity);
+    }
     @Override
     public Map<String,Object> parsingPath(String path){
         return dataBaseRecoverService.parsingPath(path);
@@ -98,10 +110,21 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
 
     @Override
     public void handMetaBack(JobInfoEntity jobInfoEntity){
-        new Thread(()->{
+        executorService.execute(()->{
             metaBackupHandler.execute(jobInfoEntity);
         });
     }
+    @Override
+    public void recoverStructedData(RecoverLogEntity recoverLogEntity){
+        executorService.execute(()->{
+            dataRecoverService.recoverStructedData(recoverLogEntity);
+        });
+    }
+    @Override
+    public List<Map<String,Object>> md5Check(List<String> paths){
+         return dataRecoverService.md5Check(paths);
+    }
+
 
 
 }

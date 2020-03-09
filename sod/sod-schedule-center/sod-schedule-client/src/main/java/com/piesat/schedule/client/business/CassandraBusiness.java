@@ -13,6 +13,7 @@ import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 
 import java.util.List;
@@ -62,6 +63,11 @@ public class CassandraBusiness extends BaseBusiness{
     public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
         CassandraService cassandraService=SpringUtil.getBean(CassandraService.class);
         cassandraService.recoverMeta(recoverMetaVo,impInfo,recoverLogEntity,resultT);
+    }
+
+    @Override
+    public void recoverStructedData(RecoverMetaVo recoverMetaVo, RecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
+
     }
 }
 

@@ -13,6 +13,7 @@ import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 
 import java.sql.Connection;
@@ -45,5 +46,8 @@ public abstract class BaseBusiness {
     public abstract void metaBack(MetaBackupEntity metaBackupEntity, MetadataVo metadataVo, ResultT<String> resultT);
 
     public abstract void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT);
+
+    public abstract void recoverStructedData(RecoverMetaVo recoverMetaVo, RecoverLogEntity recoverLogEntity, ResultT<String> resultT);
+
 }
 

@@ -226,7 +226,7 @@ public class ImpMetaData{
 //								url = url.replace("SYSTEM", database);
 //							}
 						log.info("恢复表{}数据",tableName);
-						impDataReadFile(dataSource.getUrl(), fileName, tableName, columns);
+						impDataReadFile(parentId, fileName, tableName, columns);
 					}
 				}
 				for(String foreign : foreigns){
@@ -247,7 +247,7 @@ public class ImpMetaData{
 				}
 			}
 		} catch (Exception e){
-			e.printStackTrace();
+			sb.append(e.getMessage());
 		} finally {
 			FetlUtil.closeSt(st);
 			FetlUtil.closeConn(con);
@@ -257,7 +257,7 @@ public class ImpMetaData{
 		return sb.toString();
  	}
 	
-	public void impDataReadFile(String url, String fileName, String tableName, String[] columns) throws Exception{	
+	public void impDataReadFile(String parentId, String fileName, String tableName, String[] columns) throws Exception{
 		List<Integer> types = new ArrayList<>();
 		String restorSql = connetSqlString2(columns, tableName,types);
 		DataInputStream dis = null;
@@ -277,7 +277,7 @@ public class ImpMetaData{
 							continue;
 						}
 					}
-				    pool.execute(new AnalysisData(url,commitCount,oneData,restorSql,types));
+				    pool.execute(new AnalysisData(parentId,commitCount,oneData,restorSql,types));
 				    oneData = new ArrayList<byte[]>();
 				}
 			}
@@ -289,7 +289,7 @@ public class ImpMetaData{
 						continue;
 					}
 				}
-			    pool.execute(new AnalysisData(url,commitCount,oneData,restorSql,types));
+			    pool.execute(new AnalysisData(parentId,commitCount,oneData,restorSql,types));
 			}
 			dis.close();
 		}

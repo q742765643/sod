@@ -39,6 +39,10 @@ spring:
       force: true
       charset: utf-8
       enabled: true
+  servlet:
+     multipart:
+      max-file-size: 1000000000
+      max-request-size: 1000000000
   datasource:
       #driver-class-name: com.xugu.cloudjdbc.Driver
       #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8

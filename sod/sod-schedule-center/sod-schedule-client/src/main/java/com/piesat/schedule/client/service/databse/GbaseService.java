@@ -14,6 +14,7 @@ import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
+import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.schedule.mapper.database.GbaseOperationMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
@@ -75,6 +76,7 @@ public class GbaseService {
                 treeInstance.setId(instance);
                 treeInstance.setPId("数据库");
                 treeInstance.setName(instance);
+                treeInstance.setParent(true);
                 treeVos.add(treeInstance);
                 this.getInstanceMeta(instance, treeVos);
             }
@@ -247,17 +249,17 @@ public class GbaseService {
         }
         Set<String> users=impInfo.get(Type.USER);
         if(null!=users&&!users.isEmpty()){
-            for(String user:users){
+            users.forEach(user->{
                 String realPath = recoverMetaVo.getUnzipPath() + "/" + map.get("---user " + user + "---");
                 this.recoverGbaseUser(user,realPath,resultT);
-            }
+            });
         }
         Set<String> tables=impInfo.get(Type.TABLE);
         if(null!=tables&&!tables.isEmpty()){
-            for(String table:tables){
+            tables.forEach(table->{
                 String realPath = recoverMetaVo.getUnzipPath() + "/" + map.get("---table " + table + "---");
                 this.recoverGbaseTable(recoverLogEntity.getParentId(),table,realPath,resultT);
-            }
+            });
         }
         Set<String> datas=impInfo.get(Type.DATA);
         if(null!=datas&&!datas.isEmpty()){
@@ -338,6 +340,19 @@ public class GbaseService {
             resultT.setErrorMessage("表{}数据恢复失败",tableName);
            log.error(OwnException.get(e));
         }
+
+    }
+
+    public void recoverStructedData(RecoverMetaVo recoverMetaVo,RecoverLogEntity recoverLogEntity,ResultT<String> resultT){
+        Map<String, String> map = ZipUtils.readFile(recoverMetaVo.getIndexPath(), resultT);
+        map.forEach((key, value) -> {
+
+            if(key.indexOf("---data ")!=-1){
+                String data=key.replace("---data ","").replace("---","");
+                String realPath = recoverMetaVo.getUnzipPath() + "/" + value;
+                this.recoverGbaseData(data,realPath,resultT);
+            }
+        });
 
     }
 }

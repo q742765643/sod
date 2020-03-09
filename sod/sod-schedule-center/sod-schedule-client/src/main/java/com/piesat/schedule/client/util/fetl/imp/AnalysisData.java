@@ -7,18 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.schedule.client.datasource.DataSourceContextHolder;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.fetl.util.FetlUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AnalysisData implements Runnable{
-	private String url;
+	private String parentId;
 	private int commitCount;
 	private List<byte[]> data;
 	private List<Integer> columnTypes;
 	private String preSql;
-	public AnalysisData(String url,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
-		this.url = url;
+	public AnalysisData(String parentId,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
+		this.parentId = parentId;
 		this.commitCount = commitCount;
 		this.data = data;
 		this.columnTypes = columnTypes;
@@ -28,15 +31,18 @@ public class AnalysisData implements Runnable{
 	@Override
 	public void run(){    
         if(data != null && data.size() != 0){
-        	Connection con = FetlUtil.get_conn(url+"&char_set=utf8");
-        	int lineCount = 0;
+        	Connection con = null;
+			DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+			int lineCount = 0;
 	        int index = 0;
 	        int length = 0;
 	        List<byte[][]> datas = new ArrayList<>();
 	        PreparedStatement ps = null;
 	        byte[][] rowData = null;
 	        try{
-	        	int columnCount = columnTypes.size();
+				DataSourceContextHolder.setDataSource(parentId);
+				con=dynamicDataSource.getConnection();
+				int columnCount = columnTypes.size();
 				int signCount = columnCount;
 				signCount = (signCount+3)/4;
 				byte[] signbytes = new byte[signCount];
@@ -111,6 +117,7 @@ public class AnalysisData implements Runnable{
 			} catch (Exception e){
 				log.error(e.getMessage());
 			} finally {
+				DataSourceContextHolder.clearDataSource();
 				data.clear();
 				FetlUtil.closePs(ps);
 				FetlUtil.closeConn(con);

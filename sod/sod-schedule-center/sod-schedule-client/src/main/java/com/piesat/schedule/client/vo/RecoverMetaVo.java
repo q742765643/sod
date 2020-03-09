@@ -23,8 +23,8 @@ public class RecoverMetaVo {
     private Set<String> trigger = new HashSet<>();
     private Set<String> users = new HashSet<>();
     private Set<String> roles = new HashSet<>();
-    private String unzipPath;
-    private String indexPath;
+    private String unzipPath="";
+    private String indexPath="";
     private long startTime;
 
     private long endTime;

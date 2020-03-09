@@ -21,6 +21,7 @@ import com.piesat.schedule.rpc.proxy.GrpcServiceProxy;
 import com.piesat.schedule.rpc.vo.Server;
 import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.util.ResultT;
+import com.piesat.util.constant.GrpcConstant;
 import io.grpc.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,7 @@ public abstract class ExecuteBaseService {
       public List<Server> findServer(JobInfoEntity jobInfoEntity){
             List<Server> servers=new ArrayList<>();
             DiscoveryClient discoveryClient= SpringUtil.getBean(DiscoveryClient.class);
-            Application application=discoveryClient.getApplication("schedule-client-server");
+            Application application=discoveryClient.getApplication(GrpcConstant.SCHEDULE_CLIENT_SERVER);
             List<InstanceInfo> instanceInfos= null;
             try {
                   instanceInfos = application.getInstances();

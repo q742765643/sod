@@ -666,7 +666,7 @@ public class ExpMetadata {
 		}
 	}
 	
-	public void expData(BufferedWriter writer, Connection conn, List<String> tableNames, File file) throws Exception{
+	public void expData(BufferedWriter writer, Connection conn, List<String> tableNames, File file,StringBuffer sb) throws Exception{
 		String path = file.getParentFile().getPath();
 		if(tableNames == null){
 			Statement st = null;
@@ -685,7 +685,11 @@ public class ExpMetadata {
 		} else{
 			for(String tableName:tableNames){
 				log.info("开始备份表{}数据",tableName);
-				expData(writer,conn,tableName,path);
+				try {
+					expData(writer,conn,tableName,path);
+				} catch (Exception e) {
+					sb.append(e.getMessage()+"\n");
+				}
 			}
 		}
 	}
@@ -700,7 +704,7 @@ public class ExpMetadata {
 		writer.write("---end data---\r\n");
 	}
 	
-	public String expData(String file,String tableName,List<String> cols,String where,String parentId) throws Exception{
+	public String expData(String file,String tableName,List<String> cols,String where,String parentId) throws Exception {
 		Connection conn = null;
 		DynamicDataSource dynamicDataSource=SpringUtil.getBean(DynamicDataSource.class);
 		try {
@@ -733,14 +737,18 @@ public class ExpMetadata {
 			return returnString.toString();
 		} catch (Exception e){
 			log.error(OwnException.get(e));
+			throw e;
 
 		} finally{
 			DataSourceContextHolder.clearDataSource();
 			if(null!=conn){
-				conn.close();
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		return "";
 	}
 	
 	public String expData(String fileName,String tableName,String sql,String parentId) throws SQLException{
@@ -847,7 +855,7 @@ public class ExpMetadata {
 		return columns.toString();
 	}
 	
-	public String expMetaData(String parentId, Map<Type, List<String>> expInfo, String filepath) throws Exception {
+	public String expMetaData(String parentId, Map<Type, List<String>> expInfo, String filepath) {
 		Connection conn = null;
 		BufferedWriter writer = null;
 		StringBuffer sb = new StringBuffer();
@@ -1006,14 +1014,15 @@ public class ExpMetadata {
 	            if(expInfo.containsKey(Type.DATA)){
 	            	List<String> tableNames = expInfo.get(Type.DATA);
 	            	try {
-	            		expData(writer, conn, tableNames, file);
+	            		expData(writer, conn, tableNames, file,sb);
 	            	} catch (Exception e) {
 						sb.append(e.getMessage()).append("\n");
 					}
 	            }	          
 			}
 		} catch (Exception e) {
-			throw e;
+			sb.append(e.getMessage()).append("\n");
+			log.error(OwnException.get(e));
 		} finally {
 			FetlUtil.closeConn(conn);
 			FetlUtil.closeWriter(writer);
