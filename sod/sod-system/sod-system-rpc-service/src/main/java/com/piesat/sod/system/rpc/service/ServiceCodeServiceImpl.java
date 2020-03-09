@@ -13,7 +13,6 @@ import com.piesat.sod.system.rpc.mapstruct.ServiceCodeMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,7 +52,8 @@ public class ServiceCodeServiceImpl extends BaseService<ServiceCodeEntity> imple
 
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<ServiceCodeEntity> serviceCodeEntities= (List<ServiceCodeEntity>) pageBean.getPageData();
-        pageBean.setPageData(serviceCodeMapstruct.toDto(serviceCodeEntities));
+        List<ServiceCodeDto> serviceCodeDtos = serviceCodeMapstruct.toDto(serviceCodeEntities);
+        pageBean.setPageData(serviceCodeDtos);
         return pageBean;
     }
 
@@ -78,7 +78,7 @@ public class ServiceCodeServiceImpl extends BaseService<ServiceCodeEntity> imple
     }
 
     @Override
-    public void deleteByIds(List<String> ids) {
+    public void deleteRecordByIds(List<String> ids) {
         this.deleteByIds(ids);
     }
 

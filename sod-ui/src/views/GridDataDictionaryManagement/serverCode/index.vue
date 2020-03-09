@@ -213,9 +213,9 @@ export default {
       }
       let ids = [];
       this.choserow.forEach(element => {
-        ids.push(element.recordId);
+        ids.push(element.id);
       });
-      gridEleServiceDefineDelete({ ids: ids.join(",") }).then(response => {
+      gridEleServiceDefineDelete(ids.join(",")).then(response => {
         if (response.code == 200) {
           this.msgSuccess("删除成功");
           this.getList();
