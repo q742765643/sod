@@ -97,10 +97,20 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="backupLogList" row-key="id" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="backupLogList"
+      row-key="id"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true" />
-      <el-table-column label="运行地址" align="center" prop="executorAddress"  />
+      <el-table-column
+        label="资料名称"
+        align="center"
+        prop="profileName"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column label="运行地址" align="center" prop="executorAddress" />
       <el-table-column label="状态" align="center" prop="handleCode" :formatter="statusFormat" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -116,6 +126,13 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['schedule:backupLog:query']"
           >查看</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-download"
+            @click="handleDownload(scope.row)"
+            v-hasPermi="['schedule:backupLog:download']"
+          >下载</el-button>
           <el-button
             size="mini"
             type="text"
@@ -139,10 +156,9 @@
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
-
           <el-col :span="24">
             <el-form-item label="资料名称" prop="profileName">
-              <el-input v-model="form.profileName"  />
+              <el-input v-model="form.profileName" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -181,18 +197,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="应触发时间" prop="triggerTime" >
-              <el-input v-model="form.triggerTime"/>
+            <el-form-item label="应触发时间" prop="triggerTime">
+              <el-input v-model="form.triggerTime" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="实际触发时间" prop="handleTime" >
-              <el-input v-model="form.handleTime"/>
+            <el-form-item label="实际触发时间" prop="handleTime">
+              <el-input v-model="form.handleTime" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="执行过程">
-              <el-input v-model="form.handleMsg" type="textarea" ></el-input>
+              <el-input v-model="form.handleMsg" type="textarea"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -205,143 +221,168 @@
 </template>
 
 <script>
-  import { listBackupLog, getBackupLog, delBackupLog } from "@/api/schedule/backup/backupLog";
-  import { formatDate } from "@/utils/index";
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
+import { downFile } from "@/api/system/metadataBackup";
+import {
+  listBackupLog,
+  getBackupLog,
+  delBackupLog
+} from "@/api/schedule/backup/backupLog";
+import { formatDate } from "@/utils/index";
 
-  export default {
-    data() {
-      return {
-        // 遮罩层
-        loading: true,
-        // 选中数组
-        ids: [],
-        // 非单个禁用
-        single: true,
-        // 非多个禁用
-        multiple: true,
-        // 总条数
-        total: 0,
-        // 备份表格数据
-        backupLogList: [],
-        // 弹出层标题
-        title: "",
-        // 是否显示弹出层
-        open: false,
-        // 状态数据字典
-        statusOptions: [],
+export default {
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 总条数
+      total: 0,
+      // 备份表格数据
+      backupLogList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 状态数据字典
+      statusOptions: [],
 
-        // 日期范围
-        dateRange: [],
-        // 查询参数
-        queryParams: {
-          pageNum: 1,
-          pageSize: 10,
-          profileName: undefined,
-          dataClassId: undefined,
-          handleCode: undefined,
-          tableName: undefined
-        },
-        // 表单参数
-        form: {},
-        // 表单校验
-        rules: {
-
+      // 日期范围
+      dateRange: [],
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        profileName: undefined,
+        dataClassId: undefined,
+        handleCode: undefined,
+        tableName: undefined
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {}
+    };
+  },
+  created() {
+    this.getList();
+    this.getDicts("job_handle_status").then(response => {
+      this.statusOptions = response.data;
+    });
+  },
+  methods: {
+    /** 查询字典类型列表 */
+    getList() {
+      this.loading = true;
+      listBackupLog(this.addDateRange(this.queryParams, this.dateRange)).then(
+        response => {
+          this.backupLogList = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
         }
+      );
+    },
+    // 字典状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.statusOptions, row.handleCode);
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: undefined
       };
+      this.resetForm("form");
     },
-    created() {
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
-      this.getDicts("job_handle_status").then(response => {
-        this.statusOptions = response.data;
-
-      });
-
-
     },
-    methods: {
-      /** 查询字典类型列表 */
-      getList() {
-        this.loading = true;
-        listBackupLog(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.backupLogList = response.data.pageData;
-            this.total = response.data.totalCount;
-            this.loading = false;
-          }
-        );
-      },
-      // 字典状态字典翻译
-      statusFormat(row, column) {
-        return this.selectDictLabel(this.statusOptions, row.handleCode);
-      },
-      // 取消按钮
-      cancel() {
-        this.open = false;
-        this.reset();
-      },
-      // 表单重置
-      reset() {
-        this.form = {
-          id: undefined,
-
-        };
-        this.resetForm("form");
-      },
-      /** 搜索按钮操作 */
-      handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
-      },
-      /** 重置按钮操作 */
-      resetQuery() {
-        this.dateRange = [];
-        this.resetForm("queryForm");
-        this.handleQuery();
-      },
-      // 多选框选中数据
-      handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
-        this.multiple = !selection.length
-      },
-      /** 修改按钮操作 */
-      handleUpdate(row) {
-        this.reset();
-        const id = row.id || this.ids
-        getBackupLog(id).then(response => {
-          this.form = response.data;
-          this.form.triggerTime=formatDate(this.form.triggerTime)
-          this.form.handleTime=formatDate(this.form.handleTime)
-          this.open = true;
-          this.title = "查看数据备份日志信息";
-        });
-      },
-      /** 删除按钮操作 */
-      handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$confirm('是否确认删除任务日志编号为"' + ids + '"的数据项?', "警告", {
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids;
+      getBackupLog(id).then(response => {
+        this.form = response.data;
+        this.form.triggerTime = formatDate(this.form.triggerTime);
+        this.form.handleTime = formatDate(this.form.handleTime);
+        this.open = true;
+        this.title = "查看数据备份日志信息";
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$confirm(
+        '是否确认删除任务日志编号为"' + ids + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }
+      )
+        .then(function() {
           return delBackupLog(ids);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
-      },
-      /** 导出按钮操作 */
-      handleExport() {
-        const queryParams = this.queryParams;
-        this.$confirm('是否确认导出所有类型数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
+        })
+        .catch(function() {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams;
+      this.$confirm("是否确认导出所有类型数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
           return exportType(queryParams);
-        }).then(response => {
+        })
+        .then(response => {
           this.download(response.msg);
-        }).catch(function() {});
-      }
+        })
+        .catch(function() {});
+    },
+    handleDownload(row) {
+      let obj = {
+        path: row.storageDirectory + "/" + row.fileName
+      };
+      console.log(obj);
+      let flieData = Encrypt(JSON.stringify(obj));
+      flieData = encodeURIComponent(flieData);
+
+      window.location.href =
+        baseUrl +
+        "/api/schedule/uploadDown/downFile?sign=111111&data=" +
+        flieData;
     }
-  };
+  }
+};
 </script>

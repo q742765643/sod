@@ -285,6 +285,8 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import {
@@ -296,7 +298,8 @@ import {
   execute,
   listLog,
   deleteLogById,
-  listLogDatail
+  listLogDatail,
+  downFile
 } from "@/api/system/metadataBackup";
 //增加查看弹框
 import handleExport from "@/views/system/metadataBackup/handleExport";
@@ -515,7 +518,19 @@ export default {
         this.treedata = newTeam(checkedTree, "");
       });
     },
-    download() {},
+    download(row) {
+      let path = row.storageDirectory;
+      let obj = {
+        path: path
+      };
+      let flieData = Encrypt(JSON.stringify(obj));
+      flieData = encodeURIComponent(flieData);
+
+      window.location.href =
+        baseUrl +
+        "/api/schedule/uploadDown/downFile?sign=111111&data=" +
+        flieData;
+    },
     deleteLog(row) {
       this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
         confirmButtonText: "确定",

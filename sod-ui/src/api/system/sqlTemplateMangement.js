@@ -1,50 +1,48 @@
-import request from '@/utils/request'
-const baseUrl =process.env.VUE_APP_DB_API
-
-// 查询sql模板
-export function initSqlList() {
+import request from "@/utils/request";
+const baseUrl = process.env.VUE_APP_DB_API;
+// 获取数据分类
+export function getAllSqlList() {
   return request({
-    url: baseUrl+'/restApi/sqlTemplate/findAll',
-    method: 'get'
-  })
+    url: baseUrl + "/sqlTemplate/findAll",
+    method: "get"
+  });
 }
-
 //获取数据库类型
-export function getDBType() {
+export function getDBtype() {
   return request({
-    url: baseUrl+'/restApi/sqlTemplate/findAll',
-    method: 'get'
-  })
+    url: baseUrl + "/restApi/dicmgn/queryAllByTypeAndFlag",
+    method: "get"
+  });
 }
-
-//删除sql模板
-export function delSqlTem() {
-  return request({
-    url: baseUrl+'/restApi/sqlTemplate/del',
-    method: 'delete'
-  })
-}
-
 //新增sql模板
-export function addSqlTem() {
+export function saveSqlTemplate(query) {
   return request({
-    url: baseUrl+'/restApi/sqlTemplate/add',
-    method: 'post'
-  })
+    url: baseUrl + "/sqlTemplate/add",
+    method: "post",
+    params: query
+  });
 }
-
-//根据id查询模板
-export function getSqlTemById() {
+//查看是否已建立数据库
+export function isAlreadyTem(query) {
   return request({
-    url: baseUrl+'/restApi/sqlTemplate/findByPk',
-    method: 'get'
-  })
+    url: baseUrl + "/sqlTemplate/checkSqlTemplate",
+    method: "get",
+    params: query
+  });
 }
-
+//删除sql模板
+export function delTemplate(query) {
+  return request({
+    url: baseUrl + "/sqlTemplate/del",
+    method: "delete",
+    params: query
+  });
+}
 //编辑sql模板
-export function editSqlTem() {
+export function editTemplate(query) {
   return request({
-    url: baseUrl+'/restApi/sqlTemplate/edit',
-    method: 'put'
-  })
+    url: baseUrl + "/sqlTemplate/edit",
+    method: "put",
+    params: query
+  });
 }
