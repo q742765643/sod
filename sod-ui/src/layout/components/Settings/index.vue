@@ -25,16 +25,10 @@
         <span>显示 Logo</span>
         <el-switch v-model="sidebarLogo" class="drawer-switch" />
       </div>
+
       <div class="drawer-item">
-        <span>目录颜色</span>
-        <el-switch
-          @change="changMenuColor"
-          v-model="sideMenuColor"
-          active-color="#304156"
-          inactive-color="#46a6ff"
-          active-text="典雅黑"
-          inactive-text="优雅蓝"
-        ></el-switch>
+        <span>是否左右布局</span>
+        <el-switch v-model="menuPosition" class="drawer-switch" />
       </div>
     </div>
   </div>
@@ -92,6 +86,17 @@ export default {
           value: val
         });
       }
+    },
+    menuPosition: {
+      get() {
+        return this.$store.state.settings.menuPosition;
+      },
+      set(val) {
+        this.$store.dispatch("settings/changeSetting", {
+          key: "menuPosition",
+          value: val
+        });
+      }
     }
   },
   methods: {
@@ -101,14 +106,7 @@ export default {
         value: val
       });
     },
-    changMenuColor(val) {
-      let bodyInfo = document.getElementsByTagName("body");
-      if (val) {
-        bodyInfo[0].classList.remove("blueActive");
-      } else {
-        bodyInfo[0].classList.add("blueActive");
-      }
-    }
+    changMenuPosition(val) {}
   }
 };
 </script>

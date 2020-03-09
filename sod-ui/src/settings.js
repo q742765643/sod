@@ -24,6 +24,8 @@ module.exports = {
    * 目录黑色或蓝色
    */
   sideMenuColor: true,
+  /* 目录在左或上 */
+  menuPosition: true,
   /**
    * @type {string | array} 'production' | ['production', 'development']
    * @description Need show err logs component.
