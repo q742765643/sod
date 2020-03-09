@@ -33,7 +33,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:8082`,
+        target: `http://10.1.6.117:8082`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_BASE_API]: ""
@@ -61,9 +61,9 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
-      // 姜海峰
+      // 姜海峰 服务代码定义
       [process.env.VUE_APP_SERVER_API]: {
-        target: `http://10.28.104.159:1111`,
+        target: `http://10.1.6.117:8007`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SERVER_API]: ""
@@ -84,8 +84,9 @@ module.exports = {
           ["^" + process.env.VUE_APP_DB_API]: ""
         }
       },
+      //公共元数据同步
       [process.env.VUE_APP_SYNC_WLG]: {
-        target: `http://27.155.87.89:23873`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYNC_WLG]: ""
@@ -108,7 +109,7 @@ module.exports = {
       },
       // 吴磊
       [process.env.VUE_APP_WLEI]: {
-        target: `http://27.155.87.89:12206`,
+        target: `http://10.1.6.117:8007`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_WLEI]: ""
