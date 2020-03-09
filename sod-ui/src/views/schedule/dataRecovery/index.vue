@@ -44,6 +44,17 @@
             <el-button size="small" type="primary" @click="getTreeList" icon="el-icon-search">查询</el-button>
             <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
           </el-form-item>
+          <el-form-item>
+            <el-upload
+              class="upload-demo"
+              :action="upLoadUrl"
+              :on-success="successUpload"
+              :before-upload="handleBefore"
+              :data="uploadData"
+            >
+              <el-button icon="el-icon-upload2" size="small" type="success">上传</el-button>
+            </el-upload>
+          </el-form-item>
         </el-form>
         <p style="font-size:14px">恢复文件列表</p>
         <el-scrollbar wrap-class="scrollbar-wrapper">
@@ -135,10 +146,67 @@
         ref="myHandleChild"
       />
     </el-dialog>
+
+    <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
+      <el-form ref="ruleForm" :model="logFormDialog" label-width="120px" class="logDetailBoxRe">
+        <el-form-item label="数据库名称">
+          <el-select size="small" filterable v-model="logFormDialog.databaseId">
+            <el-option
+              v-for="database in databaseOptions"
+              :key="database.KEY"
+              :label="database.VALUE"
+              :value="database.KEY"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="资料名称">
+          <el-select v-model="logFormDialog.dataClassId" filterable placeholder="请选择资料">
+            <el-option
+              v-for="dataClass in dataClassIdOptions"
+              :key="dataClass.DATA_CLASS_ID"
+              :label="dataClass.CLASS_NAME"
+              :value="dataClass.DATA_CLASS_ID"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="表名称">
+          <el-input size="small" v-model="logFormDialog.tableName"></el-input>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-input size="small" v-model="logFormDialog.handleCode"></el-input>
+        </el-form-item>
+        <el-form-item label="所有执行过程">
+          <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+          <el-button type="primary" size="small" @click="showAllDetail('所有执行过程')">显示全部</el-button>
+        </el-form-item>
+        <el-form-item label="恢复文件路径">
+          <el-input size="small" v-model="logFormDialog.storageDirectory" type="textarea"></el-input>
+          <el-button type="primary" size="small" @click="showAllDetail('恢复文件路径')">显示全部</el-button>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="logDetailDialog = false">取 消</el-button>
+      </span>
+
+      <el-dialog
+        :title="allDetailTitle"
+        :visible.sync="allDetailDialog"
+        v-if="allDetailDialog"
+        width="1000px"
+        append-to-body
+      >
+        <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="allDetailDialog = false">取 消</el-button>
+        </span>
+      </el-dialog>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
 // 树转换
 import { newTeam } from "@/components/commonVaildate";
 // md5校验
@@ -195,7 +263,16 @@ export default {
       logTableData: [],
       logDataTotal: 0,
       tableNames: [],
-      statusOptions: []
+      statusOptions: [],
+      logFormDialog: {},
+      logDetailDialog: false,
+      allDetailDialog: false,
+      allDetailTitle: "",
+      allDetailMsg: "",
+      TreeDetaildata: [],
+      statusOptions: [],
+      uploadData: {},
+      upLoadUrl: baseUrl + "/api/schedule/uploadDown/uploadFile"
     };
   },
   created() {
@@ -328,18 +405,60 @@ export default {
     },
 
     viewDetail(row) {
-      detailLogById(row.id).then(res => {});
+      console.log(row.id);
+      detailLogById(row.id).then(res => {
+        if (res.code == 200) {
+          this.logDetailDialog = true;
+          this.selectByDatabaseIds(res.data.databaseId);
+          this.logFormDialog = res.data;
+          this.logFormDialog.handleCode = this.selectDictLabel(
+            this.statusOptions,
+            this.logFormDialog.handleCode
+          );
+        }
+
+        // let checkedTree = JSON.parse(res.data.backContent);
+      });
     },
     //选中行
     handleHistorySelectionChange() {
       this.currentRow = val;
     },
-    // 弹框取消
-    cancelHandle(msgFormDialog) {
-      this.handleObj = {};
-      this.currentRow = [];
-      this.handleDialog = false;
-      this.handleQuery();
+    showAllDetail(title) {
+      this.allDetailTitle = title;
+
+      if (title == "所有执行过程") {
+        this.allDetailMsg = this.logFormDialog.handleMsg;
+      } else {
+        this.allDetailMsg = this.logFormDialog.storageDirectory;
+      }
+      this.allDetailDialog = true;
+    },
+    // 上传
+    handleBefore() {
+      if (!this.queryParams.databaseId) {
+        this.msgError("请选择数据库IP");
+        return;
+      }
+      if (!this.queryParams.path) {
+        this.msgError("请选择目录");
+        return;
+      }
+      let pid = "";
+      this.databaseOptions.forEach(element => {
+        if (element.KEY == this.queryParams.databaseId) {
+          pid = element.parentId;
+        }
+      });
+      this.uploadData.path =
+        this.queryParams.path + "/" + pid + "/" + this.queryParams.dataClassId;
+    },
+    successUpload(res) {
+      if (res.code == 200) {
+        this.msgSuccess("上传成功");
+      } else {
+        this.msgError(res.msg);
+      }
     }
   }
 };
@@ -363,6 +482,19 @@ export default {
   .footer {
     text-align: center;
     margin: 10px;
+  }
+}
+.logDetailBoxRe {
+  .el-select {
+    width: 100%;
+  }
+  .el-textarea {
+    width: 90%;
+  }
+}
+.allDetailMsg {
+  .el-textarea__inner {
+    min-height: 420px !important;
   }
 }
 </style>

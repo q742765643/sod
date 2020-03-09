@@ -33,8 +33,14 @@
             <el-button size="small" type="primary" @click="getTreeList" icon="el-icon-search">查询</el-button>
           </el-form-item>
           <el-form-item>
-            <el-upload class="upload-demo" action=" ">
-              <el-button icon="el-icon-upload2" size="small" type="primary">上传</el-button>
+            <el-upload
+              class="upload-demo"
+              :action="upLoadUrl"
+              :on-success="successUpload"
+              :before-upload="handleBefore"
+              :data="uploadData"
+            >
+              <el-button icon="el-icon-upload2" size="small" type="success">上传</el-button>
             </el-upload>
           </el-form-item>
         </el-form>
@@ -198,6 +204,7 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import {
@@ -252,7 +259,9 @@ export default {
         checked: []
       },
       TreeDetaildata: [],
-      statusOptions: []
+      statusOptions: [],
+      uploadData: {},
+      upLoadUrl: baseUrl + "/api/schedule/uploadDown/uploadFile"
     };
   },
   created() {
@@ -397,11 +406,44 @@ export default {
         this.logFormDialog.handleTime = formatDate(
           this.logFormDialog.handleTime
         );
-        this.logFormDialog.handleCode = this.statusFormat(this.logFormDialog);
+        this.logFormDialog.handleCode = this.selectDictLabel(
+          this.statusOptions,
+          this.logFormDialog.handleCode
+        );
 
         let checkedTree = JSON.parse(res.data.backContent);
         this.treedata = newTeam(checkedTree, "");
       });
+    },
+    // 上传
+    handleBefore() {
+      if (!this.queryParams.databaseId) {
+        this.msgError("请选择数据库IP");
+        return;
+      }
+      if (!this.queryParams.storageDirectory) {
+        this.msgError("请选择目录");
+        return;
+      }
+      let pid = "";
+      this.ipList.forEach(element => {
+        if (element.KEY == this.queryParams.databaseId) {
+          pid = element.parentId;
+        }
+      });
+      this.uploadData.path =
+        this.queryParams.storageDirectory +
+        "/" +
+        pid +
+        "/" +
+        this.queryParams.taskName;
+    },
+    successUpload(res) {
+      if (res.code == 200) {
+        this.msgSuccess("上传成功");
+      } else {
+        this.msgError(res.msg);
+      }
     }
   }
 };
