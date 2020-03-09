@@ -39,8 +39,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column align="center" type="selection" width="50"></el-table-column>
-      <el-table-column align="center" prop="logic_id" label="数据用途ID"></el-table-column>
-      <el-table-column align="center" prop="logic_name" label="用途描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column align="center" prop="logicFlag" label="数据用途ID"></el-table-column>
+      <el-table-column align="center" prop="logicName" label="用途描述" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column
         align="center"
         prop="storage_type_name"
