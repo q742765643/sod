@@ -1,9 +1,9 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SERVER_API;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 // 查询表格
 export function gridEleDecodeDefineAll(query) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/all',
+    url: baseUrl + '/system/gribParameterDefine/list',
     method: 'get',
     params: query
   })
@@ -11,27 +11,26 @@ export function gridEleDecodeDefineAll(query) {
 // 添加
 export function gridEleDecodeDefineAdd(data) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/add',
+    url: baseUrl + '/system/gribParameterDefine/save',
     method: 'post',
     data: data
   })
 }
 export function gridEleDecodeDefineEdit(data) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/edit',
-    method: 'post',
+    url: baseUrl + '/system/gribParameterDefine/edit',
+    method: 'put',
     data: data
   })
 }
 // 删除
 export function gridEleDecodeDefineDelete(ids) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/deleteByIds',
-    method: 'get',
-    params: ids
+    url: baseUrl + '/system/gribParameterDefine/deleteByIds/'+ids,
+    method: 'delete',
   })
 }
-// 导出 
+// 导出
 export function exportJSON() {
   return request({
     url: baseUrl + '/system/api/gridEleDecodeDefine/exportJSON',
