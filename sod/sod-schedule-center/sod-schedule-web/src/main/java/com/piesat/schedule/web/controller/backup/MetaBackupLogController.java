@@ -67,6 +67,12 @@ public class MetaBackupLogController {
         metaBackupLogService.deleteMetaBackupLogByIds(metaBackupLogIds);
         return resultT;
     }
+    @ApiOperation(value = "元数据备份日志导出", notes = "元数据备份日志导出")
+    @RequiresPermissions("schedule:metaBackupLog:export")
+    @GetMapping("/export")
+    public void exportExcel(MetaBackupLogDto metaBackupLogDto){
+        metaBackupLogService.exportExcel(metaBackupLogDto);
+    }
 
 }
 

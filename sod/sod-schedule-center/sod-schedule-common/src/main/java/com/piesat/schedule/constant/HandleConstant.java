@@ -11,6 +11,7 @@ public class HandleConstant {
     public static final String MOVE="MOVE";
     public static final String CLEAR="CLEAR";
     public static final String METABACKUP="METABACKUP";
+    public static final String METACLEAR="METACLEAR";
 
     /**
      *  公共元数据同步

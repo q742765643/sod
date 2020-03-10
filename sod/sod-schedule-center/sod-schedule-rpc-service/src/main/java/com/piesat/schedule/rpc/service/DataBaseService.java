@@ -39,6 +39,11 @@ public class DataBaseService
         return databaseDtos;
     }
 
+    public DatabaseDto findDataBaseById(String dataBaseId){
+        DatabaseDto databaseDto=databaseService.getDotById(dataBaseId);
+        return databaseDto;
+    }
+
     public List<Map<String, Object>> getByDatabaseId(String databaseId){
         List<Map<String, Object>> mapList=dataLogicService.getByDatabaseId(databaseId);
         return mapList;

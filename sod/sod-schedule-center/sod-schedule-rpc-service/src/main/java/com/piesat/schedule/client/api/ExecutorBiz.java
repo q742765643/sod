@@ -23,6 +23,8 @@ public interface ExecutorBiz {
 
     public List<TreeVo> findMeta(String parentId, String databaseType);
 
+    public List<TreeVo> findAllTableByIp(String parentId, String databaseType);
+
     public void recover(MetaRecoverLogEntity recoverLogEntity);
 
     public  List<TreeVo> getFileList(String parentId,String storageDirectory);

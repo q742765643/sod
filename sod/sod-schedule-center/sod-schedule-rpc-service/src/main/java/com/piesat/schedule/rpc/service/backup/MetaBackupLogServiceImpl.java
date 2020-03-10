@@ -6,16 +6,19 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.dao.backup.BackupLogDao;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
 import com.piesat.schedule.dao.backup.MetaBackupLogDao;
+import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.backup.MetaBackupLogEntity;
 import com.piesat.schedule.rpc.api.backup.BackupLogService;
 import com.piesat.schedule.rpc.api.backup.MetaBackupLogService;
 import com.piesat.schedule.rpc.api.backup.MetaBackupService;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
 import com.piesat.schedule.rpc.dto.backup.MetaBackupLogDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupLogMapstruct;
@@ -85,14 +88,37 @@ public class MetaBackupLogServiceImpl extends BaseService<MetaBackupLogEntity> i
     public void deleteMetaBackupLogByIds(String[] metaBackupLogIds){
         this.deleteByIds(Arrays.asList(metaBackupLogIds));
     }
+    public List<MetaBackupLogEntity> selectMetaBackupLogList(MetaBackupLogDto metaBackupLogDto){
+        MetaBackupLogEntity metaBackupLogEntity=metaBackupLogMapstruct.toEntity(metaBackupLogDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
 
-    @Override
-    public byte[] downFile(String path){
+        if(StringUtils.isNotNullString(metaBackupLogEntity.getDatabaseName())){
+            specificationBuilder.add("databaseName", SpecificationOperator.Operator.likeAll.name(),metaBackupLogEntity.getDatabaseName());
+        }
+        if(StringUtils.isNotNullString(metaBackupLogEntity.getTaskName())){
+            specificationBuilder.add("taskName", SpecificationOperator.Operator.likeAll.name(),metaBackupLogEntity.getTaskName());
+        }
+        if(null!=metaBackupLogEntity.getHandleCode()){
+            specificationBuilder.add("handleCode",SpecificationOperator.Operator.eq.name(),metaBackupLogEntity.getHandleCode());
+        }
+        if(StringUtils.isNotNullString((String) metaBackupLogEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) metaBackupLogEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) metaBackupLogEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaBackupLogEntity.getParamt().get("endTime"));
+        }
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        List<MetaBackupLogEntity> metaBackupLogEntities=this.getAll(specificationBuilder.generateSpecification(),sort);
+        return metaBackupLogEntities;
 
-        return null;
     }
 
-
+    @Override
+    public void exportExcel(MetaBackupLogDto metaBackupLogDto){
+        List<MetaBackupLogEntity> entities=this.selectMetaBackupLogList(metaBackupLogDto);
+        ExcelUtil<MetaBackupLogEntity> util=new ExcelUtil(MetaBackupLogEntity.class);
+        util.exportExcel(entities,"数据备份日志");
+    }
 
 
 

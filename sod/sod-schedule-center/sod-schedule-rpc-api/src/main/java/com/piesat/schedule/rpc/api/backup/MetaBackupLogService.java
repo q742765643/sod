@@ -17,6 +17,6 @@ public interface MetaBackupLogService {
 
     public void deleteMetaBackupLogByIds(String[] metaBackupLogIds);
 
-    public byte[] downFile(String path);
+    public void exportExcel(MetaBackupLogDto metaBackupLogDto);
 }
 

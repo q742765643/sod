@@ -27,7 +27,8 @@ import {
   resetForm,
   addDateRange,
   selectDictLabel,
-  download
+  download,
+  downloadfileCommon
 } from "@/utils/ruoyi";
 import Pagination from "@/components/Pagination";
 
@@ -42,6 +43,7 @@ Vue.prototype.resetForm = resetForm
 Vue.prototype.addDateRange = addDateRange
 Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.download = download
+Vue.prototype.downloadfileCommon = downloadfileCommon
 
 Vue.prototype.msgSuccess = function (msg) {
   this.$message({

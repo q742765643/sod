@@ -197,7 +197,8 @@ import {
   getByDatabaseIdAndClassId,
   startBackup,
   stopBackup,
-  executeBackup
+  executeBackup,
+  exportBackup
 } from "@/api/schedule/backup/backup";
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 
@@ -371,10 +372,11 @@ export default {
         type: "warning"
       })
         .then(function() {
-          return exportType(queryParams);
+          return exportBackup();
+
         })
         .then(response => {
-          this.download(response.msg);
+          this.downloadfileCommon(response);
         })
         .catch(function() {});
     }

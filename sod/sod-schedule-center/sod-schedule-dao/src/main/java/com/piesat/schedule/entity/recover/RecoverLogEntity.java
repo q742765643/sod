@@ -27,7 +27,7 @@ public class RecoverLogEntity extends JobInfoLogEntity{
     private String profileName;
     @Column(name="d_data_id", length=50)
     private String ddataId;
-    @Column(name="storage_directory", length=255)
+    @Column(name="storage_directory", columnDefinition = "TEXT")
     private String storageDirectory;
     @Column(name="table_name", length=50)
     private String tableName;

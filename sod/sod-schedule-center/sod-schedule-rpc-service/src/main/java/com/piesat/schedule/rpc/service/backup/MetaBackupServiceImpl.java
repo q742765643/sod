@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.api.DatabaseService;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.client.api.ExecutorBiz;
@@ -13,9 +14,11 @@ import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
+import com.piesat.schedule.entity.backup.MetaBackupLogEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.backup.MetaBackupService;
 import com.piesat.schedule.rpc.dto.backup.MetaBackupDto;
+import com.piesat.schedule.rpc.dto.backup.MetaBackupLogDto;
 import com.piesat.schedule.rpc.mapstruct.backup.MetaBackupMapstruct;
 import com.piesat.schedule.rpc.thread.ScheduleThread;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
@@ -128,6 +131,7 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
                     Map<String,String> map=new HashMap<>();
                     map.put("KEY",databaseDto.getId());
                     map.put("VAULE",databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort());
+                    map.put("parentId",databaseDto.getDatabaseDefine().getId());
                     maps.add(map);
                 }
             }
@@ -150,6 +154,36 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         metaBackupEntity.setTriggerLastTime(System.currentTimeMillis());
         executorBiz.handMetaBack(metaBackupEntity);
 
+    }
+
+    public List<MetaBackupEntity> selectBackupList(MetaBackupDto metaBackupDto){
+        MetaBackupEntity metaBackupEntity=metaBackupMapstruct.toEntity(metaBackupDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(metaBackupEntity.getDatabaseName())){
+            specificationBuilder.add("databaseName", SpecificationOperator.Operator.likeAll.name(),metaBackupEntity.getDatabaseName());
+        }
+        if(StringUtils.isNotNullString(metaBackupEntity.getTaskName())){
+            specificationBuilder.add("taskName", SpecificationOperator.Operator.likeAll.name(),metaBackupEntity.getTaskName());
+        }
+        if(null!=metaBackupEntity.getTriggerStatus()){
+            specificationBuilder.add("triggerStatus",SpecificationOperator.Operator.eq.name(),metaBackupEntity.getTriggerStatus());
+        }
+        if(StringUtils.isNotNullString((String) metaBackupEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) metaBackupEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) metaBackupEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaBackupEntity.getParamt().get("endTime"));
+        }
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        List<MetaBackupEntity> metaBackupEntities=this.getAll(specificationBuilder.generateSpecification(),sort);
+        return metaBackupEntities;
+
+    }
+    @Override
+    public void exportExcel(MetaBackupDto metaBackupDto){
+        List<MetaBackupEntity> entities=this.selectBackupList(metaBackupDto);
+        ExcelUtil<MetaBackupEntity> util=new ExcelUtil(MetaBackupEntity.class);
+        util.exportExcel(entities,"元数据备份配置");
     }
 }
 

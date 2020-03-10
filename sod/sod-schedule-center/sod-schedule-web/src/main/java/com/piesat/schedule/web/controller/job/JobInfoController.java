@@ -38,6 +38,7 @@ public class JobInfoController {
     private DataBaseService dataBaseService;
 
     @GetMapping("/findAllDataBase")
+    @ApiOperation(value = "查询所有物理库接口", notes = "查询所有物理库接口")
     public ResultT findAllDataBase(){
         ResultT resultT=new ResultT();
         List<DatabaseDto> databaseDtos= (List<DatabaseDto>) dataBaseService.findAllDataBase();
@@ -51,7 +52,16 @@ public class JobInfoController {
         resultT.setData(mapList);
         return resultT;
     }
+    @ApiOperation(value = "查询所有物理库详情接口", notes = "查询所有物理库详情接口")
+    @GetMapping(value = "/findDataBaseById/{databaseId}")
+    public  ResultT<DatabaseDto> findDataBaseById(@PathVariable String databaseId){
+        ResultT<DatabaseDto> resultT=new ResultT();
+        DatabaseDto databaseDto=dataBaseService.findDataBaseById(databaseId);
+        resultT.setData(databaseDto);
+        return resultT;
+    }
     @GetMapping(value = "/getByDatabaseIdAndClassId")
+    @ApiOperation(value = "查询资料详情接口", notes = "查询资料详情接口")
     public ResultT getByDatabaseIdAndClassId(String databaseId,String dataClassId){
         ResultT resultT=new ResultT();
         DataRetrieval dataRetrieval =dataBaseService.getByDatabaseIdAndClassId(databaseId,dataClassId);

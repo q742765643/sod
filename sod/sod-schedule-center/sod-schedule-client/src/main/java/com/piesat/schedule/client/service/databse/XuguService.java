@@ -227,5 +227,31 @@ public class XuguService {
             resultT.setErrorMessage(detail);
         }
     }
+
+    public List<TreeVo> findAllTableByIp(){
+        List<TreeVo> treeVos = new ArrayList<>();
+        List<String> instances = xuguOperationMapper.findXuguInstance();
+        if (!instances.isEmpty()) {
+            for (String instance : instances) {
+                TreeVo treeInstance = new TreeVo();
+                treeInstance.setId(instance);
+                treeInstance.setPId("");
+                treeInstance.setName(instance);
+                treeInstance.setParent(true);
+                treeVos.add(treeInstance);
+                List<String> tables = xuguOperationMapper.findXuguTables(instance);
+                if (!tables.isEmpty()) {
+                    for (String table : tables) {
+                        TreeVo treeTable = new TreeVo();
+                        treeTable.setId(instance + "." + table);
+                        treeTable.setPId(instance);
+                        treeTable.setName(instance + "." + table);
+                        treeVos.add(treeTable);
+                    }
+                }
+            }
+        }
+        return treeVos;
+    }
 }
 

@@ -41,10 +41,6 @@ public class ExecuteMmdSyncServiceImpl extends ExecuteBaseService implements Exe
 		
 	}
 
-	@Override
-	public String insertLog(JobInfoEntity jobInfo, Server server, String result, String logId) {
-		return null;
-	}
 	/**
 	 *  公共元数据自动同步调用
 	 * @description 

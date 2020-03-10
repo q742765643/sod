@@ -177,7 +177,6 @@ public abstract class ExecuteBaseService {
             }
       }
 
-      public abstract  String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId);
 
 
 }

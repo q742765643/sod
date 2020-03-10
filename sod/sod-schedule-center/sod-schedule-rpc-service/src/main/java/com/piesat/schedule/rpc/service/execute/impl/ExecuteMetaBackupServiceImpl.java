@@ -30,9 +30,6 @@ public class ExecuteMetaBackupServiceImpl  extends ExecuteBaseService implements
         jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.TASK_SERIAL.name());
     }
 
-    @Override
-    public String insertLog(JobInfoEntity jobInfo, Server server, String result, String logId) {
-        return null;
-    }
+
 }
 

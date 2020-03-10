@@ -5,12 +5,12 @@
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
-        :background-color="variables.menuBg"
+        background-color="rgba(0,0,0,0)"
         :text-color="variables.menuText"
         :unique-opened="true"
-        :active-text-color="variables.menuActiveText"
+        active-text-color="#fff"
         :collapse-transition="false"
-        mode="vertical"
+        :mode="aboutMenuPosition?'vertical':'horizontal'"
       >
         <sidebar-item
           v-for="route in permission_routes"
@@ -20,6 +20,7 @@
         />
       </el-menu>
     </el-scrollbar>
+    <div class v-if="!aboutMenuPosition"></div>
   </div>
 </template>
 
@@ -43,7 +44,12 @@ export default {
       return path;
     },
     showLogo() {
+      console.log(this.$store.state.settings.sidebarLogo);
       return this.$store.state.settings.sidebarLogo;
+    },
+    aboutMenuPosition() {
+      console.log(this.$store.state.settings.menuPosition);
+      return this.$store.state.settings.menuPosition;
     },
     variables() {
       return variables;

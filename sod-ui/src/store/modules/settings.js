@@ -6,7 +6,8 @@ const {
   tagsView,
   fixedHeader,
   sidebarLogo,
-  sideMenuColor
+  sideMenuColor,
+  menuPosition
 } = defaultSettings
 
 const state = {
@@ -15,7 +16,8 @@ const state = {
   tagsView: tagsView,
   fixedHeader: fixedHeader,
   sidebarLogo: sidebarLogo,
-  sideMenuColor: sideMenuColor
+  sideMenuColor: sideMenuColor,
+  menuPosition: menuPosition
 }
 
 const mutations = {
