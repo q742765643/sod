@@ -154,6 +154,7 @@ export default {
     },
     showDialog(type) {
       if (type == "add") {
+        this.ruleForm = {};
         this.dialogTitle = "添加";
         this.msgFormDialog = true;
       } else {
@@ -172,6 +173,7 @@ export default {
       }
     },
     handleTrue(formName) {
+      console.log(this.ruleForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.dialogTitle == "添加") {

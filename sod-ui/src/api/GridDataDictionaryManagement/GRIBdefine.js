@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SYSTEM;
+const baseUrl = process.env.VUE_APP_SERVER_API;
 // 查询表格
 export function gridEleDecodeDefineAll(query) {
   return request({
@@ -26,7 +26,7 @@ export function gridEleDecodeDefineEdit(data) {
 // 删除
 export function gridEleDecodeDefineDelete(ids) {
   return request({
-    url: baseUrl + '/system/gribParameterDefine/deleteByIds/'+ids,
+    url: baseUrl + '/system/gribParameterDefine/deleteByIds/' + ids,
     method: 'delete',
   })
 }

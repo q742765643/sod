@@ -523,7 +523,6 @@ export default {
     // 查看详情
     showDetailDialog(row) {
       listLogDatail(row.id).then(res => {
-        console.log(res);
         this.logFormDialog = res.data;
         this.logDetailDialog = true;
         this.logFormDialog.checked = [];

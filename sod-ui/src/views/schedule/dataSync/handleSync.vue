@@ -140,9 +140,9 @@
           <el-col :span="24">
             <el-form-item label="同步类型" prop="syncType">
               <el-select size="medium" v-model="msgFormDialog.syncType">
-                <el-option label="定时任务同步" value="1"></el-option>
-                <el-option label="数据触发同步" value="2"></el-option>
-                <el-option label="数据库日志同步" value="3"></el-option>
+                <el-option label="定时任务同步" :value="1"></el-option>
+                <el-option label="数据触发同步" :value="2"></el-option>
+                <el-option label="数据库日志同步" :value="3"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -390,7 +390,11 @@
     </el-form>
     <!-- 确定取消 -->
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button
+        type="primary"
+        @click="trueDialog('ruleForm')"
+        v-if="this.handleObj.handleType!='detail'"
+      >确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
   </section>
@@ -435,8 +439,7 @@ export default {
         domains: [
           {
             sourceTableFilter: "",
-            columnOper: "",
-            columnOperArray: ""
+            columnOper: ""
           }
         ]
       },
@@ -587,10 +590,38 @@ export default {
     },
     async initDetail() {
       this.msgFormDialog = this.handleObj;
+      // 源表源表名回显
       await this.sourceDBChange(this.handleObj.sourceDatabaseId);
       await this.sourceTableChange(this.handleObj.sourceTableId);
       if (this.handleObj.sourceDBId) {
         this.msgFormDialog.sourceDatabaseId = this.handleObj.sourceDBId;
+      }
+      // 源表过滤字段回显
+      this.stableFilterForm = {
+        domains: []
+      };
+      this.msgFormDialog.sourceTableFilter.forEach((element, index) => {
+        let obj = {};
+        obj.sourceTableFilter = element;
+        obj.sourceTableFilterText = this.msgFormDialog.sourceTableFilterText[
+          index
+        ];
+        obj.columnOper = this.msgFormDialog.columnOper[index];
+        this.stableFilterForm.domains.push(obj);
+      });
+      // 同步任务执行节点回显
+      this.msgFormDialog.ipAndPort =
+        this.msgFormDialog.execIp + ":" + this.msgFormDialog.execPort;
+      //todo
+      this.msgFormDialog.targetType = "0";
+      // 目标表下拉框
+      await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
+      // 目标表回显
+      this.msgFormDialog.targetTable = this.msgFormDialog.targetTables[0].targetTableId;
+      await this.targetTableChange(this.msgFormDialog.targetTable, "");
+      if (this.msgFormDialog.targetTables.length == 2) {
+        this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
+        await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
     },
     //源数据库事件,根据数据库ID获取源表
@@ -709,8 +740,8 @@ export default {
       }
     },
     //目标数据库事件,根据数据库ID获取表
-    targetDBChange(selectTargetDB) {
-      syncTableByDatabaseId({ databaseId: selectTargetDB }).then(res => {
+    async targetDBChange(selectTargetDB) {
+      await syncTableByDatabaseId({ databaseId: selectTargetDB }).then(res => {
         var resdata = res.data;
         for (var i = 0; i < resdata.length; i++) {
           if (
@@ -721,8 +752,6 @@ export default {
           }
         }
         this.targetTableArray = resdata;
-        console.log("目标表");
-        console.log(this.targetTableArray);
       });
     },
     //目标表事件
@@ -736,7 +765,7 @@ export default {
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
-      if (selectTargetTableID == "") {
+      if (!selectTargetTableID) {
         return;
       }
       if (this.sourceColumnDetail.length == 0) {
@@ -803,7 +832,6 @@ export default {
     //键表或普通的要素表映射
     KTableMapping(table_id, table_name, data_class_id, ttid) {
       if (this.targetColumnDetail.length > 0) {
-        //debugger;
         var sourceLength = this.sourceColumnDetail.length;
         var targetLength = this.targetColumnDetail.length;
         //组织键表映射
@@ -850,7 +878,6 @@ export default {
 
     //值表映射
     ETableMapping(element_obj) {
-      debugger;
       //源表的值表字段信息
       var sourceVColumnList = this.sourceVColumnDetail;
       var sourceLength = sourceVColumnList.length;
@@ -1018,11 +1045,15 @@ export default {
         this.msgFormDialog.sourceTableFilter = [];
 
         arryDomains.forEach(element => {
-          this.msgFormDialog.sourceTableFilterText.push(
-            element.sourceTableFilterText
-          );
-          this.msgFormDialog.columnOper.push(element.columnOper);
-          this.msgFormDialog.sourceTableFilter.push(element.sourceTableFilter);
+          if (element) {
+            this.msgFormDialog.sourceTableFilterText.push(
+              element.sourceTableFilterText
+            );
+            this.msgFormDialog.columnOper.push(element.columnOper);
+            this.msgFormDialog.sourceTableFilter.push(
+              element.sourceTableFilter
+            );
+          }
         });
         console.log(this.msgFormDialog);
         this.$refs[formName].validate(valid => {
@@ -1094,9 +1125,6 @@ export default {
     display: flex;
     justify-content: flex-end;
     padding: 10px 0;
-  }
-  .el-form-item {
-    margin-bottom: 5px;
   }
 }
 </style>
