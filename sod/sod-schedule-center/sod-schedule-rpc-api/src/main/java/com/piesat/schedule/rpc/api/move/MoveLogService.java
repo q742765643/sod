@@ -15,4 +15,6 @@ public interface MoveLogService {
     public MoveLogDto findMoveLogById(String moveLogId);
 
     public void deleteMoveLogByIds(String[] moveLogIds);
+
+    public void exportExcel(MoveLogDto moveLogDto);
 }

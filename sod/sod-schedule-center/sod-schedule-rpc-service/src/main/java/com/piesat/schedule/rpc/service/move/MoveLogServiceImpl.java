@@ -5,11 +5,14 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.schedule.dao.move.MoveLogDao;
+import com.piesat.schedule.entity.clear.MetaClearEntity;
 import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.rpc.api.move.MoveLogService;
+import com.piesat.schedule.rpc.dto.clear.MetaClearDto;
 import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveLogMapstruct;
@@ -74,6 +77,7 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
         return pageBean;
 
     }
+    @Override
     public MoveLogDto selectMoveLoByJobId(String jobId){
         PageForm pageForm=new PageForm(1,1);
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
@@ -99,6 +103,46 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
     @Override
     public void deleteMoveLogByIds(String[] moveLogIds){
         this.deleteByIds(Arrays.asList(moveLogIds));
+    }
+
+    public List<MoveLogEntity> selectMoveLogList(MoveLogDto moveLogDto){
+        MoveLogEntity moveLogEntity=moveLogMapstruct.toEntity(moveLogDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(moveLogEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),moveLogEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(moveLogEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(moveLogEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getProfileName());
+        }
+        if(null!=moveLogEntity.getHandleCode()){
+            specificationBuilder.add("handleCode",SpecificationOperator.Operator.eq.name(),moveLogEntity.getHandleCode());
+        }
+        if(StringUtils.isNotNullString(moveLogEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),moveLogEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) moveLogEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) moveLogEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) moveLogEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) moveLogEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        List<MoveLogEntity> moveEntities=this.getAll(specification,sort);
+        return moveEntities;
+
+    }
+
+    @Override
+    public void exportExcel(MoveLogDto moveLogDto){
+        List<MoveLogEntity> entities=this.selectMoveLogList(moveLogDto);
+        ExcelUtil<MoveLogEntity> util=new ExcelUtil(MoveLogEntity.class);
+        util.exportExcel(entities,"数据迁移日志");
     }
 }
 

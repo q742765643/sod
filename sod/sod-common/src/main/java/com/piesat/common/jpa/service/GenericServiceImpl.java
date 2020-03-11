@@ -1,6 +1,9 @@
 package com.piesat.common.jpa.service;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.jpa.dao.GenericDao;
+import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.util.BaseDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.hibernate.SQLQuery;
@@ -21,6 +24,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,6 +59,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     @Override
     public PageBean getPage(final Specification<T> specification, PageForm pageForm, Sort sort) {
         PageBean pageBean=new PageBean();
+        sort=this.getSort(pageForm,sort);
         Page<T> page=this.getGenericDao().findAll(specification,this.buildPageRequest(pageForm,sort));
         pageBean.setPageData(page.getContent());
         pageBean.setTotalPage(page.getTotalPages());
@@ -102,6 +107,7 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     @Override
     public PageBean getAll(final PageForm pageForm,Sort sort) {
         PageBean pageBean=new PageBean();
+        sort=this.getSort(pageForm,sort);
         Page<T> page=this.getGenericDao().findAll(this.buildPageRequest(pageForm,sort));
         pageBean.setPageData(page.getContent());
         pageBean.setTotalPage(page.getTotalPages());
@@ -288,6 +294,32 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
             sort=Sort.unsorted();
         }
         return PageRequest.of(pageForm.getCurrentPage()-1, pageForm.getPageSize(),sort);
+    }
+
+    public Sort getSort(PageForm pageForm,Sort sort){
+        Object obj=pageForm.getT();
+        if(obj instanceof BaseDto){
+            BaseDto baseDto= (BaseDto) obj;
+            String  param=baseDto.getParams();
+            if (null == param || !com.piesat.common.utils.StringUtils.isNotNullString(param)) {
+                return sort;
+            }
+            Map<String, Object> map = JSON.parseObject(param, Map.class);
+            List<Map<String, String>> mapList = (List<Map<String, String>>) map.get("orderBy");
+            if (null == mapList || mapList.isEmpty()) {
+                return sort;
+            }
+            List<Sort.Order> orders=new ArrayList<Sort.Order>();
+            mapList.forEach(smap-> {
+                String name = smap.get("name");
+                String sortT = smap.get("sort");
+                orders.add( new Sort.Order(Sort.Direction.fromString(sortT), name));
+            });
+            if(!orders.isEmpty()){
+                sort=Sort.by(orders);
+            }
+        }
+        return sort;
     }
 
 }

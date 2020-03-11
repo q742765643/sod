@@ -16,4 +16,6 @@ public interface ClearLogService {
     public ClearLogDto findClearLogById(String clearLogId);
 
     public void deleteClearLogByIds(String[] clearLogIds);
+
+    public void exportExcel(ClearLogDto clearLogDto);
 }

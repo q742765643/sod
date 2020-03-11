@@ -32,7 +32,7 @@ public class MetaClearEntity extends JobInfoEntity{
     @Excel(name = "物理库名称")
     @Column(name="database_name", length=200)
     private String databaseName;
-    @Excel(name = "清除类型")
+    @Excel(name = "where条件")
     @Column(name="conditions", length=200)
     private String conditions;
     @Excel(name = "物理库类型")

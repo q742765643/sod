@@ -27,6 +27,9 @@ public interface MoveService {
     public void deleteMoveByIds(String[] moveIds);
 
     public List<Map<String,Object>> findDatabase();
+
     public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
+
+    public void exportExcel(MoveDto moveDto);
 }
 
