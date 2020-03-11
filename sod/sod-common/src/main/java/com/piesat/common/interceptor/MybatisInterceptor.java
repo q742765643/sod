@@ -1,9 +1,11 @@
 package com.piesat.common.interceptor;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.JsonSerializable;
 import com.piesat.common.annotation.MybatisAnnotation;
 import com.piesat.common.jpa.entity.BaseEntity;
 import com.piesat.common.utils.reflect.ReflectUtils;
+import com.piesat.util.BaseDto;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Table;
@@ -63,6 +65,28 @@ public class MybatisInterceptor implements Interceptor {
         String originalSql = boundSql.getSql().trim();
         if (parameter instanceof BaseEntity) {
             BaseEntity entity = (BaseEntity) parameter;
+            CCJSqlParserManager pm = new CCJSqlParserManager();
+            Statement parse = pm.parse(new StringReader(originalSql));
+            Select noOrderSelect = (Select)parse;
+            SelectBody selectBody = noOrderSelect.getSelectBody();
+            String add=this.resetSql(entity.getParams(),selectBody,resultMaps);
+
+            if(com.piesat.common.utils.StringUtils.isNotNullString(add)) {
+                try {
+
+                    PlainSelect setOperationList = (PlainSelect)selectBody;
+                    originalSql = noOrderSelect.toString();
+                    if (null!=setOperationList.getOrderByElements()){
+                        setOperationList.setOrderByElements(null);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String sql = originalSql+" order by  " + add;
+                originalSql = sql;
+            }
+        }  if (parameter instanceof BaseDto) {
+            BaseDto entity = (BaseDto) parameter;
             CCJSqlParserManager pm = new CCJSqlParserManager();
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;

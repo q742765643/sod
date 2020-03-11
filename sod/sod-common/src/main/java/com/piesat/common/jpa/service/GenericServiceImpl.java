@@ -318,7 +318,28 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
             if(!orders.isEmpty()){
                 sort=Sort.by(orders);
             }
+        }else if(obj instanceof BaseEntity){
+            BaseEntity baseEntity= (BaseEntity) obj;
+            String  param=baseEntity.getParams();
+            if (null == param || !com.piesat.common.utils.StringUtils.isNotNullString(param)) {
+                return sort;
+            }
+            Map<String, Object> map = JSON.parseObject(param, Map.class);
+            List<Map<String, String>> mapList = (List<Map<String, String>>) map.get("orderBy");
+            if (null == mapList || mapList.isEmpty()) {
+                return sort;
+            }
+            List<Sort.Order> orders=new ArrayList<Sort.Order>();
+            mapList.forEach(smap-> {
+                String name = smap.get("name");
+                String sortT = smap.get("sort");
+                orders.add( new Sort.Order(Sort.Direction.fromString(sortT), name));
+            });
+            if(!orders.isEmpty()){
+                sort=Sort.by(orders);
+            }
         }
+
         return sort;
     }
 
