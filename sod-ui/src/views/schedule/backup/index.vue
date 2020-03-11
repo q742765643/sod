@@ -186,6 +186,8 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
 import {
   listBackup,
   getBackup,
@@ -365,20 +367,11 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm("是否确认导出所有类型数据项?", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return exportBackup();
-
-        })
-        .then(response => {
-          this.downloadfileCommon(response);
-        })
-        .catch(function() {});
+      let obj = this.queryParams;
+      let flieData = Encrypt(JSON.stringify(obj)); //加密
+      flieData = encodeURIComponent(flieData); //转码
+      window.location.href =
+        baseUrl + "/schedule/backup/export?sign=111111&data=" + flieData;
     }
   }
 };

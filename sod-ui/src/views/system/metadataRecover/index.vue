@@ -390,7 +390,6 @@ export default {
     },
     viewDetail(row) {
       logDetail(row.id).then(res => {
-        console.log(res);
         this.logFormDialog = res.data;
         this.logDetailDialog = true;
         this.logFormDialog.checked = [];

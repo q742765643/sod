@@ -101,7 +101,7 @@
             type="text"
             size="mini"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleUpdate(scope.row,'edit')"
             v-hasPermi="['schedule:backup:edit']"
           >编辑</el-button>
           <el-button
@@ -111,7 +111,12 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['schedule:sync:deleteSync']"
           >删除</el-button>
-          <el-button type="text" size="mini" icon="el-icon-view">查看</el-button>
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-view"
+            @click="handleUpdate(scope.row,'detail')"
+          >查看</el-button>
           <el-button
             type="text"
             size="mini"
@@ -302,7 +307,7 @@ export default {
     },
 
     viewDaiy(row) {
-      this.handletaskId = row.taskId;
+      this.handletaskId = row.id;
       this.dailyDataDialog = true;
     },
     addSync() {
@@ -332,12 +337,17 @@ export default {
         .catch(function() {});
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate(row, type) {
       const id = row.id;
-      getSyncInfo(id).then(response => {
+      if (type == "edit") {
         this.dialogTitle = "修改";
+      } else {
+        this.dialogTitle = "查看详情";
+      }
+      getSyncInfo(id).then(response => {
         this.handleDialog = true;
         this.handleObj = response.data;
+        this.handleObj.handleType = type;
         console.log(this.handleObj);
       });
     }

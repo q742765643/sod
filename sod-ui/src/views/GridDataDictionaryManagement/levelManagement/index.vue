@@ -166,6 +166,7 @@ export default {
     },
     showDialog(type) {
       if (type == "add") {
+        this.ruleForm = {};
         this.dialogTitle = "添加";
       } else {
         if (this.choserow.length != 1) {

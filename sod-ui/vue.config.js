@@ -61,9 +61,9 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
-      // 姜海峰
+      // 亚娟
       [process.env.VUE_APP_SERVER_API]: {
-        target: `http://10.1.6.117:8007`,
+        target: `http://192.168.1.101:2345`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SERVER_API]: ""

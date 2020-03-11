@@ -59,8 +59,8 @@ service.interceptors.request.use(
 
 // 响应拦截器
 service.interceptors.response.use(res => {
-    console.log(res)
-    if(res.data instanceof ArrayBuffer){
+    // console.log(res)
+    if (res.data instanceof ArrayBuffer) {
       return res;
     }
     const code = res.data.code
