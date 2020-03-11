@@ -97,10 +97,20 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="moveLogList" row-key="id" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="moveLogList"
+      row-key="id"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="资料名称" align="center" prop="profileName" :show-overflow-tooltip="true" />
-      <el-table-column label="运行地址" align="center" prop="executorAddress"  />
+      <el-table-column
+        label="资料名称"
+        align="center"
+        prop="profileName"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column label="运行地址" align="center" prop="executorAddress" />
       <el-table-column label="状态" align="center" prop="handleCode" :formatter="statusFormat" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -139,25 +149,24 @@
     <el-dialog :title="title" :visible.sync="open" width="800px">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
-
           <el-col :span="24">
             <el-form-item label="资料名称" prop="profileName">
-              <el-input v-model="form.profileName"  />
+              <el-input v-model="form.profileName" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="清除条件" prop="conditions">
-              <el-input v-model="form.conditions"  />
+              <el-input v-model="form.conditions" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="二级nas清除条件" prop="clearConditions">
-              <el-input v-model="form.clearConditions"  />
+              <el-input v-model="form.clearConditions" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="归档清除条件" prop="archiveConditions">
-              <el-input v-model="form.archiveConditions"  />
+              <el-input v-model="form.archiveConditions" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -201,18 +210,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="应触发时间" prop="triggerTime" >
-              <el-input v-model="form.triggerTime"/>
+            <el-form-item label="应触发时间" prop="triggerTime">
+              <el-input v-model="form.triggerTime" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="实际触发时间" prop="handleTime" >
-              <el-input v-model="form.handleTime"/>
+            <el-form-item label="实际触发时间" prop="handleTime">
+              <el-input v-model="form.handleTime" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="执行过程">
-              <el-input v-model="form.handleMsg" type="textarea" ></el-input>
+              <el-input v-model="form.handleMsg" type="textarea"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -225,143 +234,146 @@
 </template>
 
 <script>
-  import { listMoveLog, getMoveLog, delMoveLog } from "@/api/schedule/move/moveLog";
-  import { formatDate } from "@/utils/index";
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
+import {
+  listMoveLog,
+  getMoveLog,
+  delMoveLog
+} from "@/api/schedule/move/moveLog";
+import { formatDate } from "@/utils/index";
 
-  export default {
-    data() {
-      return {
-        // 遮罩层
-        loading: true,
-        // 选中数组
-        ids: [],
-        // 非单个禁用
-        single: true,
-        // 非多个禁用
-        multiple: true,
-        // 总条数
-        total: 0,
-        // 备份表格数据
-        moveLogList: [],
-        // 弹出层标题
-        title: "",
-        // 是否显示弹出层
-        open: false,
-        // 状态数据字典
-        statusOptions: [],
+export default {
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 总条数
+      total: 0,
+      // 备份表格数据
+      moveLogList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 状态数据字典
+      statusOptions: [],
 
-        // 日期范围
-        dateRange: [],
-        // 查询参数
-        queryParams: {
-          pageNum: 1,
-          pageSize: 10,
-          profileName: undefined,
-          dataClassId: undefined,
-          handleCode: undefined,
-          tableName: undefined
-        },
-        // 表单参数
-        form: {},
-        // 表单校验
-        rules: {
-
+      // 日期范围
+      dateRange: [],
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        profileName: undefined,
+        dataClassId: undefined,
+        handleCode: undefined,
+        tableName: undefined
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {}
+    };
+  },
+  created() {
+    this.getList();
+    this.getDicts("job_handle_status").then(response => {
+      this.statusOptions = response.data;
+    });
+  },
+  methods: {
+    /** 查询字典类型列表 */
+    getList() {
+      this.loading = true;
+      listMoveLog(this.addDateRange(this.queryParams, this.dateRange)).then(
+        response => {
+          this.moveLogList = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
         }
+      );
+    },
+    // 字典状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.statusOptions, row.handleCode);
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: undefined
       };
+      this.resetForm("form");
     },
-    created() {
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
-      this.getDicts("job_handle_status").then(response => {
-        this.statusOptions = response.data;
-
-      });
-
-
     },
-    methods: {
-      /** 查询字典类型列表 */
-      getList() {
-        this.loading = true;
-        listMoveLog(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.moveLogList = response.data.pageData;
-            this.total = response.data.totalCount;
-            this.loading = false;
-          }
-        );
-      },
-      // 字典状态字典翻译
-      statusFormat(row, column) {
-        return this.selectDictLabel(this.statusOptions, row.handleCode);
-      },
-      // 取消按钮
-      cancel() {
-        this.open = false;
-        this.reset();
-      },
-      // 表单重置
-      reset() {
-        this.form = {
-          id: undefined,
-
-        };
-        this.resetForm("form");
-      },
-      /** 搜索按钮操作 */
-      handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
-      },
-      /** 重置按钮操作 */
-      resetQuery() {
-        this.dateRange = [];
-        this.resetForm("queryForm");
-        this.handleQuery();
-      },
-      // 多选框选中数据
-      handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
-        this.single = selection.length!=1
-        this.multiple = !selection.length
-      },
-      /** 修改按钮操作 */
-      handleUpdate(row) {
-        this.reset();
-        const id = row.id || this.ids
-        getMoveLog(id).then(response => {
-          this.form = response.data;
-          this.form.triggerTime=formatDate(this.form.triggerTime)
-          this.form.handleTime=formatDate(this.form.handleTime)
-          this.open = true;
-          this.title = "查看数据迁移日志信息";
-        });
-      },
-      /** 删除按钮操作 */
-      handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$confirm('是否确认删除任务日志编号为"' + ids + '"的数据项?', "警告", {
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids;
+      getMoveLog(id).then(response => {
+        this.form = response.data;
+        this.form.triggerTime = formatDate(this.form.triggerTime);
+        this.form.handleTime = formatDate(this.form.handleTime);
+        this.open = true;
+        this.title = "查看数据迁移日志信息";
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$confirm(
+        '是否确认删除任务日志编号为"' + ids + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }
+      )
+        .then(function() {
           return delMoveLog(ids);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
-      },
-      /** 导出按钮操作 */
-      handleExport() {
-        const queryParams = this.queryParams;
-        this.$confirm('是否确认导出所有类型数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return exportType(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-        }).catch(function() {});
-      }
+        })
+        .catch(function() {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      let obj = this.queryParams;
+      let flieData = Encrypt(JSON.stringify(obj)); //加密
+      flieData = encodeURIComponent(flieData); //转码
+      window.location.href =
+        baseUrl + "/schedule/moveLog/export?sign=111111&data=" + flieData;
     }
-  };
+  }
+};
 </script>

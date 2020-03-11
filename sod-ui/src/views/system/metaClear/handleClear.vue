@@ -1,5 +1,5 @@
 <template>
-  <section class="handleExport">
+  <section class="handleClear">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="140px">
       <el-row>
         <el-col :span="12">
@@ -21,12 +21,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="类型" prop="checked">
-            <el-checkbox-group v-model="msgFormDialog.checked">
-              <el-checkbox label="结构">结构</el-checkbox>
-              <el-checkbox label="数据">数据</el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
+
           <el-row>
             <el-col :span="20">
               <el-form-item label="执行策略" prop="jobCron">
@@ -44,15 +39,8 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="存储目录">
-            <el-select size="small" filterable v-model="msgFormDialog.storageDirectory">
-              <el-option
-                v-for="dict in storageDirectoryOptions"
-                :key="dict.dictValue"
-                :label="dict.dictLabel"
-                :value="dict.dictValue"
-              ></el-option>
-            </el-select>
+          <el-form-item label="where条件" prop="conditions">
+            <el-input size="small" v-model="msgFormDialog.conditions"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -70,13 +58,9 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="where条件" v-show="msgFormDialog.conditions">
-        <el-input size="small" v-model="msgFormDialog.conditions" :disabled="true"></el-input>
-      </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
-      <el-button type="primary" @click="trueDialog('ruleForm','handExe')">手工执行元数据备份</el-button>
-      <el-button type="primary" @click="trueDialog('ruleForm','handtrue')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
     <Cron
@@ -93,14 +77,14 @@
 import Cron from "@/components/cron/Cron";
 import { newTeam } from "@/components/commonVaildate";
 import {
+  getDetailByID,
   findDataBase,
   findMeta,
-  addMetaBackup,
-  editMetaBackup,
-  handExecute
-} from "@/api/system/metadataBackup";
+  addMetaClear,
+  editMetaBackup
+} from "@/api/system/metaClear";
 export default {
-  name: "handleExport",
+  name: "handleClear",
   props: {
     handleObj: {
       type: Object
@@ -118,9 +102,7 @@ export default {
       msgFormDialog: {
         taskName: "",
         databaseId: "",
-        checked: [],
         jobCron: "",
-        storageDirectory: "",
         conditions: ""
       },
       ipList: [],
@@ -136,12 +118,11 @@ export default {
         databaseId: [
           { required: true, message: "请选择数据库IP", trigger: "change" }
         ],
-        checked: [{ required: true, message: "请选择类型", trigger: "change" }],
         jobCron: [
           { required: true, message: "请输入执行策略", trigger: "blur" }
         ],
-        storageDirectory: [
-          { required: true, message: "请选择存储目录", trigger: "change" }
+        conditions: [
+          { required: true, message: "请输入where条件", trigger: "blur" }
         ]
       }
     };
@@ -154,29 +135,21 @@ export default {
       this.storageDirectoryOptions = response.data;
     });
     if (this.handleObj.id) {
-      this.msgFormDialog = this.handleObj;
-      this.msgFormDialog.checked = [];
-      let checkedArry = this.msgFormDialog.isStructure.split(",");
-      checkedArry.forEach(element => {
-        if (element == "0") {
-          this.msgFormDialog.checked.push("结构");
-        }
-        if (element == "1") {
-          this.msgFormDialog.checked.push("数据");
-        }
+      // 查详情
+      await getDetailByID(this.handleObj.id).then(response => {
+        this.msgFormDialog = response.data;
       });
       await this.findTree(this.msgFormDialog.databaseId);
-      // 获取树的选中节点
-      let checkedTree = JSON.parse(this.msgFormDialog.backContent);
+      // // 获取树的选中节点
       this.defaultChecked = [];
+      let checkedTree = this.msgFormDialog.clearContent.split(",");
       checkedTree.forEach(element => {
         this.treeJson.forEach(t => {
-          if (element.nodeKey == t.nodeKey) {
-            this.defaultChecked.push(element.nodeKey);
+          if (element == t.id) {
+            this.defaultChecked.push(t.nodeKey);
           }
         });
       });
-      console.log(this.defaultChecked);
     }
   },
   methods: {
@@ -189,7 +162,6 @@ export default {
         });
         // 第一级的pid为空
         this.treedata = newTeam(this.treeJson, "");
-        console.log(this.treedata);
       });
     },
     handExe(formName) {
@@ -205,64 +177,40 @@ export default {
       let newArry = [];
       checkedArry.forEach(element => {
         this.treeJson.forEach(t => {
-          if (element == t.nodeKey) {
-            let obj = {};
-            obj = t;
-            newArry.push(obj);
+          if (element == t.nodeKey && t.pid) {
+            /*  let obj = {};
+            obj = t; */
+            newArry.push(t.id);
           }
         });
       });
-      this.msgFormDialog.backContent = JSON.stringify(newArry);
-      this.msgFormDialog.isStructure = [];
-      this.msgFormDialog.checked.forEach(element => {
-        if (element == "结构") {
-          this.msgFormDialog.isStructure.push("0");
-        }
-        if (element == "数据") {
-          this.msgFormDialog.isStructure.push("1");
-        }
-      });
-      this.msgFormDialog.isStructure = this.msgFormDialog.isStructure.join(",");
+      if (newArry.length == 0) {
+        this.msgError("数据库对象只能选择子节点");
+        return;
+      }
+      this.msgFormDialog.clearContent = newArry.join(",");
+      // this.msgFormDialog.clearContent = checkedArry.join(",");
       console.log(this.msgFormDialog);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (type == "handtrue") {
-            if (this.handleObj.id) {
-              editMetaBackup(this.msgFormDialog).then(response => {
-                if (response.code === 200) {
-                  this.msgSuccess("修改成功");
-                  this.$emit("cancelHandle");
-                } else {
-                  this.msgError(response.msg);
-                }
-              });
-            } else {
-              addMetaBackup(this.msgFormDialog).then(response => {
-                if (response.code === 200) {
-                  this.msgSuccess("新增成功");
-                  this.$emit("cancelHandle");
-                } else {
-                  this.msgError(response.msg);
-                }
-              });
-            }
+          if (this.handleObj.id) {
+            editMetaBackup(this.msgFormDialog).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("修改成功");
+                this.$emit("cancelHandle");
+              } else {
+                this.msgError(response.msg);
+              }
+            });
           } else {
-            this.$prompt("请输入where条件", "温馨提示", {
-              confirmButtonText: "确定",
-              cancelButtonText: "取消"
-            })
-              .then(({ value }) => {
-                this.msgFormDialog.conditions = value;
-                handExecute(this.msgFormDialog).then(response => {
-                  if (response.code === 200) {
-                    this.msgSuccess("新增成功");
-                    this.$emit("cancelHandle");
-                  } else {
-                    this.msgError(response.msg);
-                  }
-                });
-              })
-              .catch(function() {});
+            addMetaClear(this.msgFormDialog).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess("新增成功");
+                this.$emit("cancelHandle");
+              } else {
+                this.msgError(response.msg);
+              }
+            });
           }
         } else {
           console.log("error submit!!");
@@ -285,12 +233,12 @@ export default {
 };
 </script>
 <style lang="scss">
-.handleExport {
+.handleClear {
   .el-select {
     width: 100%;
   }
   .el-scrollbar {
-    height: 340px;
+    height: 240px;
     .el-scrollbar__wrap {
       overflow-x: hidden;
     }

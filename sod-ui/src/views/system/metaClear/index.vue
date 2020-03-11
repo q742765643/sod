@@ -1,8 +1,8 @@
 <template>
-  <div class="app-container metadataBackupTem">
-    <!-- 系统元数据备份 -->
+  <div class="app-container metadataClearTem">
+    <!-- 元数据清除 -->
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="元数据备份配置" name="first">
+      <el-tab-pane label="元数据清除配置" name="first">
         <el-form :model="queryParams" :inline="true">
           <el-form-item label="数据库IP">
             <el-select size="small" style="width:200px" filterable v-model="queryParams.databaseId">
@@ -36,10 +36,10 @@
         </el-form>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button size="small" type="primary" @click="handleAdd" icon="el-icon-plus">添加</el-button>
+            <el-button size="small" type="primary" @click="handleClear" icon="el-icon-plus">添加</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="danger" @click="deleteShow()" icon="el-icon-delete">删除同步任务</el-button>
+            <el-button size="small" type="danger" @click="deleteShow" icon="el-icon-delete">删除</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
@@ -62,24 +62,17 @@
           ></el-table-column>
           <el-table-column
             align="center"
-            prop="storageDirectory"
-            label="存储目录"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column
-            align="center"
             prop="databaseName"
             label="数据库"
             :show-overflow-tooltip="true"
           ></el-table-column>
           <el-table-column align="center" prop="jobCron" label="执行策略" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column align="center" prop="isStructure" label="类型" width="100">
-            <template slot-scope="scope">
-              <span v-if="scope.row.isStructure==0">结构</span>
-              <span v-if="scope.row.isStructure==1">数据</span>
-              <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
-            </template>
-          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="conditions"
+            label="where条件"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
           <el-table-column align="center" prop="triggerStatus" label="状态">
             <template slot-scope="scope">
               <el-link
@@ -142,7 +135,7 @@
           @pagination="getMetaBackupList"
         />
       </el-tab-pane>
-      <el-tab-pane label="元数据备份监控" name="second">
+      <el-tab-pane label="元数据清除日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
           <el-form-item label="数据库IP">
             <el-select style="width:200px" filterable v-model="rowlogForm.name">
@@ -157,16 +150,7 @@
           <el-form-item label="任务名称">
             <el-input size="small" v-model="rowlogForm.taskName"></el-input>
           </el-form-item>
-          <el-form-item label="时间范围">
-            <el-date-picker
-              style="width:300px"
-              v-model="dateRange"
-              type="datetimerange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            ></el-date-picker>
-          </el-form-item>
+
           <el-form-item>
             <el-button size="small" type="primary" @click="queryListLog" icon="el-icon-search">查询</el-button>
           </el-form-item>
@@ -196,30 +180,26 @@
             label="任务名称"
             :show-overflow-tooltip="true"
           ></el-table-column>
-          <el-table-column
-            prop="storageDirectory"
-            align="center"
-            label="存储目录"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
+
           <el-table-column
             prop="databaseName"
             align="center"
             label="数据库"
             :show-overflow-tooltip="true"
           ></el-table-column>
-          <el-table-column width="200px" prop="handleTime" align="center" label="运行开始时间">
-            <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.handleTime) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="isStructure" align="center" label="类型">
-            <template slot-scope="scope">
-              <span v-if="scope.row.isStructure==0">结构</span>
-              <span v-if="scope.row.isStructure==1">数据</span>
-              <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
-            </template>
-          </el-table-column>
+          <el-table-column
+            prop="conditions"
+            align="center"
+            label="where条件"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column
+            prop="executorAddress"
+            align="center"
+            label="执行地址"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+
           <el-table-column label="状态" align="center" prop="handleCode" :formatter="statusFormat"></el-table-column>
           <el-table-column align="center" label="操作" width="240px">
             <template slot-scope="scope">
@@ -229,12 +209,6 @@
                 icon="el-icon-reading"
                 @click="showDetailDialog(scope.row)"
               >查看详情</el-button>
-              <el-button
-                type="text"
-                size="mini"
-                icon="el-icon-download"
-                @click="download(scope.row)"
-              >下载</el-button>
               <el-button
                 type="text"
                 size="mini"
@@ -254,56 +228,38 @@
       </el-tab-pane>
     </el-tabs>
     <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="50%">
-      <handleExport @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExport>
+      <handleClear @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleClear>
     </el-dialog>
     <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
       <el-form ref="ruleForm" :model="logFormDialog" label-width="140px">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="任务名称">
-              <el-input size="small" v-model="logFormDialog.taskName"></el-input>
-            </el-form-item>
-            <el-form-item label="数据库IP">
-              <el-select size="small" filterable v-model="logFormDialog.databaseId">
-                <el-option
-                  v-for="(item,index) in ipList"
-                  :key="index"
-                  :label="item.VAULE"
-                  :value="item.KEY"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="类型">
-              <el-checkbox-group v-model="logFormDialog.checked">
-                <el-checkbox label="结构">结构</el-checkbox>
-                <el-checkbox label="数据">数据</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label="存储目录">
-              <el-input size="small" v-model="logFormDialog.storageDirectory"></el-input>
-            </el-form-item>
-            <el-form-item label="执行地址">
-              <el-input size="small" v-model="logFormDialog.executorAddress"></el-input>
-            </el-form-item>
-            <el-form-item label="执行耗时">
-              <el-input size="small" v-model="logFormDialog.elapsedTime"></el-input>
-            </el-form-item>
-            <el-form-item label="应触发时间">
-              <el-input size="small" v-model="logFormDialog.triggerTime"></el-input>
-            </el-form-item>
-            <el-form-item label="实际触发时间">
-              <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
-            </el-form-item>
-            <el-form-item label="执行过程">
-              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-scrollbar wrap-class="scrollbar-wrapper">
-              <el-tree ref="eltree" node-key="nodeKey" :data="treedata" :props="defaultProps"></el-tree>
-            </el-scrollbar>
-          </el-col>
-        </el-row>
+        <el-form-item label="任务名称">
+          <el-input size="small" v-model="logFormDialog.taskName"></el-input>
+        </el-form-item>
+        <el-form-item label="数据库IP">
+          <el-select size="small" filterable v-model="logFormDialog.databaseId">
+            <el-option
+              v-for="(item,index) in ipList"
+              :key="index"
+              :label="item.VAULE"
+              :value="item.KEY"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="执行地址">
+          <el-input size="small" v-model="logFormDialog.executorAddress"></el-input>
+        </el-form-item>
+        <el-form-item label="执行耗时">
+          <el-input size="small" v-model="logFormDialog.elapsedTime"></el-input>
+        </el-form-item>
+        <el-form-item label="应触发时间">
+          <el-input size="small" v-model="logFormDialog.triggerTime"></el-input>
+        </el-form-item>
+        <el-form-item label="实际触发时间">
+          <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
+        </el-form-item>
+        <el-form-item label="执行过程">
+          <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="logDetailDialog = false">取 消</el-button>
@@ -317,23 +273,22 @@ var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
 import { Encrypt } from "@/utils/htencrypt";
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
+import { startTask, stopTask, execute } from "@/api/system/metadataBackup";
 import {
   findDataBase,
-  metaBackupList,
-  metaBackupDel,
-  startTask,
-  stopTask,
-  execute,
+  metaClearList,
+  metaClearDel,
+  metaClearExport,
   listLog,
   deleteLogById,
   listLogDatail,
-  downFile
-} from "@/api/system/metadataBackup";
+  metaClearLogExport
+} from "@/api/system/metaClear";
 //增加查看弹框
-import handleExport from "@/views/system/metadataBackup/handleExport";
+import handleClear from "@/views/system/metaClear/handleClear";
 export default {
   components: {
-    handleExport
+    handleClear
   },
   data() {
     return {
@@ -347,13 +302,10 @@ export default {
       },
       tableData: [],
       total: 0,
-      // 新增/编辑同步任务
       dialogTitle: "",
       handleDialog: false,
       handleObj: {},
-      // 立即同步元数据
       logDetailDialog: false,
-      syncDescList: [],
       currentRow: [],
       //同步记录查询
       loadingHis: false,
@@ -363,7 +315,6 @@ export default {
         taskName: "",
         databaseId: ""
       },
-      dateRange: [],
       logTableData: [], //同步表格数据
       logDataTotal: 0,
       tableNames: [],
@@ -412,13 +363,13 @@ export default {
     /** 查询列表 */
     getMetaBackupList() {
       this.loading = true;
-      metaBackupList(this.queryParams).then(response => {
+      metaClearList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
       });
     },
-    handleAdd(type) {
+    handleClear(type) {
       this.handleObj = {};
       this.dialogTitle = "添加";
       this.handleDialog = true;
@@ -460,7 +411,7 @@ export default {
           type: "warning"
         })
           .then(function() {
-            return metaBackupDel(ids.join(","));
+            return metaClearDel(ids.join(","));
           })
           .then(() => {
             this.getMetaBackupList();
@@ -478,6 +429,14 @@ export default {
         triggerStatus: ""
       };
       this.getMetaBackupList();
+    },
+    handleExport() {
+      // metaClearExport(this.queryParams).then(response => {});
+      let obj = this.queryParams;
+      let flieData = Encrypt(JSON.stringify(obj)); //加密
+      flieData = encodeURIComponent(flieData); //转码
+      window.location.href =
+        baseUrl + "/schedule/metaClear/export?sign=111111&data=" + flieData;
     },
 
     statusFormat(row, column) {
@@ -511,14 +470,11 @@ export default {
     //日志列表
     getListLog() {
       this.loading = true;
-      console.log(this.rowlogForm);
-      listLog(this.addDateRange(this.rowlogForm, this.dateRange)).then(
-        response => {
-          this.logTableData = response.data.pageData;
-          this.logDataTotal = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      listLog(this.rowlogForm).then(response => {
+        this.logTableData = response.data.pageData;
+        this.logDataTotal = response.data.totalCount;
+        this.loading = false;
+      });
     },
     // 查看详情
     showDetailDialog(row) {
@@ -546,18 +502,13 @@ export default {
         this.treedata = newTeam(checkedTree, "");
       });
     },
-    download(row) {
-      let path = row.storageDirectory;
-      let obj = {
-        path: path
-      };
-      let flieData = Encrypt(JSON.stringify(obj));
-      flieData = encodeURIComponent(flieData);
 
+    handleLogExport() {
+      let obj = this.rowlogForm;
+      let flieData = Encrypt(JSON.stringify(obj)); //加密
+      flieData = encodeURIComponent(flieData); //转码
       window.location.href =
-        baseUrl +
-        "/api/schedule/uploadDown/downFile?sign=111111&data=" +
-        flieData;
+        baseUrl + "/schedule/metaClearLog/export?sign=111111&data=" + flieData;
     },
     deleteLog(row) {
       this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
@@ -586,38 +537,14 @@ export default {
         };
         this.queryListLog();
       }
-    },
-    handleExport() {
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/metaBackup/export?sign=111111&data=" + flieData;
-    },
-    handleLogExport() {
-      let obj = this.rowlogForm;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/metaBackupLog/export?sign=111111&data=" + flieData;
     }
   }
 };
 </script>
 <style lang="scss">
-.metadataBackupTem {
+.metadataClearTem {
   .el-select {
     width: 100%;
-  }
-  .el-scrollbar {
-    height: 510px;
-    .el-scrollbar__wrap {
-      overflow-x: hidden;
-    }
-  }
-  .el-tree {
-    min-width: 100%;
-    display: inline-block !important;
   }
 }
 </style>

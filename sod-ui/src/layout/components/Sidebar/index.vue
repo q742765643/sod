@@ -44,11 +44,11 @@ export default {
       return path;
     },
     showLogo() {
-      console.log(this.$store.state.settings.sidebarLogo);
+      // console.log(this.$store.state.settings.sidebarLogo);
       return this.$store.state.settings.sidebarLogo;
     },
     aboutMenuPosition() {
-      console.log(this.$store.state.settings.menuPosition);
+      // console.log(this.$store.state.settings.menuPosition);
       return this.$store.state.settings.menuPosition;
     },
     variables() {
