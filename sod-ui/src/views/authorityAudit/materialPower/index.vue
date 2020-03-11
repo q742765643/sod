@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="状态">
         <el-select
-          v-model="queryParams.examine_status"
+          v-model="queryParams.auditStatus"
           placeholder="状态"
           clearable
           size="small"
@@ -20,12 +20,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="申请人">
-        <el-input size="small" v-model="queryParams.nameUser" placeholder="申请人"></el-input>
+        <el-input size="small" v-model="queryParams.userName" placeholder="申请人"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.time"
+          v-model="queryParams.applyTime"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -52,14 +52,15 @@
     </el-row>
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="application_unit" label="用户名"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="机构"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="联系方式"></el-table-column>
-      <el-table-column align="center" prop="application_time" label="申请时间">
+      <el-table-column align="center" prop="userName" label="用户名"></el-table-column>
+      <el-table-column align="center" prop="department" label="机构"></el-table-column>
+      <el-table-column align="center" prop="telephone" label="联系方式"></el-table-column>
+      <el-table-column align="center" prop="applyTime" label="申请时间">
         <!-- <template slot-scope="scope">{{scope.row.application_time.split('.')[0]}}</template> -->
       </el-table-column>
-      <el-table-column align="center" prop="db_name" label="资料个数"></el-table-column>
-      <el-table-column align="center" prop="examine_status" label="状态"></el-table-column>
+      <el-table-column align="center" prop="db_name" label="资料个数"
+                       :formatter="function(row){return row.dataAuthorityRecordList.length}"></el-table-column>
+      <el-table-column align="center" prop="examine_status" label="状态" :formatter="statusShow"></el-table-column>
       <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-view" @click="viewCell(scope.row)">查看</el-button>
@@ -85,15 +86,8 @@
 
 <script>
 import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+  queryList
+} from "@/api/authorityAudit/materialPower/index";
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
 import handlePower from "@/views/authorityAudit/materialPower/handlePower";
 export default {
@@ -108,10 +102,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        auditStatus: "",
+        userName: "",
+        applyTime: ["", ""]
       },
       examineStatus: [
         {
@@ -148,7 +141,7 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
+      queryList(this.queryParams).then(
         response => {
           this.tableData = response.data.pageData;
           this.total = response.data.totalCount;
@@ -160,10 +153,9 @@ export default {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        auditStatus: "",
+        userName: "",
+        applyTime: ["", ""]
       };
       this.handleQuery();
     },
@@ -186,7 +178,12 @@ export default {
     handleDialogClose() {
       this.handleDialog = false;
       this.handleObj = {};
-    }
+    },
+    //状态转换
+    statusShow(row) {
+      let result = row.auditStatus == "02" ? "已审核" : "待审核";
+      return result;
+    },
   }
 };
 </script>
