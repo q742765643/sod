@@ -21,7 +21,7 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
-    schedule-client-server:
+    schedule-client-server1:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext

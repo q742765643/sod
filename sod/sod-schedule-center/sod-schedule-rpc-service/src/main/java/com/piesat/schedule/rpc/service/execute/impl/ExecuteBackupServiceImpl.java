@@ -33,11 +33,6 @@ public class ExecuteBackupServiceImpl extends ExecuteBaseService implements Exec
 
 
     @Override
-    public String insertLog(JobInfoEntity jobInfo,Server server,String result,String logId){
-        return null;
-    }
-
-    @Override
     public JobInfoEntity getById(String id) {
         return backupDao.findById(id).get();
     }

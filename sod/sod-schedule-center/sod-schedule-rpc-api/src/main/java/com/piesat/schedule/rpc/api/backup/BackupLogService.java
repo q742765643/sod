@@ -15,4 +15,6 @@ public interface BackupLogService {
     public BackupLogDto findBackupLogById(String backupLogId);
 
     public void deleteBackupLogByIds(String[] backupLogIds);
+
+    public void exportExcel(BackupLogDto backupLogDto);
 }

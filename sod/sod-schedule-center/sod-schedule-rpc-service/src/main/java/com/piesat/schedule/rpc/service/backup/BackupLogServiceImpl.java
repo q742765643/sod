@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.schedule.dao.backup.BackupLogDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
@@ -79,6 +80,7 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
         return pageBean;
 
     }
+    @Override
     public BackupLogDto selectBackupLoByJobId(String jobId){
         PageForm pageForm=new PageForm(1,1);
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
@@ -105,7 +107,44 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
         this.deleteByIds(Arrays.asList(backupLogIds));
     }
 
+    public List<BackupLogEntity> selectBackupLogList(BackupLogDto backupLogDto){
+        BackupLogEntity backupLogEntity=backupLogMapstruct.toEntity(backupLogDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(backupLogEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),backupLogEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(backupLogEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(backupLogEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getProfileName());
+        }
+        if(null!=backupLogEntity.getHandleCode()){
+            specificationBuilder.add("handleCode",SpecificationOperator.Operator.eq.name(),backupLogEntity.getHandleCode());
+        }
+        if(StringUtils.isNotNullString(backupLogEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),backupLogEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) backupLogEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) backupLogEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) backupLogEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupLogEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
+        List<BackupLogEntity> backupLogEntities=this.getAll(specification,sort);
+        return backupLogEntities;
 
+    }
+    @Override
+    public void exportExcel(BackupLogDto backupLogDto){
+        List<BackupLogEntity> entities=this.selectBackupLogList(backupLogDto);
+        ExcelUtil<BackupLogEntity> util=new ExcelUtil(BackupLogEntity.class);
+        util.exportExcel(entities,"数据备份日志");
+    }
 
 
 }

@@ -3,6 +3,7 @@ package com.piesat.schedule.web.controller.backup;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.rpc.api.backup.MetaBackupService;
 import com.piesat.schedule.rpc.dto.backup.MetaBackupDto;
+import com.piesat.schedule.rpc.dto.backup.MetaBackupLogDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -113,6 +114,12 @@ public class MetaBackupController {
         ResultT<String> resultT=new ResultT<>();
         metaBackupService.handExecute(metaBackupDto);
         return resultT;
+    }
+    @ApiOperation(value = "元数据备份配置导出", notes = "元数据备份配置导出")
+    @RequiresPermissions("schedule:metaBackup:export")
+    @GetMapping("/export")
+    public void exportExcel(MetaBackupDto metaBackupDto){
+        metaBackupService.exportExcel(metaBackupDto);
     }
 
 

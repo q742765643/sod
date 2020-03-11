@@ -14,10 +14,7 @@ import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.type.Type;
-import com.piesat.schedule.client.vo.ClearVo;
-import com.piesat.schedule.client.vo.MetadataVo;
-import com.piesat.schedule.client.vo.RecoverMetaVo;
-import com.piesat.schedule.client.vo.StrategyVo;
+import com.piesat.schedule.client.vo.*;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
@@ -88,13 +85,12 @@ public class GbaseBusiness extends BaseBusiness{
         int exitVal=-1;
         try {
             DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
-            DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
-            if(dataSource!=null){
-                URL url=new URL(dataSource.getUrl());
-                cmd.append("gccli -h ").append(url.getHost())
+            ConnectVo connectVo=dynamicDataSource.getConnectVo(parentId);
+            if(connectVo!=null){
+                cmd.append("gccli -h ").append(connectVo.getIp())
                         .append(" -u")
-                        .append(dataSource.getUsername())
-                        .append(" -p").append(dataSource.getPassword())
+                        .append(connectVo.getUserName())
+                        .append(" -p").append(connectVo.getPassWord())
                         .append(" -e ")
                         .append("\"").append(sql)
                         .append(" INTO OUTFILE '").append(tempFilePath).append("'")
@@ -253,6 +249,20 @@ public class GbaseBusiness extends BaseBusiness{
     public void recoverStructedData(RecoverMetaVo recoverMetaVo, RecoverLogEntity recoverLogEntity, ResultT<String> resultT){
         GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
         gbaseService.recoverStructedData(recoverMetaVo,recoverLogEntity,resultT);
+    }
+
+    @Override
+    public List<TreeVo> findAllTableByIp(String parentId) {
+        DataSourceContextHolder.setDataSource(parentId);
+        try {
+            GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
+            return gbaseService.findAllTableByIp();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            DataSourceContextHolder.clearDataSource();
+        }
+        return null;
     }
 }
 

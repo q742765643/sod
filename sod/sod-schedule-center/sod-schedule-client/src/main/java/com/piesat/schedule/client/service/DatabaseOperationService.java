@@ -66,6 +66,12 @@ public class DatabaseOperationService {
         databaseOperationVo.setConditions(conditions);
         return databaseOperationMapper.delteKtable(databaseOperationVo);
     }
+    public int delteKtable(String tableName, String conditions){
+        DatabaseOperationVo databaseOperationVo=new DatabaseOperationVo();
+        databaseOperationVo.setKtable(tableName);
+        databaseOperationVo.setConditions(conditions);
+        return databaseOperationMapper.delteKtable(databaseOperationVo);
+    }
 
     public int deleteVtable(ClearLogEntity clearLogEntity, String conditions,ResultT<String> resultT){
         DatabaseOperationVo databaseOperationVo=new DatabaseOperationVo();

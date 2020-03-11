@@ -10,6 +10,7 @@ import com.piesat.schedule.client.util.CmdUtil;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.type.Type;
+import com.piesat.schedule.client.vo.ConnectVo;
 import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
@@ -125,16 +126,15 @@ public class GbaseService {
 
     public void expUser(String userAndUuid, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
-        if (dataSource != null) {
+        ConnectVo connectVo=dynamicDataSource.getConnectVo(metaBackupEntity.getParentId());
+        if (connectVo != null) {
             try {
                 log.info("开始备份用户{}", userAndUuid);
                 String user = userAndUuid.split("--")[0];
                 String path = metadataVo.getParentPath() + "/USER_" + userAndUuid + ".sql";
-                URL url = new URL(dataSource.getUrl());
                 StringBuilder sql = new StringBuilder();
-                sql.append("gccli -h ").append(url.getHost())
-                        .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
+                sql.append("gccli -h ").append(connectVo.getIp())
+                        .append(" -u").append(connectVo.getUserName()).append(" -p").append(connectVo.getPassWord())
                         .append(" -N -s ").append(" -e ").append("\"");
                 sql.append("show grants for " + user + "").append("\"").append(">>" + path);
                 String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
@@ -160,17 +160,17 @@ public class GbaseService {
 
     public void expTable(String tableInfo, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
-        if (dataSource != null) {
+        ConnectVo connectVo=dynamicDataSource.getConnectVo(metaBackupEntity.getParentId());
+
+        if (connectVo != null) {
             try {
                 log.info("开始备份表{}结构", tableInfo);
                 String path = metadataVo.getParentPath() + "/TABLE_" + tableInfo + ".sql";
                 String instance = tableInfo.split("\\.")[0];
                 String tableName = tableInfo.split("\\.")[1];
-                URL url = new URL(dataSource.getUrl());
                 StringBuilder sql = new StringBuilder();
-                sql.append("gcdump  -h ").append(url.getHost())
-                        .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
+                sql.append("gcdump  -h ").append(connectVo.getIp())
+                        .append(" -u").append(connectVo.getUserName()).append(" -p").append(connectVo.getPassWord())
                         .append(" " + instance + " ").append(tableName);
                 sql.append(">>" + path + "");
                 String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
@@ -198,16 +198,15 @@ public class GbaseService {
 
     public void expData(String table, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(metaBackupEntity.getParentId());
-        if (dataSource != null) {
+        ConnectVo connectVo=dynamicDataSource.getConnectVo(metaBackupEntity.getParentId());
+        if (connectVo != null) {
             try {
-                URL url = new URL(dataSource.getUrl());
                 String path = metadataVo.getParentPath() + "/DATA_" + table + ".txt";
                 StringBuilder sql = new StringBuilder();
-                sql.append("gccli -h ").append(url.getHost())
+                sql.append("gccli -h ").append(connectVo.getIp())
                         .append(" -u")
-                        .append(dataSource.getUsername())
-                        .append(" -p").append(dataSource.getPassword())
+                        .append(connectVo.getUserName())
+                        .append(" -p").append(connectVo.getPassWord())
                         .append(" -e ")
                         .append("\"").append("rmt:select * from ").append(table);
                         if(StringUtils.isNotNullString(metaBackupEntity.getConditions())){
@@ -299,19 +298,17 @@ public class GbaseService {
     }
     public void recoverGbaseTable(String parentId,String table,String path, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
-        DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
-        if(null==dataSource){
-            log.error("{}数据为空",parentId);
-            resultT.setErrorMessage("表{}结构恢复失败",table);
-            return;
-        }
         int exit=-1;
         try {
-            URL url=new URL(dataSource.getUrl());
-
+            ConnectVo connectVo=dynamicDataSource.getConnectVo(parentId);
+            if(null==connectVo){
+                log.error("{}数据为空",parentId);
+                resultT.setErrorMessage("表{}结构恢复失败",table);
+                return;
+            }
             StringBuilder sql = new StringBuilder();
-            sql.append("gccli -h ").append(url.getHost())
-                    .append(" -u").append(dataSource.getUsername()).append(" -p").append(dataSource.getPassword())
+            sql.append("gccli -h ").append(connectVo.getIp())
+                    .append(" -u").append(connectVo.getUserName()).append(" -p").append(connectVo.getPassWord())
                     .append(" -N -s ").append(" -f");
             sql.append("<" + path + "");
             String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
@@ -354,5 +351,31 @@ public class GbaseService {
             }
         });
 
+    }
+
+    public List<TreeVo> findAllTableByIp(){
+        List<TreeVo> treeVos = new ArrayList<>();
+        List<String> instances =gbaseOperationMapper.findGbaseInstance();
+        if (!instances.isEmpty()) {
+            for (String instance : instances) {
+                TreeVo treeInstance = new TreeVo();
+                treeInstance.setId(instance);
+                treeInstance.setPId("");
+                treeInstance.setName(instance);
+                treeInstance.setParent(true);
+                treeVos.add(treeInstance);
+                List<String> tables = gbaseOperationMapper.findGbaseTables(instance);
+                if (!tables.isEmpty()) {
+                    for (String table : tables) {
+                        TreeVo treeTable = new TreeVo();
+                        treeTable.setId(instance + "." + table);
+                        treeTable.setPId(instance);
+                        treeTable.setName(instance + "." + table);
+                        treeVos.add(treeTable);
+                    }
+                }
+            }
+        }
+        return treeVos;
     }
 }

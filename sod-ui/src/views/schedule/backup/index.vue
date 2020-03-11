@@ -199,7 +199,8 @@ import {
   getByDatabaseIdAndClassId,
   startBackup,
   stopBackup,
-  executeBackup
+  executeBackup,
+  exportBackup
 } from "@/api/schedule/backup/backup";
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 

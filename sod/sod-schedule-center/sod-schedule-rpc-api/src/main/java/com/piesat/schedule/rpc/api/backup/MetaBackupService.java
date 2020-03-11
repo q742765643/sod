@@ -30,5 +30,7 @@ public interface MetaBackupService {
     public List<Map<String,String>> findDataBase();
 
     public void handExecute(MetaBackupDto metaBackupDto);
+
+    public void exportExcel(MetaBackupDto metaBackupDto);
 }
 

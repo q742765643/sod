@@ -1,8 +1,7 @@
 package com.piesat.schedule.client.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.piesat.schedule.client.vo.CassandraConVo;
-import org.apache.commons.lang3.StringUtils;
+import com.piesat.schedule.client.vo.ConnectVo;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
@@ -17,6 +16,8 @@ import java.util.Map;
  **/
 public class DynamicDataSource extends AbstractRoutingDataSource {
     public static Map<Object, Object> _targetDataSources = new HashMap();
+    public static Map<Object, ConnectVo> connectVoMap = new HashMap();
+
     @Override
     protected Object determineCurrentLookupKey() {
         String dataSourceName = DataSourceContextHolder.getDataSource();
@@ -30,20 +31,12 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         if (obj != null) {
             return;
         }
-        if("RADB".equals(dataSourceName)){
-            CassandraConVo cassandraConVo=new CassandraConVo();
-            cassandraConVo.setIp("10.211.55.7");
-            cassandraConVo.setPort(9042);
-            cassandraConVo.setUserName("cassandra");
-            cassandraConVo.setPassWord("cassandra");
-            _targetDataSources.put("RADB",cassandraConVo);
 
-        }else{
-            DataSource dataSource = this.getDataSource(dataSourceName);
-            if (null != dataSource) {
-                this.setDataSource(dataSourceName, dataSource);
-            }
+        DataSource dataSource = this.getDataSource(dataSourceName);
+        if (null != dataSource) {
+            this.setDataSource(dataSourceName, dataSource);
         }
+
 
 
     }
@@ -54,6 +47,12 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
             return (DataSource) obj;
         }
         return null;
+    }
+
+    public ConnectVo getConnectVo(String dataSourceName){
+        this.selectDataSource(dataSourceName);
+        ConnectVo connectVo=connectVoMap.get(dataSourceName);
+        return connectVo;
     }
     @Override
     public void setTargetDataSources(Map<Object, Object> targetDataSources) {
@@ -82,12 +81,24 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         //DataSourceContextHolder.setDataSource(dataSourceName);
     }
     private DataSource getDataSource(String dataSourceName) {
-        String driverClassName="com.xugu.cloudjdbc.Driver";
-        String userName="USR_SOD";
-        String url="jdbc:xugu://10.1.6.117:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false";
-        String password="Pnmic_qwe123";
-        DataSource dataSource = this.createDataSource(
-                driverClassName, url, userName, password);
+        ConnectVo connectVo =new ConnectVo();
+        connectVo.setIp("10.211.55.7");
+        connectVo.setPort(9042);
+        connectVo.setUserName("cassandra");
+        connectVo.setPassWord("cassandra");
+        connectVoMap.put("RADB", connectVo);
+
+        DataSource dataSource=null;
+        if(!dataSourceName.equals("RADB")){
+            String driverClassName="com.xugu.cloudjdbc.Driver";
+            String userName="USR_SOD";
+            String url="jdbc:xugu://10.1.6.117:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false";
+            String password="Pnmic_qwe123";
+            dataSource = this.createDataSource(
+                    driverClassName, url, userName, password);
+        }
+
+
         return dataSource;
     }
 }

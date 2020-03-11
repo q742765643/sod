@@ -1,6 +1,7 @@
 package com.piesat.schedule.rpc.api.backup;
 
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
@@ -19,4 +20,5 @@ public interface BackupService {
     public void deleteBackupByIds(String[] backupIds);
     public List<Map<String,Object>> findDatabase();
     public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
+    public void exportExcel(BackUpDto backUpDto);
 }

@@ -11,7 +11,7 @@ import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.CmdUtil;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.type.Type;
-import com.piesat.schedule.client.vo.CassandraConVo;
+import com.piesat.schedule.client.vo.ConnectVo;
 import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
@@ -34,12 +34,11 @@ public class CassandraService {
     public List<TreeVo> findMeta(String parenId) {
         List<TreeVo> treeVos = new ArrayList<>();
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-        dynamicDataSource.selectDataSource(parenId);
-        CassandraConVo cassandraConVo = (CassandraConVo) DynamicDataSource._targetDataSources.get(parenId);
+        ConnectVo connectVo = dynamicDataSource.getConnectVo(parenId);
         Cluster cluster =
-                Cluster.builder().addContactPoint(cassandraConVo.getIp())
-                        .withPort(cassandraConVo.getPort())
-                        .withCredentials(cassandraConVo.getUserName(), cassandraConVo.getPassWord())
+                Cluster.builder().addContactPoint(connectVo.getIp())
+                        .withPort(connectVo.getPort())
+                        .withCredentials(connectVo.getUserName(), connectVo.getPassWord())
                         .build();
 
         try {
@@ -102,12 +101,11 @@ public class CassandraService {
     public void expInstance(String instance, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT){
         try {
             DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-            dynamicDataSource.selectDataSource(metaBackupEntity.getParentId());
-            CassandraConVo cassandraConVo = (CassandraConVo) DynamicDataSource._targetDataSources.get(metaBackupEntity.getParentId());
+            ConnectVo connectVo =dynamicDataSource.getConnectVo(metaBackupEntity.getParentId());
             String path = metadataVo.getParentPath() + "/INSTANCE_" + instance + ".sql";
             StringBuilder sql=new StringBuilder();
-            sql.append("cqlsh ").append(cassandraConVo.getIp()).append(" ").append(cassandraConVo.getPort());
-            sql.append(" -u").append(cassandraConVo.getUserName()).append(" -p").append(cassandraConVo.getPassWord());
+            sql.append("cqlsh ").append(connectVo.getIp()).append(" ").append(connectVo.getPort());
+            sql.append(" -u").append(connectVo.getUserName()).append(" -p").append(connectVo.getPassWord());
             sql.append(" -e ").append("'describe keyspace "+instance+"'>>"+path);
             log.info("cassandra导出表空间sql{}:",sql.toString());
             String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
@@ -136,12 +134,11 @@ public class CassandraService {
     public void expTable(String tableInfo, MetadataVo metadataVo, MetaBackupEntity metaBackupEntity, ResultT<String> resultT) {
         try {
             DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-            dynamicDataSource.selectDataSource(metaBackupEntity.getParentId());
-            CassandraConVo cassandraConVo = (CassandraConVo) DynamicDataSource._targetDataSources.get(metaBackupEntity.getParentId());
+            ConnectVo connectVo = dynamicDataSource.getConnectVo(metaBackupEntity.getParentId());
             String path = metadataVo.getParentPath() + "/TABLE_" + tableInfo + ".sql";
             StringBuilder sql = new StringBuilder();
-            sql.append("cqlsh ").append(cassandraConVo.getIp()).append(" ").append(cassandraConVo.getPort());
-            sql.append(" -u").append(cassandraConVo.getUserName()).append(" -p").append(cassandraConVo.getPassWord());
+            sql.append("cqlsh ").append(connectVo.getIp()).append(" ").append(connectVo.getPort());
+            sql.append(" -u").append(connectVo.getUserName()).append(" -p").append(connectVo.getPassWord());
             sql.append(" -e ").append("'describe table " + tableInfo + "'>>" + path);
             String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
             log.info("开始备份表{}结构", tableInfo);
@@ -186,11 +183,10 @@ public class CassandraService {
 
     public void recoverCassandraTable(String parentId, String tableOrInstance, String path, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
-        dynamicDataSource.selectDataSource(parentId);
-        CassandraConVo cassandraConVo = (CassandraConVo) DynamicDataSource._targetDataSources.get(parentId);
+        ConnectVo connectVo = dynamicDataSource.getConnectVo(parentId);
         StringBuilder sql=new StringBuilder();
-        sql.append("cqlsh ").append(cassandraConVo.getIp()).append(" ").append(cassandraConVo.getPort());
-        sql.append(" -u").append(cassandraConVo.getUserName()).append(" -p").append(cassandraConVo.getPassWord());
+        sql.append("cqlsh ").append(connectVo.getIp()).append(" ").append(connectVo.getPort());
+        sql.append(" -u").append(connectVo.getUserName()).append(" -p").append(connectVo.getPassWord());
         sql.append(" -f ").append(path);
 
         String[] commands = new String[]{"/bin/sh", "-c", sql.toString()};
@@ -200,5 +196,6 @@ public class CassandraService {
         }
 
     }
+
 }
 

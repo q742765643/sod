@@ -49,5 +49,7 @@ public abstract class BaseBusiness {
 
     public abstract void recoverStructedData(RecoverMetaVo recoverMetaVo, RecoverLogEntity recoverLogEntity, ResultT<String> resultT);
 
+    public abstract List<TreeVo> findAllTableByIp(String parentId);
+
 }
 
