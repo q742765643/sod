@@ -109,7 +109,12 @@ public class MybatisInterceptor implements Interceptor {
             }
         }else if(parameter instanceof Map){
             Map map = (Map) parameter;
-            String pp=(String) map.get("params");
+            String pp= null;
+            try {
+                pp = (String) map.get("params");
+            } catch (Exception e) {
+               // e.printStackTrace();
+            }
             CCJSqlParserManager pm = new CCJSqlParserManager();
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
