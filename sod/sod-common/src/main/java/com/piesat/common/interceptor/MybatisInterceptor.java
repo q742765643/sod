@@ -109,11 +109,12 @@ public class MybatisInterceptor implements Interceptor {
             }
         }else if(parameter instanceof Map){
             Map map = (Map) parameter;
+            String pp=(String) map.get("params");
             CCJSqlParserManager pm = new CCJSqlParserManager();
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
-            String add=this.resetSql((String) map.get("params"),selectBody,resultMaps);
+            String add=this.resetSql(pp,selectBody,resultMaps);
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)){
                 try {
                     PlainSelect setOperationList = (PlainSelect)selectBody;
