@@ -10,10 +10,10 @@ import com.piesat.schedule.client.handler.base.BaseHandler;
 import com.piesat.schedule.client.service.recover.DataBaseRecoverService;
 import com.piesat.schedule.client.service.recover.DataRecoverService;
 import com.piesat.schedule.client.util.FileUtil;
+import com.piesat.schedule.client.util.RedisUtil;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.schedule.entity.recover.RecoverLogEntity;
-import com.piesat.sso.client.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

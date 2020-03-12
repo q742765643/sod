@@ -54,7 +54,10 @@ public class SendThread {
                 int count=0;
                 int i=0;
                 int j=0;
-                boolean flag=redisLock.lock("custom");
+                boolean flag=redisLock.tryLock("custom");
+                if(!flag){
+                    return;
+                }
                 long startTime=System.currentTimeMillis();
                 while (System.currentTimeMillis()-startTime<50000) {
                     try {
