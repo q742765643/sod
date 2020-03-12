@@ -119,6 +119,12 @@ public class SyncTaskDto extends BaseDto {
     private Integer execPort;
 
     /**
+     * 目标存储类型
+     * 0数据库存储1文件存储
+     */
+    private Integer targetType;
+
+    /**
      * 运行状态
      */
     private String runState;

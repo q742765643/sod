@@ -29,8 +29,8 @@ public class ServiceCodeManagementController {
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(ServiceCodeDto serviceCodeDto, int pageNum, int pageSize) {
-        ResultT<PageBean> resultT = new ResultT<>();
+    public ResultT<PageBean<ServiceCodeDto>> list(ServiceCodeDto serviceCodeDto, int pageNum, int pageSize) {
+        ResultT<PageBean<ServiceCodeDto>> resultT = new ResultT<>();
         PageForm<ServiceCodeDto> pageForm = new PageForm<>(pageNum, pageSize, serviceCodeDto);
         PageBean pageBean = serviceCodeService.selectPageList(pageForm);
         resultT.setData(pageBean);

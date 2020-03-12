@@ -141,6 +141,13 @@ public class SyncTaskEntity extends BaseEntity {
     private Integer execPort;
 
     /**
+     * 目标存储类型
+     * 0数据库存储1文件存储
+     */
+    @Column(name="target_type", length = 1)
+    private Integer targetType;
+
+    /**
      * 源表id
      * 键值表时为键表id
      */

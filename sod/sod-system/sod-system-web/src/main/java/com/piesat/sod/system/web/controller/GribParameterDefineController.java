@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system/gribParameterDefine")
-@Api(value="服务代码管理",tags= {"服务代码管理接口"})
+@Api(value="GRIB参数定义",tags= {"GRIB参数定义接口"})
 public class GribParameterDefineController {
 
     @Autowired
