@@ -286,7 +286,7 @@ public class ImportData {
             for (Map mm: lde ) {
                 String database_id = toString(mm.get("DATABASE_ID"));
                 LogicDatabaseEntity ld = new LogicDatabaseEntity();
-                ld.setDatabaseDefineId(database_id);
+                ld.setDatabaseId(database_id);
                 ld.setCreateTime(new Date());
                 lll.add(ld);
             }

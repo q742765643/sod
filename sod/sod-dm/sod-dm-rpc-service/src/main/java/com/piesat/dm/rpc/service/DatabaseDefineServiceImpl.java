@@ -50,6 +50,11 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     }
 
     @Override
+    public List<DatabaseDefineDto> findByType(String databaseType) {
+        return this.databaseDefineMapper.toDto(this.databaseDefineDao.findByDatabaseType(databaseType));
+    }
+
+    @Override
     public PageBean getPage(DatabaseDefineDto databaseDefineDto, int pageNum, int pageSize) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
         if (StringUtils.isNotBlank(databaseDefineDto.getId())) {

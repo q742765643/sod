@@ -24,5 +24,7 @@ public interface DatabaseDefineService {
 
     List<DatabaseDefineDto> all();
 
+    List<DatabaseDefineDto> findByType(String databaseType);
+
     PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
 }

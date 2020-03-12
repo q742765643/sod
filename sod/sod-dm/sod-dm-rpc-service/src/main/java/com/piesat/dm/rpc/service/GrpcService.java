@@ -3,25 +3,29 @@ package com.piesat.dm.rpc.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.dao.DatabaseDao;
-import com.piesat.dm.dao.DatabaseDefineDao;
-import com.piesat.dm.dao.StorageConfigurationDao;
-import com.piesat.dm.entity.DatabaseDefineEntity;
-import com.piesat.dm.entity.StorageConfigurationEntity;
+import com.piesat.dm.core.parser.DatabaseInfo;
+import com.piesat.dm.dao.*;
+import com.piesat.dm.entity.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.LogicDefineService;
+import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.LogicDefineDto;
 import com.piesat.dm.rpc.dto.LogicStorageTypesDto;
+import com.piesat.dm.rpc.mapper.DataTableMapper;
+import com.piesat.dm.rpc.mapper.LogicDefineMapper;
 import com.piesat.dm.rpc.mapper.StorageConfigurationMapper;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.sod.system.rpc.api.ManageFieldService;
+import com.piesat.sod.system.rpc.api.SqlTemplateService;
 import com.piesat.sod.system.rpc.dto.ManageFieldDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -29,12 +33,10 @@ import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author yaya
@@ -56,7 +58,21 @@ public class GrpcService {
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
     @Autowired
+    private DatabaseDao databaseDao;
+    @Autowired
     private DataLogicService dataLogicService;
+    @Autowired
+    private LogicDefineServiceImpl logicDefineServiceImpl;
+    @Autowired
+    private LogicDefineMapper logicDefineMapper;
+    @Autowired
+    private DataTableDao dataTableDao;
+    @Autowired
+    private DataTableMapper dataTableMapper;
+    @Autowired
+    private ShardingDao shardingDao;
+    @Autowired
+    private DatabaseInfo databaseInfo;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -66,6 +82,10 @@ public class GrpcService {
     private SyncTaskService syncTaskService;
     @GrpcHthtClient
     private BackupService backupService;
+    @GrpcHthtClient
+    private SqlTemplateService sqlTemplateService;
+
+
 
 
     public ResultT updateColumnValue(String id, String column, String value) {
@@ -181,18 +201,86 @@ public class GrpcService {
     }
 
     public List<LogicDefineDto> getAllLogicDefine() {
-        List<LogicDefineDto> all = this.logicDefineService.all();
-        for (LogicDefineDto ld : all) {
-            List<LogicDatabaseDto> logicDatabaseEntityList = ld.getLogicDatabaseEntityList();
-            for (LogicDatabaseDto ldb : logicDatabaseEntityList) {
-                ldb.setDatabaseName(this.databaseDefineDao.findById(ldb.getDatabaseDefineId()).get().getDatabaseName());
+        List<LogicDefineDto> logicDefineDtos = this.logicDefineService.all();
+        List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
+        List<DatabaseEntity> all = this.databaseDao.findAll();
+        for (LogicDefineDto logicDefineDto : logicDefineDtos) {
+            List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
+            for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
+                for (DictDataDto dictDataDto : DictDataDtos) {
+                    if (dictDataDto.getDictValue().equals(logicStorageTypesDto.getStorageType())) {
+                        logicStorageTypesDto.setStorageName(dictDataDto.getDictLabel());
+                    }
+                }
             }
-            List<LogicStorageTypesDto> logicStorageTypesEntityList = ld.getLogicStorageTypesEntityList();
-            for (LogicStorageTypesDto ls:logicStorageTypesEntityList) {
-                ls.setName(this.dictDataService.findByDictTypeAndDictValue("sys_storage_type",ls.getStorageType()).getDictLabel());
+            List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
+            for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
+                for (DatabaseEntity databaseEntity : all) {
+                    if (databaseEntity.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(databaseEntity.getDatabaseDefine().getDatabaseName());
+                    }
+                }
             }
         }
-        return all;
+        return logicDefineDtos;
+    }
+
+
+    public PageBean selectLogicDefinePageList(PageForm<LogicDefineDto> pageForm) {
+        LogicDefineEntity logicDefineEntity = logicDefineMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotNullString(logicDefineEntity.getLogicFlag())) {
+            specificationBuilder.add("logicFlag", SpecificationOperator.Operator.likeAll.name(), logicDefineEntity.getLogicFlag());
+        }
+        if (StringUtils.isNotNullString(logicDefineEntity.getLogicName())) {
+            specificationBuilder.add("logicName", SpecificationOperator.Operator.likeAll.name(), logicDefineEntity.getLogicName());
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, "serialNumber");
+        PageBean pageBean = this.logicDefineServiceImpl.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
+        List<LogicDefineEntity> logicDefineEntities = (List<LogicDefineEntity>) pageBean.getPageData();
+        List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
+        List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
+        List<DatabaseEntity> all = this.databaseDao.findAll();
+        for (LogicDefineDto logicDefineDto : logicDefineDtos) {
+            List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
+            for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
+                for (DictDataDto dictDataDto : DictDataDtos) {
+                    if (dictDataDto.getDictValue().equals(logicStorageTypesDto.getStorageType())) {
+                        logicStorageTypesDto.setStorageName(dictDataDto.getDictLabel());
+                    }
+                }
+            }
+            List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
+            for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
+                for (DatabaseEntity databaseEntity : all) {
+                    if (databaseEntity.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(databaseEntity.getDatabaseDefine().getDatabaseName());
+                    }
+                }
+            }
+        }
+
+        pageBean.setPageData(logicDefineDtos);
+        return pageBean;
+    }
+
+    public Map<String, String> getSql(String tableId, String databaseId) {
+        List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
+        DataTableEntity dataTableEntity = this.dataTableDao.findById(tableId).get();
+        Optional<DatabaseEntity> databaseEntity = this.databaseDao.findById(databaseId);
+        DatabaseEntity database = databaseEntity.get();
+        String databaseType = database.getDatabaseDefine().getDatabaseType();
+//        this.sqlTemplateService
+        Map<String, String> map = new HashMap<>();
+        if (this.databaseInfo.getXugu().equals(databaseType)) {
+//            this.databaseSqlService.getXuGuCreateSql()
+        } else if (this.databaseInfo.getGbase8a().equals(databaseType)) {
+
+        } else if (this.databaseInfo.getCassandra().equals(databaseType)) {
+
+        }
+
+        return map;
     }
 
 }
