@@ -182,7 +182,11 @@ public class DataBaseRecoverService {
         treeVo.setPId("");
         treeVo.setParent(true);
         list.add(treeVo);
-        this.getFileFistChidren(path,list);
+        try {
+            this.getFileFistChidren(path,list);
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
+        }
         return list;
 
     }
@@ -195,7 +199,11 @@ public class DataBaseRecoverService {
         treeVo.setPId("");
         treeVo.setParent(true);
         list.add(treeVo);
-        this.getFileFistChidren(path,list);
+        try {
+            this.getFileFistChidren(path,list);
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
+        }
         return list;
 
     }
