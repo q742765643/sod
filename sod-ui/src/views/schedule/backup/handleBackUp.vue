@@ -40,12 +40,37 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="近时备份条件" prop="conditions">
-            <el-input v-model="msgFormDialog.conditions" placeholder="请输入近时备份条件" />
+
+            <el-select
+              v-model="msgFormDialog.conditions"
+              placeholder="请选择近时备份条件"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in conditionsOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="远时备份条件" prop="secondConditions">
-            <el-input v-model="msgFormDialog.secondConditions" placeholder="请输入远时备份条件" />
+            <el-select
+              v-model="msgFormDialog.secondConditions"
+              placeholder="请选择远时备份条件"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in secondConditionsOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -161,6 +186,8 @@ export default {
       databaseOptions: [],
       dataClassIdOptions: [],
       storageDirectoryOptions: [],
+      conditionsOptions:[],
+      secondConditionsOptions:[],
       msgFormDialog: {
         ddataId: "",
         dataClassId: "",
@@ -214,6 +241,12 @@ export default {
     });
     await this.getDicts("backup_storage_directory").then(response => {
       this.storageDirectoryOptions = response.data;
+    });
+    await this.getDicts("database_backup_near_where").then(response => {
+      this.conditionsOptions = response.data;
+    });
+    await this.getDicts("database_backup_far_where").then(response => {
+      this.secondConditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
     if (this.handleObj.pageName == "资料存储策略") {

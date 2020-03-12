@@ -40,7 +40,19 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="清除条件" prop="conditions">
-            <el-input v-model="msgFormDialog.conditions" placeholder="请输入清除条件" />
+            <el-select
+              v-model="msgFormDialog.conditions"
+              placeholder="请选择清除条件"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in conditionsOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -126,6 +138,7 @@ export default {
       alarmOptions: [],
       databaseOptions: [],
       dataClassIdOptions: [],
+      conditionsOptions:[],
       msgFormDialog: {
         databaseId: "",
         dataClassId: "",
@@ -166,6 +179,9 @@ export default {
     });
     await findAllDataBase().then(response => {
       this.databaseOptions = response.data;
+    });
+    await this.getDicts("database_clear_where").then(response => {
+      this.conditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
     if (this.handleObj.pageName == "资料存储策略") {

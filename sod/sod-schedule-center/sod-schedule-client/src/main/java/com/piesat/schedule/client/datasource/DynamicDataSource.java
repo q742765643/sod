@@ -1,12 +1,18 @@
 package com.piesat.schedule.client.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.dm.rpc.api.DatabaseService;
+import com.piesat.dm.rpc.dto.DatabaseAdministratorDto;
+import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.client.vo.ConnectVo;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @program: sod
@@ -73,9 +79,16 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                                         String username, String password) {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driverClassName);
-        dataSource.setUrl(url);
+        dataSource.setUrl(url.replace("recv_mode=1","recv_mode=0"));
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        dataSource.setMinIdle(1);
+        dataSource.setMaxActive(20);
+        dataSource.setPoolPreparedStatements(false);
+        dataSource.setTestOnBorrow(true);
+        dataSource.setTestOnReturn(true);
+        dataSource.setMaxOpenPreparedStatements(0);
+        dataSource.setTimeBetweenEvictionRunsMillis(60000);
         return dataSource;
     }
 
@@ -84,23 +97,39 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         //DataSourceContextHolder.setDataSource(dataSourceName);
     }
     private DataSource getDataSource(String dataSourceName) {
-        ConnectVo connectVo =new ConnectVo();
-        connectVo.setIp("10.211.55.7");
-        connectVo.setPort(9042);
-        connectVo.setUserName("cassandra");
-        connectVo.setPassWord("cassandra");
-        connectVoMap.put("RADB", connectVo);
-
         DataSource dataSource=null;
-        if(!dataSourceName.equals("RADB")){
-            String driverClassName="com.xugu.cloudjdbc.Driver";
-            String userName="USR_SOD";
-            String url="jdbc:xugu://10.1.6.117:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false";
-            String password="Pnmic_qwe123";
-            dataSource = this.createDataSource(
-                    driverClassName, url, userName, password);
-        }
+        DatabaseService databaseService= SpringUtil.getBean(DatabaseService.class);
+        List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
+        for(DatabaseDto databaseDto:databaseDtos){
+               String parentId=databaseDto.getDatabaseDefine().getId();
+               if(parentId.toUpperCase().equals(dataSourceName.toUpperCase())){
+                   ConnectVo connectVo =new ConnectVo();
+                   Set<DatabaseAdministratorDto> databaseAdministratorDtos=databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
+                   String userName="admin";
+                   String password="admin";
+                   try {
+                       for(DatabaseAdministratorDto administratorDto:databaseAdministratorDtos){
+                           userName=administratorDto.getUserName();
+                           password=administratorDto.getPassWord();
+                       }
+                   } catch (Exception e) {
+                       e.printStackTrace();
+                   }
+                   connectVo.setIp(databaseDto.getDatabaseDefine().getDatabaseIp());
+                   connectVo.setPort(Integer.parseInt(databaseDto.getDatabaseDefine().getDatabasePort()));
+                   connectVo.setUserName(userName);
+                   connectVo.setPassWord(password);
+                   connectVoMap.put(parentId, connectVo);
+                   if(!"cassandra".equals(databaseDto.getDatabaseDefine().getDatabaseType())){
 
+                       String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
+                       String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();
+                       dataSource = this.createDataSource(
+                               driverClassName, url, userName, password);
+                   }
+               }
+
+        }
 
         return dataSource;
     }
