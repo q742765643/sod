@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.dao.DatabaseDefineDao;
 import com.piesat.dm.dao.LogicDefineDao;
 import com.piesat.dm.entity.LogicDefineEntity;
 import com.piesat.dm.rpc.api.LogicDefineService;
@@ -31,6 +32,9 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     private LogicDefineDao logicDefineDao;
     @Autowired
     private LogicDefineMapper logicDefineMapper;
+    @Autowired
+    private DatabaseDefineDao databaseDefineDao;
+
 
     @Override
     public BaseDao<LogicDefineEntity> getBaseDao() {
@@ -83,9 +87,9 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
         Sort sort=Sort.by(Sort.Direction.ASC,"serialNumber");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<LogicDefineEntity> logicDefineEntities= (List<LogicDefineEntity>) pageBean.getPageData();
-        pageBean.setPageData(logicDefineMapper.toDto(logicDefineEntities));
+        List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
 
-
+        pageBean.setPageData(logicDefineDtos);
         return pageBean;
     }
 

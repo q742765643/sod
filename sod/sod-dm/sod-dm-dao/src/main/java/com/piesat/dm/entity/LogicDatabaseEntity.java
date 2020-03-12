@@ -22,7 +22,7 @@ public class LogicDatabaseEntity extends BaseEntity {
     @Column(name = "logic_id")
     private String logicId;
 
-    @Column(name = "database_define_id", length = 255, nullable = false)
-    private String databaseDefineId;
+    @Column(name = "database_id", length = 255, nullable = false)
+    private String databaseId;
 
 }

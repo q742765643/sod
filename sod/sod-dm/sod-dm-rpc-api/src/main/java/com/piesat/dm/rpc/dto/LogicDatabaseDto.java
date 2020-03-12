@@ -17,7 +17,7 @@ public class LogicDatabaseDto {
 
     private String logicId;
 
-    private String databaseDefineId;
+    private String databaseId;
 
     private String databaseName;
 

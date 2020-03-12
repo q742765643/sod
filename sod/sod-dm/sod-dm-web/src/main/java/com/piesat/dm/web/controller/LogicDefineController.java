@@ -54,7 +54,7 @@ public class LogicDefineController {
     public ResultT<PageBean> list(LogicDefineDto logicDefineDto, int pageNum, int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<LogicDefineDto> pageForm = new PageForm<>(pageNum, pageSize, logicDefineDto);
-        PageBean pageBean = logicDefineService.selectPageList(pageForm);
+        PageBean pageBean = grpcService.selectLogicDefinePageList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -151,9 +151,9 @@ public class LogicDefineController {
             }
             for(LogicDatabaseDto logicDatabaseDto:logic.getLogicDatabaseEntityList()){
                 if(StringUtils.isNotNullString(logicDatabases.toString())){
-                    logicDatabases.append(",").append(logicDatabaseDto.getDatabaseDefineId());
+                    logicDatabases.append(",").append(logicDatabaseDto.getDatabaseId());
                 }else{
-                    logicDatabases.append(logicDatabaseDto.getDatabaseDefineId());
+                    logicDatabases.append(logicDatabaseDto.getDatabaseId());
                 }
             }
             ArrayList<String> strings = new ArrayList<>();

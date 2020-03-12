@@ -3,63 +3,49 @@
     <el-tab-pane label="基本信息" name="first">
       <el-form :model="formBaseInfo" class="demo-form-inline" label-width="120px">
         <el-form-item label="用户名">
-          <el-input v-model="formBaseInfo.user" readonly></el-input>
+          <el-input v-model="formBaseInfo.USERREALNAME" readonly></el-input>
         </el-form-item>
         <el-form-item label="机构">
-          <el-input v-model="formBaseInfo.user" readonly></el-input>
+          <el-input v-model="formBaseInfo.DEPARTMENT" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系方式">
-          <el-input v-model="formBaseInfo.user" readonly></el-input>
+          <el-input v-model="formBaseInfo.USERPHONE" readonly></el-input>
         </el-form-item>
         <el-form-item label="申请时间">
-          <el-input v-model="formBaseInfo.user" readonly></el-input>
+          <el-input v-model="formBaseInfo.APPLY_TIME" readonly></el-input>
         </el-form-item>
         <el-form-item label="数据库账户名">
-          <el-input v-model="formBaseInfo.user" readonly></el-input>
+          <el-input v-model="formBaseInfo.DATABASE_UP_ID" readonly></el-input>
         </el-form-item>
         <el-form-item label="数据库账户密码">
-          <el-input v-model="formBaseInfo.user" readonly></el-input>
+          <el-input v-model="formBaseInfo.DATABASE_UP_PASSWORD" readonly></el-input>
         </el-form-item>
       </el-form>
     </el-tab-pane>
     <el-tab-pane label="数据读写权限" name="second">
-      <el-alert title="申请状态：已申请2种资料,涉及2张表的读写权限， 审核通过2张表, 审核不通过0张表" type="success" :closable="false"></el-alert>
+      <el-alert
+        :title="'申请状态：已申请'+tableData.length+'种资料,涉及'+tableData.length+'张表的读写权限， 审核通过'+AUTHORIZE_NUM+'张表, 审核不通过'+AUTHORIZEF_NUM+'张表'"
+        type="success"
+        :closable="false"
+      ></el-alert>
       <el-form :model="queryParams" ref="queryForm" :inline="true">
-        <el-form-item label="状态">
-          <el-select
-            v-model="queryParams.examine_status"
-            placeholder="状态"
-            clearable
-            size="small"
-            style="width: 240px"
-          >
-            <el-option label="全部" value></el-option>
-            <el-option
-              v-for="(item,index) in examineStatus"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            />
+        <el-form-item label="关键字查询">
+          <el-select size="small" v-model="queryParams.searchSelect" @change="changeSearch">
+            <el-option label="资料分类" value="typeName"></el-option>
+            <el-option label="资料名称" value="className"></el-option>
+            <el-option label="表名称" value="tableName"></el-option>
+            <el-option label="数据库" value="databaseName"></el-option>
+            <el-option label="申请状态" value="applyAuthority"></el-option>
+            <el-option label="审核状态" value="authorize"></el-option>
+            <el-option label="专题名" value="specialDatabaseName"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="申请人">
-          <el-input size="small" v-model="queryParams.nameUser" placeholder="申请人"></el-input>
-        </el-form-item>
-        <el-form-item label="申请时间">
-          <el-date-picker
-            size="small"
-            v-model="queryParams.time"
-            type="datetimerange"
-            range-separator="~"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          >></el-date-picker>
+        <el-form-item label>
+          <el-input size="small" v-model="queryParams.searchInput" type="text"></el-input>
         </el-form-item>
 
         <el-form-item>
           <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-          <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="10" class="mb8">
@@ -68,17 +54,60 @@
           <el-button type="danger" icon="el-icon-close" size="mini" @click="handleRefused">拒接</el-button>
         </el-col>
       </el-row>
-      <el-table v-loading="loading" :data="tableData" row-key="id">
-        <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-        <el-table-column align="center" prop="application_unit" label="资料分类"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="资料名称"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="表名称"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="数据库"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="专题名"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="权限"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="申请状态"></el-table-column>
-        <el-table-column align="center" prop="db_name" label="审核状态"></el-table-column>
-        <el-table-column align="center" prop="examine_status" label="拒绝原因">
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        row-key="id"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column align="center" prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column
+          align="center"
+          prop="CLASS_NAME"
+          label="资料名称"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column align="center" prop="TABLE_NAME" label="表名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column
+          align="center"
+          prop="DATABASE_NAME"
+          label="数据库"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          prop="SPECIAL_DATABASE_NAME"
+          label="专题名"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column align="center" prop="IS_ACCESS" label="权限" width="80px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.IS_ACCESS=='0'">受限</span>
+            <span v-else>公开</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="APPLY_AUTHORITY" label="申请状态" width="120px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.APPLY_AUTHORITY=='1'">读申请</span>
+            <span v-else>读写申请</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="AUTHORIZE" label="审核状态" width="120px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.AUTHORIZE=='2'">
+              <i class="el-icon-circle-close" style="color:#F56C6C"></i>拒绝
+            </span>
+            <span v-else-if="scope.row.AUTHORIZE=='1'">
+              <i class="el-icon-circle-check" style="color:#67C23A"></i>通过
+            </span>
+            <span v-else>
+              <i class="el-icon-s-finance" style="color:#E6A23C"></i>待审核
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="CAUSE" label="拒绝原因" width="120px">
           <template slot-scope="scope">
             <el-popover
               placement="top"
@@ -86,9 +115,9 @@
               trigger="click"
               width="200"
               popper-class="darkPopover"
-              v-if="scope.row.uses"
+              v-if="scope.row.CAUSE"
             >
-              <p>{{ scope.row.uses}}</p>
+              <p>{{ scope.row.CAUSE}}</p>
               <div slot="reference" class="name-wrapper">
                 <el-button type="primary" size="mini" plain class="tagpointer">查看</el-button>
               </div>
@@ -96,21 +125,18 @@
           </template>
         </el-table-column>
       </el-table>
-
-      <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
+import {
+  getApplyInfoById,
+  getRecordByApplyId,
+  updateRecordCheck
+} from "@/api/authorityAudit/materialPower/index";
 export default {
-  name: "handleCloudDialog",
+  name: "handleMaterialDialog",
   props: {
     handleObj: {
       type: Object
@@ -121,16 +147,106 @@ export default {
       activeName: "first",
       formBaseInfo: {},
       queryParams: {},
+      searchKey: "",
       loading: false,
       tableData: [],
-      total: 0
+      total: 0,
+      AUTHORIZE_NUM: 0,
+      AUTHORIZEF_NUM: 0,
+      multipleSelection: []
     };
   },
-  created() {},
+  async created() {
+    this.queryParams.id = this.handleObj.id;
+    await getApplyInfoById({ id: this.handleObj.id }).then(res => {
+      if (res.code == 200) {
+        this.formBaseInfo = res.data;
+      } else {
+        this.msgError(res.msg);
+      }
+    });
+  },
   methods: {
-    getList() {},
-    handlePower() {},
+    handleClick() {
+      if (this.activeName == "second") {
+        this.handleQuery();
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    // 关键字更改
+    changeSearch(val) {
+      this.searchKey = val;
+    },
+    getList(obj) {
+      console.log(obj);
+      getRecordByApplyId(obj).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+          this.AUTHORIZE_NUM = 0;
+          this.AUTHORIZEF_NUM0 = 0;
+          this.tableData.forEach(element => {
+            if (element.AUTHORIZE == 1) {
+              this.AUTHORIZE_NUM++;
+            } else if (element.AUTHORIZE == 2) {
+              this.AUTHORIZEF_NUM++;
+            }
+          });
+        } else {
+          this.msgError(res.msg);
+        }
+      });
+    },
+
+    handleQuery() {
+      let searchValue = this.queryParams.searchInput;
+      if (this.searchKey == "applyAuthority" || this.searchKey == "authorize") {
+        if (searchValue == "读申请" || searchValue == "通过") {
+          searchValue = "1";
+        } else if (searchValue == "读写申请" || searchValue == "拒绝") {
+          searchValue = "2";
+        } else {
+          searchValue = "";
+        }
+      }
+      let obj = {};
+      obj.applyId = this.queryParams.id;
+      obj[this.queryParams.searchSelect] = searchValue;
+      this.getList(obj);
+    },
+
+    handlePower() {
+      if (this.multipleSelection.lenght == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      console.log(this.multipleSelection);
+      let obj = {};
+      // obj.userId = localStorage.getItem("loginUserId");
+      obj.userId = "admin";
+      obj.authorize = 1;
+      obj.dataAuthorityRecordList = [];
+      this.multipleSelection.forEach(element => {
+        let cobj = {};
+        cobj.id = element.ID;
+        cobj.applyId = this.handleObj.id;
+        obj.dataAuthorityRecordList.push(cobj);
+      });
+      console.log(obj);
+      updateRecordCheck(obj).then(res => {
+        if (res.code == 200) {
+          this.msgSuccess("授权成功");
+        } else {
+          this.msgError(res.msg);
+        }
+      });
+    },
     handleRefused() {
+      if (this.multipleSelection.lenght == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
       this.$prompt("请输入拒绝原因", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

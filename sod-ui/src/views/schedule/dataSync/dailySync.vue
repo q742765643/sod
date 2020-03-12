@@ -12,7 +12,9 @@
       <el-table-column align="center" prop="error" label="日志信息" min-width="60"></el-table-column>
       <el-table-column align="center" prop="error" label="详情" min-width="60">
         <template slot-scope="scope">
-          <el-link type="primary" @click="viewCell(scope.row)">查看详情</el-link>
+          <el-tooltip class="item" effect="dark" :content="scope.row.error" placement="top">
+            <el-button size="small">错误信息</el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
