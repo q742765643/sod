@@ -13,12 +13,10 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.LogicDefineService;
-import com.piesat.dm.rpc.dto.DataTableDto;
-import com.piesat.dm.rpc.dto.LogicDatabaseDto;
-import com.piesat.dm.rpc.dto.LogicDefineDto;
-import com.piesat.dm.rpc.dto.LogicStorageTypesDto;
+import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.mapper.DataTableMapper;
 import com.piesat.dm.rpc.mapper.LogicDefineMapper;
+import com.piesat.dm.rpc.mapper.ShardingMapper;
 import com.piesat.dm.rpc.mapper.StorageConfigurationMapper;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
@@ -27,6 +25,7 @@ import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.sod.system.rpc.api.ManageFieldService;
 import com.piesat.sod.system.rpc.api.SqlTemplateService;
 import com.piesat.sod.system.rpc.dto.ManageFieldDto;
+import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
@@ -72,7 +71,11 @@ public class GrpcService {
     @Autowired
     private ShardingDao shardingDao;
     @Autowired
+    private ShardingMapper shardingMapper;
+    @Autowired
     private DatabaseInfo databaseInfo;
+    @Autowired
+    private DatabaseSqlService databaseSqlService;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -84,8 +87,6 @@ public class GrpcService {
     private BackupService backupService;
     @GrpcHthtClient
     private SqlTemplateService sqlTemplateService;
-
-
 
 
     public ResultT updateColumnValue(String id, String column, String value) {
@@ -264,23 +265,44 @@ public class GrpcService {
         return pageBean;
     }
 
-    public Map<String, String> getSql(String tableId, String databaseId) {
+    public ResultT getSql(String tableId, String databaseId) {
         List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
         DataTableEntity dataTableEntity = this.dataTableDao.findById(tableId).get();
+        DataTableDto dataTableDto = this.dataTableMapper.toDto(dataTableEntity);
+        List<TableColumnDto> TableColumnDtos = new ArrayList<TableColumnDto>(dataTableDto.getColumns());
+        List<TableIndexDto> TableIndexDtos = new ArrayList<TableIndexDto>(dataTableDto.getTableIndexList());
         Optional<DatabaseEntity> databaseEntity = this.databaseDao.findById(databaseId);
         DatabaseEntity database = databaseEntity.get();
         String databaseType = database.getDatabaseDefine().getDatabaseType();
-//        this.sqlTemplateService
         Map<String, String> map = new HashMap<>();
-        if (this.databaseInfo.getXugu().equals(databaseType)) {
-//            this.databaseSqlService.getXuGuCreateSql()
-        } else if (this.databaseInfo.getGbase8a().equals(databaseType)) {
-
-        } else if (this.databaseInfo.getCassandra().equals(databaseType)) {
-
+        try {
+            List<SqlTemplateDto> sqlTemplateDtos = this.sqlTemplateService.checkSqlTemplate(databaseType);
+            if (sqlTemplateDtos == null || sqlTemplateDtos.size() == 0) {
+                return ResultT.failed("模板不存在！");
+            } else {
+                String createSql = "", insertSql = "", querySql = "";
+                if (this.databaseInfo.getXugu().equals(databaseType)) {
+                    createSql = this.databaseSqlService.getXuGuCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
+                    insertSql = this.databaseSqlService.getXuGuInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                    querySql = this.databaseSqlService.getXuGuQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                } else if (this.databaseInfo.getGbase8a().equals(databaseType)) {
+                    createSql = this.databaseSqlService.getGbaseCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
+                    insertSql = this.databaseSqlService.getGbaseInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                    querySql = this.databaseSqlService.getGbaseQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                } else if (this.databaseInfo.getCassandra().equals(databaseType)) {
+                    createSql = this.databaseSqlService.getCassandraCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
+                    insertSql = this.databaseSqlService.getCassandraInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                    querySql = this.databaseSqlService.getCassandraQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                }
+                map.put("createSql", createSql);
+                map.put("insertSql", insertSql);
+                map.put("querySql", querySql);
+                return ResultT.success(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
         }
-
-        return map;
     }
 
 }

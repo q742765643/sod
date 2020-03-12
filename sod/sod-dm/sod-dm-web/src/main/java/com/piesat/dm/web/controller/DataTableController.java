@@ -5,6 +5,7 @@ import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.SampleData;
+import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -32,6 +33,8 @@ public class DataTableController {
     private DataTableService dataTableService;
     @Autowired
     private DataLogicService dataLogicService;
+    @Autowired
+    private GrpcService grpcService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataTable:add")
@@ -171,5 +174,16 @@ public class DataTableController {
         }
     }
 
+    @ApiOperation(value = "查询sql信息")
+    @RequiresPermissions("dm:dataTable:getSql")
+    @GetMapping(value = "/getSql")
+    public ResultT getSql(String tableId,String databaseId){
+        try {
+            return this.grpcService.getSql(tableId,databaseId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
 }

@@ -24,10 +24,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = { "com.piesat" })
 @MapperScan("com.piesat.*.mapper")
 @Slf4j
-public class Application {
+public class DmApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(DmApplication.class, args);
     }
 
 }
