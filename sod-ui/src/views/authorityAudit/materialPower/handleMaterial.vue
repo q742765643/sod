@@ -225,16 +225,20 @@ export default {
       let obj = {};
       // obj.userId = localStorage.getItem("loginUserId");
       obj.userId = "admin";
-      obj.authorize = 1;
-      obj.dataAuthorityRecordList = [];
+      obj.dataAuthorityRecords = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};
         cobj.id = element.ID;
-        cobj.applyId = this.handleObj.id;
-        obj.dataAuthorityRecordList.push(cobj);
+        cobj.applyId = element.APPLY_ID;
+        cobj.databaseId = element.DATABASE_ID;
+        cobj.applyAuthority = element.APPLY_AUTHORITY;
+        cobj.authorize = 1;
+        cobj.dataClassId = element.DATA_CLASS_ID;
+
+        obj.dataAuthorityRecords.push(cobj);
       });
       console.log(obj);
-      updateRecordCheck(obj).then(res => {
+      updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
         if (res.code == 200) {
           this.msgSuccess("授权成功");
         } else {

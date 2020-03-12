@@ -30,10 +30,10 @@ export function getRecordByApplyId(query) {
 }
 
 // 审核拒绝
-export function updateRecordCheck(data) {
+export function updateRecordCheck(data1) {
   return request({
     url: baseUrl + '/dm/dataAuthorityApply/updateRecordCheck',
     method: 'PUT',
-    params: data
+    data: data1
   })
 }
