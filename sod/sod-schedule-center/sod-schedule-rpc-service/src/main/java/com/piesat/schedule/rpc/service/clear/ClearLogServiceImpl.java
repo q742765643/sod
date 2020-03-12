@@ -5,13 +5,16 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.schedule.dao.clear.ClearLogDao;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
+import com.piesat.schedule.entity.clear.MetaClearLogEntity;
 import com.piesat.schedule.rpc.api.clear.ClearLogService;
 import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
 import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
+import com.piesat.schedule.rpc.dto.clear.MetaClearLogDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearLogMapstruct;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
 import com.piesat.util.page.PageBean;
@@ -102,6 +105,47 @@ public class ClearLogServiceImpl extends BaseService<ClearLogEntity> implements 
     @Override
     public void deleteClearLogByIds(String[] clearLogIds){
         this.deleteByIds(Arrays.asList(clearLogIds));
+    }
+
+    public List<ClearLogEntity> selectClearLogList(ClearLogDto clearLogDto){
+        ClearLogEntity clearLogEntity=clearLogMapstruct.toEntity(clearLogDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(clearLogEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),clearLogEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(clearLogEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),clearLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),clearLogEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(clearLogEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),clearLogEntity.getProfileName());
+        }
+        if(null!=clearLogEntity.getHandleCode()){
+            specificationBuilder.add("handleCode",SpecificationOperator.Operator.eq.name(),clearLogEntity.getHandleCode());
+        }
+        if(StringUtils.isNotNullString(clearLogEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),clearLogEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) clearLogEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) clearLogEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) clearLogEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) clearLogEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        List<ClearLogEntity> clearLogEntities=this.getAll(specification,sort);
+        return clearLogEntities;
+
+    }
+
+    @Override
+    public void exportExcel(ClearLogDto clearLogDto){
+        List<ClearLogEntity> entities=this.selectClearLogList(clearLogDto);
+        ExcelUtil<ClearLogEntity> util=new ExcelUtil(ClearLogEntity.class);
+        util.exportExcel(entities,"数据清除日志");
     }
 }
 

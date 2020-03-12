@@ -8,6 +8,7 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,12 @@ public class ClearLogController {
         ResultT<String> resultT=new ResultT<>();
         clearLogService.deleteClearLogByIds(clearLogIds);
         return resultT;
+    }
+    @ApiOperation(value = "数据清除日志导出", notes = "数据清除日志导出")
+    @RequiresPermissions("schedule:clearLog:export")
+    @GetMapping("/export")
+    public void exportExcel(ClearLogDto clearLogDto){
+        clearLogService.exportExcel(clearLogDto);
     }
 }
 

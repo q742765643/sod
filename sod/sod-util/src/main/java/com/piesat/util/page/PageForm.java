@@ -16,6 +16,8 @@ public class PageForm<T> {
      */
     private int currentPage = 1;
 
+    private String orderBy;
+
     /**
      * 分页大小
      */
@@ -54,6 +56,14 @@ public class PageForm<T> {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
     }
 }
 

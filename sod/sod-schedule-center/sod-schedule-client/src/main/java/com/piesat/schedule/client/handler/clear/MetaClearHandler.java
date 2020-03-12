@@ -51,10 +51,10 @@ public class MetaClearHandler implements BaseHandler {
             metaClearLogEntity.setJobId(metaClearEntity.getId());
 
             ReplaceVo replaceVo = new ReplaceVo();
-            replaceVo.setMsg(metaClearEntity.getClearContent());
+            replaceVo.setMsg(metaClearEntity.getConditions());
             replaceVo.setBackupTime(metaClearEntity.getTriggerLastTime());
             ExtractMessage.getIndexOf(replaceVo, resultT);
-            metaClearEntity.setClearContent(replaceVo.getMsg());
+            metaClearEntity.setConditions(replaceVo.getMsg());
             resultT.setSuccessMessage("清除条件为{}",replaceVo.getMsg());
             metaClearLogEntity=this.insertMetaClearLog(metaClearLogEntity,resultT);
             this.metaClearExecute(metaClearLogEntity,resultT);

@@ -40,14 +40,14 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.1.6.117:8003`,
+        target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
         }
       },
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `http://10.1.6.117:8005`,
+        target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -55,7 +55,7 @@ module.exports = {
       },
       // dm模块
       [process.env.VUE_APP_DM]: {
-        target: `http://10.1.6.117:8007`,
+        target: `http://192.168.1.101:8007`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""

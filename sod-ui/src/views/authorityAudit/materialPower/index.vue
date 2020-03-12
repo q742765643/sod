@@ -25,7 +25,7 @@
       <el-form-item label="申请时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.applyTime"
+          v-model="dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -56,10 +56,16 @@
       <el-table-column align="center" prop="department" label="机构"></el-table-column>
       <el-table-column align="center" prop="telephone" label="联系方式"></el-table-column>
       <el-table-column align="center" prop="applyTime" label="申请时间">
-        <!-- <template slot-scope="scope">{{scope.row.application_time.split('.')[0]}}</template> -->
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.applyTime) }}</span>
+        </template>
       </el-table-column>
-      <el-table-column align="center" prop="db_name" label="资料个数"
-                       :formatter="function(row){return row.dataAuthorityRecordList.length}"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="db_name"
+        label="资料个数"
+        :formatter="function(row){return row.dataAuthorityRecordList.length}"
+      ></el-table-column>
       <el-table-column align="center" prop="examine_status" label="状态" :formatter="statusShow"></el-table-column>
       <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="scope">
@@ -85,9 +91,7 @@
 </template>
 
 <script>
-import {
-  queryList
-} from "@/api/authorityAudit/materialPower/index";
+import { queryList } from "@/api/authorityAudit/materialPower/index";
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
 import handlePower from "@/views/authorityAudit/materialPower/handlePower";
 export default {
@@ -103,9 +107,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         auditStatus: "",
-        userName: "",
-        applyTime: ["", ""]
+        userName: ""
       },
+      dateRange: [],
       examineStatus: [
         {
           value: "01",
@@ -141,7 +145,7 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      queryList(this.queryParams).then(
+      queryList(this.addDateRange(this.queryParams, this.dateRange)).then(
         response => {
           this.tableData = response.data.pageData;
           this.total = response.data.totalCount;
@@ -150,12 +154,12 @@ export default {
       );
     },
     resetQuery() {
+      this.dateRange = [];
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
         auditStatus: "",
-        userName: "",
-        applyTime: ["", ""]
+        userName: ""
       };
       this.handleQuery();
     },
@@ -170,7 +174,7 @@ export default {
       });
     },
     viewCell(row) {
-      this.handleObj = {};
+      this.handleObj = row;
       this.handleDialog = true;
     },
     deleteCell(row) {},
@@ -183,7 +187,7 @@ export default {
     statusShow(row) {
       let result = row.auditStatus == "02" ? "已审核" : "待审核";
       return result;
-    },
+    }
   }
 };
 </script>

@@ -174,20 +174,14 @@ public class DataBaseRecoverService {
     }
     public  List<TreeVo> getFileList(String parentId,String storageDirectory){
         List<TreeVo> list=new ArrayList<>();
+
+        String path = storageDirectory+"/"+parentId;
         TreeVo treeVo=new TreeVo();
-        treeVo.setId(storageDirectory);
-        treeVo.setName(storageDirectory);
+        treeVo.setId(path);
+        treeVo.setName(path);
         treeVo.setPId("");
         treeVo.setParent(true);
         list.add(treeVo);
-
-        String path = storageDirectory+"/"+parentId;
-        TreeVo treeVo1=new TreeVo();
-        treeVo1.setId(path);
-        treeVo1.setName(parentId);
-        treeVo1.setPId(storageDirectory);
-        treeVo1.setParent(true);
-        list.add(treeVo1);
         this.getFileFistChidren(path,list);
         return list;
 
