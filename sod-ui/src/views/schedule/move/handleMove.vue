@@ -40,7 +40,19 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="迁移条件" prop="conditions">
-            <el-input v-model="msgFormDialog.conditions" placeholder="请输入迁移条件" />
+            <el-select
+              v-model="msgFormDialog.conditions"
+              placeholder="请选择迁移条件"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in conditionsOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -138,7 +150,19 @@
             label="二级nas清除条件"
             prop="clearConditions"
           >
-            <el-input v-model="msgFormDialog.clearConditions" placeholder="请输入二级nas清除条件" />
+            <el-select
+              v-model="msgFormDialog.clearConditions"
+              placeholder="请选择二级nas清除条件"
+              filterable
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in clearConditionsOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <!-- <el-col :span="24">
@@ -196,6 +220,8 @@ export default {
       alarmOptions: [],
       databaseOptions: [],
       dataClassIdOptions: [],
+      conditionsOptions:[],
+      clearConditionsOptions:[],
       msgFormDialog: {
         databaseId: "",
         dataClassId: "",
@@ -252,6 +278,12 @@ export default {
     });
     await this.getDicts("move_target_directory").then(response => {
       this.targetDirectoryOptions = response.data;
+    });
+    await this.getDicts("database_move_1_where").then(response => {
+      this.conditionsOptions = response.data;
+    });
+    await this.getDicts("database_move_2_where").then(response => {
+      this.clearConditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
     if (this.handleObj.pageName == "资料存储策略") {
