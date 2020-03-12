@@ -112,19 +112,24 @@ public class GbaseBusiness extends BaseBusiness{
                 while ((line = bufrError.readLine()) != null) {
                     msg.append(line).append('\n');
                 }
+            }else {
+                resultT.setErrorMessage("gbase备份表{}失败,connect信息错误{}",tableName,sql.toString());
+                log.error("gbase备份表{}失败,connect信息错误{}",tableName,sql.toString());
+
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            resultT.setErrorMessage("gbase备份表{}失败{},connect信息错误{}",tableName,sql.toString(),OwnException.get(e));
+            log.error("gbase备份表{}失败{},connect信息错误{}",tableName,sql.toString(),OwnException.get(e));
         }finally {
             if(exitVal!=0){
-                resultT.setErrorMessage("gbase备份表{}失败,cmd{},错误{}",tableName,cmd,msg);
+                resultT.setErrorMessage("gbase备份表{}失败,cmd{},错误{}",tableName,cmd.toString(),msg);
                 resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_15_ERROR.getKey());
                 EiSendUtil.gbaseException(parentId,cmd.toString(),resultT);
-                log.error("gbase备份表{}失败,cmd{},错误{}",tableName,cmd,msg);
+                log.error("gbase备份表{}失败,cmd{},错误{}",tableName,cmd.toString(),msg);
             }else{
-               resultT.setSuccessMessage("gbase备份表{}成功,cmd{}",tableName,cmd);
-               log.info("gbase备份表{}成功,cmd{}",tableName,cmd);
+               resultT.setSuccessMessage("gbase备份表{}成功,cmd{}",tableName,cmd.toString());
+               log.info("gbase备份表{}成功,cmd{}",tableName,cmd.toString());
             }
 
         }

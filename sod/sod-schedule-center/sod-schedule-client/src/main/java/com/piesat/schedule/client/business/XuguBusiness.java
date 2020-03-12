@@ -57,11 +57,11 @@ public class XuguBusiness extends BaseBusiness{
             File tempFile=new File(tempFilePath);
             String index=expMetadata.expData(tempFile.getName(),backupLogEntity.getTableName(),sql.toString(),backupLogEntity.getParentId());
             ZipUtils.writetxt(strategyVo.getIndexPath(),index,resultT);
-            resultT.setSuccessMessage("备份K表{}成功,sql{}",backupLogEntity.getTableName(),sql);
-            log.info("备份K表{}成功,sql{}",backupLogEntity.getTableName(),sql);
+            resultT.setSuccessMessage("备份K表{}成功,sql{}",backupLogEntity.getTableName(),sql.toString());
+            log.info("备份K表{}成功,sql{}",backupLogEntity.getTableName(),sql.toString());
         } catch (Exception e) {
-            resultT.setErrorMessage("备份K表{}失败,sql{},错误{}",backupLogEntity.getTableName(),sql, OwnException.get(e));
-            log.error("备份K表{}失败,sql{},错误{}",backupLogEntity.getTableName(),sql, OwnException.get(e));
+            resultT.setErrorMessage("备份K表{}失败,sql{},错误{}",backupLogEntity.getTableName(),sql.toString(), OwnException.get(e));
+            log.error("备份K表{}失败,sql{},错误{}",backupLogEntity.getTableName(),sql.toString(), OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_14_ERROR.getKey());
             EiSendUtil.xuguException(backupLogEntity.getParentId(),resultT);
         }
@@ -87,12 +87,12 @@ public class XuguBusiness extends BaseBusiness{
             ExpMetadata expMetadata=new ExpMetadata();
             String index=expMetadata.expData(tempFile.getName(),backupLogEntity.getVTableName(),sql.toString(),backupLogEntity.getParentId());
             ZipUtils.writetxt(strategyVo.getIndexPath(),index,resultT);
-            resultT.setSuccessMessage("备份V表{}成功,sql{}",backupLogEntity.getVTableName(),sql);
+            resultT.setSuccessMessage("备份V表{}成功,sql{}",backupLogEntity.getVTableName(),sql.toString());
 
-            log.info("备份V表{}成功,sql{}",backupLogEntity.getVTableName(),sql);
+            log.info("备份V表{}成功,sql{}",backupLogEntity.getVTableName(),sql.toString());
         } catch (Exception e) {
-            resultT.setErrorMessage("备份K表{}失败,sql{},错误{}",backupLogEntity.getVTableName(),sql, OwnException.get(e));
-            log.error("备份K表{}失败,sql{},错误{}",backupLogEntity.getVTableName(),sql, OwnException.get(e));
+            resultT.setErrorMessage("备份K表{}失败,sql{},错误{}",backupLogEntity.getVTableName(),sql.toString(), OwnException.get(e));
+            log.error("备份K表{}失败,sql{},错误{}",backupLogEntity.getVTableName(),sql.toString(), OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_14_ERROR.getKey());
             EiSendUtil.xuguException(backupLogEntity.getParentId(),resultT);
         }

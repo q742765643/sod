@@ -49,9 +49,12 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         return null;
     }
 
-    public ConnectVo getConnectVo(String dataSourceName){
+    public ConnectVo getConnectVo(String dataSourceName) {
         this.selectDataSource(dataSourceName);
         ConnectVo connectVo=connectVoMap.get(dataSourceName);
+        if(connectVo==null){
+            throw new RuntimeException("数据库连接信息不存在");
+        }
         return connectVo;
     }
     @Override

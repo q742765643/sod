@@ -213,7 +213,10 @@ public class MybatisInterceptor implements Interceptor {
 
             }
             mapList.forEach(smap-> {
-                String name = smap.get("name");
+                String name =smap.get("name");
+                if(name.indexOf(".")!=-1){
+                    name=name.substring(name.lastIndexOf(".")+1);
+                }
                 if(null != resultMappings && !resultMappings.isEmpty()){
                     for (ResultMapping resultMapping : resultMappings) {
                         if (name.toUpperCase().equals(resultMapping.getProperty().toUpperCase())) {
@@ -225,7 +228,10 @@ public class MybatisInterceptor implements Interceptor {
                 if(null!=selectItems&&!selectItems.isEmpty()){
                     for(SelectItem selectItem:selectItems){
                         SelectExpressionItem selectExpressionItem= (SelectExpressionItem) selectItem;
-                        if(selectExpressionItem.getExpression().toString().toUpperCase().indexOf(name.toUpperCase())!=-1){
+                        String sitem=selectExpressionItem.getExpression().toString().toUpperCase();
+                        sitem=sitem.replaceAll("_","");
+                        String vname=name.toUpperCase().replaceAll("_","");
+                        if(sitem.indexOf(vname)!=-1){
                             name=selectExpressionItem.getExpression().toString();
                             break;
                         }
