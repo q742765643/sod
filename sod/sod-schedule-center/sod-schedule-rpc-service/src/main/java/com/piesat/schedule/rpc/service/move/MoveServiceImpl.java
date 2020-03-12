@@ -6,14 +6,17 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
+import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.move.MoveDto;
+import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
@@ -87,6 +90,7 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         return pageBean;
 
     }
+    @Override
     public MoveDto selectmoveByParam(String databaseId, String dataClassId){
         PageForm pageForm=new PageForm(1,1);
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
@@ -132,6 +136,7 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         jobInfoService.stopByIds(Arrays.asList(moveIds));
     }
 
+    @Override
     public List<Map<String,Object>> findDatabase(){
         List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("move_database");
         List<String> dicts=new ArrayList<>();
@@ -157,7 +162,8 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
 
     }
 
-    public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId){
+    @Override
+    public List<Map<String,Object>> findDataClassId(String dataBaseId, String dataClassId){
 
         List<Map<String,Object>> dataClassIds=new ArrayList<>();
 
@@ -189,6 +195,45 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         moveEntity.setParentId(dataRetrieval.getParentId());
         moveEntity.setProfileName(dataRetrieval.getProfileName());
         moveEntity.setForeignKey(dataRetrieval.getForeignKey());
+    }
+    public List<MoveEntity> selectMoveList(MoveDto moveDto){
+        MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(moveEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),moveEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(moveEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),moveEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),moveEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(moveEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),moveEntity.getProfileName());
+        }
+        if(null!=moveEntity.getTriggerStatus()){
+            specificationBuilder.add("triggerStatus",SpecificationOperator.Operator.eq.name(),moveEntity.getTriggerStatus());
+        }
+        if(StringUtils.isNotNullString(moveEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),moveEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) moveEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) moveEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) moveEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) moveEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        List<MoveEntity> moveEntities=this.getAll(specification,sort);
+        return moveEntities;
+
+    }
+
+    @Override
+    public void exportExcel(MoveDto moveDto){
+        List<MoveEntity> entities=this.selectMoveList(moveDto);
+        ExcelUtil<MoveEntity> util=new ExcelUtil(MoveEntity.class);
+        util.exportExcel(entities,"数据迁移配置");
     }
 }
 

@@ -2,6 +2,8 @@ import request from '@/utils/request'
 const baseUrl =process.env.VUE_APP_SCHEDULE_CENTER_API
 
 export function listBackup(query) {
+  var orderBy=[{"name":"tableName","sort":"asc"}];
+  query.params.orderBy=orderBy;
   return request({
     url: baseUrl+'/schedule/backup/list',
     method: 'get',

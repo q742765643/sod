@@ -1,6 +1,7 @@
 package com.piesat.schedule.web.controller.move;
 
 import com.piesat.schedule.rpc.api.move.MoveService;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
@@ -100,6 +101,14 @@ public class MoveController {
         List<Map<String,Object>> mapList=moveService.findDataClassId(databaseId,dataClassId);
         resultT.setData(mapList);
         return resultT;
+    }
+
+    @ApiOperation(value = "数据迁移配置导出", notes = "数据迁移配置导出")
+    @RequiresPermissions("schedule:move:export")
+    @GetMapping("/export")
+    public void exportExcel(MoveDto moveDto){
+        moveService.exportExcel(moveDto);
+
     }
 }
 

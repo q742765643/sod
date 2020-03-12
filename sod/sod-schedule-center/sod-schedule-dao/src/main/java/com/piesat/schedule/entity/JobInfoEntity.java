@@ -46,7 +46,7 @@ public class JobInfoEntity extends BaseEntity{
     private Integer executorFailRetryCount;		// 失败重试次数
     @Column(name="retry_interval", length=50)
     private Integer retryInterval;
-    @Excel(name = "任务状态", readConverterExp = "0=启动,1=未启动")
+    @Excel(name = "任务状态", readConverterExp = "0=未启动,1=启动")
     @Column(name="trigger_status", length=50)
     private Integer triggerStatus;		// 调度状态：0-停止，1-运行
     @Column(name="trigger_last_time", length=50)

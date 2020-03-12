@@ -1,10 +1,12 @@
 package com.piesat.ucenter.mapper.system;
 
 import com.github.pagehelper.PageInfo;
+import com.piesat.common.annotation.MybatisAnnotation;
 import com.piesat.ucenter.entity.system.UserEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -15,7 +17,7 @@ import java.util.List;
 @Component
 public interface UserMapper {
     UserEntity selectByPrimaryKey(String id);
-
+    @MybatisAnnotation(value = "")
     List<UserEntity> selectUserList(UserEntity userEntity);
 
 }

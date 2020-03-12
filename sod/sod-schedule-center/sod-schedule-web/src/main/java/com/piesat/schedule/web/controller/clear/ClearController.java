@@ -2,6 +2,7 @@ package com.piesat.schedule.web.controller.clear;
 
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
+import com.piesat.schedule.rpc.dto.clear.MetaClearDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -100,6 +101,13 @@ public class ClearController {
         List<Map<String,Object>> mapList=clearService.findDataClassId(databaseId,dataClassId);
         resultT.setData(mapList);
         return resultT;
+    }
+
+    @ApiOperation(value = "数据清除配置导出", notes = "数据清除配置导出")
+    @RequiresPermissions("schedule:clear:export")
+    @GetMapping("/export")
+    public void exportExcel(ClearDto clearDto){
+        clearService.exportExcel(clearDto);
     }
 }
 

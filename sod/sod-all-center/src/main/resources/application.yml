@@ -1,23 +1,32 @@
 server:
-  port: 1238
+  port: 8005
   servlet:
       context-path: /
-tomcat:
-    remote-ip-header: x-forward-for
-    uri-encoding: UTF-8
-    max-threads: 10
-    background-processor-delay: 30
-    basedir: ${user.home}/tomcat/
+  tomcat:
+      remote-ip-header: x-forward-for
+      uri-encoding: UTF-8
+      max-threads: 10
+      background-processor-delay: 30
+      basedir: ${user.home}/tomcat/
 
 grpc:
   server:
-    port: 6007
+    port: 8006
+  client:
+    ucenter-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    dm-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 spring:
   #aop:
   #auto: true
   #proxy-target-class: true
   application:
-    name: schedule-client-server
+    name: schedule-server
   sleuth:
     sampler:
       probability: 1
@@ -55,6 +64,8 @@ spring:
       testWhileIdle: true
       testOnBorrow: true
       testOnReturn: true
+  main:
+      allow-bean-definition-overriding: true
   jpa:
     properties:
       hibernate:
@@ -71,9 +82,10 @@ spring:
     port: 8001
     timeout: 5000
     password:
+    #database: 1
 mybatis:
   type-aliases-package: com.piesat.*.entity
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath*:mapper/*.xml
   callSettersOnNulls:  true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -86,18 +98,19 @@ pagehelper:
 
 eureka:
   instance:
-    prefer-ip-address: true
-    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    hostname: desktop-2vav0fh
+
+    #prefer-ip-address: true
+    #instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: http://10.1.6.117:8002/eureka/
 
-backup:
-  temp-path: /zzj/CMADASS
+log:
+  path: E:/log
+  level: INFO
 
-gbaseserver:
-  ip: 127.0.0.1
-  user: gbase
-  pass: gbase
+
+

@@ -24,5 +24,7 @@ public interface ClearService {
     public void deleteClearByIds(String[] clearIds);
     public List<Map<String,Object>> findDatabase();
     public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
+
+    public void exportExcel(ClearDto clearDto);
 }
 
