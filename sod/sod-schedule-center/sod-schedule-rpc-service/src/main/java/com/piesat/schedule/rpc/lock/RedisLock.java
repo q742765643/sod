@@ -62,6 +62,7 @@ public class RedisLock {
         while (!result){
             try {
                 result = this.lock(key);
+                Thread.sleep(1000);
             } catch (Exception e) {
                log.error(OwnException.get(e));
                break;

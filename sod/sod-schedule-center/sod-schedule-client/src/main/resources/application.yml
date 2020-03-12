@@ -12,6 +12,11 @@ tomcat:
 grpc:
   server:
     port: 6007
+  client:
+    dm-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 spring:
   #aop:
   #auto: true
