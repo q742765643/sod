@@ -51,4 +51,6 @@ public interface LevelService {
      * @return
      */
     LevelDto getDotById(String id);
+
+    List<LevelDto> getAllLevel();
 }

@@ -18,4 +18,6 @@ public interface LevelMapper {
      * @return
      */
     public List<LevelEntity> selectLevelList(LevelEntity levelEntity);
+
+    List<LevelEntity> getAllLevel();
 }

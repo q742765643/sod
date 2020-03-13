@@ -7,6 +7,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,5 +99,13 @@ public class LevelController {
         LevelDto levelDto=levelService.getDotById(levelId);
         resultT.setData(levelDto);
         return resultT;
+    }
+
+    @ApiOperation(value = "查询所有层次")
+    @RequiresPermissions("dm:dictionary:getAllLevel")
+    @GetMapping(value = "/getAllLevel")
+    public ResultT getAllLevel(){
+        List<LevelDto> allLevel = this.levelService.getAllLevel();
+        return ResultT.success(allLevel);
     }
 }

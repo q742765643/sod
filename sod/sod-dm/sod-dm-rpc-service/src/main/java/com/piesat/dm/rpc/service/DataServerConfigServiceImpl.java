@@ -6,6 +6,7 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.dao.DataServerConfigDao;
 import com.piesat.dm.entity.DataServerConfigEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DataServerConfigService;
 import com.piesat.dm.rpc.dto.DataServerConfigDto;
 import com.piesat.dm.rpc.mapper.DataServerConfigMapper;
@@ -30,6 +31,8 @@ public class DataServerConfigServiceImpl extends BaseService<DataServerConfigEnt
     private DataServerConfigDao dataServerConfigDao;
     @Autowired
     private DataServerConfigMapper dataServerConfigMapper;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<DataServerConfigEntity> getBaseDao() {
@@ -73,5 +76,10 @@ public class DataServerConfigServiceImpl extends BaseService<DataServerConfigEnt
         List<DataServerConfigEntity> pageData = (List<DataServerConfigEntity>) page.getPageData();
         page.setPageData(this.dataServerConfigMapper.toDto(pageData));
         return page;
+    }
+
+    @Override
+    public int getDataServiceMaxNum(String data_service_id) {
+        return this.mybatisQueryMapper.getDataServiceMaxNum(data_service_id);
     }
 }

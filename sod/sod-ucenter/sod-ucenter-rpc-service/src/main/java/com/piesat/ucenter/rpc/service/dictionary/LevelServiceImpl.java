@@ -78,4 +78,10 @@ public class LevelServiceImpl extends BaseService<LevelEntity> implements LevelS
         LevelEntity levelEntity = this.getById(id);
         return this.levelMapstruct.toDto(levelEntity);
     }
+
+    @Override
+    public List<LevelDto> getAllLevel() {
+        List<LevelEntity> levelEntity = this.levelMapper.getAllLevel();
+        return this.levelMapstruct.toDto(levelEntity);
+    }
 }

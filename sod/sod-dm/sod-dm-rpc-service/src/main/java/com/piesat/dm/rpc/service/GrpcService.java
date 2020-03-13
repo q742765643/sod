@@ -14,17 +14,16 @@ import com.piesat.dm.rpc.api.DataClassService;
 import com.piesat.dm.rpc.api.DataLogicService;
 import com.piesat.dm.rpc.api.LogicDefineService;
 import com.piesat.dm.rpc.dto.*;
-import com.piesat.dm.rpc.mapper.DataTableMapper;
-import com.piesat.dm.rpc.mapper.LogicDefineMapper;
-import com.piesat.dm.rpc.mapper.ShardingMapper;
-import com.piesat.dm.rpc.mapper.StorageConfigurationMapper;
+import com.piesat.dm.rpc.mapper.*;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.sod.system.rpc.api.ManageFieldService;
+import com.piesat.sod.system.rpc.api.ServiceCodeService;
 import com.piesat.sod.system.rpc.api.SqlTemplateService;
 import com.piesat.sod.system.rpc.dto.ManageFieldDto;
+import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
 import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -76,6 +75,10 @@ public class GrpcService {
     private DatabaseInfo databaseInfo;
     @Autowired
     private DatabaseSqlService databaseSqlService;
+    @Autowired
+    private TableColumnDao tableColumnDao;
+    @Autowired
+    private TableColumnMapper tableColumnMapper;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -87,6 +90,8 @@ public class GrpcService {
     private BackupService backupService;
     @GrpcHthtClient
     private SqlTemplateService sqlTemplateService;
+    @GrpcHthtClient
+    private ServiceCodeService serviceCodeService;
 
 
     public ResultT updateColumnValue(String id, String column, String value) {
@@ -305,4 +310,19 @@ public class GrpcService {
         }
     }
 
+    public int syncServiceName(List<TableColumnDto> tableColumnDtoList) {
+        List<ServiceCodeDto> serviceCodeDtos = this.serviceCodeService.queryAll();
+        int un = 0;
+        for (ServiceCodeDto sc : serviceCodeDtos) {
+            for (TableColumnDto tc : tableColumnDtoList) {
+                if (sc.getDbEleCode().equals(tc.getCElementCode()) && !sc.getUserEleCode().equals(tc.getUserEleCode())) {
+                    tc.setUserEleCode(sc.getUserEleCode());
+                    this.tableColumnDao.save(this.tableColumnMapper.toEntity(tc));
+                    un++;
+                }
+            }
+        }
+
+        return un;
+    }
 }

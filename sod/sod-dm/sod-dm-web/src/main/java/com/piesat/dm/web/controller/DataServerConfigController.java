@@ -31,7 +31,7 @@ public class DataServerConfigController {
     private DataServerConfigService dataServerConfigService;
 
     @ApiOperation(value = "新增")
-    @RequiresPermissions("dm:dataserverbaseinfo:add")
+    @RequiresPermissions("dm:dataserverconfig:add")
     @Log(title = "服务基础信息管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataServerConfigDto dataServerConfigDto) {
@@ -45,7 +45,7 @@ public class DataServerConfigController {
     }
 
     @ApiOperation(value = "新增多个")
-    @RequiresPermissions("dm:dataserverbaseinfo:addList")
+    @RequiresPermissions("dm:dataserverconfig:addList")
     @Log(title = "服务基础信息管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/addList")
     public ResultT addList(@RequestBody List<DataServerConfigDto> dataServerConfigDto) {
@@ -59,7 +59,7 @@ public class DataServerConfigController {
     }
 
     @ApiOperation(value = "根据id查询")
-    @RequiresPermissions("dm:dataserverbaseinfo:get")
+    @RequiresPermissions("dm:dataserverconfig:get")
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
@@ -72,7 +72,7 @@ public class DataServerConfigController {
     }
 
     @ApiOperation(value = "根据id删除")
-    @RequiresPermissions("dm:dataserverbaseinfo:del")
+    @RequiresPermissions("dm:dataserverconfig:del")
     @Log(title = "服务基础信息管理", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
@@ -86,7 +86,7 @@ public class DataServerConfigController {
     }
 
     @ApiOperation(value = "查询所有")
-    @RequiresPermissions("dm:dataserverbaseinfo:all")
+    @RequiresPermissions("dm:dataserverconfig:all")
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
@@ -99,8 +99,8 @@ public class DataServerConfigController {
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    @RequiresPermissions("dm:gridarea:list")
+    @ApiOperation(value = "条件分页查询")
+    @RequiresPermissions("dm:dataserverconfig:list")
     public ResultT<PageBean> list(String dataServiceId,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
@@ -111,4 +111,15 @@ public class DataServerConfigController {
         resultT.setData(pageBean);
         return resultT;
     }
+
+    @GetMapping("/getMaxNum")
+    @ApiOperation(value = "查询数据服务的最大编号")
+    @RequiresPermissions("dm:dataserverconfig:getMaxNum")
+    public ResultT getMaxNum(String data_service_id) {
+        int dataServiceMaxNum = dataServerConfigService.getDataServiceMaxNum(data_service_id);
+        ResultT r = new ResultT();
+        r.setData(dataServiceMaxNum);
+        return r;
+    }
+
 }

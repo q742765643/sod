@@ -53,4 +53,6 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getRecordByApplyId(@Param("map")Map<String,String> map);
 
     void updateDataAuthorityRecord(@Param("id")String id,@Param("authorize")Integer authorize,@Param("cause")String cause);
+
+    int getDataServiceMaxNum(@Param("data_service_id")String data_service_id);
 }

@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.dto.DataServerConfigDto;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface DataServerConfigService {
     List<DataServerConfigDto> all();
 
     PageBean list(PageForm pageForm, String dataServiceId);
+
+    int getDataServiceMaxNum(String data_service_id);;
 }

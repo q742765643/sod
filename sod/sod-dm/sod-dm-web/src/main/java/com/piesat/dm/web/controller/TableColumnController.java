@@ -7,6 +7,7 @@ import com.piesat.dm.rpc.dto.DataLogicDto;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.TableColumnDto;
 import com.piesat.dm.rpc.dto.TableColumnList;
+import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -39,6 +40,8 @@ public class TableColumnController {
     private DataTableService dataTableService;
     @Autowired
     private DataLogicService dataLogicService;
+    @Autowired
+    private GrpcService grpcService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:tableColumn:add")
@@ -268,6 +271,22 @@ public class TableColumnController {
             }
 
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "同步服务编码")
+    @RequiresPermissions("dm:tableColumn:syncSCode")
+    @Log(title = "同步服务编码", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/syncSCode")
+    public ResultT syncSCode(@RequestBody TableColumnList tableColumnList) {
+        try {
+            int un = this.grpcService.syncServiceName(tableColumnList.getTableColumnList());
+            ResultT r = new ResultT();
+            r.setData(un);
+            return r;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
