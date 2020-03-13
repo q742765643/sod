@@ -367,4 +367,8 @@
         where  id = #{id}
     </update>
 
+    <select id="getDataServiceMaxNum" resultType="Integer" parameterType="String">
+        select  nvl(max (num),0) from T_SOD_DATASERVICE_CONFIG where data_service_id = #{data_service_id} and num is not null
+    </select>
+
 </mapper>

@@ -52,4 +52,6 @@ public interface MybatisQueryMapper {
 
     void updateDataAuthorityRecord(@Param("id")String id,@Param("authorize")Integer authorize,@Param("cause")String cause);
     void updateDataAuthorityApply(@Param("id")String id,@Param("auditStatus")String auditStatus);
+
+    int getDataServiceMaxNum(@Param("data_service_id")String data_service_id);
 }
