@@ -86,4 +86,9 @@ public class ServiceCodeServiceImpl extends BaseService<ServiceCodeEntity> imple
     public void deleteById(String id) {
         this.delete(id);
     }
+
+    @Override
+    public List<ServiceCodeDto> queryAll() {
+        return this.serviceCodeMapstruct.toDto(this.getAll());
+    }
 }

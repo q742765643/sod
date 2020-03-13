@@ -24,4 +24,6 @@ public interface ServiceCodeService {
     public void deleteRecordByIds(List<String> ids);
 
     public void deleteById(String id);
+
+    List<ServiceCodeDto> queryAll();
 }

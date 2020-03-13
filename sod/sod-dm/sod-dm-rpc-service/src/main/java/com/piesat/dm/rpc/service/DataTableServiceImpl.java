@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service;
 
+import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.core.api.DatabaseDcl;
@@ -16,6 +17,7 @@ import com.piesat.dm.rpc.mapper.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.TableForeignKeyMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,23 +110,6 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         return dataTableDao.updateById(dataTableDto.getTableName(), dataTableDto.getId());
     }
 
-    public Map<String, String> getSql(String tableId, String databaseId) {
-        List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
-        DataTableDto dataTableDto = this.getDotById(tableId);
-        Optional<DatabaseEntity> databaseEntity = this.databaseDao.findById(databaseId);
-        DatabaseEntity database = databaseEntity.get();
-        String databaseType = database.getDatabaseDefine().getDatabaseType();
-        Map<String, String> map = new HashMap<>();
-        if (this.databaseInfo.getXugu().equals(databaseType)) {
-//            this.databaseSqlService.getXuGuCreateSql()
-        } else if (this.databaseInfo.getGbase8a().equals(databaseType)) {
-
-        } else if (this.databaseInfo.getCassandra().equals(databaseType)) {
-
-        }
-
-        return map;
-    }
 
     @Override
     public ResultT getOverview(String databaseId, String dataClassId) {
@@ -193,34 +178,51 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
         DataClassEntity dataClassEntity = this.dataClassDao.findByDataClassId(paste.getDataClassId());
         for (DataTableEntity copy : copys) {
-            List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(copy.getId());
-            copy.setClassLogic(paste);
-            copy.setDataServiceId(dataClassEntity.getDataClassId());
-            copy.setDataServiceName(dataClassEntity.getClassName());
-            copy.setNameCn(dataClassEntity.getClassName());
-            copy.setCreateTime(new Date());
-            copy.setId("");
-            copy.setCreateTime(new Date());
-            copy.setVersion(0);
-            Set<TableColumnEntity> columns = copy.getColumns();
+            DataTableEntity dte = new DataTableEntity();
+            BeanUtils.copyProperties(copy,dte);
+            List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(dte.getId());
+            dte.setClassLogic(paste);
+            dte.setDataServiceId(dataClassEntity.getDataClassId());
+            dte.setDataServiceName(dataClassEntity.getClassName());
+            dte.setNameCn(dataClassEntity.getClassName());
+            dte.setCreateTime(new Date());
+            dte.setId(null);
+            dte.setCreateTime(new Date());
+            dte.setVersion(0);
+            Set<TableColumnEntity> columns = dte.getColumns();
+            Set<TableColumnEntity> cl = new LinkedHashSet();
             for (TableColumnEntity c : columns) {
-                c.setVersion(0);
-                c.setId("");
-                c.setCreateTime(new Date());
+                TableColumnEntity cc = new TableColumnEntity();
+                BeanUtils.copyProperties(c,cc);
+                cc.setVersion(0);
+                String id = UUID.randomUUID().toString();
+                cc.setId(null);
+                cc.setCreateTime(new Date());
+                cl.add(cc);
             }
-            Set<TableIndexEntity> tableIndexList = copy.getTableIndexList();
+            dte.setColumns(cl);
+            Set<TableIndexEntity> tableIndexList = dte.getTableIndexList();
+            Set<TableIndexEntity> til = new LinkedHashSet();
             for (TableIndexEntity index : tableIndexList) {
-                index.setId("");
-                index.setCreateTime(new Date());
-                index.setVersion(0);
+                TableIndexEntity te = new TableIndexEntity();
+                BeanUtils.copyProperties(index,te);
+                String id = UUID.randomUUID().toString();
+                te.setId(null);
+                te.setCreateTime(new Date());
+                te.setVersion(0);
+                til.add(te);
             }
-            DataTableEntity save = this.dataTableDao.save(copy);
+            dte.setTableIndexList(til);
+            DataTableEntity save = this.dataTableDao.save(dte);
             for (ShardingEntity se : shardingEntities) {
-                se.setTableId(save.getId());
-                se.setId("");
-                se.setCreateTime(new Date());
-                se.setVersion(0);
-                this.shardingDao.save(se);
+                ShardingEntity sde = new ShardingEntity();
+                BeanUtils.copyProperties(se,sde);
+                sde.setTableId(save.getId());
+                String id = UUID.randomUUID().toString();
+                sde.setId(null);
+                sde.setCreateTime(new Date());
+                sde.setVersion(0);
+                this.shardingDao.save(sde);
             }
 
         }

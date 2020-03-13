@@ -34,8 +34,6 @@ public interface DataTableService {
 
     int updateById(DataTableDto dataTableDto);
 
-    Map<String,String> getSql(String tableId,String databaseId);
-
     ResultT getOverview(String databaseId,String dataClassId);
 
     ResultT getSampleData(SampleData sampleData) throws Exception;

@@ -73,4 +73,16 @@ public class ServiceCodeDefineServiceImpl extends BaseService<ServiceCodeDefineE
     public void deleteRecordByIds(List<String> ids) {
         this.deleteByIds(ids);
     }
+
+    @Override
+    public List<ServiceCodeDefineDto> findByDbFcstEle(String dbFcstEle) {
+        List<ServiceCodeDefineEntity> byDbFcstEle = this.serviceCodeDefineDao.findByDbFcstEle(dbFcstEle);
+        return this.serviceCodeDefineMapstruct.toDto(byDbFcstEle);
+    }
+
+    @Override
+    public ServiceCodeDefineDto findById(String id) {
+        ServiceCodeDefineEntity serviceCodeDefineEntity = this.getById(id);
+        return this.serviceCodeDefineMapstruct.toDto(serviceCodeDefineEntity);
+    }
 }

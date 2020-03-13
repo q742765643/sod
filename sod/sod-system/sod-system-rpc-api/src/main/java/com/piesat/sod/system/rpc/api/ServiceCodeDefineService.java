@@ -1,5 +1,6 @@
 package com.piesat.sod.system.rpc.api;
 
+import com.piesat.sod.system.entity.ServiceCodeDefineEntity;
 import com.piesat.sod.system.rpc.dto.ServiceCodeDefineDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -19,4 +20,8 @@ public interface ServiceCodeDefineService {
     ServiceCodeDefineDto updateDto(ServiceCodeDefineDto serviceCodeDefineDto);
 
     public void deleteRecordByIds(List<String> ids);
+
+    List<ServiceCodeDefineDto> findByDbFcstEle(String dbFcstEle);
+
+    ServiceCodeDefineDto findById(String id);
 }
