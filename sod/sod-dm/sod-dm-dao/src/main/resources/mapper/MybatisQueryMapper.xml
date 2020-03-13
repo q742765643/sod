@@ -308,7 +308,7 @@
         </where>
     </select>
     <select id="getRecordByApplyId" resultType="java.util.Map" parameterType="java.util.Map">
-        select d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
+        select distinct d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
                  (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.database_id,c.table_name,e.database_name special_database_name,ee.database_name
                   from T_SOD_DATA_CLASS a
