@@ -262,26 +262,7 @@
           WHERE a.id = #{id}
     </select>
 
-    <select id="selectDataAuthorityApplyPageList" resultType="java.util.Map">
-        select a.* from t_sod_data_authority_apply a
-        <where>
-            <if test="auditStatus != null and auditStatus  != ''">
-                a.audit_status = #{auditStatus}
-            </if>
-            <if test="userId != null and userId != ''">
-                AND a.user_id = #{userId}
-            </if>
-            <if test="applyTime != null and applyTime != ''">
-                AND a.apply_time &gt; #{applyTime}
-            </if>
-            <if test="endTime != null and endTime != ''">
-                AND a.apply_time &lt; #{endTime}
-            </if>
-        </where>
-        ORDER  BY a.audit_status,a.apply_time desc
-    </select>
-
-    <select id="queryDataAuthorityApplyById" resultType="java.util.Map">
+    <select id="queryDataAuthorityApplyById" resultType="java.util.Map" parameterType="String">
         select a.*,b.database_up_id,b.database_up_password,b.examine_status
         from t_sod_data_authority_apply a left join t_sod_database_user b on a.user_id = b.user_id and b.examine_status = 1
 		where a.id = #{id}
@@ -289,7 +270,7 @@
 
 
     <select id="getRecordByApplyIdMysql" resultType="java.util.Map" parameterType="java.util.Map">
-        select d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
+        select distinct d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
             (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.database_id,c.table_name,e.database_name special_database_name,ee.database_name
              from T_SOD_DATA_CLASS a
@@ -376,6 +357,14 @@
         </set>
         where  id = #{id}
     </update>
-
+    <update id="updateDataAuthorityApply">
+        update t_sod_data_authority_apply
+        <set>
+            <if test="auditStatus != null and auditStatus  != ''">
+                audit_status = #{auditStatus}
+            </if>
+        </set>
+        where  id = #{id}
+    </update>
 
 </mapper>

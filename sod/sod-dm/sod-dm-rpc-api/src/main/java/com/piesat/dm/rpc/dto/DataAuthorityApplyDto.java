@@ -4,6 +4,7 @@ import com.piesat.util.BaseDto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -58,4 +59,6 @@ public class DataAuthorityApplyDto extends BaseDto {
     private Date examineTime;
 
     private Set<DataAuthorityRecordDto> dataAuthorityRecordList;
+
+    private List<DataAuthorityRecordDto> dataAuthorityRecords;
 }

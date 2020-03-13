@@ -10,10 +10,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +86,7 @@ public class DataAuthorityApplyController {
 
     @PutMapping(value = "/updateRecordCheck")
     @ApiOperation(value = "审核资料", notes = "审核资料")
-    public ResultT<String> updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto){
+    public ResultT<String> updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
        Map<String,Object> result = dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
        if((Integer)result.get("returnCode") == 0){
            return ResultT.success();

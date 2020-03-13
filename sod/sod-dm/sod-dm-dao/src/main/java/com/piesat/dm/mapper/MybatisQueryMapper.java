@@ -45,12 +45,11 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getDatabaseClassTreeMysql(@Param("id")String id);
     List<Map<String, Object>> getDatabaseClassTreePMysql(@Param("classIds")List<String> classIds,@Param("id")String id);
 
-    List<Map<String, Object>> selectDataAuthorityApplyPageList(@Param("auditStatus")String auditStatus,@Param("userId")String userId,@Param("applyTime")String applyTime,@Param("endTime")String endTime);
-
     Map<String, Object> queryDataAuthorityApplyById(@Param("id")String id);
 
     List<Map<String, Object>> getRecordByApplyIdMysql(@Param("map")Map<String,String> map);
     List<Map<String, Object>> getRecordByApplyId(@Param("map")Map<String,String> map);
 
     void updateDataAuthorityRecord(@Param("id")String id,@Param("authorize")Integer authorize,@Param("cause")String cause);
+    void updateDataAuthorityApply(@Param("id")String id,@Param("auditStatus")String auditStatus);
 }

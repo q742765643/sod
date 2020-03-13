@@ -57,12 +57,12 @@
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column
         align="center"
-        prop="application_user"
+        prop="userName"
         label="申请用户"
         width="120px"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column align="center" prop="application_unit" label="申请单位" width="120px"></el-table-column>
+      <el-table-column align="center" prop="department" label="申请单位" width="120px"></el-table-column>
       <el-table-column align="center" prop="application_time" label="申请时间" width="160px"></el-table-column>
       <el-table-column align="center" prop="examine_time" label="审核时间" width="160px"></el-table-column>
       <el-table-column align="center" prop="storage_logic" label="数据库类型" width="120px"></el-table-column>
