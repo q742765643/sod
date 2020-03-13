@@ -112,7 +112,7 @@
             <el-popover
               placement="top"
               effect="dark"
-              trigger="click"
+              trigger="hover"
               width="200"
               popper-class="darkPopover"
               v-if="scope.row.CAUSE"
@@ -222,25 +222,7 @@ export default {
         return;
       }
       console.log(this.multipleSelection);
-      let obj = {};
-      // obj.userId = localStorage.getItem("loginUserId");
-      obj.userId = "admin";
-      obj.authorize = 1;
-      obj.dataAuthorityRecordList = [];
-      this.multipleSelection.forEach(element => {
-        let cobj = {};
-        cobj.id = element.ID;
-        cobj.applyId = this.handleObj.id;
-        obj.dataAuthorityRecordList.push(cobj);
-      });
-      console.log(obj);
-      updateRecordCheck(obj).then(res => {
-        if (res.code == 200) {
-          this.msgSuccess("授权成功");
-        } else {
-          this.msgError(res.msg);
-        }
-      });
+      this.powerMethods();
     },
     handleRefused() {
       if (this.multipleSelection.lenght == 0) {
@@ -253,8 +235,45 @@ export default {
         inputPattern: /\S/,
         inputErrorMessage: "拒绝原因不能为空"
       })
-        .then(({ value }) => {})
+        .then(({ value }) => {
+          this.powerMethods(value);
+        })
         .catch(() => {});
+    },
+    powerMethods(value) {
+      let obj = {};
+      // obj.userId = localStorage.getItem("loginUserId");
+      obj.userId = "admin";
+      obj.dataAuthorityRecords = [];
+      this.multipleSelection.forEach(element => {
+        let cobj = {};
+        cobj.id = element.ID;
+        cobj.applyId = element.APPLY_ID;
+        cobj.databaseId = element.DATABASE_ID;
+        cobj.applyAuthority = element.APPLY_AUTHORITY;
+        if (value) {
+          cobj.authorize = 2;
+        } else {
+          cobj.authorize = 1;
+        }
+
+        cobj.dataClassId = element.DATA_CLASS_ID;
+        cobj.cause = value;
+        obj.dataAuthorityRecords.push(cobj);
+      });
+      console.log(obj);
+      updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
+        if (res.code == 200) {
+          if (value) {
+            this.msgSuccess("拒绝成功");
+          } else {
+            this.msgSuccess("授权成功");
+          }
+          this.handleQuery();
+        } else {
+          this.msgError(res.msg);
+        }
+      });
     }
   }
 };
