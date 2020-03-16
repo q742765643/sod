@@ -415,8 +415,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         String so = syncTaskDto.getSourceTable();//键表对的mapper的id，可能有多个用逗号分隔
         String sl = syncTaskDto.getSlaveTables();//值表对的mapper的id
         List<Integer> mapperList = new ArrayList<Integer>();
-        for(int i=0;i<so.split(",").length;i++){
-            mapperList.add(Integer.valueOf(so.split(",")[i]));
+        if(StringUtils.isNotNullString(so)){
+            for(int i=0;i<so.split(",").length;i++){
+                mapperList.add(Integer.valueOf(so.split(",")[i]));
+            }
         }
         if(StringUtils.isNotNullString(sl)){
             mapperList.add(Integer.valueOf(sl));
