@@ -39,13 +39,15 @@ module.exports = {
           ["^" + process.env.VUE_APP_BASE_API]: ""
         }
       },
+      //ucenter
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.1.6.117:8003`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
         }
       },
+      //schedule
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
         target: `http://10.1.6.117:8005`,
         changeOrigin: true,
@@ -61,21 +63,6 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
-      // 亚娟
-      [process.env.VUE_APP_SERVER_API]: {
-        target: `http://192.168.1.101:2345`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_SERVER_API]: ""
-        }
-      },
-      [process.env.VUE_APP_DICT]: {
-        target: `http://10.1.6.117:8003`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_DICT]: ""
-        }
-      },
       // 韦立国
       [process.env.VUE_APP_DB_API]: {
         target: `http://222.186.174.9:44306`,
@@ -86,18 +73,10 @@ module.exports = {
       },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
-        target: `http://localhost:2345`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_SYSTEM]: ""
-        }
-      },
-      //公共元数据同步
-      [process.env.VUE_APP_SYNC_WLG]: {
         target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
-          ["^" + process.env.VUE_APP_SYNC_WLG]: ""
+          ["^" + process.env.VUE_APP_SYSTEM]: ""
         }
       },
       [process.env.VUE_APP_DIC_WLG]: {
@@ -105,14 +84,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DIC_WLG]: ""
-        }
-      },
-      //王亚娟
-      [process.env.VUE_APP_SYNC]: {
-        target: `http://10.1.6.117:8005`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_SYNC]: ""
         }
       },
       // 吴磊
