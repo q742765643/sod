@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SERVER_API;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 // 查询表格
 export function gridEleServiceDefineAll(query) {
   return request({
