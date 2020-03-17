@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="审核状态">
         <el-select
-          v-model="queryParams.examine_status"
+          v-model="queryParams.examineStatus"
           placeholder="审核状态"
           clearable
           size="small"
@@ -20,15 +20,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input size="small" v-model="queryParams.nameUser" placeholder="申请用户"></el-input>
+        <el-input size="small" v-model="queryParams.userName" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item label="数据库名">
-        <el-input size="small" v-model="queryParams.nameSourceDB" placeholder="数据库名"></el-input>
+        <el-input size="small" v-model="queryParams.databaseName" placeholder="数据库名"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.time"
+          v-model="dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -63,14 +63,19 @@
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column align="center" prop="department" label="申请单位" width="120px"></el-table-column>
-      <el-table-column align="center" prop="application_time" label="申请时间" width="160px"></el-table-column>
-      <el-table-column align="center" prop="examine_time" label="审核时间" width="160px"></el-table-column>
-      <el-table-column align="center" prop="storage_logic" label="数据库类型" width="120px"></el-table-column>
-      <el-table-column align="center" prop="db_name" label="数据库名" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="db_use" label="用 途" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column align="center" prop="updateTime" label="申请时间" width="160px"></el-table-column>
+      <el-table-column align="center" prop="examineTime" label="审核时间" width="160px"></el-table-column>
+      <el-table-column align="center" prop="storageLogic" label="数据库类型" width="120px"></el-table-column>
       <el-table-column
         align="center"
-        prop="examine_status"
+        prop="databaseName"
+        label="数据库名"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column align="center" prop="databaseUse" label="用 途" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="examineStatus"
         label="审核状态"
         width="80px"
         :formatter="statusShow"
@@ -78,21 +83,21 @@
       <el-table-column align="center" label="操作" width="260px">
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.examine_status=='01'"
+            v-if="scope.row.examineStatus=='01'"
             type="text"
             size="mini"
             icon="el-icon-coordinate"
             @click="viewCell(scope.row)"
           >审核</el-button>
           <el-button
-            v-if="scope.row.examine_status=='04'"
+            v-if="scope.row.examineStatus=='04'"
             type="text"
             size="mini"
             icon="el-icon-finished"
             @click="viewCell(scope.row)"
           >释放</el-button>
           <el-button
-            v-if="scope.row.examine_status!='01' && scope.row.examine_status!='04'"
+            v-if="scope.row.examineStatus!='01' && scope.row.examineStatus!='04'"
             type="text"
             size="mini"
             icon="el-icon-view"
@@ -150,13 +155,11 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""],
-        beginTime: "",
-        endTime: ""
+        examineStatus: "",
+        userName: "",
+        databaseName: ""
       },
+      dateRange: [],
       auditStatus: [
         {
           value: "01",
@@ -203,13 +206,10 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      if (this.queryParams.time && this.queryParams.time.length > 0) {
-        this.queryParams.beginTime = this.queryParams.time[0];
-        this.queryParams.endTime = this.queryParams.time[1];
-      }
-
-      console.log(this.queryParams);
-      cldbApplicationAll(this.queryParams).then(response => {
+      console.log(this.addDateRange(this.queryParams, this.dateRange));
+      cldbApplicationAll(
+        this.addDateRange(this.queryParams, this.dateRange)
+      ).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -219,24 +219,23 @@ export default {
       this.queryParams = {
         pageNum: 1,
         pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        examineStatus: "",
+        userName: "",
+        databaseName: ""
       };
       this.handleQuery();
     },
     // 状态
     statusShow: function(row) {
-      if (row.examine_status == "01") {
+      if (row.examineStatus == "01") {
         return "待审";
-      } else if (row.examine_status == "02") {
+      } else if (row.examineStatus == "02") {
         return "已审";
-      } else if (row.examine_status == "03") {
+      } else if (row.examineStatus == "03") {
         return "拒绝";
-      } else if (row.examine_status == "04") {
+      } else if (row.examineStatus == "04") {
         return "申请释放";
-      } else if (row.examine_status == "05") {
+      } else if (row.examineStatus == "05") {
         return "已释放";
       } else {
         return "-";
