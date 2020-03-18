@@ -69,12 +69,12 @@
       </el-main>
     </el-container>
     <!-- 弹窗 树-->
-    <el-dialog :title="dialogTitle" :visible.sync="TreeDialog">
+    <el-dialog :title="dialogTitle" :visible.sync="TreeDialog" v-dialogDrag>
       <handleTree v-if="TreeDialog" :handleTreeObj="handleTreeObj" @cancelDialog="cancelDialog"></handleTree>
     </el-dialog>
 
     <!-- 弹窗 字典-->
-    <el-dialog :title="dialogTitle" :visible.sync="DictDialog">
+    <el-dialog :title="dialogTitle" :visible.sync="DictDialog" v-dialogDrag>
       <handleDict
         v-if="DictDialog"
         :handleGroup="handleGroup"
@@ -236,6 +236,7 @@ export default {
       });
     },
     addRow() {
+      this.handleDictObj = {};
       this.dialogTitle = "新增字典";
       this.DictDialog = true;
     },
@@ -244,10 +245,12 @@ export default {
         this.$message({ message: "请选中一条需要编辑的数据!", type: "error" });
         return;
       }
-      this.dialogTitle = "编辑管理字段";
-      this.handleDictObj = this.multipleSelection[0];
-      this.handleDictObj.groupId = this.checkNode.groupId;
-      this.DictDialog = true;
+      findManageFieldByPk({ id: this.multipleSelection[0].id }).then(res => {
+        this.dialogTitle = "编辑管理字段";
+        this.handleDictObj = res.data;
+        this.handleDictObj.groupId = this.checkNode.groupId;
+        this.DictDialog = true;
+      });
     },
     deleteRow() {
       if (this.multipleSelection.length == 0) {
@@ -338,6 +341,10 @@ export default {
     .el-scrollbar__wrap {
       overflow: auto;
     }
+  }
+  .el-tree,
+  .elMain {
+    background: #fff;
   }
   .elMain {
     border: 1px solid #ebeef5;

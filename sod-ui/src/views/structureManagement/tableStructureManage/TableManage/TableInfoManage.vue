@@ -92,6 +92,7 @@
       </div>
     </el-form>
     <el-dialog
+      v-dialogDrag
       title="帮助"
       :visible.sync="dialogVisible"
       width="60%"
@@ -132,6 +133,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      v-dialogDrag
       title="基础信息编辑"
       :visible.sync="baseMsgEditDialog"
       width="80%"

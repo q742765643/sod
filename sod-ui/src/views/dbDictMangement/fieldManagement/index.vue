@@ -91,12 +91,12 @@
       </el-main>
     </el-container>
     <!-- 弹窗 树-->
-    <el-dialog :title="dialogTitle" :visible.sync="TreeDialog">
+    <el-dialog :title="dialogTitle" :visible.sync="TreeDialog" v-dialogDrag>
       <handleTree v-if="TreeDialog" :handleTreeObj="handleTreeObj" @cancelDialog="cancelDialog"></handleTree>
     </el-dialog>
 
     <!-- 弹窗 字典-->
-    <el-dialog :title="dialogTitle" :visible.sync="DictDialog">
+    <el-dialog :title="dialogTitle" :visible.sync="DictDialog" v-dialogDrag>
       <handleDict
         v-if="DictDialog"
         :handleGroup="handleGroup"
@@ -111,7 +111,8 @@
 import {
   findMenu,
   getTableData,
-  deleteByIds
+  deleteByIds,
+  findById
 } from "@/api/dbDictMangement/fieldManagement";
 
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
@@ -294,9 +295,11 @@ export default {
         return;
       }
       this.handleGroup = this.treeData;
-      this.handleDictObj = this.multipleSelection[0];
-      this.dialogTitle = "编辑字典";
-      this.DictDialog = true;
+      findById({ id: this.multipleSelection[0].id }).then(res => {
+        this.dialogTitle = "编辑字典";
+        this.handleDictObj = res.data;
+        this.DictDialog = true;
+      });
     },
     deleteRow() {
       if (this.multipleSelection.length == 0) {

@@ -63,7 +63,7 @@
       @pagination="handleQuery"
     />
     <!-- 添加-->
-    <el-dialog title="添加" :visible.sync="DataDialog" width="45%" class="calculate">
+    <el-dialog title="添加" :visible.sync="DataDialog" width="45%" class="calculate" v-dialogDrag>
       <el-form :model="handleObj" :rules="rules" label-width="130px" ref="ruleForm">
         <el-form-item label="服务代码:" prop="userEleCode" class="labelitem">
           <el-input v-model="handleObj.userEleCode" placeholder="请输入服务代码名称" />

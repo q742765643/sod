@@ -253,10 +253,16 @@
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="50%">
+    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="50%">
       <handleExport @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExport>
     </el-dialog>
-    <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
+    <el-dialog
+      v-dialogDrag
+      title="详情"
+      :visible.sync="logDetailDialog"
+      v-if="logDetailDialog"
+      width="1000px"
+    >
       <el-form ref="ruleForm" :model="logFormDialog" label-width="140px">
         <el-row>
           <el-col :span="12">

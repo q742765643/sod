@@ -148,6 +148,7 @@
     </el-container>
     <!-- 资料概览弹出层 -->
     <el-dialog
+      v-dialogDrag
       title="资料概览"
       :visible.sync="materialListVisible"
       width="70%"
@@ -157,6 +158,7 @@
     </el-dialog>
     <!-- 新增、编辑资料  资料分类树 -->
     <el-dialog
+      v-dialogDrag
       :title="materialSingleTitle"
       :visible.sync="materialSingleVisible"
       width="90%"
@@ -176,6 +178,7 @@
     </el-dialog>
     <!-- 表结构管理 -->
     <el-dialog
+      v-dialogDrag
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"

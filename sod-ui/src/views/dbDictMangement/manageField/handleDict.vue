@@ -20,7 +20,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="组名称:" prop="dbEleName">
+      <el-form-item label="组名称:" prop="groupId">
         <el-select v-model="ruleForm.groupId">
           <el-option
             v-for="(item,index) in GroupNames"

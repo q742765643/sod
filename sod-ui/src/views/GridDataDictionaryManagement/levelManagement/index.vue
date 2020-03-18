@@ -55,7 +55,7 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="45%">
+    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="45%" v-dialogDrag>
       <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
         <el-form-item label="grib格式:" prop="gribVersion">
           <el-input v-model.number="ruleForm.gribVersion" type="number" placeholder="请输入数字" />

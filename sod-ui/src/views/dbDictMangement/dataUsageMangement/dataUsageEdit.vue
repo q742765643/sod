@@ -137,8 +137,6 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let obj = this.msgFormDialog;
-
-          debugger
           obj.logicDatabaseEntityList = [];
           obj.databaseId.forEach(element => {
             let dObj = {};

@@ -25,17 +25,14 @@ import Layout from '@/layout'
  */
 
 // 公共路由
-export const constantRoutes = [
-  {
+export const constantRoutes = [{
     path: '/redirect',
     component: Layout,
     hidden: true,
-    children: [
-      {
-        path: '/redirect/:path*',
-        component: () => import('@/views/redirect')
-      }
-    ]
+    children: [{
+      path: '/redirect/:path*',
+      component: () => import('@/views/redirect')
+    }]
   },
   {
     path: '/login',
@@ -61,47 +58,54 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/index'),
-        name: '首页',
-        meta: { title: '首页', icon: 'dashboard', noCache: true, affix: true }
+    children: [{
+      path: 'index',
+      component: () => import('@/views/index'),
+      name: '首页',
+      meta: {
+        title: '首页',
+        icon: 'dashboard',
+        noCache: true,
+        affix: true
       }
-    ]
+    }]
   },
   {
     path: '/user',
     component: Layout,
     hidden: true,
     redirect: 'noredirect',
-    children: [
-      {
-        path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
-        name: '个人中心',
-        meta: { title: '个人中心', icon: 'user' }
+    children: [{
+      path: 'profile',
+      component: () => import('@/views/system/user/profile/index'),
+      name: '个人中心',
+      meta: {
+        title: '个人中心',
+        icon: 'user'
       }
-    ]
+    }]
   },
   {
     path: '/dict',
     component: Layout,
     hidden: true,
-    children: [
-      {
-        //path: 'type/data/:dictId(\\d+)',
-        path: 'type/data/:dictId',
-        component: () => import('@/views/system/dict/data'),
-        name: '字典数据',
-        meta: { title: '字典数据', icon: '' }
+    children: [{
+      //path: 'type/data/:dictId(\\d+)',
+      path: 'type/data/:dictId',
+      component: () => import('@/views/system/dict/data'),
+      name: '字典数据',
+      meta: {
+        title: '字典数据',
+        icon: ''
       }
-    ]
+    }]
   }
 ]
 
 export default new Router({
   mode: 'history', // 去掉url中的#
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior: () => ({
+    y: 0
+  }),
   routes: constantRoutes
 })

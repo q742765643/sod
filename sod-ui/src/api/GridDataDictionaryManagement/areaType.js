@@ -31,3 +31,10 @@ export function defineDelete(id) {
     method: 'delete',
   })
 }
+// 详情
+export function detailById(id) {
+  return request({
+    url: baseUrl + '/dictionary/define/' + id,
+    method: 'get',
+  })
+}

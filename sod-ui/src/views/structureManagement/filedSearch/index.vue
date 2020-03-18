@@ -77,7 +77,12 @@
       @pagination="getList"
     />
     <!-- 高级搜索 -->
-    <el-dialog title="筛选" :visible.sync="dialogSuperSearch" :before-close="handleClose">
+    <el-dialog
+      title="筛选"
+      :visible.sync="dialogSuperSearch"
+      :before-close="handleClose"
+      v-dialogDrag
+    >
       <super-search
         v-if="dialogSuperSearch"
         :superObj="superObj"

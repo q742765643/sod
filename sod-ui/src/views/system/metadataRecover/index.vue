@@ -145,7 +145,7 @@
       </el-tab-pane>
     </el-tabs>
     <!-- 恢复 -->
-    <el-dialog :title="dialogTitle" :visible.sync="handeleRecoverDialog" width="50%">
+    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handeleRecoverDialog" width="50%">
       <handeleRecover
         @cancelHandle="cancelHandle"
         v-if="handeleRecoverDialog"
@@ -153,7 +153,13 @@
       ></handeleRecover>
     </el-dialog>
 
-    <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
+    <el-dialog
+      v-dialogDrag
+      title="详情"
+      :visible.sync="logDetailDialog"
+      v-if="logDetailDialog"
+      width="1000px"
+    >
       <el-form ref="ruleForm" :model="logFormDialog" label-width="120px" class="logDetailBox">
         <el-row>
           <el-col :span="12" style="padding-right:12px;">

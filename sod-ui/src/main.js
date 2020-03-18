@@ -32,8 +32,7 @@ import {
 } from "@/utils/ruoyi";
 import Pagination from "@/components/Pagination";
 
-// import Blob from '@/components/excelXlsx/js/Blob'
-// import Export2Excel from '@/components/excelXlsx/js/Export2Excel.js'
+import './utils/directives.js'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts

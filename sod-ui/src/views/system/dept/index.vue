@@ -56,17 +56,17 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button 
-            size="mini" 
-            type="text" 
-            icon="el-icon-edit" 
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:dept:edit']"
           >修改</el-button>
-          <el-button 
-            size="mini" 
-            type="text" 
-            icon="el-icon-plus" 
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-plus"
             @click="handleAdd(scope.row)"
             v-hasPermi="['system:dept:add']"
           >新增</el-button>
@@ -83,7 +83,7 @@
     </el-table>
 
     <!-- 添加或修改部门对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px">
+    <el-dialog v-dialogDrag :title="title" :visible.sync="open" width="600px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24" v-if="form.parentId !== '0'">
@@ -138,7 +138,14 @@
 </template>
 
 <script>
-import { listDept, getDept, treeselect, delDept, addDept, updateDept } from "@/api/system/dept";
+import {
+  listDept,
+  getDept,
+  treeselect,
+  delDept,
+  addDept,
+  updateDept
+} from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -212,7 +219,7 @@ export default {
     getTreeselect() {
       treeselect().then(response => {
         this.deptOptions = [];
-        const dept = { id: 0, label: '主类目', children: [] };
+        const dept = { id: 0, label: "主类目", children: [] };
         dept.children = response.data;
         this.deptOptions.push(dept);
       });
@@ -294,16 +301,23 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      this.$confirm('是否确认删除名称为"' + row.deptName + '"的数据项?', "警告", {
+      this.$confirm(
+        '是否确认删除名称为"' + row.deptName + '"的数据项?',
+        "警告",
+        {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
-        }).then(function() {
+        }
+      )
+        .then(function() {
           return delDept(row.id);
-        }).then(() => {
+        })
+        .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        }).catch(function() {});
+        })
+        .catch(function() {});
     }
   }
 };

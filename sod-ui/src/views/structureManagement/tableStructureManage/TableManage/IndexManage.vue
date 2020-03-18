@@ -18,6 +18,7 @@
       :title="indexTitle"
       :visible.sync="dialogStatus.indexDialog"
       append-to-body
+      v-dialogDrag
     >
       <div>
         <el-form :model="indexForm" label-width="120px" ref="indexForm">

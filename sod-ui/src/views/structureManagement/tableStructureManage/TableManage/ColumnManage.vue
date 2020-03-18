@@ -103,6 +103,7 @@
       </el-table>
     </el-scrollbar>
     <el-dialog
+      v-dialogDrag
       width="80%"
       title="公共元数据"
       :visible.sync="dialogStatus.publicMatedataDialog"
@@ -241,6 +242,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      v-dialogDrag
       width="80%"
       :title="codeTitle"
       :visible.sync="dialogStatus.columnDialog"
@@ -372,7 +374,13 @@
         <el-button @click="cancleCode('formCodeName')" size="small">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog width="80%" title="字段排序" :visible.sync="dialogStatus.codeSortDialog" append-to-body>
+    <el-dialog
+      width="80%"
+      title="字段排序"
+      :visible.sync="dialogStatus.codeSortDialog"
+      append-to-body
+      v-dialogDrag
+    >
       <div class="dragBox">
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-alert title="请拖动字段实现排序" type="success" :closable="false"></el-alert>
@@ -420,6 +428,7 @@
       title="操作"
       :visible.sync="exportInnerVisible"
       append-to-body
+      v-dialogDrag
     >
       <el-row :v-if="exportInnerVisible">
         <el-col :span="12">

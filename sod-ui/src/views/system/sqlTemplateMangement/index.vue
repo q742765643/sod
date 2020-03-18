@@ -24,6 +24,7 @@
     </el-row>
     <!-- 弹窗-->
     <el-dialog
+      v-dialogDrag
       class="sqlTemDialog"
       :title="dialogTitle"
       width="70%"
@@ -35,7 +36,11 @@
         <el-col :span="9">
           <el-form :inline="true">
             <el-form-item label="数据库厂商：">
-              <el-select v-model="handleSqlTemplate.databaseServer" size="small">
+              <el-select
+                v-model="handleSqlTemplate.databaseServer"
+                size="small"
+                :disabled="dialogTitle == '编辑模板'"
+              >
                 <el-option
                   v-for="item in databaseList"
                   :key="item.keyCol"
@@ -217,20 +222,20 @@ export default {
       this.handleSqlTemplate.template += value;
     },
     trueDialog() {
-      isAlreadyTem({
-        databaseServer: this.handleSqlTemplate.databaseServer
-      }).then(response => {
-        //已存在不可添加
-        if (response.data.length >= 1) {
-          this.$message({
-            type: "warning",
-            message: "此数据库已经添加，不可以重复添加"
-          });
-        }
-        //添加
-        else {
-          //新增
-          if (this.dialogTitle == "新增模板") {
+      //新增
+      if (this.dialogTitle == "新增模板") {
+        isAlreadyTem({
+          databaseServer: this.handleSqlTemplate.databaseServer
+        }).then(response => {
+          //已存在不可添加
+          if (response.data.length >= 1) {
+            this.$message({
+              type: "warning",
+              message: "此数据库已经添加，不可以重复添加"
+            });
+          }
+          //添加
+          else {
             saveSqlTemplate(this.handleSqlTemplate).then(response => {
               if (response.code === 200) {
                 this.$message({
@@ -242,21 +247,21 @@ export default {
               }
             });
           }
-          //编辑
-          else {
-            editTemplate(this.handleSqlTemplate).then(response => {
-              if (response.code === 200) {
-                this.$message({
-                  type: "success",
-                  message: "编辑成功"
-                });
-                this.handleDailyVisible = false;
-                this.getSqlData();
-              }
+        });
+      }
+      //编辑
+      else {
+        editTemplate(this.handleSqlTemplate).then(response => {
+          if (response.code === 200) {
+            this.$message({
+              type: "success",
+              message: "编辑成功"
             });
+            this.handleDailyVisible = false;
+            this.getSqlData();
           }
-        }
-      });
+        });
+      }
     },
     closeDialog() {
       this.handleDailyVisible = false;

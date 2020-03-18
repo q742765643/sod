@@ -138,7 +138,13 @@
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog width="90%" title="MD5校验" :visible.sync="innerCheckMD5Visible" append-to-body>
+    <el-dialog
+      width="90%"
+      title="MD5校验"
+      :visible.sync="innerCheckMD5Visible"
+      append-to-body
+      v-dialogDrag
+    >
       <chechExe
         v-if="innerCheckMD5Visible"
         :handlecheckObj="handlecheckObj"
@@ -147,7 +153,13 @@
       />
     </el-dialog>
 
-    <el-dialog title="详情" :visible.sync="logDetailDialog" v-if="logDetailDialog" width="1000px">
+    <el-dialog
+      title="详情"
+      :visible.sync="logDetailDialog"
+      v-if="logDetailDialog"
+      width="1000px"
+      v-dialogDrag
+    >
       <el-form ref="ruleForm" :model="logFormDialog" label-width="120px" class="logDetailBoxRe">
         <el-form-item label="数据库名称">
           <el-select size="small" filterable v-model="logFormDialog.databaseId">
@@ -195,6 +207,7 @@
         v-if="allDetailDialog"
         width="1000px"
         append-to-body
+        v-dialogDrag
       >
         <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
         <span slot="footer" class="dialog-footer">

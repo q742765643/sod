@@ -40,7 +40,7 @@
       @pagination="getList"
     />
 
-    <el-dialog title="权限配置" :visible.sync="handleDialog" width="650px">
+    <el-dialog v-dialogDrag title="权限配置" :visible.sync="handleDialog" width="650px">
       <handleTime
         v-if="handleDialog"
         :handleObj="handleObj"

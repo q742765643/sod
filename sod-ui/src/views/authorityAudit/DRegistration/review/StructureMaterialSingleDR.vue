@@ -111,6 +111,7 @@
       :visible.sync="storageTreeVisible"
       :close-on-click-modal="false"
       :append-to-body="true"
+      v-dialogDrag
     >
       <StructureStorageTree
         v-if="storageTreeVisible"
@@ -126,6 +127,7 @@
       append-to-body
       width="70%"
       top="5vh"
+      v-dialogDrag
     >
       <EditDataUseDialog
         v-if="editDataUseVisible"
