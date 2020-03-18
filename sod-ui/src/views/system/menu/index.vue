@@ -105,7 +105,7 @@
     </el-table>
 
     <!-- 添加或修改菜单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px">
+    <el-dialog v-dialogDrag :title="title" :visible.sync="open" width="600px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24">

@@ -208,6 +208,7 @@
       width="90%"
       max-width="1100px"
       top="5vh"
+      v-dialogDrag
     >
       <handleAccount
         v-if="handleDialog"
@@ -217,14 +218,14 @@
       />
     </el-dialog>
     <!-- 数据注册审核-->
-    <el-dialog :visible.sync="reviewdataRegisterVisible" fullscreen title="存储资料审核">
+    <el-dialog :visible.sync="reviewdataRegisterVisible" fullscreen title="存储资料审核" v-dialogDrag>
       <reviewDataRegister
         v-if="reviewdataRegisterVisible"
         :registerForm="reviewFormData"
         @closeexamine="closeexamine"
       />
     </el-dialog>
-    <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
+    <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤" v-dialogDrag>
       <revieStepRegister v-if="reviewStep" :materialObj="materialObj" @closeStep="closeStep" />
     </el-dialog>
 
@@ -235,6 +236,7 @@
       width="90%"
       :close-on-click-modal="false"
       top="5vh"
+      v-dialogDrag
     >
       <StructureMaterialSingle
         v-if="materialSingleVisible"

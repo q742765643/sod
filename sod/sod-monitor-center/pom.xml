@@ -10,6 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sod-monitor-center</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sod-monitor-server</module>
+        <module>sod-monitor-agent</module>
+        <module>sod-monitor-calculate</module>
+        <module>sod-monitor-testlog</module>
+    </modules>
 
 
 </project>

@@ -121,15 +121,15 @@
       </el-scrollbar>
     </el-main>
     <!-- 弹窗 备份 -->
-    <el-dialog :title="dialogTitle" :visible.sync="backUpDialog" width="800px">
+    <el-dialog :title="dialogTitle" :visible.sync="backUpDialog" width="800px" v-dialogDrag>
       <handleBackUp @cancelHandle="cancelHandle" v-if="backUpDialog" :handleObj="handleObj"></handleBackUp>
     </el-dialog>
     <!-- 弹窗 清除-->
-    <el-dialog :title="dialogTitle" :visible.sync="clearDialog" width="800px">
+    <el-dialog :title="dialogTitle" :visible.sync="clearDialog" width="800px" v-dialogDrag>
       <handleClear @cancelHandle="cancelHandle" v-if="clearDialog" :handleObj="handleObj"></handleClear>
     </el-dialog>
     <!-- 弹窗 迁移 -->
-    <el-dialog :title="dialogTitle" :visible.sync="moveDialog" width="800px">
+    <el-dialog :title="dialogTitle" :visible.sync="moveDialog" width="800px" v-dialogDrag>
       <handleMove @cancelHandle="cancelHandle" v-if="moveDialog" :handleObj="handleObj"></handleMove>
     </el-dialog>
   </el-container>
@@ -217,7 +217,7 @@ export default {
     //节点点击
     sourceNodeClick(data) {
       console.log(data);
-      this.checkNode = nodeArr;
+      this.checkNode = data;
       this.getfindData(data.id);
     },
     getfindData(classId) {

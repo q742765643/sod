@@ -28,7 +28,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = { "com.piesat" },repositoryBaseClass = GenericDaoImpl.class)
 @EnableJpaAuditing
 @EntityScan(basePackages = { "com.piesat" })
-@MapperScan("com.piesat.*.mapper")
+@MapperScan({"com.piesat.*.mapper","com.piesat.sod.*.mapper"})
 @Slf4j
 public class AllApplication {
 	public static void main(String[] args) {

@@ -74,7 +74,13 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="50%" highlight-current-row>
+    <el-dialog
+      :title="dialogTitle"
+      :visible.sync="msgFormDialog"
+      width="50%"
+      highlight-current-row
+      v-dialogDrag
+    >
       <el-form
         :model="ruleForm"
         :rules="rules"
@@ -119,7 +125,12 @@
       </div>
     </el-dialog>
     <!-- 高级搜索 -->
-    <el-dialog title="筛选" :visible.sync="dialogSuperSearch" :before-close="closeSuperSearch">
+    <el-dialog
+      title="筛选"
+      :visible.sync="dialogSuperSearch"
+      :before-close="closeSuperSearch"
+      v-dialogDrag
+    >
       <super-search
         v-if="dialogSuperSearch"
         :superObj="superObj"
@@ -171,12 +182,14 @@ export default {
         eleCodeShort: [
           { required: true, message: "请输入活动区域", trigger: "blur" }
         ],
-        subjectId: [{ required: true, message: "请输入学科", trigger: "blur" }],
+        subjectId: [
+          { required: true, message: "请输入数字格式学科", trigger: "blur" }
+        ],
         classify: [
-          { required: true, message: "请输入参数种类", trigger: "blur" }
+          { required: true, message: "请输入数字格式参数种类", trigger: "blur" }
         ],
         parameterId: [
-          { required: true, message: "请输入参数编码", trigger: "blur" }
+          { required: true, message: "请输入数字格式参数编码", trigger: "blur" }
         ],
         gribVersion: [
           { required: true, message: "请选择GRIB版本", trigger: "change" }

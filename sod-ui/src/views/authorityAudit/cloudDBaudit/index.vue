@@ -135,6 +135,7 @@
       width="90%"
       max-width="1100px"
       top="5vh"
+      v-dialogDrag
     >
       <handleAccount
         v-if="handleDialog"

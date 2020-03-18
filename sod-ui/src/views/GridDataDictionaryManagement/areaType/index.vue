@@ -63,7 +63,13 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="50%" highlight-current-row>
+    <el-dialog
+      :title="dialogTitle"
+      :visible.sync="msgFormDialog"
+      width="50%"
+      highlight-current-row
+      v-dialogDrag
+    >
       <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
         <el-form-item label="区域标识:" prop="areaId">
           <el-input v-model="ruleForm.areaId" placeholder="请输入区域标识" />
@@ -78,7 +84,7 @@
           <el-input v-model.number="ruleForm.startLon" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="结束经度:" prop="endLon">
-          <el-input v-model.number="ruleForm.endLon" placeholder="请输入结束经度" />
+          <el-input v-model.number="ruleForm.endLon" type="number" placeholder="请输入结束经度" />
         </el-form-item>
         <el-form-item label="备注:" prop="areaDesc">
           <el-input type="textarea" v-model="ruleForm.areaDesc" />
@@ -97,7 +103,8 @@ import {
   defineList,
   defineSave,
   defineEdit,
-  defineDelete
+  defineDelete,
+  detailById
 } from "@/api/GridDataDictionaryManagement/areaType";
 export default {
   data() {
@@ -127,16 +134,32 @@ export default {
           { required: true, message: "请输入区域标识", trigger: "blur" }
         ],
         startLat: [
-          { required: true, message: "请输入开始纬度", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入数字格式的开始纬度",
+            trigger: "blur"
+          }
         ],
         endLat: [
-          { required: true, message: "请输入结束纬度", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入数字格式的结束纬度",
+            trigger: "blur"
+          }
         ],
         startLon: [
-          { required: true, message: "请输入开始经度", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入数字格式的开始经度",
+            trigger: "blur"
+          }
         ],
         endLon: [
-          { required: true, message: "请输入结束经度", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入数字格式的结束经度",
+            trigger: "blur"
+          }
         ],
         areaDesc: [{ required: true, message: "请输入备注", trigger: "blur" }]
       }
@@ -178,7 +201,9 @@ export default {
           });
           return;
         } else {
-          this.ruleForm = this.choserow[0];
+          detailById(this.choserow[0].id).then(response => {
+            this.ruleForm = response.data;
+          });
         }
         this.dialogTitle = "编辑";
       }

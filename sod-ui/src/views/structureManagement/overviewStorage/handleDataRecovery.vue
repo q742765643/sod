@@ -79,7 +79,13 @@
       <el-button type="primary" @click="handleRecover('ruleForm')">md5数据校验</el-button>
       <el-button @click="handleRecover('false')">取 消</el-button>
     </div>
-    <el-dialog width="70%" :title="innerTreeTitle" :visible.sync="innerTreeVisible" append-to-body>
+    <el-dialog
+      width="70%"
+      :title="innerTreeTitle"
+      :visible.sync="innerTreeVisible"
+      append-to-body
+      v-dialogDrag
+    >
       <InnerTree
         v-if="innerTreeVisible"
         :handleInnerObj="handleInnerObj"
@@ -201,9 +207,9 @@ export default {
       this.innerTreeVisible = false;
     },
     handleRecover(formName) {
-      if(formName == 'false'){
+      if (formName == "false") {
         this.$emit("handleRecover", false);
-        return
+        return;
       }
       if (!this.msgFormDialog.filePath) {
         this.$message({
@@ -220,15 +226,14 @@ export default {
           return false;
         }
       });
-    },
-    
+    }
   }
 };
 </script>
 
 <style lang="scss">
 .handleDataRecoveryDialog {
-  .el-select{
+  .el-select {
     width: 100%;
   }
   .box-card {

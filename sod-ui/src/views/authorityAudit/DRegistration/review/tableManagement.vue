@@ -49,6 +49,7 @@
       :fullscreen="true"
       :before-close="closeStructureManage"
       top="0"
+      v-dialogDrag
     >
       <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
     </el-dialog>

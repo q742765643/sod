@@ -81,10 +81,17 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog title="数据授权查看" :visible.sync="handleDialog" width="90%" max-width="1100px" top="5vh">
+    <el-dialog
+      title="数据授权查看"
+      :visible.sync="handleDialog"
+      width="90%"
+      max-width="1100px"
+      top="5vh"
+      v-dialogDrag
+    >
       <handleMaterial v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
     </el-dialog>
-    <el-dialog title="权限配置" :visible.sync="handlepowerDialog" width="650px">
+    <el-dialog title="权限配置" :visible.sync="handlepowerDialog" width="650px" v-dialogDrag>
       <handlePower v-if="handlepowerDialog" @cancelHandle="cancelHandle" ref="myHandleServer" />
     </el-dialog>
   </div>

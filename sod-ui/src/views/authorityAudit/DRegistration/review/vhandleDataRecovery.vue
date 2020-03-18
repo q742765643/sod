@@ -101,7 +101,13 @@
       <el-button type="primary" @click="trueDialog('ruleForm')">md5数据校验</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
-    <el-dialog width="70%" :title="innerTreeTitle" :visible.sync="innerTreeVisible" append-to-body>
+    <el-dialog
+      width="70%"
+      :title="innerTreeTitle"
+      :visible.sync="innerTreeVisible"
+      append-to-body
+      v-dialogDrag
+    >
       <InnerTree
         v-if="innerTreeVisible"
         :handleInnerObj="handleInnerObj"
@@ -162,7 +168,6 @@ export default {
   },
   created() {
     // this.searchObj = this.handleObj;
-
     // this.getFindDataBase("");
     // this.axios
     //   .get(interfaceObj.databaseBackup_DataBaseFromDir, {

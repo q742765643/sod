@@ -26,7 +26,13 @@
 
     <!-- <Pagination :total="dataTotal" @paginationChange="paginationChange0" ref="pagination"></Pagination> -->
 
-    <el-dialog width="80%" title="选择" :visible.sync="dialogStatus.optConfig" append-to-body>
+    <el-dialog
+      width="80%"
+      title="选择"
+      :visible.sync="dialogStatus.optConfig"
+      append-to-body
+      v-dialogDrag
+    >
       <div>
         <el-form :model="optSearchObj" :inline="true" size="small" label-width="120px">
           <el-form-item label="短名">
@@ -57,7 +63,13 @@
         <el-button type="primary" @click="trueHandle('table')" size="small">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog width="80%" :title="dialogTitle" :visible.sync="dialogStatus.config" append-to-body>
+    <el-dialog
+      width="80%"
+      :title="dialogTitle"
+      :visible.sync="dialogStatus.config"
+      append-to-body
+      v-dialogDrag
+    >
       <el-form size="mini" :model="formData" label-width="120px" ref="formData" :rules="rules">
         <el-row>
           <el-col :span="12">

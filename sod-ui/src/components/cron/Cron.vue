@@ -8,6 +8,7 @@
       max-height="500px"
       top="1vh"
       :close-on-click-modal="false"
+      v-dialogDrag
     >
   <div class="cron" :val="value_">
     <el-tabs v-model="activeName">

@@ -132,6 +132,7 @@
       :title="dialogTitle"
       :visible.sync="dataServeDialog"
       append-to-body
+      v-dialogDrag
     >
       <el-form size="mini" :rules="rules" ref="formName" :model="msgFormDialog" label-width="140px">
         <el-row>

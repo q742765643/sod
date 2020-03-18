@@ -89,7 +89,7 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog">
+    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" v-dialogDrag>
       <handleDataBase
         v-if="msgFormDialog"
         :handleMsgObj="handleMsgObj"

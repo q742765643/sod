@@ -82,7 +82,7 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog">
+    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" v-dialogDrag>
       <dataUsageEdit
         v-if="msgFormDialog"
         :handleObj="handleObj"
@@ -169,31 +169,20 @@ export default {
         this.dialogTitle = "编辑";
         getById({ id: this.choserow[0].id }).then(res => {
           this.handleObj = res.data;
+          this.handleObj.storageType = [];
+          res.data.logicStorageTypesEntityList.forEach(element => {
+            this.handleObj.storageType.push(element.storageType);
+          });
+
+          this.handleObj.databaseId = [];
+          res.data.logicDatabaseEntityList.forEach(element => {
+            this.handleObj.databaseId.push(element.databaseId);
+          });
           this.msgFormDialog = true;
         });
       }
     },
-    beforeAvatarUpload(file) {
-      const isJSON = file.type === "application/json";
-      if (!isJSON) {
-        this.$message.error("导入文件只能是 JSON 格式!");
-      }
-    },
-    handleAvatarSuccess(res, file) {
-      if (res.returnCode == 0) {
-        this.$message({
-          type: "success",
-          message: "导入成功"
-        });
-        this.getList();
-      } else {
-        this.$message({
-          type: "error",
-          message: "导入失败"
-        });
-      }
-      this.$refs.upload.clearFiles();
-    },
+
     handleSelectionChange(val) {
       this.choserow = val;
     },
@@ -205,7 +194,7 @@ export default {
         });
         return;
       } else {
-        delLogic(this.queryParams).then(response => {
+        delLogic({ id: this.choserow[0].id }).then(response => {
           if (response.code == 200) {
             this.$message({
               type: "success",

@@ -121,7 +121,12 @@
       @pagination="getList"
     />
     <!-- 高级搜索 -->
-    <el-dialog title="筛选" :visible.sync="dialogSuperSearch" :before-close="closeSuperSearch">
+    <el-dialog
+      title="筛选"
+      :visible.sync="dialogSuperSearch"
+      :before-close="closeSuperSearch"
+      v-dialogDrag
+    >
       <super-search
         v-if="dialogSuperSearch"
         :superObj="superObj"
@@ -131,6 +136,7 @@
     </el-dialog>
     <!-- 配置 -->
     <el-dialog
+      v-dialogDrag
       title="选择需要配置的选项"
       :visible.sync="dialogSetting"
       width="500px"
@@ -164,6 +170,7 @@
 
     <!-- 数据恢复 -->
     <el-dialog
+      v-dialogDrag
       title="结构化数据恢复"
       :visible.sync="handleDataRecoveryDialog"
       :before-close="handleClose"
@@ -174,7 +181,13 @@
         :handleObj="handleObj"
         @handleRecover="handleRecover"
       />
-      <el-dialog width="90%" title="MD5校验" :visible.sync="innerCheckMD5Visible" append-to-body>
+      <el-dialog
+        width="90%"
+        title="MD5校验"
+        :visible.sync="innerCheckMD5Visible"
+        append-to-body
+        v-dialogDrag
+      >
         <chechExe
           v-if="innerCheckMD5Visible"
           :handlecheckObj="handlecheckObj"

@@ -49,6 +49,7 @@
       :title="dialogTitle"
       :visible.sync="productDialog"
       append-to-body
+      v-dialogDrag
     >
       <el-form size="mini" :rules="rules" ref="formName" :model="msgFormDialog" label-width="140px">
         <el-col :span="12">

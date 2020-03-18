@@ -27,8 +27,11 @@
         <module>sod-dm</module>
         <module>sod-system</module>
         <module>sod-schedule-center</module>
+
         <module>sod-monitor-center</module>
+
         <module>sod-all-center</module>
+
     </modules>
     <repositories>
         <repository>

@@ -75,7 +75,7 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog title="专题库资料授权查看" :visible.sync="handleDialog" width="1200px">
+    <el-dialog title="专题库资料授权查看" :visible.sync="handleDialog" width="1200px" v-dialogDrag>
       <handleLibrary
         v-if="handleDialog"
         :handleObj="handleObj"
@@ -83,7 +83,7 @@
         ref="myHandleServer"
       />
     </el-dialog>
-    <el-dialog title="专题库创建" :visible.sync="applyTopicDialog" width="1200px">
+    <el-dialog title="专题库创建" :visible.sync="applyTopicDialog" width="1200px" v-dialogDrag>
       <applyTopic v-if="applyTopicDialog" ref="applyTopicServer" @closedialog="closeeditDialog" />
     </el-dialog>
   </div>

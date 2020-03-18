@@ -470,7 +470,6 @@ export default {
       contantTaskChose: [],
       addnewtargettable: 0,
       msgFormDialog: {
-        taskId: "", //任务ID
         taskName: "", //任务名
         dataSourceId: "", //数据来源
         sourceDatabaseId: "", //源库
@@ -1046,26 +1045,31 @@ export default {
             );
           }
         });
-        console.log(this.msgFormDialog);
+
         this.$refs[formName].validate(valid => {
           if (valid) {
-            if (this.handleObj.taskId) {
+            let msg = "";
+            if (this.handleObj.id) {
+              delete this.msgFormDialog.slaveTables;
+              msg = "编辑成功";
             } else {
-              syncSaveUpdate(this.msgFormDialog).then(res => {
-                if (res.code == "200") {
-                  this.$message({
-                    type: "success",
-                    message: "新增成功"
-                  });
-                  this.$emit("resetQuery");
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: "新增失败"
-                  });
-                }
-              });
+              msg = "新增成功";
             }
+            console.log(this.msgFormDialog);
+            syncSaveUpdate(this.msgFormDialog).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: msg
+                });
+                this.$emit("resetQuery");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
+            });
             //this.msgFormDialog[i_i] = v;
           } else {
             // console.log("error submit!!");

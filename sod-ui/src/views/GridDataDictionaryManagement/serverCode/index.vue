@@ -52,7 +52,7 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="50%">
+    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" width="50%" v-dialogDrag>
       <el-form :model="ruleForm" :rules="rules" label-width="150px" ref="ruleForm">
         <el-form-item label="要素服务代码:" prop="userFcstEle">
           <el-input v-model="ruleForm.userFcstEle" placeholder="请输入要素服务代码" />

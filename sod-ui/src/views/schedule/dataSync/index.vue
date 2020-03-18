@@ -135,11 +135,11 @@
       @pagination="getList"
     />
 
-    <el-dialog title="日志列表" :visible.sync="dailyDataDialog" width="90%">
+    <el-dialog title="日志列表" :visible.sync="dailyDataDialog" width="90%" v-dialogDrag>
       <dailySync v-if="dailyDataDialog" :handletaskId="handletaskId" />
     </el-dialog>
     <!-- 新增编辑 -->
-    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="80%">
+    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="80%" v-dialogDrag>
       <handleSync
         v-if="handleDialog"
         :handleObj="handleObj"
@@ -148,7 +148,12 @@
       />
     </el-dialog>
     <!-- 高级搜索 -->
-    <el-dialog title="筛选" :visible.sync="dialogSuperSearch" :before-close="closeSuperSearch">
+    <el-dialog
+      title="筛选"
+      :visible.sync="dialogSuperSearch"
+      :before-close="closeSuperSearch"
+      v-dialogDrag
+    >
       <super-search
         v-if="dialogSuperSearch"
         :superObj="superObj"

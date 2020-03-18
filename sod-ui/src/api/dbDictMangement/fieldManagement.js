@@ -41,3 +41,11 @@ export function updateById(query) {
     params: query
   });
 }
+//详情
+export function findById(query) {
+  return request({
+    url: baseUrl + "/restApi/dicmgn/findById",
+    method: "put",
+    params: query
+  });
+}

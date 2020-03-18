@@ -195,10 +195,15 @@
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog :title="dialogTitle" :visible.sync="handleDialog" width="650px">
+    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="650px">
       <handleSod @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleSod>
     </el-dialog>
-    <el-dialog title="同步详情" :visible.sync="syncDescDialogVisible" v-if="syncDescDialogVisible">
+    <el-dialog
+      v-dialogDrag
+      title="同步详情"
+      :visible.sync="syncDescDialogVisible"
+      v-if="syncDescDialogVisible"
+    >
       <div v-for="(item,index) in syncDescList" :key="index">
         <div v-if="item.run_state=='同步成功'">
           <span>同步表名{{index}}:{{item.syncTableName}}</span>

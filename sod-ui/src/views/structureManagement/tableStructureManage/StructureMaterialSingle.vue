@@ -100,6 +100,7 @@
 
     <!-- 公共元数据资料树 -->
     <el-dialog
+      v-dialogDrag
       title="公共元数据资料树"
       :visible.sync="publicTreeVisible"
       :close-on-click-modal="false"
@@ -113,6 +114,7 @@
     </el-dialog>
     <!-- 存储元数据资料树 -->
     <el-dialog
+      v-dialogDrag
       title="存储元数据资料树"
       :visible.sync="storageTreeVisible"
       :close-on-click-modal="false"
@@ -127,6 +129,7 @@
 
     <!-- 编辑数据用途弹出层 -->
     <el-dialog
+      v-dialogDrag
       title="数据用途选择"
       :visible.sync="editDataUseVisible"
       append-to-body

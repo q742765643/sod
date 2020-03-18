@@ -47,7 +47,7 @@ export function saveLogic(data) {
   })
 }
 // 编辑
-export function editLogic(query) {
+export function editLogic(data) {
   return request({
     url: baseUrl + '/dm/logicDefine/edit',
     method: 'put',
