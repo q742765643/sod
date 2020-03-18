@@ -3,10 +3,10 @@
     <!-- 数据用途管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="数据用途ID:">
-        <el-input size="small" v-model="queryParams.logic_id" placeholder="请输入数据用途ID" />
+        <el-input size="small" v-model="queryParams.logicFlag" placeholder="请输入数据用途ID" />
       </el-form-item>
       <el-form-item label="用途描述:">
-        <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入中文简称" />
+        <el-input size="small" v-model="queryParams.logicName" placeholder="请输入用途描述" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -41,29 +41,35 @@
       <el-table-column align="center" type="selection" width="50"></el-table-column>
       <el-table-column align="center" prop="logicFlag" label="数据用途ID"></el-table-column>
       <el-table-column align="center" prop="logicName" label="用途描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column align="center" prop="storageType" label="表类型" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <span>{{scope.row.logicStorageTypesEntityList[0].storageType}}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
-        prop="storage_type_name"
-        label="表类型"
+        prop="databaseName"
+        label="数据库名称"
         :show-overflow-tooltip="true"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <span
+            v-if="scope.row.logicDatabaseEntityList.length>0"
+          >{{scope.row.logicDatabaseEntityList[0].databaseName}}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
-        prop="logic_desc"
+        prop="logicDesc"
         label="用途说明"
         width="360"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column
-        align="center"
-        prop="database_name"
-        label="数据库名称"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column align="center" prop="create_time" label="创建时间">
-        <!-- <template slot-scope="scope">
-            <span>{{scope.row.create_time.split('.')[0]}}</span>
-        </template>-->
+
+      <el-table-column align="center" prop="createTime" label="创建时间">
+        <template slot-scope="scope">
+          <span>{{parseTime(scope.row.createTime)}}</span>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -77,13 +83,22 @@
 
     <!-- 弹窗-->
     <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog">
-      <dataUsageEdit v-if="msgFormDialog" :handleMsgObj="handleMsgObj" @cancelDialog="cancelDialog"></dataUsageEdit>
+      <dataUsageEdit
+        v-if="msgFormDialog"
+        :handleObj="handleObj"
+        @cancelDialog="cancelDialog"
+        ref="myDialog"
+      ></dataUsageEdit>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { queryDataBaseLogicAll } from "@/api/dbDictMangement/dataUsageMangement";
+import {
+  queryDataBaseLogicAll,
+  delLogic,
+  getById
+} from "@/api/dbDictMangement/dataUsageMangement";
 import dataUsageEdit from "@/views/dbDictMangement/dataUsageMangement/dataUsageEdit";
 export default {
   components: {
@@ -111,7 +126,7 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       ruleForm: {},
-      handleMsgObj: {}
+      handleObj: {}
     };
   },
   created() {
@@ -139,12 +154,24 @@ export default {
       });
     },
     showDialog(type) {
-      this.msgFormDialog = true;
-    },
-    handleTrue() {},
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-      this.msgFormDialog = false;
+      if (type == "add") {
+        this.dialogTitle = "添加";
+        this.handleObj = {};
+        this.msgFormDialog = true;
+      } else {
+        if (this.choserow.length != 1) {
+          this.$message({
+            type: "error",
+            message: "请选择一条数据"
+          });
+          return;
+        }
+        this.dialogTitle = "编辑";
+        getById({ id: this.choserow[0].id }).then(res => {
+          this.handleObj = res.data;
+          this.msgFormDialog = true;
+        });
+      }
     },
     beforeAvatarUpload(file) {
       const isJSON = file.type === "application/json";
@@ -170,10 +197,36 @@ export default {
     handleSelectionChange(val) {
       this.choserow = val;
     },
-    deleteCell() {},
+    deleteCell() {
+      if (this.choserow.length != 1) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+        return;
+      } else {
+        delLogic(this.queryParams).then(response => {
+          if (response.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.handleQuery();
+          } else {
+            this.$message({
+              type: "error",
+              message: "删除失败"
+            });
+          }
+        });
+      }
+    },
     tableExoprt() {},
     outDataBasePhysicss() {},
-    cancelDialog() {}
+    cancelDialog() {
+      this.msgFormDialog = false;
+      this.handleQuery();
+    }
   }
 };
 </script>

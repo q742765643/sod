@@ -8,54 +8,43 @@ export function cldbApplicationAll(query) {
     params: query
   })
 }
+//
+export function getDictDataByType(query) {
+  return request({
+    url: baseUrl + '/dm/cloudDatabaseApply/getDictDataByType/' + query,
+    method: 'get',
+  })
+}
 // 删除表格
 export function deleteExamine(data) {
   return request({
-    url: baseUrl + '/system/api/cldbApplication/deleteExamine',
-    method: 'get',
+    url: baseUrl + '/dm/cloudDatabaseApply/deleteById',
+    method: 'delete',
     params: data
   })
 }
 // 添加表格
-export function addInfo(data) {
+export function saveCldb(data) {
   return request({
-    url: baseUrl + '/system/api/cldbApplication/addInfo',
+    url: baseUrl + '/dm/cloudDatabaseApply/save',
     method: 'post',
     data: data
   })
 }
-// 获取数据库类型
-export function getYunDbLogic(data) {
+
+// 编辑
+export function editCldb(data) {
   return request({
-    url: baseUrl + '/system/api/cldbApplication/getYunDbLogic',
-    method: 'get',
+    url: baseUrl + '/dm/cloudDatabaseApply/edit',
+    method: 'put',
+    data: data
   })
 }
-// 获取文件存储类型存储空间大小
-export function getFileLogic(data) {
+// 查详情
+export function getById(query) {
   return request({
-    url: baseUrl + '/system/api/cldbApplication/getFileLogic',
+    url: baseUrl + '/dm/cloudDatabaseApply/getById',
     method: 'get',
-  })
-}
-// 获取mysql类型存储空间大小
-export function getMysqlLogic(data) {
-  return request({
-    url: baseUrl + '/system/api/cldbApplication/getMysqlLogic',
-    method: 'get',
-  })
-}
-//获取redis类型存储空间大小
-export function getRedisLogic(data) {
-  return request({
-    url: baseUrl + '/system/api/cldbApplication/getRedisLogic',
-    method: 'get',
-  })
-}
-// 获取cpu内存类型
-export function databaseLogic(data) {
-  return request({
-    url: baseUrl + '/system/api/cldbApplication/databaseLogic',
-    method: 'get',
+    params: query
   })
 }

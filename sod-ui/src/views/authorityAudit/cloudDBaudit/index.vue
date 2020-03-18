@@ -63,8 +63,16 @@
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column align="center" prop="department" label="申请单位" width="120px"></el-table-column>
-      <el-table-column align="center" prop="updateTime" label="申请时间" width="160px"></el-table-column>
-      <el-table-column align="center" prop="examineTime" label="审核时间" width="160px"></el-table-column>
+      <el-table-column align="center" prop="updateTime" label="申请时间" width="160px">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="examineTime" label="审核时间" width="160px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.examineTime">{{ parseTime(scope.row.examineTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" prop="storageLogic" label="数据库类型" width="120px"></el-table-column>
       <el-table-column
         align="center"
@@ -141,8 +149,10 @@
 <script>
 import {
   cldbApplicationAll,
-  deleteExamine
+  deleteExamine,
+  getById
 } from "@/api/authorityAudit/cloudDBaudit";
+
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
 export default {
   components: {
@@ -261,26 +271,20 @@ export default {
       });
     },
     viewCell(row) {
-      this.dialogTitle = "数据库账户审核";
-      this.handleObj = row;
-      this.handleDialog = true;
+      getById({ id: row.id }).then(response => {
+        this.dialogTitle = "数据库账户审核";
+        this.handleObj = response.data;
+        this.handleDialog = true;
+      });
     },
     deleteCell(row) {
-      this.$confirm(
-        "确定要删除数据库名为" + row.db_name + "的这条数据吗?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
+      this.$confirm("确定要删除这条数据吗?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
         .then(() => {
-          let cellObj = {};
-          cellObj.application_id = row.application_id;
-          cellObj.db_name = row.db_name;
-          console.log(cellObj);
-          deleteExamine(cellObj).then(response => {
+          deleteExamine({ id: row.id }).then(response => {
             if (response.code == 200) {
               this.msgSuccess("删除成功");
               this.getList();
@@ -293,6 +297,7 @@ export default {
     handleDialogClose() {
       this.handleDialog = false;
       this.handleObj = {};
+      this.handleQuery();
     }
   }
 };

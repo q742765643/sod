@@ -15,7 +15,7 @@
           <el-col :span="8">
             <el-form-item label="申请用户" prop="userId">
               <el-select
-                v-if="this.searchObj.application_id == undefined"
+                v-if="this.searchObj.id == undefined"
                 size="small"
                 filterable
                 v-model="msgFormDialog.userId"
@@ -32,11 +32,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="申请单位" prop="application_unit">
+            <el-form-item label="申请单位" prop="department">
               <el-input
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.application_unit"
+                v-model="msgFormDialog.department"
                 placeholder="申请单位"
               ></el-input>
             </el-form-item>
@@ -62,10 +62,10 @@
                 @change="storageChange"
               >
                 <el-option
-                  v-for="(item,index) in storageLogic"
+                  v-for="(item,index) in storageLogicList"
                   :key="index"
-                  :label="item.key_col"
-                  :value="item.key_col"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -96,10 +96,10 @@
             <el-form-item label="申请存储空间大小" prop="storageSpace">
               <el-select :disabled="isDetail" size="small" v-model="msgFormDialog.storageSpace">
                 <el-option
-                  v-for="(item,index) in storageSpace"
+                  v-for="(item,index) in storageSpaceList"
                   :key="index"
-                  :label="item.key_col"
-                  :value="item.key_col"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -118,14 +118,14 @@
             <el-form-item
               label="申请CPU/内存"
               prop="cpuMemory"
-              v-if="msgFormDialog.storageLogic !='Redis'&& msgFormDialog.storageLogic !='网络共享存储'"
+              v-if="msgFormDialog.storageLogic !='redis'&& msgFormDialog.storageLogic !='file'"
             >
               <el-select :disabled="isDetail" size="small" v-model="msgFormDialog.cpuMemory">
                 <el-option
                   v-for="(item,index) in cpuList"
                   :key="index"
-                  :label="item.key_col"
-                  :value="item.key_col"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -136,12 +136,7 @@
         <div slot="header" class="clearfix">
           <span>审核信息</span>
         </div>
-        <el-row
-          type="flex"
-          class="row-bg"
-          justify="center"
-          v-if="this.searchObj.application_id == undefined"
-        >
+        <el-row type="flex" class="row-bg" justify="center" v-if="this.searchObj.id == undefined">
           <el-col :span="8">
             <el-form-item label="审核人" prop="examiner">
               <el-input size="small" v-model="msgFormDialog.examiner" placeholder="审核人"></el-input>
@@ -156,8 +151,9 @@
                 :limit="1"
                 :on-exceed="handleExceed"
                 :action="upLoadUrl"
-                :before-remove="beforeRemove"
                 :on-success="successUpload"
+                :before-upload="handleBefore"
+                :data="uploadData"
               >
                 <el-button size="small">点击上传(只能上传docx文件)</el-button>
               </el-upload>
@@ -219,7 +215,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <el-card class="box-card" v-if="examineStatus || msgFormDialog.storageLogic !='XUGU'">
+      <el-card class="box-card" v-if="examineStatus || msgFormDialog.storageLogic !='database'">
         <div slot="header" class="clearfix">
           <span>分配信息</span>
         </div>
@@ -227,7 +223,7 @@
           type="flex"
           class="row-bg"
           justify="center"
-          v-if="msgFormDialog.storageLogic !='Redis'&& msgFormDialog.storageLogic !='XUGU'"
+          v-if="msgFormDialog.storageLogic !='redis'&& msgFormDialog.storageLogic !='database'"
         >
           <el-col :span="8">
             <el-form-item label="挂载服务器" prop="mountServer">
@@ -264,7 +260,7 @@
           type="flex"
           class="row-bg"
           justify="center"
-          v-if="msgFormDialog.storageLogic !='网络共享存储'"
+          v-if="msgFormDialog.storageLogic !='file'"
         >
           <el-col :span="8">
             <el-form-item label="数据库IP" prop="databaseIp">
@@ -287,23 +283,19 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <!-- <el-button
-              v-if="this.searchObj.application_id == undefined"
-              type="primary"
-              size="small"
-              icon="el-icon-paperclip"
-              @click="demoDownload()"
-            >验证链接</el-button>-->
-            <el-form-item
-              v-if="this.searchObj.application_id != undefined"
-              label="实际分配存储空间"
-              prop="newStorageSpace"
-            >
-              <el-input
+            <el-form-item label="实际分配存储空间" prop="newStorageSpace">
+              <el-select
                 :disabled="isDetailStatus"
                 size="small"
                 v-model="msgFormDialog.newStorageSpace"
-              ></el-input>
+              >
+                <el-option
+                  v-for="(item,index) in storageSpaceList"
+                  :key="index"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -311,7 +303,7 @@
           type="flex"
           class="row-bg"
           justify="center"
-          v-if="msgFormDialog.storageLogic !='网络共享存储'"
+          v-if="msgFormDialog.storageLogic !='file'"
         >
           <el-col :span="8">
             <el-form-item label="数据库用户名" prop="databaseUsername">
@@ -345,25 +337,24 @@
             </el-row>
           </el-col>
           <el-col :span="8">
-            <el-form-item
-              v-if="this.searchObj.newCpuMemory!=''&&this.searchObj.newCpuMemory!=null&&this.searchObj.newCpuMemory!=undefined "
-              label="实际分配CPU/内存"
-              prop="newCpuMemory"
-            >
-              <el-input
+            <el-form-item label="实际分配CPU/内存" prop="newCpuMemory">
+              <el-select
                 :disabled="isDetailStatus"
                 size="small"
                 v-model="msgFormDialog.newCpuMemory"
-              ></el-input>
+                v-if="msgFormDialog.storageLogic !='redis'&& msgFormDialog.storageLogic !='file'"
+              >
+                <el-option
+                  v-for="(item,index) in cpuList"
+                  :key="index"
+                  :label="item.dictValue"
+                  :value="item.dictValue"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
       </el-card>
-
-      <!-- <el-select v-model="msgFormDialog.ipChose" class="ipChose">
-          <el-option label="指定IP" value="1"></el-option>
-          <el-option label="IP段" value="2"></el-option>
-      </el-select>-->
     </el-form>
 
     <!-- 确定取消 -->
@@ -376,15 +367,12 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DM;
+import { Encrypt } from "@/utils/htencrypt";
 import {
-  addInfo,
-  getYunDbLogic,
-  getFileLogic,
-  getMysqlLogic,
-  getRedisLogic,
-  databaseLogic
+  getDictDataByType,
+  editCldb,
+  saveCldb
 } from "@/api/authorityAudit/cloudDBaudit";
-
 import {
   chineseLengthTenValidation,
   telphoneNumValidation,
@@ -443,18 +431,19 @@ export default {
       isReason: false,
       isDetail: false,
       isDetailStatus: false,
+      uploadData: {},
       upLoadUrl: baseUrl + "/dm/cloudDatabaseApply/upload",
       isDisabled: false,
       examineStatus: true,
       userBox: [], //获取所有用户
-      storageSpace: [],
-      storageLogic: [],
+      storageSpaceList: [],
+      storageLogicList: [],
 
       searchObj: {},
       contantTaskChose: [],
       msgFormDialog: {
-        userId: "",
-        application_unit: "",
+        userId: "admin",
+        department: "",
         telephone: "",
         storageLogic: "",
         databaseName: "",
@@ -476,7 +465,7 @@ export default {
         userId: [
           { required: true, message: "请选择申请用户", trigger: "change" }
         ],
-        application_unit: [
+        department: [
           { required: true, validator: nameValidate, trigger: "blur" }
         ],
         telephone: [
@@ -541,12 +530,15 @@ export default {
   },
   created() {
     this.searchObj = this.handleObj;
-    getYunDbLogic().then(response => {
-      this.storageLogic = response.data;
+    this.msgFormDialog = this.handleObj;
+    this.msgFormDialog.userId = "admin";
+    this.getDicts("cloud_database_type").then(response => {
+      this.storageLogicList = response.data;
     });
-    databaseLogic().then(response => {
+    this.getDicts("cloud_cup_type").then(response => {
       this.cpuList = response.data;
     });
+    this.initServerDetail();
   },
   methods: {
     // 眼睛开关
@@ -569,36 +561,38 @@ export default {
         });
     },
     // 查看详情时的下载
-    downloadWord() {},
+    downloadWord() {
+      let path = this.msgFormDialog.examineMaterial;
+      let obj = {
+        filepath: path
+      };
+      let flieData = Encrypt(JSON.stringify(obj));
+      flieData = encodeURIComponent(flieData);
+      window.location.href =
+        baseUrl +
+        "/dm/cloudDatabaseApply/download?sign=111111&data=" +
+        flieData;
+    },
     // 上传限制
     handleExceed() {
       this.$message.warning("当前限制选择1个文件");
     },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`, {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.msgFormDialog.examineMaterial = "";
-        })
-        .catch(() => {
-          console.log("已取消删除");
-        });
+
+    handleBefore(file) {
+      this.uploadData.filename = file;
     },
     successUpload: function(response, file, fileList) {
-      this.msgFormDialog.examineMaterial = response.examineMaterial;
+      this.msgFormDialog.examineMaterial = response.msg;
     },
     // 申请用户
     userChange(selectUserId) {
-      let obj = {};
+      /*  let obj = {};
       obj = this.userBox.find(item => {
         //这里的userBox就是上面遍历的数据源
         return item.userId === selectUserId; //筛选出匹配数据
       });
       this.msgFormDialog.telephone = obj.phone;
-      this.msgFormDialog.application_unit = obj.deptName;
+      this.msgFormDialog.department = obj.deptName; */
     },
     // 获取所有用户信息
     getUserAll() {
@@ -610,26 +604,16 @@ export default {
     // 数据库改变
     storageChange(selectStorage) {
       console.log(selectStorage);
-      this.msgFormDialog.storageSpace = "";
-      if (selectStorage == "Redis") {
-        getRedisLogic().then(response => {
-          this.storageSpace = response.data;
-        });
-      } else if (selectStorage == "网络共享存储") {
-        getFileLogic().then(response => {
-          this.storageSpace = response.data;
-        });
-      } else if (selectStorage == "XUGU") {
-        getMysqlLogic().then(response => {
-          this.storageSpace = response.data;
-        });
-      }
+      this.msgFormDialog.storageSpaceList = [];
+      getDictDataByType("cloud_" + selectStorage + "_storage_space").then(
+        response => {
+          this.storageSpaceList = response.data;
+        }
+      );
     },
     // 获取服务器详情
     initServerDetail() {
-      if (this.searchObj.application_id == undefined) {
-        // 新增
-      } else {
+      if (this.searchObj.id) {
         // 修改
         this.msgFormDialog = this.searchObj;
         this.msgFormDialog.userId = this.searchObj.application_user;
@@ -691,9 +675,41 @@ export default {
         this.$refs[formName].resetFields();
         this.$emit("cancelHandle");
       } else {
+        console.log(this.msgFormDialog);
         this.$refs[formName].validate(valid => {
           if (valid) {
-            this.$emit("trueHandle", this.msgFormDialog);
+            if (this.handleObj.id) {
+              editCldb(this.msgFormDialog).then(res => {
+                if (res.code == 200) {
+                  this.$message({
+                    type: "success",
+                    message: "编辑成功"
+                  });
+                  this.$emit("handleDialogClose");
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: res.msg
+                  });
+                }
+              });
+            } else {
+              this.msgFormDialog.examineStatus = "02";
+              saveCldb(this.msgFormDialog).then(res => {
+                if (res.code == 200) {
+                  this.$message({
+                    type: "success",
+                    message: "增加成功"
+                  });
+                  this.$emit("handleDialogClose");
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: res.msg
+                  });
+                }
+              });
+            }
           } else {
             console.log("error submit!!");
             return false;
@@ -703,7 +719,7 @@ export default {
     },
     cancelDialog(formName) {
       this.$refs[formName].resetFields();
-      this.$emit("cancelHandle");
+      this.$emit("handleDialogClose");
     }
   }
 };
