@@ -31,4 +31,6 @@ public interface LogicDefineService {
     List<LogicDefineDto> all();
 
     List<LogicDefineDto> findByParam(LogicDefineDto logicDefineDto);
+
+    LogicDefineDto updateDto(LogicDefineDto logicDefineDto);
 }

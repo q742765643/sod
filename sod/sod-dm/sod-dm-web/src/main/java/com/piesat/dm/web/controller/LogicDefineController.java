@@ -125,6 +125,16 @@ public class LogicDefineController {
         }
     }
 
+    @PutMapping("/edit")
+    @ApiOperation(value = "编辑", notes = "编辑")
+    public ResultT<LogicDefineDto> edit(@RequestBody LogicDefineDto logicDefineDto)
+    {
+        ResultT<LogicDefineDto> resultT=new ResultT<>();
+        logicDefineDto= this.logicDefineService.updateDto(logicDefineDto);
+        resultT.setData(logicDefineDto);
+        return resultT;
+    }
+
     @PostMapping(value = "/exportTable")
     @ApiOperation(value = "导出", notes = "导出")
     public void exportTable(LogicDefineDto logicDefineDto, HttpServletRequest request, HttpServletResponse response){

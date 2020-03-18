@@ -98,4 +98,11 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
         List<LogicDefineEntity> logicDefineDaoAll = this.logicDefineDao.findAll();
         return this.logicDefineMapper.toDto(logicDefineDaoAll);
     }
+
+    @Override
+    public LogicDefineDto updateDto(LogicDefineDto logicDefineDto) {
+        LogicDefineEntity logicDefineEntity=logicDefineMapper.toEntity(logicDefineDto);
+        logicDefineEntity = this.saveNotNull(logicDefineEntity);
+        return logicDefineMapper.toDto(logicDefineEntity);
+    }
 }
