@@ -562,32 +562,28 @@ export default {
     };
   },
   async created() {
-    await this.initView();
+    // 数据来源
+    await getDictDataByType("data_source_identify").then(res => {
+      this.dataSourceIdArray = res.data;
+    });
+    // 源库，目标库
+    await syncDatabaseDetail().then(res => {
+      this.databaseDetailArray = res.data;
+    });
+    // 同步任务执行节点
+    await getDictDataByType("sync_run_host").then(res => {
+      this.ipAndPortArray = res.data;
+    });
+    // 数据流向
+    await getDictDataByType("data_flow_identify").then(res => {
+      this.flowDirArray = res.data;
+    });
     if (this.handleObj.id) {
       // 查详情
       await this.initDetail();
     }
   },
   methods: {
-    // initView
-    async initView() {
-      // 数据来源
-      await getDictDataByType("data_source_identify").then(res => {
-        this.dataSourceIdArray = res.data;
-      });
-      // 源库，目标库
-      await syncDatabaseDetail().then(res => {
-        this.databaseDetailArray = res.data;
-      });
-      // 同步任务执行节点
-      await getDictDataByType("sync_run_host").then(res => {
-        this.ipAndPortArray = res.data;
-      });
-      // 数据流向
-      await getDictDataByType("data_flow_identify").then(res => {
-        this.flowDirArray = res.data;
-      });
-    },
     async initDetail() {
       this.msgFormDialog = this.handleObj;
       // 源表源表名回显
@@ -609,15 +605,10 @@ export default {
         obj.columnOper = this.msgFormDialog.columnOper[index];
         this.stableFilterForm.domains.push(obj);
       });
-      // 同步任务执行节点回显
-      this.msgFormDialog.ipAndPort =
-        this.msgFormDialog.execIp + ":" + this.msgFormDialog.execPort;
       //todo
       this.msgFormDialog.targetType = "0";
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
-      // 目标表回显
-      this.msgFormDialog.targetTable = this.msgFormDialog.targetTables[0].targetTableId;
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
       if (this.msgFormDialog.targetTables.length == 2) {
         this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
