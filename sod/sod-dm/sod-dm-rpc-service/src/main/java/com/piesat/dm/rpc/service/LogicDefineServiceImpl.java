@@ -45,7 +45,7 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     public LogicDefineDto saveDto(LogicDefineDto logicDefineDto) {
         logicDefineDto.setCreateTime(new Date());
         LogicDefineEntity logicDefineEntity = this.logicDefineMapper.toEntity(logicDefineDto);
-        logicDefineEntity = this.logicDefineDao.save(logicDefineEntity);
+        logicDefineEntity = this.logicDefineDao.saveNotNull(logicDefineEntity);
         return this.logicDefineMapper.toDto(logicDefineEntity);
     }
 

@@ -1,11 +1,11 @@
 <template>
   <section class="codeUseDialog">
     <el-form :model="msgFormDialog" ref="fromRef" :rules="baseFormRules" label-width="120px">
-      <el-form-item prop="logicId" label="数据用途ID:">
+      <el-form-item prop="logicFlag" label="数据用途ID:">
         <el-input
           size="small"
           :disabled="isDbIdDisable"
-          v-model="msgFormDialog.logicId"
+          v-model="msgFormDialog.logicFlag"
           placeholder="请输入(1内容不能含有中文字符)"
         />
       </el-form-item>
@@ -137,16 +137,21 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let obj = this.msgFormDialog;
-          obj.logicDatabaseEntityList = [
-            {
-              databaseId: obj.databaseId.join(",")
-            }
-          ];
-          obj.logicStorageTypesEntityList = [
-            {
-              storageType: obj.storageType.join(",")
-            }
-          ];
+
+          debugger
+          obj.logicDatabaseEntityList = [];
+          obj.databaseId.forEach(element => {
+            let dObj = {};
+            dObj.databaseId = element;
+            obj.logicDatabaseEntityList.push(dObj);
+          });
+
+          obj.logicStorageTypesEntityList = [];
+          obj.storageType.forEach(element => {
+            let dObj = {};
+            dObj.storageType = element;
+            obj.logicStorageTypesEntityList.push(dObj);
+          });
           console.log(obj);
 
           if (this.handleObj.id) {
