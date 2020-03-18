@@ -17,6 +17,8 @@ public interface CloudDatabaseApplyService {
 
     CloudDatabaseApplyDto updateDto(CloudDatabaseApplyDto cloudDatabaseApplyDto);
 
+    CloudDatabaseApplyDto getDotById(String id);
+
     public void deleteById(String id);
 
 
