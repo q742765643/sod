@@ -148,6 +148,16 @@ public class CloudDatabaseApplyController {
         return resultT;
     }
 
+    @GetMapping(value = "/getById")
+    @ApiOperation(value = "根据id查询", notes = "根据id查询")
+    public ResultT<CloudDatabaseApplyDto> getById(String id)
+    {
+        ResultT<CloudDatabaseApplyDto> resultT=new ResultT<>();
+        CloudDatabaseApplyDto cloudDatabaseApplyDto= this.cloudDatabaseApplyService.getDotById(id);
+        resultT.setData(cloudDatabaseApplyDto);
+        return resultT;
+    }
+
     @DeleteMapping("/deleteById")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> remove(String id)

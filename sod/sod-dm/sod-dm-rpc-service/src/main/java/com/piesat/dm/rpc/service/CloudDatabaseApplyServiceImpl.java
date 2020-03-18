@@ -98,6 +98,17 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     }
 
     @Override
+    public CloudDatabaseApplyDto getDotById(String id) {
+        CloudDatabaseApplyEntity cloudDatabaseApplyEntity = this.getById(id);
+        CloudDatabaseApplyDto cloudDatabaseApplyDto = cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
+        //调接口查申请人详情
+        cloudDatabaseApplyDto.setUserName("申请人");
+        cloudDatabaseApplyDto.setTelephone("12388888888");
+        cloudDatabaseApplyDto.setDepartment("部门");
+        return cloudDatabaseApplyDto;
+    }
+
+    @Override
     public void deleteById(String id) {
         this.delete(id);
     }
