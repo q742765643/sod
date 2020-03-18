@@ -3,9 +3,7 @@ package com.piesat.schedule.rpc.dto.sync;
 import com.piesat.util.BaseDto;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author yaya
@@ -148,12 +146,12 @@ public class SyncTaskDto extends BaseDto {
     /**
      * 目标表（键变/要素表） 与源表（键变/要素表）映射关系
      */
-    private List<Map<String,Object>> targetRelation;
+    private List<Map<String,Object>> targetRelation = new ArrayList<Map<String,Object>>();
 
     /**
      * 目标表（值表） 与源表（值表）映射关系
      */
-    private Map<String,Object> slaveRelation;
+    private Map<String,Object> slaveRelation = new HashMap<String,Object>();
 
     /**
      * 源表条件查询字段

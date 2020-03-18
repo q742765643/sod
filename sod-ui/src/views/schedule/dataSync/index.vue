@@ -356,7 +356,7 @@ export default {
         this.handleObj.ipAndPort =
           this.handleObj.execIp + ":" + this.handleObj.execPort;
         // 目标表回显
-        this.handleObj.targetTable = this.handleObj.targetTables[0].targetTableId;
+        this.handleObj.targetTable = this.handleObj.targetRelation[0].targetTableId;
         this.handleObj.handleType = type;
         console.log(this.handleObj);
       });

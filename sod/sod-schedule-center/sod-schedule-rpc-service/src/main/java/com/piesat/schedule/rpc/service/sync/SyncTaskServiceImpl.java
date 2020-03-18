@@ -224,7 +224,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @Override
     @Transactional(readOnly = false)
     public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
-        this.deleteSync(syncTaskDto.getId());
+        this.deleteConfigFilter(syncTaskDto.getId());
         this.saveDto(syncTaskDto);
         return syncTaskDto;
     }
@@ -406,6 +406,12 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @Override
     @Transactional(readOnly = false)
     public void deleteSync(String taskId) {
+        deleteConfigFilter(taskId);
+        //删除synctask表
+        syncTaskDao.deleteById(taskId);
+    }
+
+    public void deleteConfigFilter(String taskId){
         SyncTaskDto syncTaskDto = this.getDtoById(taskId);
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         // 调用服务
@@ -443,8 +449,6 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         //删除dimessage表
 
-        //删除synctask表
-        syncTaskDao.deleteById(taskId);
     }
 
     @Override
@@ -483,11 +487,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         syncTaskEntity.setColumnOper(columnOper.split(","));
         syncTaskEntity.setSourceTableFilterText(sourceTableFilterText.split(","));
 
-        String syncTaskJson = JSONObject.toJSONString(syncTaskEntity);
-        JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
+        SyncTaskDto syncTaskDto = syncTaskMapstruct.toDto(syncTaskEntity);
+
 
         //目标表
-        List<Map<String, Object>> targets = new ArrayList<>();
         for(SyncMappingEntity syncMappingEntity :syncMappingEntitys){
 
             //目标表
@@ -498,10 +501,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             SyncConfigEntity syncConfigEntity = syncConfigDao.findById(Integer.valueOf(configId));
             relation.put("targetTableId", syncConfigEntity.getTargetTableId());
             relation.put("mapping", syncMappingEntity.getMapping());
-            targets.add(relation);
+            syncTaskDto.getTargetRelation().add(relation);
         }
-        jsonObject.put("targetTables",targets);
-
 
         //值表mapping的id
         String slaveTable = syncTaskEntity.getSlaveTables();
@@ -512,9 +513,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             //获取config的id
             String configId = syncMappingEntity.getTargetTableId();
             relation.put("mapping",syncMappingEntity.getMapping());
-            jsonObject.put("slaveTables",relation);
+            syncTaskDto.setSlaveRelation(relation);
         }
-
+        String syncTaskJson = JSONObject.toJSONString(syncTaskDto);
+        JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
         return jsonObject;
     }
 }

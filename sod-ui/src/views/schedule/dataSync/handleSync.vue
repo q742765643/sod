@@ -1050,7 +1050,6 @@ export default {
           if (valid) {
             let msg = "";
             if (this.handleObj.id) {
-              delete this.msgFormDialog.slaveTables;
               msg = "编辑成功";
             } else {
               msg = "新增成功";
