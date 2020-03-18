@@ -26,10 +26,10 @@
         <el-switch v-model="sidebarLogo" class="drawer-switch" />
       </div>
 
-      <div class="drawer-item">
+      <!--  <div class="drawer-item">
         <span>是否左右布局</span>
         <el-switch v-model="menuPosition" class="drawer-switch" />
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
