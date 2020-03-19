@@ -63,13 +63,14 @@ public class MybatisInterceptor implements Interceptor {
             return null;
         }
         String originalSql = boundSql.getSql().trim();
+        String add="";
         if (parameter instanceof BaseEntity) {
             BaseEntity entity = (BaseEntity) parameter;
             CCJSqlParserManager pm = new CCJSqlParserManager();
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
-            String add=this.resetSql(entity.getParams(),selectBody,resultMaps);
+            add=this.resetSql(entity.getParams(),selectBody,resultMaps);
 
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)) {
                 try {
@@ -91,7 +92,7 @@ public class MybatisInterceptor implements Interceptor {
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
-            String add=this.resetSql(entity.getParams(),selectBody,resultMaps);
+            add=this.resetSql(entity.getParams(),selectBody,resultMaps);
 
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)) {
                 try {
@@ -119,7 +120,7 @@ public class MybatisInterceptor implements Interceptor {
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
-            String add=this.resetSql(pp,selectBody,resultMaps);
+            add=this.resetSql(pp,selectBody,resultMaps);
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)){
                 try {
                     PlainSelect setOperationList = (PlainSelect)selectBody;
@@ -135,11 +136,18 @@ public class MybatisInterceptor implements Interceptor {
             }
 
         }
+       /* if(!com.piesat.common.utils.StringUtils.isNotNullString(add)){
+            return invocation.proceed();
+        }*/
         //String mid = mappedStatement.getId();
         BoundSql newBoundSql = new BoundSql(mappedStatement.getConfiguration(), originalSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
         if (ReflectUtils.getFieldValue(boundSql, "metaParameters") != null) {
             MetaObject mo = (MetaObject) ReflectUtils.getFieldValue(boundSql, "metaParameters");
             ReflectUtils.setFieldValue(newBoundSql, "metaParameters", mo);
+        }
+        if (ReflectUtils.getFieldValue(boundSql, "additionalParameters") != null) {
+            Map<String, Object> additionalParameters =  ReflectUtils.getFieldValue(boundSql, "additionalParameters");
+            ReflectUtils.setFieldValue(newBoundSql, "additionalParameters", additionalParameters);
         }
         MappedStatement newMs = copyFromMappedStatement(mappedStatement, new BoundSqlSqlSource(newBoundSql));
 

@@ -39,12 +39,12 @@ spring:
     #username: sod5
     #password: 123456
 #    driver-class-name: com.xugu.cloudjdbc.Driver
-#    url: jdbc:xugu://1.119.5.177:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false
+#    url: jdbc:xugu://10.1.6.117:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false
 #    username: USR_SOD
 #    password: Pnmic_qwe123
     driver-class-name: com.mysql.jdbc.Driver
 #    url: jdbc:mysql://127.0.0.1:8000/sod
-    url: jdbc:mysql://1.119.5.177:8000/sod
+    url: jdbc:mysql://10.1.6.117:8000/sod
     username: root
     password: root
     type: com.alibaba.druid.pool.DruidDataSource
@@ -75,7 +75,7 @@ spring:
     open-in-view: false
   redis:
 #    host: 127.0.0.1
-    host: 1.119.5.177
+    host: 10.1.6.117
     port: 8001
     timeout: 5000
     password:
@@ -98,14 +98,14 @@ eureka:
     hostname: desktop-2vav0fh
   #    prefer-ip-address: true
   #    ip-address: 127.0.0.1
-  #    ip-address: 1.119.5.177
+  #    ip-address: 10.1.6.117
   #    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
 #      defaultZone: http://127.0.0.1:8002/eureka/
-      defaultZone: http://1.119.5.177:8002/eureka/
+      defaultZone: http://10.1.6.117:8002/eureka/
 
 serverfile:
   filePath: D:/upload/
