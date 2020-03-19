@@ -1,15 +1,11 @@
 package com.piesat.sod.system.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.GenericGenerator;
+import com.piesat.common.jpa.entity.BaseEntity;
 
 import lombok.Data;
 
@@ -21,22 +17,14 @@ import lombok.Data;
 */
 @Data
 @Entity
-@Table(name="DMIN_DB_MANAGER_FIELD")
-public class ManageFieldEntity implements Serializable{
+@Table(name="T_SOD_DB_MANAGER_FIELD")
+public class ManageFieldEntity extends BaseEntity{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7295902358572895742L;
 	
-	/**
-	 *  id
-	 */
-	@Id
-    @Column(name="ID")
-    @GeneratedValue(generator = "htht.uuid")
-    @GenericGenerator(name = "htht.uuid", strategy = "com.piesat.common.jpa.generator.UUIDStringGenerator")
-	private String id;
 	/**
 	 * 存储编码
 	 */

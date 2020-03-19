@@ -20,7 +20,7 @@ import lombok.Data;
 */
 @Data
 @Entity
-@Table(name = "DMIN_DB_MANAGER_FIELDGROUP")
+@Table(name = "T_SOD_DB_MANAGER_FIELDGROUP")
 public class ManageGroupEntity implements Serializable{
 
 	/**

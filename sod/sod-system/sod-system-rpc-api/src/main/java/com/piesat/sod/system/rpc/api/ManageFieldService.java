@@ -116,4 +116,12 @@ public interface ManageFieldService {
 	 * @throws Exception
 	 */
 	void delManageField(String ids) throws Exception;
+	/**
+	 *  管理字段导出
+	 * @description 
+	 * @author wlg
+	 * @date 2020年3月19日下午4:34:04
+	 * @param dto
+	 */
+	void exportExcel(ManageFieldDto dto);
 }

@@ -6,21 +6,17 @@ package com.piesat.sod.system.rpc.dto;
 *
 */
 
-import java.io.Serializable;
+import com.piesat.util.BaseDto;
 
 import lombok.Data;
 
 @Data
-public class ManageFieldDto implements Serializable{
+public class ManageFieldDto extends BaseDto{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3016029307502490989L;
-	/**
-	 * id
-	 */
-	private String id;
 	/**
 	 * 存储编码
 	 */

@@ -11,6 +11,10 @@ import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.sod.system.dao.ManageFieldDao;
 import com.piesat.sod.system.dao.ManageFieldGroupDao;
 import com.piesat.sod.system.dao.ManageGroupDao;
@@ -236,6 +240,41 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 			manageFieldGroupDao.delByFieldId(id);
 		}
 		
+	}
+
+	/**
+	 *  管理字段导出
+	 * @description 
+	 * @author wlg
+	 * @date 2020-03-19 16:34
+	 * @param dto
+	 */
+	@Override
+	public void exportExcel(ManageFieldDto dto) {
+		List<ManageFieldEntity> data = findList(dto);
+		ExcelUtil<ManageFieldEntity> util = new ExcelUtil(ManageFieldEntity.class);
+		util.exportExcel(data,"管理字段管理");
+		
+	}
+	/**
+	 *  获取结果集
+	 * @description 
+	 * @author wlg
+	 * @date 2020年3月19日下午4:52:29
+	 * @param dto
+	 * @return
+	 */
+	private List<ManageFieldEntity> findList(ManageFieldDto dto){
+		try {
+			ManageFieldEntity mfe = manageFieldMapstruct.toEntity(dto);
+			//获取结果集
+			if(!StringUtil.isEmpty(mfe.getDbEleCode())) mfe.setDbEleCode("%"+mfe.getDbEleCode()+"%");
+			List<ManageFieldEntity> data = manageFieldMapper.findByConditions(mfe);
+			return data;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.piesat.sod.system.rpc.dto;
 
-import java.io.Serializable;
+import com.piesat.util.BaseDto;
 
 import lombok.Data;
 /**
@@ -9,17 +9,12 @@ import lombok.Data;
  *
  */
 @Data
-public class SqlTemplateDto implements Serializable{
+public class SqlTemplateDto extends BaseDto{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3883656248790827717L;
-	
-	/**
-	 * id
-	 */
-	private String id;
 	/**
 	 * 数据库类型
 	 */

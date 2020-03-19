@@ -2,7 +2,6 @@ package com.piesat.sod.system.rpc.service;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -13,11 +12,14 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.alibaba.druid.util.StringUtils;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.sod.system.dao.DbFileDao;
 import com.piesat.sod.system.entity.DbFileEntity;
+import com.piesat.sod.system.mapper.DbFileMapper;
 import com.piesat.sod.system.rpc.api.DbFileService;
 import com.piesat.sod.system.rpc.dto.DbFileDto;
 import com.piesat.sod.system.rpc.mapstruct.DbFileMapstruct;
@@ -40,6 +42,9 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	@Autowired
 	private DbFileMapstruct dbFileMapstruct;
 	
+	@Autowired
+	private DbFileMapper dbFileMapper;
+	
 	@Value("${serverfile.dbfile}")
 	private String fileArr;
 
@@ -55,36 +60,36 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	@Override
 	public PageBean findPageData(PageForm<DbFileDto> pageForm) throws Exception{
 		DbFileEntity dfe = dbFileMapstruct.toEntity(pageForm.getT());
-		StringBuffer sb = new StringBuffer();
-	
-		sb.append( " SELECT "
-				+ " record_id,file_type,file_name,file_stor_name,file_stor_path, "
-				+ " update_time,file_picture,file_suffix "
-				+ " FROM dmin_db_file "
-				+ " where 1=1 ");
-		if(null != dfe.getFileType() && !StringUtils.isEmpty(dfe.getFileType())) {
-			sb.append( " and file_type = '"+dfe.getFileType()+"' ");
-		}
-		if(null != dfe.getFileName() && !StringUtils.isEmpty(dfe.getFileName())) {
-			sb.append(" and file_name like '%"+dfe.getFileName()+"%' ");
-		}
-		if(null != dfe.getFileSuffix() && !StringUtils.isEmpty(dfe.getFileSuffix())) {
-			sb.append( " and file_suffix like '%"+dfe.getFileSuffix()+"%' ");
-		}
-		if(null != dfe.getStartDate() && !StringUtils.isEmpty(dfe.getStartDate())) {
-			sb.append( " and  update_time >= '"+dfe.getStartDate()+" 00:00:00' ");
-		}
-		if(null != dfe.getEndDate() && !StringUtils.isEmpty(dfe.getEndDate())) {
-			sb.append(" and  update_time <= '"+dfe.getEndDate()+" 59:59:59' ");
-		}
-//		if(null != dfe.getField() && !StringUtils.isEmpty(dfe.getField())
-//				&& null != dfe.getOrder() && !StringUtils.isEmpty(dfe.getOrder())) {
-//			sb.append( " order by "+dfe.getField() + " "+dfe.getOrder());
-//		}else {
-//			sb.append( "order by update_time desc");
-//		}
-		sb.append( "order by update_time desc");
-		PageBean page = this.queryByNativeSQLPageList(sb.toString(), DbFileEntity.class, null, pageForm);
+		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+		if(!StringUtil.isEmpty(dfe.getFileName())) dfe.setFileName("%"+dfe.getFileName()+"%");
+		if(!StringUtil.isEmpty(dfe.getFileSuffix())) dfe.setFileSuffix("%"+dfe.getFileSuffix()+"%");
+		
+		List<DbFileEntity> data = dbFileMapper.selectList(dfe);
+		PageInfo<DbFileEntity> pageInfo = new PageInfo<>(data);
+		
+		List<DbFileDto> dtoData = dbFileMapstruct.toDto(pageInfo.getList());
+		PageBean page = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
+		
+		/*
+		 * StringBuffer sb = new StringBuffer();
+		 * 
+		 * sb.append( " SELECT " +
+		 * " record_id,file_type,file_name,file_stor_name,file_stor_path, " +
+		 * " update_time,file_picture,file_suffix " + " FROM dmin_db_file " +
+		 * " where 1=1 "); if(null != dfe.getFileType() &&
+		 * !StringUtils.isEmpty(dfe.getFileType())) { sb.append(
+		 * " and file_type = '"+dfe.getFileType()+"' "); } if(null != dfe.getFileName()
+		 * && !StringUtils.isEmpty(dfe.getFileName())) {
+		 * sb.append(" and file_name like '%"+dfe.getFileName()+"%' "); } if(null !=
+		 * dfe.getFileSuffix() && !StringUtils.isEmpty(dfe.getFileSuffix())) {
+		 * sb.append( " and file_suffix like '%"+dfe.getFileSuffix()+"%' "); } if(null
+		 * != dfe.getStartDate() && !StringUtils.isEmpty(dfe.getStartDate())) {
+		 * sb.append( " and  update_time >= '"+dfe.getStartDate()+" 00:00:00' "); }
+		 * if(null != dfe.getEndDate() && !StringUtils.isEmpty(dfe.getEndDate())) {
+		 * sb.append(" and  update_time <= '"+dfe.getEndDate()+" 59:59:59' "); }
+		 * sb.append( "order by update_time desc");
+		 */
+//		PageBean page = this.queryByNativeSQLPageList(sb.toString(), DbFileEntity.class, null, pageForm);
 		return page;
 	}
 
@@ -124,7 +129,7 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 			String fileType = request.getParameter("fileType");
 			dfe.setFileName(mf.getOriginalFilename());
 			dfe.setFileSuffix(fileSuffix);
-			dfe.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now));
+			dfe.setUpdateTime(now);
 			dfe.setFileType(fileType);
 			dfe.setFileStorName(mf.getOriginalFilename());
 			dfe.setFileStorPath(filePath);
