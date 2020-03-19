@@ -83,8 +83,8 @@ object StreamingKafka {
           val json = new java.util.HashMap[String, String]
           json.put("data","1")
           return Requests.indexRequest()
-            .index("location-1")
-            .`type`("location1")
+            .index("htht3")
+            .`type`("1")
             .source(json)
         }
 
