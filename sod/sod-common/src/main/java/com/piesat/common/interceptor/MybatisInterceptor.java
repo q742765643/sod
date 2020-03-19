@@ -136,9 +136,9 @@ public class MybatisInterceptor implements Interceptor {
             }
 
         }
-       /* if(!com.piesat.common.utils.StringUtils.isNotNullString(add)){
+       if(!com.piesat.common.utils.StringUtils.isNotNullString(add)){
             return invocation.proceed();
-        }*/
+        }
         //String mid = mappedStatement.getId();
         BoundSql newBoundSql = new BoundSql(mappedStatement.getConfiguration(), originalSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
         if (ReflectUtils.getFieldValue(boundSql, "metaParameters") != null) {
