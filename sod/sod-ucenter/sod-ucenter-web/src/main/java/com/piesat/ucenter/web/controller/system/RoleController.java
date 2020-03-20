@@ -5,9 +5,12 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.api.system.RoleService;
 import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
 import com.piesat.ucenter.rpc.dto.system.RoleDto;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +27,7 @@ import java.util.List;
  * @创建时间 2019/12/4 15:03
  */
 @RestController
+@Api(value="角色操作接口",tags={"角色操作接口"})
 @RequestMapping("/system/role")
 public class RoleController {
     @Autowired
@@ -137,4 +141,11 @@ public class RoleController {
         resultT.setData(roleDtos);
         return resultT;
     }
+    @ApiOperation(value = "角色信息导出", notes = "角色信息导出")
+    @RequiresPermissions("system:role:export")
+    @GetMapping("/export")
+    public void exportExcel(RoleDto roleDto){
+        roleService.exportExcel(roleDto);
+    }
+
 }

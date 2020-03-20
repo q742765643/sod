@@ -10,6 +10,7 @@ import com.piesat.common.utils.ip.AddressUtils;
 import com.piesat.common.utils.ip.IpUtils;
 import com.piesat.common.utils.sign.Base64;
 import com.piesat.sso.client.enums.OperatorType;
+import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.ucenter.rpc.api.monitor.LoginInfoService;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.api.system.RoleService;
@@ -22,6 +23,7 @@ import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import eu.bitwalker.useragentutils.UserAgent;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -57,6 +59,8 @@ public class LoginController {
     private LoginInfoService loginInfoService;
     @Autowired
     private ExecutorService executorService;
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 登录方法
      *
@@ -72,6 +76,13 @@ public class LoginController {
         ResultT<Map<String,Object>> resultT=new ResultT<>();
         Map<String,Object> map=new HashMap<>();
         try {
+            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+
+            String ycode= (String) redisUtil.get(verifyKey);
+            if(!ycode.equals(code.toUpperCase())){
+                resultT.setErrorMessage("验证码错误");
+                return resultT;
+            }
             Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             token.setLoginType("0");
@@ -178,6 +189,7 @@ public class LoginController {
      * 生成验证码
      */
     @GetMapping("/captchaImage")
+    @ApiOperation(value = "生成验证码", notes = "生成验证码")
     public ResultT<Map<String,Object>> getCode(HttpServletResponse response) throws IOException
     {
         ResultT<Map<String,Object>> resultT = new ResultT();
@@ -188,7 +200,7 @@ public class LoginController {
         String uuid = IdUtils.simpleUUID();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
-        //redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        redisUtil.set(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION*60);
         // 生成图片
         int w = 111, h = 36;
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -197,6 +209,7 @@ public class LoginController {
         {
             Map<String,Object> map=new HashMap<>();
             map.put("uuid", uuid);
+            map.put("code", verifyCode);
             map.put("img", Base64.encode(stream.toByteArray()));
             resultT.setData(map);
             return resultT;

@@ -9,6 +9,8 @@ import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +27,7 @@ import java.util.List;
  * @创建时间 2019/12/3 16:10
  */
 @RestController
+@Api(value="字段类型操作接口",tags={"字段类型操作接口"})
 @RequestMapping("/system/dict/type")
 public class DictTypeController {
     @Autowired
@@ -108,5 +111,12 @@ public class DictTypeController {
             dictTypeService.deleteDictTypeByIds(list);
         }
         return resultT;
+    }
+
+    @ApiOperation(value = "字典类型导出", notes = "字典类型导出")
+    @RequiresPermissions("system:dict:export")
+    @GetMapping("/export")
+    public void exportExcel(DictTypeDto dictTypeDto){
+        dictTypeService.exportExcel(dictTypeDto);
     }
 }

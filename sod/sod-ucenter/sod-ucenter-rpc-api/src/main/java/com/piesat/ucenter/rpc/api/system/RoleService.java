@@ -91,4 +91,6 @@ public interface RoleService {
      * @return 角色列表
      */
     public List<RoleDto> selectRoleAll();
+
+    public void exportExcel(RoleDto roleDto);
 }

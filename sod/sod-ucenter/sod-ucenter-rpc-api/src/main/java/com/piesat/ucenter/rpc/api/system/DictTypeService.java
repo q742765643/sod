@@ -81,4 +81,6 @@ public interface DictTypeService {
      */
     public DictTypeDto updateDictType(DictTypeDto dictType);
 
+    public void exportExcel(DictTypeDto dictType);
+
 }

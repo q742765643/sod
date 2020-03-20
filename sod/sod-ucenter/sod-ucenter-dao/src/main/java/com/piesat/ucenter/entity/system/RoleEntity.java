@@ -1,5 +1,6 @@
 package com.piesat.ucenter.entity.system;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
@@ -19,14 +20,17 @@ import javax.persistence.Transient;
 @Table(name="T_SOD_ROLE")
 public class RoleEntity extends BaseEntity {
     /** 角色名称 */
+    @Excel(name="角色名称")
     @Column(name="role_name",length = 30)
     private String roleName;
 
     /** 角色权限 */
+    @Excel(name="角色权限")
     @Column(name="role_key",length = 100)
     private String roleKey;
 
     /** 角色排序 */
+    @Excel(name="角色排序")
     @Column(name="role_sort",length = 4)
     private int roleSort;
 
@@ -35,12 +39,14 @@ public class RoleEntity extends BaseEntity {
     private String dataScope;
 
     /** 角色状态（0正常 1停用） */
+    @Excel(name="角色状态",readConverterExp = "0=正常,1=停用")
     @Column(name="status",columnDefinition = "varchar(1) default '0'")
     private String status;
 
     /**
      * 备注
      */
+    @Excel(name="备注")
     @Column(name="remark",length = 500)
     private String remark;
 

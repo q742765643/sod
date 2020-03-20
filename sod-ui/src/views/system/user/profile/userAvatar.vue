@@ -112,12 +112,13 @@ export default {
     // 上传图片
     uploadImg() {
       this.$refs.cropper.getCropBlob(data => {
+          console.log(data)
         let formData = new FormData();
         formData.append("avatarfile", data);
         uploadAvatar(formData).then(response => {
           if (response.code === 200) {
             this.open = false;
-            this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl;
+            this.options.img = process.env.VUE_APP_UCENTER_API + response.data;
             this.msgSuccess("修改成功");
           } else {
             this.msgError(response.msg);

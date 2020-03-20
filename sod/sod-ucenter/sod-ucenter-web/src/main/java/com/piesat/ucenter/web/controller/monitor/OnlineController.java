@@ -7,6 +7,7 @@ import com.piesat.ucenter.rpc.api.monitor.OnlineService;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
+import io.swagger.annotations.Api;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @创建时间 2019/12/9 14:47
  */
 @RestController
+@Api(value = "在线用户接口", tags = {"在线用户接口"})
 @RequestMapping("/monitor/online")
 public class OnlineController {
     @Autowired

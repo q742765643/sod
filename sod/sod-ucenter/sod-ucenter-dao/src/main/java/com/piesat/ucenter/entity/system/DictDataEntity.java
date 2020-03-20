@@ -1,5 +1,6 @@
 package com.piesat.ucenter.entity.system;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
@@ -19,18 +20,22 @@ import javax.persistence.Table;
 public class DictDataEntity extends BaseEntity{
 
     /** 字典排序 */
+    @Excel(name="字典排序")
     @Column(name="dict_sort")
     private int dictSort;
 
     /** 字典标签 */
+    @Excel(name="字典标签")
     @Column(name="dict_label", length=100)
     private String dictLabel;
 
     /** 字典键值 */
+    @Excel(name="字典键值")
     @Column(name="dict_value", length=100)
     private String dictValue;
 
     /** 字典类型 */
+    @Excel(name="字典类型")
     @Column(name="dict_type", length=100)
     private String dictType;
 
@@ -47,12 +52,14 @@ public class DictDataEntity extends BaseEntity{
     private String isDefault;
 
     /** 状态（0正常 1停用） */
+    @Excel(name="状态",readConverterExp = "0=正常,1=停用")
     @Column(name="status", length=1)
     private String status;
 
     /**
      * 备注
      */
+    @Excel(name="备注")
     @Column(name="remark",length = 500)
     private String remark;
 }

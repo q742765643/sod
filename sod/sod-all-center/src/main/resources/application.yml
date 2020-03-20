@@ -115,5 +115,9 @@ log:
 serverfile:
   dbfile: D:/upload/
 
+fileUpload:
+  savaPath:  E:/upload
+  httpPath: /upload
+
 
 

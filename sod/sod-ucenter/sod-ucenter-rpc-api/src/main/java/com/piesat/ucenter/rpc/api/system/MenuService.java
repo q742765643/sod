@@ -90,4 +90,6 @@ public interface MenuService {
      * @return 选中菜单列表
      */
     public List<String> selectMenuListByRoleId(String roleId);
+
+    public void exportExcel(MenuDto menuDto);
 }

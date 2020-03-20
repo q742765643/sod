@@ -8,6 +8,7 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @create: 2019-12-29 20:12
  **/
 @RestController
+@Api(value = "数据备份日志接口", tags = {"数据备份日志接口"})
 @RequestMapping("/schedule/backupLog")
 public class BackupLogController {
     @Autowired

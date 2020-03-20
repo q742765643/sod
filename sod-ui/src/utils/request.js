@@ -23,11 +23,16 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   config => {
+    console.log(config)
     if (getToken()) {
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     let data = ""
     let ajax = config.headers['X-Requested-With'];
+    let headers=config.headers['Content-Type'];
+    if("multipart/form-data"==headers){
+      return config;
+    }
     if (typeof config.params != 'undefined') {
       data = Encrypt(JSON.stringify(config.params))
       const param = {

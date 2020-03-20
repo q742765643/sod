@@ -30,6 +30,39 @@
             <artifactId>java-grok</artifactId>
             <version>0.1.9</version>
         </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>6.8.7</version>
+            <scope>system</scope>
+            <systemPath>/Users/zzj/fsdownload/elasticsearch-6.8.7.jar</systemPath>
+
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch-core</artifactId>
+            <version>6.8.7</version>
+            <scope>system</scope>
+            <systemPath>/Users/zzj/fsdownload/elasticsearch-core-6.8.7.jar</systemPath>
+
+        </dependency>
+         <dependency>
+                   <groupId>org.elasticsearch</groupId>
+                   <artifactId>x-pack</artifactId>
+                   <version>6.8.7</version>
+                   <scope>system</scope>
+                   <systemPath>/Users/zzj/fsdownload/x-pack-core-6.8.7.jar</systemPath>
+
+               </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>lucese</artifactId>
+            <version>6.8.7</version>
+            <scope>system</scope>
+            <systemPath>/Users/zzj/fsdownload/lucene-core-7.7.2.jar</systemPath>
+
+        </dependency>
+
     </dependencies>
     <repositories>
     <repository>

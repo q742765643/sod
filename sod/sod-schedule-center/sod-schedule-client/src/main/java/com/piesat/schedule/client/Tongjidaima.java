@@ -21,10 +21,10 @@ public class Tongjidaima {
     private static int i;//代码总行数
     private static int j;//文件个数
     public static void main(String[] args) throws IOException {
-       /* File file = new File("/zzj/git/cunguan/DataStoragePlatform_maven");//需要统计行数的文件夹路径
+        File file = new File("/zzj/git/hthtsod/sod");//需要统计行数的文件夹路径
         traverseFiles(file);//调用递归方法查看.java文件，用于统计行数
         System.out.println("所写文件个数："+j);
-        System.out.println("所写代码总行数："+i);*/
+        System.out.println("所写代码总行数："+i);
         List<Map<String,String>> map=new ArrayList<>();
         Map<String,String> map1=new HashMap<>();
         map1.put("name","create_time");

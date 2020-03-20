@@ -6,13 +6,16 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.monitor.OperLogDao;
 import com.piesat.ucenter.entity.monitor.OperLogEntity;
 import com.piesat.ucenter.entity.system.DictDataEntity;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.mapper.monitor.OperLogMapper;
 import com.piesat.ucenter.rpc.api.monitor.OperLogService;
 import com.piesat.ucenter.rpc.dto.monitor.OperLogDto;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.monitor.OperLogMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -110,5 +113,12 @@ public class OperLogServiceImpl extends BaseService<OperLogEntity> implements Op
     }
 
 
+    @Override
+    public void exportExcel(OperLogDto operLogDto){
+        OperLogEntity operLogEntity=operLogMapstruct.toEntity(operLogDto);
+        List<OperLogEntity> entities=operLogMapper.selectOperLogList(operLogEntity);
+        ExcelUtil<OperLogEntity> util=new ExcelUtil(OperLogEntity.class);
+        util.exportExcel(entities,"操作日志");
+    }
 }
 

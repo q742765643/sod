@@ -5,9 +5,12 @@ import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.api.monitor.OperLogService;
 import com.piesat.ucenter.rpc.dto.monitor.OperLogDto;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * @create: 2019-12-16 15:44
  **/
 @RestController
+@Api(value="操作日志接口",tags={"操作日志接口"})
 @RequestMapping("/monitor/operlog")
 public class OperLogController {
     @Autowired
@@ -53,6 +57,12 @@ public class OperLogController {
         ResultT<String> resultT=new ResultT<>();
         operLogService.cleanOperLog();
         return resultT;
+    }
+    @ApiOperation(value = "日志信息导出", notes = "日志信息导出")
+    @RequiresPermissions("monitor:operlog:export")
+    @GetMapping("/export")
+    public void exportExcel(OperLogDto operLogDto){
+        operLogService.exportExcel(operLogDto);
     }
 }
 

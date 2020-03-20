@@ -9,6 +9,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,9 @@ public class DecryptUtil {
             shouldDecrypt=false;
         }*/
         /*****===========2.判断注解判断是否需要解密=================*****/
+        if(o instanceof ResourceHttpRequestHandler){
+            return;
+        }
         HandlerMethod h = (HandlerMethod)o;
         DecryptRequest decryptRequest=h.getMethod().getAnnotation(DecryptRequest.class);
         if(decryptRequest!=null&&decryptRequest.value()==false){
