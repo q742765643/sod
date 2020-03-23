@@ -257,22 +257,22 @@
       >
         <el-col :span="12">
           <el-form-item label="公共元数据字段" prop="dbEleCode">
-            <el-input placeholder="公共元数据字段" v-model="columnEditData.dbEleCode"></el-input>
+            <el-input placeholder="公共元数据字段" v-model="columnEditData.dbEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="字段名称" prop="celementCode">
-            <el-input placeholder="字段名称" v-model="columnEditData.celementCode"></el-input>
+            <el-input placeholder="字段名称" v-model="columnEditData.celementCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="服务名称" prop="userEleCode">
-            <el-input placeholder="服务名称" v-model="columnEditData.userEleCode"></el-input>
+            <el-input placeholder="服务名称" v-model="columnEditData.userEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文简称" prop="eleName">
-            <el-input placeholder="中文简称" v-model="columnEditData.eleName"></el-input>
+            <el-input placeholder="中文简称" v-model="columnEditData.eleName" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -281,20 +281,20 @@
               <el-option
                 v-for="(item,index) in dataTypes"
                 :key="index"
-                :label="item.key_col"
-                :value="item.key_col"
+                :label="item.dictLabel"
+                :value="item.dictValue"
               ></el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="要素单位" prop="unitCn">
-            <el-input placeholder="要素单位" v-model="columnEditData.unitCn"></el-input>
+            <el-input placeholder="要素单位" v-model="columnEditData.unitCn" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="数据精度">
-            <el-input placeholder="数据精度" v-model="columnEditData.accuracy"></el-input>
+            <el-input placeholder="数据精度" v-model="columnEditData.accuracy" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -303,8 +303,8 @@
               v-model="columnEditData.isNull"
               active-color="#13ce66"
               inactive-color="#909399"
-              active-value="true"
-              inactive-value="false"
+              :active-value="true"
+              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -314,8 +314,8 @@
               v-model="columnEditData.isUpdate"
               active-color="#13ce66"
               inactive-color="#909399"
-              active-value="true"
-              inactive-value="false"
+              :active-value="true"
+              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -325,8 +325,8 @@
               v-model="columnEditData.isShow"
               active-color="#13ce66"
               inactive-color="#909399"
-              active-value="true"
-              inactive-value="false"
+              :active-value="true"
+              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -336,8 +336,8 @@
               v-model="columnEditData.isPrimaryKey"
               active-color="#13ce66"
               inactive-color="#909399"
-              active-value="true"
-              inactive-value="false"
+              :active-value="true"
+              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -347,24 +347,24 @@
               v-model="columnEditData.isManager"
               active-color="#13ce66"
               inactive-color="#909399"
-              active-value="true"
-              inactive-value="false"
+              :active-value="true"
+              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="默认值">
-            <el-input placeholder="默认值" v-model="columnEditData.defaultValue"></el-input>
+            <el-input placeholder="默认值" v-model="columnEditData.defaultValue" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文描述">
-            <el-input placeholder="中文描述" v-model="columnEditData.nameCn"></el-input>
+            <el-input placeholder="中文描述" v-model="columnEditData.nameCn" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="序号" prop="serialNumber">
-            <el-input placeholder="序号" v-model="columnEditData.serialNumber"></el-input>
+            <el-input placeholder="序号" v-model="columnEditData.serialNumber" size="small"></el-input>
           </el-form-item>
         </el-col>
         <div class="clear"></div>
@@ -453,7 +453,9 @@ import {
   findByTableId,
   tableColumnDel,
   tableColumnSave,
-  tableColumnSaveList
+  tableColumnSaveList,
+  getDictByType,
+  getColumDatailById
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { enable } from "@/api/structureManagement/tableStructureManage/index";
 export default {
@@ -544,6 +546,7 @@ export default {
         return;
       }
       this.columnEditData = {};
+      this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
       this.dialogStatus.columnDialog = true;
     },
@@ -556,9 +559,22 @@ export default {
         });
       } else {
         this.codeTitle = "编辑字段";
-        this.columnEditData = JSON.parse(JSON.stringify(this.selColumnData[0]));
-        this.dialogStatus.columnDialog = true;
+        this.getDictByTypeMethods("table_column_type");
+        getColumDatailById({ id: this.selColumnData[0].id }).then(response => {
+          if (response.code == 200) {
+            this.columnEditData = response.data;
+            this.dialogStatus.columnDialog = true;
+          }
+        });
       }
+    },
+    // 根据类型查询字典信息
+    getDictByTypeMethods(dictType) {
+      getDictByType({ dictType: dictType }).then(response => {
+        if (response.code == 200) {
+          this.dataTypes = response.data;
+        }
+      });
     },
     // 删除字段
     columnDelete() {
@@ -585,17 +601,6 @@ export default {
           }
         });
       }
-    },
-    getOptionsData() {
-      //获取下拉选项数据
-      this.axios
-        .get(interfaceObj.TableStructure_getOptionsByType, {
-          params: { type: 2 }
-        })
-        .then(res => {
-          this.dataTypes = res.data.data;
-        })
-        .catch(error => {});
     },
     getColumnTables() {
       this.getmatedata();
@@ -646,14 +651,12 @@ export default {
       //校验表单
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.columnEditData.id = this.tableInfo.id;
-          if (this.selColumnData.length > 0) {
-            this.columnEditData.column_id = this.selColumnData[0].column_id;
-          }
+          this.columnEditData.tableId = this.tableInfo.id;
           if (this.tableType == "E-show") {
-            this.columnEditData.is_kv_k = "true";
+            this.columnEditData.isKvK = "true";
           }
-          dataTableSavle(this.columnEditData).then(response => {
+          console.log(this.columnEditData);
+          tableColumnSave(this.columnEditData).then(response => {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.$refs[formName].resetFields();
@@ -892,7 +895,7 @@ export default {
       if (publicRows.length > 0) {
         if (this.tableType == "E-show") {
           publicRows.forEach(element => {
-            element.is_kv_k = "true";
+            element.isKvK = "true";
           });
         }
         this.axios
@@ -1057,7 +1060,6 @@ export default {
         this.tableStructureManageContral = false;
       }
     });
-    // this.getOptionsData();
   },
   computed: {
     dragOptions() {

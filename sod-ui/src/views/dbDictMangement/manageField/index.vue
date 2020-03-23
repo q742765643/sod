@@ -85,6 +85,9 @@
   </div>
 </template>
 <script>
+var baseUrl = process.env.VUE_APP_DB_API;
+import { Encrypt } from "@/utils/htencrypt";
+
 import handleTree from "@/views/dbDictMangement/manageField/handleTree";
 import handleDict from "@/views/dbDictMangement/manageField/handleDict";
 
@@ -136,6 +139,14 @@ export default {
     await this.getTreeData();
   },
   methods: {
+    // 下载
+    exportData() {
+      let obj = this.queryParams;
+      let flieData = Encrypt(JSON.stringify(obj)); //加密
+      flieData = encodeURIComponent(flieData); //转码
+      window.location.href =
+        baseUrl + "/managefield/export?sign=111111&data=" + flieData;
+    },
     // 查询字段分组
     async getTreeData() {
       await findAllManageGroup().then(res => {
@@ -287,13 +298,7 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    exportData() {
-      // let url =
-      //   interfaceObj.manageFieldApi_export +
-      //   "?group_id=" +
-      //   this.searchObj.group_id;
-      // testExport(url);
-    },
+
     formatBoolean(row, column, cellValue) {
       var ret = ""; //你想在页面展示的值
       if (row.nullAble) {

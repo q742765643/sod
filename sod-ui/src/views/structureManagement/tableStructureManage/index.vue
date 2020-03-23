@@ -178,7 +178,6 @@
     </el-dialog>
     <!-- 表结构管理 -->
     <el-dialog
-      v-dialogDrag
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"
@@ -595,6 +594,7 @@ export default {
       padding-bottom: 10px;
 
       .sourceOperate {
+        display: flex;
         .el-button {
           margin-left: 0px;
           border-radius: 0px;

@@ -181,3 +181,29 @@ export function saveBase(data) {
     data: data
   })
 }
+
+// 字段新增 里的 数据类型
+// 根据类型查询字典信息
+export function getDictByType(query) {
+  return request({
+    url: baseUrl + '/dm/dataTable/getDictByType',
+    method: 'get',
+    params: query
+  })
+}
+// 根据ID查询表字段详情
+export function getColumDatailById(query) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/get',
+    method: 'get',
+    params: query
+  })
+}
+// 索引新增
+export function tableIndexSave(data) {
+  return request({
+    url: baseUrl + '/dm/tableIndex/save',
+    method: 'post',
+    data: data
+  })
+}

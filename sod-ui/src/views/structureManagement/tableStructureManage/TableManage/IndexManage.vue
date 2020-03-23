@@ -34,9 +34,9 @@
             >
               <el-option
                 v-for="item in indexTypeOptions"
-                :key="item.key_col"
-                :label="item.key_col+'['+item.name_cn+']'"
-                :value="item.key_col"
+                :key="item.dictValue"
+                :label="item.dictValue+'['+item.dictLabel+']'"
+                :value="item.dictValue"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -69,7 +69,9 @@
 <script>
 import {
   findTableIndex,
-  delTableIndex
+  delTableIndex,
+  getDictByType,
+  tableIndexSave
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object },
@@ -111,37 +113,9 @@ export default {
       }
       this.indexTitle = "新增索引";
       this.indexForm.indexColumn = [];
+      this.getDictByTypeMethods("table_index_type");
       // this.indexForm = {};
       this.dialogStatus.indexDialog = true;
-    },
-    trueIndex() {
-      this.indexForm.id = this.tableInfo.id;
-      this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
-      let url = "";
-      if (this.indexTitle == "新增索引") {
-        url = interfaceObj.TableStructure_addTableIndex;
-      } else if (this.indexTitle == "编辑索引") {
-        url = interfaceObj.TableStructure_updateTableIndex;
-      }
-      this.axios
-        .post(url, this.indexForm)
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "操作成功"
-            });
-            this.getIndexTable();
-            this.$refs["indexForm"].resetFields();
-            this.dialogStatus.indexDialog = false;
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        })
-        .catch(error => {});
     },
     editIndex() {
       if (this.indexItemSel.length != 1) {
@@ -150,12 +124,40 @@ export default {
           type: "warning"
         });
       } else {
+        this.getDictByTypeMethods("table_index_type");
         this.indexTitle = "编辑索引";
         this.indexForm = JSON.parse(JSON.stringify(this.indexItemSel[0]));
         this.indexForm.indexColumn = this.indexForm.indexColumn.split(",");
         this.dialogStatus.indexDialog = true;
       }
     },
+    // 根据类型查询字典信息
+    getDictByTypeMethods(dictType) {
+      getDictByType({ dictType: dictType }).then(response => {
+        if (response.code == 200) {
+          this.indexType = response.data;
+        }
+      });
+    },
+    trueIndex() {
+      this.indexForm.id = this.tableInfo.id;
+      this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
+      console.log(this.indexForm);
+      tableIndexSave(this.indexForm).then(response => {
+        if (response.code == 200) {
+          this.$message({ message: "操作成功", type: "success" });
+          this.getIndexTable();
+          this.$refs["indexForm"].resetFields();
+          this.dialogStatus.indexDialog = false;
+        } else {
+          this.$message({
+            type: "error",
+            message: "操作失败"
+          });
+        }
+      });
+    },
+
     deleteIndex() {
       if (this.indexItemSel.length != 1) {
         this.$message({
@@ -181,16 +183,7 @@ export default {
     }
   },
 
-  mounted() {
-    // this.axios
-    //   .get(interfaceObj.TableStructure_getOptionsByType, {
-    //     params: { type: 6 }
-    //   })
-    //   .then(res => {
-    //     this.indexTypeOptions = res.data.data;
-    //   })
-    //   .catch(error => {});
-  },
+  mounted() {},
   watch: {
     async tableInfo(val) {
       this.indexItem = this.tableInfo.tableIndexList;
