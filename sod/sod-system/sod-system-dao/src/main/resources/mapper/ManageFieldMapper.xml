@@ -21,9 +21,9 @@
     	select 
     		t2.* 
     	from 
-    		dmin_db_manager_field_fieldgroup t1
+    		t_sod_db_manager_field_fieldgroup t1
 		left join 
-			dmin_db_manager_field t2 
+			t_sod_db_manager_field t2 
 		on 
 			t1.field_id = t2.id
 		where 

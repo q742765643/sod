@@ -1,6 +1,6 @@
 package com.piesat.sod.system.rpc.dto;
 
-import java.io.Serializable;
+import com.piesat.util.BaseDto;
 
 import lombok.Data;
 
@@ -11,15 +11,11 @@ import lombok.Data;
 *
 */
 @Data
-public class DbFileDto implements Serializable{
+public class DbFileDto extends BaseDto{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 707151325787729909L;
-	/**
-	 * id
-	 */
-	private String recordId;
 	/**
 	 * 文件类型
 	 */
@@ -36,10 +32,6 @@ public class DbFileDto implements Serializable{
 	 * 存储路径
 	 */
 	private String fileStorPath;
-	/**
-	 * 更新时间
-	 */
-	private String updateTime;
 	/**
 	 * 是否是图片
 	 */

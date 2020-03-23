@@ -83,4 +83,6 @@ public interface DictDataService {
      * @return
      */
     DictDataDto findByDictTypeAndDictValue(String dictType,String dictValue);
+
+    public void exportExcel(DictDataDto dictData);
 }

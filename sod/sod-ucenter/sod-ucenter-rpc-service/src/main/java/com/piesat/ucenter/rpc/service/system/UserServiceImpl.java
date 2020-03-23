@@ -6,8 +6,10 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.dao.system.UserRoleDao;
+import com.piesat.ucenter.entity.system.RoleEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.entity.system.UserRoleEntity;
 import com.piesat.ucenter.mapper.system.RoleMapper;
@@ -53,9 +55,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public UserDto saveUserDto(UserDto userDto){
         UserEntity userEntity= userMapstruct.toEntity(userDto);
         userEntity=this.saveNotNull(userEntity);
-        userEntity= userMapper.selectByPrimaryKey("1");
-        PageHelper.startPage(1,10);
-        userMapper.selectByPrimaryKey("1");
         return userMapstruct.toDto(userEntity);
 
     }
@@ -179,6 +178,18 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         this.saveNotNull(userEntity);
     }
     /**
+     * 修改用户状态
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    @Override
+    public UserDto updateProfile(UserDto user)
+    {
+        UserEntity userEntity=userMapstruct.toEntity(user);
+        return userMapstruct.toDto(this.saveNotNull(userEntity));
+    }
+    /**
      * 批量删除用户信息
      *
      * @param userIds 需要删除的用户ID
@@ -187,10 +198,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public void deleteUserByIds(List<String> userIds)
     {
-     /*   for (Long userId : userIds)
+        for (String userId : userIds)
         {
-            checkUserAllowed(new SysUser(userId));
-        }*/
+            userRoleDao.deleteByUserId(userId);
+        }
         this.deleteByIds(userIds);
     }
     /**
@@ -206,5 +217,35 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         List<String> roles=roleMapper.selectRoleListByUserId(userId);
         userEntity.setRoleIds( roles.toArray(new String[roles.size()]));
         return userMapstruct.toDto(userEntity);
+    }
+
+    /**
+     * 查询用户所属角色组
+     *
+     * @param userName 用户名
+     * @return 结果
+     */
+    @Override
+    public String selectUserRoleGroup(String userName)
+    {
+        List<RoleEntity> list = roleMapper.selectRolesByUserName(userName);
+        StringBuffer idsStr = new StringBuffer();
+        for (RoleEntity role : list)
+        {
+            idsStr.append(role.getRoleName()).append(",");
+        }
+        if (StringUtils.isNotEmpty(idsStr.toString()))
+        {
+            return idsStr.substring(0, idsStr.length() - 1);
+        }
+        return idsStr.toString();
+    }
+
+    @Override
+    public void exportExcel(UserDto userDto){
+        UserEntity userEntity=userMapstruct.toEntity(userDto);
+        List<UserEntity> entities=userMapper.selectUserList(userEntity);
+        ExcelUtil<UserEntity> util=new ExcelUtil(UserEntity.class);
+        util.exportExcel(entities,"用户");
     }
 }

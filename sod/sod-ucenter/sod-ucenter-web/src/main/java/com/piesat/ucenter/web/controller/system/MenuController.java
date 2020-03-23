@@ -5,9 +5,11 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.entity.system.MenuEntity;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.dto.system.MenuDto;
+import com.piesat.ucenter.rpc.dto.system.RoleDto;
 import com.piesat.ucenter.rpc.util.TreeSelect;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system/menu")
-@Api(value="菜单controller",tags={"菜单操作接口"})
+@Api(value="菜单操作接口",tags={"菜单操作接口"})
 public class MenuController {
     @Autowired
     private MenuService menuService;
@@ -113,6 +115,12 @@ public class MenuController {
         List<String> list=menuService.selectMenuListByRoleId(roleId);
         resultT.setData(list);
         return resultT;
+    }
+    @ApiOperation(value = "菜单信息导出", notes = "菜单信息导出")
+    @RequiresPermissions("system:role:export")
+    @GetMapping("/export")
+    public void exportExcel(MenuDto menuDto){
+        menuService.exportExcel(menuDto);
     }
 
 }

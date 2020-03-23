@@ -56,5 +56,8 @@ public interface OperLogService {
      */
     public void cleanOperLog();
 
+
+    public void exportExcel(OperLogDto operLogDto);
+
 }
 

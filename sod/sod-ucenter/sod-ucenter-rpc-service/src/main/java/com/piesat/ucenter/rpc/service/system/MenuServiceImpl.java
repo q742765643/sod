@@ -3,11 +3,14 @@ package com.piesat.ucenter.rpc.service.system;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.system.MenuDao;
 import com.piesat.ucenter.entity.system.MenuEntity;
+import com.piesat.ucenter.entity.system.RoleEntity;
 import com.piesat.ucenter.mapper.system.MenuMapper;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.dto.system.MenuDto;
+import com.piesat.ucenter.rpc.dto.system.RoleDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.system.MenuMapstruct;
 import com.piesat.ucenter.rpc.util.MetaVo;
@@ -253,7 +256,8 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
             router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon()));
             router.setName(menu.getMenuName());
             List<MenuDto> cMenus = menu.getChildren();
-            if (!cMenus.isEmpty() && cMenus.size() > 0 && "M".equals(menu.getMenuType()))
+            //&& "M".equals(menu.getMenuType())
+            if (!cMenus.isEmpty() && cMenus.size() > 0 )
             {
                 router.setAlwaysShow(true);
                 router.setRedirect("noRedirect");
@@ -331,5 +335,13 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
     public List<String> selectMenuListByRoleId(String roleId)
     {
         return menuMapper.selectMenuListByRoleId(roleId);
+    }
+
+    @Override
+    public void exportExcel(MenuDto menuDto){
+        MenuEntity menuEntity=menuMapstruct.toEntity(menuDto);
+        List<MenuEntity> entities=menuMapper.selectMenuList(menuEntity);
+        ExcelUtil<MenuEntity> util=new ExcelUtil(MenuEntity.class);
+        util.exportExcel(entities,"菜单");
     }
 }

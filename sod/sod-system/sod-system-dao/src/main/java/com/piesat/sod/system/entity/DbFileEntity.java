@@ -1,15 +1,11 @@
 package com.piesat.sod.system.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.GenericGenerator;
+import com.piesat.common.jpa.entity.BaseEntity;
 
 import lombok.Data;
 
@@ -23,19 +19,11 @@ import lombok.Data;
 @Table(name = "T_SOD_DB_FILE")
 @Entity
 //@MappedSuperclass
-public class DbFileEntity implements Serializable{
+public class DbFileEntity extends BaseEntity{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5919028096424404350L;
-	/**
-	 * id
-	 */
-	@Id
-    @Column(name="RECORD_ID")
-    @GeneratedValue(generator = "htht.uuid")
-    @GenericGenerator(name = "htht.uuid", strategy = "com.piesat.common.jpa.generator.UUIDStringGenerator")
-	private String recordId;
 	/**
 	 * 文件类型
 	 */
@@ -56,11 +44,6 @@ public class DbFileEntity implements Serializable{
 	 */
 	@Column(name="FILE_STOR_PATH")
 	private String fileStorPath;
-	/**
-	 * 更新时间
-	 */
-	@Column(name="UPDATE_TIME")
-	private String updateTime;
 	/**
 	 * 是否是图片
 	 */

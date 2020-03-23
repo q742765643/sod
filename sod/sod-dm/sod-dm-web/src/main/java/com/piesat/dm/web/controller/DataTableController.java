@@ -8,6 +8,7 @@ import com.piesat.dm.rpc.dto.SampleData;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -186,4 +187,11 @@ public class DataTableController {
         }
     }
 
+    @ApiOperation(value = "根据类型查询字典信息")
+    @RequiresPermissions("dm:dataTable:getDictByType")
+    @GetMapping(value = "/getDictByType")
+    public ResultT  getDictByType(String dictType){
+        List<DictDataDto> dictByType = this.grpcService.getDictByType(dictType);
+        return ResultT.success(dictByType);
+    }
 }

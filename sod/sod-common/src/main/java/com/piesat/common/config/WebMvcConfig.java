@@ -8,6 +8,7 @@ import com.piesat.common.interceptor.HthtInterceptor;
 import com.piesat.common.interceptor.RequestParamMethodArgumentResolver;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +42,13 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     private CurrentUserArgumentResolver currentUserArgumentResolver;
     @Autowired
     private ConfigurableBeanFactory beanFactory;
+    @Value("${fileUpload.savaPath:/zzj/data/upload}")
+    private String savePath;
+    @Value("${fileUpload.httpPath:/upload}")
+    private String httpPath;
+
+
+
 
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -51,6 +59,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     }
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(httpPath+"/**").addResourceLocations("file:"+savePath+"/");
         registry.addResourceHandler("doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
@@ -127,5 +136,21 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .allowCredentials(true)
                 //设置缓存时间，减少重复响应
                 .maxAge(3600);
+    }
+
+    public String getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
+    }
+
+    public String getHttpPath() {
+        return httpPath;
+    }
+
+    public void setHttpPath(String httpPath) {
+        this.httpPath = httpPath;
     }
 }

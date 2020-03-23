@@ -85,4 +85,10 @@ public interface UserService {
      * @return 用户对象信息
      */
     public UserDto selectUserById(String userId);
+
+     String selectUserRoleGroup(String userName);
+
+    public UserDto updateProfile(UserDto user);
+
+    public void exportExcel(UserDto userDto);
 }

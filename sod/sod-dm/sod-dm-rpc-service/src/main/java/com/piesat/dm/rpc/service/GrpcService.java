@@ -206,6 +206,7 @@ public class GrpcService {
         return result;
     }
 
+
     public List<LogicDefineDto> getAllLogicDefine() {
         List<LogicDefineDto> logicDefineDtos = this.logicDefineService.all();
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
@@ -324,5 +325,10 @@ public class GrpcService {
         }
 
         return un;
+    }
+
+    public List<DictDataDto>  getDictByType(String dictType){
+        List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType(dictType);
+        return DictDataDtos;
     }
 }

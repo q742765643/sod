@@ -55,6 +55,7 @@
     <if test="paramt.endTime != null and paramt.endTime != ''"><!-- 结束时间检索 -->
       and r.create_time &lt;= #{paramt.endTime}
     </if>
+    ORDER by r.role_sort asc
     <!-- 数据范围过滤 -->
   </select>
 
@@ -69,4 +70,9 @@
 	        left join t_sod_user u on u.id = ur.user_id
 	    where u.id = #{userId}
 	</select>
+
+  <select id="selectRolesByUserName" parameterType="String" resultMap="BaseResultMap">
+    <include refid="selectRoleVo"/>
+    WHERE   u.user_name = #{userName}
+  </select>
 </mapper>

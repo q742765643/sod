@@ -66,6 +66,10 @@
             <name>Releases</name>
             <url>http://60.205.204.230:8081/nexus/content/repositories/releases/</url>
         </repository>
+        <repository>
+            <id>elastic.co</id>
+            <url>https://artifacts.elastic.co/maven</url>
+        </repository>
     </repositories>
 
 </project>

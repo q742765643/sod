@@ -39,4 +39,6 @@ public interface LoginInfoService {
      * 清空系统登录日志
      */
     public void cleanLogininfor();
+
+    public void exportExcel(LoginInfoDto loginInfoDto);
 }

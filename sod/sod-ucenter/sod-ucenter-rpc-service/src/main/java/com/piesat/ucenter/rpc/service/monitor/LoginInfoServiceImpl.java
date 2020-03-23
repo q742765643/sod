@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.monitor.LoginInfoDao;
 import com.piesat.ucenter.entity.monitor.LoginInfoEntity;
 import com.piesat.ucenter.entity.monitor.OperLogEntity;
@@ -88,6 +89,14 @@ public class LoginInfoServiceImpl extends BaseService<LoginInfoEntity> implement
     public void cleanLogininfor()
     {
         this.deleteAll();
+    }
+
+    @Override
+    public void exportExcel(LoginInfoDto loginInfoDto){
+        LoginInfoEntity loginInfoEntity=loginInfoMapstruct.toEntity(loginInfoDto);
+        List<LoginInfoEntity> entities=loginInfoMapper.selectLogininforList(loginInfoEntity);
+        ExcelUtil<LoginInfoEntity> util=new ExcelUtil(LoginInfoEntity.class);
+        util.exportExcel(entities,"登录日志");
     }
 }
 

@@ -5,11 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.system.RoleDao;
 import com.piesat.ucenter.dao.system.RoleMenuDao;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.ucenter.entity.system.RoleEntity;
 import com.piesat.ucenter.entity.system.RoleMenuEntity;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.mapper.system.RoleMapper;
 import com.piesat.ucenter.rpc.api.system.RoleService;
 import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
@@ -218,5 +220,12 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     {
         List<RoleEntity> roleEntities=this.getAll();
         return roleMapstruct.toDto(roleEntities);
+    }
+    @Override
+    public void exportExcel(RoleDto roleDto){
+        RoleEntity roleEntity=roleMapstruct.toEntity(roleDto);
+        List<RoleEntity> entities=roleMapper.selectRoleList(roleEntity);
+        ExcelUtil<RoleEntity> util=new ExcelUtil(RoleEntity.class);
+        util.exportExcel(entities,"角色");
     }
 }

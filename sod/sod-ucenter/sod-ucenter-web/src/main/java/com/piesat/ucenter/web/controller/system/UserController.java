@@ -31,7 +31,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system/user")
-@Api(value="用户controller",tags={"用户操作接口"})
+@Api(value="用户操作接口",tags={"用户操作接口"})
 public class UserController {
     @Autowired
     private UserService userService;
@@ -68,6 +68,13 @@ public class UserController {
     @PostMapping
     public ResultT<String> add(@RequestBody UserDto user)
     {
+        UserDto userDto=userService.selectUserByUserName(user.getUserName());
+        ResultT<String> resultT=new ResultT<>();
+
+        if(null!=userDto){
+            resultT.setErrorMessage("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
+            return resultT;
+        }
         /*if (UserConstants.NOT_UNIQUE.equals(userService.checkUserNameUnique(user.getUserName())))
         {
             return AjaxResult.error("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
@@ -82,7 +89,6 @@ public class UserController {
         }
         user.setCreateBy(SecurityUtils.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));*/
-        ResultT<String> resultT=new ResultT<>();
         userService.insertUser(user);
         return resultT;
     }
@@ -140,6 +146,11 @@ public class UserController {
         userService.updateUserStatus(user);
         return resultT;
     }
-
+    @ApiOperation(value = "用户信息导出", notes = "用户信息导出")
+    @RequiresPermissions("system:user:export")
+    @GetMapping("/export")
+    public void exportExcel(UserDto userDto){
+        userService.exportExcel(userDto);
+    }
 
 }

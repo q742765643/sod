@@ -8,6 +8,7 @@ import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import javax.xml.ws.soap.Addressing;
  * @create: 2019-12-29 20:18
  **/
 @RestController
+@Api(value = "数据迁移日志接口", tags = {"数据迁移日志接口"})
 @RequestMapping("/schedule/moveLog")
 public class MoveLogController {
     @Autowired

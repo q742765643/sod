@@ -265,5 +265,19 @@ public class ManageFiledController {
 		}
 	}
 	
+	/**
+	 *  管理字段导出
+	 * @description 
+	 * @author wlg
+	 * @date 2020年3月19日下午4:32:44
+	 * @param dto
+	 */
+	@ApiOperation(value = "管理字段导出", notes = "管理字段导出")
+    @RequiresPermissions("restApi:manageField:export")
+    @GetMapping("/export")
+	public void exportExcel(ManageFieldDto dto) {
+		manageFieldService.exportExcel(dto);
+	}
+	
 
 }

@@ -2,6 +2,7 @@ package com.piesat.ucenter.entity.system;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
@@ -33,12 +34,14 @@ public class UserEntity extends BaseEntity {
     /**
      * 用户账号
      */
+    @Excel(name = "用户帐号")
     @Column(name="user_name", length=30,nullable=false)
     private String userName;
 
     /**
      * 用户昵称
      */
+    @Excel(name = "用户昵称")
     @Column(name="nick_name", length=30,nullable=false)
     private String nickName;
 
@@ -51,18 +54,21 @@ public class UserEntity extends BaseEntity {
     /**
      * 用户邮箱
      */
+    @Excel(name = "用户邮箱")
     @Column(name="email",columnDefinition = "varchar(50) default ''")
     private String email;
 
     /**
      * 手机号码
      */
+    @Excel(name = "手机号码")
     @Column(name="phonenumber",columnDefinition = "varchar(11) default ''")
     private String phonenumber;
 
     /**
      * 用户性别（0男 1女 2未知）
      */
+    @Excel(name = "性别",readConverterExp = "0=男,1=女,2=未知")
     @Column(name="sex",columnDefinition = "varchar(1) default '0'")
     private String sex;
 
@@ -98,6 +104,7 @@ public class UserEntity extends BaseEntity {
     /**
      * 最后登陆时间
      */
+    @Excel(name = "最后登陆时间",dateFormat = "yyyy-MM-dd HH:mm:ss", type = Excel.Type.EXPORT)
     @Column(name="login_date")
     private Date loginDate;
 

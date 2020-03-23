@@ -5,13 +5,16 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.common.constant.UserConstants;
 import com.piesat.ucenter.dao.system.DictTypeDao;
+import com.piesat.ucenter.entity.system.DictDataEntity;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.mapper.system.DictDataMapper;
 import com.piesat.ucenter.mapper.system.DictTypeMapper;
 import com.piesat.ucenter.rpc.api.system.DictTypeService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.dto.system.DictTypeDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.system.DictTypeMapstruct;
@@ -165,6 +168,14 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
             return UserConstants.NOT_UNIQUE;
         }
         return UserConstants.UNIQUE;
+    }
+
+    @Override
+    public void exportExcel(DictTypeDto dictType){
+        DictTypeEntity dictTypeEntity=dictTypeMapstruct.toEntity(dictType);
+        List<DictTypeEntity> entities=dictTypeMapper.selectDictTypeList(dictTypeEntity);
+        ExcelUtil<DictTypeEntity> util=new ExcelUtil(DictTypeEntity.class);
+        util.exportExcel(entities,"字典类型信息");
     }
 
 }

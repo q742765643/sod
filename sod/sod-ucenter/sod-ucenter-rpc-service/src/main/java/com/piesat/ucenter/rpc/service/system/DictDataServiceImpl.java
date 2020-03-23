@@ -4,13 +4,16 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.system.DictDataDao;
 import com.piesat.ucenter.entity.system.DictDataEntity;
+import com.piesat.ucenter.entity.system.RoleEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.mapper.system.DictDataMapper;
 import com.piesat.ucenter.mapper.system.DictTypeMapper;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
+import com.piesat.ucenter.rpc.dto.system.RoleDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.system.DictDataMapstruct;
 import com.piesat.util.page.PageBean;
@@ -139,5 +142,11 @@ public class DictDataServiceImpl extends BaseService<DictDataEntity> implements 
     public DictDataDto findByDictTypeAndDictValue(String dictType, String dictValue) {
         return dictDataMapstruct.toDto(this.dictDataDao.findByDictTypeAndDictValue(dictType,dictValue));
     }
-
+    @Override
+    public void exportExcel(DictDataDto dictData){
+        DictDataEntity dictDataEntity=dictDataMapstruct.toEntity(dictData);
+        List<DictDataEntity> entities=dictDataMapper.selectDictDataList(dictDataEntity);
+        ExcelUtil<DictDataEntity> util=new ExcelUtil(DictDataEntity.class);
+        util.exportExcel(entities,"字典数据信息");
+    }
 }

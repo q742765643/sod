@@ -6,6 +6,7 @@ import com.piesat.ucenter.rpc.api.system.DeptService;
 import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.util.TreeSelect;
 import com.piesat.util.ResultT;
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import java.util.List;
  * @创建时间 2019/12/3 9:46
  */
 @RestController
+@Api(value = "部门管理接口", tags = {"部门管理接口"})
 @RequestMapping("/system/dept")
 public class DeptController {
     @Autowired
