@@ -103,7 +103,7 @@ public class ServiceCodeManagementController {
 
     @GetMapping(value = "/queryAll")
     @ApiOperation(value = "查询所有", notes = "查询所有")
-    public ResultT<ServiceCodeDto> queryAll(String id)
+    public ResultT queryAll(String id)
     {
         ResultT resultT=new ResultT<>();
         List<ServiceCodeDto> serviceCodeDto= this.serviceCodeService.queryAll();
