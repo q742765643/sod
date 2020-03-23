@@ -94,7 +94,7 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              type="success"
+              type="primary"
               icon="el-icon-edit"
               size="mini"
               :disabled="single"
@@ -114,7 +114,7 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              type="warning"
+              type="success"
               icon="el-icon-download"
               size="mini"
               @click="handleExport"
@@ -292,6 +292,8 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_UCENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
 import {
   listUser,
   getUser,
@@ -316,6 +318,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      nickNames: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -508,6 +511,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id);
+      this.nickNames = selection.map(item => item.nickName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -585,11 +589,16 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm('是否确认删除用户编号为"' + ids + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      const nickName = row.nickName || this.nickNames;
+      this.$confirm(
+        '是否确认删除用户昵称为"' + nickName + '"的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
         .then(function() {
           return delUser(ids);
         })
@@ -601,19 +610,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm("是否确认导出所有用户数据项?", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return exportUser(queryParams);
-        })
-        .then(response => {
-          this.download(response.msg);
-        })
-        .catch(function() {});
+      let flieData = Encrypt(
+        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
+      );
+      flieData = encodeURIComponent(flieData);
+
+      window.location.href =
+        baseUrl + "/system/user/export?sign=111111&data=" + flieData;
     }
   }
 };

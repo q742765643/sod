@@ -108,7 +108,7 @@
       <el-table-column prop="ele_service_id" label="要素服务代码"></el-table-column>
       <el-table-column prop="ele_name_cn" label="要素中文名"></el-table-column>
       <el-table-column prop="ele_unit" label="要素单位"></el-table-column>
-      <el-table-column prop="level_type" label="层次类型"></el-table-column>
+      <el-table-column prop="levelType" label="层次类型"></el-table-column>
       <el-table-column prop="scale_divisor" label="层次转换因子"></el-table-column>
       <el-table-column prop="ele_hours" label="资料时次"></el-table-column>
       <el-table-column prop="grid_pixel" label="空间分辨率"></el-table-column>
@@ -200,18 +200,18 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="层次类型" prop="level_type">
+            <el-form-item label="层次类型" prop="levelType">
               <el-select
                 filterable
-                v-model="msgFormDialog.level_type"
+                v-model="msgFormDialog.levelType"
                 placeholder="层次类型"
                 size="small"
               >
                 <el-option
                   v-for="item in optionsLevels"
                   :key="item.value"
-                  :label="item.level_type"
-                  :value="item.level_type"
+                  :label="item.levelType"
+                  :value="item.levelType"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -287,6 +287,7 @@ import {
   findByDataCLassId,
   saveBase
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { getAllLevel } from "@/api/GridDataDictionaryManagement/levelManagement";
 export default {
   name: "dataServeManage",
   props: { rowData: Object },
@@ -329,7 +330,7 @@ export default {
             trigger: "change"
           }
         ],
-        level_type: [
+        levelType: [
           { required: true, message: "请输入层次类型", trigger: "blur" }
         ],
         scale_divisor: [
@@ -373,9 +374,9 @@ export default {
         });
     },
 
-    getAllLevel() {
-      this.axios.get(interfaceObj.TableStructure_getAllLevel).then(res => {
-        this.optionsLevels = res.data.data;
+    async getAllLevelMethods() {
+      await getAllLevel().then(response => {
+        this.optionsLevels = response.data;
       });
     },
     modeEleQueryAll() {
@@ -433,7 +434,7 @@ export default {
       this.msgFormDialog = {};
       this.msgFormDialog.dataClassId = this.rowData.DATA_CLASS_ID;
       this.dialogTitle = "新增数据服务信息";
-      // this.getAllLevel();
+      this.getAllLevelMethods();
       // this.modeEleQueryAll();
       this.dataServeDialog = true;
     },
@@ -447,7 +448,7 @@ export default {
         this.msgFormDialog = {};
         this.msgFormDialog.DATA_CLASS_ID = this.rowData.DATA_CLASS_ID;
         this.getAllLevel();
-        this.modeEleQueryAll();
+        // this.modeEleQueryAll();
         this.dialogTitle = "编辑数据服务信息";
         this.msgFormDialog = this.multipleSelection[0];
         this.dataServeDialog = true;

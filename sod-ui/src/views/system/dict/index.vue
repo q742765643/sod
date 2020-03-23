@@ -67,7 +67,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -87,7 +87,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
+          type="success"
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
@@ -185,6 +185,8 @@ import {
   updateType,
   exportType
 } from "@/api/system/dict/type";
+var baseUrl = process.env.VUE_APP_UCENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
 
 export default {
   data() {
@@ -348,19 +350,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm("是否确认导出所有类型数据项?", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return exportType(queryParams);
-        })
-        .then(response => {
-          this.download(response.msg);
-        })
-        .catch(function() {});
+      let flieData = Encrypt(
+        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
+      );
+      flieData = encodeURIComponent(flieData);
+
+      window.location.href =
+        baseUrl + "/system/dict/type/export?sign=111111&data=" + flieData;
     }
   }
 };

@@ -588,6 +588,7 @@ export default {
         this.selColumnData.forEach(element => {
           ids.push(element.id);
         });
+        console.log(ids.join(","));
         tableColumnDel({ ids: ids.join(",") }).then(response => {
           if (response.code == 200) {
             this.$message({ message: "删除成功", type: "success" });

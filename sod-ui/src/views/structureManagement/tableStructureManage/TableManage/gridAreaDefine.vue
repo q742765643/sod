@@ -31,10 +31,8 @@
     >
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="areaId" label="区域代码">
-        <template slot-scope="scope">{{scope.row.areaId.split('[')[0]}}</template>
-      </el-table-column>
-      <el-table-column prop="area_region_desc" label="区域描述"></el-table-column>
+      <el-table-column prop="areaId" label="区域代码" align="center"></el-table-column>
+      <el-table-column prop="areaRegionDesc" label="区域描述" align="center"></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -74,9 +72,12 @@ export default {
 
   methods: {
     searchFun() {
+      console.log(this.queryParams);
       gridareaList(this.queryParams).then(res => {
         if (res.code == 200) {
-          this.tableData = res.data;
+          debugger;
+          this.tableData = res.data.pageData;
+          this.total = res.data.totalCount;
         } else {
           this.$message({
             message: res.msg,
@@ -157,7 +158,7 @@ export default {
         });
     },
     forParent() {
-      // this.searchFun();
+      this.searchFun();
       this.getoptionsArea();
     }
   },

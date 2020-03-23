@@ -57,7 +57,7 @@ module.exports = {
       },
       // dm模块
       [process.env.VUE_APP_DM]: {
-        target: `http://10.1.6.117:8007`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""

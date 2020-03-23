@@ -22,7 +22,7 @@ export function tableColumnDel(data) {
   return request({
     url: baseUrl + '/dm/tableColumn/delIds',
     method: 'delete',
-    data: data
+    params: data
   })
 }
 // 根据表id查询分库分表键

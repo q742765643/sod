@@ -37,7 +37,7 @@
           :header="importHeaders"
           ref="upload"
         >
-          <el-button size="small" type="warning" icon="el-icon-upload2">导入</el-button>
+          <el-button size="small" type="success" icon="el-icon-upload2">导入</el-button>
         </el-upload>
       </el-col>
       <el-col :span="1.5">

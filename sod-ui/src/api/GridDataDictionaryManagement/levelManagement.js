@@ -8,6 +8,13 @@ export function levelList(query) {
     params: query
   })
 }
+// 查所有
+export function getAllLevel() {
+  return request({
+    url: baseUrl + '/dictionary/level/getAllLevel',
+    method: 'get',
+  })
+}
 // 添加
 export function levelSave(data) {
   return request({

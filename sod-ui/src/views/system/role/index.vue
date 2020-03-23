@@ -67,7 +67,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -87,7 +87,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
+          type="success"
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
@@ -130,13 +130,13 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:role:edit']"
           >修改</el-button>
-          <el-button
+          <!-- <el-button
             size="mini"
             type="text"
             icon="el-icon-circle-check"
             @click="handleDataScope(scope.row)"
             v-hasPermi="['system:role:edit']"
-          >数据权限</el-button>
+          >数据权限</el-button>-->
           <el-button
             size="mini"
             type="text"
@@ -206,7 +206,7 @@
         <el-form-item label="权限字符">
           <el-input v-model="form.roleKey" :disabled="true" />
         </el-form-item>
-        <el-form-item label="权限范围">
+        <!--  <el-form-item label="权限范围">
           <el-select v-model="form.dataScope">
             <el-option
               v-for="item in dataScopeOptions"
@@ -215,7 +215,7 @@
               :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="数据权限" v-show="form.dataScope == 2">
           <el-tree
             :data="deptOptions"
@@ -237,6 +237,8 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_UCENTER_API;
+import { Encrypt } from "@/utils/htencrypt";
 import {
   listRole,
   getRole,
@@ -487,9 +489,9 @@ export default {
     /** 分配数据权限操作 */
     handleDataScope(row) {
       this.reset();
-      this.$nextTick(() => {
+      /* this.$nextTick(() => {
         this.getRoleDeptTreeselect(row.id);
-      });
+      }); */
       getRole(row.id).then(response => {
         this.form = response.data;
         this.openDataScope = true;
@@ -560,19 +562,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm("是否确认导出所有角色数据项?", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return exportRole(queryParams);
-        })
-        .then(response => {
-          this.download(response.msg);
-        })
-        .catch(function() {});
+      let flieData = Encrypt(
+        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
+      );
+      flieData = encodeURIComponent(flieData);
+
+      window.location.href =
+        baseUrl + "/system/role/export?sign=111111&data=" + flieData;
     }
   }
 };

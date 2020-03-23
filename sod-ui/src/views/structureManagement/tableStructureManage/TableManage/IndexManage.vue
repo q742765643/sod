@@ -135,7 +135,7 @@ export default {
     getDictByTypeMethods(dictType) {
       getDictByType({ dictType: dictType }).then(response => {
         if (response.code == 200) {
-          this.indexType = response.data;
+          this.indexTypeOptions = response.data;
         }
       });
     },
