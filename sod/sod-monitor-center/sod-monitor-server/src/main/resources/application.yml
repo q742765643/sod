@@ -1,0 +1,77 @@
+server:
+  port: 8008
+  servlet:
+      context-path: /
+  tomcat:
+      remote-ip-header: x-forward-for
+      uri-encoding: UTF-8
+      max-threads: 10
+      background-processor-delay: 30
+      basedir: ${user.home}/tomcat/
+
+grpc:
+  server:
+    port: 8010
+spring:
+  application:
+    name: monitor-server
+  sleuth:
+    sampler:
+      probability: 1
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  servlet:
+     multipart:
+      max-file-size: 1000000000
+      max-request-size: 1000000000
+  datasource:
+      es:
+        driver-class-name: org.elasticsearch.xpack.sql.jdbc.EsDriver
+        url: jdbc:es://http://10.211.55.7:9200
+      general:
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://10.1.6.117:8000/sod
+        username: root
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        # 下面为连接池的补充设置，应用到上面所有数据源中
+        # 初始化大小，最小，最大
+        initialSize: 1
+        minIdle: 3
+        maxActive: 20
+  data:
+      elasticsearch:
+        cluster-nodes: 10.211.55.7:9300 # 配置IP及端口号
+        cluster-name: elasticsearch
+  main:
+      allow-bean-definition-overriding: true
+mybatis:
+  #callSettersOnNulls:  true
+  #type-aliases-package: com.piesat.*.entity
+  #mapper-locations: classpath:es/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+eureka:
+  instance:
+    hostname: desktop-2vav0fh
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://10.1.6.117:8002/eureka/
+
+
+
+
