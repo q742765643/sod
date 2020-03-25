@@ -2,9 +2,7 @@ package com.piesat.common.utils.sign;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.piesat.common.utils.AESUtil;
-import com.piesat.common.utils.RSAUtil;
-import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.*;
 import com.piesat.common.vo.SignVo;
 import net.bytebuddy.implementation.bytecode.Throw;
 
@@ -26,8 +24,7 @@ public class SignAuthUtil {
          if(!StringUtils.isNotNullString(signVo.getUuidHt())){
              return false;
          }
-         if(System.currentTimeMillis()-signVo.getTimestampHt()>1000*3*60){
-             System.out.println(System.currentTimeMillis()-signVo.getTimestampHt());
+         if(System.currentTimeMillis()-signVo.getTimestampHt()>1000*10*60){
              return false;
          }
          String newAppId= RSAUtil.decrypt(signVo.getAppIdHt(),RSAUtil.keyMap.get(1));
@@ -47,6 +44,23 @@ public class SignAuthUtil {
          }
          if(!flag){
              throw new Exception("请求不合法");
+         }
+     }
+     public static void createSign(String token) throws Exception {
+         SignVo signVo=new SignVo();
+         signVo.setAppIdHt(token);
+         signVo.setTimestampHt(System.currentTimeMillis());
+         signVo.setUuidHt(RSAUtil.encrypt(IdUtils.simpleUUID(),RSAUtil.keyMap.get(0)));
+
+         String sign=AESUtil.aesEncrypt(JSON.toJSONString(signVo));
+         System.out.println(sign);
+     }
+
+     public static void main(String[] args){
+         try {
+             createSign("aaa");
+         } catch (Exception e) {
+             e.printStackTrace();
          }
      }
 

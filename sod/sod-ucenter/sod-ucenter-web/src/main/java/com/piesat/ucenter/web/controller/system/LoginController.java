@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  * @创建时间 2019/11/28 11:43
  */
 @RestController
-@Api(value="登录",tags={"用户登录"})
+@Api(value="用户登录",tags={"用户登录"})
 public class LoginController {
     @Autowired
     private UserService userService;
@@ -70,6 +70,7 @@ public class LoginController {
      * @param uuid 唯一标识
      * @return 结果
      */
+    @ApiOperation(value = "登录", notes = "登录")
     @PostMapping("/login")
     public ResultT<Map<String,Object>> login(String username, String password, String code, String uuid)
     {
@@ -79,6 +80,10 @@ public class LoginController {
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
             String ycode= (String) redisUtil.get(verifyKey);
+            if(null==ycode){
+                resultT.setErrorMessage("验证码不能为空");
+                return resultT;
+            }
             if(!ycode.equals(code.toUpperCase())){
                 resultT.setErrorMessage("验证码错误");
                 return resultT;
@@ -104,7 +109,7 @@ public class LoginController {
         }
         return resultT;
     }
-
+    @ApiOperation(value = "第三方登录", notes = "第三方登录")
     @PostMapping("/thirdLogin")
     public ResultT<Map<String,Object>> thirdLogin(@RequestBody Map<String,String> userDto)
     {
