@@ -1,25 +1,58 @@
 /* 主色调 */
 // $themeColor: #409eff;
 // $boderColor: #ebebeb;
-body,
-.el-tree,
-.el-input__inner,
-.el-range-input {
-  background: #f0f5fb;
+$backColor:#f1f4f7;
+$boderColor: #e5e8ec;
+
+html,
+body {
+  background: $backColor;
+}
+
+.app-main>.app-container {
+  background: #fff;
+  margin: 20px;
+  margin-top: 0;
 }
 
 body .el-table th.gutter {
   display: table-cell !important;
 }
 
-.el-dialog {
+// 侧边栏的树
+.elTreeAsideBox {
+  border-right: 1px solid $boderColor;
+  height: calc(100vh - 170px);
 
-  .el-tree,
-  .el-input__inner,
-  .el-range-input {
-    background: #fff;
+  .el-scrollbar {
+    margin-top: 10px;
+    height: calc(100% - 80px);
+
+    .elTreeScroll {
+      overflow-x: hidden;
+    }
   }
 }
+
+.el-tree {
+  min-width: 100%;
+  display: inline-block !important;
+}
+
+// 查询box 
+//如果没有表格操作栏，需要单独设置margin-bottom:24px;
+.searchBox {
+  padding: 15px;
+  padding-bottom: 0;
+  background: $backColor;
+  border-radius: 8px;
+}
+
+// 表格操作栏
+.handleTableBox {
+  margin: 24px 0;
+}
+
 
 // 没有labelwidth的formitem
 .unitFormItem {
@@ -36,9 +69,6 @@ body .el-table th.gutter {
   padding: 10px 2px;
 }
 
-.el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
-  background-color: #c6e2ff;
-}
 
 .red {
   color: red;

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 一致性检查 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="专题库名称：">
         <el-input size="small" v-model="queryParams.database_name" placeholder="输入关键字搜索"></el-input>
       </el-form-item>
@@ -9,7 +9,7 @@
         <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button
           size="small"

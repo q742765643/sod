@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="角色名称" prop="roleName">
         <el-input
           v-model="queryParams.roleName"
@@ -55,7 +55,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -103,9 +103,9 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="显示顺序" prop="roleSort" width="100" />
+      <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" align="center" />
+      <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" align="center" />
+      <el-table-column label="显示顺序" prop="roleSort" width="100" align="center" />
       <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch
@@ -573,3 +573,4 @@ export default {
   }
 };
 </script>
+

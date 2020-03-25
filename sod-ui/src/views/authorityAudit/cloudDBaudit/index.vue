@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 云数据库审核 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="审核状态">
         <el-select
           v-model="queryParams.examineStatus"
@@ -41,7 +41,7 @@
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button
           type="primary"

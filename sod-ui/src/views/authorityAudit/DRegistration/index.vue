@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 数据注册审核 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据分类：">
         <el-select v-model="queryParams.DDataId" placeholder>
           <el-option key="index" label="全部" value></el-option>
@@ -28,7 +28,7 @@
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button
           type="primary"

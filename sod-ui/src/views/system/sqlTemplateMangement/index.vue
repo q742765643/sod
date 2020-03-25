@@ -7,7 +7,7 @@
           <div slot="header" class="clearfix">
             <span>{{item.databaseName}}</span>
           </div>
-          <div style="padding: 14px;">
+          <div style="padding: 12px;">
             <el-button type="primary" size="small" round @click="editSqlTemplate(item)">编辑</el-button>
             <el-button type="danger" size="small" round @click="deleteSqlTemplate(item)">删除</el-button>
           </div>

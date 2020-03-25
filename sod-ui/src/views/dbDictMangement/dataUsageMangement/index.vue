@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 数据用途管理 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途ID:">
         <el-input size="small" v-model="queryParams.logicFlag" placeholder="请输入数据用途ID" />
       </el-form-item>
@@ -12,7 +12,7 @@
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
       </el-col>

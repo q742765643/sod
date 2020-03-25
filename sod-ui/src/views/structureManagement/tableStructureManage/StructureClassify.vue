@@ -1,5 +1,5 @@
 <template>
-  <el-aside class="asideTreeStructure">
+  <el-aside class="asideTreeStructure elTreeAsideBox">
     <el-tabs :tab-position="tabPosition" @tab-click="handleTabClick">
       <el-tab-pane label="资料分类树"></el-tab-pane>
       <el-tab-pane label="数据用途分类树" v-if="tableStructureManageContral"></el-tab-pane>
@@ -315,7 +315,6 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  height: calc(100vh - 130px);
   //分类
   .el-tabs__item {
     white-space: normal;
@@ -376,8 +375,6 @@ export default {
       }
     }
     .el-tree {
-      min-width: 100%;
-      display: inline-block !important;
       i {
         color: #409eff;
       }

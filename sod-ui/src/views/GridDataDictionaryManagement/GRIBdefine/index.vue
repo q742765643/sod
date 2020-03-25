@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- grib参数定义 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="GRIB格式:">
         <el-input size="small" v-model="queryParams.gribVersion" placeholder="请输入GRIB格式" />
       </el-form-item>
@@ -18,7 +18,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
       </el-col>

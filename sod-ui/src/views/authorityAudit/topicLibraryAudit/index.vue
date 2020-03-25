@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 专题库审核 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="资料状态">
         <el-select v-model="queryParams.examineStatus">
           <el-option label="全部" value></el-option>
@@ -204,3 +204,8 @@ export default {
   }
 };
 </script>
+<style lang="css" scoped>
+.searchBox {
+  margin-bottom: 24px;
+}
+</style>

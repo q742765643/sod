@@ -3,7 +3,7 @@
     <!-- 公共元数据同步 -->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="同步任务配置" name="first">
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
             <el-button
               size="small"
@@ -104,7 +104,7 @@
         />
       </el-tab-pane>
       <el-tab-pane label="同步记录查询" name="second">
-        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
+        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="同步表名">
             <el-select style="width:200px" filterable v-model="rowlogForm.syncTableName">
               <el-option
@@ -141,7 +141,7 @@
             <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
             <el-button
               type="danger"
@@ -481,6 +481,16 @@ export default {
 .commonMetadataTem {
   .el-tabs__content {
     padding-bottom: 20px;
+  }
+  #pane-first {
+    .handleTableBox {
+      margin: 8px 0 24px 0;
+    }
+  }
+  #pane-second {
+    .searchBox {
+      margin-top: 15px;
+    }
   }
 }
 </style>

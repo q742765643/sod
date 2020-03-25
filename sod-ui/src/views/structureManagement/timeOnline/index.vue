@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 在线时间检索 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="四级编码">
         <el-input size="small" v-model="queryParams.d_data_id"></el-input>
       </el-form-item>
@@ -120,3 +120,8 @@ export default {
   }
 };
 </script>
+<style lang="css" scoped>
+.searchBox {
+  margin-bottom: 24px;
+}
+</style>
