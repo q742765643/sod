@@ -11,7 +11,11 @@ import {
 import {
   Encrypt
 } from '@/utils/htencrypt'
+import {
+  rsaencrypt
+} from '@/utils/rsaencrypt'
 
+const uuid = require('uuid/v4')
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
 const service = axios.create({
@@ -23,10 +27,17 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   config => {
-    console.log(config)
     if (getToken()) {
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+      let sign = {
+        "timestampHt": new Date().getTime(),
+        "uuidHt": uuid(),
+        "appIdHt":rsaencrypt(getToken())
+      }
+      config.headers['sign'] = Encrypt(JSON.stringify(sign))
+
     }
+
     let data = ""
     let ajax = config.headers['X-Requested-With'];
     let headers=config.headers['Content-Type'];
