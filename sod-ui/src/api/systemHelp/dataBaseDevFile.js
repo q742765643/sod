@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-const baseUrl = process.env.VUE_APP_DB_API;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 // 查询表格
 export function getpage(query) {
   return request({
