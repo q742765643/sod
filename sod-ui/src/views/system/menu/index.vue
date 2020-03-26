@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true">
+    <el-form :inline="true" class="searchBox">
       <el-form-item label="菜单名称">
         <el-input
           v-model="queryParams.menuName"
@@ -379,3 +379,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.searchBox {
+  margin-bottom: 24px;
+}
+</style>

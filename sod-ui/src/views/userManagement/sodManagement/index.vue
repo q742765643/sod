@@ -1,7 +1,7 @@
 <template>
   <div class="app-container sodDeploy">
     <!-- 查询条件 -->
-    <el-form :inline="true" :model="queryParams" ref="modelForm" class="funLoad selSearchCon">
+    <el-form :inline="true" :model="queryParams" ref="modelForm" class="searchBox">
       <el-form-item label="功能名称">
         <el-input size="small" v-model="queryParams.name"></el-input>
       </el-form-item>
@@ -17,7 +17,7 @@
         <el-button size="small" type="primary" @click="searchFun" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button size="small" type="primary" icon="el-icon-plus" @click="addCell">新增</el-button>
       </el-col>
@@ -205,13 +205,6 @@ export default {
 
 <style lang="scss">
 .sodDeploy {
-  .funLoad,
-  .loadTable {
-    margin: 10px;
-  }
-  .el-input {
-    width: 98%;
-  }
   .el-link.el-link--default {
     font-size: 12px;
     color: #409eff;

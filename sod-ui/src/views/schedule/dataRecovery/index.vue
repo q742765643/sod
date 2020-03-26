@@ -3,7 +3,7 @@
     <!-- 数据恢复 -->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="结构化数据恢复" name="first">
-        <el-form :model="queryParams" :inline="true">
+        <el-form :model="queryParams" :inline="true" class="searchBox">
           <el-form-item label="数据库名称">
             <el-select
               v-model="queryParams.databaseId"
@@ -73,7 +73,7 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="恢复日志" name="second">
-        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
+        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="资料名称">
             <el-input size="small" v-model="queryParams.profileName"></el-input>
           </el-form-item>
@@ -488,13 +488,14 @@ export default {
   .el-scrollbar__wrap {
     overflow-x: hidden;
   }
-  .el-tree {
-    min-width: 100%;
-    display: inline-block !important;
-  }
   .footer {
     text-align: center;
     margin: 10px;
+  }
+  #pane-second {
+    .searchBox {
+      margin-bottom: 24px;
+    }
   }
 }
 .logDetailBoxRe {

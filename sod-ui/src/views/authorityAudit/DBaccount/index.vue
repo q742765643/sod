@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 数据库访问账户 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="审核状态" prop="examineStatus">
         <el-select
           v-model="queryParams.examineStatus"
@@ -192,3 +192,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.searchBox {
+  margin-bottom: 24px;
+}
+</style>

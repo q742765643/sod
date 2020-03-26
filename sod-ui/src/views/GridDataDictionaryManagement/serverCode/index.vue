@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 服务代码定义 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="格点要素服务代码:">
         <el-input size="small" v-model="queryParams.userFcstEle" />
       </el-form-item>
@@ -12,7 +12,7 @@
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
       </el-col>

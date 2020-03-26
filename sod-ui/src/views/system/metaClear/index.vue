@@ -3,7 +3,7 @@
     <!-- 元数据清除 -->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="元数据清除配置" name="first">
-        <el-form :model="queryParams" :inline="true">
+        <el-form :model="queryParams" :inline="true" class="searchBox">
           <el-form-item label="数据库IP">
             <el-select size="small" style="width:200px" filterable v-model="queryParams.databaseId">
               <el-option
@@ -34,7 +34,7 @@
             <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
           </el-form-item>
         </el-form>
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
             <el-button size="small" type="primary" @click="handleClear" icon="el-icon-plus">添加</el-button>
           </el-col>
@@ -136,7 +136,7 @@
         />
       </el-tab-pane>
       <el-tab-pane label="元数据清除日志" name="second">
-        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true">
+        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="数据库IP">
             <el-select style="width:200px" filterable v-model="rowlogForm.name">
               <el-option
@@ -155,7 +155,7 @@
             <el-button size="small" type="primary" @click="queryListLog" icon="el-icon-search">查询</el-button>
           </el-form-item>
         </el-form>
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
             <el-button
               size="small"

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 用户角色审核 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="申请用户">
         <el-input size="small" v-model="queryParams.username" placeholder="申请用户"></el-input>
       </el-form-item>
@@ -205,3 +205,8 @@ export default {
   }
 };
 </script>
+<style lang="css" scoped>
+.searchBox {
+  margin-bottom: 24px;
+}
+</style>

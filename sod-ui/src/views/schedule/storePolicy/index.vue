@@ -1,125 +1,127 @@
 <template>
   <!-- 资料存储策略 -->
-  <el-container class="app-container storePolicy">
-    <!-- 左侧树 -->
-    <el-aside class="elAside">
-      <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText" class="filterText"></el-input>
-      <el-scrollbar wrap-class="scrollbar-wrapper">
-        <el-tree
-          class="el-tree"
-          :highlight-current="highlight"
-          node-key="id"
-          :data="treeData"
-          :props="defaultProps"
-          :default-expanded-keys="expandedKeys"
-          :filter-node-method="filterNode"
-          @node-click="sourceNodeClick"
-          ref="elTree"
-        ></el-tree>
-      </el-scrollbar>
-    </el-aside>
-    <el-main class="elMain" style="padding:0 0 20px 0;">
-      <div class="headName">{{checkNode.name}}</div>
-      <el-scrollbar wrap-class="scrollbar-wrapper">
-        <el-row v-for="(row,rowIndex) in groupList" :key="rowIndex" :gutter="18" class="cardBox">
-          <p class="el-p">
-            <i class="el-icon-s-management"></i>
-            {{row.databaseName}}
-          </p>
-          <el-col :span="12" v-for="(item,index) in  row.policyDtos" :key="index">
-            <el-card class="box-cards">
-              <div slot="header">
-                <span>{{item.policyName}}</span>
-              </div>
-              <p>
-                是否配置：
-                <span
-                  v-if="item.isConfiguration=='已配置'"
-                  style="color:#67C23A;"
-                >{{item.isConfiguration}}</span>
-                <span
-                  v-else-if="item.isConfiguration=='未配置'"
-                  style="color:#F56C6C;"
-                >{{item.isConfiguration}}</span>
-                <span v-else-if="item.isConfiguration=='不需配置'">{{item.isConfiguration}}</span>
-              </p>
-              <p v-if="item.policyName=='同步'">源库：{{item.sourceRepository}}</p>
-              <p v-if="item.policyName=='同步'">源表：{{item.sourceTable}}</p>
-              <p>任务状态：{{item.triggerStatus}}</p>
-              <p v-if="item.policyName=='备份'">备份观测时间：{{item.ddateTime}}</p>
-              <p v-if="item.policyName=='清除'||item.policyName=='迁移'">清除观测时间：{{item.ddateTime}}</p>
-              <p v-if="item.policyName!='同步'">执行耗时：{{item.elapsedTime}}</p>
-              <el-popover placement="bottom" trigger="hover" popper-class="cornBox">
-                <div>
-                  <ul class="ulInfoBox" style="color:#67C23A;">
-                    <span>下五次执行时间：</span>
-                    <li v-for="(item_a,index_a) in item.nextTime" :key="index_a">
-                      <p class="rowInfo">
-                        <span>{{item_a}}</span>
-                      </p>
-                    </li>
-                  </ul>
+  <div class="app-container storePolicy">
+    <el-row :gutter="40">
+      <el-col :span="5" :xs="24" class="elTreeAsideBox">
+        <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText" class="filterText"></el-input>
+        <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
+          <el-tree
+            class="el-tree"
+            :highlight-current="highlight"
+            node-key="id"
+            :data="treeData"
+            :props="defaultProps"
+            :default-expanded-keys="expandedKeys"
+            :filter-node-method="filterNode"
+            @node-click="sourceNodeClick"
+            ref="elTree"
+          ></el-tree>
+        </el-scrollbar>
+      </el-col>
+      <el-col :span="19" :xs="24" class="rightContainer">
+        <div class="headName">{{checkNode.name}}</div>
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+          <el-row v-for="(row,rowIndex) in groupList" :key="rowIndex" :gutter="18" class="cardBox">
+            <p class="el-p">
+              <i class="el-icon-s-management"></i>
+              {{row.databaseName}}
+            </p>
+            <el-col :span="12" v-for="(item,index) in  row.policyDtos" :key="index">
+              <el-card class="box-cards">
+                <div slot="header">
+                  <span>{{item.policyName}}</span>
                 </div>
-                <p type="text" slot="reference" class="cornText" v-if="item.policyName!='同步'">
-                  <span>执行策略：</span>
-                  <span style="color:#409EFF;">{{item.jobCron}}</span>
+                <p>
+                  是否配置：
+                  <span
+                    v-if="item.isConfiguration=='已配置'"
+                    style="color:#67C23A;"
+                  >{{item.isConfiguration}}</span>
+                  <span
+                    v-else-if="item.isConfiguration=='未配置'"
+                    style="color:#F56C6C;"
+                  >{{item.isConfiguration}}</span>
+                  <span v-else-if="item.isConfiguration=='不需配置'">{{item.isConfiguration}}</span>
                 </p>
-              </el-popover>
-              <p>
-                操作：
-                <el-button
-                  size="mini"
-                  type="success"
-                  icon="el-icon-plus"
-                  @click="addRow(row,item.policyName)"
-                  title="添加"
-                  v-if="item.isConfiguration=='未配置'"
-                ></el-button>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  icon="el-icon-edit"
-                  title="修改"
-                  v-if="item.isConfiguration=='已配置'"
-                  @click="editRow(item,item.policyName)"
-                ></el-button>
-                <el-button
-                  size="mini"
-                  type="danger"
-                  icon="el-icon-delete"
-                  title="删除"
-                  v-if="item.isConfiguration=='已配置'"
-                  @click="deleteJob(item,item.policyName)"
-                ></el-button>
-                <el-button
-                  size="mini"
-                  type="warning"
-                  icon="el-icon-caret-right"
-                  title="启动"
-                  v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='停止'"
-                  @click="startJob(row,item.policyName)"
-                ></el-button>
-                <el-button
-                  size="mini"
-                  type="warning"
-                  icon="el-icon-video-play"
-                  title="重启"
-                  v-if="item.policyName=='同步'&&item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
-                ></el-button>
-                <el-button
-                  size="mini"
-                  type="warning"
-                  icon="el-icon-video-pause"
-                  title="停止"
-                  @click="stopJob(row,item.policyName)"
-                  v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
-                ></el-button>
-              </p>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-scrollbar>
-    </el-main>
+                <p v-if="item.policyName=='同步'">源库：{{item.sourceRepository}}</p>
+                <p v-if="item.policyName=='同步'">源表：{{item.sourceTable}}</p>
+                <p>任务状态：{{item.triggerStatus}}</p>
+                <p v-if="item.policyName=='备份'">备份观测时间：{{item.ddateTime}}</p>
+                <p v-if="item.policyName=='清除'||item.policyName=='迁移'">清除观测时间：{{item.ddateTime}}</p>
+                <p v-if="item.policyName!='同步'">执行耗时：{{item.elapsedTime}}</p>
+                <el-popover placement="bottom" trigger="hover" popper-class="cornBox">
+                  <div>
+                    <ul class="ulInfoBox" style="color:#67C23A;">
+                      <span>下五次执行时间：</span>
+                      <li v-for="(item_a,index_a) in item.nextTime" :key="index_a">
+                        <p class="rowInfo">
+                          <span>{{item_a}}</span>
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                  <p type="text" slot="reference" class="cornText" v-if="item.policyName!='同步'">
+                    <span>执行策略：</span>
+                    <span style="color:#409EFF;">{{item.jobCron}}</span>
+                  </p>
+                </el-popover>
+                <p>
+                  操作：
+                  <el-button
+                    size="mini"
+                    type="success"
+                    icon="el-icon-plus"
+                    @click="addRow(row,item.policyName)"
+                    title="添加"
+                    v-if="item.isConfiguration=='未配置'"
+                  ></el-button>
+                  <el-button
+                    size="mini"
+                    type="primary"
+                    icon="el-icon-edit"
+                    title="修改"
+                    v-if="item.isConfiguration=='已配置'"
+                    @click="editRow(item,item.policyName)"
+                  ></el-button>
+                  <el-button
+                    size="mini"
+                    type="danger"
+                    icon="el-icon-delete"
+                    title="删除"
+                    v-if="item.isConfiguration=='已配置'"
+                    @click="deleteJob(item,item.policyName)"
+                  ></el-button>
+                  <el-button
+                    size="mini"
+                    type="warning"
+                    icon="el-icon-caret-right"
+                    title="启动"
+                    v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='停止'"
+                    @click="startJob(row,item.policyName)"
+                  ></el-button>
+                  <el-button
+                    size="mini"
+                    type="warning"
+                    icon="el-icon-video-play"
+                    title="重启"
+                    v-if="item.policyName=='同步'&&item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
+                  ></el-button>
+                  <el-button
+                    size="mini"
+                    type="warning"
+                    icon="el-icon-video-pause"
+                    title="停止"
+                    @click="stopJob(row,item.policyName)"
+                    v-if="item.isConfiguration=='已配置'&&item.triggerStatus=='运行中'"
+                  ></el-button>
+                </p>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-scrollbar>
+      </el-col>
+    </el-row>
+
     <!-- 弹窗 备份 -->
     <el-dialog :title="dialogTitle" :visible.sync="backUpDialog" width="800px" v-dialogDrag>
       <handleBackUp @cancelHandle="cancelHandle" v-if="backUpDialog" :handleObj="handleObj"></handleBackUp>
@@ -132,7 +134,7 @@
     <el-dialog :title="dialogTitle" :visible.sync="moveDialog" width="800px" v-dialogDrag>
       <handleMove @cancelHandle="cancelHandle" v-if="moveDialog" :handleObj="handleObj"></handleMove>
     </el-dialog>
-  </el-container>
+  </div>
 </template>
 <script>
 import handleClear from "@/views/schedule/clear/handleClear";
@@ -325,38 +327,12 @@ export default {
 </script>
 <style lang="scss">
 .storePolicy {
-  padding: 20px 5px 0 5px;
-  .elAside {
-    max-width: 250px;
-    padding: 0;
-    margin: 0 10px;
-    background: #fff;
-    border: 1px solid #ebeef5;
+  .rightContainer {
     overflow: hidden;
-    box-sizing: border-box;
-    height: calc(100vh - 130px);
-    .filterText {
-      display: block;
-      width: 90%;
-      margin: 12px auto;
-    }
+    height: calc(100vh - 170px);
     .el-scrollbar {
+      width: 100%;
       height: calc(100% - 80px);
-    }
-    .el-scrollbar__wrap {
-      overflow-x: hidden;
-    }
-    .el-tree {
-      min-width: 100%;
-      display: inline-block !important;
-    }
-  }
-  .elMain {
-    border: 1px solid #ebeef5;
-    overflow: hidden;
-    height: calc(100vh - 130px);
-    .el-scrollbar {
-      height: calc(100% - 40px);
       .el-scrollbar__wrap {
         overflow-x: hidden;
       }

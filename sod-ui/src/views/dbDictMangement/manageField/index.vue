@@ -1,9 +1,8 @@
 <template>
   <div class="app-container fielddManagement">
     <!-- 管理字段管理 -->
-    <el-container>
-      <!-- 左侧树 -->
-      <el-aside class="elAside">
+    <el-row :gutter="40">
+      <el-col :span="4" :xs="24" class="elTreeAsideBox">
         <div class="sourceTreeTopOp">
           <el-button-group>
             <el-button type="primary" size="mini" @click="addType()" icon="el-icon-plus"></el-button>
@@ -12,21 +11,20 @@
           </el-button-group>
         </div>
         <div class="treeTitle">管理字段分组</div>
-        <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
           <el-tree
-            class="el-tree"
-            :highlight-current="highlight"
-            node-key="groupId"
-            :data="treeData"
+            :data="deptOptions"
             :props="defaultProps"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            ref="tree"
+            default-expand-all
             @node-click="handleNodeClick"
-            ref="elTree"
-            :render-content="renderContent"
-          ></el-tree>
+          />
         </el-scrollbar>
-      </el-aside>
-      <el-main class="elMain">
-        <el-form :model="queryParams" ref="queryForm" :inline="true">
+      </el-col>
+      <el-col :span="20" :xs="24">
+        <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
           <el-form-item label="字段编码">
             <el-input size="small" v-model="queryParams.dbEleCode" placeholder="字段编码"></el-input>
           </el-form-item>
@@ -34,7 +32,7 @@
             <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
           </el-form-item>
         </el-form>
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
             <el-button size="small" type="primary" icon="el-icon-plus" @click="addRow()">新增字典</el-button>
           </el-col>
@@ -66,8 +64,8 @@
           :limit.sync="queryParams.pageSize"
           @pagination="handleQuery"
         />
-      </el-main>
-    </el-container>
+      </el-col>
+    </el-row>
     <!-- 弹窗 树-->
     <el-dialog :title="dialogTitle" :visible.sync="TreeDialog" v-dialogDrag>
       <handleTree v-if="TreeDialog" :handleTreeObj="handleTreeObj" @cancelDialog="cancelDialog"></handleTree>
@@ -313,47 +311,22 @@ export default {
 </script>
 <style lang="scss">
 .fielddManagement {
-  padding: 20px 5px 0 5px;
-  .elAside {
-    max-width: 250px;
-    padding: 0;
-    margin: 0 10px;
-    background: #fff;
-    border: 1px solid #ebeef5;
-    overflow: hidden;
-    box-sizing: border-box;
-    height: calc(100vh - 130px);
-    .sourceTreeTopOp {
-      width: 100%;
-      padding: 10px 0;
-      text-align: center;
-      .el-button {
-        i {
-          font-weight: bold;
-        }
+  .sourceTreeTopOp {
+    width: 100%;
+    padding: 10px 0;
+    text-align: center;
+    .el-button {
+      i {
+        font-weight: bold;
       }
     }
-    .treeTitle {
-      border-bottom: 1px solid #ebeef5;
-      width: 100%;
-      text-align: center;
-      background: #eee;
-      font-size: 14px;
-    }
-    .el-scrollbar {
-      height: calc(100% - 80px);
-    }
-    .el-scrollbar__wrap {
-      overflow: auto;
-    }
   }
-  .el-tree,
-  .elMain {
-    background: #fff;
-  }
-  .elMain {
-    border: 1px solid #ebeef5;
-    overflow: hidden;
+  .treeTitle {
+    padding: 8px 0;
+    width: 100%;
+    text-align: center;
+    background: #eee;
+    font-size: 14px;
   }
 }
 </style>

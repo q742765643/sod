@@ -562,7 +562,7 @@ export default {
     margin-right: 10px;
     box-sizing: border-box;
     padding: 0px;
-    height: calc(100vh - 130px);
+    height: calc(100vh - 170px);
     overflow: hidden;
     margin-bottom: 0;
     .treeTitle {
@@ -577,7 +577,7 @@ export default {
       }
     }
     .el-scrollbar {
-      height: calc(100vh - 240px);
+      height: calc(100vh - 280px);
       .el-scrollbar__wrap {
         overflow-x: hidden;
       }

@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
+    <el-row :gutter="40">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
+      <el-col :span="4" :xs="24" class="elTreeAsideBox">
         <div class="head-container">
           <el-input
             v-model="deptName"
@@ -13,7 +13,7 @@
             style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container">
+        <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
           <el-tree
             :data="deptOptions"
             :props="defaultProps"
@@ -23,11 +23,17 @@
             default-expand-all
             @node-click="handleNodeClick"
           />
-        </div>
+        </el-scrollbar>
       </el-col>
       <!--用户数据-->
       <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+        <el-form
+          :model="queryParams"
+          ref="queryForm"
+          :inline="true"
+          label-width="68px"
+          class="searchBox"
+        >
           <el-form-item label="用户名称" prop="userName">
             <el-input
               v-model="queryParams.userName"
@@ -82,7 +88,7 @@
           </el-form-item>
         </el-form>
 
-        <el-row :gutter="10" class="mb8">
+        <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
             <el-button
               type="primary"
@@ -621,3 +627,4 @@ export default {
   }
 };
 </script>
+

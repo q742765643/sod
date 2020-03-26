@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 数据同步 -->
-    <el-form :model="queryParams" ref="queryParams" :inline="true">
+    <el-form :model="queryParams" ref="queryParams" :inline="true" class="searchBox">
       <el-form-item label="关键字查询">
         <el-select size="small" v-model="queryParams.selectInfo">
           <el-option
@@ -34,7 +34,7 @@
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button type="primary" icon="el-icon-plus" size="small" @click="addSync">添加</el-button>
       </el-col>

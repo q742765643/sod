@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 存储字段检索 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="表名称:">
         <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
       </el-form-item>
@@ -12,7 +12,7 @@
         <el-input size="small" v-model="queryParams.c_element_code" placeholder="请输入字段名称" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button type="primary" @click="handleQuery" icon="el-icon-search" size="small">查询</el-button>
         <el-button type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
         </el-button>
@@ -166,3 +166,8 @@ export default {
   }
 };
 </script>
+<style lang="css" scoped>
+.searchBox {
+  margin-bottom: 20px;
+}
+</style>

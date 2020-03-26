@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
@@ -130,4 +130,8 @@ export default {
   }
 };
 </script>
-
+<style lang="css" scoped>
+.searchBox {
+  margin-bottom: 24px;
+}
+</style>

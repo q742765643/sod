@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 存储结构概览 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途:">
         <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入数据用途" />
       </el-form-item>
@@ -332,3 +332,8 @@ export default {
   }
 };
 </script>
+<style lang="css" scoped>
+.searchBox {
+  margin-bottom: 20px;
+}
+</style>

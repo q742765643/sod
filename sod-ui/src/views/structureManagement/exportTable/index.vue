@@ -1,7 +1,7 @@
 <template>
   <div class="app-container export-container">
     <!-- 表结构导出 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据库用途：">
         <el-select v-model="queryParams.logic_id" size="small" @change="handleQuery">
           <el-option
@@ -266,6 +266,9 @@ export default {
 </script>
 <style lang="scss">
 .export-container {
+  .searchBox {
+    margin-bottom: 24px;
+  }
   .transfer-left,
   .transfer-right {
     width: 45% !important;
