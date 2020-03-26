@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_DIC_WLG
+const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询列表
 export function page(query) {
