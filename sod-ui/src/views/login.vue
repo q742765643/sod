@@ -5,7 +5,7 @@
         <span style="opacity:0;">1</span>
       </el-col>
       <el-col :span="11">
-        <img src="../assets/image/title.png" class="title" />
+        <img src="@/assets/image/title.png" class="title" />
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
           <el-form-item prop="username">
             <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
