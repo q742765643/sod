@@ -96,6 +96,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    public List<DataClassDto> findByDDataId(String dDataId) {
+        List<DataClassEntity> dataClassEntities = this.dataClassDao.findByDDataId(dDataId);
+        return this.dataClassMapper.toDto(dataClassEntities);
+    }
+
+    @Override
     public JSONArray getDatabaseClass() {
         List<DatabaseEntity> databaseList = this.databaseDao.findAll();
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();

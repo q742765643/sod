@@ -13,5 +13,7 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
 
     DataClassEntity findByDataClassId(String dataClassId);
 
+    List<DataClassEntity> findByDDataId(String dDataId);
+
     List<DataClassEntity> findByParentIdOrderByDataClassIdDesc(String parentId);
 }

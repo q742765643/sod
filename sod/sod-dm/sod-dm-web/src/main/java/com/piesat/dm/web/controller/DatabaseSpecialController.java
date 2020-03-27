@@ -2,6 +2,8 @@ package com.piesat.dm.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.netflix.discovery.converters.Auto;
+import com.piesat.dm.common.tree.Tree;
+import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.entity.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.rpc.api.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.DatabaseSpecialReadWriteService;
@@ -20,7 +22,7 @@ import java.util.List;
 
 /**
  * 专题库管理
- * @Description 
+ * @Description
  * @ClassName DatabaseSpecialController
  * @author wulei
  * @date 2020/2/12 15:56
@@ -155,4 +157,18 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据专题库ID获取对应树信息")
+    @RequiresPermissions("dm:databaseSpecial:getTreeBySdbId")
+    @GetMapping(value = "/getTreeBySdbId")
+    public ResultT getTreeBySdbId(String sdbId) {
+        try {
+            List<Ztree> treeList = this.databaseSpecialService.getTreeBySdbId(sdbId);
+            return ResultT.success(treeList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }
