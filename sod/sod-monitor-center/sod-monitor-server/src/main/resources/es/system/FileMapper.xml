@@ -55,6 +55,8 @@
         <if test="timestamp != null ">
             AND "@timestamp" = #{timestamp}
         </if>
+        ORDER BY "@timestamp" desc limit 1000
+
     </select>
     <select id="maxTime" resultType="java.util.Date">
         select

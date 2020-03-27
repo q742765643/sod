@@ -5,15 +5,14 @@ import java.util.Date
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.annotations.ApiModelProperty
 import lombok.Data
-import org.springframework.context.annotation.Bean
 
 import scala.beans.BeanProperty
 
 /**
-  * Created by zzj on 2020/3/24.
+  * Created by zzj on 2020/3/25.
   */
 @Data
-class MemoryEntity {
+class NetWorkEntity {
   @ApiModelProperty("采集时间")
   @BeanProperty
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
@@ -24,19 +23,32 @@ class MemoryEntity {
   @ApiModelProperty("类型")
   @BeanProperty
   var dataset:String=_
-  @ApiModelProperty("实际使用的内存（以字节为单位）")
+  @ApiModelProperty("网卡入口包大小 单位字节")
   @BeanProperty
-  var usedBytes:Long=_
-  @ApiModelProperty("实际可用内存（以字节为单位）")
+  var inBytes:Long=_
+  @ApiModelProperty("网卡出口包大小 单位字节")
   @BeanProperty
-  var free:Long=_
-  @ApiModelProperty("实际使用的内存百分比")
+  var outBytes:Long=_
+  @ApiModelProperty("网卡入口包数量")
   @BeanProperty
-  var usedPct:Float=_
+  var inPackets:Long=_
+  @ApiModelProperty("网卡出口网卡包数量")
+  @BeanProperty
+  var outPackets:Long=_
+  @BeanProperty
+  var sumInBytes:Long=_
+  @BeanProperty
+  var sumOutBytes:Long=_
+  @BeanProperty
+  var inSpeed:Float=_
+  @BeanProperty
+  var outSpeed:Float=_
+  @BeanProperty
+  var transferredIn:Long=_
+  @BeanProperty
+  var transferredOut:Long=_
   @BeanProperty
   var startTime:String=_
   @BeanProperty
   var endTime:String=_
-
-
 }

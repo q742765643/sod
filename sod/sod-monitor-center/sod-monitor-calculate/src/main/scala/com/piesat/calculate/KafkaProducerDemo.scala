@@ -1,7 +1,7 @@
 package com.piesat.calculate
 
 import java.text.SimpleDateFormat
-import java.util.Properties
+import java.util.{Date, Properties}
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.serializer.SerializeConfig
@@ -41,13 +41,13 @@ object KafkaProducerDemo {
       var kafkaMessege:KafkaMessege=new KafkaMessege()
       var logMessege:LogMessege=new LogMessege();
       logMessege.ddataId="A.00001"
-      logMessege.ddatatime=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()-2000)
+      logMessege.ddatatime=new Date(System.currentTimeMillis()-2000)
       logMessege.station="自动站"
       val conf = new SerializeConfig()
 
       var messege=JSON.toJSONString(logMessege,conf)
       print(messege)
-      kafkaMessege.message="2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  {'ddataId':'A.00001','ddatatime':'"+logMessege.ddatatime+"','station':'自动站2'}"
+      kafkaMessege.message="2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  {'ddataId':'A.00001','ddatatime':'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()-2000)+"','station':'自动站2'}"
       // 得到返回值
       val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", JSON.toJSONString(kafkaMessege,conf))).get()
       println(rmd.toString)
@@ -56,13 +56,13 @@ object KafkaProducerDemo {
       var kafkaMessege:KafkaMessege=new KafkaMessege()
       var logMessege:LogMessege=new LogMessege();
       logMessege.ddataId="A.00002"
-      logMessege.ddatatime=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()-2000)
+      logMessege.ddatatime=new Date(System.currentTimeMillis()-2000)
       logMessege.station="自动站"
       val conf = new SerializeConfig()
 
       var messege=JSON.toJSONString(logMessege,conf)
       print(messege)
-      kafkaMessege.message="2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  {'ddataId':'A.00001','ddatatime':'"+logMessege.ddatatime+"','station':'自动站'}"
+      kafkaMessege.message="2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  {'ddataId':'A.00001','ddatatime':'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()-2000)+"','station':'自动站'}"
       // 得到返回值
       val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", JSON.toJSONString(kafkaMessege,conf))).get()
       println(rmd.toString)

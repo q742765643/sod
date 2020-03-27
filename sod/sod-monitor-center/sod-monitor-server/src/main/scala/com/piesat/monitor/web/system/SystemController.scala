@@ -6,8 +6,8 @@ import io.swagger.annotations.{Api, ApiOperation}
 import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RestController}
 import java.util.{List => JavaList}
 
-import com.piesat.monitor.entity.system.{CpuEntity, FileEntity, MemoryEntity, ProcessEntity}
-import com.piesat.monitor.rpc.service.system.{CpuService, FileService, MemoryService, ProcessService}
+import com.piesat.monitor.entity.system._
+import com.piesat.monitor.rpc.service.system._
 import org.springframework.beans.factory.annotation.Autowired
 
 /**
@@ -19,7 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired
 class SystemController @Autowired()(cpuService: CpuService,
                                     memoryService: MemoryService,
                                     fileService:FileService,
-                                    processService:ProcessService) {
+                                    processService:ProcessService,
+                                    netWorkService: NetWorkService) {
   @GetMapping(Array("/cpuUsage"))
   @ApiOperation(value = "查询时间范围内cpu使用率", notes = "查询时间范围内cpu使用率")
   def cpuList(cpuEntity:CpuEntity):ResultT[JavaList[CpuEntity]]= {
@@ -49,6 +50,14 @@ class SystemController @Autowired()(cpuService: CpuService,
   def processList(processEntity: ProcessEntity):ResultT[JavaList[ProcessEntity]]= {
     var list = processService.list(processEntity);
     var resultT = new ResultT[JavaList[ProcessEntity]]()
+    resultT.setData(list);
+    return resultT
+  }
+  @GetMapping(Array("/netWorkUsage"))
+  @ApiOperation(value = "查询流量信息", notes = "查询流量信息")
+  def netWorkList(netWorkEntity: NetWorkEntity):ResultT[JavaList[NetWorkEntity]]= {
+    var list = netWorkService.list(netWorkEntity);
+    var resultT = new ResultT[JavaList[NetWorkEntity]]()
     resultT.setData(list);
     return resultT
   }

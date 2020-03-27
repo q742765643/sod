@@ -2,13 +2,12 @@ package com.piesat.monitor.entity.ssh
 
 import java.util.Date
 
-import com.fasterxml.jackson.annotation.JsonFormat
+import com.alibaba.fastjson.annotation.JSONField
+import com.fasterxml.jackson.annotation.{JsonFormat, JsonProperty}
 import lombok.Data
+import org.elasticsearch.search.DocValueFormat.DateTime
 import org.springframework.data.annotation.Id
-import org.springframework.data.elasticsearch.annotations.DateFormat
-import org.springframework.data.elasticsearch.annotations.Document
-import org.springframework.data.elasticsearch.annotations.Field
-import org.springframework.data.elasticsearch.annotations.FieldType
+import org.springframework.data.elasticsearch.annotations._
 
 import scala.beans.BeanProperty
 
@@ -17,18 +16,19 @@ import scala.beans.BeanProperty
   * Created by zzj on 2020/3/23.
   */
 @Data
-@Document(indexName = "ssh",`type` = "ssh")
+//@Document(indexName = "ssh-#{ T(com.piesat.monitor.util.IndexUtil).getDateStr()}",`type` = "ssh")
+@Document(indexName = "sshq-#{ T(com.piesat.monitor.util.IndexUtil).getDateStr()}",`type` = "ssh")
 class SshEntity {
 
   @Id
   @BeanProperty
   var id:String=_
-
   @BeanProperty
   var ip:String=_
 
   @BeanProperty
   var port:Integer=_
+  @JsonProperty("uuuus")
   @BeanProperty
   var userName:String=_
 
@@ -42,4 +42,5 @@ class SshEntity {
 
   @BeanProperty
   var hostName:String=_
+
 }
