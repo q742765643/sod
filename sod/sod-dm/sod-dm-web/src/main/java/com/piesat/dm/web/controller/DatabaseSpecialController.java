@@ -83,7 +83,7 @@ public class DatabaseSpecialController {
     @DeleteMapping(value = "/delete")
     public ResultT delete(String id) {
         try {
-            this.databaseSpecialService.delete(id);
+            this.databaseSpecialService.deleteById(id);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,6 +97,19 @@ public class DatabaseSpecialController {
     public ResultT update(@RequestBody DatabaseSpecialDto databaseSpecialDto) {
         try {
             DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据专题库id修改专题库使用状态")
+    @RequiresPermissions("dm:databaseSpecial:updateUseStatusById")
+    @PostMapping(value = "/updateUseStatusById")
+    public ResultT updateUseStatusById(String sdbId,String useStatus) {
+        try {
+            DatabaseSpecialDto save = this.databaseSpecialService.updateUseStatusById(sdbId, useStatus);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -171,4 +184,16 @@ public class DatabaseSpecialController {
         }
     }
 
+    @ApiOperation(value = "根据审核状态查询")
+    @RequiresPermissions("dm:databaseSpecial:getByExamineStatus")
+    @GetMapping(value = "/getByExamineStatus")
+    public ResultT getByExamineStatus(String examineStatus) {
+        try {
+            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.getByExamineStatus(examineStatus);
+            return ResultT.success(databaseSpecialDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

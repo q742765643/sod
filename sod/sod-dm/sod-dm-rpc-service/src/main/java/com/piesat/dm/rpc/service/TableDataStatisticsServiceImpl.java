@@ -9,7 +9,9 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.dao.TableDataStatisticsDao;
 import com.piesat.dm.entity.TableDataStatisticsEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.DataOnlineTimeService;
 import com.piesat.dm.rpc.api.TableDataStatisticsService;
+import com.piesat.dm.rpc.dto.DataOnlineTimeDto;
 import com.piesat.dm.rpc.dto.TableDataStatisticsDto;
 import com.piesat.dm.rpc.mapper.TableDataStatisticsMapper;
 import com.piesat.util.page.PageBean;
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +41,9 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
 
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+
+    @Autowired
+    private DataOnlineTimeService dataOnlineTimeService;
 
     @Override
     public BaseDao<TableDataStatisticsEntity> getBaseDao() {
@@ -73,6 +80,30 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
         List<TableDataStatisticsEntity> pageData = (List<TableDataStatisticsEntity>)page.getPageData();
         page.setPageData(this.tableDataStatisticsMapper.toDto(pageData));
         return page;
+    }
+
+    @Override
+    public Map<String, Object> getOnlineTime(String classDataId, String statisticDate) {
+
+        Map<String,Object> map = new HashMap<String,Object>();
+
+        List<Map<String,Object>> onlineList = mybatisQueryMapper.getOnlineTime(classDataId,statisticDate);
+        DataOnlineTimeDto dataOnlineTimeDto = dataOnlineTimeService.findByDataClassId(classDataId);
+
+        if (dataOnlineTimeDto!=null && !"0".equals(dataOnlineTimeDto.getUsing())){
+            if ("today".equals(dataOnlineTimeDto.getEndTimeFlag())) {
+                onlineList.get(0).put("END_TIME",new Date());
+            }else if (dataOnlineTimeDto.getEndTime()!=null){
+                onlineList.get(0).put("END_TIME", dataOnlineTimeDto.getEndTime());
+            }
+            if (dataOnlineTimeDto.getBeginTime()!=null){
+                onlineList.get(0).put("BEGIN_TIME",dataOnlineTimeDto.getBeginTime());
+            }
+        }
+        if(null != onlineList && onlineList.size()>0) {
+            map.put("online", onlineList.get(0));
+        }
+        return map;
     }
 
 }

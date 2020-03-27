@@ -25,4 +25,6 @@ public interface DataOnlineTimeService {
 
     void update(DataOnlineTimeDto dataOnlineTimeDto);
 
+    DataOnlineTimeDto findByDataClassId(String dataClassId);
+
 }

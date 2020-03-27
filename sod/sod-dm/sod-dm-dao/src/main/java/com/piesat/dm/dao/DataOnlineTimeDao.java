@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DataOnlineTimeDao extends BaseDao<DataOnlineTimeEntity> {
     void deleteByDataClassId(String dataClassId);
+
+    DataOnlineTimeEntity findByDataClassId(String dataClassId);
 }

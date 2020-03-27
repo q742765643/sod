@@ -157,6 +157,24 @@
         </where>
     </select>
 
+    <select id="getOnlineTime" resultType="java.util.Map">
+        select
+            min(BEGIN_TIME) as "BEGIN_TIME",max(END_TIME) as "END_TIME"
+        from
+            T_SOD_TABLEDATA_STATISTICS a
+                left join T_SOD_DATA_TABLE  b on a.TABLE_ID = b.id
+                left join T_SOD_DATA_LOGIC c on b.class_logic_id = c.ID
+                left join T_SOD_DATABASE d on a.database_id = d.id
+                left join T_SOD_DATABASE_DEFINE dd on d.database_define_id = dd.id
+        where
+            c.DATA_CLASS_ID = #{classDataId} and a.statistic_date >= #{statisticDate} and
+            dd.id in ('STDB','HADB','FIDB');
+    </select>
+
+    <select id="getTableInfoByClassId" resultType="java.util.Map">
+        select a.*,b.logic_name from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = c.id
+                                         left join T_SOD_LOGIC_DEFINE c on b.logic_flag = c.logic_flag
+    </select>
 
 
     <select id="getLogicClassTree" resultType="java.util.Map">

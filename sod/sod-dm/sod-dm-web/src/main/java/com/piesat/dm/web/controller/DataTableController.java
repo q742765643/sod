@@ -194,4 +194,31 @@ public class DataTableController {
         List<DictDataDto> dictByType = this.grpcService.getDictByType(dictType);
         return ResultT.success(dictByType);
     }
+
+    @ApiOperation(value = "根据资料编码查询")
+    @RequiresPermissions("dm:dataTable:getByClassId")
+    @GetMapping(value = "/getByClassId")
+    public ResultT getByClassId(String dataClassId){
+        try {
+            List<Map<String, Object>> r = this.dataTableService.getByClassId(dataClassId);
+            return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据资料存储编码查询对应逻辑库中各个表的相关存储结构详细信息")
+    @RequiresPermissions("dm:dataTable:getMultiDataInfoByClassId")
+    @GetMapping(value = "/getMultiDataInfoByClassId")
+    public ResultT getMultiDataInfoByClassId(String dataClassId){
+        try {
+            List<Map<String, Object>> r = this.dataTableService.getMultiDataInfoByClassId(dataClassId);
+            return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

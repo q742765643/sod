@@ -27,7 +27,12 @@ public interface DataTableService {
     List<DataTableDto> all();
 
     List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+
     List<Map<String, Object>> getByDatabaseId(String databaseId);
+
+    List<Map<String, Object>> getByClassId(String dataClassId);
+
+    List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId);
 
     List<DataTableDto> getByClassLogicId(String classLogic);
 

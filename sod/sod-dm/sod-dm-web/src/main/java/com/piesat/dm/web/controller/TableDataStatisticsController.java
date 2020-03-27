@@ -101,5 +101,17 @@ public class TableDataStatisticsController {
         return resultT;
     }
 
+    @ApiOperation(value = "获取在线时间(根据存储编码和统计日期查询)")
+    @RequiresPermissions("dm:datastatistics:getOnlineTime")
+    @GetMapping(value = "/getOnlineTime")
+    public ResultT getOnlineTime(String classDataId,String statisticDate) {
+        try {
+            this.tableDataStatisticsService.getOnlineTime(classDataId, statisticDate);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
 }

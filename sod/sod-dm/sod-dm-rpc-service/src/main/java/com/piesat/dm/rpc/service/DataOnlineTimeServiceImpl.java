@@ -99,4 +99,10 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         this.deleteByDataClassId(dataOnlineTimeDto.getDataClassId());
         this.saveDto(dataOnlineTimeDto);
     }
+
+    @Override
+    public DataOnlineTimeDto findByDataClassId(String dataClassId) {
+        DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeDao.findByDataClassId(dataClassId);
+        return this.dataOnlineTimeMapper.toDto(dataOnlineTimeEntity);
+    }
 }

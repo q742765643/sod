@@ -63,6 +63,13 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    public void deleteById(String id) {
+        this.delete(id);
+        this.databaseSpecialReadWriteDao.deleteBySdbId(id);
+        this.databaseSpecialAuthorityDao.deleteBySdbId(id);
+    }
+
+    @Override
     public DatabaseSpecialDto getDotById(String id) {
         DatabaseSpecialEntity databaseSpecialEntity = this.getById(id);
         return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
@@ -243,6 +250,21 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         //List<DminSpecialDbTree> dataList = dminSpecialDbTreeDao.getRecordByTdbId(tdbId);
 
         return null;
+    }
+
+    @Override
+    public List<DatabaseSpecialDto> getByExamineStatus(String examineStatus) {
+        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByExamineStatusAndOrderBySortNoAscCreateTimeDesc(examineStatus);
+        return this.databaseSpecialMapper.toDto(databaseSpecialEntities);
+    }
+
+    @Override
+    public DatabaseSpecialDto updateUseStatusById(String sdbId, String useStatus) {
+        DatabaseSpecialDto databaseSpecialDto = this.getDotById(sdbId);
+        databaseSpecialDto.setUseStatus(useStatus);
+        DatabaseSpecialEntity databaseSpecialEntity = databaseSpecialMapper.toEntity(databaseSpecialDto);
+        databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
+        return databaseSpecialMapper.toDto(databaseSpecialEntity);
     }
 
     /**

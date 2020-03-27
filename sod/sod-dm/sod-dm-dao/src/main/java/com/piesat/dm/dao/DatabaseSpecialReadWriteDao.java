@@ -20,4 +20,6 @@ public interface DatabaseSpecialReadWriteDao extends BaseDao<DatabaseSpecialRead
      * @return
      */
     List<DatabaseSpecialReadWriteEntity> findBySdbIdAndDataType(String sdbId, String dataType);
+
+    void deleteBySdbId(String sdbId);
 }

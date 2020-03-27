@@ -54,4 +54,8 @@ public interface MybatisQueryMapper {
     void updateDataAuthorityApply(@Param("id")String id,@Param("auditStatus")String auditStatus);
 
     int getDataServiceMaxNum(@Param("data_service_id")String data_service_id);
+
+    List<Map<String, Object>> getOnlineTime(@Param("classDataId")String classDataId,@Param("statisticDate")String statisticDate);
+
+    List<Map<String, Object>> getTableInfoByClassId(@Param("dataClassId") String dataClassId);
 }

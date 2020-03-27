@@ -1,6 +1,7 @@
 package com.piesat.dm.rpc.service;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.core.api.DatabaseDcl;
@@ -12,6 +13,7 @@ import com.piesat.dm.rpc.api.DataTableService;
 import com.piesat.dm.rpc.dto.DataTableDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.dm.rpc.dto.SampleData;
+import com.piesat.dm.rpc.dto.TableIndexDto;
 import com.piesat.dm.rpc.mapper.DataTableMapper;
 import com.piesat.dm.rpc.mapper.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.TableForeignKeyMapper;
@@ -97,6 +99,47 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         String sql = "select A.* ,B.data_class_id,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> getByClassId(String dataClassId) {
+        return mybatisQueryMapper.getTableInfoByClassId(dataClassId);
+    }
+
+    @Override
+    public List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId) {
+        //根据存储编码查询表信息
+        List<Map<String, Object>> tableInfoLists = mybatisQueryMapper.getTableInfoByClassId(dataClassId);
+        if(tableInfoLists != null && tableInfoLists.size()>0){
+            for(int i = 0;i<tableInfoLists.size();i++){
+                Map<String, Object> tableInfo = tableInfoLists.get(i);
+
+                //根据表ID查询表实体
+                DataTableDto dataTableDto = this.getDotById(String.valueOf(tableInfo.get("ID")));
+
+                //索引涉及到的字段
+                List<String> indexField=new ArrayList<String>();
+                JSONObject indexFieldJson = new JSONObject();
+                LinkedHashSet<TableIndexDto> tableIndexList = dataTableDto.getTableIndexList();
+                if(tableIndexList != null && tableIndexList.size()>0){
+                    for(TableIndexDto tableIndexDto : tableIndexList){
+                        String indexColumn = tableIndexDto.getIndexColumn();
+                        for(String column : indexColumn.split(",")){
+                            if(!indexField.contains(column)){
+                                indexField.add(column);
+                                indexFieldJson.put(String.format("index_field%d", indexField.size()),column);
+                            }
+                        }
+                    }
+                }
+
+                tableInfo.put("table_structure",dataTableDto.getColumns());//表字段信息
+                tableInfo.put("table_index1",tableIndexList);//索引信息
+                tableInfo.put("table_index2",indexFieldJson);
+                tableInfo.put("table_index3", indexField);
+            }
+        }
+        return tableInfoLists;
     }
 
     @Override

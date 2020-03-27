@@ -28,4 +28,6 @@ public interface TableDataStatisticsService {
 
     PageBean list(PageForm pageForm,String tableId);
 
+    Map<String,Object> getOnlineTime(String classDataId, String statisticDate);
+
 }

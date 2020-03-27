@@ -28,7 +28,7 @@ public interface DatabaseSpecialService {
      * 根据ID删除
      * @param id
      */
-    void delete(String id);
+    void deleteById(String id);
 
     /**
      * 根据id查询
@@ -63,4 +63,8 @@ public interface DatabaseSpecialService {
     void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList);
 
     List<Ztree> getTreeBySdbId(String sdbId);
+
+    List<DatabaseSpecialDto> getByExamineStatus(String examineStatus);
+
+    DatabaseSpecialDto updateUseStatusById(String sdbId,String useStatus);
 }
