@@ -24,19 +24,19 @@
             <version>${parent.version}</version>
             <scope>compile</scope>
         </dependency>
-     <!--   <dependency>
+        <dependency>
             <groupId>com.htht</groupId>
             <artifactId>sod-dm-web</artifactId>
             <version>${parent.version}</version>
             <scope>compile</scope>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.htht</groupId>
             <artifactId>sod-system-web</artifactId>
             <version>${parent.version}</version>
             <scope>compile</scope>
         </dependency>
-        
+
     </dependencies>
     <build>
         <!--解决idea打包没有xml-->

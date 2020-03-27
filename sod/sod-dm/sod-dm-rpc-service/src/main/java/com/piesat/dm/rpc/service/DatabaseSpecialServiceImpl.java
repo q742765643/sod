@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.entity.UUIDEntity;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.common.tree.Tree;
+import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
@@ -223,6 +225,26 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         }
     }
 
+    @Override
+    public List<Ztree> getTreeBySdbId(String sdbId) {
+
+        List<Ztree> data = new ArrayList<Ztree>();
+
+        // 添加默认分类
+        Ztree mainTree = new Ztree("-1", "-2", "资料分类树", true, 0);
+        mainTree.setOpen(true);
+        Ztree autoTree = new Ztree("9999", "-1", "未归类资料", false);
+        Ztree readyTree = new Ztree("0", "-1", "已归类资料", true);
+        data.add(mainTree);
+        data.add(autoTree);
+        data.add(readyTree);
+
+        // 根据专题库ID获取对应树信息。
+        //List<DminSpecialDbTree> dataList = dminSpecialDbTreeDao.getRecordByTdbId(tdbId);
+
+        return null;
+    }
+
     /**
      * 授权
      */
@@ -348,4 +370,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             databaseVO.closeConnect();
         }
     }
+
+
 }

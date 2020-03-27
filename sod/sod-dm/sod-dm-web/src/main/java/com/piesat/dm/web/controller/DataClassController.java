@@ -72,6 +72,19 @@ public class DataClassController {
         }
     }
 
+    @ApiOperation(value = "根据dDataId查询")
+    @RequiresPermissions("dm:dataClass:findByDDataId")
+    @GetMapping(value = "/findByDDataId")
+    public ResultT findByDDataId(String dDataId) {
+        try {
+            List<DataClassDto> dataClassDtos = this.dataClassService.findByDDataId(dDataId);
+            return ResultT.success(dataClassDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:dataClass:del")
     @Log(title = "资料分类管理", businessType = BusinessType.DELETE)

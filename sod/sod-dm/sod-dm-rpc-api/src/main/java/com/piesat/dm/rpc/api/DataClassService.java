@@ -33,6 +33,8 @@ public interface DataClassService {
 
     DataClassDto findByDataClassId(String dataClassId);
 
+    List<DataClassDto> findByDDataId(String dDataId);
+
     JSONArray getDatabaseClass();
 
     JSONArray getDatabaseClassMysql();

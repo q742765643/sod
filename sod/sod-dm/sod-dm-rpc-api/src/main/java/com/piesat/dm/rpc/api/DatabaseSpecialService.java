@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.api;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.common.tree.Tree;
+import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.rpc.dto.DatabaseDto;
 import com.piesat.dm.rpc.dto.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.DatabaseSpecialReadWriteDto;
@@ -59,4 +61,6 @@ public interface DatabaseSpecialService {
      * @param databaseSpecialReadWriteDtoList
      */
     void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList);
+
+    List<Ztree> getTreeBySdbId(String sdbId);
 }

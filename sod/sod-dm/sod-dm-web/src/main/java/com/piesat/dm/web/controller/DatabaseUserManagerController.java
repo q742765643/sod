@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * 数据库访问账户管理
- * @Description 
+ * @Description
  * @ClassName DatabaseUserManagerController
  * @author wulei
  * @date 2020/2/10 10:17
@@ -188,7 +188,7 @@ public class DatabaseUserManagerController {
         }
     }
 
-    @ApiOperation(value = "判断申请账户是否已存在")
+    @ApiOperation(value = "判断申请账户是否已存在(待审核或已审核通过)")
     @RequiresPermissions("dm:databaseUser:ifUserExist")
     @GetMapping(value = "/ifUserExist")
     public ResultT ifUserExist(String userId) {
@@ -198,6 +198,22 @@ public class DatabaseUserManagerController {
                 return ResultT.success("YES");
             }
             return ResultT.success("NO");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据用户id和审核状态查询")
+    @RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
+    @GetMapping(value = "/findByUserIdAndExamineStatus")
+    public ResultT findByUserIdAndExamineStatus(String userId,String examineStatus) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,examineStatus);
+            if(databaseUserDto!=null){
+                return ResultT.success(databaseUserDto);
+            }
+            return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

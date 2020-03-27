@@ -83,7 +83,7 @@
   </div>
 </template>
 <script>
-var baseUrl = process.env.VUE_APP_DB_API;
+var baseUrl = process.env.VUE_APP_SYSTEM;
 import { Encrypt } from "@/utils/htencrypt";
 
 import handleTree from "@/views/dbDictMangement/manageField/handleTree";

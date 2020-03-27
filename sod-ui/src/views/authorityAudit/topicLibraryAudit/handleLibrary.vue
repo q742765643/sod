@@ -288,7 +288,7 @@ import {
   update
 } from "@/api/authorityAudit/topicLibraryAudit";
 import { download } from "@/api/authorityAudit/DBaccount";
-var baseUrl = process.env.VUE_APP_WLEI;
+var baseUrl = process.env.VUE_APP_DM;
 export default {
   name: "handleLiberyDialog",
   props: {

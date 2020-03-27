@@ -81,6 +81,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
     @Override
+    public DatabaseUserDto findByUserIdAndExamineStatus(String userId,String examineStatus) {
+        DatabaseUserEntity databaseUserEntity = databaseUserDao.findByUserIdAndExamineStatus(userId,examineStatus);
+        return this.databaseUserMapper.toDto(databaseUserEntity);
+    }
+
+    @Override
     public DatabaseUserDto saveDto(DatabaseUserDto databaseUserDto) {
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
         this.save(databaseUserEntity);

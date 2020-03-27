@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_WLEI;
+const baseUrl = process.env.VUE_APP_DM;
 // 新增表格
 export function addTable(data) {
   return request({

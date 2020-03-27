@@ -52,6 +52,14 @@ public interface DatabaseUserService {
     DatabaseUserDto getDotByUserId(String userId);
 
     /**
+     * 根据userId和审核状态查询
+     * @param userId
+     * @param examineStatus
+     * @return
+     */
+    DatabaseUserDto findByUserIdAndExamineStatus(String userId,String examineStatus);
+
+    /**
      * 新增
      * @param atabaseUserDto
      * @return
