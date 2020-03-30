@@ -11,12 +11,14 @@
         <result column="beat.hostname" property="hostname" />
         <result column="event.dataset"  property="dataset" />
         <result column="system.cpu.cores"  property="cpuCores" />
+        <result column="system.cpu.user.pct"  property="cpuUserPct" />
         <result column="system.cpu.idle.pct"  property="cpuIdlePct" />
         <result column="system.cpu.iowait.pct"  property="cpuIowaitPct" />
         <result column="system.cpu.irq.pct"  property="cpuIrqPct" />
         <result column="system.cpu.softirq.pct"  property="cpuSoftirqPct" />
         <result column="system.cpu.nice.pct"  property="cpuNicePct" />
         <result column="system.cpu.system.pct"  property="cpuSystemPct" />
+        <result column="system.cpu.total.pct"  property="totalPct" />
 
 
     </resultMap>
@@ -25,12 +27,14 @@
          "beat.hostname",
          "event.dataset",
          "system.cpu.cores",
+         "system.cpu.user.pct",
          "system.cpu.idle.pct",
          "system.cpu.iowait.pct",
          "system.cpu.irq.pct",
          "system.cpu.softirq.pct",
          "system.cpu.nice.pct",
-         "system.cpu.system.pct"
+         "system.cpu.system.pct",
+         "system.cpu.total.pct"
     </sql>
 
     <select id="list" resultMap="BaseResultMap">
@@ -51,6 +55,7 @@
         <if test="dataset != null and dataset != ''">
             AND  "event.dataset" = #{dataset}
         </if>
+         ORDER BY "@timestamp" desc limit 1000
     </select>
 
 </mapper>

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Properties
 
 import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.serializer.SerializeConfig
 import com.piesat.calculate.entity.{KafkaMessege, LogMessege, StationCount}
 import com.piesat.calculate.function.{CountFunction, WindowResult}
 import com.piesat.calculate.trigger.CountTrigger
@@ -15,14 +16,18 @@ import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrderness
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
-import org.apache.flink.streaming.connectors.elasticsearch.{ElasticsearchSinkFunction, RequestIndexer}
+import org.apache.flink.streaming.connectors.elasticsearch.{ActionRequestFailureHandler, ElasticsearchSinkFunction, RequestIndexer}
 import org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
+import org.apache.flink.util.ExceptionUtils
 import org.apache.http.HttpHost
+import org.elasticsearch.ElasticsearchParseException
+import org.elasticsearch.action.ActionRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.update.UpdateRequest
 import org.elasticsearch.client.Requests
-import org.elasticsearch.common.xcontent.XContentFactory
+import org.elasticsearch.common.util.concurrent.EsRejectedExecutionException
+import org.elasticsearch.common.xcontent.{XContentFactory, XContentType}
 
 /**
   * Created by zzj on 2020/3/17.
@@ -80,19 +85,30 @@ object StreamingKafka {
       httpHosts,
       new ElasticsearchSinkFunction[LogMessege] { //参数element就是上面清洗好的数据格式
         def createIndexRequest(element: LogMessege): IndexRequest = {
-          val json = new java.util.HashMap[String, String]
-          json.put("data","1")
           return Requests.indexRequest()
-            .index("htht3")
-            .`type`("1")
-            .source(json)
+            .index("htht5")
+            .`type`("doc").id("1")
+            .source(JSON.toJSONString(element,new SerializeConfig()),XContentType.JSON)
         }
 
         override def process(element: LogMessege, runtimeContext: RuntimeContext, requestIndexer: RequestIndexer): Unit = {
+          //requestIndexer.add(createUpdateRequest(element))
           requestIndexer.add(createIndexRequest(element))
         }
       }
     )
+    esSinkBuilder.setFailureHandler(new ActionRequestFailureHandler() {
+      @throws[Throwable]
+      override def onFailure(actionRequest: ActionRequest, throwable: Throwable, i: Int, requestIndexer: RequestIndexer): Unit = {
+        if (ExceptionUtils.findThrowable(throwable, classOf[EsRejectedExecutionException]).isPresent) {
+
+        } else {
+          print(throwable)
+          throw throwable
+        }
+      }
+    })
+
     streamSinge.addSink(esSinkBuilder.build())
     val esSinkBuilderCount = new ElasticsearchSink.Builder[StationCount](
       httpHosts,
@@ -102,12 +118,9 @@ object StreamingKafka {
 
           var updateRequest: UpdateRequest = new UpdateRequest();
           updateRequest.index("htht");
-          updateRequest.`type`("location");
-          updateRequest.id("1");
-          updateRequest.doc(XContentFactory.jsonBuilder()
-            .startObject()
-            .field("data", "222")
-            .endObject())
+          updateRequest.`type`("doc");
+          updateRequest.id("1").docAsUpsert(true).scriptedUpsert(true);
+          updateRequest.doc(JSON.toJSONString(element,new SerializeConfig()),XContentType.JSON)
           updateRequest
           /*return Requests.indexRequest()
              .index("htht")
@@ -120,8 +133,7 @@ object StreamingKafka {
         }
 
         override def process(element: StationCount, runtimeContext: RuntimeContext, requestIndexer: RequestIndexer): Unit = {
-          requestIndexer.add(createUpdateRequest(element))
-
+             requestIndexer.add(createUpdateRequest(element))
         }
       }
     )
@@ -133,10 +145,9 @@ object StreamingKafka {
           false
         }
       })
-      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[LogMessege](Time.days(1)) {
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[LogMessege](Time.minutes(1)) {
         override def extractTimestamp(element: LogMessege): Long = {
-          var date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(element.ddatatime)
-          var a = date.getTime
+          var a = element.ddatatime.getTime
           return a
         }
       })
@@ -165,5 +176,6 @@ object StreamingKafka {
     env.execute("StreamingKafka")
 
   }
+
 
 }

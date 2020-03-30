@@ -82,8 +82,8 @@ class CountTrigger extends Trigger[LogMessege, TimeWindow] {
       ctx.getPartitionedState(eventTimerStateDescriptor).clear()
       TriggerResult.FIRE_AND_PURGE
     } else if ((time >= window.maxTimestamp()) && (ctx.getPartitionedState(countStateDescriptor).get() == 0L)) { //没有未触发计算的数据
-      println("事件时间到达最大的窗口时间，但是窗口中没有有未计算的数据，清除窗口 但是不触发计算")
-      TriggerResult.PURGE
+      println("事件时间到达最大的窗口时间，但是窗口中没有有未计算的数据，清除窗口 触发计算")
+      TriggerResult.FIRE_AND_PURGE
     } else {
       TriggerResult.CONTINUE
 

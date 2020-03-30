@@ -16,7 +16,9 @@ class SshService  @Autowired()(sshDao: SshDao)
     ssh.setId(
      IdUtils.simpleUUID
     )
-    sshDao.save(ssh)
+    ssh.setId("1111")
+     sshDao.save(ssh)
+
   }
 
 }
