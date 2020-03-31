@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.schedule.mapper.index.IndexCountTaskMapper">
+   
+   <!-- 统计资料数量 -->
+   <select id="countData" parameterType="java.lang.String" resultType="java.lang.Integer">
+   		select
+   			count(1)
+   		from 
+   			t_sod_data_class
+   		where 
+   			type = 2 and update_time &lt;= #{date}
+   </select>
+   
+   <!-- 删除过时统计数据 -->
+   <delete id="delOldClassCount" parameterType="java.util.Map">
+   		delete
+   		from 
+   			t_sod_data_class_count
+   		where 
+   			year = #{year} and month = #{month}
+   </delete>
+
+</mapper>
