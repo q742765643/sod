@@ -1,12 +1,10 @@
 package com.piesat.calculate
 
-import java.text.SimpleDateFormat
 import java.util.{Date, Properties}
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.serializer.SerializeConfig
-import com.piesat.calculate.entity.{KafkaMessege, LogMessege}
-import com.piesat.calculate.main.StreamingKafka.ZOOKEEPER_HOST
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.piesat.calculate.entity.KafkaMessege
+import com.piesat.calculate.entity.transfer.{StationLevelEntity, StationLevelFiledEntity}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord, RecordMetadata}
 
 /**
@@ -16,7 +14,7 @@ object KafkaProducerDemo {
   def main(args: Array[String]): Unit = {
     val prop = new Properties
     // 指定请求的kafka集群列表
-    prop.put("bootstrap.servers", "10.211.55.7:9092")// 指定响应方式
+    prop.put("bootstrap.servers", "10.211.55.7:9092") // 指定响应方式
     prop.setProperty("zookeeper.connect", "10.211.55.7:2181")
 
     //prop.put("acks", "0")
@@ -35,38 +33,43 @@ object KafkaProducerDemo {
 
     // 得到生产者的实例
     val producer = new KafkaProducer[String, String](prop)
-
+    var objectMapper = new ObjectMapper()
     // 模拟一些数据并发送给kafka
     for (i <- 1 to 10) {
-      var kafkaMessege:KafkaMessege=new KafkaMessege()
-      var logMessege:LogMessege=new LogMessege();
-      logMessege.ddataId="A.00001"
-      logMessege.ddatatime=new Date(System.currentTimeMillis()-2000)
-      logMessege.station="自动站"
-      val conf = new SerializeConfig()
-
-      var messege=JSON.toJSONString(logMessege,conf)
+      var kafkaMessege: KafkaMessege = new KafkaMessege()
+      var stationLevel: StationLevelEntity = new StationLevelEntity()
+      var stationLevelFiled: StationLevelFiledEntity = new StationLevelFiledEntity();
+      stationLevel.setName("文件级资料处理详细信息")
+      stationLevel.setMessage("文件级资料处理详细信息")
+      stationLevel.setStype("RT.CTS.STATION.DI")
+      stationLevelFiled.setDataType("A.0001.0002.S003")
+      stationLevelFiled.setDataType1("A.0001.0002.R003")
+      stationLevelFiled.setTt("tt")
+      stationLevelFiled.setDataUpdateFlag("000")
+      stationLevelFiled.setReceive("A.0001.0002.R003")
+      stationLevelFiled.setSend("A.0001.0002.S003")
+      stationLevelFiled.setTranTime(new Date())
+      stationLevelFiled.setDataTime(new Date(System.currentTimeMillis() - 2000))
+      stationLevelFiled.setSystem("CTS")
+      stationLevelFiled.setIiiii("11")
+      stationLevelFiled.setProcessLink("1")
+      stationLevelFiled.setProcessStartTime(new Date)
+      stationLevelFiled.setProcessEndTime(new Date)
+      stationLevelFiled.setFileNameO("aa.zip")
+      stationLevelFiled.setFileNameN("aa.zip")
+      stationLevelFiled.setProcessState("1")
+      stationLevelFiled.setBusinessState("1")
+      stationLevelFiled.setRecordTime(new Date())
+      stationLevel.setStationLevelFiledEntity(stationLevelFiled)
+      var messege = objectMapper.writeValueAsString(stationLevel)
       print(messege)
-      kafkaMessege.message="2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  {'ddataId':'A.00001','ddatatime':'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()-2000)+"','station':'自动站2'}"
+      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  " + messege
       // 得到返回值
-      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", JSON.toJSONString(kafkaMessege,conf))).get()
+      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", objectMapper.writeValueAsString(kafkaMessege))).get()
       println(rmd.toString)
+      Thread.sleep(1000)
     }
-    for (i <- 1 to 1) {
-      var kafkaMessege:KafkaMessege=new KafkaMessege()
-      var logMessege:LogMessege=new LogMessege();
-      logMessege.ddataId="A.00002"
-      logMessege.ddatatime=new Date(System.currentTimeMillis()-2000)
-      logMessege.station="自动站"
-      val conf = new SerializeConfig()
 
-      var messege=JSON.toJSONString(logMessege,conf)
-      print(messege)
-      kafkaMessege.message="2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  {'ddataId':'A.00001','ddatatime':'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()-2000)+"','station':'自动站'}"
-      // 得到返回值
-      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", JSON.toJSONString(kafkaMessege,conf))).get()
-      println(rmd.toString)
-    }
 
     producer.close()
   }

@@ -5,21 +5,21 @@ import scala.beans.BeanProperty
 /**
   * Created by zzj on 2020/3/17.
   */
-class KafkaMessege {
+class KafkaMessege extends Serializable {
   @BeanProperty
-  var timestamp:String=_
+  var timestamp: String = _
   @BeanProperty
-  var metadata:String=_
+  var metadata: String = _
   @BeanProperty
-  var agent:String=_
+  var agent: String = _
   @BeanProperty
-  var log:String=_
+  var log: String = _
   @BeanProperty
-  var message:String=_
+  var message: String = _
   @BeanProperty
-  var fields:String=_
+  var fields: String = _
   @BeanProperty
-  var ecs:String=_
+  var ecs: String = _
   @BeanProperty
-  var host:String=_
+  var host: String = _
 }
