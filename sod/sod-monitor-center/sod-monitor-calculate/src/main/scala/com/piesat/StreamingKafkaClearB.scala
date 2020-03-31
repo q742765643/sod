@@ -1,12 +1,11 @@
 package com.piesat
 
-import java.util.{Date, Properties}
+import java.util.Properties
 
 import com.alibaba.fastjson.JSON
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.environment.CheckpointConfig
-import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 
@@ -17,9 +16,10 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
   * Created by zzj on 2020/3/16.
   */
 object StreamingKafkaClearB {
-  var ZOOKEEPER_HOST="10.211.55.7:2181"
-  var KAFKA_BROKER="10.211.55.7:9092"
-  var KAFKA_GROUP ="hthtsod"
+  var ZOOKEEPER_HOST = "10.211.55.7:2181"
+  var KAFKA_BROKER = "10.211.55.7:9092"
+  var KAFKA_GROUP = "hthtsod"
+
   def main(args: Array[String]): Unit = {
     //    获取Flink运行环境也就是入口点
     val env = StreamExecutionEnvironment.getExecutionEnvironment
@@ -37,24 +37,24 @@ object StreamingKafkaClearB {
     env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
 
     //    没有设置检查点请自行添加
-        //env.getStateBackend(new FsStateBackend("hdfs://master:9000/flink/checkpoints"))
+    //env.getStateBackend(new FsStateBackend("hdfs://master:9000/flink/checkpoints"))
     //    要消费的主题
-    val topic="test"
+    val topic = "test"
     //    kafka的配置信息
-    val kafkaProps=new Properties()
+    val kafkaProps = new Properties()
     kafkaProps.setProperty("zookeeper.connect", ZOOKEEPER_HOST)
     kafkaProps.setProperty("bootstrap.servers", KAFKA_BROKER)
     kafkaProps.setProperty("group.id", KAFKA_GROUP)
 
-    val consumer =new FlinkKafkaConsumer[String](topic, new SimpleStringSchema(), kafkaProps)
-   val stream = env.addSource(consumer).map(
-      x=>{
+    val consumer = new FlinkKafkaConsumer[String](topic, new SimpleStringSchema(), kafkaProps)
+    val stream = env.addSource(consumer).map(
+      x => {
         JSON.parseObject(x)
       }
-    ).map(x=>{
-      var a=x.getString("name")
+    ).map(x => {
+      var a = x.getString("name")
     })
-     // Time.seconds是设定延迟时间，要具体看数据本身的延迟程度；超出的可以通过窗口处理，再不行要通过SideOutput
+    // Time.seconds是设定延迟时间，要具体看数据本身的延迟程度；超出的可以通过窗口处理，再不行要通过SideOutput
 
     env.execute("StreamingKafkaClear")
 
