@@ -68,5 +68,11 @@ public class DatabaseSpecialReadWriteDto extends BaseEntity {
      */
     private Integer dataType;
 
+    /**
+     * 分类id
+     * 资料归属哪个分类下面
+     */
+    private String typeId;
+
     private String userId;
 }

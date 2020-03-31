@@ -37,4 +37,12 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
         List<DatabaseSpecialReadWriteEntity> dataList = databaseSpecialReadWriteDao.findBySdbIdAndDataType(sdbId,dataType);
         return this.databaseSpecialReadWriteMapper.toDto(dataList);
     }
+
+    @Override
+    public List<DatabaseSpecialReadWriteDto> findBySdbIdAndDataClassId(String sdbId, String dataClassId) {
+        List<DatabaseSpecialReadWriteEntity> readWriteEntities = databaseSpecialReadWriteDao.findBySdbIdAndDataClassId(sdbId, dataClassId);
+        return this.databaseSpecialReadWriteMapper.toDto(readWriteEntities);
+    }
+
+
 }

@@ -9,16 +9,15 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.dao.DataAuthorityApplyDao;
+import com.piesat.dm.dao.DataAuthorityRecordDao;
 import com.piesat.dm.entity.DataAuthorityApplyEntity;
 import com.piesat.dm.entity.DataAuthorityRecordEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.DataAuthorityApplyService;
-import com.piesat.dm.rpc.api.DatabaseService;
-import com.piesat.dm.rpc.dto.DataAuthorityApplyDto;
-import com.piesat.dm.rpc.dto.DataAuthorityRecordDto;
-import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.api.*;
+import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.mapper.DataAuthorityApplyMapper;
 import com.piesat.dm.rpc.mapper.DataAuthorityRecordMapper;
 import com.piesat.util.page.PageBean;
@@ -47,7 +46,16 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private DatabaseService databaseService;
-
+    @Autowired
+    private DataAuthorityRecordDao dataAuthorityRecordDao;
+    @Autowired
+    private DatabaseSpecialService databaseSpecialService;
+    @Autowired
+    private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
+    @Autowired
+    private DatabaseUserService databaseUserService;
+    @Autowired
+    private DataTableService dataTableService;
 
     @Override
     public BaseDao<DataAuthorityApplyEntity> getBaseDao() {
@@ -80,15 +88,16 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
         //调用接口获取所有的用户信息
 
-        List<DataAuthorityApplyDto> dataAuthorityApplyDtos = new ArrayList<DataAuthorityApplyDto>();
+        List<DataAuthorityApplyDto> dataAuthorityApplyDtos = dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntities);
+
         //循环遍历
-        for(DataAuthorityApplyEntity authorityApply : dataAuthorityApplyEntities){
+        for(DataAuthorityApplyDto authorityApply : dataAuthorityApplyDtos){
 
             //若所申请资料全部审核了，将这条申请记录修改为“已审核”
-            Set<DataAuthorityRecordEntity> dataAuthorityRecordList = authorityApply.getDataAuthorityRecordList();
+            List<DataAuthorityRecordDto> dataAuthorityRecordList = authorityApply.getDataAuthorityRecordList();
             int num = 0;
             if(StringUtils.isNotNullString(authorityApply.getAuditStatus()) && !"02".equals(authorityApply.getAuditStatus())){
-                for(DataAuthorityRecordEntity authorityRecord:dataAuthorityRecordList){
+                for(DataAuthorityRecordDto authorityRecord:dataAuthorityRecordList){
                     if(authorityRecord.getAuthorize() != null){
                         num++;
                         if (num == dataAuthorityRecordList.size()) {
@@ -100,16 +109,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }
             }
 
-            DataAuthorityApplyDto dataAuthorityApplyDto1 = dataAuthorityApplyMapper.toDto(authorityApply);
-            List<DataAuthorityRecordDto> dataAuthorityRecordDtos = dataAuthorityRecordMapper.toDto(new ArrayList<DataAuthorityRecordEntity>(dataAuthorityRecordList));
-            dataAuthorityApplyDto1.setDataAuthorityRecordList(new HashSet<DataAuthorityRecordDto>(dataAuthorityRecordDtos));
-
-
             //遍历所有用户信息找到每条记录对应的用户信息
-            dataAuthorityApplyDto1.setUserName("申请人");
-            dataAuthorityApplyDto1.setTelephone("12388888888");
-            dataAuthorityApplyDto1.setDepartment("部门");
-            dataAuthorityApplyDtos.add(dataAuthorityApplyDto1);
+            authorityApply.setUserName("申请人");
+            authorityApply.setTelephone("12388888888");
+            authorityApply.setDepartment("部门");
         }
 
         pageBean.setPageData(dataAuthorityApplyDtos);
@@ -139,26 +142,70 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     public Map<String, Object> updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto) {
         Map<String, Object> map = new HashMap<String, Object>();
-        List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecords();
+        List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
 
+        //获取用户up账户
+        DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(dataAuthorityApplyDto.getUserId(), "1");
+        if(databaseUserDto == null){
+            map.put("returnCode",1);
+            map.put("msg","授权失败,未找到用户对应数据库账户信息");
+            return map;
+        }
+        String ip = "";
+        if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIp())){
+            ip = databaseUserDto.getDatabaseUpIp();
+        }else if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIpSegment())){
+            ip = databaseUserDto.getDatabaseUpIpSegment();
+        }
+
+        //用户up账户对应的可用物理库
+        List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
+
+
+        StringBuffer buffer = new StringBuffer();
         //为每个数据表进行授权
         for(DataAuthorityRecordDto dataAuthorityRecordDto:dataAuthorityRecordList){
-            DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
-            if(databaseDto == null){
+            if(!databaseIds.contains(dataAuthorityRecordDto.getDatabaseId())){
+                buffer.append("不具备对物理库：" + dataAuthorityRecordDto.getDatabaseId()+"的访问权限");
                 continue;
             }
-            if(databaseDto.getDatabaseDefine().getId().equals("RADB") || databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
-                //Cassandra  RADB
 
-            }else{
-                if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权
+            //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
+            //获取资料对应的表信息
+            //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
 
-                }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//拒绝
+            DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+            if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权
+                if(databaseDto.getDatabaseDefine().getId().equals("RADB") || databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
+                    //Cassandra  RADB
+
+                 }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){
+                    try {
+                        //获取数据库管理账户
+                        DatabaseAdministratorDto databaseAdministratorDto = null;
+                        Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
+                        for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
+                            if(databaseAdministratorDto1.getIsManager()){
+                                databaseAdministratorDto = databaseAdministratorDto1;
+                                break;
+                            }
+                        }
+                        Xugu xugu = new Xugu(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+                }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){
 
                 }
 
+            }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//拒绝
+
             }
+
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
         }
 
@@ -166,4 +213,39 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
         return map;
     }
+
+    @Override
+    public List<Map<String,Object>> getRecordListByUserId(String userId) {
+        if(DatabaseType.databaseType.toLowerCase().equals("mysql")){
+            return mybatisQueryMapper.getRecordListByUserIdMysql(userId);
+        }else{
+            return mybatisQueryMapper.getRecordListByUserId(userId);
+        }
+    }
+
+    @Override
+    public void updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause) {
+        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
+
+        if(dataAuthorityRecordEntities != null && dataAuthorityRecordEntities.size() > 0){
+            for(DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordEntities){
+                //如果资料是专题库引用资料，审核专题库引用资料
+                if(StringUtils.isNotNullString(dataAuthorityRecordEntity.getQtdbId())){
+                    List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos = databaseSpecialReadWriteService.findBySdbIdAndDataClassId(dataAuthorityRecordEntity.getQtdbId(), data_class_id);
+                    if(databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0){
+                        for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtos){
+                            if(StringUtils.isNotNullString(cause)){
+                                databaseSpecialReadWriteDto.setFailureReason(cause);
+                            }
+                            databaseSpecialService.empowerDataOne(databaseSpecialReadWriteDto);//授权
+                        }
+                    }
+                }
+                //资料授权审核
+                mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(),authorize,cause);
+                //真正授权
+            }
+        }
+    }
+
 }
