@@ -11,6 +11,7 @@ import com.piesat.dm.rpc.dto.DatabaseUserDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 专题库管理
@@ -62,7 +63,9 @@ public interface DatabaseSpecialService {
      */
     void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList);
 
-    List<Ztree> getTreeBySdbId(String sdbId);
+    Map<String,Object> getDataTreeBySdbId(String sdbId);
+
+    Map<String,Object> getTreeBySdbId(String sdbId);
 
     List<DatabaseSpecialDto> getByExamineStatus(String examineStatus);
 

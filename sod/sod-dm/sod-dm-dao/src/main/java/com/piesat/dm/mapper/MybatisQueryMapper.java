@@ -58,4 +58,9 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getOnlineTime(@Param("classDataId")String classDataId,@Param("statisticDate")String statisticDate);
 
     List<Map<String, Object>> getTableInfoByClassId(@Param("dataClassId") String dataClassId);
+
+    List<Map<String, Object>> querySpecialReadWriteBySdbId(@Param("sdbId") String sdbId);
+
+    List<Map<String, Object>> getRecordListByUserIdMysql(@Param("userId") String userId);
+    List<Map<String, Object>> getRecordListByUserId(@Param("userId") String userId);
 }

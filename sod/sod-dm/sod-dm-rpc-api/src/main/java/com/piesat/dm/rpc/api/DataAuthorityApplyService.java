@@ -22,4 +22,8 @@ public interface DataAuthorityApplyService {
     List<Map<String,Object>> getRecordByApplyId(Map<String,String> map);
 
     Map<String,Object> updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto);
+
+    List<Map<String,Object>> getRecordListByUserId(String userId);
+
+    void updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause);
 }

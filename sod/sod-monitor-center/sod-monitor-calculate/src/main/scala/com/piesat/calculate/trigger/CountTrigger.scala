@@ -1,26 +1,25 @@
 package com.piesat.calculate.trigger
 
-import com.piesat.calculate.entity.LogMessege
+import com.piesat.calculate.entity.transfer.StationLevelEntity
 import org.apache.flink.api.common.functions.ReduceFunction
 import org.apache.flink.api.common.state.ReducingStateDescriptor
 import org.apache.flink.streaming.api.windowing.triggers.{Trigger, TriggerResult}
-import org.apache.flink.streaming.api.windowing.triggers.Trigger.TriggerContext
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 
 /**
   * Created by zzj on 2020/3/17.
   */
-class CountTrigger extends Trigger[LogMessege, TimeWindow] {
-  //触发计算的最大数量
-  private var maxCount: Long = _
-  //定时触发间隔时长 (ms)
-  private var interval: Long = 60 * 1000
+class CountTrigger extends Trigger[StationLevelEntity, TimeWindow] {
   //记录当前数量的状态
   private lazy val countStateDescriptor: ReducingStateDescriptor[Long] = new ReducingStateDescriptor[Long]("counter", new Sum, classOf[Long])
   //记录执行时间定时触发时间的状态
   private lazy val processTimerStateDescriptor: ReducingStateDescriptor[Long] = new ReducingStateDescriptor[Long]("processTimer", new Update, classOf[Long])
   //记录时间时间定时器的状态
   private lazy val eventTimerStateDescriptor: ReducingStateDescriptor[Long] = new ReducingStateDescriptor[Long]("eventTimer", new Update, classOf[Long])
+  //触发计算的最大数量
+  private var maxCount: Long = _
+  //定时触发间隔时长 (ms)
+  private var interval: Long = 60 * 1000
 
   def this(maxCount: Int) {
     this()
@@ -32,7 +31,7 @@ class CountTrigger extends Trigger[LogMessege, TimeWindow] {
     this.interval = interval
   }
 
-  override def onElement(element: LogMessege, timestamp: Long, window: TimeWindow, ctx: Trigger.TriggerContext): TriggerResult = {
+  override def onElement(element: StationLevelEntity, timestamp: Long, window: TimeWindow, ctx: Trigger.TriggerContext): TriggerResult = {
     val countState = ctx.getPartitionedState(countStateDescriptor)
     //计数状态加1
     countState.add(1L)
@@ -109,4 +108,5 @@ class CountTrigger extends Trigger[LogMessege, TimeWindow] {
   class Update extends ReduceFunction[Long] {
     override def reduce(value1: Long, value2: Long): Long = value2
   }
+
 }

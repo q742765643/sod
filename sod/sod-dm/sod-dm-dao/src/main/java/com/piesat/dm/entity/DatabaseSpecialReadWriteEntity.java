@@ -80,4 +80,11 @@ public class DatabaseSpecialReadWriteEntity extends BaseEntity {
      */
     @Column(name = "data_type")
     private Integer dataType;
+
+    /**
+     * 分类id
+     * 资料归属哪个分类下面
+     */
+    @Column(name = "type_id", length = 50)
+    private String typeId;
 }

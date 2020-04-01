@@ -13,10 +13,12 @@ import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.*;
 import com.piesat.dm.entity.*;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.DatabaseSpecialService;
 import com.piesat.dm.rpc.api.DatabaseUserService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.mapper.*;
+import com.piesat.util.ResultT;
 import org.bouncycastle.asn1.dvcs.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DataTableDao dataTableDao;
     @Autowired
     private DatabaseInfo databaseInfo;
+
+    @Autowired
+    private DatabaseSpecialTreeDao databaseSpecialTreeDao;
+
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
@@ -233,7 +241,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public List<Ztree> getTreeBySdbId(String sdbId) {
+    public Map<String,Object> getDataTreeBySdbId(String sdbId) {
+
+        Map<String,Object> resultMap =  new HashMap<String,Object>();
 
         List<Ztree> data = new ArrayList<Ztree>();
 
@@ -247,14 +257,84 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         data.add(readyTree);
 
         // 根据专题库ID获取对应树信息。
-        //List<DminSpecialDbTree> dataList = dminSpecialDbTreeDao.getRecordByTdbId(tdbId);
+        int maxTypeId = 1;
+        List<DatabaseSpecialTreeEntity> databaseSpecialTreeEntities = databaseSpecialTreeDao.findBySdbId(sdbId);
+        if(databaseSpecialTreeEntities != null && databaseSpecialTreeEntities.size() > 0){
+            for(DatabaseSpecialTreeEntity databaseSpecialTree : databaseSpecialTreeEntities){
 
-        return null;
+                //获取最大类型id
+                if (Integer.parseInt(databaseSpecialTree.getTypeId()) > maxTypeId) {
+                    maxTypeId = Integer.parseInt(databaseSpecialTree.getTypeId());
+                }
+
+                Ztree tree = new Ztree();
+                tree.setId(databaseSpecialTree.getTypeId());
+                tree.setpId(databaseSpecialTree.getParentId());
+                tree.setName(databaseSpecialTree.getTypeName());
+                tree.setIsParent(true);
+                data.add(tree);
+            }
+        }
+
+        List<Map<String, Object>> readWriteBySdbId = mybatisQueryMapper.querySpecialReadWriteBySdbId(sdbId);
+        if (readWriteBySdbId != null && readWriteBySdbId.size() > 0) {
+            for (Map<String, Object> datum : readWriteBySdbId) {
+                Ztree tree = new Ztree();
+                tree.setId(datum.get("ID").toString());
+                tree.setName(datum.get("NAME").toString());
+                tree.setpId(datum.get("PID").toString());
+                tree.setIsParent(false);
+                data.add(tree);
+            }
+        }
+        resultMap.put("maxTypeId",maxTypeId);
+        resultMap.put("data",data);
+        return resultMap;
+    }
+
+    @Override
+    public Map<String,Object> getTreeBySdbId(String sdbId) {
+
+        Map<String,Object> resultMap =  new HashMap<String,Object>();
+
+        List<Ztree> data = new ArrayList<Ztree>();
+
+        // 添加默认分类
+        Ztree mainTree = new Ztree("-1", "-2", "资料分类树", true, 0);
+        mainTree.setOpen(true);
+        Ztree autoTree = new Ztree("9999", "-1", "未归类资料", false);
+        Ztree readyTree = new Ztree("0", "-1", "已归类资料", true);
+        data.add(mainTree);
+        data.add(autoTree);
+        data.add(readyTree);
+
+        // 根据专题库ID获取对应树信息。
+        int maxTypeId = 1;
+        List<DatabaseSpecialTreeEntity> databaseSpecialTreeEntities = databaseSpecialTreeDao.findBySdbId(sdbId);
+        if(databaseSpecialTreeEntities != null && databaseSpecialTreeEntities.size() > 0){
+            for(DatabaseSpecialTreeEntity databaseSpecialTree : databaseSpecialTreeEntities){
+
+                //获取最大类型id
+                if (Integer.parseInt(databaseSpecialTree.getTypeId()) > maxTypeId) {
+                    maxTypeId = Integer.parseInt(databaseSpecialTree.getTypeId());
+                }
+
+                Ztree tree = new Ztree();
+                tree.setId(databaseSpecialTree.getTypeId());
+                tree.setpId(databaseSpecialTree.getParentId());
+                tree.setName(databaseSpecialTree.getTypeName());
+                tree.setIsParent(true);
+                data.add(tree);
+            }
+        }
+        resultMap.put("maxTypeId",maxTypeId);
+        resultMap.put("data",data);
+        return resultMap;
     }
 
     @Override
     public List<DatabaseSpecialDto> getByExamineStatus(String examineStatus) {
-        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByExamineStatusAndOrderBySortNoAscCreateTimeDesc(examineStatus);
+        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByExamineStatusOrderBySortNoAscCreateTimeDesc(examineStatus);
         return this.databaseSpecialMapper.toDto(databaseSpecialEntities);
     }
 

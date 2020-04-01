@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 专题库管理
@@ -171,13 +172,26 @@ public class DatabaseSpecialController {
         }
     }
 
+    @ApiOperation(value = "根据专题库ID获取对应树和资料信息")
+    @RequiresPermissions("dm:databaseSpecial:getDataTreeBySdbId")
+    @GetMapping(value = "/getDataTreeBySdbId")
+    public ResultT getDataTreeBySdbId(String sdbId) {
+        try {
+            Map<String, Object> treeBySdbId = this.databaseSpecialService.getDataTreeBySdbId(sdbId);
+            return ResultT.success(treeBySdbId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据专题库ID获取对应树信息")
     @RequiresPermissions("dm:databaseSpecial:getTreeBySdbId")
     @GetMapping(value = "/getTreeBySdbId")
     public ResultT getTreeBySdbId(String sdbId) {
         try {
-            List<Ztree> treeList = this.databaseSpecialService.getTreeBySdbId(sdbId);
-            return ResultT.success(treeList);
+            Map<String, Object> treeBySdbId = this.databaseSpecialService.getTreeBySdbId(sdbId);
+            return ResultT.success(treeBySdbId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

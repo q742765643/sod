@@ -4,7 +4,7 @@ import com.piesat.monitor.dao.es.system.CpuMapper
 import com.piesat.monitor.entity.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.{List => JavaList}
+import java.util.{Date, List => JavaList}
 
 import com.piesat.monitor.entity.system.CpuEntity
 

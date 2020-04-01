@@ -21,4 +21,6 @@ public interface DatabaseSpecialReadWriteService {
      * @return
      */
     List<DatabaseSpecialReadWriteDto> getDotList(String sdbId, String dataType);
+
+    List<DatabaseSpecialReadWriteDto> findBySdbIdAndDataClassId(String sdbId, String dataClassId);
 }

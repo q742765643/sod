@@ -244,7 +244,7 @@ export default {
       let obj = {};
       // obj.userId = localStorage.getItem("loginUserId");
       obj.userId = "admin";
-      obj.dataAuthorityRecords = [];
+      obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};
         cobj.id = element.ID;
@@ -259,7 +259,7 @@ export default {
 
         cobj.dataClassId = element.DATA_CLASS_ID;
         cobj.cause = value;
-        obj.dataAuthorityRecords.push(cobj);
+        obj.dataAuthorityRecordList.push(cobj);
       });
       console.log(obj);
       updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {

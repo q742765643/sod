@@ -95,4 +95,27 @@ public class DataAuthorityApplyController {
            return ResultT.failed(message);
        }
     }
+
+    @GetMapping(value = "/getRecordListByUserId")
+    @ApiOperation(value = "根据用户id查询申请资料", notes = "根据用户id查询申请资料")
+    public ResultT<List<Map<String,Object>>> getRecordListByUserId(String userId)
+    {
+        ResultT<List<Map<String,Object>>> resultT=new ResultT<>();
+        List<Map<String,Object>> recordListByUserId= this.dataAuthorityApplyService.getRecordListByUserId(userId);
+        resultT.setData(recordListByUserId);
+        return resultT;
+    }
+
+
+    @PutMapping(value = "/updateRecordByApplyIdAndClassId")
+    @ApiOperation(value = "根据申请id和存储编码修改数据授权资料信息", notes = "根据申请id和存储编码修改数据授权资料信息")
+    public ResultT<String> updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause){
+        try {
+            dataAuthorityApplyService.updateRecordByApplyIdAndClassId(apply_id,data_class_id,authorize,cause);
+            return ResultT.success();
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

@@ -58,7 +58,5 @@ public class DataAuthorityApplyDto extends BaseDto {
      */
     private Date examineTime;
 
-    private Set<DataAuthorityRecordDto> dataAuthorityRecordList;
-
-    private List<DataAuthorityRecordDto> dataAuthorityRecords;
+    private List<DataAuthorityRecordDto> dataAuthorityRecordList;
 }
