@@ -17,7 +17,7 @@ import scala.beans.BeanProperty
   */
 @Data
 //@Document(indexName = "ssh-#{ T(com.piesat.monitor.util.IndexUtil).getDateStr()}",`type` = "ssh")
-@Document(indexName = "sshq-#{ T(com.piesat.monitor.util.IndexUtil).getDateStr()}",`type` = "ssh")
+@Document(indexName = "ssh",`type` = "doc")
 class SshEntity {
 
   @Id
@@ -28,7 +28,6 @@ class SshEntity {
 
   @BeanProperty
   var port:Integer=_
-  @JsonProperty("uuuus")
   @BeanProperty
   var userName:String=_
 

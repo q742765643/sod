@@ -27,6 +27,9 @@ spring:
      multipart:
       max-file-size: 1000000000
       max-request-size: 1000000000
+  jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      time-zone: GMT+8
   datasource:
       es:
         driver-class-name: org.elasticsearch.xpack.sql.jdbc.EsDriver

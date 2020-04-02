@@ -48,9 +48,9 @@ public class SignAuthUtil {
      }
      public static void createSign(String token) throws Exception {
          SignVo signVo=new SignVo();
-         signVo.setAppIdHt(token);
+         signVo.setAppIdHt(RSAUtil.encrypt(token,RSAUtil.keyMap.get(0)));
          signVo.setTimestampHt(System.currentTimeMillis());
-         signVo.setUuidHt(RSAUtil.encrypt(IdUtils.simpleUUID(),RSAUtil.keyMap.get(0)));
+         signVo.setUuidHt(IdUtils.simpleUUID());
 
          String sign=AESUtil.aesEncrypt(JSON.toJSONString(signVo));
          System.out.println(sign);
@@ -58,7 +58,7 @@ public class SignAuthUtil {
 
      public static void main(String[] args){
          try {
-             createSign("aaa");
+             createSign("");
          } catch (Exception e) {
              e.printStackTrace();
          }

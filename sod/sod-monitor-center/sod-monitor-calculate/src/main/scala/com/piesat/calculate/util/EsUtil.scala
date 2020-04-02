@@ -39,16 +39,11 @@ object EsUtil {
     val timeFormat: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")
     val filter=scala.collection.mutable.Map[String,Object]()
     var a="2020-03-30 15:47:35:508";
-    filter.put("fields.DATA_TIME",timeFormat.parse(a))
+    filter.put("event.dataset","system.process")
     //get("htht*", "A.00001||自动站2")
-    getWhere("transfer_analyze-*", filter)
+    getWhere("metricbeat-*", filter)
 
-    val json = new java.util.HashMap[String,Object]
-    json.put("aa",new Date())
-    add(Requests.indexRequest()
-      .index("aa")
-      .`type`("doc").id("22")
-      .source(json))
+
 
 
   }
@@ -175,6 +170,9 @@ object EsUtil {
       searchRequest.source(searchSourceBuilder)
       var response = restHighLevelClient.search(searchRequest)
       var result = response.getHits.getHits
+      for(a<-result){
+        print(a.getSourceAsMap)
+      }
       if (result.length > 0) {
         return 1
       } else {
