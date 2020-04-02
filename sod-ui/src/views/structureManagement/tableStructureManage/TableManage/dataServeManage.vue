@@ -33,11 +33,17 @@
     </fieldset>
     <fieldset style="margin-top:20px;margin-bottom:20px;">
       <legend>{{'默认配置设置'}}</legend>
-      <el-form ref="form" :model="baseSet" label-width="120px">
+      <el-form ref="form" :model="baseSet" label-width="120px" :rules="baseRules">
         <el-row>
           <el-col :span="6">
             <el-form-item label="区域选择">
-              <el-select filterable v-model="baseSet.region" placeholder="请选择" size="small">
+              <el-select
+                filterable
+                v-model="baseSet.region"
+                placeholder="请选择"
+                size="small"
+                prop="region"
+              >
                 <el-option
                   v-for="item in baseAreaOptions"
                   :key="item.value"
@@ -48,32 +54,32 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="GRIB版本">
-              <el-input v-model="baseSet.gribVersion" size="small"></el-input>
+            <el-form-item label="GRIB版本" prop="gribVersion">
+              <el-input v-model="baseSet.gribVersion" size="small" type="number"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="场类型">
-              <el-input v-model="baseSet.fieldType" size="small"></el-input>
+            <el-form-item label="场类型" prop="fieldType">
+              <el-input v-model="baseSet.fieldType" size="small" type="number"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="加工过程类型">
+            <el-form-item label="加工过程类型" prop="processType">
               <el-input v-model="baseSet.processType" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="资料时次">
+            <el-form-item label="资料时次" prop="dataTime">
               <el-input v-model="baseSet.dataTime" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="时效单位">
+            <el-form-item label="时效单位" prop="timeUnit">
               <el-input v-model="baseSet.timeUnit" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="空间分辨率">
+            <el-form-item label="空间分辨率" prop="spatialResolution">
               <el-input v-model="baseSet.spatialResolution" size="small"></el-input>
             </el-form-item>
           </el-col>
@@ -100,13 +106,11 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="index" width="45" :index="table_index"></el-table-column>
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="areaId" label="区域代码">
-        <template slot-scope="scope">{{scope.row.areaId.split('[')[0]}}</template>
-      </el-table-column>
+      <el-table-column type="selection" width="45"></el-table-column>
+      <el-table-column prop="areaId" label="区域代码"></el-table-column>
       <el-table-column prop="dbEleName" label="要素存储短名"></el-table-column>
-      <el-table-column prop="ele_service_id" label="要素服务代码"></el-table-column>
-      <el-table-column prop="eleName" label="要素中文名"></el-table-column>
+      <el-table-column prop="eleServiceId" label="要素服务代码"></el-table-column>
+      <el-table-column prop="eleLongName" label="要素中文名"></el-table-column>
       <el-table-column prop="eleUnit" label="要素单位"></el-table-column>
       <el-table-column prop="levelType" label="层次类型"></el-table-column>
       <el-table-column prop="scaleDivisor" label="层次转换因子"></el-table-column>
@@ -115,8 +119,8 @@
       <el-table-column prop="timeUnit" label="预报时效单位"></el-table-column>
       <el-table-column prop="timeList" label="预报时效列表"></el-table-column>
       <el-table-column prop="levelUnit" label="层次单位"></el-table-column>
-      <el-table-column prop="level_list" label="层次列表"></el-table-column>
-      <el-table-column prop="elePropertyName" label="要素长名"></el-table-column>
+      <el-table-column prop="levelList" label="层次列表"></el-table-column>
+      <el-table-column prop="eleLongName" label="要素长名"></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -184,7 +188,7 @@
               <el-select
                 filterable
                 @change="getEleUnit"
-                v-model="msgFormDialog.fieldType"
+                v-model="msgFormDialog.eleServiceId"
                 placeholder="要素服务代码"
                 size="small"
               >
@@ -286,7 +290,13 @@ import {
   findByDataServiceId,
   dataserverconfigSave,
   serviceCodeQueryAll,
-  findByDbFcstEle
+  findByDbFcstEle,
+  findByDataCLassId,
+  dataserverconfiglist,
+  saveBase,
+  dataserverconfigget,
+  addList,
+  delByIds
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { getAllLevel } from "@/api/GridDataDictionaryManagement/levelManagement";
 export default {
@@ -294,6 +304,7 @@ export default {
   props: { rowData: Object },
   data() {
     return {
+      repeatIndex: 0,
       total: 0,
       tableData: [],
       baseAreaOptions: [],
@@ -308,16 +319,37 @@ export default {
       },
       baseSet: {},
       searchObj: {
-        dataClassId: this.rowData.DATA_CLASS_ID,
+        dataServiceId: this.rowData.DATA_CLASS_ID,
         pageNum: 1,
         pageSize: 10
       },
       dialogTitle: "新增数据服务信息",
       dataServeDialog: false,
       msgFormDialog: {
-        fieldType: "",
-        eleUnit: "",
-        dataClassId: this.rowData.DATA_CLASS_ID
+        dataServiceId: this.rowData.DATA_CLASS_ID
+      },
+      baseRules: {
+        region: [
+          { required: true, message: "请选择区域代码", trigger: "change" }
+        ],
+        gribVersion: [
+          { required: true, message: "请输入GRIB版本", trigger: "blur" }
+        ],
+        fieldType: [
+          { required: true, message: "请输入场类型", trigger: "blur" }
+        ],
+        processType: [
+          { required: true, message: "请输入加工过程类型", trigger: "blur" }
+        ],
+        dataTime: [
+          { required: true, message: "请输入资料时次", trigger: "blur" }
+        ],
+        timeUnit: [
+          { required: true, message: "请输入时效单位", trigger: "blur" }
+        ],
+        spatialResolution: [
+          { required: true, message: "请输入空间分辨率", trigger: "blur" }
+        ]
       },
       rules: {
         num: [{ required: true, message: "请输入序号", trigger: "blur" }],
@@ -347,7 +379,7 @@ export default {
       return (this.searchObj.pageNum - 1) * this.searchObj.pageSize + index + 1;
     },
     searchFun() {
-      defineList(this.queryParams).then(response => {
+      dataserverconfiglist(this.searchObj).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -357,22 +389,18 @@ export default {
       this.multipleSelection = val;
     },
 
-    getFormDetail() {
-      this.axios
-        .get(interfaceObj.TableStructure_getServiceBase, {
-          params: {
-            DATA_CLASS_ID: this.rowData.DATA_CLASS_ID
+    async getFormDetail() {
+      await findByDataCLassId({ dataCLassId: this.rowData.DATA_CLASS_ID }).then(
+        response => {
+          if (response.code == 200 && response.data.length > 0) {
+            console.log(response);
+            let data = response.data[0];
+            this.baseServe.eleField = data.eleField;
+            this.baseServe.regionField = data.regionField;
+            this.baseSet = data;
           }
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.baseServe.eleField = res.data.data.eleField;
-            this.baseServe.regionField = res.data.data.regionField;
-            this.baseSet = res.data.data;
-          } else {
-            console.log(res.data.codeMessage);
-          }
-        });
+        }
+      );
     },
 
     async getAllLevelMethods() {
@@ -396,6 +424,7 @@ export default {
       findByDbFcstEle({ dbFcstEle: val }).then(response => {
         if (response.code == 200) {
           this.eleOptionsList = response.data;
+          console.log(this.eleOptionsList);
         } else {
           this.$message({
             type: "error",
@@ -415,8 +444,9 @@ export default {
     },
     addBase() {
       let obj = Object.assign(this.baseSet, this.baseServe);
+      obj.dataCLassId = this.rowData.DATA_CLASS_ID;
       console.log(obj);
-      dataserverconfigSave(obj).then(response => {
+      saveBase(obj).then(response => {
         if (response.code == 200) {
           this.$message({
             type: "success",
@@ -431,12 +461,20 @@ export default {
       });
     },
     add() {
-      this.msgFormDialog = {};
-      this.msgFormDialog.dataClassId = this.rowData.DATA_CLASS_ID;
-      this.dialogTitle = "新增数据服务信息";
-      this.getAllLevelMethods();
-      this.modeEleQueryAll();
-      this.dataServeDialog = true;
+      if (this.baseSet.region) {
+        this.msgFormDialog = {};
+        this.msgFormDialog = this.baseSet;
+        this.msgFormDialog.dataServiceId = this.rowData.DATA_CLASS_ID;
+        this.dialogTitle = "新增数据服务信息";
+        this.getAllLevelMethods();
+        this.modeEleQueryAll();
+        this.dataServeDialog = true;
+      } else {
+        this.$message({
+          type: "error",
+          message: "请先设置默认配置"
+        });
+      }
     },
     edit() {
       if (this.multipleSelection.length != 1) {
@@ -445,13 +483,22 @@ export default {
           message: "请选择一条数据"
         });
       } else {
-        this.msgFormDialog = {};
-        this.msgFormDialog.DATA_CLASS_ID = this.rowData.DATA_CLASS_ID;
-        this.getAllLevelMethods();
-        this.modeEleQueryAll();
-        this.dialogTitle = "编辑数据服务信息";
-        this.msgFormDialog = this.multipleSelection[0];
-        this.dataServeDialog = true;
+        dataserverconfigget({ id: this.multipleSelection[0].id }).then(
+          response => {
+            if (response.code == 200) {
+              this.getAllLevelMethods();
+              this.modeEleQueryAll();
+              this.dialogTitle = "编辑数据服务信息";
+              this.msgFormDialog = response.data;
+              this.dataServeDialog = true;
+            } else {
+              this.$message({
+                type: "error",
+                message: response.msg
+              });
+            }
+          }
+        );
       }
     },
     deleteCell() {
@@ -459,27 +506,23 @@ export default {
       this.multipleSelection.forEach(element => {
         ids.push(element.mode_data_def_id);
       });
-      this.axios
-        .post(interfaceObj.TableStructure_deleteModeDef, {
-          mode_data_def_ids: ids.join(",")
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-            this.searchFun();
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        });
+      delByIds({ ids: ids.join(",") }).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+          this.searchFun();
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          });
+        }
+      });
     },
     columnCopy() {
-      if (this.selColumnData.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择一条数据！",
           type: "warning"
@@ -487,7 +530,7 @@ export default {
       } else {
         sessionStorage.setItem(
           "copyServeColumn",
-          JSON.stringify(this.selColumnData)
+          JSON.stringify(this.multipleSelection)
         );
         this.$message({
           message: "复制成功",
@@ -498,37 +541,28 @@ export default {
     columnPaste() {
       this.repeatIndex = 0;
       let pasteArry = JSON.parse(sessionStorage.getItem("copyServeColumn"));
-      pasteArry = this.array_diff(pasteArry, this.columnData);
-      let msg = "";
-      if (this.repeatIndex > 0) msg = "去重(" + this.repeatIndex + ")条,";
-      if (pasteArry.length == 0) {
+      if (pasteArry[0].dataServiceId == this.rowData.DATA_CLASS_ID) {
         this.$message({
-          message: msg + "已无可插入数据!",
+          message: "不能在同一个表内插入数据!",
           type: "info"
         });
       } else {
-        this.$alert("是否插入" + pasteArry.length + "条复制字段", "温馨提示", {
-          confirmButtonText: "确定",
-          callback: action => {
-            this.axios
-              .post(interfaceObj.TableStructure_addManageColumn, {
-                manageColumnList: pasteArry
-              })
-              .then(res => {
-                if (res.data.returnCode == 0) {
-                  this.$message({
-                    message: "插入成功！",
-                    type: "success"
-                  });
-                  this.getCodeTable();
-                } else {
-                  this.$message({
-                    message: res.data.returnMessage,
-                    type: "error"
-                  });
-                }
-              })
-              .catch(error => {});
+        pasteArry.forEach(element => {
+          element.dataServiceId = this.rowData.DATA_CLASS_ID;
+          element.id = "";
+        });
+        addList(pasteArry).then(response => {
+          if (response.code == 200) {
+            this.$message({
+              message: "插入成功！",
+              type: "success"
+            });
+            this.searchFun();
+          } else {
+            this.$message({
+              type: "error",
+              message: response.msg
+            });
           }
         });
       }
@@ -538,72 +572,40 @@ export default {
       this.dataServeDialog = false;
     },
     trueHandle(formName) {
+      let obj = Object.assign(this.msgFormDialog, this.baseServe);
+      console.log(obj);
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let msg = "";
           if (this.dialogTitle == "新增数据服务信息") {
-            this.msgFormDialog.DATA_CLASS_ID = this.rowData.DATA_CLASS_ID;
-            delete this.msgFormDialog.data_service_id;
-            this.axios
-              .post(interfaceObj.TableStructure_addModeDef, this.msgFormDialog)
-              .then(res => {
-                if (res.data.returnCode == 0) {
-                  this.$message({
-                    type: "success",
-                    message: "新增成功"
-                  });
-                  this.searchFun();
-                  this.$refs[formName].resetFields();
-                  this.dataServeDialog = false;
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: res.data.returnMessage
-                  });
-                }
-              });
+            obj.id = "";
+            msg = "新增成功";
           } else {
-            this.msgFormDialog.DATA_CLASS_ID = this.msgFormDialog.data_service_id;
-            delete this.msgFormDialog.data_service_id;
-            this.axios
-              .post(
-                interfaceObj.TableStructure_updateModeDef,
-                this.msgFormDialog
-              )
-              .then(res => {
-                if (res.data.returnCode == 0) {
-                  this.$message({
-                    type: "success",
-                    message: "编辑成功"
-                  });
-                  this.searchFun();
-                  this.$refs[formName].resetFields();
-                  this.dataServeDialog = false;
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: res.data.returnMessage
-                  });
-                }
-              });
+            msg = "编辑成功";
           }
+          dataserverconfigSave(obj).then(response => {
+            if (response.code == 200) {
+              this.searchFun();
+              this.$refs[formName].resetFields();
+              this.dataServeDialog = false;
+              this.$message({
+                type: "success",
+                message: msg
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: response.msg
+              });
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    array_diff(a, b, tabActive) {
-      for (var i = 0; i < b.length; i++) {
-        for (var j = 0; j < a.length; j++) {
-          if (a[j].c_element_code == b[i].c_element_code) {
-            a.splice(j, 1);
-            j = j - 1;
-            this.repeatIndex++;
-          }
-        }
-      }
-      return a;
-    },
+
     async gettableInfo() {
       await gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {
@@ -639,7 +641,7 @@ export default {
         }
       });
     },
-    getoptionsArea() {},
+
     async getBaseAreaOptions() {
       await findByDataServiceId({
         dataServiceId: this.rowData.DATA_CLASS_ID
@@ -649,11 +651,10 @@ export default {
       });
     },
     async forParent() {
-      // this.searchFun();
-
-      // this.getFormDetail();
       await this.gettableInfo(); //获取基本服务信息下拉框
       await this.getBaseAreaOptions(); //获取区域下拉框
+      this.searchFun();
+      await this.getFormDetail();
     }
   }
 };

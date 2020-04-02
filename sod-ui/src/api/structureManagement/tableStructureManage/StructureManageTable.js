@@ -258,3 +258,37 @@ export function dataserverconfigSave(data) {
     data: data
   })
 }
+
+export function dataserverconfiglist(query) {
+  return request({
+    url: baseUrl + '/dm/dataserverconfig/list',
+    method: 'get',
+    params: query
+  })
+}
+
+export function dataserverconfigget(query) {
+  return request({
+    url: baseUrl + '/dm/dataserverconfig/get',
+    method: 'get',
+    params: query
+  })
+}
+
+export function addList(data) {
+  return request({
+    url: baseUrl + '/dm/dataserverconfig/addList',
+    method: 'post',
+    data: data
+  })
+}
+
+// 服务信息删除
+
+export function delByIds(query) {
+  return request({
+    url: baseUrl + '/dm/dataserverconfig/delByIds',
+    method: 'get',
+    params: query
+  })
+}
