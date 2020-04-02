@@ -207,3 +207,54 @@ export function tableIndexSave(data) {
     data: data
   })
 }
+
+// 查所有区域
+export function allArea(query) {
+  return request({
+    url: baseUrl + '/dictionary/define/all',
+    method: 'get',
+  })
+}
+// 区域信息 删除
+
+
+export function gridareaDel(query) {
+  return request({
+    url: baseUrl + '/dm/gridarea/delByIds',
+    method: 'delete',
+    params: query
+  })
+}
+// 根据存储编码查询区域信息
+export function findByDataServiceId(query) {
+  return request({
+    url: baseUrl + '/dm/gridarea/findByDataServiceId',
+    method: 'get',
+    params: query
+  })
+}
+
+// 要素存储代码
+export function serviceCodeQueryAll(query) {
+  return request({
+    url: baseUrl + '/system/gribParameterDefine/queryAll',
+    method: 'get',
+    params: query
+  })
+}
+// 根据服务代码查询
+export function findByDbFcstEle(query) {
+  return request({
+    url: baseUrl + '/system/serviceCodeDefine/findByDbFcstEle',
+    method: 'get',
+    params: query
+  })
+}
+// 新增数据服务信息
+export function dataserverconfigSave(data) {
+  return request({
+    url: baseUrl + '/dm/dataserverconfig/save',
+    method: 'post',
+    data: data
+  })
+}

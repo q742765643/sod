@@ -32,7 +32,7 @@ service.interceptors.request.use(
       let sign = {
         "timestampHt": new Date().getTime(),
         "uuidHt": uuid(),
-        "appIdHt":rsaencrypt(getToken())
+        "appIdHt": rsaencrypt(getToken())
       }
       config.headers['sign'] = Encrypt(JSON.stringify(sign))
 
@@ -40,8 +40,8 @@ service.interceptors.request.use(
 
     let data = ""
     let ajax = config.headers['X-Requested-With'];
-    let headers=config.headers['Content-Type'];
-    if("multipart/form-data"==headers){
+    let headers = config.headers['Content-Type'];
+    if ("multipart/form-data" == headers) {
       return config;
     }
     if (typeof config.params != 'undefined') {

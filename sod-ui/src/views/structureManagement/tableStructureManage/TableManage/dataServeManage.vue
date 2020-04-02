@@ -41,8 +41,8 @@
                 <el-option
                   v-for="item in baseAreaOptions"
                   :key="item.value"
-                  :label="item.area_id"
-                  :value="item.area_id"
+                  :label="item.areaId"
+                  :value="item.areaId"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -101,22 +101,22 @@
     >
       <el-table-column type="index" width="45" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="area_id" label="区域代码">
-        <template slot-scope="scope">{{scope.row.area_id.split('[')[0]}}</template>
+      <el-table-column prop="areaId" label="区域代码">
+        <template slot-scope="scope">{{scope.row.areaId.split('[')[0]}}</template>
       </el-table-column>
-      <el-table-column prop="db_fcst_ele" label="要素存储短名"></el-table-column>
+      <el-table-column prop="dbEleName" label="要素存储短名"></el-table-column>
       <el-table-column prop="ele_service_id" label="要素服务代码"></el-table-column>
-      <el-table-column prop="ele_name_cn" label="要素中文名"></el-table-column>
-      <el-table-column prop="ele_unit" label="要素单位"></el-table-column>
+      <el-table-column prop="eleName" label="要素中文名"></el-table-column>
+      <el-table-column prop="eleUnit" label="要素单位"></el-table-column>
       <el-table-column prop="levelType" label="层次类型"></el-table-column>
-      <el-table-column prop="scale_divisor" label="层次转换因子"></el-table-column>
-      <el-table-column prop="ele_hours" label="资料时次"></el-table-column>
-      <el-table-column prop="grid_pixel" label="空间分辨率"></el-table-column>
-      <el-table-column prop="time_unit" label="预报时效单位"></el-table-column>
-      <el-table-column prop="time_list" label="预报时效列表"></el-table-column>
-      <el-table-column prop="level_unit" label="层次单位"></el-table-column>
+      <el-table-column prop="scaleDivisor" label="层次转换因子"></el-table-column>
+      <el-table-column prop="eleHours" label="资料时次"></el-table-column>
+      <el-table-column prop="gridPixel" label="空间分辨率"></el-table-column>
+      <el-table-column prop="timeUnit" label="预报时效单位"></el-table-column>
+      <el-table-column prop="timeList" label="预报时效列表"></el-table-column>
+      <el-table-column prop="levelUnit" label="层次单位"></el-table-column>
       <el-table-column prop="level_list" label="层次列表"></el-table-column>
-      <el-table-column prop="ele_long_name" label="要素长名"></el-table-column>
+      <el-table-column prop="elePropertyName" label="要素长名"></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -137,15 +137,15 @@
       <el-form size="mini" :rules="rules" ref="formName" :model="msgFormDialog" label-width="140px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="序号" prop="s_number">
-              <el-input placeholder="序号" v-model="msgFormDialog.s_number"></el-input>
+            <el-form-item label="序号" prop="num">
+              <el-input placeholder="序号" v-model="msgFormDialog.num"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="区域代码" prop="area_id">
+            <el-form-item label="区域代码" prop="areaId">
               <el-select
                 filterable
-                v-model="msgFormDialog.area_id"
+                v-model="msgFormDialog.areaId"
                 placeholder="请选择区域"
                 size="small"
                 class="areaSelect"
@@ -153,8 +153,8 @@
                 <el-option
                   v-for="(item,index) in baseAreaOptions"
                   :key="index"
-                  :label="item.area_id"
-                  :value="item.area_id"
+                  :label="item.areaId"
+                  :value="item.areaId"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -162,19 +162,19 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="要素存储代码" prop="db_fcst_ele">
+            <el-form-item label="要素存储代码" prop="dbEleName">
               <el-select
                 filterable
                 @change="getServeByEle"
-                v-model="msgFormDialog.db_fcst_ele"
+                v-model="msgFormDialog.dbEleName"
                 placeholder="要素存储代码"
                 size="small"
               >
                 <el-option
                   v-for="(item,index) in eleQueryAll"
                   :key="index"
-                  :label="item.ele_code_short"
-                  :value="item.ele_code_short"
+                  :label="item.eleCodeShort"
+                  :value="item.eleCodeShort"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -184,15 +184,15 @@
               <el-select
                 filterable
                 @change="getEleUnit"
-                v-model="msgFormDialog.field_type"
+                v-model="msgFormDialog.fieldType"
                 placeholder="要素服务代码"
                 size="small"
               >
                 <el-option
                   v-for="(item,index) in eleOptionsList"
                   :key="index"
-                  :label="item.user_fcst_ele"
-                  :value="item.user_fcst_ele"
+                  :label="item.userFcstEle"
+                  :value="item.userFcstEle"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -217,57 +217,57 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="层次类型转换因子" prop="scale_divisor">
-              <el-input placeholder="层次类型转换因子" v-model="msgFormDialog.scale_divisor"></el-input>
+            <el-form-item label="层次类型转换因子" prop="scaleDivisor">
+              <el-input placeholder="层次类型转换因子" v-model="msgFormDialog.scaleDivisor"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素中文名">
-              <el-input placeholder="要素中文名" v-model="msgFormDialog.ele_name_cn"></el-input>
+              <el-input placeholder="要素中文名" v-model="msgFormDialog.eleNameCn"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="要素长名">
-              <el-input placeholder="要素长名" v-model="msgFormDialog.ele_long_name"></el-input>
+              <el-input placeholder="要素长名" v-model="msgFormDialog.eleLongName"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素单位">
-              <el-input placeholder="要素单位" v-model="msgFormDialog.ele_unit"></el-input>
+              <el-input placeholder="要素单位" v-model="msgFormDialog.eleUnit"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="资料时次">
-              <el-input placeholder="资料时次" v-model="msgFormDialog.ele_hours"></el-input>
+              <el-input placeholder="资料时次" v-model="msgFormDialog.eleHours"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="空间分辨率">
-              <el-input placeholder="空间分辨率" v-model="msgFormDialog.grid_pixel"></el-input>
+              <el-input placeholder="空间分辨率" v-model="msgFormDialog.gridPixel"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="预报时效单位">
-              <el-input placeholder="预报时效单位" v-model="msgFormDialog.time_unit"></el-input>
+              <el-input placeholder="预报时效单位" v-model="msgFormDialog.timeUnit"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="层次单位">
-              <el-input placeholder="层次单位" v-model="msgFormDialog.level_unit"></el-input>
+              <el-input placeholder="层次单位" v-model="msgFormDialog.levelUnit"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="预报时效列表">
-              <el-input placeholder="预报时效列表" v-model="msgFormDialog.time_list"></el-input>
+              <el-input placeholder="预报时效列表" v-model="msgFormDialog.timeList"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -283,9 +283,10 @@
 <script>
 import {
   gcl,
-  dataserverbaseinfoGet,
-  findByDataCLassId,
-  saveBase
+  findByDataServiceId,
+  dataserverconfigSave,
+  serviceCodeQueryAll,
+  findByDbFcstEle
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { getAllLevel } from "@/api/GridDataDictionaryManagement/levelManagement";
 export default {
@@ -314,16 +315,16 @@ export default {
       dialogTitle: "新增数据服务信息",
       dataServeDialog: false,
       msgFormDialog: {
-        field_type: "",
-        ele_unit: "",
+        fieldType: "",
+        eleUnit: "",
         dataClassId: this.rowData.DATA_CLASS_ID
       },
       rules: {
-        s_number: [{ required: true, message: "请输入序号", trigger: "blur" }],
-        area_id: [
+        num: [{ required: true, message: "请输入序号", trigger: "blur" }],
+        areaId: [
           { required: true, message: "请选择区域代码", trigger: "change" }
         ],
-        db_fcst_ele: [
+        dbEleName: [
           {
             required: true,
             message: "请选择格点要素存储代码",
@@ -333,7 +334,7 @@ export default {
         levelType: [
           { required: true, message: "请输入层次类型", trigger: "blur" }
         ],
-        scale_divisor: [
+        scaleDivisor: [
           { required: true, message: "请输入层次转换因子", trigger: "blur" }
         ]
       }
@@ -380,62 +381,61 @@ export default {
       });
     },
     modeEleQueryAll() {
-      this.axios.get(interfaceObj.TableStructure_modeEleQueryAll).then(res => {
-        this.eleQueryAll = res.data.data;
+      serviceCodeQueryAll().then(response => {
+        if (response.code == 200) {
+          this.eleQueryAll = response.data;
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
       });
     },
     getServeByEle(val) {
-      // this.msgFormDialog.field_type = "";
-      this.axios
-        .get(interfaceObj.TableStructure_getByEle, {
-          params: {
-            db_fcst_ele: val
-          }
-        })
-        .then(res => {
-          this.eleOptionsList = res.data.data;
-        });
-    },
-    getEleUnit(val) {
-      let record_id;
-      this.eleOptionsList.forEach(element => {
-        if (element.user_fcst_ele == val) {
-          record_id = element.record_id;
+      findByDbFcstEle({ dbFcstEle: val }).then(response => {
+        if (response.code == 200) {
+          this.eleOptionsList = response.data;
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
         }
       });
-      this.axios
-        .get(interfaceObj.TableStructure_getDminById, {
-          params: {
-            id: record_id
-          }
-        })
-        .then(res => {
-          this.msgFormDialog.ele_unit = res.data.data.ele_unit;
-        });
+    },
+    getEleUnit(val) {
+      this.eleOptionsList.forEach(element => {
+        if (element.userFcstEle == val) {
+          this.msgFormDialog.eleUnit = element.eleUnit;
+          this.msgFormDialog.eleNameCn = element.eleName;
+          this.msgFormDialog.eleLongName = element.elePropertyName;
+        }
+      });
     },
     addBase() {
       let obj = Object.assign(this.baseSet, this.baseServe);
       console.log(obj);
-      // saveBase(obj).then(response => {
-      //   if(response.code == 200){
-      //     this.$message({
-      //         type: "success",
-      //         message: "保存成功"
-      //       });
-      //   }else{
-      //     this.$message({
-      //         type: "error",
-      //         message:response.msg
-      //       });
-      //   }
-      // });
+      dataserverconfigSave(obj).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "保存成功"
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
+      });
     },
     add() {
       this.msgFormDialog = {};
       this.msgFormDialog.dataClassId = this.rowData.DATA_CLASS_ID;
       this.dialogTitle = "新增数据服务信息";
       this.getAllLevelMethods();
-      // this.modeEleQueryAll();
+      this.modeEleQueryAll();
       this.dataServeDialog = true;
     },
     edit() {
@@ -447,8 +447,8 @@ export default {
       } else {
         this.msgFormDialog = {};
         this.msgFormDialog.DATA_CLASS_ID = this.rowData.DATA_CLASS_ID;
-        this.getAllLevel();
-        // this.modeEleQueryAll();
+        this.getAllLevelMethods();
+        this.modeEleQueryAll();
         this.dialogTitle = "编辑数据服务信息";
         this.msgFormDialog = this.multipleSelection[0];
         this.dataServeDialog = true;
@@ -628,7 +628,6 @@ export default {
             }
           }
           this.optionsColumnList = tableInfo_k.concat(tableInfo_e);
-          console.log(this.optionsColumnList);
           if (data.length == 0) {
             this.optionsColumnList = [];
           }
@@ -642,14 +641,12 @@ export default {
     },
     getoptionsArea() {},
     async getBaseAreaOptions() {
-      let obj = {
-        pageNum: 1,
-        pageSize: 100,
-        areaId: ""
-      };
-      // await defineList(obj).then(response => {
-      //   this.baseAreaOptions = response.data.pageData;
-      // });
+      await findByDataServiceId({
+        dataServiceId: this.rowData.DATA_CLASS_ID
+      }).then(response => {
+        console.log(response);
+        this.baseAreaOptions = response.data;
+      });
     },
     async forParent() {
       // this.searchFun();

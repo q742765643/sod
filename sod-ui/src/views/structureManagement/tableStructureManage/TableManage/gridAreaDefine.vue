@@ -47,9 +47,11 @@
 <script>
 import {
   gridareaSave,
-  gridareaList
+  gridareaList,
+  findByDataServiceId,
+  allArea,
+  gridareaDel
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
-import { defineList } from "@/api/GridDataDictionaryManagement/areaType";
 export default {
   name: "gridEreaDefine",
   props: { rowData: Object },
@@ -75,7 +77,6 @@ export default {
       console.log(this.queryParams);
       gridareaList(this.queryParams).then(res => {
         if (res.code == 200) {
-          debugger;
           this.tableData = res.data.pageData;
           this.total = res.data.totalCount;
         } else {
@@ -90,13 +91,8 @@ export default {
       this.multipleSelection = val;
     },
     getoptionsArea() {
-      let obj = {
-        pageNum: 1,
-        pageSize: 10,
-        areaId: ""
-      };
-      defineList(obj).then(response => {
-        this.optionsArea = response.data.pageData;
+      allArea().then(response => {
+        this.optionsArea = response.data;
       });
     },
     add() {
@@ -107,7 +103,6 @@ export default {
     },
     save() {
       this.isEdit = !this.isEdit;
-      debugger;
       var time = new Date();
       let obj = {};
       obj.areaId = this.selectArea;
@@ -116,7 +111,7 @@ export default {
           obj.areaRegionDesc = element.areaDesc;
         }
       });
-      obj.dataClassId = this.rowData.DATA_CLASS_ID;
+      obj.dataServiceId = this.rowData.DATA_CLASS_ID;
       console.log(obj);
       gridareaSave(obj).then(res => {
         if (res.code == 200) {
@@ -136,26 +131,30 @@ export default {
     deleteArea() {
       let ids = [];
       this.multipleSelection.forEach(element => {
-        ids.push(element.record_id);
+        ids.push(element.id);
       });
-      this.axios
-        .post(interfaceObj.TableStructure_deleteGridArea, {
-          record_ids: ids.join(",")
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.searchFun();
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
+      if (ids.length == 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
         });
+        return;
+      }
+      console.log(ids);
+      gridareaDel({ ids: ids.join(",") }).then(res => {
+        if (res.code == 200) {
+          this.searchFun();
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     },
     forParent() {
       this.searchFun();
