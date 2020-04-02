@@ -176,6 +176,35 @@
                                          left join T_SOD_LOGIC_DEFINE c on b.logic_flag = c.logic_flag
     </select>
 
+    <select id="getInfoByUserIdMysql" resultType="java.util.Map">
+        select b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
+                left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
+                left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+        union
+        select c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE a
+                  left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
+                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+        order by id asc
+    </select>
+    <select id="getInfoByUserIdMysql" resultType="java.util.Map">
+        select b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
+                  left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
+                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+        union
+        select c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE a
+                  left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
+                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+        order by id asc
+    </select>
+
+    <select id="getLogicByUserId" resultType="java.util.Map">
+       select  distinct a.* from T_SOD_LOGIC_DEFINE a, T_SOD_LOGIC_DATABASE b where a.id = b.logic_id
+               and b.database_id in
+              <foreach collection="databaseIds" item="item" index="index" open="(" close=")" separator=",">
+                  #{item}
+             </foreach>
+    </select>
+
 
     <select id="getLogicClassTree" resultType="java.util.Map">
         SELECT LOGIC_NAME "name",CONCAT('0-',LOGIC_FLAG) "id",'0' "pId",'1' "type",'0' "metaDataId" FROM  T_SOD_LOGIC_DEFINE

@@ -148,6 +148,16 @@ public class CloudDatabaseApplyController {
         return resultT;
     }
 
+    @PutMapping("/updateExamineStatus")
+    @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
+    public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id,String examineStatus)
+    {
+        ResultT<CloudDatabaseApplyDto> resultT=new ResultT<>();
+        CloudDatabaseApplyDto cloudDatabaseApplyDto = this.cloudDatabaseApplyService.updateExamineStatus(id,examineStatus);
+        resultT.setData(cloudDatabaseApplyDto);
+        return resultT;
+    }
+
     @GetMapping(value = "/getById")
     @ApiOperation(value = "根据id查询", notes = "根据id查询")
     public ResultT<CloudDatabaseApplyDto> getById(String id)
@@ -172,5 +182,15 @@ public class CloudDatabaseApplyController {
     public ResultT getDictDataByType(@PathVariable String type){
         List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType(type);
         return  ResultT.success(dictDataDtos);
+    }
+
+    @GetMapping(value = "/getByUserId")
+    @ApiOperation(value = "根据用户id查询", notes = "根据用户id查询")
+    public ResultT<List<CloudDatabaseApplyDto>> getByUserId(String userId)
+    {
+        ResultT<List<CloudDatabaseApplyDto>> resultT=new ResultT<>();
+        List<CloudDatabaseApplyDto> cloudDatabaseApplyDtos = this.cloudDatabaseApplyService.getByUserId(userId);
+        resultT.setData(cloudDatabaseApplyDtos);
+        return resultT;
     }
 }

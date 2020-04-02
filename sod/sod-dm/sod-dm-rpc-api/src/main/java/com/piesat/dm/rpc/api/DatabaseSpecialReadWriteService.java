@@ -23,4 +23,6 @@ public interface DatabaseSpecialReadWriteService {
     List<DatabaseSpecialReadWriteDto> getDotList(String sdbId, String dataType);
 
     List<DatabaseSpecialReadWriteDto> findBySdbIdAndDataClassId(String sdbId, String dataClassId);
+
+    DatabaseSpecialReadWriteDto saveDto(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto);
 }

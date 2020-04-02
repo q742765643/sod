@@ -23,7 +23,11 @@ public interface DataAuthorityApplyService {
 
     Map<String,Object> updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto);
 
+    Map<String,Object>  updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto);
+
     List<Map<String,Object>> getRecordListByUserId(String userId);
 
     void updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause);
+
+    void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id,String data_class_id,String database_id,Integer authorize, String cause);
 }

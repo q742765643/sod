@@ -8,6 +8,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据用途定义
@@ -33,4 +34,6 @@ public interface LogicDefineService {
     List<LogicDefineDto> findByParam(LogicDefineDto logicDefineDto);
 
     LogicDefineDto updateDto(LogicDefineDto logicDefineDto);
+
+    List<Map<String,Object>> getLogicByUserId(String databaseIds);
 }

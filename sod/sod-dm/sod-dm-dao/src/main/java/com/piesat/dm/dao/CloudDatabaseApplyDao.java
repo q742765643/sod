@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.CloudDatabaseApplyEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -11,4 +13,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CloudDatabaseApplyDao extends BaseDao<CloudDatabaseApplyEntity> {
+    List<CloudDatabaseApplyEntity> findByUserIdOrderByExamineStatusAscCreateTimeDesc(String userId);
 }

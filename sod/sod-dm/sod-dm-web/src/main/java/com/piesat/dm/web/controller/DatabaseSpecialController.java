@@ -1,16 +1,10 @@
 package com.piesat.dm.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.netflix.discovery.converters.Auto;
-import com.piesat.dm.common.tree.Tree;
-import com.piesat.dm.common.tree.Ztree;
-import com.piesat.dm.entity.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.rpc.api.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.*;
-import com.piesat.sso.client.annotation.Log;
-import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +33,19 @@ public class DatabaseSpecialController {
     private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
     @Autowired
     private DatabaseSpecialAuthorityService databaseSpecialAuthorityService;
+
+
+    @PostMapping(value = "/save")
+    @ApiOperation(value = "添加", notes = "添加")
+    public ResultT save(@RequestBody DatabaseSpecialDto databaseSpecialDto) {
+        try {
+            DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
     @ApiOperation(value = "获取专题库列表")
     @RequiresPermissions("dm:databaseSpecial:specialList")
@@ -85,6 +92,19 @@ public class DatabaseSpecialController {
     public ResultT delete(String id) {
         try {
             this.databaseSpecialService.deleteById(id);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据专题库id删除专题库权限表中记录")
+    @RequiresPermissions("dm:databaseSpecial:deleteAuthorityBySdbId")
+    @DeleteMapping(value = "/deleteAuthorityBySdbId")
+    public ResultT deleteAuthorityBySdbId(String sdbId) {
+        try {
+            this.databaseSpecialService.deleteAuthorityBySdbId(sdbId);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
@@ -210,4 +230,17 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+    @ApiOperation(value = "根据用户id和使用状态查询")
+    @RequiresPermissions("dm:databaseSpecial:getByUserIdAndUseStatus")
+    @GetMapping(value = "/getByUserIdAndUseStatus")
+    public ResultT getByUserIdAndUseStatus(String userId,String useStatus) {
+        try {
+            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.getByUserIdAndUseStatus(userId,useStatus);
+            return ResultT.success(databaseSpecialDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

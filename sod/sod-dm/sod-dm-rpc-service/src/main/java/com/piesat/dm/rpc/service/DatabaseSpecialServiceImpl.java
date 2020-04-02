@@ -78,6 +78,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    public void deleteAuthorityBySdbId(String sdbId) {
+        this.databaseSpecialAuthorityDao.deleteBySdbId(sdbId);
+    }
+
+    @Override
     public DatabaseSpecialDto getDotById(String id) {
         DatabaseSpecialEntity databaseSpecialEntity = this.getById(id);
         return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
@@ -345,6 +350,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         DatabaseSpecialEntity databaseSpecialEntity = databaseSpecialMapper.toEntity(databaseSpecialDto);
         databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
         return databaseSpecialMapper.toDto(databaseSpecialEntity);
+    }
+
+    @Override
+    public List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId, String useStatus) {
+        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByUserIdAndUseStatus(userId, useStatus);
+        return databaseSpecialMapper.toDto(databaseSpecialEntities);
     }
 
     /**
