@@ -115,7 +115,7 @@
                   <el-button size="small" @click="showStructureManage(scope.row)">
                     <i
                       class="btnRound blueRound"
-                      v-if="scope.row.tablecount > scope.row.roundCount"
+                      v-if="scope.row.TABLECOUNT > scope.row.roundCount"
                     ></i>
                     <i class="btnRound orangRound" v-else></i>
                     表结构管理
@@ -192,6 +192,11 @@
         v-bind:parentRowData="rowData"
       />
     </el-dialog>
+
+    <!-- SQL建表 -->
+    <el-dialog title="SQL建表" :visible.sync="handleSQLDialog" width="80%">
+      <handleSQL @cancelHandle="cancelHandle" v-if="handleSQLDialog" :handleSQLObj="handleSQLObj"></handleSQL>
+    </el-dialog>
   </div>
 </template>
 
@@ -206,6 +211,8 @@ import StructureMaterialSingle from "@/views/structureManagement/tableStructureM
 import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
 // 表结构管理-公共元数据树查询的页面
 import PublicDatumPage from "@/views/structureManagement/tableStructureManage/PublicDatumPage";
+// SQL建表
+import handleSQL from "@/views/structureManagement/tableStructureManage/handleSQL";
 import {
   dataClassAll,
   databaseClass,
@@ -225,7 +232,8 @@ export default {
     StructureMaterialSingle,
     PublicDatumPage,
     StructureManageTable,
-    StructureMaterialList
+    StructureMaterialList,
+    handleSQL
   },
   data() {
     return {
@@ -308,7 +316,7 @@ export default {
             obj.logic_id = item.logic_id;
             obj.logic_name = item.LOGIC_NAME;
             obj.storage_name = item.name_cn;
-            obj.storage_type = item.storage_type;
+            obj.STORAGE_TYPE = item.STORAGE_TYPE;
             obj.physicsName = item.database_name;
             obj.special = item.database_id;
             obj.special_database_name = item.special_database_name;
@@ -352,9 +360,9 @@ export default {
           if (this.tableData.length > 0) {
             this.tableData.forEach((item, index) => {
               item.roundCount =
-                item.storage_type == "K_E_table"
+                item.STORAGE_TYPE == "K_E_table"
                   ? 1
-                  : item.storage_type == "MK_table"
+                  : item.STORAGE_TYPE == "MK_table"
                   ? 1
                   : 0;
             });
@@ -390,6 +398,10 @@ export default {
         row: row
       };
     },
+    cancelHandle() {
+      this.handleSQLObj = {};
+      this.handleSQLDialog = false;
+    },
     async handleCommand(command) {
       if (command.button == "copy") {
         sessionStorage.setItem(
@@ -410,7 +422,7 @@ export default {
             type: "error"
           });
         }
-        if (command.row.storage_type !== copyObj.storage_type) {
+        if (command.row.STORAGE_TYPE !== copyObj.STORAGE_TYPE) {
           this.$message({
             message: "复制与粘贴表存储类型不一致！",
             type: "info"
@@ -474,7 +486,17 @@ export default {
       this.searchFun("search");
       this.structureManageVisible = false;
     },
-    showSQLManage() {},
+    showSQLManage(row) {
+      if (row.TABLECOUNT > row.roundCount) {
+        this.handleSQLObj = row;
+        this.handleSQLDialog = true;
+      } else {
+        this.$message({
+          message: "表结构不存在，请先创建",
+          type: "info"
+        });
+      }
+    },
     // 选中行
     handleCurrentChange(currentRow) {
       if (currentRow == null) {

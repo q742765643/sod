@@ -9,28 +9,32 @@
       </el-carousel>
     </section>
     <section>
-      <el-row class="row-bg" justify="space-between" type="flex">
-        <el-col :span="16" class="leftCol elcol">
-          <span class="homeTitle">资料分类统计</span>
-          <div class="handleChart">
-            <el-button :type="classType" @click="classBarInit" size="small">按资料分类</el-button>
-            <el-button :type="DBType" @click="DBBarInit" size="small">按数据库分类</el-button>
+      <el-row class="row-bg" justify="space-between" type="flex" :gutter="20">
+        <el-col :span="16">
+          <div class="colBox">
+            <span class="homeTitle">资料分类统计</span>
+            <div class="handleChart">
+              <el-button :type="classType" @click="classBarInit" size="small">按资料分类</el-button>
+              <el-button :type="DBType" @click="DBBarInit" size="small">按数据库分类</el-button>
+            </div>
+            <div class="chartsBox" id="dataCLassfication"></div>
           </div>
-          <div class="chartsBox" id="dataCLassfication"></div>
         </el-col>
-        <el-col :span="8" class="rightCol elcol">
-          <span class="homeTitle">待办提醒</span>
-          <div class="eventBox">
-            <div
-              :key="index"
-              @click="goPageUrl(item.name)"
-              class="eventList"
-              v-for="(item, index) in eventList"
-            >
-              <i class="el-icon-price-tag"></i>
-              <span class="name">{{ item.name }}</span>，待办
-              <span class="todoNum">{{ item.notDone }}</span>条，已办理
-              <span class="haveTodoNum">{{ item.alreadyDone }}</span>条
+        <el-col :span="8">
+          <div class="colBox">
+            <span class="homeTitle">待办提醒</span>
+            <div class="eventBox">
+              <div
+                :key="index"
+                @click="goPageUrl(item.name)"
+                class="eventList"
+                v-for="(item, index) in eventList"
+              >
+                <i class="el-icon-price-tag"></i>
+                <span class="name">{{ item.name }}</span>，待办
+                <span class="todoNum">{{ item.uncheck }}</span>条，已办理
+                <span class="haveTodoNum">{{ item.checked }}</span>条
+              </div>
             </div>
           </div>
         </el-col>
@@ -43,7 +47,7 @@
         <el-col :key="index" :span="8" v-for="(item, index) in pieBox">
           <el-card class="box-card">
             <div class="clearfix" slot="header">
-              <span>{{ item.logic_name }}</span>
+              <span>{{ item.LOGIC_NAME }}</span>
             </div>
             <div class="cardBody">
               <div :id="pieId(index)" class="pieBox"></div>
@@ -172,35 +176,40 @@
         <el-col :key="index" :span="6" v-for="(item, index) in projectLibraryList">
           <div :class="'project' + index">
             <span>{{ "信息中心" }}</span>
-            <p>{{ item.tdb_name }}</p>
+            <p>{{ item.SDB_NAME }}</p>
           </div>
         </el-col>
       </el-row>
     </section>
 
     <section>
-      <el-row class="row-bg">
-        <el-col :span="24" class="leftCol elcol">
-          <span class="homeTitle">资料种类统计</span>
+      <el-row class="row-bg" :gutter="20">
+        <el-col :span="16">
+          <div class="colBox">
+            <span class="homeTitle">资料种类统计</span>
 
-          <div class="chartsBox" id="lineChart"></div>
+            <div class="chartsBox" id="lineChart"></div>
+          </div>
         </el-col>
-        <!-- <el-col :span="8" class="rightCol elcol">
-          <span class="homeTitle">帮助文档</span>
-          <div class="documentBox">
-            <div class="documentList" v-for="(item,index) in documentList" :key="index">
-              <span class="round"></span>
-              <span
-                class="name"
-                :title="item.file_name"
-              >{{item.file_type == 'dev'?'[开发文档] ':'[运维文档] '}}{{item.file_name}}</span>
-              <el-link
-                type="primary"
-                @click="downloadWord(item.file_stor_path+'/'+item.file_stor_name)"
-              >[下载]</el-link>
+
+        <el-col :span="8">
+          <div class="colBox">
+            <span class="homeTitle">帮助文档</span>
+            <div class="documentBox">
+              <div class="documentList" v-for="(item,index) in documentList" :key="index">
+                <span class="round"></span>
+                <span
+                  class="name"
+                  :title="item.file_name"
+                >{{item.file_type == 'dev'?'[开发文档] ':'[运维文档] '}}{{item.file_name}}</span>
+                <el-link
+                  type="primary"
+                  @click="downloadWord(item.file_stor_path+'/'+item.file_stor_name)"
+                >[下载]</el-link>
+              </div>
             </div>
           </div>
-        </el-col>-->
+        </el-col>
       </el-row>
     </section>
 
@@ -223,6 +232,14 @@
 <script>
 // import { interfaceObj } from "@/urlConfig.js";
 import { testExport } from "@/components/commonVaildate.js";
+import {
+  findDataCount,
+  findDataMonthCount,
+  findUndoCount,
+  findLogicInfo,
+  findSpecialDbList,
+  findFileList
+} from "@/api/index";
 var echarts = require("echarts");
 export default {
   name: "home",
@@ -251,11 +268,11 @@ export default {
       ],
       // 代办提醒
       eventList: [
-        { name: "新增资料审核", alreadyDone: 0, notDone: 0 },
-        { name: "数据授权审核", alreadyDone: 0, notDone: 0 },
-        { name: "数据库账户审核", alreadyDone: 0, notDone: 0 },
-        { name: "业务专题库审核", alreadyDone: 0, notDone: 0 },
-        { name: "云数据库审核", alreadyDone: 0, notDone: 0 }
+        { name: "新增资料审核", checked: 0, uncheck: 0 },
+        { name: "数据授权审核", checked: 0, uncheck: 0 },
+        { name: "数据库账户审核", checked: 0, uncheck: 0 },
+        { name: "业务专题库审核", checked: 0, uncheck: 0 },
+        { name: "云数据库审核", checked: 0, uncheck: 0 }
       ],
       // 饼图
       pieBox: [],
@@ -268,16 +285,15 @@ export default {
     };
   },
   mounted() {
-    /*//资料分类
-    this.drawBarChartClass();
+    //资料分类
+    // this.drawBarChartClass();
     // 资料种类统计
     this.drawLineChart();
-    */
   },
   created() {
     this.getEventList();
-    // this.getHelpDocument();
-    this.getPieBox();
+    this.getHelpDocument();
+    // this.getPieBox();
     this.queryCheckList();
   },
   watch: {
@@ -291,22 +307,22 @@ export default {
   methods: {
     // 代办提醒
     getEventList() {
-      this.axios.get(interfaceObj.getUpcomingDataJson).then(res => {
-        let data = res.data.data;
-        this.eventList[0].alreadyDone = data.xzzl.alreadyDone;
-        this.eventList[0].notDone = data.xzzl.notDone;
+      findUndoCount().then(res => {
+        let data = res.data;
+        this.eventList[0].checked = data.xzzl.checked;
+        this.eventList[0].uncheck = data.xzzl.uncheck;
 
-        // this.eventList[1].alreadyDone = data.sjsq.alreadyDone;
-        // this.eventList[1].notDone = data.sjsq.notAgency;
+        // this.eventList[1].checked = data.sjsq.checked;
+        // this.eventList[1].uncheck = data.sjsq.notAgency;
 
-        this.eventList[1].alreadyDone = data.sjzh.alreadyDone;
-        this.eventList[1].notDone = data.sjzh.notDone;
+        this.eventList[1].checked = data.sjkzh.checked;
+        this.eventList[1].uncheck = data.sjkzh.uncheck;
 
-        this.eventList[2].alreadyDone = data.ywzt.alreadyDone;
-        this.eventList[2].notDone = data.ywzt.notAgency;
+        this.eventList[2].checked = data.ywztk.checked;
+        this.eventList[2].uncheck = data.ywztk.uncheck;
 
-        this.eventList[3].alreadyDone = data.ysjk.alreadyDone;
-        this.eventList[3].notDone = data.ysjk.notDone;
+        this.eventList[3].checked = data.ysjk.checked;
+        this.eventList[3].uncheck = data.ysjk.uncheck;
       });
     },
     // 代办跳页
@@ -331,6 +347,13 @@ export default {
     },
     // 按资料分类的chart
     drawBarChartClass() {
+      findDataCount().then(response => {
+        console.log(response);
+        /* this.baseServe.eleField = res.data.data.eleField;
+          this.baseServe.regionField = res.data.data.regionField;
+          this.baseSet = res.data.data; */
+      });
+
       this.axios.get(interfaceObj.getCountDataJson).then(res => {
         let dataNumChart = res.data.data.dataNum;
         let dataTypeChart = res.data.data.dataType;
@@ -408,8 +431,8 @@ export default {
     },
     // 数据库分类
     drawDBchart() {
-      this.axios.get(interfaceObj.getDatabaseGroup).then(res => {
-        let data = res.data.data;
+      findLogicInfo().then(res => {
+        let data = res.data;
         var myChart = echarts.init(
           document.getElementById("dataCLassfication")
         );
@@ -502,12 +525,12 @@ export default {
     },
     // 饼图box
     getPieBox() {
-      this.axios.get(interfaceObj.queryLogicPhysicsInfos).then(res => {
-        let piedata = res.data.data;
+      findLogicInfo().then(res => {
+        let piedata = res.data;
         let RepeatArry = [];
         for (var i = 0; i < piedata.length; i++) {
           for (var j = i + 1; j < piedata.length; j++) {
-            if (piedata[i].logic_name == piedata[j].logic_name) {
+            if (piedata[i].LOGIC_NAME == piedata[j].LOGIC_NAME) {
               RepeatArry.push(piedata[j]);
               // 名称
               piedata[i].database_name2 = piedata[j].database_name;
@@ -634,7 +657,7 @@ export default {
           pieList.push(
             {
               value: this.pieBox[i].total_capacity,
-              name: this.pieBox[i].logic_name
+              name: this.pieBox[i].LOGIC_NAME
             },
             {
               value: this.pieBox[i].total_capacity2,
@@ -647,7 +670,7 @@ export default {
               this.pieBox[i].total_capacity == undefined
                 ? 0
                 : this.pieBox[i].total_capacity,
-            name: this.pieBox[i].logic_name
+            name: this.pieBox[i].LOGIC_NAME
           });
         }
         option.series[0].data = pieList;
@@ -656,15 +679,15 @@ export default {
     },
     // 获取专题库
     queryCheckList() {
-      this.axios.get(interfaceObj.queryCheckList).then(res => {
-        this.projectLibraryList = res.data.data;
+      findSpecialDbList().then(res => {
+        this.projectLibraryList = res.data;
       });
     },
     // 资料种类统计
     drawLineChart() {
-      this.axios.get(interfaceObj.getCountDataByMonth).then(res => {
-        let numData = res.data.data.numData;
-        let monthData = res.data.data.monthData;
+      findDataMonthCount().then(res => {
+        let numData = res.data.numData;
+        let monthData = res.data.monthData;
 
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById("lineChart"));
@@ -756,7 +779,7 @@ export default {
     },
     // 帮助文档
     getHelpDocument() {
-      this.axios.get(interfaceObj.getFileList).then(res => {
+      findFileList().then(res => {
         this.documentList = res.data.data;
       });
     },
@@ -798,13 +821,11 @@ section {
 .el-carousel--horizontal {
   overflow: hidden;
 }
-.elcol {
+.colBox {
+  width: 100%;
+  height: 100%;
   background: #fff;
   position: relative;
-}
-.leftCol {
-  margin-right: 20px;
-  padding-bottom: 20px;
 }
 .homeTitle {
   color: #373d41;
@@ -872,7 +893,7 @@ section {
   padding: 0 10px;
   .el-col {
     div {
-      // background: url(~@/assets/home/images/topicInfo.png) no-repeat 10px center;
+      background: url(~@/assets/home/images/topicInfo.png) no-repeat 10px center;
       border-radius: 6px;
       height: 72px;
       background-color: #409eff;
