@@ -9,6 +9,7 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.dao.DataAuthorityApplyDao;
@@ -147,7 +148,6 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //获取用户up账户
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(dataAuthorityApplyDto.getUserId(), "1");
         if(databaseUserDto == null){
-            map.put("returnCode",1);
             map.put("msg","授权失败,未找到用户对应数据库账户信息");
             return map;
         }
@@ -166,8 +166,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //为每个数据表进行授权
         for(DataAuthorityRecordDto dataAuthorityRecordDto:dataAuthorityRecordList){
 
+            boolean flag = true;
             if(!databaseIds.contains(dataAuthorityRecordDto.getDatabaseId())){
-                buffer.append("不具备对物理库：" + dataAuthorityRecordDto.getDatabaseId()+"的访问权限");
+                buffer.append("不具备对物理库：" + dataAuthorityRecordDto.getDatabaseId()+"的访问权限" + "<br/>");
                 continue;
             }
 
@@ -176,42 +177,74 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
 
             DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
-            if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权
-                if(databaseDto.getDatabaseDefine().getId().equals("RADB") || databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
-                    //Cassandra  RADB
 
-                 }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){
-                    try {
-                        //获取数据库管理账户
-                        DatabaseAdministratorDto databaseAdministratorDto = null;
-                        Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
-                        for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
-                            if(databaseAdministratorDto1.getIsManager()){
-                                databaseAdministratorDto = databaseAdministratorDto1;
-                                break;
-                            }
-                        }
-                        Xugu xugu = new Xugu(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){
-
+            //获取数据库管理账户
+            DatabaseAdministratorDto databaseAdministratorDto = null;
+            Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
+            for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
+                if(databaseAdministratorDto1.getIsManager()){
+                    databaseAdministratorDto = databaseAdministratorDto1;
+                    break;
                 }
-
-            }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//拒绝
-
             }
 
-            mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
+
+            if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){//xugu
+                if(databaseAdministratorDto == null){
+                    buffer.append("物理库：" + dataAuthorityRecordDto.getDatabaseId()+"没有管理员账户" + "<br/>");
+                    continue;
+                }
+                try {
+                    Xugu xugu = new Xugu(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
+                    if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
+                        xugu.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+                    }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//授权写
+                        xugu.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    flag = false;
+                    buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权失败" + "<br/>");
+                }
+
+
+
+            }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){//gbase8a
+                if(databaseAdministratorDto == null){
+                    buffer.append("物理库：" + dataAuthorityRecordDto.getDatabaseId()+"没有管理员账户" + "<br/>");
+                    continue;
+                }
+                try {
+                    Gbase8a gbase8a = new Gbase8a(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
+                    List<String> ips = new ArrayList<String>();
+                    ips.add(ip);
+                    if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
+                        gbase8a.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),ips);
+                    }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//授权写
+                        gbase8a.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),ips);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    flag = false;
+                    buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权失败" +"<br/>");
+                }
+
+            }/*else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
+                //Cassandra
+            }*/
+            if(flag){
+                mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
+                buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权成功" + "<br/>");
+            }
         }
 
-        map.put("returnCode",0);
-
+        map.put("msg",buffer.toString());
         return map;
+    }
+
+    @Override
+    public Map<String, Object> updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto) {
+        return null;
     }
 
     @Override
@@ -237,15 +270,27 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                             if(StringUtils.isNotNullString(cause)){
                                 databaseSpecialReadWriteDto.setFailureReason(cause);
                             }
-                            databaseSpecialService.empowerDataOne(databaseSpecialReadWriteDto);//授权
+                            databaseSpecialReadWriteDto.setExamineStatus(authorize);
+                            databaseSpecialReadWriteService.saveDto(databaseSpecialReadWriteDto);
                         }
                     }
                 }
+
                 //资料授权审核
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(),authorize,cause);
-                //真正授权
             }
         }
+    }
+
+    @Override
+    public void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id, String data_class_id, String database_id, Integer authorize, String cause) {
+        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassIdAndDatabaseId(apply_id, data_class_id,database_id);
+        if(dataAuthorityRecordEntities != null && dataAuthorityRecordEntities.size() > 0){
+            for(DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordEntities){
+                mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(),authorize,cause);
+            }
+        }
+
     }
 
 }

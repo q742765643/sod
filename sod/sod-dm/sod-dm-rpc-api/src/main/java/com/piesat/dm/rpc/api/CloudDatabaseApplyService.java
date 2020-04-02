@@ -4,6 +4,8 @@ import com.piesat.dm.rpc.dto.CloudDatabaseApplyDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -20,6 +22,10 @@ public interface CloudDatabaseApplyService {
     CloudDatabaseApplyDto getDotById(String id);
 
     public void deleteById(String id);
+
+    List<CloudDatabaseApplyDto> getByUserId(String userId);
+
+    CloudDatabaseApplyDto updateExamineStatus(String id,String examineStatus);
 
 
 }

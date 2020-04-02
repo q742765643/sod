@@ -4,7 +4,9 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.entity.LogicStorageTypesEntity;
+import com.piesat.dm.rpc.api.DatabaseUserService;
 import com.piesat.dm.rpc.api.LogicDefineService;
+import com.piesat.dm.rpc.dto.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.LogicDefineDto;
 import com.piesat.dm.rpc.dto.LogicStorageTypesDto;
@@ -46,6 +48,8 @@ public class LogicDefineController {
     private GrpcService grpcService;
     @GrpcHthtClient
     private DictDataService dictDataService;
+    @Autowired
+    private DatabaseUserService databaseUserService;
 
 
     @GetMapping("/list")
@@ -176,6 +180,23 @@ public class LogicDefineController {
             lists.add(strings);
         }
         ExportTableUtil.exportTable(request, response, headList, lists , "逻辑库定义导出");
+    }
+
+    @ApiOperation(value = "根据用户id查询该用户账户中物理库对应的逻辑库信息")
+    @RequiresPermissions("dm:logicDefine:getLogicByUserId")
+    @GetMapping(value = "/getLogicByUserId")
+    public ResultT getLogicByUserId(String userId) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
+            if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
+                return ResultT.failed("请先创建存储账户！！！");
+            }
+            List<Map<String,Object>> logicDefineDtos = this.logicDefineService.getLogicByUserId(databaseUserDto.getExamineDatabaseId());
+            return ResultT.success(logicDefineDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "查询所有(升级版)")

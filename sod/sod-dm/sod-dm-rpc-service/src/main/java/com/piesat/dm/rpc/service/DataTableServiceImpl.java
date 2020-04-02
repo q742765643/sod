@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
+import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.dao.*;
 import com.piesat.dm.entity.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -99,6 +100,15 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         String sql = "select A.* ,B.data_class_id,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> findByUserId(String userId) {
+        if(DatabaseType.databaseType.toLowerCase().equals("mysql")){
+            return mybatisQueryMapper.getInfoByUserIdMysql(userId);
+        }else{
+            return mybatisQueryMapper.getInfoByUserId(userId);
+        }
     }
 
     @Override

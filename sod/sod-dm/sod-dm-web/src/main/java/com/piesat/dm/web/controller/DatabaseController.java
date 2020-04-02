@@ -1,10 +1,13 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.entity.DatabaseEntity;
 import com.piesat.dm.rpc.api.DatabaseDefineService;
 import com.piesat.dm.rpc.api.DatabaseService;
+import com.piesat.dm.rpc.api.DatabaseUserService;
 import com.piesat.dm.rpc.dto.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.dto.DatabaseUserDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -14,6 +17,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +35,8 @@ public class DatabaseController {
     private DatabaseService databaseService;
     @Autowired
     private DatabaseDefineService databaseDefineService;
+    @Autowired
+    private DatabaseUserService databaseUserService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:database:add")
@@ -108,5 +114,22 @@ public class DatabaseController {
     public ResultT findByLevel(int level) {
         List<DatabaseDto> all = this.databaseService.findByLevel(level);
         return ResultT.success(all);
+    }
+
+    @ApiOperation(value = "根据用户ID查询可用物理库的信息")
+    @RequiresPermissions("dm:database:findByUserId")
+    @GetMapping(value = "/findByUserId")
+    public ResultT findByUserId(String userId) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
+            if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
+                return ResultT.failed("请先创建存储账户！！！");
+            }
+            List<DatabaseDto> databaseDtos = this.databaseService.findByIdIn(Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
+            return ResultT.success(databaseDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }

@@ -138,6 +138,19 @@ public class DataTableController {
         }
     }
 
+    @ApiOperation(value = "根据用户id查询资料及父级")
+    @RequiresPermissions("dm:dataTable:findByUserId")
+    @GetMapping(value = "/findByUserId")
+    public ResultT findByUserId(String userId){
+        try {
+            List<Map<String, Object>> r = this.dataTableService.findByUserId(userId);
+            return ResultT.success(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
     @PostMapping(value = "/sample")
@@ -208,7 +221,7 @@ public class DataTableController {
         }
     }
 
-    @ApiOperation(value = "根据资料存储编码查询对应逻辑库中各个表的相关存储结构详细信息")
+    @ApiOperation(value = "根据资料存储编码取得对应表的相关存储结构详细信息")
     @RequiresPermissions("dm:dataTable:getMultiDataInfoByClassId")
     @GetMapping(value = "/getMultiDataInfoByClassId")
     public ResultT getMultiDataInfoByClassId(String dataClassId){

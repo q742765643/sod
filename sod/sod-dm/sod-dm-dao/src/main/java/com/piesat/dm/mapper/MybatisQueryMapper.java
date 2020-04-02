@@ -59,7 +59,12 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getTableInfoByClassId(@Param("dataClassId") String dataClassId);
 
+    List<Map<String, Object>> getInfoByUserIdMysql(@Param("userId") String userId);
+    List<Map<String, Object>> getInfoByUserId(@Param("userId") String userId);
+
     List<Map<String, Object>> querySpecialReadWriteBySdbId(@Param("sdbId") String sdbId);
+
+    List<Map<String, Object>> getLogicByUserId(@Param("databaseIds") String[] databaseIds);
 
     List<Map<String, Object>> getRecordListByUserIdMysql(@Param("userId") String userId);
     List<Map<String, Object>> getRecordListByUserId(@Param("userId") String userId);

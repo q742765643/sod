@@ -31,6 +31,8 @@ public interface DatabaseSpecialService {
      */
     void deleteById(String id);
 
+    void deleteAuthorityBySdbId(String sdbId);
+
     /**
      * 根据id查询
      * @param id
@@ -70,4 +72,6 @@ public interface DatabaseSpecialService {
     List<DatabaseSpecialDto> getByExamineStatus(String examineStatus);
 
     DatabaseSpecialDto updateUseStatusById(String sdbId,String useStatus);
+
+    List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId,String useStatus);
 }

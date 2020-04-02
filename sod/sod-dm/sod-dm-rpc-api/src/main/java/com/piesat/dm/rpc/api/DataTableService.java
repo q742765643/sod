@@ -30,6 +30,8 @@ public interface DataTableService {
 
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
+    List<Map<String, Object>> findByUserId(String userId);
+
     List<Map<String, Object>> getByClassId(String dataClassId);
 
     List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId);

@@ -14,4 +14,6 @@ import java.util.List;
 @Repository
 public interface DataAuthorityRecordDao extends BaseDao<DataAuthorityRecordEntity> {
     List<DataAuthorityRecordEntity> findByApplyIdAndDataClassId(String applyId, String dataClassId);
+
+    List<DataAuthorityRecordEntity> findByApplyIdAndDataClassIdAndDatabaseId(String applyId, String dataClassId,String databaseId);
 }

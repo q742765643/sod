@@ -112,4 +112,18 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     public void deleteById(String id) {
         this.delete(id);
     }
+
+    @Override
+    public List<CloudDatabaseApplyDto> getByUserId(String userId) {
+        List<CloudDatabaseApplyEntity> cloudDatabaseApplyEntities = cloudDatabaseApplyDao.findByUserIdOrderByExamineStatusAscCreateTimeDesc(userId);
+        return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntities);
+    }
+
+    @Override
+    public CloudDatabaseApplyDto updateExamineStatus(String id, String examineStatus) {
+        CloudDatabaseApplyEntity cloudDatabaseApplyEntity = this.getById(id);
+        cloudDatabaseApplyEntity.setExamineStatus(examineStatus);
+        cloudDatabaseApplyEntity = this.saveNotNull(cloudDatabaseApplyEntity);
+        return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
+    }
 }

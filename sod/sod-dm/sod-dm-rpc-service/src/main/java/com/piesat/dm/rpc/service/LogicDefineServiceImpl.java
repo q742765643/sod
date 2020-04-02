@@ -8,6 +8,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.DatabaseDefineDao;
 import com.piesat.dm.dao.LogicDefineDao;
 import com.piesat.dm.entity.LogicDefineEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.LogicDefineService;
 import com.piesat.dm.rpc.dto.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.LogicDefineMapper;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据用途定义
@@ -34,6 +36,8 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     private LogicDefineMapper logicDefineMapper;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
 
     @Override
@@ -104,5 +108,10 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
         LogicDefineEntity logicDefineEntity=logicDefineMapper.toEntity(logicDefineDto);
         logicDefineEntity = this.saveNotNull(logicDefineEntity);
         return logicDefineMapper.toDto(logicDefineEntity);
+    }
+
+    @Override
+    public List<Map<String, Object>> getLogicByUserId(String databaseIds) {
+       return mybatisQueryMapper.getLogicByUserId(databaseIds.split(","));
     }
 }

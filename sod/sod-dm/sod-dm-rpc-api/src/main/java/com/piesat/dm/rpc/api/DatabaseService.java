@@ -29,4 +29,6 @@ public interface DatabaseService {
     List<Map<String,Object>> getByDatabaseDefineId(String id);
 
     List<DatabaseDto> findByLevel(int level);
+
+    List<DatabaseDto> findByIdIn(List<String> ids);
 }

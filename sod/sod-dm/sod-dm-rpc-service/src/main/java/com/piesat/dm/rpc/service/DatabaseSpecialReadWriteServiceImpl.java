@@ -44,5 +44,11 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
         return this.databaseSpecialReadWriteMapper.toDto(readWriteEntities);
     }
 
+    @Override
+    public DatabaseSpecialReadWriteDto saveDto(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
+        DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity=databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto);
+        databaseSpecialReadWriteEntity = this.saveNotNull(databaseSpecialReadWriteEntity);
+        return databaseSpecialReadWriteMapper.toDto(databaseSpecialReadWriteEntity);
+    }
 
 }

@@ -15,4 +15,6 @@ public interface DatabaseSpecialDao extends BaseDao<DatabaseSpecialEntity> {
 
     List<DatabaseSpecialEntity>  findByExamineStatusOrderBySortNoAscCreateTimeDesc(String examineStatus);
 
+    List<DatabaseSpecialEntity> findByUserIdAndUseStatus(String userId,String useStatus);
+
 }

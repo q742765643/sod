@@ -85,15 +85,17 @@ public class DataAuthorityApplyController {
     }
 
     @PutMapping(value = "/updateRecordCheck")
-    @ApiOperation(value = "审核资料", notes = "审核资料")
-    public ResultT<String> updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
+    @ApiOperation(value = "授权资料", notes = "授权资料")
+    public ResultT updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
        Map<String,Object> result = dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
-       if((Integer)result.get("returnCode") == 0){
-           return ResultT.success();
-       }else{
-           String  message = (String) result.get("message");
-           return ResultT.failed(message);
-       }
+       return ResultT.success(result.get("msg"));
+    }
+
+    @PutMapping(value = "/updateRecordCheckCancel")
+    @ApiOperation(value = "撤销已授权资料", notes = "撤销已授权资料")
+    public ResultT updateRecordCheckCancel(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
+        Map<String,Object> result = dataAuthorityApplyService.updateRecordCheckCancel(dataAuthorityApplyDto);
+        return ResultT.success(result.get("msg"));
     }
 
     @GetMapping(value = "/getRecordListByUserId")
@@ -112,6 +114,16 @@ public class DataAuthorityApplyController {
     public ResultT<String> updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause){
         try {
             dataAuthorityApplyService.updateRecordByApplyIdAndClassId(apply_id,data_class_id,authorize,cause);
+            return ResultT.success();
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @PutMapping(value = "/updateRecordByApplyIdAndClassIdAndDatabaseId")
+    @ApiOperation(value = "根据申请id、存储编码和数据库id修改数据授权资料信息", notes = "根据申请id、存储编码和数据库id修改数据授权资料信息")
+    public ResultT<String> updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id,String data_class_id,String database_id,Integer authorize, String cause){
+        try {
+            dataAuthorityApplyService.updateRecordByApplyIdAndClassIdAndDatabaseId(apply_id,data_class_id,database_id,authorize,cause);
             return ResultT.success();
         }catch (Exception e){
             return ResultT.failed(e.getMessage());
