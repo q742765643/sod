@@ -1,5 +1,11 @@
 package com.piesat.dm.rpc.dto;
 
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import lombok.Data;
 
 /**
