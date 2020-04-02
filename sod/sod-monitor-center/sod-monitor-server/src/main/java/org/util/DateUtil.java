@@ -1,7 +1,10 @@
 package org.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @program: sod
@@ -22,6 +25,18 @@ public class DateUtil {
         cal.setTime(d);
         cal.add(Calendar.HOUR_OF_DAY, 8);
         return cal.getTime();
+    }
+
+    public static Map<String,Date> getStartAndEnd(){
+        Map<String,Date> map=new HashMap<>();
+        Date endTime=new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endTime);
+        cal.add(Calendar.MINUTE, -5);
+        Date startTime=cal.getTime();
+        map.put("startTime",startTime);
+        map.put("endTime",endTime);
+        return map;
     }
 
 }

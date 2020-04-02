@@ -79,9 +79,11 @@ class ProcessEntity {
    var processFileEntity:ProcessFileEntity=_
 
    @BeanProperty
-   var startTime:String=_
+   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+   var startTime:Date=_
    @BeanProperty
-   var endTime:String=_
+   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+   var endTime:Date=_
 
 
 

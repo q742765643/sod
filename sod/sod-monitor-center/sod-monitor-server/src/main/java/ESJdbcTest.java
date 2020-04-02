@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @program: sod
@@ -25,6 +27,15 @@ public class ESJdbcTest {
         SshEntity sshEntity=new SshEntity();
         sshEntity.setUserName("111");
         sshEntity.setCreateTime(new Date());
+        Function<SshEntity,String> a= new Function<SshEntity,String>(){
+            @Override
+            public String apply(SshEntity sshEntity) {
+                return sshEntity.getIp();
+            }
+        };
+        List<SshEntity> list=new ArrayList();
+        List<String> ips = list.stream().map(a).collect(Collectors.toList());
+
         try {
             System.out.println(objectMapper.writeValueAsString(sshEntity));
         } catch (JsonProcessingException e1) {

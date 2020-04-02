@@ -35,9 +35,9 @@ class KafkaMonitor {
   @BeanProperty
   var groupId:String=_
   @BeanProperty
-  var startTime:String=_
+  var startTime:Date=_
   @BeanProperty
-  var endTime:String=_
+  var endTime:Date=_
   @BeanProperty
   var groupIds:JavaList[String]=_
 }

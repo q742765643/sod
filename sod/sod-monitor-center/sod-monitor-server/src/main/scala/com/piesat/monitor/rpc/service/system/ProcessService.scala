@@ -1,6 +1,7 @@
 package com.piesat.monitor.rpc.service.system
 
-import java.util.{List => JavaList}
+import java.util
+import java.util.{Date, List => JavaList}
 
 import com.piesat.monitor.dao.es.processConfig.ProcessConfigMapper
 import com.piesat.monitor.dao.es.system.{FileMapper, ProcessMapper}
@@ -14,6 +15,8 @@ import org.elasticsearch.index.query.{BoolQueryBuilder, QueryBuilder, QueryBuild
 import org.elasticsearch.search.sort.{FieldSortBuilder, SortOrder}
 import org.springframework.data.domain.{Page, PageRequest}
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
+import org.util.DateUtil
+
 import scala.collection.JavaConversions._
 
 
@@ -26,9 +29,45 @@ class ProcessService @Autowired()(processMapper: ProcessMapper,processDao:Proces
 
   def list(processEntity: ProcessEntity):JavaList[ProcessEntity]={
       processEntity.setDataset("system.process")
+      var map:util.Map[String,Date]=DateUtil.getStartAndEnd()
+
+      processEntity.startTime=map.get("startTime")
+      processEntity.endTime=map.get("endTime")
       var time=processMapper.maxTime(processEntity);
+
       processEntity.setTimestamp(time)
       processMapper.list(processEntity)
+  }
+  def checkProcess(ip:String):Boolean={
+    try {
+      var processConfig: ProcessConfig = new ProcessConfig
+      processConfig.setIp(ip)
+      var list: JavaList[ProcessConfig] = processConifgMapper.list(processConfig)
+      var processEntity = new ProcessEntity
+      processEntity.setHostname(processConfig.ip)
+      var plist: JavaList[ProcessEntity] = this.list(processEntity)
+      for (p: ProcessConfig <- list) {
+        for (pl: ProcessEntity <- plist) {
+          if (pl.cmdline.indexOf(p.processName) > 0) {
+            p.processState = "1"
+            p.timestamp = pl.timestamp
+          }
+        }
+      }
+      var flag: Boolean = true
+      for (p: ProcessConfig <- list) {
+        if (!p.processState.equals("1")) {
+          flag = false
+        }
+      }
+      flag
+    } catch {
+      case ex:Exception =>{
+        print(ex)
+      }
+        false
+    }
+
   }
   def listProcess(processConfig:ProcessConfig):JavaList[ProcessConfig]={
       var list:JavaList[ProcessConfig]=processConifgMapper.list(processConfig)
@@ -67,7 +106,7 @@ class ProcessService @Autowired()(processMapper: ProcessMapper,processDao:Proces
         */
       //filter.add(QueryBuilders.matchQuery("@timestamp", processEntity.getTimestamp));
     }
-    if(processEntity != null && !StringUtils.isEmpty(processEntity.getStartTime)) {
+    if(processEntity != null && null!=processEntity.getStartTime) {
       /**
         * 注：rangeQuery：范围匹配
         */

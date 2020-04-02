@@ -30,10 +30,10 @@
         from
         "metricbeat-*"
         where 1=1
-        <if test="endTime != null and endTime != ''">
+        <if test="endTime != null ">
             AND "@timestamp" &lt;= #{endTime}
         </if>
-        <if test="startTime != null and startTime != ''">
+        <if test="startTime != null ">
             AND  "@timestamp" &gt;= #{startTime}
         </if>
         <if test="dataset != null and dataset != ''">
@@ -63,10 +63,10 @@
         from
         "metricbeat-*"
         where 1=1
-        <if test="endTime != null and endTime != ''">
+        <if test="endTime != null ">
             AND "@timestamp" &lt;= #{endTime}
         </if>
-        <if test="startTime != null and startTime != ''">
+        <if test="startTime != null ">
             AND  "@timestamp" &gt;= #{startTime}
         </if>
         <if test="dataset != null and dataset != ''">
