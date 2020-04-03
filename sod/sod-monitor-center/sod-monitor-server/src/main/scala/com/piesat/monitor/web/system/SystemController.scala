@@ -6,8 +6,11 @@ import io.swagger.annotations.{Api, ApiOperation}
 import org.springframework.web.bind.annotation.{GetMapping, RequestMapping, RestController}
 import java.util.{List => JavaList}
 
+import com.piesat.monitor.entity.process.ProcessConfig
+import com.piesat.monitor.entity.ssh.SshEntity
 import com.piesat.monitor.entity.system._
 import com.piesat.monitor.rpc.service.system._
+import com.piesat.monitor.vo.cluster.CLusterMaster
 import org.springframework.beans.factory.annotation.Autowired
 
 /**
@@ -20,7 +23,8 @@ class SystemController @Autowired()(cpuService: CpuService,
                                     memoryService: MemoryService,
                                     fileService:FileService,
                                     processService:ProcessService,
-                                    netWorkService: NetWorkService) {
+                                    netWorkService: NetWorkService,
+                                    clusterMonitorService: ClusterMonitorService) {
   @GetMapping(Array("/cpuUsage"))
   @ApiOperation(value = "查询时间范围内cpu使用率", notes = "查询时间范围内cpu使用率")
   def cpuList(cpuEntity:CpuEntity):ResultT[JavaList[CpuEntity]]= {
@@ -47,9 +51,9 @@ class SystemController @Autowired()(cpuService: CpuService,
   }
   @GetMapping(Array("/processUsage"))
   @ApiOperation(value = "查询进程信息", notes = "查询进程信息")
-  def processList(processEntity: ProcessEntity):ResultT[JavaList[ProcessEntity]]= {
-    var list = processService.list(processEntity);
-    var resultT = new ResultT[JavaList[ProcessEntity]]()
+  def processList(processConfig: ProcessConfig):ResultT[JavaList[ProcessConfig]]= {
+    var list = processService.listProcess(processConfig);
+    var resultT = new ResultT[JavaList[ProcessConfig]]()
     resultT.setData(list);
     return resultT
   }
@@ -58,6 +62,14 @@ class SystemController @Autowired()(cpuService: CpuService,
   def netWorkList(netWorkEntity: NetWorkEntity):ResultT[JavaList[NetWorkEntity]]= {
     var list = netWorkService.list(netWorkEntity);
     var resultT = new ResultT[JavaList[NetWorkEntity]]()
+    resultT.setData(list);
+    return resultT
+  }
+  @GetMapping(Array("/clusterMonitor"))
+  @ApiOperation(value = "查询集群信息", notes = "查询集群信息")
+  def clusterMonitorList(sshEntity: SshEntity):ResultT[CLusterMaster]= {
+    var list = clusterMonitorService.list(sshEntity);
+    var resultT = new ResultT[CLusterMaster]()
     resultT.setData(list);
     return resultT
   }
