@@ -26,6 +26,10 @@ public interface MybatisQueryMapper {
 
     void updateNewdataApplyStatus(@Param("entity")NewdataApplyEntity newdataApplyEntity);
 
+    List<Map<String, Object>> getByUserIdAndApplyId(@Param("entity")NewdataApplyEntity newdataApplyEntity);
+
+    List<Map<String, Object>> getColumnByIdAndDDataId(@Param("entity")NewdataApplyEntity newdataApplyEntity);
+
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId")String databaseId, @Param("tableName")String tableName);
 
 
@@ -68,4 +72,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getRecordListByUserIdMysql(@Param("userId") String userId);
     List<Map<String, Object>> getRecordListByUserId(@Param("userId") String userId);
+
+
 }

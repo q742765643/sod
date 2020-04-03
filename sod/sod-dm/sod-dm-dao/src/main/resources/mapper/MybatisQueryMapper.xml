@@ -301,6 +301,47 @@
         </set>
              where  id = #{entity.id}
     </update>
+    <select id="getByUserIdAndApplyId" resultType="java.util.Map">
+        select a.*,b.logic_id logicId,b.database_id databaseId,f.logic_name,d.id physicId,e.class_name,
+               c.database_name || '[' || c.schema_name || ']' as 'schemaName',d.database_name || '[' || d.id || ']' as 'physicName'
+               from T_SOD_NEWDATA_APPLY a
+               left join T_SOD_STORAGE_CONFIGURATION b on a.data_class_id=b.data_class_id
+               left join T_SOD_LOGIC_DEFINE f on b.logic_id = f.id
+               left join T_SOD_DATABASE c on b.database_id = c.id
+               left join T_SOD_DATABASE_DEFINE d on c.database_define_id = d.id
+               left join T_SOD_DATA_CLASS e on a.data_class_id = e.data_class_id
+               <where>
+                   <if test="entity.userId != null and entity.userId  != ''">
+                       a.user_id = #{entity.userId}
+                   </if>
+                    <if test="entity.id != null and entity.id  != ''">
+                        and a.id = #{entity.id}
+                    </if>
+                   <if test="entity.dDataId != null and entity.dDataId  != ''">
+                       and a.d_data_id = #{entity.dDataId}
+                   </if>
+                   <if test="entity.dataOrigin != null and entity.dataOrigin  != ''">
+                       and a.data_origin = #{entity.dataOrigin}
+                   </if>
+               </where>
+    </select>
+    <select id="getColumnByIdAndDDataId" resultType="java.util.Map">
+        select  distinct c_element_code,ele_name,type,unit,user_ele_code,is_null,accuracy,is_primary_key,serial_number from T_SOD_DATA_TABLE_COLUMN where table_id in
+            ( select t.id table_name
+                from T_SOD_NEWDATA_APPLY a
+                left join T_SOD_STORAGE_CONFIGURATION b on a.data_class_id=b.data_class_id
+                left join T_SOD_DATA_LOGIC f on b.database_id = f.database_id and b.logic_id = f.logic_id and b.data_class_id = f.data_class_id
+                left join T_SOD_DATA_TABLE t on f.id = t.class_logic_id
+                <where>
+                    <if test="entity.id != null and entity.id  != ''">
+                        a.id = #{entity.id}
+                    </if>
+                    <if test="entity.dDataId != null and entity.dDataId  != ''">
+                        and a.d_data_id = #{entity.dDataId}
+                    </if>
+                </where> ) order by serial_number asc
+    </select>
+
     <select id="queryNewdataApplyByApplyId" parameterType="String" resultType="java.util.Map">
           select a.*, b.c_datum_code,b.c_datumtype,c.c_datum_code type_code,c.c_datumtype type_name
           FROM t_sod_newdata_apply a

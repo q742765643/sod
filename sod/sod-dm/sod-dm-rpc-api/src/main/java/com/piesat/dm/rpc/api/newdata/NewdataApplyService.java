@@ -45,4 +45,10 @@ public interface NewdataApplyService {
 
     Map<String,Object> getArchiveInfo(String id);
 
+    List<Map<String,Object>> getByUserIdAndApplyId(NewdataApplyDto newdataApplyDto);
+
+    List<Map<String,Object>> getColumnByIdAndDDataId(NewdataApplyDto newdataApplyDto);
+
+    void deleteById(String id);
+
 }

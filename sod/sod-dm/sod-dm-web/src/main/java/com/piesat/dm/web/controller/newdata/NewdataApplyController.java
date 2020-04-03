@@ -70,6 +70,27 @@ public class NewdataApplyController {
         return resultT;
     }
 
+    @GetMapping("/getByUserIdAndId")
+    @ApiOperation(value = "根据申请用户id、申请id、四级编码和数据来源查询新增资料详情", notes = "根据申请用户id、申请id、四级编码和数据来源查询新增资料详情")
+    public ResultT<List<Map<String,Object>>> getByUserIdAndId(NewdataApplyDto newdataApplyDto){
+        List<Map<String,Object>> dataTypeList = this.newdataApplyService.getByUserIdAndApplyId(newdataApplyDto);
+        return ResultT.success(dataTypeList);
+    }
+
+    @GetMapping("/getColumnByIdAndDDataId")
+    @ApiOperation(value = "根据申请用户id、四级编码查询新增资料字段信息", notes = "根据申请用户id、四级编码查询新增资料字段信息")
+    public ResultT<List<Map<String,Object>>> getColumnByIdAndDDataId(NewdataApplyDto newdataApplyDto){
+        List<Map<String,Object>> dataTypeList = this.newdataApplyService.getColumnByIdAndDDataId(newdataApplyDto);
+        return ResultT.success(dataTypeList);
+    }
+
+    @DeleteMapping("/deleteById")
+    @ApiOperation(value = "根据申请id删除申请表和表结构数据", notes = "根据申请id删除申请表和表结构数据")
+    public ResultT deleteById(String id){
+        this.newdataApplyService.deleteById(id);
+        return ResultT.success();
+    }
+
    @GetMapping("/getDataTypeList")
    @ApiOperation(value = "查询数据分类", notes = "查询数据分类")
    public ResultT<List<Map<String,Object>>> getDataTypeList(){

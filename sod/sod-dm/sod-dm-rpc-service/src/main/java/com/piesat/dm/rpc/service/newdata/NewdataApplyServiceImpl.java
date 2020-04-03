@@ -263,4 +263,21 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         return list == null ? null:list.get(0);
     }
 
+    @Override
+    public List<Map<String, Object>> getByUserIdAndApplyId(NewdataApplyDto newdataApplyDto) {
+        NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        return mybatisQueryMapper.getByUserIdAndApplyId(newdataApplyEntity);
+    }
+
+    @Override
+    public List<Map<String, Object>> getColumnByIdAndDDataId(NewdataApplyDto newdataApplyDto) {
+        NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        return mybatisQueryMapper.getColumnByIdAndDDataId(newdataApplyEntity);
+    }
+
+    @Override
+    public void deleteById(String id) {
+
+    }
+
 }
