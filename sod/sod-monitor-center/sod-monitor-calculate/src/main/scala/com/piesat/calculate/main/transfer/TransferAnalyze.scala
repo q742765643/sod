@@ -93,7 +93,7 @@ object TransferAnalyze {
       }
 
     }).filter(x => {
-      if (x != null && x.isCount == 0 && x.id != null) {
+      if (x != null  && x.id != null) {
         true
       } else {
         false
@@ -107,6 +107,13 @@ object TransferAnalyze {
           a
         }
       })
+        .filter(x=>{
+          if(x.isCount == 0){
+            true
+          }else{
+            false
+          }
+        })
       .keyBy(_.groupKey)//.window(TumblingEventTimeWindows.of(Time.days(1)))
       .timeWindow(Time.days(1))
       //.timeWindow(Time.days(1))

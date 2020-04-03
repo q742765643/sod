@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.serializer.SerializeConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.piesat.calculate.entity.flow.FlowMonitor
+import com.piesat.calculate.entity.task.{DiTaskConfiguration, DiTaskExecute}
 import com.piesat.calculate.entity.{BaseEntity, StationCount}
 import com.piesat.calculate.util.{EsUtil, MapUtil}
 import com.piesat.calculate.util.config.SystemConfig
@@ -14,6 +15,7 @@ import org.apache.flink.api.common.functions.RuntimeContext
 import org.apache.flink.streaming.connectors.elasticsearch.{ActionRequestFailureHandler, ElasticsearchSinkFunction, RequestIndexer}
 import org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink
 import org.elasticsearch.action.ActionRequest
+import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.update.UpdateRequest
 import org.elasticsearch.client.Requests
@@ -26,6 +28,89 @@ import scala.collection.JavaConverters._
   * Created by zzj on 2020/3/26.
   */
 class EsSink[T] {
+  def sinkAddTaskExecute(indexName: String): ElasticsearchSink[DiTaskExecute] = {
+    var SystemConfig = new SystemConfig
+    val httpHosts = SystemConfig.loadEsProperties()
+    val esSinkBuilder = new ElasticsearchSink.Builder[DiTaskExecute](
+      httpHosts,
+      new ElasticsearchSinkFunction[DiTaskExecute] { //参数element就是上面清洗好的数据格式
+
+        def createIndexRequest(element: DiTaskExecute): IndexRequest = {
+          var map=MapUtil.objectToMapInsert(element)
+          return Requests.indexRequest()
+            .index(indexName)
+            .`type`("doc").id(element.id)
+            .source(map)
+        }
+        def createUpdateRequest(element: DiTaskExecute,indexName:String,id:String): UpdateRequest = {
+          var map=MapUtil.objectToMapInsert(element)
+          return new UpdateRequest().index(indexName).`type`("doc").id(id).doc(map)
+        }
+        override def process(element: DiTaskExecute, runtimeContext: RuntimeContext, requestIndexer: RequestIndexer): Unit = {
+          val filter=scala.collection.mutable.Map[String,Object]()
+          val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
+          val date = dateFormat.format(element.startTimeA)
+          var indexName:String="di_task_monitor-"+date
+          filter.put("START_TIME_L", element.startTimeL)
+          filter.put("TASK_ID", element.getTaskId)
+          var re=EsUtil.getWhereReslut(indexName,filter)
+          if(re.size()==0){
+            requestIndexer.add(createIndexRequest(element))
+          }else{
+            var res=re.get(0)
+            var id:String=res.get("id").asInstanceOf[String]
+            requestIndexer.add(createUpdateRequest(element,indexName,id))
+          }
+
+        }
+      }
+    )
+    esSinkBuilder.setBulkFlushMaxActions(1)
+    esSinkBuilder.setBulkFlushInterval(TimeValue.timeValueSeconds(5L).getSeconds)
+    esSinkBuilder.setBulkFlushBackoffRetries(3)
+    esSinkBuilder.setBulkFlushBackoffDelay(2)
+    esSinkBuilder.setBulkFlushBackoff(true)
+    return esSinkBuilder.build()
+  }
+  def sinkAddTask(indexName: String): ElasticsearchSink[DiTaskConfiguration] = {
+    var SystemConfig = new SystemConfig
+    val httpHosts = SystemConfig.loadEsProperties()
+    val esSinkBuilder = new ElasticsearchSink.Builder[DiTaskConfiguration](
+      httpHosts,
+      new ElasticsearchSinkFunction[DiTaskConfiguration] { //参数element就是上面清洗好的数据格式
+
+        def createIndexRequest(element: DiTaskConfiguration): IndexRequest = {
+
+          var map=MapUtil.objectToMapInsert(element)
+          return Requests.indexRequest()
+            .index(indexName)
+            .`type`("doc").id(element.id)
+            .source(map)
+        }
+        def deleteIndexRequest(element: DiTaskConfiguration): DeleteRequest = {
+
+          var map=MapUtil.objectToMapInsert(element)
+          return new DeleteRequest().index(indexName).`type`("doc").id(element.id)
+        }
+
+        override def process(element: DiTaskConfiguration, runtimeContext: RuntimeContext, requestIndexer: RequestIndexer): Unit = {
+          if(element.isDelete==1){
+            requestIndexer.add(deleteIndexRequest(element))
+          }else{
+            requestIndexer.add(createIndexRequest(element))
+          }
+        }
+      }
+    )
+    esSinkBuilder.setBulkFlushMaxActions(1)
+    esSinkBuilder.setBulkFlushInterval(TimeValue.timeValueSeconds(5L).getSeconds)
+    esSinkBuilder.setBulkFlushBackoffRetries(3)
+    esSinkBuilder.setBulkFlushBackoffDelay(2)
+    esSinkBuilder.setBulkFlushBackoff(true)
+    return esSinkBuilder.build()
+  }
+
+
   def sinkAdd(indexName: String): ElasticsearchSink[T] = {
     var SystemConfig = new SystemConfig
     val httpHosts = SystemConfig.loadEsProperties()
