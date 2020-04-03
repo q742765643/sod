@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataapply.NewdataApplyDao;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -289,6 +290,14 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
     @Override
     public void deleteById(String id) {
+        NewdataApplyEntity newdataApplyEntity = this.getById(id);
+        if(StringUtils.isNotNullString(newdataApplyEntity.getDataClassId())){
+            //storageConfigurationService.
+        }
+
+        this.delete(id);
+
+
 
     }
 
