@@ -33,5 +33,9 @@ class KafkaConfig {
   @BeanProperty
   var groupId:String=_
 
+  @ApiModelProperty("别名")
+  @BeanProperty
+  var alias:String=_
+
 
 }

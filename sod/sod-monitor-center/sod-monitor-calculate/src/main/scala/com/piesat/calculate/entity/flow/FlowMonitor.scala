@@ -23,7 +23,7 @@ class FlowMonitor {
   var dataType: String = _
   @BeanProperty
   var id: String = _
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   @BeanProperty
   var ddateTime: Date = _
   @JsonProperty("collection_receivable")
@@ -52,6 +52,9 @@ class FlowMonitor {
   @BeanProperty
   var  putRealIncome:Long=_
 
+  @JsonProperty("material_type")
+  @BeanProperty
+  var  materialType:String=_
 
   override def toString = s"FlowMonitor($name, $iiiii, $dataType, $id, $ddateTime, $collectionReceivable, $collectionRealIncome, $timely, $distributeReceivable, $distributeRealIncome, $putReceivable, $putRealIncome)"
 }

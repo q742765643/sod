@@ -1,6 +1,7 @@
 package com.piesat.calculate.main.transfer
 
 import java.text.SimpleDateFormat
+import java.util
 
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -14,11 +15,16 @@ import com.piesat.calculate.sink.EsSink
 import com.piesat.calculate.trigger.transfer.CountTransferTrigger
 import com.piesat.calculate.util.config.SystemConfig
 import com.piesat.calculate.util.{EsUtil, GrokUtil}
+import com.piesat.calculate.windows.HtWindowAssigner
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.streaming.api.windowing.triggers.ContinuousProcessingTimeTrigger
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
+
+import scala.collection.JavaConverters._
 
 /**
   * Created by zzj on 2020/3/17.
@@ -52,17 +58,20 @@ object TransferAnalyze {
         var id: String = null
         var groupKey: String = null
         val filter=scala.collection.mutable.Map[String,Object]()
+        if(stationLevelFiled.iiiii==null||"".equals(stationLevelFiled.iiiii)){
+          stationLevelFiled.iiiii="0"
+        }
         filter.put("fields.DATA_TYPE", stationLevelFiled.dataType)
-        filter.put("fields.DATA_TIME", timeFormat.format(stationLevelFiled.dataTime))
-        if (FlowConstant.RT_CTS_STATION_DI.equals(stationLevel.stype)) {
+        filter.put("fields.DATA_TIME", stationLevelFiled.dataTime)
+        if (FlowConstant.RT_CTS_STATION_DI.equals(stationLevel.stype)||FlowConstant.RT_DPC_STATION_DI.equals(stationLevel.stype)) {
           id = stationLevelFiled.dataType + "_" + timeFormat.format(stationLevelFiled.dataTime) + "_" + stationLevelFiled.iiiii + "_" + stationLevelFiled.dataUpdateFlag
-          groupKey = stationLevelFiled.dataType + "_" + stationLevelFiled.iiiii
+          groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii
           filter.put("fields.IIiii", stationLevelFiled.iiiii)
         }
-        if (FlowConstant.RT_CTS_FILE_DI.equals(stationLevel.stype)) {
+        if (FlowConstant.RT_CTS_FILE_DI.equals(stationLevel.stype)||FlowConstant.RT_DPC_FILE_DI.equals(stationLevel.stype)) {
           id = stationLevelFiled.dataType + "_" + stationLevelFiled.fileNameN + "_" + stationLevelFiled.dataUpdateFlag
           filter.put("fields.FILE_NAME_N", stationLevelFiled.fileNameN)
-          groupKey = stationLevelFiled.dataType + "_" + timeFormat.format(stationLevelFiled.dataTime).substring(0, 10)
+          groupKey = stationLevelFiled.dataType + "||"+ stationLevelFiled.iiiii
         }
         val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
         stationLevel.setDdateTime(stationLevelFiled.dataTime)
@@ -95,11 +104,15 @@ object TransferAnalyze {
       .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[StationLevelEntity](Time.minutes(1)) {
         override def extractTimestamp(element: StationLevelEntity): Long = {
           var a = element.ddateTime.getTime
-          return a
+          a
         }
       })
-      .keyBy(_.groupKey).timeWindow(Time.days(1))
+      .keyBy(_.groupKey)//.window(TumblingEventTimeWindows.of(Time.days(1)))
+      .timeWindow(Time.days(1))
+      //.timeWindow(Time.days(1))
       //自定义触发器
+      //.trigger(ContinuousProcessingTimeTrigger.of(Time.seconds(5)))
+      //.window(new HtWindowAssigner)
       .trigger(new CountTransferTrigger(10, 5 * 1000))
       .sideOutputLateData(outputTag)
       .aggregate(new CountTransferFunction(), new WindowResult())
@@ -107,7 +120,32 @@ object TransferAnalyze {
     val output = count.getSideOutput(outputTag)
     output.map(f => {
       println(s"过时数据：$f")
-    })
+      try {
+        val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
+        val date = dateFormat.format(f.ddateTime)
+        val timeFormat: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")
+        var dataS = timeFormat.format(f.ddateTime)
+        var dataDay = dataS.substring(0, 10)
+        var oldMap = EsUtil.get("transfer_statistics-" + date, dataDay + "||" + f.groupKey)
+        var objectMapper = new ObjectMapper
+        var newMap: util.Map[String, Object] = new util.HashMap[String, Object]
+        if (FlowConstant.RT_CTS_STATION_DI.equals(f.stype) || FlowConstant.RT_DPC_STATION_DI.equals(f.stype)) {
+          var cc:String= String.valueOf(oldMap.get("collection_realIncome"))
+          var collectionRealIncome:Long=cc.toLong+1
+          newMap.put("collection_realIncome", collectionRealIncome.asInstanceOf[Object])
+        }
+        if (FlowConstant.RT_CTS_FILE_DI.equals(f.stype) || FlowConstant.RT_DPC_FILE_DI.equals(f.stype)) {
+          var pp:String =String.valueOf(oldMap.get("put_realIncome"))
+          var putRealIncome:Long=pp.toLong+1
+          newMap.put("put_realIncome", putRealIncome.asInstanceOf[Object])
+        }
+        EsUtil.update("transfer_statistics-" + date, dataDay + "||" + f.groupKey, newMap)
+      } catch {
+        case ex:Exception =>{
+          print(ex)
+        }
+      }
+      })
     count.print()
     count.addSink(new EsSink[FlowMonitor].sinkUpdate("transfer_statistics"))
     env.execute("TransferAnalyze")
