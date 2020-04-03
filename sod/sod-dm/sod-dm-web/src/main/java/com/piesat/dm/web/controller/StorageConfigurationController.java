@@ -2,7 +2,7 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
-import com.piesat.dm.rpc.api.DataClassService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.service.GrpcService;

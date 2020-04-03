@@ -7,13 +7,17 @@
         select
         A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,B.ID
         LOGIC_ID,B.LOGIC_FLAG,B.STORAGE_TYPE,B.DATABASE_ID,B.IS_COMPLETE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
-        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL
+        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL,G.tableCount TABLECOUNT
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATA_LOGIC B on A.data_class_id = B.data_class_id
         left join T_SOD_LOGIC_DEFINE E on B.logic_flag=E.logic_flag
         left join T_SOD_DATABASE C on B.database_id=C.id
         left join T_SOD_DATABASE_DEFINE D on C.database_define_id = D.id
         left join T_SOD_DICT_DATA F ON B.STORAGE_TYPE = F.dict_value
+        left join (
+        select bb.id, count(distinct TABLE_ID) tableCount from  T_SOD_DATA_TABLE aa inner join T_SOD_DATA_LOGIC bb on aa.CLASS_LOGIC_ID =bb.id
+        inner join T_SOD_DATA_TABLE_COLUMN cc on aa.id = cc.TABLE_ID  group by  bb.id
+        ) G ON G.id = B.id
         WHERE
         F.dict_type = 'sys_storage_type' AND
         A.data_class_id in
@@ -521,5 +525,9 @@
         order by
             da.create_time desc,
             dd.authorize asc
+    </select>
+
+    <select id="getDataClassBaseInfo"  resultType="java.util.Map" parameterType="String">
+        SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]> 'delete') and  A.C_COREMETA_ID = #{cCoremetaId}
     </select>
 </mapper>

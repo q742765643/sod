@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto;
 
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import lombok.Data;
 
 

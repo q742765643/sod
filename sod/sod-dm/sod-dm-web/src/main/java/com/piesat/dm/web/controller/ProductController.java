@@ -1,6 +1,5 @@
 package com.piesat.dm.web.controller;
 
-import com.piesat.dm.rpc.dto.GridAreaDto;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
