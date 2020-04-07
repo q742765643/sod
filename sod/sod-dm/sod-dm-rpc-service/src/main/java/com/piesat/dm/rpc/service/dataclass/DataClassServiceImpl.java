@@ -357,4 +357,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             }
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getLogicByDdataId(String dDataId) {
+        return this.mybatisQueryMapper.getLogicByDdataId(dDataId);
+    }
 }
