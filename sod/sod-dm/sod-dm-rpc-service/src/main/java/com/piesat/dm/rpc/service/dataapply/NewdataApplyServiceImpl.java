@@ -98,6 +98,20 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         return pageBean;
     }
 
+    @Override
+    public NewdataApplyDto saveDto(NewdataApplyDto newdataApplyDto) {
+        NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
+        return newdataApplyMapper.toDto(newdataApplyEntity);
+    }
+
+    @Override
+    public NewdataApplyDto updateDto(NewdataApplyDto newdataApplyDto) {
+        NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
+        return newdataApplyMapper.toDto(newdataApplyEntity);
+    }
+
     @Transactional
     @Override
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto) {
@@ -255,7 +269,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
     @Override
     public ResultT<String> updateDataStructure(TableColumnDto tableColumnDto) {
-        tableColumnService.updateDto(tableColumnDto);
+        //tableColumnService.updateDto(tableColumnDto);
         return ResultT.success();
     }
 
@@ -291,14 +305,15 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public void deleteById(String id) {
         NewdataApplyEntity newdataApplyEntity = this.getById(id);
+
         if(StringUtils.isNotNullString(newdataApplyEntity.getDataClassId())){
-            //storageConfigurationService.
+            //删除存储策略
+            storageConfigurationService.deleteByDataClassId(newdataApplyEntity.getDataClassId());
+            //删除表结构
+            dataClassService.deleteByDataClassId(newdataApplyEntity.getDataClassId());
         }
-
+        //删除申请信息
         this.delete(id);
-
-
-
     }
 
 }

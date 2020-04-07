@@ -81,6 +81,29 @@ public class NewdataApplyController {
         return resultT;
     }
 
+    @PostMapping(value = "/save")
+    @ApiOperation(value = "添加", notes = "添加")
+    public ResultT save(@RequestBody NewdataApplyDto newdataApplyDto) {
+        try {
+            NewdataApplyDto save = this.newdataApplyService.saveDto(newdataApplyDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/edit")
+    @ApiOperation(value = "编辑", notes = "编辑")
+    public ResultT<NewdataApplyDto> edit(@RequestBody NewdataApplyDto newdataApplyDto)
+    {
+        ResultT<NewdataApplyDto> resultT=new ResultT<>();
+        newdataApplyDto= this.newdataApplyService.updateDto(newdataApplyDto);
+        resultT.setData(newdataApplyDto);
+        return resultT;
+    }
+
     @GetMapping("/getByUserIdAndId")
     @ApiOperation(value = "根据申请用户id、申请id、四级编码和数据来源查询新增资料详情", notes = "根据申请用户id、申请id、四级编码和数据来源查询新增资料详情")
     public ResultT<List<Map<String,Object>>> getByUserIdAndId(NewdataApplyDto newdataApplyDto){

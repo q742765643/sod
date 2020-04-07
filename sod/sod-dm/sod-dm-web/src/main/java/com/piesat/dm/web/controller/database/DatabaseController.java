@@ -124,11 +124,25 @@ public class DatabaseController {
             if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
                 return ResultT.failed("请先创建存储账户！！！");
             }
-            List<DatabaseDto> databaseDtos = this.databaseService.findByIdIn(Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
+            List<DatabaseDto> databaseDtos = this.databaseService.findByDatabaseClassifyAndIdIn("物理库",Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
             return ResultT.success(databaseDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "查询所有物理库/专题库")
+    @RequiresPermissions("dm:database:findByDatabaseClassify")
+    @GetMapping(value = "/findByDatabaseClassify")
+    public ResultT findByDatabaseClassify(String databaseClassify) {
+        try {
+            List<DatabaseDto> databaseDtos = this.databaseService.findByDatabaseClassify(databaseClassify);
+            return ResultT.success(databaseDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

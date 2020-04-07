@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -61,6 +62,34 @@ public class TableColumnController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @ApiOperation(value = "批量添加")
+    @PostMapping(value = "/saveColumns")
+    public ResultT saveColumns(@RequestBody DataTableDto dataTableDto) {
+        try {
+            LinkedHashSet<TableColumnDto> columns = dataTableDto.getColumns();
+            if(columns != null){
+                for(TableColumnDto tableColumnDto :columns){
+                    this.tableColumnService.saveDto(tableColumnDto);
+                }
+            }
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/edit")
+    @ApiOperation(value = "编辑", notes = "编辑")
+    public ResultT<TableColumnDto> edit(@RequestBody TableColumnDto tableColumnDto)
+    {
+        ResultT<TableColumnDto> resultT=new ResultT<>();
+        tableColumnDto= this.tableColumnService.updateDto(tableColumnDto);
+        resultT.setData(tableColumnDto);
+        return resultT;
     }
 
     @ApiOperation(value = "根据id查询")

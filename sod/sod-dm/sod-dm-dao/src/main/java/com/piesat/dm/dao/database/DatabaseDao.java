@@ -24,5 +24,7 @@ public interface DatabaseDao extends BaseDao<DatabaseEntity> {
 
     List<DatabaseEntity> findByLevel(int level);
 
-    List<DatabaseEntity> findByIdIn(List<String> ids);
+    List<DatabaseEntity> findByDatabaseClassifyAndIdIn(String databaseClassify,List<String> ids);
+
+    List<DatabaseEntity> findByDatabaseClassify(String databaseClassify);
 }

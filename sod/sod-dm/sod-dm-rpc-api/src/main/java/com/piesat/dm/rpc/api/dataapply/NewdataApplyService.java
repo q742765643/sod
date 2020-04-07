@@ -21,6 +21,10 @@ public interface NewdataApplyService {
 
     public PageBean selectPageList(PageForm<Map<String,Object>> pageForm);
 
+    NewdataApplyDto saveDto(NewdataApplyDto newdataApplyDto);
+
+    NewdataApplyDto updateDto(NewdataApplyDto newdataApplyDto);
+
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto);
 
     List<Map<String,Object>> getLogicInfo();

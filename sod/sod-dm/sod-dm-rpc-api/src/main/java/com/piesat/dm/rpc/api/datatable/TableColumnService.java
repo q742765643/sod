@@ -29,7 +29,7 @@ public interface TableColumnService {
 
     int deleteByIdIn(List<String> ids);
 
-    int updateDto(TableColumnDto tableColumnDto);
+    TableColumnDto updateDto(TableColumnDto tableColumnDto);
 
     List<TableColumnDto> getPrimaryKey(String tableId);
 }

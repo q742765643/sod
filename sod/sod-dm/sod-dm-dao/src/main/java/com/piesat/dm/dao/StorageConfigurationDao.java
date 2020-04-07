@@ -16,5 +16,5 @@ public interface StorageConfigurationDao extends BaseDao<StorageConfigurationEnt
 
     List<StorageConfigurationEntity> findByDataClassId(String dataClassId);
 
-    //void deleteBy
+    void deleteByDataClassId(String dataClassId);
 }

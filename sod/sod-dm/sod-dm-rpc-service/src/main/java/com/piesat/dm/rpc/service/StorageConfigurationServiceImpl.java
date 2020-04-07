@@ -104,4 +104,9 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
         List<StorageConfigurationEntity> storageConfigurationEntities =  this.storageConfigurationDao.findByDataClassId(dataClassId);
         return this.storageConfigurationMapper.toDto(storageConfigurationEntities);
     }
+
+    @Override
+    public void deleteByDataClassId(String dataClassId) {
+        this.storageConfigurationDao.deleteByDataClassId(dataClassId);
+    }
 }

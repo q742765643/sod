@@ -69,8 +69,10 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
-    public int updateDto(TableColumnDto tableColumnDto) {
-        return tableColumnDao.updateDto(tableColumnDto.getDbEleCode(),tableColumnDto.getType(),tableColumnDto.getTableId());
+    public TableColumnDto updateDto(TableColumnDto tableColumnDto) {
+        TableColumnEntity tableColumnEntity = tableColumnMapper.toEntity(tableColumnDto);
+        tableColumnEntity = this.saveNotNull(tableColumnEntity);
+        return tableColumnMapper.toDto(tableColumnEntity);
     }
 
     @Override
