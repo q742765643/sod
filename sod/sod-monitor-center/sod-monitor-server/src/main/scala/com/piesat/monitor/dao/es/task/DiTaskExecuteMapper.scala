@@ -12,6 +12,8 @@ import org.apache.ibatis.annotations.Mapper
 trait DiTaskExecuteMapper {
   def list(diTaskExecute: DiTaskExecute):JavaList[DiTaskExecute]
 
+  def listExecute(diTaskExecute: DiTaskExecute):JavaList[DiTaskExecute]
+
   def findById(id:String):DiTaskExecute
 
   def groupbyTaskDuty(diTaskExecute: DiTaskExecute):JavaList[DiTaskGroup]

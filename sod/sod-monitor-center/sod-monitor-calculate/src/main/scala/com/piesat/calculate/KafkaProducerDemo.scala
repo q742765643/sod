@@ -63,7 +63,7 @@ object KafkaProducerDemo {
       stationLevel.setStationLevelFiledEntity(stationLevelFiled)
       var messege = objectMapper.writeValueAsString(stationLevel)
       print(messege)
-      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  " + messege
+      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ] " + messege
       // 得到返回值
       val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", objectMapper.writeValueAsString(kafkaMessege))).get()
       println(rmd.toString)

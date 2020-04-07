@@ -63,7 +63,7 @@
         "di_task_monitor-*"
         where 1=1
         <if test="taskName != null and taskName != ''">
-            AND taskName like '%${taskName}%'
+            AND TASK_NAME like '%${taskName}%'
         </if>
         <if test="sendPhys != null and sendPhys != ''">
             AND SEND_PHYS =#{sendPhys}
@@ -72,10 +72,58 @@
             AND DATA_TYPE like '%${dataType}%'
         </if>
         <if test="taskId != null and taskId != ''">
-            AND taskId =#{taskId}
+            AND TASK_ID =#{taskId}
+        </if>
+        <if test="taskState != null and taskState != ''">
+            AND TASK_STATE =#{taskState}
+        </if>
+        <if test="ltaskState != null and ltaskState != ''">
+            AND TASK_STATE !=#{ltaskState}
+        </if>
+        <if test="startTimeL != null and startTimeL>0">
+            AND START_TIME_L =#{startTimeL}
+        </if>
+        <if test="endTime != null ">
+            AND START_TIME_S &lt; #{endTime}
+        </if>
+        <if test="startTime != null ">
+            AND  START_TIME_S &gt;= #{startTime}
         </if>
     </select>
-
+    <select id="listExecute" resultMap="BaseResultMap">
+        select
+        *
+        from
+        "di_task_execute-*"
+        where 1=1
+        <if test="taskName != null and taskName != ''">
+            AND TASK_NAME like '%${taskName}%'
+        </if>
+        <if test="sendPhys != null and sendPhys != ''">
+            AND SEND_PHYS =#{sendPhys}
+        </if>
+        <if test="dataType != null and dataType != ''">
+            AND DATA_TYPE like '%${dataType}%'
+        </if>
+        <if test="taskId != null and taskId != ''">
+            AND TASK_ID =#{taskId}
+        </if>
+        <if test="taskState != null and taskState != ''">
+            AND TASK_STATE =#{taskState}
+        </if>
+        <if test="ltaskState != null and ltaskState != ''">
+            AND TASK_STATE !=#{ltaskState}
+        </if>
+        <if test="startTimeL != null and startTimeL>0">
+            AND START_TIME_L =#{startTimeL}
+        </if>
+        <if test="endTime != null ">
+            AND START_TIME_S &lt; #{endTime}
+        </if>
+        <if test="startTime != null ">
+            AND  START_TIME_S &gt;= #{startTime}
+        </if>
+    </select>
     <select id="findById" resultMap="BaseResultMap">
         select
         *
@@ -90,7 +138,7 @@
         "di_task_monitor-*"
         where 1=1
         <if test="taskName != null and taskName != ''">
-            AND taskName like '%${taskName}%'
+            AND TASK_NAME like '%${taskName}%'
         </if>
         <if test="sendPhys != null and sendPhys != ''">
             AND SEND_PHYS =#{sendPhys}
@@ -99,13 +147,13 @@
             AND DATA_TYPE like '%${dataType}%'
         </if>
         <if test="taskId != null and taskId != ''">
-            AND taskId =#{taskId}
+            AND TASK_ID =#{taskId}
         </if>
         <if test="endTime != null ">
-            AND START_TIME_L &lt; #{endTime}
+            AND START_TIME_S &lt; #{endTime}
         </if>
         <if test="startTime != null ">
-            AND  START_TIME_L &gt;= #{startTime}
+            AND  START_TIME_S &gt;= #{startTime}
         </if>
         GROUP BY TASK_STATE,taskDuty
     </select>
