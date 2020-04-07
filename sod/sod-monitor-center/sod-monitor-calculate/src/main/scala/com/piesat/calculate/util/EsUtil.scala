@@ -1,4 +1,5 @@
 package com.piesat.calculate.util
+import java.util.{ArrayList => JavaList}
 
 import java.text.SimpleDateFormat
 import java.util
@@ -110,7 +111,7 @@ object EsUtil {
     bulkProcessor
   }
 
-  def get(indexName: String, id: String): Unit = {
+  def get(indexName: String, id: String): util.Map[String,Object] = {
     try {
       if (restHighLevelClient == null) {
         buildClient()
@@ -170,9 +171,9 @@ object EsUtil {
       searchRequest.source(searchSourceBuilder)
       var response = restHighLevelClient.search(searchRequest)
       var result = response.getHits.getHits
-      for(a<-result){
+      /*for(a<-result){
         print(a.getSourceAsMap)
-      }
+      }*/
       if (result.length > 0) {
         return 1
       } else {
@@ -185,7 +186,37 @@ object EsUtil {
         return 0
     }
   }
+  def getWhereReslut(indexName: String, map:scala.collection.mutable.Map[String,Object]):JavaList[util.Map[String,Object]]= {
+    var list=new util.ArrayList[util.Map[String,Object]]()
+    if (restHighLevelClient == null) {
+      buildClient()
+    }
+    val boolQueryBuilder = QueryBuilders.boolQuery
 
+    for((k,v)<-map){
+      val termQueryBuilder = QueryBuilders.matchPhraseQuery(k, v)
+      boolQueryBuilder.filter(termQueryBuilder)
+    }
+
+    try {
+      val searchRequest = new SearchRequest()
+      searchRequest.indices(indexName)
+      val searchSourceBuilder = new SearchSourceBuilder
+      searchSourceBuilder.query(boolQueryBuilder)
+      searchRequest.source(searchSourceBuilder)
+      var response = restHighLevelClient.search(searchRequest)
+      var result = response.getHits.getHits
+      for(re<-result){
+        list.add(re.getSourceAsMap)
+      }
+     list
+    } catch {
+      case ex:Exception =>{
+        print(ex)
+      }
+        list
+    }
+  }
 
 
   def createIndex(indexName:String,element:Object): Unit = {
@@ -218,5 +249,22 @@ object EsUtil {
   def buildSetting(request: CreateIndexRequest): Unit = {
     request.settings(Settings.builder.put("index.number_of_shards", 3).put("index.number_of_replicas", 2))
   }
+  def save(indexName:String,id:String,map:util.Map[String,Object]): Unit ={
+    if (restHighLevelClient == null) {
+      buildClient()
+    }
+    var request = new BulkRequest();
+    request.add(new IndexRequest(indexName, "doc", id).source(map));
+    restHighLevelClient.bulk(request)
+  }
+  def update(indexName:String,id:String,map:util.Map[String,Object]): Unit ={
+    if (restHighLevelClient == null) {
+      buildClient()
+    }
+    var request = new BulkRequest();
+    request.add(new UpdateRequest().index(indexName).`type`("doc").id(id).doc(map));
+    restHighLevelClient.bulk(request)
+  }
+
 
 }

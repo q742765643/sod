@@ -171,21 +171,10 @@ public class IndexServiceImpl implements IndexService{
 	 * @throws Exception
 	 */
 	@Override
-	public List<String> findDataCount() throws Exception {
-		List<Map<String,Object>> list = indexMapper.findDataCount();
+	public List<Map<String,Object>> findDataCount() throws Exception {
+		List<Map<String,Object>> result = indexMapper.findDataCount();
 		
-		String[] typeArr = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "Z"};
-        List<String> numList = new ArrayList<String>();
-        for (String type : typeArr) {
-            String num = "0";
-            for (Map<String, Object> map : list) {
-                if (type.equals(map.get("CLASSID"))) {
-                    num = map.get("NUM").toString();
-                }
-            }
-            numList.add(num);
-        }
-		return numList;
+		return result;
 	}
 
 	/**
@@ -227,8 +216,46 @@ public class IndexServiceImpl implements IndexService{
 	 */
 	@Override
 	public List<Map<String, Object>> findLogicInfo() throws Exception {
-		List<Map<String,Object>> result = indexMapper.findLogicInfo();
-		return result;
+//		List<Map<String,Object>> result = indexMapper.findLogicInfo();
+		List<Map<String,Object>> capacityCount = indexMapper.findLogicCapacity();
+		List<Map<String,Object>> dataCount = indexMapper.findLogicDataCount();
+		List<Map<String,Object>> dbCount = indexMapper.findLoigcDB();
+		
+		Map<String,Object> dbListMap = new HashMap<>();
+		List<String> dbList = new ArrayList<>();
+		for(Map<String,Object> m:dbCount) {
+			dbList.add(m.get("LOGIC_FLAG")+"");
+		}
+		
+		for(String dbLogic:dbList) {
+			List<Map<String,Object>> dbInfo = new ArrayList<>();
+			for(Map<String,Object> m:dbCount) {
+				if(dbLogic.equals(m.get("LOGIC_FLAG"))) {
+					Map<String,Object> db = new HashMap<>();
+					db.put("DATABASE_DEFINE_ID", m.get("DATABASE_DEFINE_ID"));
+					db.put("DATABASE_NAME", m.get("DATABASE_NAME"));
+					dbInfo.add(db);
+				}
+			}
+			dbListMap.put(dbLogic, dbInfo);
+		}
+		
+		for(Map<String,Object> dataMap : dataCount) {
+			
+			for(Map<String,Object> capMap:capacityCount) {
+				if(dataMap.get("LOGIC_FLAG").equals(capMap.get("DATABASE_LOGIC"))) {
+					dataMap.put("TOTAL_CAPACITY", capMap.get("TOTAL_CAPACITY"));
+					dataMap.put("USED_CAPACITY", capMap.get("TOTAL_CAPACITY"));
+				}
+			}
+			
+			for(Map.Entry<String, Object> entry:dbListMap.entrySet()) {
+				if(dataMap.get("LOGIC_FLAG").equals(entry.getKey())) {
+					dataMap.put("DB_INFO", entry.getValue());
+				}
+			}
+		}
+		return dataCount;
 	}
 
 }

@@ -24,7 +24,7 @@
 
     <select id="list" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List" />
+        *
         from
         process_config
         where 1=1

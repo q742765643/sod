@@ -91,7 +91,7 @@ class CountTransferTrigger extends Trigger[StationLevelEntity, TimeWindow] {
 
   //窗口结束时清空状态
   override def clear(window: TimeWindow, ctx: Trigger.TriggerContext): Unit = {
-    // println(s"清除窗口状态，定时器")
+    println(s"清除窗口状态，定时器")
     ctx.deleteEventTimeTimer(ctx.getPartitionedState(eventTimerStateDescriptor).get())
     ctx.deleteProcessingTimeTimer(ctx.getPartitionedState(processTimerStateDescriptor).get())
     ctx.getPartitionedState(processTimerStateDescriptor).clear()

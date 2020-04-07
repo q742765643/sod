@@ -66,14 +66,7 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
-eureka:
-  instance:
-    hostname: desktop-2vav0fh
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://10.1.6.117:8002/eureka/
+
 
 
 

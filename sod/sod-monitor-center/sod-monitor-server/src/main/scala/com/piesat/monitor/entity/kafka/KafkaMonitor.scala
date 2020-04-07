@@ -35,7 +35,9 @@ class KafkaMonitor {
   @BeanProperty
   var groupId:String=_
   @BeanProperty
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   var startTime:Date=_
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   @BeanProperty
   var endTime:Date=_
   @BeanProperty

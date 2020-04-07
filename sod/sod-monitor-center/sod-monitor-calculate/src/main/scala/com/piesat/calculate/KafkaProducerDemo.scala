@@ -49,7 +49,7 @@ object KafkaProducerDemo {
       stationLevelFiled.setReceive("A.0001.0002.R003")
       stationLevelFiled.setSend("A.0001.0002.S003")
       stationLevelFiled.setTranTime(new Date())
-      stationLevelFiled.setDataTime(new Date(System.currentTimeMillis() - 2000))
+      stationLevelFiled.setDataTime(new Date(System.currentTimeMillis() -86400*1000))//*286400*1000
       stationLevelFiled.setSystem("CTS")
       stationLevelFiled.setIiiii("11")
       stationLevelFiled.setProcessLink("1")
@@ -67,7 +67,7 @@ object KafkaProducerDemo {
       // 得到返回值
       val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", objectMapper.writeValueAsString(kafkaMessege))).get()
       println(rmd.toString)
-      Thread.sleep(1000)
+      Thread.sleep(3000)
     }
 
 
