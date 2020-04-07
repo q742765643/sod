@@ -19,7 +19,7 @@ class WindowResult extends WindowFunction[FlowStatistics, FlowMonitor, String, T
     val timeFormat: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")
     var dataS=timeFormat.format(flowStatistics.ddateTime)
     var dataDay=dataS.substring(0,10)
-    flowMonitor.id=dataDay+"_"+flowStatistics.id
+    flowMonitor.id=dataDay+"||"+flowStatistics.id
     flowMonitor.ddateTime=timeFormat.parse(dataDay+" 00:00:00:000");
     flowMonitor.collectionRealIncome=flowStatistics.collectionRealIncome
     flowMonitor.putRealIncome=flowStatistics.putRealIncome

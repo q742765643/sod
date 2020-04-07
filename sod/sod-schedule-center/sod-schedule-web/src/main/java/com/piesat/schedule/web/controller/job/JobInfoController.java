@@ -1,9 +1,7 @@
 package com.piesat.schedule.web.controller.job;
 
 import com.piesat.common.utils.OwnException;
-import com.piesat.dm.rpc.dto.DataLogicDto;
-import com.piesat.dm.rpc.dto.DataTableDto;
-import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;

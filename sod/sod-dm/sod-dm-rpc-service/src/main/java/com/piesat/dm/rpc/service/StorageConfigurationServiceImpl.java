@@ -7,7 +7,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.StorageConfigurationDao;
 import com.piesat.dm.entity.StorageConfigurationEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.DataClassService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.mapper.StorageConfigurationMapper;
@@ -103,5 +103,10 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     public List<StorageConfigurationDto> findByDataClassId(String dataClassId) {
         List<StorageConfigurationEntity> storageConfigurationEntities =  this.storageConfigurationDao.findByDataClassId(dataClassId);
         return this.storageConfigurationMapper.toDto(storageConfigurationEntities);
+    }
+
+    @Override
+    public void deleteByDataClassId(String dataClassId) {
+        this.storageConfigurationDao.deleteByDataClassId(dataClassId);
     }
 }

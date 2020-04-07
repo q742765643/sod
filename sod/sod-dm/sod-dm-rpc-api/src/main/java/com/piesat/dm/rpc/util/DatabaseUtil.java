@@ -5,9 +5,10 @@ import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.rpc.dto.DatabaseAdministratorDto;
-import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,6 +45,17 @@ public class DatabaseUtil {
             db = new Cassandra(databaseIp, port, dad.getUserName(), dad.getPassWord(), database.getSchemaName());
         }
         return db;
+    }
+
+
+    public static DatabaseAdministratorDto getManagerUser(List<DatabaseAdministratorDto> list) {
+        DatabaseAdministratorDto m = null;
+        for (DatabaseAdministratorDto d : list) {
+            if (d.getIsManager()) {
+                m = d;
+            }
+        }
+        return m;
     }
 
 }

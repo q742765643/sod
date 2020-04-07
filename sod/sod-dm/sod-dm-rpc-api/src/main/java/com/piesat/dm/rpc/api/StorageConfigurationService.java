@@ -24,4 +24,6 @@ public interface StorageConfigurationService {
 
     List<StorageConfigurationDto> findByDataClassId(String dataClassId);
 
+    void deleteByDataClassId(String dataClassId);
+
 }

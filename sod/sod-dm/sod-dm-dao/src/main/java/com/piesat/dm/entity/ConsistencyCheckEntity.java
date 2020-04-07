@@ -1,6 +1,7 @@
 package com.piesat.dm.entity;
 
 import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import lombok.Data;
 
 import javax.persistence.*;

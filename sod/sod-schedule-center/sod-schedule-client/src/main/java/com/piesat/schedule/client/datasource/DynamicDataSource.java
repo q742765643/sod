@@ -2,9 +2,9 @@ package com.piesat.schedule.client.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
-import com.piesat.dm.rpc.api.DatabaseService;
-import com.piesat.dm.rpc.dto.DatabaseAdministratorDto;
-import com.piesat.dm.rpc.dto.DatabaseDto;
+import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.client.vo.ConnectVo;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 

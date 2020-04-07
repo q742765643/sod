@@ -35,7 +35,7 @@ public class MapUtil {
                 }
                 if(field.getType().toString().toUpperCase().indexOf("DATE")!=-1){
                     value.put("type","date");
-                    value.put("format","yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time");
+                    value.put("format","yyyy-MM-dd HH:mm:ss:SSS||epoch_millis||date_optional_time");
                 }
                 if(field.getType().toString().toUpperCase().indexOf("FLOAT")!=-1){
                     value.put("type","float");
@@ -68,7 +68,9 @@ public class MapUtil {
             }
             if(field.getType().toString().toUpperCase().indexOf("DATE")!=-1){
                 value.put("type","date");
-                value.put("format","yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time");
+                value.put("format","yyyy-MM-dd HH:mm:ss:SSS||epoch_millis||date_optional_time");
+
+                //value.put("format","yyyy-MM-dd HH:mm:ss||yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time");
             }
             if(field.getType().toString().toUpperCase().indexOf("FLOAT")!=-1){
                 value.put("type","float");
@@ -115,6 +117,9 @@ public class MapUtil {
                 fieldName = jsonProperty.value();
             }
             Object value=field.get(obj);
+            if(value==null){
+                value="";
+            }
             map.put(qz+"."+fieldName, value);
 
         }

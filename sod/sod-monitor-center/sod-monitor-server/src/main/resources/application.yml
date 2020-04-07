@@ -27,6 +27,9 @@ spring:
      multipart:
       max-file-size: 1000000000
       max-request-size: 1000000000
+  jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      time-zone: GMT+8
   datasource:
       es:
         driver-class-name: org.elasticsearch.xpack.sql.jdbc.EsDriver
@@ -63,14 +66,7 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
-eureka:
-  instance:
-    hostname: desktop-2vav0fh
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://10.1.6.117:8002/eureka/
+
 
 
 

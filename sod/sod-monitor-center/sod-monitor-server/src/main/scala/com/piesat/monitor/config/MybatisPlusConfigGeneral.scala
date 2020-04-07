@@ -19,8 +19,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 /**
   * Created by zzj on 2020/3/19.
   */
-@Configuration
-@MapperScan(basePackages = Array("com.piesat.monitor.dao.general"), sqlSessionTemplateRef = "generalSqlSessionTemplate")
+//@Configuration
+//@MapperScan(basePackages = Array("com.piesat.monitor.dao.general"), sqlSessionTemplateRef = "generalSqlSessionTemplate")
 class MybatisPlusConfigGeneral { //general数据源
 
   @Bean(name = Array("generalDataSource"))

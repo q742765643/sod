@@ -82,7 +82,7 @@ public interface IndexService {
 	 * @return
 	 * @throws Exception
 	 */
-	List<String> findDataCount() throws Exception;
+	List<Map<String,Object>> findDataCount() throws Exception;
 	/**
 	 *  获取逻辑库资料统计数量
 	 * @description 

@@ -15,4 +15,6 @@ import java.util.List;
 public interface StorageConfigurationDao extends BaseDao<StorageConfigurationEntity> {
 
     List<StorageConfigurationEntity> findByDataClassId(String dataClassId);
+
+    void deleteByDataClassId(String dataClassId);
 }

@@ -1,6 +1,6 @@
 package com.piesat.dm.mapper;
 
-import com.piesat.dm.entity.newdata.NewdataApplyEntity;
+import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,11 @@ public interface MybatisQueryMapper {
 
     void updateStorageConfigurationStatus(@Param("id")String id, @Param("column")String column, @Param("value")String value);
 
-    void updateNewdataApplyStatus(@Param("entity")NewdataApplyEntity newdataApplyEntity);
+    void updateNewdataApplyStatus(@Param("entity") NewdataApplyEntity newdataApplyEntity);
+
+    List<Map<String, Object>> getByUserIdAndApplyId(@Param("entity")NewdataApplyEntity newdataApplyEntity);
+
+    List<Map<String, Object>> getColumnByIdAndDDataId(@Param("entity")NewdataApplyEntity newdataApplyEntity);
 
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId")String databaseId, @Param("tableName")String tableName);
 
@@ -68,4 +72,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getRecordListByUserIdMysql(@Param("userId") String userId);
     List<Map<String, Object>> getRecordListByUserId(@Param("userId") String userId);
+
+
 }

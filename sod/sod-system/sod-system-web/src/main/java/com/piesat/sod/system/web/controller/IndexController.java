@@ -122,7 +122,7 @@ public class IndexController {
 	public ResultT findDataCount() {
 		log.info(">>>>>> 获取首页资料分类统计数量");
 		try {
-			List<String> data = indexService.findDataCount();
+			List<Map<String,Object>> data = indexService.findDataCount();
 			return ResultT.success(data);
 		} catch (Exception e) {
 			e.printStackTrace();

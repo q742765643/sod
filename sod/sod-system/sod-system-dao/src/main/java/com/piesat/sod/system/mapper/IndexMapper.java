@@ -159,5 +159,32 @@ public interface IndexMapper {
 	 * @throws Exception
 	 */
 	List<Map<String,Object>> findLogicInfo() throws Exception;
+	/**
+	 *  获取数据用途使用量
+	 * @description 
+	 * @author wlg
+	 * @date 2020年4月3日上午10:22:11
+	 * @return
+	 * @throws Exception
+	 */
+	List<Map<String,Object>> findLogicCapacity() throws Exception;
+	/**
+	 *  获取数据用途资料统计
+	 * @description 
+	 * @author wlg
+	 * @date 2020年4月3日上午10:23:20
+	 * @return
+	 * @throws Exception
+	 */
+	List<Map<String,Object>> findLogicDataCount() throws Exception;
+	/**
+	 *  获取数据用途物理库
+	 * @description 
+	 * @author wlg
+	 * @date 2020年4月3日上午10:23:41
+	 * @return
+	 * @throws Exception
+	 */
+	List<Map<String,Object>> findLoigcDB() throws Exception;
 
 }

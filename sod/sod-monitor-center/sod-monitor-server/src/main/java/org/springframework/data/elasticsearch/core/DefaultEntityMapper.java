@@ -5,6 +5,7 @@
 
 package org.springframework.data.elasticsearch.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,9 +14,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 
 import com.piesat.monitor.entity.ssh.SshEntity;
 import org.springframework.data.elasticsearch.core.geo.CustomGeoModule;
@@ -23,6 +23,7 @@ import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersiste
 import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentProperty;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.util.Assert;
+import org.util.DateUtil;
 
 public class DefaultEntityMapper implements EntityMapper {
     private ObjectMapper objectMapper=new ObjectMapper();
@@ -38,13 +39,44 @@ public class DefaultEntityMapper implements EntityMapper {
     }
 
     public String mapToString(Object object) throws IOException {
+        Class<?> o = object.getClass();
+        for (Field field : o.getDeclaredFields()) {
+            field.setAccessible(true);
+            if(field.getType().toString().toUpperCase().indexOf("DATE")!=-1){
+                try {
+                    Object d= field.get(object);
+                    if(d!=null){
+                        field.set(object,DateUtil.sub((Date) d));
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
         String re= this.objectMapper.writeValueAsString(object);
-        System.out.println(re);
         return re;
     }
 
     public <T> T mapToObject(String source, Class<T> clazz) throws IOException {
-        return this.objectMapper.readValue(source, clazz);
+        T t=this.objectMapper.readValue(source, clazz);
+        Class<?> o = t.getClass();
+        for (Field field : o.getDeclaredFields()) {
+            field.setAccessible(true);
+            if(field.getType().toString().toUpperCase().indexOf("DATE")!=-1){
+                try {
+                    Object d= field.get(t);
+                    if(d!=null){
+                        field.set(t,DateUtil.add((Date) d));
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        return t;
     }
 
     private static class SpringDataElasticsearchModule extends SimpleModule {

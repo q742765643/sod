@@ -7,13 +7,17 @@
         select
         A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,B.ID
         LOGIC_ID,B.LOGIC_FLAG,B.STORAGE_TYPE,B.DATABASE_ID,B.IS_COMPLETE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
-        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL
+        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL,G.tableCount TABLECOUNT
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATA_LOGIC B on A.data_class_id = B.data_class_id
         left join T_SOD_LOGIC_DEFINE E on B.logic_flag=E.logic_flag
         left join T_SOD_DATABASE C on B.database_id=C.id
         left join T_SOD_DATABASE_DEFINE D on C.database_define_id = D.id
         left join T_SOD_DICT_DATA F ON B.STORAGE_TYPE = F.dict_value
+        left join (
+        select bb.id, count(distinct TABLE_ID) tableCount from  T_SOD_DATA_TABLE aa inner join T_SOD_DATA_LOGIC bb on aa.CLASS_LOGIC_ID =bb.id
+        inner join T_SOD_DATA_TABLE_COLUMN cc on aa.id = cc.TABLE_ID  group by  bb.id
+        ) G ON G.id = B.id
         WHERE
         F.dict_type = 'sys_storage_type' AND
         A.data_class_id in
@@ -186,14 +190,14 @@
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
         order by id asc
     </select>
-    <select id="getInfoByUserIdMysql" resultType="java.util.Map">
+    <select id="getInfoByUserId" resultType="java.util.Map">
         select b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
                   left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
-                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
         union
         select c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE a
                   left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
-                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
         order by id asc
     </select>
 
@@ -301,6 +305,47 @@
         </set>
              where  id = #{entity.id}
     </update>
+    <select id="getByUserIdAndApplyId" resultType="java.util.Map">
+        select a.*,b.logic_id logicId,b.database_id databaseId,f.logic_name,d.id physicId,e.class_name,
+               c.database_name || '[' || c.schema_name || ']' as 'schemaName',d.database_name || '[' || d.id || ']' as 'physicName'
+               from T_SOD_NEWDATA_APPLY a
+               left join T_SOD_STORAGE_CONFIGURATION b on a.data_class_id=b.data_class_id
+               left join T_SOD_LOGIC_DEFINE f on b.logic_id = f.id
+               left join T_SOD_DATABASE c on b.database_id = c.id
+               left join T_SOD_DATABASE_DEFINE d on c.database_define_id = d.id
+               left join T_SOD_DATA_CLASS e on a.data_class_id = e.data_class_id
+               <where>
+                   <if test="entity.userId != null and entity.userId  != ''">
+                       a.user_id = #{entity.userId}
+                   </if>
+                    <if test="entity.id != null and entity.id  != ''">
+                        and a.id = #{entity.id}
+                    </if>
+                   <if test="entity.dDataId != null and entity.dDataId  != ''">
+                       and a.d_data_id = #{entity.dDataId}
+                   </if>
+                   <if test="entity.dataOrigin != null and entity.dataOrigin  != ''">
+                       and a.data_origin = #{entity.dataOrigin}
+                   </if>
+               </where>
+    </select>
+    <select id="getColumnByIdAndDDataId" resultType="java.util.Map">
+        select  distinct c_element_code,ele_name,type,unit,user_ele_code,is_null,accuracy,is_primary_key,serial_number from T_SOD_DATA_TABLE_COLUMN where table_id in
+            ( select t.id table_name
+                from T_SOD_NEWDATA_APPLY a
+                left join T_SOD_STORAGE_CONFIGURATION b on a.data_class_id=b.data_class_id
+                left join T_SOD_DATA_LOGIC f on b.database_id = f.database_id and b.logic_id = f.logic_id and b.data_class_id = f.data_class_id
+                left join T_SOD_DATA_TABLE t on f.id = t.class_logic_id
+                <where>
+                    <if test="entity.id != null and entity.id  != ''">
+                        a.id = #{entity.id}
+                    </if>
+                    <if test="entity.dDataId != null and entity.dDataId  != ''">
+                        and a.d_data_id = #{entity.dDataId}
+                    </if>
+                </where> ) order by serial_number asc
+    </select>
+
     <select id="queryNewdataApplyByApplyId" parameterType="String" resultType="java.util.Map">
           select a.*, b.c_datum_code,b.c_datumtype,c.c_datum_code type_code,c.c_datumtype type_name
           FROM t_sod_newdata_apply a
@@ -480,5 +525,9 @@
         order by
             da.create_time desc,
             dd.authorize asc
+    </select>
+
+    <select id="getDataClassBaseInfo"  resultType="java.util.Map" parameterType="String">
+        SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]> 'delete') and  A.C_COREMETA_ID = #{cCoremetaId}
     </select>
 </mapper>

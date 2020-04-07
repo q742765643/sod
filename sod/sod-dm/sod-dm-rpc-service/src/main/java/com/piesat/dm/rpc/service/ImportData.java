@@ -1,8 +1,21 @@
 package com.piesat.dm.rpc.service;
 
 import com.piesat.dm.common.codedom.CodeDOM;
-import com.piesat.dm.dao.*;
-import com.piesat.dm.entity.*;
+import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.DatabaseDefineDao;
+import com.piesat.dm.dao.dataclass.DataClassDao;
+import com.piesat.dm.dao.dataclass.DataLogicDao;
+import com.piesat.dm.dao.dataclass.DatumTypeInfoDao;
+import com.piesat.dm.dao.dataclass.LogicDefineDao;
+import com.piesat.dm.dao.datatable.DataTableDao;
+import com.piesat.dm.dao.datatable.ShardingDao;
+import com.piesat.dm.entity.database.DatabaseDefineEntity;
+import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.*;
+import com.piesat.dm.entity.datatable.DataTableEntity;
+import com.piesat.dm.entity.datatable.ShardingEntity;
+import com.piesat.dm.entity.datatable.TableColumnEntity;
+import com.piesat.dm.entity.datatable.TableIndexEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,9 +51,9 @@ public class ImportData {
 
 
     public void implAll(){
-//        importDataClassData();
-//        importDataClassLogicData();
-//        importDatumData();
+        importDataClassData();
+        importDataClassLogicData();
+        importDatumData();
         impLogicDefine();
         importDatabaseData();
     }
