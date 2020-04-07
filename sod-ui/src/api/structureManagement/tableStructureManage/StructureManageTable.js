@@ -292,3 +292,28 @@ export function delByIds(query) {
     params: query
   })
 }
+export function syncSCode(data) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/syncSCode',
+    method: 'post',
+    data: data
+  })
+}
+
+
+// 查询公共元数据字段
+export function queryCmccElements(query) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/queryCmccElements',
+    method: 'get',
+    params: query
+  })
+}
+
+export function managefieldPage(query) {
+  return request({
+    url: baseUrl + '/managefield/findData',
+    method: 'get',
+    params: query
+  })
+}

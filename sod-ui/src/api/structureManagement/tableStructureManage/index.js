@@ -38,7 +38,7 @@ export function getDetailById(query) {
 // 数据用途选择
 export function logicDefineAll(query) {
   return request({
-    url: baseUrl + '/dm/logicDefine/all',
+    url: baseUrl + '/dm/logicDefine/getAllLd',
     method: 'get',
     params: query
   })
@@ -72,6 +72,14 @@ export function enable() {
 export function getNewDataClassId(query) {
   return request({
     url: baseUrl + '/dm/dataClass/getNewDataClassId',
+    method: 'get',
+    params: query
+  })
+}
+
+export function findByDatabaseDefineId(query) {
+  return request({
+    url: baseUrl + '/dm/database/findByDatabaseDefineId',
     method: 'get',
     params: query
   })

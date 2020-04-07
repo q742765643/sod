@@ -7,32 +7,32 @@
             <el-checkbox
               :checked="scope.row.logicIschecked"
               :label="scope.row.logicName"
-              @change="clickLogicName(scope.row)"
+              @change="clickLogicName(scope.row.logicId,scope.row.logicName)"
             ></el-checkbox>
           </template>
         </el-table-column>
-        <el-table-column label="存储类型" prop="tableType">
+        <el-table-column label="存储类型" prop="logicStorageTypesEntityList">
           <template slot-scope="scope">
             <el-radio-group v-model="scope.row.typeIschecked">
               <el-radio
-                @change="tableTypeChange(scope.row,item.name)"
-                v-for="(item,index) in scope.row.tableType"
+                @change="tableTypeChange(scope.row,item.storageName)"
+                v-for="(item,index) in scope.row.logicStorageTypesEntityList"
                 :key="index"
-                :label="item.name"
+                :label="item.storageName"
                 :disabled="!scope.row.checkType"
               ></el-radio>
             </el-radio-group>
           </template>
         </el-table-column>
-        <el-table-column label="数据库名称" prop="physics">
+        <el-table-column label="数据库名称" prop="logicDatabaseEntityList">
           <template slot-scope="scope">
             <el-radio-group v-model="scope.row.physicsNameIschecked">
               <el-radio
-                v-for="(item,index) in scope.row.physics"
+                v-for="(item,index) in scope.row.logicDatabaseEntityList"
                 :key="index"
-                :label="item.database_name"
+                :label="item.databaseName"
                 :disabled="!scope.row.checkType"
-                @change="getSpecialLib(scope.row,item.database_id,item.database_name)"
+                @change="getSpecialLib(scope.row,item.databaseId,item.databaseName)"
               ></el-radio>
             </el-radio-group>
           </template>
@@ -50,7 +50,7 @@
                   v-for="(item,index) in scope.row.specialArr"
                   :key="index"
                   :label="item.special_database_name"
-                  :value="item.database_id"
+                  :value="item.databaseId"
                 ></el-option>
               </template>
             </el-select>
@@ -66,7 +66,10 @@
 </template>
 
 <script>
-import { logicDefineAll } from "@/api/structureManagement/tableStructureManage/index";
+import {
+  logicDefineAll,
+  findByDatabaseDefineId
+} from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: {
     handleArry: {
@@ -101,24 +104,24 @@ export default {
                   this.$set(single, "logicIschecked", true);
                   obj.logic_id = single.logic_id;
                   this.clickLogicName(single);
-                  single.tableType.forEach(item => {
+                  single.logicStorageTypesEntityList.forEach(item => {
                     if (item.key == element.storage_type) {
                       this.$set(single, "typeIschecked", item.name);
                       this.tableTypeChange(single, item.name);
                     }
                   });
-                  single.physics.forEach(async item => {
-                    if (item.database_name == element.physicsName) {
+                  single.logicDatabaseEntityList.forEach(async item => {
+                    if (item.databaseName == element.physicsName) {
                       this.$set(
                         single,
                         "physicsNameIschecked",
-                        item.database_name
+                        item.databaseName
                       );
-                      // await this.getSpecialLib(
-                      //   single,
-                      //   item.database_id,
-                      //   item.database_name
-                      // );
+                      await this.getSpecialLib(
+                        single,
+                        item.databaseId,
+                        item.databaseName
+                      );
                       this.$set(
                         single,
                         "selectModel",
@@ -131,7 +134,7 @@ export default {
                         ) {
                           obj.specialArr = [s];
 
-                          this.tableSpecialArrChange(obj, s.database_id);
+                          this.tableSpecialArrChange(obj, s.databaseId);
                         }
                       });
                     }
@@ -150,7 +153,8 @@ export default {
     },
 
     //数据用途可用不可用控制
-    clickLogicName(row) {
+    clickLogicName(logicId, logicName) {
+      debugger;
       if (row.checkType) {
         this.tableData.find((single, index) => {
           if (single.logic_id === row.logic_id) {
@@ -161,6 +165,9 @@ export default {
         });
       } else {
         this.tableData.find((single, index) => {
+          /* single.logicStorageTypesEntityList.forEach(element => {
+            if(element.)
+          }); */
           if (single.logic_id === row.logic_id) {
             let chosekey = single.logic_id;
             single.checkType = true;
@@ -175,8 +182,7 @@ export default {
     async getSpecialLib(item, id, name) {
       let chosekey = item.logic_id;
       this.choseRowsObj[chosekey].physicsName = name;
-      await this.axios
-        .get(interfaceObj.TableStructure_specialList + `?physical_id=${id}`)
+      await findByDatabaseDefineId({ id: id })
         .then(res => {
           if (res.data.returnCode === "0") {
             this.aboutHandleSpecial = res.data.data;
@@ -196,7 +202,7 @@ export default {
     // 存储类型change事件
     tableTypeChange(row, value) {
       let obj = {};
-      obj = row.tableType.find(item => {
+      obj = row.logicStorageTypesEntityList.find(item => {
         return item.name === value;
       });
       let getType = "";
@@ -215,7 +221,7 @@ export default {
     tableSpecialArrChange(row, value) {
       let obj = {};
       obj = row.specialArr.find(item => {
-        return item.database_id === value;
+        return item.databaseId === value;
       });
       let getSpecialName = "";
       getSpecialName = obj.special_database_name;

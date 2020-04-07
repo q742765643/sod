@@ -12,19 +12,24 @@
       <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteConfig">删除</el-button>
     </el-button-group>
     <el-table :data="tableData" stripe @selection-change="res=>selData=res">
-      <el-table-column type="index" :index="table_index"></el-table-column>
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="服务编码" prop="data_dpc_id"></el-table-column>
-      <el-table-column label="要素存储短名" prop="ele_code_short"></el-table-column>
-      <el-table-column label="学科" prop="subject_id"></el-table-column>
-      <el-table-column label="参数种类" prop="classify"></el-table-column>
-      <el-table-column label="参数编码" prop="parameter_id"></el-table-column>
-      <el-table-column label="GRIB版本" prop="grib_version"></el-table-column>
-      <el-table-column label="是否为共有配置" prop="public_config"></el-table-column>
-      <el-table-column label="模板编号" prop="template_id"></el-table-column>
+      <el-table-column align="center" type="index" :index="table_index"></el-table-column>
+      <el-table-column align="center" type="selection" width="55"></el-table-column>
+      <el-table-column align="center" label="处理编码" prop="dataDpcId"></el-table-column>
+      <el-table-column align="center" label="要素存储短名" prop="eleCodeShort"></el-table-column>
+      <el-table-column align="center" label="学科" prop="subjectId"></el-table-column>
+      <el-table-column align="center" label="参数种类" prop="classify"></el-table-column>
+      <el-table-column align="center" label="参数编码" prop="parameterId"></el-table-column>
+      <el-table-column align="center" label="GRIB版本" prop="gribVersion"></el-table-column>
+      <el-table-column align="center" label="是否为共有配置" prop="publicConfig"></el-table-column>
+      <el-table-column align="center" label="模板编号" prop="templateId"></el-table-column>
     </el-table>
-
-    <!-- <Pagination :total="dataTotal" @paginationChange="paginationChange0" ref="pagination"></Pagination> -->
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="searchFun"
+    />
 
     <el-dialog
       width="80%"
@@ -36,27 +41,34 @@
       <div>
         <el-form :model="optSearchObj" :inline="true" size="small" label-width="120px">
           <el-form-item label="短名">
-            <el-input v-model="optSearchObj.ele_code_short"></el-input>
+            <el-input v-model="optSearchObj.eleCodeShort"></el-input>
           </el-form-item>
           <el-form-item label="模板ID">
-            <el-input v-model="optSearchObj.template_id"></el-input>
+            <el-input v-model="optSearchObj.templateId"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="small" @click="searchOptConfig(1)">查询</el-button>
           </el-form-item>
         </el-form>
         <el-table :data="optData" @selection-change="handleSelectionChange" ref="choseTable">
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column label="短名" prop="ele_code_short"></el-table-column>
-          <el-table-column label="科目" prop="subject_id"></el-table-column>
-          <el-table-column label="分类" prop="classify"></el-table-column>
-          <el-table-column label="GRIB版本" prop="grib_version"></el-table-column>
-          <el-table-column label="参数ID" prop="parameter_id"></el-table-column>
-          <el-table-column label="共有配置" prop="public_config"></el-table-column>
-          <el-table-column label="要素描述" prop="element_cn"></el-table-column>
-          <el-table-column label="模板ID" prop="template_id"></el-table-column>
+          <el-table-column align="center" type="selection" width="55"></el-table-column>
+          <el-table-column align="center" label="短名" prop="eleCodeShort"></el-table-column>
+          <el-table-column align="center" label="科目" prop="subjectId"></el-table-column>
+          <el-table-column align="center" label="分类" prop="classify"></el-table-column>
+          <el-table-column align="center" label="GRIB版本" prop="gribVersion"></el-table-column>
+          <el-table-column align="center" label="参数ID" prop="parameterId"></el-table-column>
+          <el-table-column align="center" label="共有配置" prop="publicConfig"></el-table-column>
+          <el-table-column align="center" label="要素描述" prop="element_cn"></el-table-column>
+          <el-table-column align="center" label="模板ID" prop="templateId"></el-table-column>
         </el-table>
         <!-- <Pagination :total="optDataTotal" @paginationChange="paginationChange" ref="pagination"></Pagination> -->
+        <pagination
+          v-show="optDataTotal>0"
+          :total="optDataTotal"
+          :page.sync="optSearchObj.pageNum"
+          :limit.sync="optSearchObj.pageSize"
+          @pagination="searchOptConfig"
+        />
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="canalc()" size="small">取 消</el-button>
@@ -73,47 +85,52 @@
       <el-form size="mini" :model="formData" label-width="120px" ref="formData" :rules="rules">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="处理编码" prop="data_dpc_id">
-              <el-input placeholder="处理编码" v-model="formData.data_dpc_id"></el-input>
+            <el-form-item label="处理编码" prop="dataDpcId">
+              <el-input size="small" placeholder="处理编码" v-model="formData.dataDpcId"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="格点要素短名" prop="ele_code_short">
-              <el-input placeholder="格点要素短名" v-model="formData.ele_code_short"></el-input>
+            <el-form-item label="格点要素短名" prop="eleCodeShort">
+              <el-input size="small" placeholder="格点要素短名" v-model="formData.eleCodeShort"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="学科" prop="subject_id">
-              <el-input placeholder="学科" v-model="formData.subject_id"></el-input>
+            <el-form-item label="学科" prop="subjectId">
+              <el-input size="small" placeholder="学科" v-model="formData.subjectId" type="number"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="分类" prop="classify">
-              <el-input placeholder="分类" v-model="formData.classify"></el-input>
+              <el-input size="small" placeholder="分类" v-model="formData.classify" type="number"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="参数ID" prop="parameter_id">
-              <el-input placeholder="参数ID" v-model="formData.parameter_id"></el-input>
+            <el-form-item label="参数ID" prop="parameterId">
+              <el-input size="small" placeholder="参数ID" v-model="formData.parameterId"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="GRIB版本" prop="grib_version">
-              <el-input placeholder="GRIB版本" v-model="formData.grib_version"></el-input>
+            <el-form-item label="GRIB版本" prop="gribVersion">
+              <el-input
+                size="small"
+                placeholder="GRIB版本"
+                v-model="formData.gribVersion"
+                type="number"
+              ></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="模板编号" prop="template_id">
-              <el-input placeholder="模板编号" v-model="formData.template_id"></el-input>
+            <el-form-item label="模板编号" prop="templateId">
+              <el-input size="small" placeholder="模板编号" v-model="formData.templateId"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="是否共有配置">
               <el-switch
-                v-model="formData.public_config"
+                v-model="formData.publicConfig"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
                 active-value="Y"
@@ -132,6 +149,14 @@
 </template>
 
 <script>
+import {
+  griddecodingList,
+  griddecodingSave,
+  getById,
+  saveList,
+  deleteList
+} from "@/api/structureManagement/tableStructureManage/DecodingConfigManage";
+import { gridEleDecodeDefineAll } from "@/api/GridDataDictionaryManagement/GRIBdefine";
 export default {
   name: "DecodingConfigManage",
   props: { rowData: Object },
@@ -139,34 +164,40 @@ export default {
   data() {
     return {
       tableData: [],
-      dataTotal: 0,
+      total: 0,
       dialogStatus: { optConfig: false, config: false },
-      searchObj: {},
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10
+      },
       optData: [],
-      optSearchObj: { ele_code_short: "", template_id: "" },
+      optSearchObj: {
+        pageNum: 1,
+        pageSize: 10,
+        eleCodeShort: "",
+        templateId: ""
+      },
       optDataTotal: 0,
       selData: [],
       formData: {},
       multipleSelection: [],
       dialogTitle: "新增解码配置信息",
       rules: {
-        data_dpc_id: [
+        dataDpcId: [
           { required: true, message: "请输入处理编码", trigger: "blur" }
         ],
-        ele_code_short: [
+        eleCodeShort: [
           { required: true, message: "请输入格点要素短名", trigger: "blur" }
         ],
-        subject_id: [
-          { required: true, message: "请输入学科", trigger: "blur" }
-        ],
+        subjectId: [{ required: true, message: "请输入学科", trigger: "blur" }],
         classify: [{ required: true, message: "分类", trigger: "blur" }],
-        parameter_id: [
+        parameterId: [
           { required: true, message: "请输入参数ID", trigger: "blur" }
         ],
-        template_id: [
+        templateId: [
           { required: true, message: "请输入模板编号", trigger: "blur" }
         ],
-        grib_version: [
+        gribVersion: [
           { required: true, message: "请输入GRIB版本", trigger: "blur" }
         ]
       }
@@ -175,39 +206,28 @@ export default {
   methods: {
     // table自增定义方法
     table_index(index) {
-      return (this.searchObj.page - 1) * this.searchObj.rows + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     searchFun() {
-      let paginateObj = this.$refs.pagination.paginateObj;
-      this.searchObj = { ...this.searchObj, ...paginateObj };
-      this.axios
-        .get(interfaceObj.TableStructure_getModeCode, {
-          params: {
-            data_class_id: this.rowData.data_class_id,
-            ...this.searchObj
-          }
-        })
-        .then(res => {
-          this.tableData = res.data.data;
-          this.dataTotal = res.data.total;
-        });
+      this.queryParams.dataServiceId = this.rowData.DATA_CLASS_ID;
+      console.log(this.queryParams);
+      griddecodingList(this.queryParams).then(res => {
+        this.tableData = res.data.pageData;
+        this.total = res.data.totalCount;
+      });
     },
     searchOptConfig(page) {
-      let paginateObj = this.$refs.pagination.paginateObj;
-      this.optSearchObj = { ...this.optSearchObj, ...paginateObj };
-      let sp = {};
-      if (page && page == 1) sp.page = 1;
-      this.axios
-        .get(interfaceObj.TableStructure_getModeEle, {
-          params: { ...this.optSearchObj, ...sp }
-        })
-        .then(res => {
-          this.optData = res.data.data;
-          this.optDataTotal = res.data.total;
-        });
+      if (page && page == 1) this.optSearchObj.pageNum = 1;
+      gridEleDecodeDefineAll(this.optSearchObj).then(response => {
+        this.optData = response.data.pageData;
+        this.optDataTotal = response.data.totalCount;
+        this.loading = false;
+      });
     },
     addConfig() {
       this.formData = {};
@@ -223,9 +243,11 @@ export default {
         return;
       } else {
         this.dialogTitle = "编辑解码配置信息";
-        this.formData = JSON.parse(JSON.stringify(this.selData[0]));
+        getById({ id: this.selData[0].id }).then(res => {
+          this.formData = res.data;
+          this.dialogStatus.config = true;
+        });
       }
-      this.dialogStatus.config = true;
     },
     deleteConfig() {
       if (this.selData.length == 0) {
@@ -237,35 +259,25 @@ export default {
       } else {
         let ids = [];
         this.selData.forEach(element => {
-          ids.push(element.grid_decode_id);
+          ids.push(element.id);
         });
-        this.axios
-          .post(interfaceObj.TableStructure_deleteModeCode, {
-            grid_decode_id: ids.join(",")
-          })
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.canalc();
-            } else {
-              this.$message({
-                type: "error",
-                message: res.data.returnMessage
-              });
-            }
-          });
+        deleteList({
+          ids: ids.join(",")
+        }).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.canalc();
+          } else {
+            this.$message({
+              type: "error",
+              message: res.msg
+            });
+          }
+        });
       }
-    },
-    //分页事件
-
-    paginationChange() {
-      this.searchOptConfig();
-    },
-    paginationChange0() {
-      this.searchFun();
     },
     canalc() {
       this.formData = {};
@@ -273,38 +285,26 @@ export default {
       this.dialogStatus.optConfig = false;
       this.dialogStatus.config = false;
       this.searchFun();
-      // this.$refs.choseTable.clearSelection();
     },
     trueHandle(formData) {
       if (formData == "formData") {
         this.$refs[formData].validate(valid => {
           if (valid) {
-            if (this.dialogTitle == "新增解码配置信息") {
-              this.formData.data_class_id = this.rowData.data_class_id;
-              delete this.formData.data_service_id;
-              let arry = [];
-              arry.push(this.formData);
-              this.add(arry);
-            } else {
-              this.formData.data_class_id = this.formData.data_service_id;
-              delete this.formData.data_service_id;
-              this.axios
-                .post(interfaceObj.TableStructure_updateModeCode, this.formData)
-                .then(res => {
-                  if (res.data.returnCode == 0) {
-                    this.$message({
-                      type: "success",
-                      message: "编辑成功"
-                    });
-                    this.canalc();
-                  } else {
-                    this.$message({
-                      type: "error",
-                      message: res.data.returnMessage
-                    });
-                  }
+            this.formData.dataServiceId = this.rowData.DATA_CLASS_ID;
+            griddecodingSave(this.formData).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  message: "操作成功！",
+                  type: "success"
                 });
-            }
+                this.canalc();
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
+            });
           } else {
             console.log("error submit!!");
             return false;
@@ -318,35 +318,35 @@ export default {
           });
         } else {
           this.multipleSelection.forEach(element => {
-            element.data_class_id = this.rowData.data_class_id;
+            element.dataServiceId = this.rowData.DATA_CLASS_ID;
+            element.dataDpcId = this.rowData.DATA_CLASS_ID;
           });
           this.add(this.multipleSelection);
         }
       }
     },
     add(addParams) {
-      this.axios
-        .post(interfaceObj.TableStructure_addModeCode, {
-          model_code_str: addParams
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              type: "success",
-              message: "新增成功"
-            });
-            this.canalc();
-          } else {
-            this.$message({
-              type: "error",
-              message: res.data.returnMessage
-            });
-          }
-        });
+      saveList({
+        gridDecodingList: addParams
+      }).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            message: "操作成功！",
+            type: "success"
+          });
+          this.canalc();
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     }
   },
   mounted() {
-    // this.searchFun();
+    this.searchFun();
+    this.searchOptConfig(1);
   }
 };
 </script>

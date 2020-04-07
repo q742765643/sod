@@ -13,11 +13,11 @@
         <div class="treeTitle">管理字段分组</div>
         <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
           <el-tree
-            :data="deptOptions"
+            :data="treeData"
             :props="defaultProps"
             :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
+            ref="elTree"
+            node-key="groupId"
             default-expand-all
             @node-click="handleNodeClick"
           />

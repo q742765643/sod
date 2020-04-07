@@ -52,6 +52,7 @@
                       <v-column
                         v-on:reloadTableInfo="getTableInfo"
                         v-if="tabs.table.key"
+                        :rowData="rowData"
                         :tableInfo="keyObj.tableInfo"
                       ></v-column>
                     </div>
@@ -123,6 +124,7 @@
                       <v-column
                         v-on:reloadTableInfo="getTableInfo"
                         v-if="tabs.table.el"
+                        :rowData="rowData"
                         :tableInfo="elObj.tableInfo"
                       ></v-column>
                     </div>

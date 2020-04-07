@@ -80,7 +80,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_DIC_WLG]: {
-        target: `http://192.168.1.101:2345`,
+        target: `http://192.168.1.102:2345`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DIC_WLG]: ""
