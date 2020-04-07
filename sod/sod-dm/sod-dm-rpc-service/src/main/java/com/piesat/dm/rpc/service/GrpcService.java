@@ -16,7 +16,9 @@ import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.entity.*;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
+import com.piesat.dm.entity.datatable.CmccElementEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
@@ -349,4 +351,10 @@ public class GrpcService {
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType(dictType);
         return DictDataDtos;
     }
+
+
+    public List<CmccElementEntity> queryCmccElements(DatumTableEntity datumTableEntity){
+        return this.mybatisQueryMapper.queryCmccElements(datumTableEntity);
+    }
 }
+

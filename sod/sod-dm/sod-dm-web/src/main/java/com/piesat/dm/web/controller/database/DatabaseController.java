@@ -115,6 +115,15 @@ public class DatabaseController {
         return ResultT.success(all);
     }
 
+    @ApiOperation(value = "根据父id查询")
+    @RequiresPermissions("dm:database:findByDatabaseDefineId")
+    @GetMapping(value = "/findByDatabaseDefineId")
+    public ResultT findByDatabaseDefineId(String id) {
+        List<DatabaseDto> all = this.databaseService.findByDatabaseDefineId(id);
+        return ResultT.success(all);
+    }
+
+
     @ApiOperation(value = "根据用户ID查询可用物理库的信息")
     @RequiresPermissions("dm:database:findByUserId")
     @GetMapping(value = "/findByUserId")

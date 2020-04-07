@@ -2,6 +2,7 @@ package com.piesat.dm.web.controller.datatable;
 
 import com.piesat.dm.rpc.api.datatable.GridDecodingService;
 import com.piesat.dm.rpc.dto.datatable.GridDecodingDto;
+import com.piesat.dm.rpc.dto.datatable.GridDecodingList;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -44,6 +45,20 @@ public class GridDecodingController {
         }
     }
 
+    @ApiOperation(value = "新增多个")
+    @RequiresPermissions("dm:griddecoding:saveList")
+    @Log(title = "编码配置管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/saveList")
+    public ResultT saveList(@RequestBody GridDecodingList gridDecodingList) {
+        try {
+            List<GridDecodingDto> save = this.gridDecodingService.saveList(gridDecodingList);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据id查询")
     @RequiresPermissions("dm:griddecoding:get")
     @GetMapping(value = "/get")
@@ -64,6 +79,21 @@ public class GridDecodingController {
     public ResultT del(String id) {
         try {
             this.gridDecodingService.delete(id);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "根据id删除多个")
+    @RequiresPermissions("dm:griddecoding:delByIds")
+    @Log(title = "编码配置管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/delByIds")
+    public ResultT delByIds(String ids) {
+        try {
+            this.gridDecodingService.delByIds(ids);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

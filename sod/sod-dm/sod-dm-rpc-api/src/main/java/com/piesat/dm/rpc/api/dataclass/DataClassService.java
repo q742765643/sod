@@ -59,5 +59,7 @@ public interface DataClassService {
 
     PageBean getBaseData(PageForm<Map<String,String>> pageForm,DataClassDto dataClassDto);
 
+    void exportBaseData(DataClassDto dataClassDto);
+
     String findByParentId(String parentId);
 }

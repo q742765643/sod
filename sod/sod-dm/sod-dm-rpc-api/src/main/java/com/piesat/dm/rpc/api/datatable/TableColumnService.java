@@ -32,4 +32,5 @@ public interface TableColumnService {
     TableColumnDto updateDto(TableColumnDto tableColumnDto);
 
     List<TableColumnDto> getPrimaryKey(String tableId);
+
 }

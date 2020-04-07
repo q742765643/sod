@@ -1,5 +1,6 @@
 package com.piesat.dm.entity.dataclass;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class DataClassEntity extends BaseEntity {
      * 存储编码
      * data_class_id
      */
+    @Excel(name = "存储编码")
     @Column(name = "data_class_id", length = 255, nullable = false)
     private String dataClassId;
 
@@ -30,6 +32,7 @@ public class DataClassEntity extends BaseEntity {
      * 名称
      * class_name
      */
+    @Excel(name = "资料名称")
     @Column(name = "class_name", length = 255)
     private String className;
 
@@ -58,6 +61,7 @@ public class DataClassEntity extends BaseEntity {
      * 四级编码
      * d_data_id
      */
+    @Excel(name = "四级编码")
     @Column(name = "d_data_id", length = 255)
     private String dDataId;
 
@@ -77,6 +81,7 @@ public class DataClassEntity extends BaseEntity {
     /**
      * if_stop_use
      */
+    @Excel(name = "是否发布")
     @Column(name = "if_stop_use", columnDefinition="Boolean DEFAULT false ")
     private Boolean ifStopUse;
 
