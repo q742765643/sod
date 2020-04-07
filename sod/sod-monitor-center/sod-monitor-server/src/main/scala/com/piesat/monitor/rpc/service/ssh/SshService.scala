@@ -1,9 +1,8 @@
 package com.piesat.monitor.rpc.service.ssh
 
+import java.util.{Date, List => JavaList}
 
-
-import java.util.Date
-
+import com.github.pagehelper.PageInfo
 import com.piesat.common.utils.IdUtils
 import com.piesat.monitor.dao.es.ssh.SshMapper
 import com.piesat.monitor.entity.ssh.SshEntity
@@ -11,18 +10,14 @@ import com.piesat.monitor.repository.ssh.SshDao
 import com.piesat.util.page.{PageBean, PageForm}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import com.github.pagehelper.{PageHelper, PageInfo}
-import com.piesat.monitor.entity.process.ProcessConfig
-import org.util.{DateUtil, PageUtil}
-import java.util.{List => JavaList}
-
+import org.util.PageUtil
 
 
 /**
   * Created by zzj on 2020/3/23.
   */
 @Service
-class SshService  @Autowired()(sshDao: SshDao,sshMapper:SshMapper)
+class SshService  @Autowired()(sshDao: SshDao, sshMapper:SshMapper)
 {
   def findById(id:String):SshEntity={
     sshDao.findById(id).get()

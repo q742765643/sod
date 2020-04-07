@@ -8,10 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,6 +20,7 @@ import java.util.stream.Collectors;
  **/
 public class ESJdbcTest {
     public static void main(String[] args)  {
+        Map<String,Map<String,Integer>> map=new HashMap<>();
         ObjectMapper objectMapper=new ObjectMapper();
         SshEntity sshEntity=new SshEntity();
         sshEntity.setUserName("111");

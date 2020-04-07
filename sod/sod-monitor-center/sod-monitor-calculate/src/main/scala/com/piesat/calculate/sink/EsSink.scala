@@ -35,10 +35,10 @@ class EsSink[T] {
       httpHosts,
       new ElasticsearchSinkFunction[DiTaskExecute] { //参数element就是上面清洗好的数据格式
 
-        def createIndexRequest(element: DiTaskExecute): IndexRequest = {
+        def createIndexRequest(indexNameE:String,element: DiTaskExecute): IndexRequest = {
           var map=MapUtil.objectToMapInsert(element)
           return Requests.indexRequest()
-            .index(indexName)
+            .index(indexNameE)
             .`type`("doc").id(element.id)
             .source(map)
         }
@@ -47,19 +47,20 @@ class EsSink[T] {
           return new UpdateRequest().index(indexName).`type`("doc").id(id).doc(map)
         }
         override def process(element: DiTaskExecute, runtimeContext: RuntimeContext, requestIndexer: RequestIndexer): Unit = {
-          val filter=scala.collection.mutable.Map[String,Object]()
           val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
-          val date = dateFormat.format(element.startTimeA)
-          var indexName:String="di_task_monitor-"+date
-          filter.put("START_TIME_L", element.startTimeL)
+          val date = dateFormat.format(element.startTimeL)
+          requestIndexer.add(createIndexRequest(indexName+"-"+date,element))
+          val filter=scala.collection.mutable.Map[String,Object]()
+
+          var indexNameM:String="di_task_monitor-"+date
+          filter.put("START_TIME_L", element.startTimeL.asInstanceOf[Object])
           filter.put("TASK_ID", element.getTaskId)
-          var re=EsUtil.getWhereReslut(indexName,filter)
-          if(re.size()==0){
-            requestIndexer.add(createIndexRequest(element))
-          }else{
+          var re=EsUtil.getWhereReslut(indexNameM,filter)
+
+          if(re.size()>0){
             var res=re.get(0)
             var id:String=res.get("id").asInstanceOf[String]
-            requestIndexer.add(createUpdateRequest(element,indexName,id))
+            requestIndexer.add(createUpdateRequest(element,indexNameM,id))
           }
 
         }
