@@ -1,6 +1,6 @@
 package com.piesat.monitor.job;
 
-import com.piesat.monitor.rpc.service.quartz.DiTaskConfService;
+import com.piesat.monitor.rpc.service.quartz.DiUpdateService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -11,16 +11,15 @@ import org.springframework.stereotype.Service;
  * @program: sod
  * @description:
  * @author: zzj
- * @create: 2020-04-06 18:17
+ * @create: 2020-04-07 13:51
  **/
 @Service
-public class DiTaskConfJob implements Job {
+public class DiUpdateJob implements Job {
     @Autowired
-    private DiTaskConfService diTaskConfService;
-
+    private DiUpdateService diUpdateService;
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        diTaskConfService.execute(jobExecutionContext);
+        diUpdateService.execute(jobExecutionContext);
     }
 }
 

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import com.piesat.monitor.entity.ssh.SshEntity;
 import org.springframework.data.elasticsearch.core.geo.CustomGeoModule;
 import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentEntity;
 import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentProperty;

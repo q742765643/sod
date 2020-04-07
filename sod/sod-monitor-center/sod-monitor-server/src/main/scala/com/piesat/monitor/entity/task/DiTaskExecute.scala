@@ -4,12 +4,16 @@ import java.beans.Transient
 import java.util.Date
 
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonProperty}
+import lombok.Data
+import org.springframework.data.annotation.Id
+import org.springframework.data.elasticsearch.annotations.{DateFormat, Document, Field, FieldType}
 
 import scala.beans.BeanProperty
 
 /**
   * Created by zzj on 2020/4/3.
   */
+@Data
 class DiTaskExecute{
   /**任务编号*/
   @BeanProperty
@@ -40,9 +44,11 @@ class DiTaskExecute{
   var taskDuty:String = null
 
   /**计划开始时间*/
-  @BeanProperty
   @JsonProperty("START_TIME_S")
-  var startTimeS:String=_
+  @Field(`type` = FieldType.Date, store = true, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @BeanProperty
+  var startTimeS:Date=_
 
   /**计划开始时间*/
   @BeanProperty
@@ -70,9 +76,10 @@ class DiTaskExecute{
   var  taskDetail:String=_
 
   /**任务异常时间*/
-  @BeanProperty
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   @JsonProperty("TASK_ERROR_TIME")
+  @Field(`type` = FieldType.Date, store = true, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @BeanProperty
   var taskErrorTime:Date=_
 
   /**任务异常状态说明*/
@@ -86,9 +93,10 @@ class DiTaskExecute{
   var taskErrorReason:String=_
 
   /**记录时间*/
-  @BeanProperty
   @JsonProperty("RECORD_TIME")
+  @Field(`type` = FieldType.Date, store = true, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @BeanProperty
   var recordTime:Date=_
 
   @BeanProperty
@@ -96,17 +104,23 @@ class DiTaskExecute{
   var sendPhys:String=_
 
   @BeanProperty
+  @Id
   var id: String = _
 
-  @BeanProperty
+  @Field(`type` = FieldType.Date, store = true, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss:SSS||yyyy-MM-dd||epoch_millis||date_optional_time")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @BeanProperty
   var ddateTime: Date = _
 
   @Transient
   @BeanProperty
-  var startTime:Long=_
+  var startTime:Date=_
 
   @Transient
   @BeanProperty
-  var endTime:Long=_
+  var endTime:Date=_
+
+  @Transient
+  @BeanProperty
+  var ltaskState:String=_
 }

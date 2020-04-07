@@ -60,6 +60,8 @@ class EsSink[T] {
           if(re.size()>0){
             var res=re.get(0)
             var id:String=res.get("id").asInstanceOf[String]
+            element.id=id
+            element.taskDuty=res.get("taskDuty").asInstanceOf[String]
             requestIndexer.add(createUpdateRequest(element,indexNameM,id))
           }
 

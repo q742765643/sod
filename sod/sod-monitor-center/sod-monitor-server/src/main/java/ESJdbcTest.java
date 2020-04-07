@@ -1,16 +1,9 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
-import com.piesat.monitor.entity.ssh.SshEntity;
-import org.util.DateUtil;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import com.piesat.monitor.entity.ssh.SshEntity;
 
 /**
  * @program: sod
@@ -19,19 +12,19 @@ import java.util.stream.Collectors;
  * @create: 2020-03-19 17:40
  **/
 public class ESJdbcTest {
-    public static void main(String[] args)  {
-        Map<String,Map<String,Integer>> map=new HashMap<>();
-        ObjectMapper objectMapper=new ObjectMapper();
-        SshEntity sshEntity=new SshEntity();
+    public static void main(String[] args) {
+        Map<String, Map<String, Integer>> map = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        SshEntity sshEntity = new SshEntity();
         sshEntity.setUserName("111");
         sshEntity.setCreateTime(new Date());
-        Function<SshEntity,String> a= new Function<SshEntity,String>(){
+        Function<SshEntity, String> a = new Function<SshEntity, String>() {
             @Override
             public String apply(SshEntity sshEntity) {
                 return sshEntity.getIp();
             }
         };
-        List<SshEntity> list=new ArrayList();
+        List<SshEntity> list = new ArrayList();
         List<String> ips = list.stream().map(a).collect(Collectors.toList());
 
         try {
