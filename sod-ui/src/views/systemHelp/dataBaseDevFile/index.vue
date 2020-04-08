@@ -51,11 +51,11 @@
       @current-change="handleCurrentChange"
     >
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="fileName" label="文档名称"></el-table-column>
-      <el-table-column align="center" prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
-      <el-table-column align="center" prop="filePictrue" label="文档类型" width="100px"></el-table-column>
-      <el-table-column align="center" prop="updateTime" label="上传时间" width="180px"></el-table-column>
-      <el-table-column align="center" label="操作" width="260px">
+      <el-table-column prop="fileName" label="文档名称"></el-table-column>
+      <el-table-column prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
+      <el-table-column prop="filePictrue" label="文档类型" width="100px"></el-table-column>
+      <el-table-column prop="updateTime" label="上传时间" width="180px"></el-table-column>
+      <el-table-column label="操作" width="260px">
         <template slot-scope="scope">
           <el-button
             type="text"

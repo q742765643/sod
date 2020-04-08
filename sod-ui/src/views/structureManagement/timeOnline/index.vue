@@ -14,18 +14,18 @@
     </el-form>
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="CLASS_NAME" label="资料名称"></el-table-column>
-      <el-table-column align="center" prop="D_DATA_ID" label="四级编码"></el-table-column>
-      <el-table-column align="center" prop="BEGIN_TIME" label="开始时间" width="120"></el-table-column>
-      <el-table-column align="center" prop="END_TIME" label="结束时间" width="120"></el-table-column>
-      <el-table-column align="center" prop="RECORD_COUNT" label="数据总量"></el-table-column>
-      <el-table-column align="center" prop="IF_STOP_USE" label="是否发布" width="80">
+      <el-table-column prop="CLASS_NAME" label="资料名称"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
+      <el-table-column prop="BEGIN_TIME" label="开始时间" width="120"></el-table-column>
+      <el-table-column prop="END_TIME" label="结束时间" width="120"></el-table-column>
+      <el-table-column prop="RECORD_COUNT" label="数据总量"></el-table-column>
+      <el-table-column prop="IF_STOP_USE" label="是否发布" width="80">
         <template slot-scope="scope">
           <div class="cell" v-if="scope.row.IF_STOP_USE==true">是</div>
           <div class="cell" v-if="scope.row.IF_STOP_USE==false" type="text">否</div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="120">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-edit" @click="handleCell(scope.row)">编辑</el-button>
         </template>

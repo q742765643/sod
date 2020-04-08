@@ -46,8 +46,8 @@
             </el-col>
           </el-row>
           <el-table :data="databaseList" border stripe style="width: 100%;">
-            <el-table-column prop="databaseId" label="数据库" align="center"></el-table-column>
-            <el-table-column label="权限" align="center">
+            <el-table-column prop="databaseId" label="数据库"></el-table-column>
+            <el-table-column label="权限">
               <template slot-scope="scope">
                 <el-checkbox-group v-model="scope.row.checkList">
                   <el-checkbox label="createTable">创建</el-checkbox>
@@ -101,39 +101,13 @@
         <!-- 列表 -->
         <section class="loadTable">
           <el-table :data="tableLibraryData" border style="width: 100%;">
-            <el-table-column align="center" type="index" width="50"></el-table-column>
+            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="ddataId" label="四级编码" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column
-              align="center"
-              prop="typeName"
-              label="资料分类"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="dataName"
-              label="资料名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="ddataId"
-              label="四级编码"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="tableName"
-              label="表名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="databaseName"
-              label="数据库"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
               prop="applyAuthority"
               label="申请权限"
               width="80"
@@ -184,46 +158,20 @@
         <!-- 列表 -->
         <section class="loadTable">
           <el-table :data="baseTableLibraryData" border @selection-change="handleSelectionChange">
-            <el-table-column align="center" type="selection" width="45"></el-table-column>
+            <el-table-column type="selection" width="45"></el-table-column>
+            <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="ddataId" label="四级编码" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column
-              align="center"
-              prop="typeName"
-              label="资料分类"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="dataName"
-              label="资料名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="ddataId"
-              label="四级编码"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="tableName"
-              label="表名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              prop="databaseName"
-              label="数据库"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              align="center"
               prop="applyAuthority"
               width="80px"
               label="申请权限"
               :formatter="applyAuthFormatter"
             ></el-table-column>
 
-            <el-table-column align="center" prop="empowerAuthority" label="审核状态">
+            <el-table-column prop="empowerAuthority" label="审核状态">
               <template slot-scope="scope">
                 <el-link
                   :underline="false"
@@ -241,7 +189,7 @@
                 >已拒绝</el-link>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="examine_status" label="备注">
+            <el-table-column prop="examine_status" label="备注">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
                   <p>{{ scope.row.failureReason }}</p>
@@ -251,7 +199,7 @@
                 </el-popover>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作" width="240px">
+            <el-table-column label="操作" width="240px">
               <template slot-scope="scope">
                 <el-button
                   plain

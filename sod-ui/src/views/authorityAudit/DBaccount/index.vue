@@ -30,30 +30,24 @@
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="databaseUpId"
-        label="账户ID"
-        width="120px"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column align="center" prop="userRealname" label="关联用户" width="100px"></el-table-column>
-      <el-table-column align="center" prop="department" label="机构" width="140px"></el-table-column>
-      <el-table-column align="center" prop="phoneNum" label="联系方式" width="120px"></el-table-column>
-      <el-table-column align="center" prop="createTime" label="创建时间" width="160px">
+      <el-table-column prop="databaseUpId" label="账户ID" width="120px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="userRealname" label="关联用户" width="100px"></el-table-column>
+      <el-table-column prop="department" label="机构" width="140px"></el-table-column>
+      <el-table-column prop="phoneNum" label="联系方式" width="120px"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="160px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="applyDatabaseName" label="可用数据库"></el-table-column>
-      <el-table-column align="center" prop="examineStatus" label="状态" width="100px">
+      <el-table-column prop="applyDatabaseName" label="可用数据库"></el-table-column>
+      <el-table-column prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='0'">待审核</span>
           <el-link v-if="scope.row.examineStatus=='1'" @click="viewReason(scope.row)">审核未通过</el-link>
           <span v-if="scope.row.examineStatus=='2'">审核通过</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" class-name="small-padding fixed-width">
+      <el-table-column label="操作" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.examineStatus=='0'"

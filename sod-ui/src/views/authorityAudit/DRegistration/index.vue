@@ -41,20 +41,13 @@
     </el-row>
 
     <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column align="center" type="index" :index="table_index" min-width="10" label=" "></el-table-column>
-      <el-table-column align="center" prop="D_DATA_ID" label="四级编码" sortable min-width="100"></el-table-column>
+      <el-table-column type="index" :index="table_index" min-width="10" label=" "></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" sortable min-width="100"></el-table-column>
+      <el-table-column prop="TYPE_NAME" label="数据名称" min-width="90" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="username" label="申请人" min-width="80"></el-table-column>
+      <el-table-column prop="deptName" label="机构" min-width="60"></el-table-column>
+      <el-table-column prop="phone" label="联系方式" min-width="60"></el-table-column>
       <el-table-column
-        align="center"
-        prop="TYPE_NAME"
-        label="数据名称"
-        min-width="90"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column align="center" prop="username" label="申请人" min-width="80"></el-table-column>
-      <el-table-column align="center" prop="deptName" label="机构" min-width="60"></el-table-column>
-      <el-table-column align="center" prop="phone" label="联系方式" min-width="60"></el-table-column>
-      <el-table-column
-        align="center"
         prop="CREATE_TIME"
         label="申请时间"
         sortable
@@ -65,13 +58,7 @@
           <span>{{ parseTime(scope.row.CREATE_TIME) }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="EXAMINE_STATUS"
-        label="审核状态"
-        min-width="60"
-        v-if="datacell !==2 "
-      >
+      <el-table-column prop="EXAMINE_STATUS" label="审核状态" min-width="60" v-if="datacell !==2 ">
         <template slot-scope="scope">
           <span v-if="scope.row.EXAMINE_STATUS==1">待审核</span>
           <span v-if="scope.row.EXAMINE_STATUS==3">审核不通过</span>
@@ -80,7 +67,6 @@
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
         prop="storageDefineIdentifier"
         label="存储构建"
         min-width="70"
@@ -98,7 +84,6 @@
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
         prop="storageDefineIdentifier"
         label="迁移清除"
         min-width="70"
@@ -118,13 +103,7 @@
           </el-button>-->
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="storageDefineIdentifier"
-        label="备份"
-        min-width="55"
-        v-if="datacell===2"
-      >
+      <el-table-column prop="storageDefineIdentifier" label="备份" min-width="55" v-if="datacell===2">
         <template slot-scope="scope5">
           <el-button class="opBtn" size="mini" @click="handleBackUp(scope5.row)">
             <i
@@ -140,13 +119,7 @@
           </el-button>-->
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="storageDefineIdentifier"
-        label="恢复"
-        min-width="55"
-        v-if="datacell===2"
-      >
+      <el-table-column prop="storageDefineIdentifier" label="恢复" min-width="55" v-if="datacell===2">
         <template slot-scope="scope6">
           <el-button
             v-if="scope6.row.storageDefineIdentifier!='3'"
@@ -156,13 +129,7 @@
           <el-button disabled v-else size="mini">恢复</el-button>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="EXAMINE_STATUS"
-        label="操作"
-        min-width="50"
-        v-if="datacell!==5"
-      >
+      <el-table-column prop="EXAMINE_STATUS" label="操作" min-width="50" v-if="datacell!==5">
         <template slot-scope="scope1">
           <el-button
             type="text"

@@ -3,24 +3,24 @@
     <fieldset>
       <legend>{{rowData.database_name}}</legend>
       <el-table :data="tableData" stripe style="width: 100%;">
-        <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
-        <el-table-column align="center" prop="statisticDate" label="统计日期">
+        <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+        <el-table-column prop="statisticDate" label="统计日期">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.statisticDate) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="beginTime" label="开始时间">
+        <el-table-column prop="beginTime" label="开始时间">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.beginTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="endTime" label="结束时间">
+        <el-table-column prop="endTime" label="结束时间">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.endTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="recordCount" label="总量"></el-table-column>
-        <el-table-column align="center" prop="dayTotal" label="日增量"></el-table-column>
+        <el-table-column prop="recordCount" label="总量"></el-table-column>
+        <el-table-column prop="dayTotal" label="日增量"></el-table-column>
       </el-table>
       <pagination
         v-show="total>0"

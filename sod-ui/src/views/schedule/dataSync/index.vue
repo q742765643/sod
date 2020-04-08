@@ -49,45 +49,36 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column align="center" type="index" min-width="15" label=" "></el-table-column>
-      <el-table-column align="center" type="selection" min-width="15"></el-table-column>
+      <el-table-column type="index" min-width="15" label=" "></el-table-column>
+      <el-table-column type="selection" min-width="15"></el-table-column>
+      <el-table-column prop="taskName" width="120px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column
-        align="center"
-        prop="taskName"
-        width="120px"
-        label="任务名称"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column
-        align="center"
         :show-overflow-tooltip="true"
         prop="dataSourceId"
         width="120px"
         label="数据来源标识"
       ></el-table-column>
       <el-table-column
-        align="center"
         :show-overflow-tooltip="true"
         prop="dataFlowDirectionId"
         width="120px"
         label="数据流向标识"
       ></el-table-column>
       <el-table-column
-        align="center"
         :show-overflow-tooltip="true"
         prop="sourceDatabaseId"
         width="120px"
         label="源库"
       ></el-table-column>
-      <el-table-column align="center" prop="execIp" width="120px" label="执行主机"></el-table-column>
-      <el-table-column align="center" prop="execPort" width="120px" label="执行端口"></el-table-column>
-      <el-table-column align="center" prop="updateTime" label="更新时间" width="160px">
+      <el-table-column prop="execIp" width="120px" label="执行主机"></el-table-column>
+      <el-table-column prop="execPort" width="120px" label="执行端口"></el-table-column>
+      <el-table-column prop="updateTime" label="更新时间" width="160px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
-      <el-table-column align="center" label="操作" min-width="450">
+      <el-table-column prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
+      <el-table-column label="操作" min-width="450">
         <template slot-scope="scope">
           <el-button
             type="text"

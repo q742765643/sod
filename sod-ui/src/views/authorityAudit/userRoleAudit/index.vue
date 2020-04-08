@@ -25,15 +25,15 @@
     </el-form>
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="account" label="账户名称"></el-table-column>
-      <el-table-column align="center" prop="username" label="用户名称"></el-table-column>
-      <el-table-column align="center" prop="post" label="部门"></el-table-column>
-      <el-table-column align="center" prop="updateTime" label="申请时间">
+      <el-table-column prop="account" label="账户名称"></el-table-column>
+      <el-table-column prop="username" label="用户名称"></el-table-column>
+      <el-table-column prop="post" label="部门"></el-table-column>
+      <el-table-column prop="updateTime" label="申请时间">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="status" label="审核状态">
+      <el-table-column prop="status" label="审核状态">
         <template slot-scope="scope">
           <el-link
             icon="el-icon-circle-close"
@@ -49,7 +49,7 @@
           >已审核</el-link>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="260px">
+      <el-table-column label="操作" width="260px">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.status=='0'"

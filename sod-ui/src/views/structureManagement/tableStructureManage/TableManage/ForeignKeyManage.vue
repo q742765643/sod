@@ -55,9 +55,9 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="keyColumn" label="键表字段" align="center"></el-table-column>
-      <el-table-column prop="eleColumn" label="要素表字段" align="center"></el-table-column>
-      <el-table-column prop="isReal" label="是否存在真实外键" align="center">
+      <el-table-column prop="keyColumn" label="键表字段"></el-table-column>
+      <el-table-column prop="eleColumn" label="要素表字段"></el-table-column>
+      <el-table-column prop="isReal" label="是否存在真实外键">
         <template slot-scope="scope">
           <span v-if="scope.row.isReal==true">是</span>
           <span v-if="scope.row.isReal==false">否</span>

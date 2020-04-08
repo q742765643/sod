@@ -94,7 +94,7 @@
             <el-input size="small" v-model="editRow.database_capacity" placeholder="请输入总容量">
               <template slot="append">TB</template>
             </el-input>
-            <span style="float:right;">
+            <span style="float:right;margin-top:12px;">
               <el-button
                 type="primary"
                 size="small"
@@ -217,6 +217,12 @@
 </template>
 
 <script>
+import {
+  databaseNodesAll,
+  databaseNodesDelete,
+  databaseNodesGetById,
+  databaseNodesSave
+} from "@/api/dbDictMangement/dbManagement";
 export default {
   name: "filedSearchDeploy",
   components: {},

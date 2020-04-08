@@ -135,12 +135,12 @@
           row-key="id"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="40" align="center" />
-          <el-table-column label="用户名称" align="center" prop="userName" />
-          <el-table-column label="用户昵称" align="center" prop="nickName" />
-          <el-table-column label="部门" align="center" prop="dept.deptName" />
-          <el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
-          <el-table-column label="状态" align="center">
+          <el-table-column type="selection" width="40" />
+          <el-table-column label="用户名称" prop="userName" />
+          <el-table-column label="用户昵称" prop="nickName" />
+          <el-table-column label="部门" prop="dept.deptName" />
+          <el-table-column label="手机号码" prop="phonenumber" width="120" />
+          <el-table-column label="状态">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -150,17 +150,12 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+          <el-table-column label="创建时间" prop="createTime" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            label="操作"
-            align="center"
-            width="180"
-            class-name="small-padding fixed-width"
-          >
+          <el-table-column label="操作" width="180" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
                 size="mini"
