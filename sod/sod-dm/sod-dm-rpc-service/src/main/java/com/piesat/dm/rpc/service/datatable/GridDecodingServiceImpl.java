@@ -8,6 +8,7 @@ import com.piesat.dm.dao.datatable.GridDecodingDao;
 import com.piesat.dm.entity.datatable.GridDecodingEntity;
 import com.piesat.dm.rpc.api.datatable.GridDecodingService;
 import com.piesat.dm.rpc.dto.datatable.GridDecodingDto;
+import com.piesat.dm.rpc.dto.datatable.GridDecodingList;
 import com.piesat.dm.rpc.mapper.datatable.GridDecodingMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,9 +48,22 @@ public class GridDecodingServiceImpl extends BaseService<GridDecodingEntity> imp
     }
 
     @Override
+    public List<GridDecodingDto> saveList(GridDecodingList gridDecodingList) {
+        List<GridDecodingEntity> gridDecodingEntity = this.gridDecodingMapper.toEntity(gridDecodingList.getGridDecodingList());
+        gridDecodingEntity = this.save(gridDecodingEntity);
+        return this.gridDecodingMapper.toDto(gridDecodingEntity);
+    }
+
+    @Override
     public GridDecodingDto getDotById(String id) {
         GridDecodingEntity gridDecodingEntity = this.getById(id);
         return this.gridDecodingMapper.toDto(gridDecodingEntity);
+    }
+
+    @Override
+    public void delByIds(String ids) {
+        String[] split = ids.split(",");
+        this.deleteByIds(Arrays.asList(split));
     }
 
     @Override

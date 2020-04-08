@@ -4,7 +4,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="数据库类型">
-            <el-input v-model="msgFormDialog.database_name" disabled size="small"></el-input>
+            <el-input v-model="msgFormDialog.DATABASE_NAME" disabled size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12" class="btnColBox">
@@ -34,6 +34,9 @@
 
 <script>
 // import { interfaceObj } from "@/urlConfig.js";
+import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { getSql } from "@/api/structureManagement/tableStructureManage/handleSQL";
+
 export default {
   name: "handleSQLDialog",
   props: {
@@ -48,7 +51,7 @@ export default {
         createSql: "",
         insertSql: "",
         selectSql: "",
-        database_name: this.handleSQLObj.database_name
+        DATABASE_NAME: this.handleSQLObj.DATABASE_NAME
       },
       tableObj: ""
     };
@@ -58,34 +61,22 @@ export default {
   },
   methods: {
     init() {
-      this.axios
-        .get(interfaceObj.TableStructure_getTableInfo, {
-          params: {
-            data_class_id: this.handleSQLObj.data_class_id,
-            database_logic: this.handleSQLObj.logic_id,
-            storage_type: this.handleSQLObj.storage_type
-          }
-        })
-        .then(res => {
-          this.tableObj = res.data.data[0];
-        })
-        .catch(error => {});
+      gcl({ classLogic: this.handleSQLObj.LOGIC_ID }).then(res => {
+        this.tableObj = res.data[0];
+      });
     },
     handleChange() {},
     createSql() {
-      this.axios
-        .get(interfaceObj.TableStructure_createSql, {
-          params: {
-            table_id: this.tableObj.table_id,
-            table_desc: this.handleSQLObj.database_id
-          }
-        })
-        .then(res => {
-          this.msgFormDialog.createSql = res.data.data.createSql;
-          this.msgFormDialog.insertSql = res.data.data.insertSql;
-          this.msgFormDialog.selectSql = res.data.data.selectSql;
-        })
-        .catch(error => {});
+      let obj = {
+        databaseId: this.handleSQLObj.DATABASE_ID,
+        tableId: this.tableObj.id
+      };
+      console.log(obj);
+      getSql(obj).then(res => {
+        this.msgFormDialog.createSql = res.data.createSql;
+        this.msgFormDialog.insertSql = res.data.insertSql;
+        this.msgFormDialog.selectSql = res.data.selectSql;
+      });
     },
     saveSql() {
       if (this.msgFormDialog.createSql == "") {

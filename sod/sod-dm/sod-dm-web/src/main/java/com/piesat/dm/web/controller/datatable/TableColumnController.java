@@ -1,5 +1,7 @@
 package com.piesat.dm.web.controller.datatable;
 
+import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
@@ -316,6 +318,20 @@ public class TableColumnController {
             ResultT r = new ResultT();
             r.setData(un);
             return r;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "查询公共元数据字段")
+    @RequiresPermissions("dm:tableColumn:queryCmccElements")
+    @GetMapping(value = "/queryCmccElements")
+    public ResultT queryCmccElements(DatumTableEntity datumTableEntity) {
+        try {
+            List<CmccElementEntity> all = this.grpcService.queryCmccElements(datumTableEntity);
+            return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

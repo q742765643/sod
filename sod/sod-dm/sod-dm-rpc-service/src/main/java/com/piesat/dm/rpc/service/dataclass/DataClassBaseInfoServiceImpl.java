@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.dataclass.DataClassBaseInfoDao;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataClassBaseInfoService;
 import com.piesat.dm.rpc.dto.dataclass.DataClassBaseInfoDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
@@ -24,6 +25,9 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
     private DataClassBaseInfoDao dataClassBaseInfoDao;
     @Autowired
     private DataClassBaseInfoMapper dataClassBaseInfoMapper;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
+
 
     @Override
     public BaseDao<DataClassBaseInfoEntity> getBaseDao() {
@@ -47,5 +51,26 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
     public List<DataClassBaseInfoDto> all() {
         List<DataClassBaseInfoEntity> all = this.getAll();
         return this.dataClassBaseInfoMapper.toDto(all);
+    }
+
+    @Override
+    public DataClassBaseInfoDto getDataClassBaseInfo(String id) {
+        DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(id);
+        DataClassBaseInfoDto dataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
+        DataClassBaseInfoEntity SodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(id);
+        DataClassBaseInfoDto sodDataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(SodDataClassBaseInfo);
+        dataClassBaseInfoDto = dataClassBaseInfoDto.combineSydwCore(sodDataClassBaseInfoDto,dataClassBaseInfoDto);
+        return dataClassBaseInfoDto;
+    }
+
+    @Override
+    public DataClassBaseInfoDto saveDataClassBaseInfo(DataClassBaseInfoDto dataClassBaseInfoDto) {
+        DataClassBaseInfoEntity sodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(dataClassBaseInfoDto.getDataClassId());
+        DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(dataClassBaseInfoDto.getDataClassId());
+        DataClassBaseInfoDto BaseInfo = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
+        DataClassBaseInfoDto diffInfo = dataClassBaseInfoDto.getDiffInfo(dataClassBaseInfoDto, BaseInfo);
+        DataClassBaseInfoDto dto = this.saveDto(diffInfo);
+        this.delete(sodDataClassBaseInfo.getId());
+        return dto;
     }
 }

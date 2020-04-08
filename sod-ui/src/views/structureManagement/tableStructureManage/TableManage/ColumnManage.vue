@@ -170,10 +170,12 @@
                     <el-form-item label="字段分组">
                       <el-select v-model="searchMmdata.group_id" size="small">
                         <el-option label="全部" value></el-option>
-                        <el-option label="常用管理字段" value="6C92BF6901A014125C4ED2B377384572"></el-option>
-                        <el-option label="站点数据" value="6C92BF6901A014125C4ED55C773845DB"></el-option>
-                        <el-option label="文件产品" value="6C92BF6901A014125C87A02075BD8BF4"></el-option>
-                        <el-option label="待分组字段" value="6C92BF6901A014125CDA344C5F2E2372"></el-option>
+                        <el-option
+                          v-for="item in AllManageGroup"
+                          :key="item.value"
+                          :label="item.groupId"
+                          :value="item.groupId"
+                        ></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -455,11 +457,15 @@ import {
   tableColumnSave,
   tableColumnSaveList,
   getDictByType,
-  getColumDatailById
+  getColumDatailById,
+  syncSCode,
+  queryCmccElements,
+  managefieldPage
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { enable } from "@/api/structureManagement/tableStructureManage/index";
+import { findAllManageGroup } from "@/api/dbDictMangement/manageField";
 export default {
-  props: { tableInfo: Object, tableType: String },
+  props: { tableInfo: Object, tableType: String, rowData: Object },
   components: {
     draggable,
     inputExcel
@@ -521,10 +527,52 @@ export default {
       },
       // 字段导入
       fileTemp: null,
-      fileListUpload: []
+      fileListUpload: [],
+      AllManageGroup: []
     };
   },
   methods: {
+    /* 复用字段 */
+    getColumnTables() {
+      this.getmatedata();
+      this.getmmdata();
+      this.matedataSelection = [];
+      this.mmdataSelection = [];
+      this.dialogStatus.publicMatedataDialog = true;
+    },
+    // 公共元数据
+    getmatedata() {
+      this.searchMatedata.c_datum_code = this.rowData.D_DATA_ID;
+      console.log(this.searchMatedata);
+      queryCmccElements(this.searchMatedata).then(res => {
+        if (res.code == 200) {
+          res.data.forEach(element => {
+            element.switch = false;
+          });
+          this.pubData.matedata = res.data;
+        }
+      });
+    },
+    // 管理字段
+    getmmdata() {
+      managefieldPage(this.searchMmdata)
+        .then(res => {
+          this.pubData.mmdata = res.data;
+        })
+        .catch(error => {});
+    },
+    // 管理字段分组
+    getAllGroup() {
+      findAllManageGroup().then(res => {
+        res.success
+          ? (this.AllManageGroup = res.data)
+          : this.$message({
+              type: "error",
+              message: res.msg
+            });
+      });
+    },
+
     async getCodeTable() {
       let flag = undefined;
       if (this.tableType == "E-show") {
@@ -603,39 +651,7 @@ export default {
         });
       }
     },
-    getColumnTables() {
-      this.getmatedata();
-      this.getmmdata();
-      this.matedataSelection = [];
-      this.mmdataSelection = [];
-      this.dialogStatus.publicMatedataDialog = true;
-    },
-    getmatedata() {
-      this.searchMatedata.c_datum_code = this.tableInfo.data_class_id;
-      this.axios
-        .get(interfaceObj.TableStructure_publicDatumColumn, {
-          params: this.searchMatedata
-        })
-        .then(res => {
-          if (res.data.returnCode == "0") {
-            res.data.data.forEach(element => {
-              element.switch = false;
-            });
-            this.pubData.matedata = res.data.data;
-          }
-        })
-        .catch(error => {});
-    },
-    getmmdata() {
-      this.axios
-        .get(interfaceObj.TableStructure_manageColumn, {
-          params: this.searchMmdata
-        })
-        .then(res => {
-          this.pubData.mmdata = res.data.data;
-        })
-        .catch(error => {});
-    },
+
     searchFun(type) {
       if (type == "matedata") {
         this.getmatedata();
@@ -757,19 +773,7 @@ export default {
     handleExceed() {
       this.$message.warning("当前限制选择1个文件");
     },
-    successUpload: function(response, file, fileList) {
-      if (response.returnCode == 0) {
-        this.$message({
-          type: "success",
-          message: "导入成功，已同步服务名称,请修改对应的数据同步配置！"
-        });
-        this.getCodeTable();
-        // 导入成功，已同步服务名称,请修改对应的数据同步配置！
-        this.syncServe();
-        this.exportInnerVisible = false;
-      }
-      // this.filepath = response.filepath;
-    },
+
     importTelplate() {
       if (!this.tableInfo.id) {
         this.$message({
@@ -932,7 +936,7 @@ export default {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "error"
         });
       } else {
         this.$alert(
@@ -949,27 +953,24 @@ export default {
                 switchObj.eleName = element.eleName + "质量标志";
                 switchObj.celementCode = newCode;
                 switchObj.dbEleCode = newCode;
+                switchObj.id = "";
                 publicRows.push(switchObj);
               });
-              this.axios
-                .post(interfaceObj.TableStructure_addManageColumn, {
-                  manageColumnList: publicRows
-                })
-                .then(res => {
-                  if (res.data.returnCode == 0) {
-                    this.$message({
-                      message: "插入成功！",
-                      type: "success"
-                    });
-                    this.getCodeTable();
-                  } else {
-                    this.$message({
-                      message: res.data.returnMessage,
-                      type: "error"
-                    });
-                  }
-                })
-                .catch(error => {});
+              console.log(publicRows);
+              tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
+                if (res.code == 200) {
+                  this.$message({
+                    message: "排序成功！",
+                    type: "success"
+                  });
+                  this.getCodeTable();
+                } else {
+                  this.$message({
+                    message: res.msg,
+                    type: "error"
+                  });
+                }
+              });
             }
           }
         );
@@ -977,29 +978,50 @@ export default {
     },
     // 同步服务
     async syncServe() {
-      await this.axios
-        .post(interfaceObj.TableStructure_syncServiceName, {
-          columnList: this.columnData
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            this.$message({
-              message: "同步成功！",
-              type: "success"
-            });
-            this.getCodeTable();
-          } else {
-            this.$message({
-              message: res.data.returnMessage,
-              type: "error"
-            });
-          }
-        })
-        .catch(error => {});
+      if (this.columnData.length == 0) {
+        this.$message({
+          message: "请选择一条数据",
+          type: "error"
+        });
+        return;
+      }
+      syncSCode({
+        tableColumnList: this.columnData
+      }).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            message: "同步成功！",
+            type: "success"
+          });
+          this.getCodeTable();
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
     },
     getMyExcelData(data) {
       // data 为读取的excel数据，在这里进行处理该数据
       console.log(data);
+      data.forEach(element => {
+        element.id = "";
+      });
+      tableColumnSaveList(data).then(response => {
+        if (response.code == 200) {
+          this.$message({ message: "操作成功", type: "success" });
+          this.$refs[formName].resetFields();
+          this.dialogStatus.columnDialog = false;
+          this.getCodeTable();
+          this.columnEditData = [];
+        } else {
+          this.$message({
+            type: "error",
+            message: "操作失败"
+          });
+        }
+      });
     },
 
     array_diff(a, b, tabActive) {

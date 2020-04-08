@@ -1,6 +1,9 @@
 package com.piesat.dm.mapper;
 
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
+import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
+import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -75,5 +78,9 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getRecordListByUserIdMysql(@Param("userId") String userId);
     List<Map<String, Object>> getRecordListByUserId(@Param("userId") String userId);
 
+    DataClassBaseInfoEntity getDataClassBaseInfo(@Param("id") String id);
 
+    List<CmccElementEntity> queryCmccElements(DatumTableEntity datumTableEntity);
+
+    List<Map<String, Object>> getLogicByDdataId(@Param("dDataId") String dDataId);
 }

@@ -45,8 +45,8 @@ object KafkaTaskExecuteDemo {
       diTaskConfiguration.taskId="AAAAA"
       diTaskConfiguration.system="SOD"
       diTaskConfiguration.taskName="测试"
-      diTaskConfiguration.startTimeS=sdf.format(new Date(1586181600000l))
-      diTaskConfiguration.startTimeL=1586181600000l
+      diTaskConfiguration.startTimeS=new Date(1586257200000l)
+      diTaskConfiguration.startTimeL=1586257200000l
       diTaskConfiguration.startTimeA=111
       diTaskConfiguration.endTimeA=3111
       diTaskConfiguration.taskState="成功"
@@ -59,7 +59,7 @@ object KafkaTaskExecuteDemo {
       diTaskConfiguration.recordTime=new Date()
       var messege = objectMapper.writeValueAsString(diTaskConfiguration)
       print(messege)
-      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  " + messege
+      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]   DI_TASK_EXECUTE=" + messege
       // 得到返回值
       val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("taskExecute", objectMapper.writeValueAsString(kafkaMessege))).get()
       println(rmd.toString)

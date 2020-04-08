@@ -1,21 +1,15 @@
 package com.piesat.calculate.main.task
 
-import java.text.SimpleDateFormat
-
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.piesat.calculate.constant.FlowConstant
 import com.piesat.calculate.entity.KafkaMessege
 import com.piesat.calculate.entity.task.DiTaskConfiguration
-import com.piesat.calculate.entity.transfer.{StationLevelEntity, StationLevelFiledEntity}
 import com.piesat.calculate.sink.EsSink
-import com.piesat.calculate.util.{EsUtil, GrokUtil}
+import com.piesat.calculate.util.GrokUtil
 import com.piesat.calculate.util.config.SystemConfig
 import org.apache.flink.api.common.serialization.SimpleStringSchema
-import org.apache.flink.streaming.api.scala.OutputTag
+import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
-import org.apache.flink.streaming.api.scala._
-import org.apache.flink.streaming.api.scala._
 
 /**
   * Created by zzj on 2020/4/3.
@@ -38,10 +32,16 @@ object DiTaskConfCollect {
     ).map(x => {
       try {
         var objectMapper = new ObjectMapper()
-        var result = new GrokUtil().getMesssge(x.message)
-        var diTaskConfiguration: DiTaskConfiguration = objectMapper.readValue(result, classOf[DiTaskConfiguration])
-        diTaskConfiguration.id = diTaskConfiguration.taskId
-        diTaskConfiguration
+        var result = new GrokUtil().getMesssge(x.message).trim
+        if (result.startsWith("DI_TASK_CONFIG=")) {
+          result = result.replace("DI_TASK_CONFIG=", "")
+          var diTaskConfiguration: DiTaskConfiguration = objectMapper.readValue(result, classOf[DiTaskConfiguration])
+          diTaskConfiguration.id = diTaskConfiguration.taskId
+          diTaskConfiguration
+        } else {
+          null
+        }
+
       } catch {
         case ex: Exception => {
           print(ex)

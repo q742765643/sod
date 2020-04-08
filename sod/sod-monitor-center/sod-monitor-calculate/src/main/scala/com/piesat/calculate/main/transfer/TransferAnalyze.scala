@@ -6,25 +6,20 @@ import java.util
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.piesat.calculate.constant.FlowConstant
+import com.piesat.calculate.entity.KafkaMessege
 import com.piesat.calculate.entity.flow.FlowMonitor
 import com.piesat.calculate.entity.transfer.{StationLevelEntity, StationLevelFiledEntity}
-import com.piesat.calculate.entity.{KafkaMessege, StationCount}
 import com.piesat.calculate.function.WindowResult
 import com.piesat.calculate.function.transfer.CountTransferFunction
 import com.piesat.calculate.sink.EsSink
 import com.piesat.calculate.trigger.transfer.CountTransferTrigger
 import com.piesat.calculate.util.config.SystemConfig
 import com.piesat.calculate.util.{EsUtil, GrokUtil}
-import com.piesat.calculate.windows.HtWindowAssigner
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
-import org.apache.flink.streaming.api.windowing.triggers.ContinuousProcessingTimeTrigger
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
-
-import scala.collection.JavaConverters._
 
 /**
   * Created by zzj on 2020/3/17.
@@ -51,40 +46,45 @@ object TransferAnalyze {
     ).map(x => {
       try {
         var objectMapper = new ObjectMapper()
-        var result = new GrokUtil().getMesssge(x.message)
-        var stationLevel: StationLevelEntity = objectMapper.readValue(result, classOf[StationLevelEntity])
-        var stationLevelFiled: StationLevelFiledEntity = stationLevel.getStationLevelFiledEntity
-        val timeFormat: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")
-        var id: String = null
-        var groupKey: String = null
-        val filter=scala.collection.mutable.Map[String,Object]()
-        if(stationLevelFiled.iiiii==null||"".equals(stationLevelFiled.iiiii)){
-          stationLevelFiled.iiiii="0"
-        }
-        filter.put("fields.DATA_TYPE", stationLevelFiled.dataType)
-        filter.put("fields.DATA_TIME", stationLevelFiled.dataTime)
-        if (FlowConstant.RT_CTS_STATION_DI.equals(stationLevel.stype)||FlowConstant.RT_DPC_STATION_DI.equals(stationLevel.stype)) {
-          id = stationLevelFiled.dataType + "_" + timeFormat.format(stationLevelFiled.dataTime) + "_" + stationLevelFiled.iiiii + "_" + stationLevelFiled.dataUpdateFlag
-          groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii
-          filter.put("fields.IIiii", stationLevelFiled.iiiii)
-        }
-        if (FlowConstant.RT_CTS_FILE_DI.equals(stationLevel.stype)||FlowConstant.RT_DPC_FILE_DI.equals(stationLevel.stype)) {
-          id = stationLevelFiled.dataType + "_" + stationLevelFiled.fileNameN + "_" + stationLevelFiled.dataUpdateFlag
-          filter.put("fields.FILE_NAME_N", stationLevelFiled.fileNameN)
-          groupKey = stationLevelFiled.dataType + "||"+ stationLevelFiled.iiiii
-        }
-        val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
-        stationLevel.setDdateTime(stationLevelFiled.dataTime)
-        stationLevel.setId(id)
-        stationLevel.groupKey = groupKey
-        val date = dateFormat.format(stationLevel.ddateTime)
-        var l = EsUtil.getWhere("transfer_analyze-" + date, filter)
-        if (l > 0) {
-          stationLevel.isCount = 1
+        var result = new GrokUtil().getMesssge(x.message).trim
+        if (result.startsWith("DI_ALL_PROCESS=")) {
+          result = result.replace("DI_ALL_PROCESS=", "")
+          var stationLevel: StationLevelEntity = objectMapper.readValue(result, classOf[StationLevelEntity])
+          var stationLevelFiled: StationLevelFiledEntity = stationLevel.getStationLevelFiledEntity
+          val timeFormat: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")
+          var id: String = null
+          var groupKey: String = null
+          val filter = scala.collection.mutable.Map[String, Object]()
+          if (stationLevelFiled.iiiii == null || "".equals(stationLevelFiled.iiiii)) {
+            stationLevelFiled.iiiii = "0"
+          }
+          filter.put("fields.DATA_TYPE", stationLevelFiled.dataType)
+          filter.put("fields.DATA_TIME", stationLevelFiled.dataTime)
+          if (FlowConstant.RT_CTS_STATION_DI.equals(stationLevel.stype) || FlowConstant.RT_DPC_STATION_DI.equals(stationLevel.stype)) {
+            id = stationLevelFiled.dataType + "_" + timeFormat.format(stationLevelFiled.dataTime) + "_" + stationLevelFiled.iiiii + "_" + stationLevelFiled.dataUpdateFlag
+            groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii
+            filter.put("fields.IIiii", stationLevelFiled.iiiii)
+          }
+          if (FlowConstant.RT_CTS_FILE_DI.equals(stationLevel.stype) || FlowConstant.RT_DPC_FILE_DI.equals(stationLevel.stype)) {
+            id = stationLevelFiled.dataType + "_" + stationLevelFiled.fileNameN + "_" + stationLevelFiled.dataUpdateFlag
+            filter.put("fields.FILE_NAME_N", stationLevelFiled.fileNameN)
+            groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii
+          }
+          val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
+          stationLevel.setDdateTime(stationLevelFiled.dataTime)
+          stationLevel.setId(id)
+          stationLevel.groupKey = groupKey
+          val date = dateFormat.format(stationLevel.ddateTime)
+          var l = EsUtil.getWhere("transfer_analyze-" + date, filter)
+          if (l > 0) {
+            stationLevel.isCount = 1
+          } else {
+            stationLevel.isCount = 0
+          }
+          stationLevel
         } else {
-          stationLevel.isCount = 0
+          null
         }
-        stationLevel
       } catch {
         case ex: Exception => {
           print(ex)
@@ -93,7 +93,7 @@ object TransferAnalyze {
       }
 
     }).filter(x => {
-      if (x != null  && x.id != null) {
+      if (x != null && x.id != null) {
         true
       } else {
         false
@@ -107,14 +107,14 @@ object TransferAnalyze {
           a
         }
       })
-        .filter(x=>{
-          if(x.isCount == 0){
-            true
-          }else{
-            false
-          }
-        })
-      .keyBy(_.groupKey)//.window(TumblingEventTimeWindows.of(Time.days(1)))
+      .filter(x => {
+        if (x.isCount == 0) {
+          true
+        } else {
+          false
+        }
+      })
+      .keyBy(_.groupKey) //.window(TumblingEventTimeWindows.of(Time.days(1)))
       .timeWindow(Time.days(1))
       //.timeWindow(Time.days(1))
       //自定义触发器
@@ -137,22 +137,22 @@ object TransferAnalyze {
         var objectMapper = new ObjectMapper
         var newMap: util.Map[String, Object] = new util.HashMap[String, Object]
         if (FlowConstant.RT_CTS_STATION_DI.equals(f.stype) || FlowConstant.RT_DPC_STATION_DI.equals(f.stype)) {
-          var cc:String= String.valueOf(oldMap.get("collection_realIncome"))
-          var collectionRealIncome:Long=cc.toLong+1
+          var cc: String = String.valueOf(oldMap.get("collection_realIncome"))
+          var collectionRealIncome: Long = cc.toLong + 1
           newMap.put("collection_realIncome", collectionRealIncome.asInstanceOf[Object])
         }
         if (FlowConstant.RT_CTS_FILE_DI.equals(f.stype) || FlowConstant.RT_DPC_FILE_DI.equals(f.stype)) {
-          var pp:String =String.valueOf(oldMap.get("put_realIncome"))
-          var putRealIncome:Long=pp.toLong+1
+          var pp: String = String.valueOf(oldMap.get("put_realIncome"))
+          var putRealIncome: Long = pp.toLong + 1
           newMap.put("put_realIncome", putRealIncome.asInstanceOf[Object])
         }
         EsUtil.update("transfer_statistics-" + date, dataDay + "||" + f.groupKey, newMap)
       } catch {
-        case ex:Exception =>{
+        case ex: Exception => {
           print(ex)
         }
       }
-      })
+    })
     count.print()
     count.addSink(new EsSink[FlowMonitor].sinkUpdate("transfer_statistics"))
     env.execute("TransferAnalyze")

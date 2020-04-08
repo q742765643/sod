@@ -54,3 +54,12 @@ export function findFileList(query) {
     params: query
   })
 }
+
+// 按数据库分类
+export function findLogicCountData(query) {
+  return request({
+    url: baseUrl + '/index/findLogicCountData',
+    method: 'get',
+    params: query
+  })
+}

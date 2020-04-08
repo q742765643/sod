@@ -96,7 +96,6 @@
             v-if="scope.row.runState=='error'"
           >启动</el-button>
           <el-button type="text" size="mini" icon="el-icon-video-pause">停止</el-button>
-          <el-button type="text" size="mini" icon="el-icon-s-marketing">重启</el-button>
           <el-button
             type="text"
             size="mini"

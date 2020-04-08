@@ -3,7 +3,10 @@ package com.piesat.dm.rpc.service.datatable;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.datatable.TableColumnDao;
+import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.datatable.TableColumnMapper;
@@ -26,6 +29,8 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     private TableColumnDao tableColumnDao;
     @Autowired
     private TableColumnMapper tableColumnMapper;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<TableColumnEntity> getBaseDao() {
@@ -86,4 +91,5 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         TableColumnEntity tableColumnEntity = this.getById(id);
         return this.tableColumnMapper.toDto(tableColumnEntity);
     }
+
 }

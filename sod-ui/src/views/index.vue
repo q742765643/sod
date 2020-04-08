@@ -52,117 +52,53 @@
             <div class="cardBody">
               <div :id="pieId(index)" class="pieBox"></div>
               <div class="progressBox">
-                <span class="name">{{ item.database_name }}</span>
-                <el-progress
-                  :percentage="
-                    item.used_capacity == undefined
-                      ? 0
-                      : Number(
-                          (
-                            (Number(item.used_capacity) /
-                              Number(item.total_capacity)) *
-                            100
-                          ).toFixed(2)
-                        )
-                  "
-                  :stroke-width="16"
-                  :text-inside="true"
-                  color="#ffc739"
-                ></el-progress>
-                <br />
-                <span class="name name2" v-if="item.database_name2">
-                  {{
-                  item.database_name2
-                  }}
-                </span>
-                <el-progress
-                  :percentage="
-                    item.used_capacity2 == undefined
-                      ? 0
-                      : Number(
-                          (
-                            (Number(item.used_capacity2) /
-                              Number(item.total_capacity2)) *
-                            100
-                          ).toFixed(2)
-                        )
-                  "
-                  :stroke-width="16"
-                  :text-inside="true"
-                  color="#22bfcb"
-                  v-if="item.database_name2"
-                ></el-progress>
+                <div v-for="(itemc, indexc) in item.DB_INFO" :key="indexc">
+                  <span class="name">{{ itemc.DATABASE_NAME }}</span>
+                  <el-progress
+                    :percentage="Number((indexc/10*100).toFixed(2))"
+                    :stroke-width="16"
+                    :text-inside="true"
+                    color="#ffc739"
+                  ></el-progress>
+                </div>
               </div>
             </div>
             <div class="cardFooter">
               <div class="storageInfo">
                 <i class="el-icon-receiving"></i>
                 <p class="name">总容量</p>
-                <span class="num" v-if="item.database_name2">
+                <span class="num">
                   {{
-                  item.total_capacity == undefined
+                  item.TOTAL_CAPACITY == undefined
                   ? "0"
-                  : Number(item.total_capacity) +
-                  Number(item.total_capacity2)
-                  }}TB
-                </span>
-                <span class="num" v-else>
-                  {{
-                  item.total_capacity == undefined
-                  ? "0"
-                  : item.total_capacity
+                  : item.TOTAL_CAPACITY
                   }}TB
                 </span>
               </div>
               <div class="storageInfo">
                 <i class="el-icon-bangzhu"></i>
                 <p class="name">已使用</p>
-                <span class="num" v-if="item.database_name2">
+                <span class="num">
                   {{
-                  item.used_capacity == undefined
-                  ? "0"
-                  : Number(item.used_capacity) +
-                  Number(item.used_capacity2)
-                  }}TB
-                </span>
-                <span class="num" v-else>
-                  {{
-                  item.used_capacity == undefined ? "0" : item.used_capacity
+                  item.USED_CAPACITY == undefined ? "0" : item.USED_CAPACITY
                   }}TB
                 </span>
               </div>
               <div class="storageInfo">
                 <i class="el-icon-odometer"></i>
                 <p class="name">剩余</p>
-                <span class="num" v-if="item.database_name2">
+                <span class="num">
                   {{
-                  item.total_capacity == undefined
+                  item.TOTAL_CAPACITY == undefined
                   ? "0"
-                  : Number(item.total_capacity) +
-                  Number(item.total_capacity2) -
-                  (Number(item.used_capacity) +
-                  Number(item.used_capacity2))
-                  }}TB
-                </span>
-                <span class="num" v-else>
-                  {{
-                  item.total_capacity == undefined
-                  ? "0"
-                  : item.total_capacity - item.used_capacity
+                  : item.TOTAL_CAPACITY - item.USED_CAPACITY
                   }}TB
                 </span>
               </div>
               <div class="storageInfo">
                 <i class="el-icon-tickets"></i>
                 <p class="name">存储资料</p>
-                <span class="num" v-if="item.database_name2">
-                  {{
-                  item.NUM == undefined
-                  ? "0"
-                  : Number(item.NUM) + Number(item.NUM2)
-                  }}种
-                </span>
-                <span class="num" v-else>{{ item.NUM == undefined ? "0" : item.NUM }}种</span>
+                <span class="num">{{ item.NUM == undefined ? "0" : item.NUM }}种</span>
               </div>
             </div>
           </el-card>
@@ -200,11 +136,11 @@
                 <span class="round"></span>
                 <span
                   class="name"
-                  :title="item.file_name"
-                >{{item.file_type == 'dev'?'[开发文档] ':'[运维文档] '}}{{item.file_name}}</span>
+                  :title="item.FILE_NAME"
+                >{{item.FILE_TYPE == 'dev'?'[开发文档] ':'[运维文档] '}}{{item.FILE_NAME}}</span>
                 <el-link
                   type="primary"
-                  @click="downloadWord(item.file_stor_path+'/'+item.file_stor_name)"
+                  @click="downloadWord(item.FILE_STOR_PATH+'/'+item.FILE_STOR_NAME)"
                 >[下载]</el-link>
               </div>
             </div>
@@ -238,7 +174,8 @@ import {
   findUndoCount,
   findLogicInfo,
   findSpecialDbList,
-  findFileList
+  findFileList,
+  findLogicCountData
 } from "@/api/index";
 var echarts = require("echarts");
 export default {
@@ -286,14 +223,14 @@ export default {
   },
   mounted() {
     //资料分类
-    // this.drawBarChartClass();
+    this.drawBarChartClass();
     // 资料种类统计
     this.drawLineChart();
   },
   created() {
     this.getEventList();
     this.getHelpDocument();
-    // this.getPieBox();
+    this.getPieBox();
     this.queryCheckList();
   },
   watch: {
@@ -347,16 +284,14 @@ export default {
     },
     // 按资料分类的chart
     drawBarChartClass() {
-      findDataCount().then(response => {
-        console.log(response);
-        /* this.baseServe.eleField = res.data.data.eleField;
-          this.baseServe.regionField = res.data.data.regionField;
-          this.baseSet = res.data.data; */
-      });
-
-      this.axios.get(interfaceObj.getCountDataJson).then(res => {
-        let dataNumChart = res.data.data.dataNum;
-        let dataTypeChart = res.data.data.dataType;
+      findDataCount().then(res => {
+        let data = res.data;
+        let dataNumChart = [];
+        let dataTypeChart = [];
+        data.forEach(element => {
+          dataNumChart.push(element.NUM);
+          dataTypeChart.push(element.CLASS_NAME);
+        });
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(
           document.getElementById("dataCLassfication")
@@ -395,7 +330,7 @@ export default {
               data: dataTypeChart,
               axisLabel: {
                 interval: 0,
-                rotate: 40
+                rotate: 20
               }
             }
           ],
@@ -431,8 +366,14 @@ export default {
     },
     // 数据库分类
     drawDBchart() {
-      findLogicInfo().then(res => {
+      findLogicCountData().then(res => {
         let data = res.data;
+        let chartstype = [];
+        let chartsNum = [];
+        data.forEach(element => {
+          chartstype.push(element.DATABASELOGIC);
+          chartsNum.push(element.NUM);
+        });
         var myChart = echarts.init(
           document.getElementById("dataCLassfication")
         );
@@ -466,7 +407,7 @@ export default {
           xAxis: [
             {
               type: "category",
-              data: data["physicsName"],
+              data: chartstype,
               nameRotate: 90,
               axisLabel: {
                 interval: 0,
@@ -479,7 +420,7 @@ export default {
             {
               type: "bar",
               barWidth: 20,
-              data: data["physicsNum"],
+              data: chartsNum,
               itemStyle: {
                 normal: {
                   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -526,35 +467,8 @@ export default {
     // 饼图box
     getPieBox() {
       findLogicInfo().then(res => {
-        let piedata = res.data;
-        let RepeatArry = [];
-        for (var i = 0; i < piedata.length; i++) {
-          for (var j = i + 1; j < piedata.length; j++) {
-            if (piedata[i].LOGIC_NAME == piedata[j].LOGIC_NAME) {
-              RepeatArry.push(piedata[j]);
-              // 名称
-              piedata[i].database_name2 = piedata[j].database_name;
-              // 总量
-              piedata[i].total_capacity2 = Number(
-                piedata[j].total_capacity == undefined
-                  ? 0
-                  : piedata[j].total_capacity
-              );
-              piedata[i].used_capacity2 = Number(
-                piedata[j].used_capacity == undefined
-                  ? 0
-                  : piedata[j].used_capacity
-              );
-              piedata[i].NUM2 = Number(
-                piedata[j].NUM == undefined ? 0 : piedata[j].NUM
-              );
-
-              piedata.splice(j, 1);
-              j--;
-            }
-          }
-        }
-        this.pieBox = piedata;
+        this.pieBox = res.data;
+        console.log(this.pieBox);
       });
     },
     // 饼图
@@ -656,7 +570,7 @@ export default {
         if (this.pieBox[i].database_name2) {
           pieList.push(
             {
-              value: this.pieBox[i].total_capacity,
+              value: this.pieBox[i].TOTAL_CAPACITY,
               name: this.pieBox[i].LOGIC_NAME
             },
             {
@@ -667,9 +581,9 @@ export default {
         } else {
           pieList.push({
             value:
-              this.pieBox[i].total_capacity == undefined
+              this.pieBox[i].TOTAL_CAPACITY == undefined
                 ? 0
-                : this.pieBox[i].total_capacity,
+                : this.pieBox[i].TOTAL_CAPACITY,
             name: this.pieBox[i].LOGIC_NAME
           });
         }
@@ -780,7 +694,7 @@ export default {
     // 帮助文档
     getHelpDocument() {
       findFileList().then(res => {
-        this.documentList = res.data.data;
+        this.documentList = res.data;
       });
     },
     // 下载

@@ -212,22 +212,22 @@
 
 
     <select id="getLogicClassTree" resultType="java.util.Map">
-        SELECT LOGIC_NAME "name",CONCAT('0-',LOGIC_FLAG) "id",'0' "pId",'1' "type",'0' "metaDataId" FROM  T_SOD_LOGIC_DEFINE
+        SELECT LOGIC_NAME NAME,CONCAT('0-',LOGIC_FLAG) ID,'0' PID,'1' TYPE,'0' METADATAID FROM  T_SOD_LOGIC_DEFINE
             UNION
-        SELECT DISTINCT CLASS_NAME "name", CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) "id",CONCAT(PARENT_ID,  CONCAT('-', LOGIC_FLAG)) "pId", '1' "type", '0' "metaDataId"
+        SELECT DISTINCT CLASS_NAME NAME, CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) ID,CONCAT(PARENT_ID,  CONCAT('-', LOGIC_FLAG)) PID, '1' TYPE, '0' METADATAID
         FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID =  SUBSTR(B.DATA_CLASS_ID,0,1)
             UNION
-        SELECT D.CLASS_NAME "name", CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) "id", CONCAT(D.PARENT_ID,  CONCAT('-', C.LOGIC_FLAG)) "pId",'1' "type",'0' "metaDataId"
+        SELECT D.CLASS_NAME NAME, CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) ID, CONCAT(D.PARENT_ID,  CONCAT('-', C.LOGIC_FLAG)) PID,'1' TYPE,'0' METADATAID
         FROM (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A
             INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D where C.PARENT_ID = D.DATA_CLASS_ID
             UNION
-        SELECT F.CLASS_NAME "name", CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) "id", CONCAT(F.PARENT_ID,  CONCAT('-', E.LOGIC_FLAG)) "pId",'1' "type",'0' "metaDataId"  FROM
+        SELECT F.CLASS_NAME NAME, CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) ID, CONCAT(F.PARENT_ID,  CONCAT('-', E.LOGIC_FLAG)) PID,'1' TYPE,'0' METADATAID  FROM
         (SELECT D.CLASS_NAME,D.DATA_CLASS_ID,D.PARENT_ID,C.LOGIC_FLAG FROM
         (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B  ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D
         where C.PARENT_ID = D.DATA_CLASS_ID) E,T_SOD_DATA_CLASS F  where E.PARENT_ID = F.DATA_CLASS_ID
             UNION
-        SELECT CLASS_NAME "name",A.DATA_CLASS_ID "id",CONCAT(PARENT_ID,CONCAT('-',LOGIC_FLAG)) "pId",
-        '2' "type",'0' "metaDataId" FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE TYPE = 2
+        SELECT CLASS_NAME NAME,A.DATA_CLASS_ID ID,CONCAT(PARENT_ID,CONCAT('-',LOGIC_FLAG)) PID,
+        '2' TYPE,'0' METADATAID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE TYPE = 2
     </select>
 
     <select id="getDatabaseTree" resultType="java.util.Map">
@@ -543,7 +543,62 @@
             dd.authorize asc
     </select>
 
-    <select id="getDataClassBaseInfo"  resultType="java.util.Map" parameterType="String">
-        SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]> 'delete') and  A.C_COREMETA_ID = #{cCoremetaId}
+    <select id="getDataClassBaseInfo"  resultType="DataClassBaseInfoEntity" parameterType="String">
+        select aa.DATA_CLASS_ID dataClassId,b.C_IDABS cIdabs,b.C_MAINFREQ cMainfreq,b.c_coremeta_id cCoremetaId,
+        b.C_DATASCAL cDatascal,c.C_WESTBL cWestbl,c.C_EASTBL cEastbl,c.C_SOUTHBL cSouthbl,
+        c.C_NORTHBL cNorthbl,c.C_GEODESC cGeodesc,
+        b.C_SOURCE cSource,d.C_NETNAME cNetname,a.C_NETTYPE cNettype,
+        f.C_CREAT_NAME cCreatName,f.C_CHECKER cChecker,
+        g.C_RPINDNAME cRpindname,aa.use_base_info useBaseInfo from
+        DMIN_DATA_CLASS_TABLE aa
+        left join
+        dmin_data_class_baseinfo aaa on aa.data_class_id = aaa.data_class_id
+        left join
+        (select  * from tab_omin_cm_cc_datumtypeinfo aa where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) a on aa.D_DATA_ID = a.c_datum_code
+        left join
+        (select  * from tab_omin_cm_cc_coremeta bb where (bb.C_OPT_TYPE is null or bb.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) b on a.C_COREMETA_ID = b.C_COREMETA_ID
+        left join
+        (select  * from tab_omin_cm_cc_geoele cc where (cc.C_OPT_TYPE is null or cc.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) c on c.C_COREMETA_ID = b.C_COREMETA_ID
+        left join
+        (select  * from tab_omin_cm_cc_stationnet_base dd where (dd.C_OPT_TYPE is null or dd.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) d on a.C_NETTYPE = d.C_SNET_ID
+        left join
+        (select  * from tab_omin_cm_cc_tempele ee where (ee.C_OPT_TYPE is null or ee.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) e on c.C_COREMETA_ID = e.C_COREMETA_ID
+        left join
+        (select  * from tab_omin_cm_cc_dddidpocinfo gg where (gg.C_OPT_TYPE is null or gg.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) g on c.C_COREMETA_ID = g.C_COREMETA_ID
+        left join
+        (select * from tab_omin_cm_cc_apply a where  C_UPDATED_DATE = (select max(C_UPDATED_DATE) from tab_omin_cm_cc_apply b where a.C_DATA_ID = b.C_DATA_ID  ))
+        f on b.C_COREMETA_ID = f.C_DATA_ID
+
+        <where>
+            aa.data_class_id = #{id}
+        </where>
+        limit 1
+    </select>
+
+
+    <select id="queryCmccElements" resultType="CmccElementEntity" parameterType="DatumTableEntity">
+        select
+        c_element_code,cci_root_type_code,c_class_no,c_element_namech,c_element_name,c_short_name,c_define,
+        c_subject_type,c_paramter_type,c_paramter_num,c_datatype,c_element_unit,c_element_pre,c_charactervalue,
+        c_status,c_version,c_notes,c_codetable,c_submit_org_name,c_create_date,c_updated_date,c_modifier
+        from tab_omin_cm_cc_element
+        <where>
+            c_element_code in (select c_element_code from tab_omin_cm_cc_datumtypeelm where c_datum_code = #{c_datum_code})
+            <if test="c_datatype != null and c_datatype != ''">
+                and upper(c_element_code) like #{c_datatype}
+            </if>
+            <if test="c_datum_level != null and c_datum_level != ''">
+                and c_element_namech like #{c_datum_level}
+            </if>
+            <if test="c_datumtype != null and c_datumtype != ''">
+                and upper(c_short_name) like #{c_datumtype}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getLogicByDdataId" resultType="java.util.Map" parameterType="String">
+        select a.d_data_id,b.data_class_id,c.logic_flag,c.logic_name,b.id from t_sod_data_class a left join t_sod_data_logic b on a.data_class_id = b.data_class_id
+        LEFT JOIN t_sod_logic_define c on  c.logic_flag = b.logic_flag where a.d_data_id = #{dDataId}
     </select>
 </mapper>

@@ -102,7 +102,7 @@ public class DataClassController {
     @RequiresPermissions("dm:dataClass:delByClass")
     @Log(title = "资料分类管理", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/delByClass")
-    public ResultT deleteByClassName(String dataClassId){
+    public ResultT deleteByClassName(String dataClassId) {
         try {
             this.dataClassService.deleteByDataClassId(dataClassId);
             return ResultT.success();
@@ -157,9 +157,9 @@ public class DataClassController {
     public ResultT getDatabaseClass() {
         try {
             JSONArray all = null;
-            if (DatabaseType.databaseType.toLowerCase().equals("mysql")){
+            if (DatabaseType.databaseType.toLowerCase().equals("mysql")) {
                 all = this.dataClassService.getDatabaseClassMysql();
-            }else {
+            } else {
                 all = this.dataClassService.getDatabaseClass();
             }
 
@@ -186,9 +186,9 @@ public class DataClassController {
     @ApiOperation(value = "根据目录查询资料")
     @RequiresPermissions("dm:dataClass:getListBYIn")
     @GetMapping(value = "/getListBYIn")
-    public ResultT getListBYIn(List<String> classIds, String className, String dDataId){
+    public ResultT getListBYIn(List<String> classIds, String className, String dDataId) {
         try {
-            List<Map<String, Object>> all = this.dataClassService.getListBYIn(classIds,className,dDataId);
+            List<Map<String, Object>> all = this.dataClassService.getListBYIn(classIds, className, dDataId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,9 +201,9 @@ public class DataClassController {
     @GetMapping(value = "/getBaseData")
     public ResultT getBaseData(DataClassDto dataClassDto,
                                @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         try {
-            PageBean all = this.dataClassService.getBaseData(new PageForm(pageNum, pageSize),dataClassDto);
+            PageBean all = this.dataClassService.getBaseData(new PageForm(pageNum, pageSize), dataClassDto);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,16 +211,39 @@ public class DataClassController {
         }
     }
 
+    @ApiOperation(value = "导出资料概览")
+    @RequiresPermissions("dm:dataClass:exportBaseData")
+    @GetMapping(value = "/exportBaseData")
+    public void exportBaseData(DataClassDto dataClassDto) {
+        this.dataClassService.exportBaseData(dataClassDto);
+    }
+
 
     @ApiOperation(value = "获取新增存储编码")
     @RequiresPermissions("dm:dataClass:getNewDataClassId")
     @GetMapping(value = "/getNewDataClassId")
-    public ResultT getNewDataClassId(String parentId){
+    public ResultT getNewDataClassId(String parentId) {
         try {
             String all = this.dataClassService.findByParentId(parentId);
             ResultT r = new ResultT();
             r.isSuccess();
             r.setData(all);
+            return r;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据四级编码获取数据用途")
+    @RequiresPermissions("dm:dataClass:getLogicByDdataId")
+    @GetMapping(value = "/getLogicByDdataId")
+    public ResultT getLogicByDdataId(String dDataId) {
+        try {
+            List<Map<String, Object>> logicByDdataId = this.dataClassService.getLogicByDdataId(dDataId);
+            ResultT r = new ResultT();
+            r.isSuccess();
+            r.setData(logicByDdataId);
             return r;
         } catch (Exception e) {
             e.printStackTrace();

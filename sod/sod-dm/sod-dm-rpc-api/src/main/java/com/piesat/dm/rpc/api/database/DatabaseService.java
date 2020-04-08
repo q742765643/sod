@@ -32,5 +32,7 @@ public interface DatabaseService {
 
     List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify,List<String> ids);
 
+    List<DatabaseDto> findByDatabaseDefineId(String id);
+
     List<DatabaseDto> findByDatabaseClassify(String databaseClassify);
 }

@@ -81,4 +81,31 @@ public class DataClassBaseInfoController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据存储编码查询基础信息")
+    @RequiresPermissions("dm:classbaseinfo:getDataClassBaseInfo")
+    @GetMapping(value = "/getDataClassBaseInfo")
+    public ResultT getDataClassBaseInfo(String dataClassId) {
+        try {
+            DataClassBaseInfoDto all = this.cataClassBaseInfoService.getDataClassBaseInfo(dataClassId);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "保存")
+    @RequiresPermissions("dm:classbaseinfo:saveDataClassBaseInfo")
+    @Log(title = "资料基础信息", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/saveDataClassBaseInfo")
+    public ResultT saveDataClassBaseInfo(@RequestBody DataClassBaseInfoDto dataClassBaseInfoDto) {
+        try {
+            DataClassBaseInfoDto save = this.cataClassBaseInfoService.saveDto(dataClassBaseInfoDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

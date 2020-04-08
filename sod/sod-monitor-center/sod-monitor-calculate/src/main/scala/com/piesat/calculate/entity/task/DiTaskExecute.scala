@@ -39,7 +39,8 @@ class DiTaskExecute extends BaseEntity{
   /**计划开始时间*/
   @BeanProperty
   @JsonProperty("START_TIME_S")
-  var startTimeS:String=_
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  var startTimeS:Date=_
 
   /**计划开始时间*/
   @BeanProperty
@@ -98,4 +99,8 @@ class DiTaskExecute extends BaseEntity{
   @BeanProperty
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   var ddateTime: Date = _
+
+
+  @BeanProperty
+  var taskDuty:String = null
 }

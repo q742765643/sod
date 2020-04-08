@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.tree.BaseParser;
 import com.piesat.dm.common.tree.TreeLevel;
 import com.piesat.dm.dao.database.DatabaseDao;
@@ -86,10 +87,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         List l = new ArrayList();
         for (Map<String, Object> m : maps) {
             TreeLevel tl = new TreeLevel();
-            tl.setId(m.get("id").toString());
-            tl.setParentId(m.get("pId").toString());
-            tl.setName(m.get("name").toString());
-            tl.setType(m.get("type").toString());
+            tl.setId(m.get("ID").toString());
+            tl.setParentId(m.get("PID").toString());
+            tl.setName(m.get("NAME").toString());
+            tl.setType(m.get("TYPE").toString());
             l.add(tl);
         }
         return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
@@ -292,6 +293,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         if (dataClassDto.getIsAccess() != null) {
             ssb.add("isAccess", SpecificationOperator.Operator.eq.name(), dataClassDto.getIsAccess());
         }
+        if (dataClassDto.getIfStopUse() != null) {
+            ssb.add("ifStopUse", SpecificationOperator.Operator.eq.name(), dataClassDto.getIfStopUse());
+        }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
         return page;
@@ -301,6 +305,24 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public List<DataClassDto> findAllCategory() {
         List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdAsc("0");
         return this.dataClassMapper.toDto(dataClassIdAsc);
+    }
+
+    @Override
+    public void exportBaseData(DataClassDto dataClassDto) {
+        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(dataClassDto.getClassName())) {
+            ssb.add("className", SpecificationOperator.Operator.likeAll.name(), dataClassDto.getClassName());
+        }
+        if (dataClassDto.getIsAccess() != null) {
+            ssb.add("isAccess", SpecificationOperator.Operator.eq.name(), dataClassDto.getIsAccess());
+        }
+        if (dataClassDto.getIfStopUse() != null) {
+            ssb.add("ifStopUse", SpecificationOperator.Operator.eq.name(), dataClassDto.getIfStopUse());
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        List<DataClassEntity> all = this.getAll(ssb.generateSpecification());
+        ExcelUtil<DataClassEntity> util=new ExcelUtil(DataClassEntity.class);
+        util.exportExcel(all,"资料概览信息");
     }
 
     @Override
@@ -340,5 +362,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 return parentId + ".0001";
             }
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> getLogicByDdataId(String dDataId) {
+        return this.mybatisQueryMapper.getLogicByDdataId(dDataId);
     }
 }
