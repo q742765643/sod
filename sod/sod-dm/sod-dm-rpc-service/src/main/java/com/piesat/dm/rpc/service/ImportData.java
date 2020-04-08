@@ -51,11 +51,11 @@ public class ImportData {
 
 
     public void implAll(){
-        importDataClassData();
-        importDataClassLogicData();
-        importDatumData();
-        impLogicDefine();
-        importDatabaseData();
+//        importDataClassData();
+//        importDataClassLogicData();
+//        importDatumData();
+//        impLogicDefine();
+//        importDatabaseData();
     }
 
 
