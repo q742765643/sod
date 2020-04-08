@@ -19,6 +19,7 @@ import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -49,6 +50,8 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     private DataBaseService dataBaseService;
     @Autowired
     private JobInfoMapper jobInfoMapper;
+    @Autowired
+    private DiSendService diSendService;
     @GrpcHthtClient
     private DictDataService dictDataService;
     @Override
@@ -121,18 +124,23 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
         this.getDataBaseAndClassId(moveEntity);
         moveEntity=this.saveNotNull(moveEntity);
+        diSendService.sendMove(moveEntity);
         jobInfoService.start(moveMapstruct.toDto(moveEntity));
     }
     @Override
     public void updateMove(MoveDto moveDto){
         MoveEntity moveEntity=moveMapstruct.toEntity(moveDto);
         this.getDataBaseAndClassId(moveEntity);
-        this.saveNotNull(moveEntity);
+        moveEntity=this.saveNotNull(moveEntity);
+        diSendService.sendMove(moveEntity);
         jobInfoService.start(moveDto);
     }
     @Override
     public void deleteMoveByIds(String[] moveIds){
         this.deleteByIds(Arrays.asList(moveIds));
+        for(int i=0;i<moveIds.length;i++){
+            diSendService.sendDeleteDi(moveIds[i]);
+        }
         jobInfoService.stopByIds(Arrays.asList(moveIds));
     }
 

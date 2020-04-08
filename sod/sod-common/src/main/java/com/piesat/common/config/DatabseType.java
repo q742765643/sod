@@ -26,6 +26,11 @@ public class DatabseType {
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
         yaml.setResources(new ClassPathResource("application.yml"));
         Properties properties = yaml.getObject();
+        String active = properties.getProperty("spring.profiles.active");
+        if(active!=null){
+            yaml.setResources(new ClassPathResource("application-"+active+".yml"));
+            properties=yaml.getObject();
+        }
         String url= (String) properties.get("spring.datasource.url");
         if(url.indexOf("mysql")!=-1){
             type="mysql";
@@ -33,6 +38,7 @@ public class DatabseType {
         if(url.indexOf("xugu")!=-1){
             type="xugu";
         }
+
     }
 
 

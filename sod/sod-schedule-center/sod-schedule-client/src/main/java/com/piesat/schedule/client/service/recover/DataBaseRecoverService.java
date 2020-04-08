@@ -261,24 +261,28 @@ public class DataBaseRecoverService {
 
     public List<TreeVo> getFileChidren(String childrenPath){
         List<TreeVo> list=new ArrayList<>();
-        File childrenFile=new File(childrenPath);
-        File [] children = childrenFile.listFiles();
-        if(children.length==0){
-            return list;
-        }
-        for(File file:children){
-            TreeVo treeVo=new TreeVo();
-            treeVo.setId(file.getPath().replace("\\","/"));
-            treeVo.setName(file.getName());
-            treeVo.setPId(childrenPath);
-            if(file.isDirectory()){
-                treeVo.setParent(true);
+        try {
+            File childrenFile=new File(childrenPath);
+            File [] children = childrenFile.listFiles();
+            if(children.length==0){
+                return list;
             }
-            if(file.isFile()){
-                treeVo.setParent(false);
-            }
-            list.add(treeVo);
+            for(File file:children){
+                TreeVo treeVo=new TreeVo();
+                treeVo.setId(file.getPath().replace("\\","/"));
+                treeVo.setName(file.getName());
+                treeVo.setPId(childrenPath);
+                if(file.isDirectory()){
+                    treeVo.setParent(true);
+                }
+                if(file.isFile()){
+                    treeVo.setParent(false);
+                }
+                list.add(treeVo);
 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return list;
 
