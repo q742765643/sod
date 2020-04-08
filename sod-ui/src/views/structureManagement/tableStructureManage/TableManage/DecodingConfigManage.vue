@@ -12,16 +12,16 @@
       <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteConfig">删除</el-button>
     </el-button-group>
     <el-table :data="tableData" stripe @selection-change="res=>selData=res">
-      <el-table-column align="center" type="index" :index="table_index"></el-table-column>
-      <el-table-column align="center" type="selection" width="55"></el-table-column>
-      <el-table-column align="center" label="处理编码" prop="dataDpcId"></el-table-column>
-      <el-table-column align="center" label="要素存储短名" prop="eleCodeShort"></el-table-column>
-      <el-table-column align="center" label="学科" prop="subjectId"></el-table-column>
-      <el-table-column align="center" label="参数种类" prop="classify"></el-table-column>
-      <el-table-column align="center" label="参数编码" prop="parameterId"></el-table-column>
-      <el-table-column align="center" label="GRIB版本" prop="gribVersion"></el-table-column>
-      <el-table-column align="center" label="是否为共有配置" prop="publicConfig"></el-table-column>
-      <el-table-column align="center" label="模板编号" prop="templateId"></el-table-column>
+      <el-table-column type="index" :index="table_index"></el-table-column>
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column label="处理编码" prop="dataDpcId"></el-table-column>
+      <el-table-column label="要素存储短名" prop="eleCodeShort"></el-table-column>
+      <el-table-column label="学科" prop="subjectId"></el-table-column>
+      <el-table-column label="参数种类" prop="classify"></el-table-column>
+      <el-table-column label="参数编码" prop="parameterId"></el-table-column>
+      <el-table-column label="GRIB版本" prop="gribVersion"></el-table-column>
+      <el-table-column label="是否为共有配置" prop="publicConfig"></el-table-column>
+      <el-table-column label="模板编号" prop="templateId"></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -51,15 +51,15 @@
           </el-form-item>
         </el-form>
         <el-table :data="optData" @selection-change="handleSelectionChange" ref="choseTable">
-          <el-table-column align="center" type="selection" width="55"></el-table-column>
-          <el-table-column align="center" label="短名" prop="eleCodeShort"></el-table-column>
-          <el-table-column align="center" label="科目" prop="subjectId"></el-table-column>
-          <el-table-column align="center" label="分类" prop="classify"></el-table-column>
-          <el-table-column align="center" label="GRIB版本" prop="gribVersion"></el-table-column>
-          <el-table-column align="center" label="参数ID" prop="parameterId"></el-table-column>
-          <el-table-column align="center" label="共有配置" prop="publicConfig"></el-table-column>
-          <el-table-column align="center" label="要素描述" prop="element_cn"></el-table-column>
-          <el-table-column align="center" label="模板ID" prop="templateId"></el-table-column>
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column label="短名" prop="eleCodeShort"></el-table-column>
+          <el-table-column label="科目" prop="subjectId"></el-table-column>
+          <el-table-column label="分类" prop="classify"></el-table-column>
+          <el-table-column label="GRIB版本" prop="gribVersion"></el-table-column>
+          <el-table-column label="参数ID" prop="parameterId"></el-table-column>
+          <el-table-column label="共有配置" prop="publicConfig"></el-table-column>
+          <el-table-column label="要素描述" prop="element_cn"></el-table-column>
+          <el-table-column label="模板ID" prop="templateId"></el-table-column>
         </el-table>
         <!-- <Pagination :total="optDataTotal" @paginationChange="paginationChange" ref="pagination"></Pagination> -->
         <pagination

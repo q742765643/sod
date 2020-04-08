@@ -118,22 +118,17 @@
       row-key="id"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column
-        label="资料名称"
-        align="center"
-        prop="profileName"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column label="执行策略" align="center" prop="jobCron" :show-overflow-tooltip="true" />
-      <el-table-column label="状态" align="center" prop="triggerStatus" :formatter="statusFormat" />
-      <el-table-column label="任务描述" align="center" prop="jobDesc" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="200">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
+      <el-table-column label="执行策略" prop="jobCron" :show-overflow-tooltip="true" />
+      <el-table-column label="状态" prop="triggerStatus" :formatter="statusFormat" />
+      <el-table-column label="任务描述" prop="jobDesc" :show-overflow-tooltip="true" />
+      <el-table-column label="创建时间" prop="createTime" width="200">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="300" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="300" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"

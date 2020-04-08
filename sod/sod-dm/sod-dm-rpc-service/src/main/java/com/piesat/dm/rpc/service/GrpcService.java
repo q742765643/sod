@@ -21,9 +21,11 @@ import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
@@ -75,6 +77,8 @@ public class GrpcService {
     private LogicDefineService logicDefineService;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseDefineService databaseDefineService;
     @Autowired
     private DatabaseDao databaseDao;
     @Autowired
@@ -230,7 +234,7 @@ public class GrpcService {
     public List<LogicDefineDto> getAllLogicDefine() {
         List<LogicDefineDto> logicDefineDtos = this.logicDefineService.all();
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseEntity> all = this.databaseDao.findAll();
+        List<DatabaseDefineDto> all = this.databaseDefineService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -242,9 +246,9 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseEntity databaseEntity : all) {
-                    if (databaseEntity.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(databaseEntity.getDatabaseDefine().getDatabaseName());
+                for (DatabaseDefineDto DatabaseDefineDto : all) {
+                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
                     }
                 }
             }
@@ -267,7 +271,7 @@ public class GrpcService {
         List<LogicDefineEntity> logicDefineEntities = (List<LogicDefineEntity>) pageBean.getPageData();
         List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseEntity> all = this.databaseDao.findAll();
+        List<DatabaseDefineDto> all = this.databaseDefineService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -279,9 +283,9 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseEntity databaseEntity : all) {
-                    if (databaseEntity.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(databaseEntity.getDatabaseDefine().getDatabaseName());
+                for (DatabaseDefineDto DatabaseDefineDto : all) {
+                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
                     }
                 }
             }

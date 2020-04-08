@@ -65,13 +65,12 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column type="index" width="70" align="center"></el-table-column>
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        <el-table-column type="index" width="70"></el-table-column>
+        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column
           label="公共元数据字段"
           prop="dbEleCode"
           width="200px"
-          align="center"
           v-if="tableStructureManageContral"
           :show-overflow-tooltip="true"
         ></el-table-column>
@@ -79,27 +78,19 @@
           label="字段编码"
           prop="celementCode"
           width="200px"
-          align="center"
           :show-overflow-tooltip="true"
         ></el-table-column>
         <el-table-column
           label="服务代码"
           prop="userEleCode"
           width="200px"
-          align="center"
           v-if="tableStructureManageContral"
           :show-overflow-tooltip="true"
         ></el-table-column>
-        <el-table-column label="中文简称" prop="eleName" align="center" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column
-          label="数据类型"
-          prop="type"
-          width="100px"
-          align="center"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column label="数据精度" prop="accuracy" width="100px" align="center"></el-table-column>
-        <el-table-column label="要素单位" prop="unitCn" width="100px" align="center"></el-table-column>
+        <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
+        <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
       </el-table>
     </el-scrollbar>
     <el-dialog

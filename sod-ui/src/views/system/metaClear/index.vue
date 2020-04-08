@@ -52,28 +52,13 @@
           highlight-current-row
           @selection-change="handleTaskSelectionChange"
         >
-          <el-table-column align="center" type="index" width="40" :index="table_index"></el-table-column>
-          <el-table-column align="center" type="selection" width="55"></el-table-column>
-          <el-table-column
-            align="center"
-            prop="taskName"
-            label="任务名称"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            prop="databaseName"
-            label="数据库"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column align="center" prop="jobCron" label="执行策略" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column
-            align="center"
-            prop="conditions"
-            label="where条件"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column align="center" prop="triggerStatus" label="状态">
+          <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="jobCron" label="执行策略" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="conditions" label="where条件" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="triggerStatus" label="状态">
             <template slot-scope="scope">
               <el-link
                 icon="el-icon-circle-close"
@@ -89,7 +74,7 @@
               >启动</el-link>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="操作" width="360px">
+          <el-table-column label="操作" width="360px">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -172,36 +157,16 @@
           ref="multipleTable"
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" align="center" width="40" :index="table_index_log"></el-table-column>
-          <el-table-column type="selection" align="center" width="55"></el-table-column>
-          <el-table-column
-            align="center"
-            prop="taskName"
-            label="任务名称"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
+          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
 
-          <el-table-column
-            prop="databaseName"
-            align="center"
-            label="数据库"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column
-            prop="conditions"
-            align="center"
-            label="where条件"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column
-            prop="executorAddress"
-            align="center"
-            label="执行地址"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
+          <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="conditions" label="where条件" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="executorAddress" label="执行地址" :show-overflow-tooltip="true"></el-table-column>
 
-          <el-table-column label="状态" align="center" prop="handleCode" :formatter="statusFormat"></el-table-column>
-          <el-table-column align="center" label="操作" width="240px">
+          <el-table-column label="状态" prop="handleCode" :formatter="statusFormat"></el-table-column>
+          <el-table-column label="操作" width="240px">
             <template slot-scope="scope">
               <el-button
                 type="text"

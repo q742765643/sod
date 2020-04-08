@@ -8,6 +8,15 @@ export function getListBYIn(query) {
     params: query
   })
 }
+// 根据公共元数据树查询
+export function getLogicByDdataId(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/getLogicByDdataId',
+    method: 'get',
+    params: query
+  })
+}
+
 // 删除资料/目录
 export function delByClass(data) {
   return request({
@@ -49,7 +58,7 @@ export function pasteTable(data) {
   return request({
     url: baseUrl + '/dm/dataTable/paste',
     method: 'post',
-    data: data
+    params: data
   })
 }
 //粘贴前查询

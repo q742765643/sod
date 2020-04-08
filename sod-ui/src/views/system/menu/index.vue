@@ -38,46 +38,22 @@
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column
-        align="center"
-        prop="menuName"
-        label="菜单名称"
-        :show-overflow-tooltip="true"
-        width="160px"
-      ></el-table-column>
-      <el-table-column align="center" prop="icon" label="图标" width="100px">
+      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160px"></el-table-column>
+      <el-table-column prop="icon" label="图标" width="100px">
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon" />
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="orderNum" label="排序" width="60px"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="perms"
-        label="权限标识"
-        width="130px"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column
-        align="center"
-        prop="component"
-        label="组件路径"
-        width="180px"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column
-        align="center"
-        prop="visible"
-        label="可见"
-        :formatter="visibleFormat"
-        width="80px"
-      ></el-table-column>
-      <el-table-column align="center" label="创建时间" prop="createTime" width="180">
+      <el-table-column prop="orderNum" label="排序" width="60px"></el-table-column>
+      <el-table-column prop="perms" label="权限标识" width="130px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="component" label="组件路径" width="180px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="visible" label="可见" :formatter="visibleFormat" width="80px"></el-table-column>
+      <el-table-column label="创建时间" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" class-name="small-padding fixed-width">
+      <el-table-column label="操作" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"

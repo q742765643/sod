@@ -45,25 +45,13 @@
       row-key="id"
       @current-change="handleCurrentChange"
     >
-      <el-table-column align="center" type="index" min-width="20" label=" " :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="database_name" label="专题库名称" sortable min-width="200"></el-table-column>
-      <el-table-column align="center" prop="database_type" label="数据库类型" sortable min-width="200"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="database_instance"
-        label="专题库实例"
-        sortable
-        min-width="100"
-      ></el-table-column>
-      <el-table-column
-        align="center"
-        prop="database_schema_name"
-        label="专题名ID"
-        sortable
-        min-width="100"
-      ></el-table-column>
-      <el-table-column align="center" prop="database_desc" label="专题库描述" sortable min-width="120"></el-table-column>
-      <el-table-column align="center" prop="address" label="操作" min-width="100">
+      <el-table-column type="index" min-width="20" label=" " :index="table_index"></el-table-column>
+      <el-table-column prop="database_name" label="专题库名称" sortable min-width="200"></el-table-column>
+      <el-table-column prop="database_type" label="数据库类型" sortable min-width="200"></el-table-column>
+      <el-table-column prop="database_instance" label="专题库实例" sortable min-width="100"></el-table-column>
+      <el-table-column prop="database_schema_name" label="专题名ID" sortable min-width="100"></el-table-column>
+      <el-table-column prop="database_desc" label="专题库描述" sortable min-width="120"></el-table-column>
+      <el-table-column prop="address" label="操作" min-width="100">
         <template slot-scope="scope">
           <el-button
             icon="el-icon-tickets"
@@ -102,17 +90,11 @@
 
     <el-dialog title="历史报告表" :visible.sync="historyDialog" width="80%" height="50%" v-dialogDrag>
       <el-table ref="singleTable" :data="historyData" highlight-current-row border stripe>
-        <el-table-column
-          align="center"
-          type="index"
-          min-width="20"
-          label=" "
-          :index="table_index_history"
-        ></el-table-column>
-        <el-table-column align="center" prop="database_id" label="检查ID" sortable min-width="200"></el-table-column>
-        <el-table-column align="center" prop="file_name" label="报告名称" sortable min-width="300"></el-table-column>
-        <el-table-column align="center" prop="create_time" label="生成时间" sortable min-width="200"></el-table-column>
-        <el-table-column align="center" prop="address" label="操作" min-width="100">
+        <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
+        <el-table-column prop="database_id" label="检查ID" sortable min-width="200"></el-table-column>
+        <el-table-column prop="file_name" label="报告名称" sortable min-width="300"></el-table-column>
+        <el-table-column prop="create_time" label="生成时间" sortable min-width="200"></el-table-column>
+        <el-table-column prop="address" label="操作" min-width="100">
           <template slot-scope="scope1">
             <el-button
               icon="el-icon-tickets"

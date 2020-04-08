@@ -25,18 +25,18 @@
       </el-form-item>
     </el-form>
     <el-table v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="simpleName" label="专题库简称"></el-table-column>
-      <el-table-column align="center" prop="userId" label="用户名"></el-table-column>
-      <el-table-column align="center" prop="department" label="部门"></el-table-column>
-      <el-table-column align="center" prop="phoneNum" label="联系方式"></el-table-column>
-      <el-table-column align="center" prop="createTime" label="申请时间" width="160px">
+      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="simpleName" label="专题库简称"></el-table-column>
+      <el-table-column prop="userId" label="用户名"></el-table-column>
+      <el-table-column prop="department" label="部门"></el-table-column>
+      <el-table-column prop="phoneNum" label="联系方式"></el-table-column>
+      <el-table-column prop="createTime" label="申请时间" width="160px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="serverStatus" label="用途" width="100px">
+      <el-table-column prop="serverStatus" label="用途" width="100px">
         <template slot-scope="scope">
           <el-popover
             placement="top"
@@ -52,7 +52,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="examineStatus" label="资料状态" width="120px">
+      <el-table-column prop="examineStatus" label="资料状态" width="120px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='1'">待审核</span>
           <span v-if="scope.row.examineStatus=='2'">审核通过</span>
@@ -60,7 +60,7 @@
           <span v-if="scope.row.examineStatus=='4'">再次审核</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="160px">
+      <el-table-column label="操作" width="160px">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-edit" @click="editCell(scope.row)">修改权限</el-button>
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>

@@ -1,16 +1,16 @@
 <template>
   <section class="dailySyncDialog">
     <el-table :data="tableData" highlight-current-row border stripe>
-      <el-table-column align="center" type="index" min-width="15" label=" "></el-table-column>
-      <el-table-column align="center" prop="beginTime" label="开始时间" min-width="100"></el-table-column>
-      <el-table-column align="center" prop="endTime" label="结束时间" min-width="100"></el-table-column>
-      <el-table-column align="center" prop="spendTime" label="总耗时（毫秒）" min-width="80"></el-table-column>
-      <el-table-column align="center" prop="counts" label="处理记录总数" min-width="80"></el-table-column>
-      <el-table-column align="center" prop="insertCount" label="成功插入数" min-width="70"></el-table-column>
-      <el-table-column align="center" prop="updateCount" label="成功更新数" min-width="70"></el-table-column>
-      <el-table-column align="center" prop="discardCount" label="舍弃数" min-width="40"></el-table-column>
-      <el-table-column align="center" prop="error" label="日志信息" min-width="60"></el-table-column>
-      <el-table-column align="center" prop="error" label="详情" min-width="60">
+      <el-table-column type="index" min-width="15" label=" "></el-table-column>
+      <el-table-column prop="beginTime" label="开始时间" min-width="100"></el-table-column>
+      <el-table-column prop="endTime" label="结束时间" min-width="100"></el-table-column>
+      <el-table-column prop="spendTime" label="总耗时（毫秒）" min-width="80"></el-table-column>
+      <el-table-column prop="counts" label="处理记录总数" min-width="80"></el-table-column>
+      <el-table-column prop="insertCount" label="成功插入数" min-width="70"></el-table-column>
+      <el-table-column prop="updateCount" label="成功更新数" min-width="70"></el-table-column>
+      <el-table-column prop="discardCount" label="舍弃数" min-width="40"></el-table-column>
+      <el-table-column prop="error" label="日志信息" min-width="60"></el-table-column>
+      <el-table-column prop="error" label="详情" min-width="60">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark" :content="scope.row.error" placement="top">
             <el-button size="small">错误信息</el-button>

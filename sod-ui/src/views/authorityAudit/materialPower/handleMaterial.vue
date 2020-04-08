@@ -62,39 +62,24 @@
       >
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column align="center" prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column
-          align="center"
-          prop="CLASS_NAME"
-          label="资料名称"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column align="center" prop="TABLE_NAME" label="表名称" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column
-          align="center"
-          prop="DATABASE_NAME"
-          label="数据库"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column
-          align="center"
-          prop="SPECIAL_DATABASE_NAME"
-          label="专题名"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column align="center" prop="IS_ACCESS" label="权限" width="80px">
+        <el-table-column prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="TABLE_NAME" label="表名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="DATABASE_NAME" label="数据库" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="IS_ACCESS" label="权限" width="80px">
           <template slot-scope="scope">
             <span v-if="scope.row.IS_ACCESS=='0'">受限</span>
             <span v-else>公开</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="APPLY_AUTHORITY" label="申请状态" width="120px">
+        <el-table-column prop="APPLY_AUTHORITY" label="申请状态" width="120px">
           <template slot-scope="scope">
             <span v-if="scope.row.APPLY_AUTHORITY=='1'">读申请</span>
             <span v-else>读写申请</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="AUTHORIZE" label="审核状态" width="120px">
+        <el-table-column prop="AUTHORIZE" label="审核状态" width="120px">
           <template slot-scope="scope">
             <span v-if="scope.row.AUTHORIZE=='2'">
               <i class="el-icon-circle-close" style="color:#F56C6C"></i>拒绝
@@ -107,7 +92,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="CAUSE" label="拒绝原因" width="120px">
+        <el-table-column prop="CAUSE" label="拒绝原因" width="120px">
           <template slot-scope="scope">
             <el-popover
               placement="top"

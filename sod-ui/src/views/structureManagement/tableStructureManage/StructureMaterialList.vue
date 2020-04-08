@@ -20,10 +20,10 @@
 
     <!-- 表格 -->
     <el-table :data="tableData">
-      <el-table-column label="资料名称" prop="className" align="center" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="存储编码" prop="dataClassId" align="center" width="200"></el-table-column>
-      <el-table-column label="四级编码" prop="DDataId" align="center" width="200"></el-table-column>
-      <el-table-column label="是否发布" prop="ifStopUse" width="80" align="center">
+      <el-table-column label="资料名称" prop="className" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="存储编码" prop="dataClassId" width="200"></el-table-column>
+      <el-table-column label="四级编码" prop="DDataId" width="200"></el-table-column>
+      <el-table-column label="是否发布" prop="ifStopUse" width="80">
         <template slot-scope="scope">{{scope.row.ifStopUse===1?'是':'否'}}</template>
       </el-table-column>
     </el-table>

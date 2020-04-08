@@ -54,6 +54,7 @@
 </template>
 
 <script>
+import { findByDatabaseDefineId } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   name: "PublicDatumPage",
   props: {
@@ -73,32 +74,23 @@ export default {
     };
   },
   created() {
-    // this.initRadioGroup();
     // this.initTable();
   },
   methods: {
     initRadioGroup(paramsObj) {
-      this.axios
-        .get(interfaceObj.TableStructure_getLogicList, {
-          params: {
-            c_datum_code: paramsObj.id
+      console.log(paramsObj);
+      findByDatabaseDefineId({ dDataId: paramsObj.id }).then(res => {
+        if (res.code == 200) {
+          if (res.data.length > 0) {
+            this.publicTopList = res.data;
+            this.tabPosition = res.data[0].logic_id;
+            this.initTable();
+            this.tableShow = false;
+          } else {
+            this.tableShow = true;
           }
-        })
-        .then(res => {
-          if (res.data.returnCode == 0) {
-            if (res.data.data.length > 0) {
-              this.publicTopList = res.data.data;
-              this.tabPosition = res.data.data[0].logic_id;
-              this.initTable();
-              this.tableShow = false;
-            } else {
-              this.tableShow = true;
-            }
-          }
-        })
-        .catch(error => {
-          console.log("出错了，出错信息：" + error);
-        });
+        }
+      });
     },
     initTable() {
       this.axios

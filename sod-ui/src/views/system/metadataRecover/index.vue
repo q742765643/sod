@@ -97,28 +97,18 @@
           ref="multipleTable"
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column align="center" type="index" width="40" :index="table_index_log"></el-table-column>
-          <el-table-column align="center" type="selection" width="55"></el-table-column>
-          <el-table-column
-            align="center"
-            prop="taskName"
-            label="任务名称"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            prop="storageDirectory"
-            label="恢复文件"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column align="center" prop="databaseName" label="数据库"></el-table-column>
-          <el-table-column align="center" prop="handleTime" label="运行开始时间">
+          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="storageDirectory" label="恢复文件" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="databaseName" label="数据库"></el-table-column>
+          <el-table-column prop="handleTime" label="运行开始时间">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.handleTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
-          <el-table-column align="center" label="操作">
+          <el-table-column prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
+          <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
                 type="text"

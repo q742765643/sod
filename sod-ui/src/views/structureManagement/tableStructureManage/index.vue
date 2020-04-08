@@ -73,44 +73,18 @@
               :span-method="objectSpanMethod"
               ref="singleTable"
             >
+              <el-table-column label="资料名称" prop="CLASS_NAME" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column
-                align="center"
-                label="资料名称"
-                prop="CLASS_NAME"
-                :show-overflow-tooltip="true"
-              ></el-table-column>
-              <el-table-column
-                align="center"
                 label="四级编码"
                 prop="D_DATA_ID"
                 v-if="tableStructureManageContral"
                 :show-overflow-tooltip="true"
               ></el-table-column>
-              <el-table-column
-                align="center"
-                label="数据用途类型"
-                prop="LOGIC_NAME"
-                :show-overflow-tooltip="true"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                label="存储类型"
-                prop="DICT_LABEL"
-                :show-overflow-tooltip="true"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                label="数据库"
-                prop="DATABASE_NAME_F"
-                :show-overflow-tooltip="true"
-              ></el-table-column>
-              <el-table-column
-                align="center"
-                label="专题名"
-                prop="DATABASE_NAME"
-                :show-overflow-tooltip="true"
-              ></el-table-column>
-              <el-table-column align="center" label="操作" width="320px">
+              <el-table-column label="数据用途类型" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column label="存储类型" prop="DICT_LABEL" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column label="数据库" prop="DATABASE_NAME_F" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column label="专题名" prop="DATABASE_NAME" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column label="操作" width="320px">
                 <template slot-scope="scope">
                   <el-button size="small" @click="showStructureManage(scope.row)">
                     <i
