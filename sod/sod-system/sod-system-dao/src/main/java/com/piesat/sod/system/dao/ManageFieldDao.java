@@ -1,9 +1,12 @@
 package com.piesat.sod.system.dao;
 
+import org.hibernate.validator.constraints.EAN;
 import org.springframework.stereotype.Repository;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.sod.system.entity.ManageFieldEntity;
+
+import java.util.List;
 
 /** 管理字段
 *@description
@@ -13,5 +16,4 @@ import com.piesat.sod.system.entity.ManageFieldEntity;
 */
 @Repository
 public interface ManageFieldDao extends BaseDao<ManageFieldEntity>{
-
 }

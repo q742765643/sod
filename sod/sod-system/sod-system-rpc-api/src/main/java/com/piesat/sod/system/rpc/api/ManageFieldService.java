@@ -21,17 +21,17 @@ public interface ManageFieldService {
 
 	/**
 	 *  获取所有管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月16日下午5:26:57
 	 * @return
 	 * @throws Exception
 	 */
 	List<ManageGroupDto> findAllManageGroup() throws Exception;
-	
+
 	/**
 	 *  新增管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月16日下午5:55:09
 	 * @param manageGroupDto
@@ -40,7 +40,7 @@ public interface ManageFieldService {
 	void addManageGroup(ManageGroupDto manageGroupDto) throws Exception;
 	/**
 	 *  删除管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月16日下午5:57:26
 	 * @param groupId
@@ -49,7 +49,7 @@ public interface ManageFieldService {
 	void delManageGroup(String groupId) throws Exception;
 	/**
 	 *  管理字段分页查询
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月17日下午3:56:27
 	 * @param manageGroupDto
@@ -57,20 +57,20 @@ public interface ManageFieldService {
 	 * @throws Exception
 	 */
 	PageBean findPageData(PageForm<ManageFieldDto> pageForm) throws Exception;
-	
+
 	/**
 	 * 新增管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午10:06:29
 	 * @param manageFieldDto
 	 * @throws Exception
 	 */
 	void addManageField(ManageFieldDto manageFieldDto) throws Exception;
-	
+
 	/**
 	 *  主键查询管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午10:34:28
 	 * @param groupId
@@ -80,7 +80,7 @@ public interface ManageFieldService {
 	ManageGroupDto findManageGroupByPk(String groupId) throws Exception;
 	/***
 	 * 主键查询管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午10:47:36
 	 * @param id
@@ -90,7 +90,7 @@ public interface ManageFieldService {
 	ManageFieldDto findManageFieldByPk(String id)throws Exception;
 	/**
 	 *  编辑管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午11:23:21
 	 * @param manageFieldDto
@@ -99,17 +99,17 @@ public interface ManageFieldService {
 	void editManageField(ManageFieldDto manageFieldDto) throws Exception;
 	/**
 	 *  编辑管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午11:31:02
 	 * @param manageGroupDto
 	 * @throws Exception
 	 */
 	void editManageGroup(ManageGroupDto manageGroupDto) throws Exception;
-	
+
 	/**
 	 *  删除关联字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午11:37:28
 	 * @param ids
@@ -118,10 +118,12 @@ public interface ManageFieldService {
 	void delManageField(String ids) throws Exception;
 	/**
 	 *  管理字段导出
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年3月19日下午4:34:04
 	 * @param dto
 	 */
 	void exportExcel(ManageFieldDto dto);
+
+	List<ManageFieldDto> findData(ManageFieldDto dto);
 }
