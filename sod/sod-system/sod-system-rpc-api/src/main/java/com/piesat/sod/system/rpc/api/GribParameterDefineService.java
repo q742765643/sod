@@ -20,4 +20,6 @@ public interface GribParameterDefineService {
     GribParameterDefineDto updateDto(GribParameterDefineDto ribParameterDefineDto);
 
     public void deleteRecordByIds(List<String> ids);
+
+    List<GribParameterDefineDto> all();
 }

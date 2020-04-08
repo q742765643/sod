@@ -112,6 +112,19 @@ public class DataClassController {
         }
     }
 
+    @ApiOperation(value = "查询资料分类(parentId=0)")
+    @RequiresPermissions("dm:dataClass:findAllCategory")
+    @GetMapping(value = "/findAllCategory")
+    public ResultT findAllCategory(){
+        try {
+            this.dataClassService.findAllCategory();
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "查询所有")
     @RequiresPermissions("dm:dataClass:all")
     @GetMapping(value = "/all")
@@ -215,6 +228,22 @@ public class DataClassController {
             ResultT r = new ResultT();
             r.isSuccess();
             r.setData(all);
+            return r;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据四级编码获取数据用途")
+    @RequiresPermissions("dm:dataClass:getLogicByDdataId")
+    @GetMapping(value = "/getLogicByDdataId")
+    public ResultT getLogicByDdataId(String dDataId) {
+        try {
+            List<Map<String, Object>> logicByDdataId = this.dataClassService.getLogicByDdataId(dDataId);
+            ResultT r = new ResultT();
+            r.isSuccess();
+            r.setData(logicByDdataId);
             return r;
         } catch (Exception e) {
             e.printStackTrace();

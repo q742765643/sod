@@ -22,4 +22,8 @@ public interface DataClassBaseInfoService {
     void delete(String id);
 
     List<DataClassBaseInfoDto> all();
+
+    DataClassBaseInfoDto getDataClassBaseInfo(String id);
+
+    DataClassBaseInfoDto saveDataClassBaseInfo(DataClassBaseInfoDto dataClassBaseInfoDto);
 }

@@ -97,22 +97,17 @@
           highlight-current-row
           ref="multipleTable"
         >
-          <el-table-column align="center" type="index" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
 
-          <el-table-column
-            align="center"
-            prop="profileName"
-            label="资料名称"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column align="center" prop="handleTime" label="运行开始时间">
+          <el-table-column prop="profileName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="handleTime" label="运行开始时间">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.handleTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="elapsedTime" label="耗时（秒）"></el-table-column>
-          <el-table-column align="center" prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
-          <el-table-column align="center" label="操作">
+          <el-table-column prop="elapsedTime" label="耗时（秒）"></el-table-column>
+          <el-table-column prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
+          <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
                 type="text"

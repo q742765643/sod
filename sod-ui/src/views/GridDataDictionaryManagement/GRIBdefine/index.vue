@@ -54,15 +54,15 @@
       row-key="id"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="50"></el-table-column>
-      <el-table-column align="center" prop="eleCodeShort" label="要素存储短名"></el-table-column>
-      <el-table-column align="center" prop="subjectId" label="学科"></el-table-column>
-      <el-table-column align="center" prop="classify" label="参数种类"></el-table-column>
-      <el-table-column align="center" prop="parameterId" label="参数编码"></el-table-column>
-      <el-table-column align="center" prop="gribVersion" label="GRIB版本"></el-table-column>
-      <el-table-column align="center" prop="publicConfig" label="是否为共有配置"></el-table-column>
-      <el-table-column align="center" prop="templateId" label="模板编号"></el-table-column>
-      <el-table-column align="center" prop="templateDesc" label="模板说明"></el-table-column>
+      <el-table-column type="selection" width="50"></el-table-column>
+      <el-table-column prop="eleCodeShort" label="要素存储短名"></el-table-column>
+      <el-table-column prop="subjectId" label="学科"></el-table-column>
+      <el-table-column prop="classify" label="参数种类"></el-table-column>
+      <el-table-column prop="parameterId" label="参数编码"></el-table-column>
+      <el-table-column prop="gribVersion" label="GRIB版本"></el-table-column>
+      <el-table-column prop="publicConfig" label="是否为共有配置"></el-table-column>
+      <el-table-column prop="templateId" label="模板编号"></el-table-column>
+      <el-table-column prop="templateDesc" label="模板说明"></el-table-column>
     </el-table>
 
     <pagination

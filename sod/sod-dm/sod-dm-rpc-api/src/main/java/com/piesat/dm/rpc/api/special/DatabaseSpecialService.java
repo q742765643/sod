@@ -70,5 +70,7 @@ public interface DatabaseSpecialService {
 
     DatabaseSpecialDto updateUseStatusById(String sdbId,String useStatus);
 
+    List<Map<String,Object>> getAllOtherRecordByUserId(String userId,String useStatus);
+
     List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId,String useStatus);
 }

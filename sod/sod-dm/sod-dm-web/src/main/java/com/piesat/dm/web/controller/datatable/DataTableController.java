@@ -222,6 +222,8 @@ public class DataTableController {
         }
     }
 
+
+
     @ApiOperation(value = "根据资料存储编码取得对应表的相关存储结构详细信息")
     @RequiresPermissions("dm:dataTable:getMultiDataInfoByClassId")
     @GetMapping(value = "/getMultiDataInfoByClassId")

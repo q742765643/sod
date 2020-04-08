@@ -30,20 +30,14 @@
       row-key="id"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="50"></el-table-column>
-      <el-table-column align="center" prop="gribVersion" label="GRIB版本"></el-table-column>
-      <el-table-column align="center" prop="levelType" label="层次类型"></el-table-column>
-      <el-table-column align="center" prop="levelCode" label="层次代码"></el-table-column>
-      <el-table-column align="center" prop="scaleDivisor" label="比例因子"></el-table-column>
-      <el-table-column
-        align="center"
-        prop="levelProperity"
-        label="英文描述"
-        width="360"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column align="center" prop="levelName" label="中文描述" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="unit" label="单位"></el-table-column>
+      <el-table-column type="selection" width="50"></el-table-column>
+      <el-table-column prop="gribVersion" label="GRIB版本"></el-table-column>
+      <el-table-column prop="levelType" label="层次类型"></el-table-column>
+      <el-table-column prop="levelCode" label="层次代码"></el-table-column>
+      <el-table-column prop="scaleDivisor" label="比例因子"></el-table-column>
+      <el-table-column prop="levelProperity" label="英文描述" width="360" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="levelName" label="中文描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="unit" label="单位"></el-table-column>
     </el-table>
 
     <pagination

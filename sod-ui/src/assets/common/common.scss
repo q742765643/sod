@@ -9,6 +9,11 @@ body {
   background: $backColor;
 }
 
+.el-table th,
+.el-table td {
+  text-align: center;
+}
+
 .app-main>.app-container {
   background: #fff;
   margin: 20px;

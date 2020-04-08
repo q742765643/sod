@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 专题库管理
@@ -24,4 +25,6 @@ public interface DatabaseSpecialReadWriteService {
     List<DatabaseSpecialReadWriteDto> findBySdbIdAndDataClassId(String sdbId, String dataClassId);
 
     DatabaseSpecialReadWriteDto saveDto(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto);
+
+    List<Map<String,Object>> getRecordSpecialByTdbId(String sdbId,String userId);
 }

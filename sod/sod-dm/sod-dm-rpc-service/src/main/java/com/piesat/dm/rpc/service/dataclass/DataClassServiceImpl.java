@@ -302,6 +302,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    public List<DataClassDto> findAllCategory() {
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdAsc("0");
+        return this.dataClassMapper.toDto(dataClassIdAsc);
+    }
+
+    @Override
     public void exportBaseData(DataClassDto dataClassDto) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
         if (StringUtils.isNotBlank(dataClassDto.getClassName())) {
@@ -356,5 +362,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 return parentId + ".0001";
             }
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> getLogicByDdataId(String dDataId) {
+        return this.mybatisQueryMapper.getLogicByDdataId(dDataId);
     }
 }

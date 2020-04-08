@@ -43,13 +43,13 @@ public interface DataClassService {
 
     List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId);
 
-    public List<Map<String, Object>> getDataTypeList();
+    List<Map<String, Object>> getDataTypeList();
 
     /**
      * 获取所有目录
      * @return
      */
-    public List<Map<String, Object>>  getDataGroup();
+    List<Map<String, Object>>  getDataGroup();
 
     /**
      * 获取data_class_id最大编码
@@ -59,7 +59,13 @@ public interface DataClassService {
 
     PageBean getBaseData(PageForm<Map<String,String>> pageForm,DataClassDto dataClassDto);
 
+
+    List<DataClassDto> findAllCategory();
+
     void exportBaseData(DataClassDto dataClassDto);
 
+
     String findByParentId(String parentId);
+
+    List<Map<String, Object>> getLogicByDdataId(String dDataId);
 }

@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_DIC_WLG;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 
 // 获取资料分类统计数量
 export function findDataCount(query) {
@@ -27,7 +27,7 @@ export function findUndoCount(query) {
   })
 }
 
-// 
+//
 
 export function findLogicInfo(query) {
   return request({

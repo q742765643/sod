@@ -2,6 +2,7 @@ package com.piesat.sod.system.web.controller;
 
 import com.piesat.sod.system.rpc.api.GribParameterDefineService;
 import com.piesat.sod.system.rpc.dto.GribParameterDefineDto;
+import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -69,6 +70,16 @@ public class GribParameterDefineController {
             list= Arrays.asList(ids);
             this.gribParameterDefineService.deleteRecordByIds(list);
         }
+        return resultT;
+    }
+
+    @GetMapping(value = "/queryAll")
+    @ApiOperation(value = "查询所有", notes = "查询所有")
+    public ResultT queryAll()
+    {
+        ResultT resultT=new ResultT<>();
+        List<GribParameterDefineDto> serviceCodeDto= this.gribParameterDefineService.all();
+        resultT.setData(serviceCodeDto);
         return resultT;
     }
 }

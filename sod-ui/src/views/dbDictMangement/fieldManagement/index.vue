@@ -68,13 +68,13 @@
           </el-col>
         </el-row>
         <el-table :data="tableData" @selection-change="handleSelectionChange">
-          <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
-          <el-table-column align="center" type="selection" width="50"></el-table-column>
-          <el-table-column align="center" label="关键字" prop="keyCol"></el-table-column>
-          <el-table-column align="center" label="中文名" prop="nameCn"></el-table-column>
-          <el-table-column align="center" label="字典类型" prop="dataType"></el-table-column>
-          <el-table-column align="center" label="字典描述" prop="description"></el-table-column>
-          <el-table-column align="center" label="是否可删" prop="canDelete">
+          <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+          <el-table-column type="selection" width="50"></el-table-column>
+          <el-table-column label="关键字" prop="keyCol"></el-table-column>
+          <el-table-column label="中文名" prop="nameCn"></el-table-column>
+          <el-table-column label="字典类型" prop="dataType"></el-table-column>
+          <el-table-column label="字典描述" prop="description"></el-table-column>
+          <el-table-column label="是否可删" prop="canDelete">
             <template slot-scope="scope">
               <span v-if="scope.row.canDelete=='Y'">是</span>
               <span v-if="scope.row.canDelete=='N'">否</span>

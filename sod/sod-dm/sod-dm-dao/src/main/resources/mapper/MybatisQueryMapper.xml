@@ -178,6 +178,7 @@
     <select id="getTableInfoByClassId" resultType="java.util.Map">
         select a.*,b.logic_name from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = c.id
                                          left join T_SOD_LOGIC_DEFINE c on b.logic_flag = c.logic_flag
+                                          where a.data_class_id=#{dataClassId}
     </select>
 
     <select id="getInfoByUserIdMysql" resultType="java.util.Map">
@@ -468,6 +469,32 @@
                   where a.data_class_id = b.data_class_id and b.sdb_id = #{sdbId} and b.examine_status = 1
     </select>
 
+    <select id="getRecordSpecialByTdbId" resultType="java.util.Map">
+        select  b.data_class_id,b.database_id,b.apply_authority,b.empower_authority,b.examine_status,b.failure_reason,d.data_service_name,d.table_name,e.class_name,
+                c.database_name,cc.database_name as special_database_name,
+                e.is_access,e.d_data_id
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE b,T_SOD_DATABASE c,T_SOD_DATABASE_DEFINE cc,T_SOD_DATA_TABLE d,T_SOD_DATA_LOGIC f, T_SOD_DATA_CLASS e
+        where b.data_class_id = f.data_class_id and b.database_id = f.database_id and f.id = d.class_logic_id
+              and b.database_id=c.id and c.database_define_id=cc.id
+              and b.data_class_id=e.data_class_id
+              and b.sdb_id=#{sdbId} and b.data_class_id not in (select dar.data_class_id from T_SOD_DATA_AUTHORITY_APPLY daa left join T_SOD_DATA_AUTHORITY_RECORD dar on daa.id=dar.apply_id and daa.user_id=#{user_id})
+    </select>
+
+    <!--根据用户ID从创建申请表取得其他用户创建并且没有被该用户引用的所有专题库信息-->
+    <select id="getAllOtherRecordByUserId" resultType="java.util.Map">
+       select * from T_SOD_DATABASE_SPECIAL
+        <where>
+            <if test="userId != null and userId != ''">
+                user_id != #{userId} and id not in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where user_id = #{userId})
+            </if>
+            <if test="useStatus != null and useStatus != ''">
+                and use_status in(#{useStatus})
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+
     <select id="getRecordListByUserIdMysql" resultType="java.util.Map" parameterType="String">
         select
             dd.apply_id,
@@ -527,8 +554,36 @@
             dd.authorize asc
     </select>
 
-    <select id="getDataClassBaseInfo"  resultType="java.util.Map" parameterType="String">
-        SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]> 'delete') and  A.C_COREMETA_ID = #{cCoremetaId}
+    <select id="getDataClassBaseInfo"  resultType="DataClassBaseInfoEntity" parameterType="String">
+        select aa.DATA_CLASS_ID dataClassId,b.C_IDABS cIdabs,b.C_MAINFREQ cMainfreq,b.c_coremeta_id cCoremetaId,
+        b.C_DATASCAL cDatascal,c.C_WESTBL cWestbl,c.C_EASTBL cEastbl,c.C_SOUTHBL cSouthbl,
+        c.C_NORTHBL cNorthbl,c.C_GEODESC cGeodesc,
+        b.C_SOURCE cSource,d.C_NETNAME cNetname,a.C_NETTYPE cNettype,
+        f.C_CREAT_NAME cCreatName,f.C_CHECKER cChecker,
+        g.C_RPINDNAME cRpindname,aa.use_base_info useBaseInfo from
+        DMIN_DATA_CLASS_TABLE aa
+        left join
+        dmin_data_class_baseinfo aaa on aa.data_class_id = aaa.data_class_id
+        left join
+        (select  * from tab_omin_cm_cc_datumtypeinfo aa where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) a on aa.D_DATA_ID = a.c_datum_code
+        left join
+        (select  * from tab_omin_cm_cc_coremeta bb where (bb.C_OPT_TYPE is null or bb.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) b on a.C_COREMETA_ID = b.C_COREMETA_ID
+        left join
+        (select  * from tab_omin_cm_cc_geoele cc where (cc.C_OPT_TYPE is null or cc.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) c on c.C_COREMETA_ID = b.C_COREMETA_ID
+        left join
+        (select  * from tab_omin_cm_cc_stationnet_base dd where (dd.C_OPT_TYPE is null or dd.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) d on a.C_NETTYPE = d.C_SNET_ID
+        left join
+        (select  * from tab_omin_cm_cc_tempele ee where (ee.C_OPT_TYPE is null or ee.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) e on c.C_COREMETA_ID = e.C_COREMETA_ID
+        left join
+        (select  * from tab_omin_cm_cc_dddidpocinfo gg where (gg.C_OPT_TYPE is null or gg.C_OPT_TYPE <![CDATA[ <> ]]> 'delete')) g on c.C_COREMETA_ID = g.C_COREMETA_ID
+        left join
+        (select * from tab_omin_cm_cc_apply a where  C_UPDATED_DATE = (select max(C_UPDATED_DATE) from tab_omin_cm_cc_apply b where a.C_DATA_ID = b.C_DATA_ID  ))
+        f on b.C_COREMETA_ID = f.C_DATA_ID
+
+        <where>
+            aa.data_class_id = #{id}
+        </where>
+        limit 1
     </select>
 
 
@@ -550,5 +605,11 @@
                 and upper(c_short_name) like #{c_datumtype}
             </if>
         </where>
+    </select>
+
+
+    <select id="getLogicByDdataId" resultType="java.util.Map" parameterType="String">
+        select a.d_data_id,b.data_class_id,c.logic_flag,c.logic_name,b.id from t_sod_data_class a left join t_sod_data_logic b on a.data_class_id = b.data_class_id
+        LEFT JOIN t_sod_logic_define c on  c.logic_flag = b.logic_flag where a.d_data_id = #{dDataId}
     </select>
 </mapper>

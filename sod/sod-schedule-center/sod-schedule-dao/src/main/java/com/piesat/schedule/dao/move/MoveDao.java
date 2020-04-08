@@ -5,6 +5,8 @@ import com.piesat.common.jpa.entity.BaseEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @description:
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface MoveDao extends BaseDao<MoveEntity> {
+
+    List<MoveEntity> findByDataClassId(String dataClassId);
 
 }
 

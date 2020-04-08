@@ -31,5 +31,7 @@ public interface MoveService {
     public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
 
     public void exportExcel(MoveDto moveDto);
+
+    public List<MoveDto> findByDataClassId(String dataClassId);
 }
 

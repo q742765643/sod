@@ -45,13 +45,13 @@
       row-key="id"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="50"></el-table-column>
-      <el-table-column align="center" prop="areaId" label="区域标识"></el-table-column>
-      <el-table-column align="center" prop="startLat" label="开始纬度"></el-table-column>
-      <el-table-column align="center" prop="endLat" label="结束纬度"></el-table-column>
-      <el-table-column align="center" prop="startLon" label="开始经度"></el-table-column>
-      <el-table-column align="center" prop="endLon" label="结束经度"></el-table-column>
-      <el-table-column align="center" prop="areaDesc" label="备注"></el-table-column>
+      <el-table-column type="selection" width="50"></el-table-column>
+      <el-table-column prop="areaId" label="区域标识"></el-table-column>
+      <el-table-column prop="startLat" label="开始纬度"></el-table-column>
+      <el-table-column prop="endLat" label="结束纬度"></el-table-column>
+      <el-table-column prop="startLon" label="开始经度"></el-table-column>
+      <el-table-column prop="endLon" label="结束经度"></el-table-column>
+      <el-table-column prop="areaDesc" label="备注"></el-table-column>
     </el-table>
 
     <pagination
