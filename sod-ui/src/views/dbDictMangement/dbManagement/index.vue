@@ -42,26 +42,21 @@
       ref="singleTable"
       highlight-current-row
     >
-      <el-table-column align="center" type="selection" width="50"></el-table-column>
-      <el-table-column align="center" prop="id" label="数据库ID"></el-table-column>
+      <el-table-column type="selection" width="50"></el-table-column>
+      <el-table-column prop="id" label="数据库ID" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="databaseName" label="数据库名称" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="databaseInstance" label="数据库实例"></el-table-column>
+      <el-table-column prop="databaseType" label="数据库类型"></el-table-column>
+      <el-table-column prop="databaseIp" label="IP地址"></el-table-column>
+      <el-table-column prop="mainBakType" label="主备类型" :formatter="getMainBak"></el-table-column>
+      <el-table-column prop="databaseCapacity" label="存储容量" width="100"></el-table-column>
       <el-table-column
-        align="center"
-        prop="databaseName"
-        label="数据库名称"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column align="center" prop="databaseInstance" label="数据库实例"></el-table-column>
-      <el-table-column align="center" prop="databaseType" label="数据库类型"></el-table-column>
-      <el-table-column align="center" prop="databaseIp" label="IP地址"></el-table-column>
-      <el-table-column align="center" prop="mainBakType" label="主备类型" :formatter="getMainBak"></el-table-column>
-      <el-table-column align="center" prop="databaseCapacity" label="存储容量"></el-table-column>
-      <el-table-column
-        align="center"
         prop="display_control"
         label="显示控制"
+        width="100"
         :formatter="getDisplyControl"
       ></el-table-column>
-      <el-table-column align="center" prop="check_conn" label="运行状态">
+      <el-table-column prop="check_conn" label="运行状态" width="100">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.check_conn==='1'?true:false"

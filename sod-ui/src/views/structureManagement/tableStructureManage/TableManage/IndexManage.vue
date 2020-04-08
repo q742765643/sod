@@ -7,11 +7,11 @@
     </el-button-group>
 
     <el-table :data="indexItem" border @selection-change="res=>indexItemSel=res">
-      <el-table-column type="index" align="center"></el-table-column>
-      <el-table-column type="selection" width="55" align="center"></el-table-column>
-      <el-table-column label="索引名称" prop="indexName" align="center"></el-table-column>
-      <el-table-column label="索引列" prop="indexColumn" align="center"></el-table-column>
-      <el-table-column label="索引类型" prop="indexType" align="center"></el-table-column>
+      <el-table-column type="index"></el-table-column>
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column label="索引名称" prop="indexName"></el-table-column>
+      <el-table-column label="索引列" prop="indexColumn"></el-table-column>
+      <el-table-column label="索引类型" prop="indexType"></el-table-column>
     </el-table>
     <el-dialog
       width="65%"

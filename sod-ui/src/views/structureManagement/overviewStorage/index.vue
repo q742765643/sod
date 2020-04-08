@@ -24,26 +24,14 @@
     </el-form>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column
-        prop="class_name"
-        label="资料名称"
-        width="180"
-        align="center"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column
-        prop="TABLE_NAME"
-        label="表名称"
-        width="200"
-        align="center"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column prop="DATA_CLASS_ID" label="存储编码" width="140" align="center"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码" width="140" align="center"></el-table-column>
-      <el-table-column prop="LOGIC_NAME" label="数据用途" width="120" align="center"></el-table-column>
-      <el-table-column prop="database_name1" label="数据库" width="130" align="center"></el-table-column>
-      <el-table-column prop="p_special_database_name" label="专题名" width="100" align="center"></el-table-column>
-      <el-table-column label="参数配置" width="340" align="center">
+      <el-table-column prop="class_name" label="资料名称" width="180" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="TABLE_NAME" label="表名称" width="200" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="DATA_CLASS_ID" label="存储编码" width="140"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" width="140"></el-table-column>
+      <el-table-column prop="LOGIC_NAME" label="数据用途" width="120"></el-table-column>
+      <el-table-column prop="database_name1" label="数据库" width="130"></el-table-column>
+      <el-table-column prop="p_special_database_name" label="专题名" width="100"></el-table-column>
+      <el-table-column label="参数配置" width="340">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button

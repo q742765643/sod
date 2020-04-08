@@ -52,22 +52,21 @@
     </el-row>
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" prop="userName" label="用户名"></el-table-column>
-      <el-table-column align="center" prop="department" label="机构"></el-table-column>
-      <el-table-column align="center" prop="telephone" label="联系方式"></el-table-column>
-      <el-table-column align="center" prop="applyTime" label="申请时间">
+      <el-table-column prop="userName" label="用户名"></el-table-column>
+      <el-table-column prop="department" label="机构"></el-table-column>
+      <el-table-column prop="telephone" label="联系方式"></el-table-column>
+      <el-table-column prop="applyTime" label="申请时间">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.applyTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
         prop="db_name"
         label="资料个数"
         :formatter="function(row){return row.dataAuthorityRecordList.length}"
       ></el-table-column>
-      <el-table-column align="center" prop="examine_status" label="状态" :formatter="statusShow"></el-table-column>
-      <el-table-column align="center" label="操作" width="260px">
+      <el-table-column prop="examine_status" label="状态" :formatter="statusShow"></el-table-column>
+      <el-table-column label="操作" width="260px">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-view" @click="viewCell(scope.row)">查看</el-button>
         </template>

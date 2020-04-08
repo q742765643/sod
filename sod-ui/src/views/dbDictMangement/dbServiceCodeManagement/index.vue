@@ -30,15 +30,15 @@
       @selection-change="handleSelectionChange"
       style="width: 100%;"
     >
-      <el-table-column align="center" type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column align="center" type="selection" width="55"></el-table-column>
-      <el-table-column align="center" prop="userEleCode" label="服务代码" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="dbEleCode" label="字段编码"></el-table-column>
-      <el-table-column align="center" prop="eleName" label="要素中文名称" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="eleUnit" label="单位" width="120"></el-table-column>
-      <el-table-column align="center" prop="isCodeParam" label="是否有标识代码表"></el-table-column>
-      <el-table-column align="center" prop="codeTableId" label="标识代码表"></el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column prop="userEleCode" label="服务代码" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="dbEleCode" label="字段编码"></el-table-column>
+      <el-table-column prop="eleName" label="要素中文名称" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleUnit" label="单位" width="120"></el-table-column>
+      <el-table-column prop="isCodeParam" label="是否有标识代码表"></el-table-column>
+      <el-table-column prop="codeTableId" label="标识代码表"></el-table-column>
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             icon="el-icon-edit"

@@ -47,15 +47,15 @@
           </el-col>
         </el-row>
         <el-table :data="tableData" highlight-current-row @selection-change="handleSelectionChange">
-          <el-table-column align="center" type="index" width="40" :index="table_index"></el-table-column>
-          <el-table-column align="center" type="selection" width="50"></el-table-column>
-          <el-table-column align="center" label=" " prop="id" v-if="false"></el-table-column>
-          <el-table-column align="center" label="字段编码" prop="dbEleCode"></el-table-column>
-          <el-table-column align="center" label="服务编码" prop="userEleCode"></el-table-column>
-          <el-table-column align="center" label="中文名称" prop="dbEleName"></el-table-column>
-          <el-table-column align="center" label="字段类型" prop="type"></el-table-column>
-          <el-table-column align="center" label="字段精度" prop="dataPrecision"></el-table-column>
-          <el-table-column align="center" label="是否可为空" prop="nullAble" :formatter="formatBoolean"></el-table-column>
+          <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="selection" width="50"></el-table-column>
+          <el-table-column label=" " prop="id" v-if="false"></el-table-column>
+          <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
+          <el-table-column label="服务编码" prop="userEleCode"></el-table-column>
+          <el-table-column label="中文名称" prop="dbEleName"></el-table-column>
+          <el-table-column label="字段类型" prop="type"></el-table-column>
+          <el-table-column label="字段精度" prop="dataPrecision"></el-table-column>
+          <el-table-column label="是否可为空" prop="nullAble" :formatter="formatBoolean"></el-table-column>
         </el-table>
         <pagination
           v-show="total>0"

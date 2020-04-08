@@ -38,35 +38,24 @@
       row-key="id"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="50"></el-table-column>
-      <el-table-column align="center" prop="logicFlag" label="数据用途ID"></el-table-column>
-      <el-table-column align="center" prop="logicName" label="用途描述" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column align="center" prop="storageType" label="表类型" :show-overflow-tooltip="true">
+      <el-table-column type="selection" width="50"></el-table-column>
+      <el-table-column prop="logicFlag" label="数据用途ID"></el-table-column>
+      <el-table-column prop="logicName" label="用途描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="storageType" label="表类型" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{scope.row.logicStorageTypesEntityList[0].storageType}}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="databaseName"
-        label="数据库名称"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column prop="databaseName" label="数据库名称" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span
             v-if="scope.row.logicDatabaseEntityList.length>0"
           >{{scope.row.logicDatabaseEntityList[0].databaseName}}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="logicDesc"
-        label="用途说明"
-        width="360"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
+      <el-table-column prop="logicDesc" label="用途说明" width="360" :show-overflow-tooltip="true"></el-table-column>
 
-      <el-table-column align="center" prop="createTime" label="创建时间">
+      <el-table-column prop="createTime" label="创建时间">
         <template slot-scope="scope">
           <span>{{parseTime(scope.row.createTime)}}</span>
         </template>

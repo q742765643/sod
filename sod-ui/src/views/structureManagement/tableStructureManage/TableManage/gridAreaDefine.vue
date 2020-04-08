@@ -31,8 +31,8 @@
     >
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="areaId" label="区域代码" align="center"></el-table-column>
-      <el-table-column prop="areaRegionDesc" label="区域描述" align="center"></el-table-column>
+      <el-table-column prop="areaId" label="区域代码"></el-table-column>
+      <el-table-column prop="areaRegionDesc" label="区域描述"></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"

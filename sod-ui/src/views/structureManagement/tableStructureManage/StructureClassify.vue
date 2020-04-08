@@ -222,7 +222,7 @@ export default {
       if (this.publicActive == true) {
         this.checkedNodeArr.style = "showPublicMain";
         this.checkedNodeArr.id = data.id;
-        this.checkedNodeArr.name = data.label;
+        this.checkedNodeArr.name = data.name;
         this.checkedNodeArr.icon = data.icon;
         this.$emit("searchFun", this.checkedNodeArr, data);
       } else {
