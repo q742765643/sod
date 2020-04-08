@@ -2,7 +2,9 @@ package com.piesat.sod.system.rpc.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,6 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
-import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.sod.system.dao.ManageFieldDao;
 import com.piesat.sod.system.dao.ManageFieldGroupDao;
@@ -38,19 +39,19 @@ import com.piesat.util.page.PageForm;
 */
 @Service("manageFieldService")
 public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> implements ManageFieldService{
-	
+
 	@Autowired
 	private ManageFieldDao manageFieldDao;
-	
+
 	@Autowired
 	private ManageGroupDao manageGroupDao;
-	
+
 	@Autowired
 	private ManageFieldGroupDao manageFieldGroupDao;
-	
+
 	@Autowired
 	private ManageGroupMapstruct manageGroupMapstruct;
-	
+
 	@Autowired
 	private ManageFieldMapper manageFieldMapper;
 	@Autowired
@@ -63,7 +64,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	/**
 	 *  获取所有管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-01-16 17:27
 	 * @return
@@ -78,7 +79,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	/**
 	 *  新增管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-01-16 17:57
 	 * @param manageGroupDto
@@ -88,12 +89,12 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	@Transactional
 	public void addManageGroup(ManageGroupDto manageGroupDto) throws Exception {
 		manageGroupDao.save(manageGroupMapstruct.toEntity(manageGroupDto));
-		
+
 	}
 
 	/**
 	 *  删除管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-01-16 17:57
 	 * @param groupId
@@ -106,12 +107,12 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 		manageFieldGroupDao.delByGroupId(groupId);
 
-		
+
 	}
 
 	/**
 	 *  获取分页数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-01-17 17:09
 	 * @param manageFieldDto
@@ -124,19 +125,19 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
 		//获取结果集
 		if(!StringUtil.isEmpty(mfe.getDbEleCode())) mfe.setDbEleCode("%"+mfe.getDbEleCode()+"%");
-		
+
 		List<ManageFieldEntity> data = manageFieldMapper.findByConditions(mfe);
 		PageInfo<ManageFieldEntity> pageInfo = new PageInfo<>(data);
-		
+
 		List<ManageFieldDto> dtoData = manageFieldMapstruct.toDto(pageInfo.getList());
 		PageBean pageBean = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
-		
+
 		return pageBean;
 	}
 
 	/**
 	 *  新增管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-06 10:07
 	 * @param manageFieldDto
@@ -147,7 +148,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	public void addManageField(ManageFieldDto manageFieldDto) throws Exception {
 		ManageFieldEntity mfe = manageFieldMapstruct.toEntity(manageFieldDto);
 		mfe = manageFieldDao.save(mfe);
-		
+
 		//保存与分组关联表
 		String[] groupIds = manageFieldDto.getGroupId().split(",");
 		for(String groupId:groupIds) {
@@ -156,12 +157,12 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 			mfge.setGroupId(groupId);
 			manageFieldGroupDao.save(mfge);
 		}
-		
+
 	}
 
 	/**
 	 *  主键查询管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-06 10:36
 	 * @param groupId
@@ -170,7 +171,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 */
 	@Override
 	public ManageGroupDto findManageGroupByPk(String groupId) throws Exception {
-		
+
 		ManageGroupEntity mge = manageGroupDao.findById(groupId).orElse(null);
 		ManageGroupDto mgd = manageGroupMapstruct.toDto(mge);
 		return mgd;
@@ -178,7 +179,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	/**
 	 *  主键查询管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-06 10:48
 	 * @param id
@@ -194,7 +195,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	/**
 	 *  编辑管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-06 11:23
 	 * @param manageFieldDto
@@ -208,7 +209,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	/**
 	 *  编辑管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-06 11:31
 	 * @param manageGroupDto
@@ -223,7 +224,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	/**
 	 *  批量删除管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-06 11:38
 	 * @param ids
@@ -233,18 +234,18 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	@Transactional
 	public void delManageField(String ids) throws Exception {
 		String[] idArr = ids.split(",");
-		
+
 		for(String id:idArr) {
 			manageFieldDao.deleteById(id);
-			
+
 			manageFieldGroupDao.delByFieldId(id);
 		}
-		
+
 	}
 
 	/**
 	 *  管理字段导出
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-03-19 16:34
 	 * @param dto
@@ -254,11 +255,32 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 		List<ManageFieldEntity> data = findList(dto);
 		ExcelUtil<ManageFieldEntity> util = new ExcelUtil(ManageFieldEntity.class);
 		util.exportExcel(data,"管理字段管理");
-		
+
 	}
+
+	@Override
+	public List<ManageFieldDto> findData(ManageFieldDto dto) {
+		SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+		if (StringUtils.isNotBlank(dto.getGroupId())) {
+			ssb.add("groupId", SpecificationOperator.Operator.likeAll.name(), dto.getGroupId());
+		}
+		if (StringUtils.isNotBlank(dto.getDbEleCode())) {
+			ssb.add("dbEleCode", SpecificationOperator.Operator.eq.name(), dto.getDbEleCode());
+		}
+		if (StringUtils.isNotBlank(dto.getDbEleName())) {
+			ssb.add("dbEleName", SpecificationOperator.Operator.eq.name(), dto.getDbEleName());
+		}
+		if (StringUtils.isNotBlank(dto.getUserEleCode())) {
+			ssb.add("userEleCode", SpecificationOperator.Operator.eq.name(), dto.getUserEleCode());
+		}
+		Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+		List<ManageFieldDto> all = this.getAll(ssb.generateSpecification());
+		return all;
+	}
+
 	/**
 	 *  获取结果集
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年3月19日下午4:52:29
 	 * @param dto

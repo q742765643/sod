@@ -92,4 +92,10 @@ public class GribParameterDefineServiceImpl extends BaseService<GribParameterDef
     public void deleteRecordByIds(List<String> ids) {
         this.deleteByIds(ids);
     }
+
+    @Override
+    public List<GribParameterDefineDto> all() {
+        List<GribParameterDefineEntity> all = this.getAll();
+        return this.gribParameterDefineMapstruct.toDto(all);
+    }
 }

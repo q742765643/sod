@@ -36,13 +36,13 @@ import lombok.extern.slf4j.Slf4j;
 @Api(value="管理字段管理Controller",tags = {"管理字段管理页面相关接口"})
 @Slf4j
 public class ManageFiledController {
-	
+
 	@Autowired
 	private ManageFieldService manageFieldService;
-	
+
 	/**
 	 * 获取管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月16日下午5:42:27
 	 * @return
@@ -62,7 +62,7 @@ public class ManageFiledController {
 	}
 	/**
 	 *  管理字段分组新增接口
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月17日下午3:27:59
 	 * @param manageGroupDto
@@ -84,7 +84,7 @@ public class ManageFiledController {
 	}
 	/**
 	 * 管理字段删除接口
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月17日下午3:32:45
 	 * @param groupId
@@ -104,10 +104,10 @@ public class ManageFiledController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  主键查询管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午10:39:16
 	 * @param groupId
@@ -128,7 +128,7 @@ public class ManageFiledController {
 	}
 	/**
 	 *  编辑管理字段分组
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午11:29:30
 	 * @param manageGroupDto
@@ -148,11 +148,11 @@ public class ManageFiledController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 
 	/**
 	 * 获取管理字段分页数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月19日上午9:21:40
 	 * @param manageFieldDto
@@ -174,9 +174,24 @@ public class ManageFiledController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
+
+	@RequiresPermissions("restApi:manageField:findData")
+	@ApiOperation(value="管理字段查询接口",notes="管理字段接口")
+	@GetMapping(value="/findData")
+	public ResultT findData(ManageFieldDto manageFieldDto) {
+		log.info(">>>>>>>>>>>>获取管理字段分页数据");
+		try {
+			List<ManageFieldDto> page = manageFieldService.findData(manageFieldDto);
+			return ResultT.success(page);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
+	}
+
 	/**
 	 *  添加管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午10:04:17
 	 * @param manageFieldDto
@@ -198,7 +213,7 @@ public class ManageFiledController {
 	}
 	/**
 	 *  主键查询单条管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午10:54:47
 	 * @param id
@@ -221,7 +236,7 @@ public class ManageFiledController {
 
 	/**
 	 *  编辑管理字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午11:27:53
 	 * @param manageFieldDto
@@ -241,10 +256,10 @@ public class ManageFiledController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  批量删除关联字段
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月6日上午11:47:38
 	 * @param ids
@@ -264,10 +279,10 @@ public class ManageFiledController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  管理字段导出
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年3月19日下午4:32:44
 	 * @param dto
@@ -278,6 +293,6 @@ public class ManageFiledController {
 	public void exportExcel(ManageFieldDto dto) {
 		manageFieldService.exportExcel(dto);
 	}
-	
+
 
 }
