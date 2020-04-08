@@ -3,7 +3,9 @@ package com.piesat.dm.web.controller.dataclass;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -30,6 +32,8 @@ import java.util.Map;
 public class DataClassController {
     @Autowired
     private DataClassService dataClassService;
+    @Autowired
+    private DataLogicService dataLogicService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataClass:add")
@@ -38,6 +42,8 @@ public class DataClassController {
     public ResultT save(@RequestBody DataClassDto dataClassDto) {
         try {
             DataClassDto save = this.dataClassService.saveDto(dataClassDto);
+            List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
+            save.setDataLogicList(dataLogicDtos);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

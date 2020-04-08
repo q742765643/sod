@@ -53,6 +53,19 @@ public class DatabaseNodesController {
         }
     }
 
+    @ApiOperation(value = "根据物理库id查询")
+    @RequiresPermissions("dm:databaseNodes:findByDatabaseId")
+    @GetMapping(value = "/findByDatabaseId")
+    public ResultT findByDatabaseId(String id) {
+        try {
+            List<DatabaseNodesDto> databaseNodesDto = this.databaseNodesService.findByDatabaseId(id);
+            return ResultT.success(databaseNodesDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:databaseNodes:del")
     @Log(title = "数据库节点管理", businessType = BusinessType.DELETE)

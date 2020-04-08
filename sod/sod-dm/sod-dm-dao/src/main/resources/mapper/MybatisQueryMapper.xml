@@ -609,7 +609,7 @@
 
 
     <select id="getLogicByDdataId" resultType="java.util.Map" parameterType="String">
-        select a.d_data_id,b.data_class_id,c.logic_flag,c.logic_name,b.id from t_sod_data_class a left join t_sod_data_logic b on a.data_class_id = b.data_class_id
-        LEFT JOIN t_sod_logic_define c on  c.logic_flag = b.logic_flag where a.d_data_id = #{dDataId}
+        SELECT a.d_data_id,b.data_class_id,c.logic_flag,c.logic_name,b.id FROM t_sod_data_class a INNER JOIN t_sod_data_logic b ON a.data_class_id = b.data_class_id
+        INNER JOIN t_sod_logic_define c ON  c.logic_flag = b.logic_flag WHERE a.d_data_id = #{dDataId}
     </select>
 </mapper>

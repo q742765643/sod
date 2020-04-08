@@ -18,6 +18,8 @@ import java.util.Map;
 public interface DataLogicService {
     DataLogicDto saveDto(DataLogicDto dataLogicDto);
 
+    List<DataLogicDto> saveList(List<DataLogicDto> dataLogicList);
+
     DataLogicDto getDotById(String id);
 
     void delete(String id);

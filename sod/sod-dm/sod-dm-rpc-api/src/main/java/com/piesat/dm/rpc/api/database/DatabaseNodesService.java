@@ -19,7 +19,10 @@ public interface DatabaseNodesService {
 
     DatabaseNodesDto getDotById(String id);
 
+    List<DatabaseNodesDto> findByDatabaseId(String id);
+
     void delete(String id);
 
     List<DatabaseNodesDto> all();
+
 }
