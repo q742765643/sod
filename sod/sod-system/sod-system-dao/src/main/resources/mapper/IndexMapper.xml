@@ -115,13 +115,17 @@
 	<!-- 根据资料分类获取统计数量 -->
 	<select id="findDataCount" resultType="java.util.Map">
 		select 
-			substr(data_class_id,1,1) as "CLASSID", count(data_class_id) as "NUM" 
+			substr(t1.data_class_id,1,1) as "CLASSID", count(t1.data_class_id) as "NUM" ,t2.class_name
 		from 
-			t_sod_data_class
+			t_sod_data_class t1 
+		left join 
+			t_sod_data_class t2 on substr(t1.data_class_id,1,1) = t2.d_data_id
 		where 
-			type = 2
+			t1.type = 2
 		group by 
-			substr(data_class_id,1,1)
+			substr(t1.data_class_id,1,1),t2.class_name 
+		order by
+			substr(t1.data_class_id,1,1) asc 
 	</select>
 	
 	<!-- 获取逻辑库资料统计数量 -->
@@ -147,21 +151,49 @@
 	<!-- 获取数据用途信息 -->
 	<select id="findLogicInfo" resultType="java.util.Map">
 		select 
-			a.logic_desc,a.logic_flag,a.logic_name,a.serial_number,b.*,ii.num 
+			count(dl.data_class_id) as "num" ,dd.id as "databaseId",dd.database_name as "databaseName",
+			dci.total_capacity as "totalCapacity",dci.used_capacity as "usedCapacity"
 		from 
-			t_sod_logic_define a 
+			t_sod_database_define dd 
 		left join 
-			t_sod_logic_database ab on a.logic_flag = ab.logic_id  
+			t_sod_database d on dd.id=d.database_define_id
 		left join 
-			(select da.*,db.alias_name,db.database_id,db.database_logic,db.total_capacity,db.used_capacity from t_sod_database_define da left join t_sod_database_capacity_info db on
-			da.id = db.database_id ) b
-			on ab.database_id = b.database_id
+			t_sod_data_logic dl on dl.database_id = d.id
 		left join 
-			(select count(distinct data_service_id) num,logic_id from(
-	         select data_service_id,aa.class_logic_id logic_id 
-	         from t_sod_data_table aa,t_sod_logic_database bb where aa.class_logic_id = bb.logic_id) a
-	 		 group by logic_id) ii on ab.logic_id = ii.logic_id
-		 order by 
-		 	logic_flag asc,database_id asc
+			t_sod_database_capacity_info dci on dd.id = dci.database_id
+		group by 
+		dd.id,dd.database_name,dci.total_capacity,dci.used_capacity
+	</select>
+	
+	<select id="findLogicCapacity" resultType="java.util.Map">
+		select 
+			database_logic,sum(total_capacity) as total_capacity,sum(used_capacity) as  used_capacity
+		from 
+			t_sod_database_capacity_info
+		group by database_logic
+	</select>
+	 
+	<select id="findLogicDataCount" resultType="java.util.Map">
+		select 
+			t1.logic_flag,t1.logic_name,t1.logic_desc,count(t2.data_class_id) as num 
+		from 
+			t_sod_logic_define t1 
+		left join 
+			t_sod_data_logic t2 on t1.logic_flag = t2.logic_flag
+		group by  
+			t1.logic_flag,t1.logic_name,t1.logic_desc
+	</select>
+	 
+	<select id="findLoigcDB" resultType="java.util.Map">
+		select 
+			t1.logic_name,t1.logic_flag,t1.logic_desc,t2.database_define_id,
+			t3.database_name
+		from 
+			t_sod_logic_define t1 
+		left join 
+			t_sod_logic_database t2 on t1.id = t2.logic_id
+		left join 
+			t_sod_database_define t3 on t3.id = t2.database_define_id
+		order by t1.logic_flag desc 
 	</select>
 </mapper>
