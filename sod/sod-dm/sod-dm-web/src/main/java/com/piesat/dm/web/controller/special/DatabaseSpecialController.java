@@ -233,6 +233,21 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据用户id查询其他用户创建并且没有被该用户引用的所有专题库信息")
+    @RequiresPermissions("dm:databaseSpecial:getAllOtherRecordByUserId")
+    @GetMapping(value = "/getAllOtherRecordByUserId")
+    public ResultT getAllOtherRecordByUserId(String userId,String useStatus) {
+        try {
+            List<Map<String,Object>> databaseSpecialDtos = this.databaseSpecialService.getAllOtherRecordByUserId(userId,useStatus);
+            return ResultT.success(databaseSpecialDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
     @ApiOperation(value = "根据用户id和使用状态查询")
     @RequiresPermissions("dm:databaseSpecial:getByUserIdAndUseStatus")
     @GetMapping(value = "/getByUserIdAndUseStatus")
@@ -245,5 +260,7 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+
 
 }

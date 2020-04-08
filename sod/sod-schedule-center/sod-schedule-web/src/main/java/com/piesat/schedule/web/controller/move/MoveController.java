@@ -110,5 +110,15 @@ public class MoveController {
         moveService.exportExcel(moveDto);
 
     }
+
+    @ApiOperation(value = "根据资料存储编码查询", notes = "根据资料存储编码查询")
+    @GetMapping("/findByDataClassId")
+    public ResultT findByDataClassId(String dataClassId){
+        ResultT resultT=new ResultT<>();
+        List<MoveDto> mapList=moveService.findByDataClassId(dataClassId);
+        resultT.setData(mapList);
+        return resultT;
+    }
+
 }
 

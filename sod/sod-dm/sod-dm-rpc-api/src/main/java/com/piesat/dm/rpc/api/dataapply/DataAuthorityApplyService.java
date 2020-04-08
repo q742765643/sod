@@ -16,6 +16,8 @@ public interface DataAuthorityApplyService {
 
     PageBean selectPageList(PageForm<DataAuthorityApplyDto> pageForm);
 
+    DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto);
+
     Map<String,Object> getObjectById(String id);
 
     List<Map<String,Object>> getRecordByApplyId(Map<String,String> map);

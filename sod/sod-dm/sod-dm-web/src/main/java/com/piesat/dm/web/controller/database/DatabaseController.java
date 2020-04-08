@@ -4,9 +4,12 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
+import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -36,6 +39,8 @@ public class DatabaseController {
     private DatabaseDefineService databaseDefineService;
     @Autowired
     private DatabaseUserService databaseUserService;
+    @Autowired
+    private LogicDefineService logicDefineService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:database:add")
@@ -131,6 +136,34 @@ public class DatabaseController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据用户ID和逻辑库ID查询物理库的信息")
+    @RequiresPermissions("dm:database:findByUserIdAndLogicId")
+    @GetMapping(value = "/findByUserIdAndLogicId")
+    public ResultT findByUserIdAndLogicId(String userId,String logicId) {
+        try {
+            //查询用户申请的up账户
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
+            if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
+                return ResultT.failed("请先创建存储账户！！！");
+            }
+            List<String> list = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
+            //逻辑库对应的物理库
+            LogicDefineDto logicDefineDto = logicDefineService.getDotById(logicId);
+            if(logicDefineDto != null && logicDefineDto.getLogicDatabaseEntityList() != null && logicDefineDto.getLogicDatabaseEntityList().size() > 0){
+                for(LogicDatabaseDto logicDatabaseDto: logicDefineDto.getLogicDatabaseEntityList()){
+                    list.add(logicDatabaseDto.getDatabaseId());
+                }
+            }
+            List<DatabaseDto> databaseDtos = this.databaseService.findByDatabaseClassifyAndIdIn("物理库",list);
+            return ResultT.success(databaseDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
 
     @ApiOperation(value = "查询所有物理库/专题库")
     @RequiresPermissions("dm:database:findByDatabaseClassify")

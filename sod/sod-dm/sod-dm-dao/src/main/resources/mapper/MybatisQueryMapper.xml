@@ -178,6 +178,7 @@
     <select id="getTableInfoByClassId" resultType="java.util.Map">
         select a.*,b.logic_name from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = c.id
                                          left join T_SOD_LOGIC_DEFINE c on b.logic_flag = c.logic_flag
+                                          where a.data_class_id=#{dataClassId}
     </select>
 
     <select id="getInfoByUserIdMysql" resultType="java.util.Map">
@@ -467,6 +468,21 @@
         select  distinct a.class_name NAME,a.data_class_id ID,b.type_id PID from T_SOD_DATA_CLASS a,T_SOD_DATABASE_SPECIAL_READ_WRITE b
                   where a.data_class_id = b.data_class_id and b.sdb_id = #{sdbId} and b.examine_status = 1
     </select>
+
+    <!--根据用户ID从创建申请表取得其他用户创建并且没有被该用户引用的所有专题库信息-->
+    <select id="getAllOtherRecordByUserId" resultType="java.util.Map">
+       select * from T_SOD_DATABASE_SPECIAL
+        <where>
+            <if test="userId != null and userId != ''">
+                user_id != #{userId} and id not in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where user_id = #{userId})
+            </if>
+            <if test="useStatus != null and useStatus != ''">
+                and use_status in(#{useStatus})
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
 
     <select id="getRecordListByUserIdMysql" resultType="java.util.Map" parameterType="String">
         select

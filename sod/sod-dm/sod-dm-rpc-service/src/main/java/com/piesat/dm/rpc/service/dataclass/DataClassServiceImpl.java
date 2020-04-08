@@ -298,6 +298,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    public List<DataClassDto> findAllCategory() {
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdAsc("0");
+        return this.dataClassMapper.toDto(dataClassIdAsc);
+    }
+
+    @Override
     public String findByParentId(String parentId) {
         List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdDesc(parentId);
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);

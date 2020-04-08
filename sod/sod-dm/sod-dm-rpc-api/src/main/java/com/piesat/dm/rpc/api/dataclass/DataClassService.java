@@ -59,5 +59,7 @@ public interface DataClassService {
 
     PageBean getBaseData(PageForm<Map<String,String>> pageForm,DataClassDto dataClassDto);
 
+    List<DataClassDto> findAllCategory();
+
     String findByParentId(String parentId);
 }

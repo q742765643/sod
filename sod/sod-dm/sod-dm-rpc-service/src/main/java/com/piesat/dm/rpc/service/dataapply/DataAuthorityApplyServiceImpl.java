@@ -127,6 +127,13 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    public DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto) {
+        DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
+        dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
+        return dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntity);
+    }
+
+    @Override
     public Map<String, Object> getObjectById(String id) {
         Map<String, Object> objectMap = mybatisQueryMapper.queryDataAuthorityApplyById(id);
         //根据用户id获取用户信息

@@ -235,5 +235,11 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         ExcelUtil<MoveEntity> util=new ExcelUtil(MoveEntity.class);
         util.exportExcel(entities,"数据迁移配置");
     }
+
+    @Override
+    public List<MoveDto> findByDataClassId(String dataClassId) {
+        List<MoveEntity> moveEntities = moveDao.findByDataClassId(dataClassId);
+        return moveMapstruct.toDto(moveEntities);
+    }
 }
 

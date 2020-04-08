@@ -112,6 +112,19 @@ public class DataClassController {
         }
     }
 
+    @ApiOperation(value = "查询资料分类(parentId=0)")
+    @RequiresPermissions("dm:dataClass:findAllCategory")
+    @GetMapping(value = "/findAllCategory")
+    public ResultT findAllCategory(){
+        try {
+            this.dataClassService.findAllCategory();
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "查询所有")
     @RequiresPermissions("dm:dataClass:all")
     @GetMapping(value = "/all")

@@ -39,6 +39,18 @@ public class DataAuthorityApplyController {
         return resultT;
     }
 
+    @PostMapping(value = "/save")
+    @ApiOperation(value = "添加", notes = "添加")
+    public ResultT save(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto) {
+        try {
+            DataAuthorityApplyDto save = this.dataAuthorityApplyService.saveDto(dataAuthorityApplyDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @GetMapping(value = "/getApplyInfoById")
     @ApiOperation(value = "根据id查询申请信息", notes = "根据id查询申请信息")
     public ResultT<Map<String,Object>> getApplyInfoById(String id)

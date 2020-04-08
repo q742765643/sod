@@ -368,6 +368,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    public List<Map<String, Object>> getAllOtherRecordByUserId(String userId, String useStatus) {
+        List<Map<String, Object>> allOtherRecordByUserId = mybatisQueryMapper.getAllOtherRecordByUserId(userId, useStatus);
+        return allOtherRecordByUserId;
+    }
+
+    @Override
     public List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId, String useStatus) {
         List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByUserIdAndUseStatus(userId, useStatus);
         return databaseSpecialMapper.toDto(databaseSpecialEntities);
