@@ -85,11 +85,11 @@
       <div class="editDataUse" v-if="!isSourceTree">
         <h4>编辑数据用途</h4>
         <div class="editUseDiv" @click="showEditDataUse">点击编辑</div>
-        <el-table border v-if="editUseShow" :data="materialData.dataclasslogic" style="width: 98%">
-          <el-table-column prop="logic_name" label="用途描述"></el-table-column>
-          <el-table-column prop="storage_name" label="存储类型"></el-table-column>
-          <el-table-column prop="physicsName" label="数据库名称"></el-table-column>
-          <el-table-column prop="special_database_name" label="专题名"></el-table-column>
+        <el-table border v-if="editUseShow" :data="materialData.dataLogicList" style="width: 98%">
+          <el-table-column prop="logicName" label="用途描述"></el-table-column>
+          <el-table-column prop="storageName" label="存储类型"></el-table-column>
+          <el-table-column prop="databasePName" label="数据库名称"></el-table-column>
+          <el-table-column prop="databaseName" label="专题名"></el-table-column>
         </el-table>
       </div>
     </div>
@@ -178,9 +178,6 @@ export default {
     },
     editMaterial: {
       type: String
-    },
-    editMaterialArry: {
-      type: Array
     }
   },
   data() {
@@ -202,7 +199,7 @@ export default {
         isAccess: 1,
         useBaseInfo: 0,
         serialNo: 0,
-        dataclasslogic: [] //数据用途回显的树
+        dataLogicList: [] //数据用途回显的树
       },
       dataclasslogicOld: [],
       publicTreeVisible: false, //公共元数据资料树弹出层
@@ -295,13 +292,13 @@ export default {
             this.materialData.typeText = "资料";
           }
           if (
-            response.data.dataclasslogic &&
-            response.data.dataclasslogic.length > 0
+            response.data.dataLogicList &&
+            response.data.dataLogicList.length > 0
           ) {
             this.editUseShow = true;
-            this.materialData.dataclasslogic = this.editMaterialArry;
+            this.materialData.dataLogicList = response.data.dataLogicList;
           }
-          console.log(this.editMaterialArry);
+          console.log(this.materialData.dataLogicList);
         } else {
           console.log("出错了，出错信息：" + response.msg);
         }
@@ -348,8 +345,8 @@ export default {
     },
     // 显示编辑数据用途弹出层
     showEditDataUse() {
-      if (this.materialData.dataclasslogic.length > 0) {
-        this.handleArry = this.materialData.dataclasslogic;
+      if (this.materialData.dataLogicList.length > 0) {
+        this.handleArry = this.materialData.dataLogicList;
         console.log(this.handleArry);
       }
       this.editDataUseVisible = true;
@@ -357,7 +354,7 @@ export default {
     //确认编辑数据用途弹出层
     trueEditDataUseDialog(choseTableArry) {
       this.editUseShow = true;
-      this.materialData.dataclasslogic = choseTableArry;
+      this.materialData.dataLogicList = choseTableArry;
       console.log(choseTableArry);
       this.editDataUseVisible = false;
     },
@@ -399,39 +396,33 @@ export default {
             else {
               handleMessage = "新增资料成功";
             }
-            if (this.materialData.dataclasslogic.length == 0) {
+            if (this.materialData.dataLogicList.length == 0) {
               this.$message({
                 type: "error",
                 message: "请选择数据用途"
               });
               return false;
             }
-            let dataclasslogic = this.materialData.dataclasslogic;
-            this.dataclasslogicOld = dataclasslogic;
+            let dataLogicList = this.materialData.dataLogicList;
+            this.dataclasslogicOld = dataLogicList;
             let newDataclasslogic = [];
-            for (var i = 0; i < dataclasslogic.length; i++) {
+            debugger;
+            for (var i = 0; i < dataLogicList.length; i++) {
               let obj = {};
-              obj.class_logic_id =
-                this.materialData.dataClassId +
-                "_" +
-                dataclasslogic[i].logic_id; //存储编码和逻辑库ID拼接窜
+              if (dataLogicList[i].id) {
+                obj.id = dataLogicList[i].id;
+                obj.version = dataLogicList[i].version;
+              }
               obj.dataClassId = this.materialData.dataClassId; //存储编码
-              obj.logic_id = dataclasslogic[i].logic_id; //逻辑库ID
-              obj.storage_type = dataclasslogic[i].storage_type; //资料类型
-              obj.dlphysics = []; //专题库列表
-              let dlObj = {};
-              dlObj.database_id = dataclasslogic[i].special; //物理库ID
-              dlObj.dl_id =
-                this.materialData.dataClassId +
-                "_" +
-                dataclasslogic[i].logic_id; ///存储编码和逻辑库ID拼接窜
-              obj.dlphysics.push(dlObj);
+              obj.databaseId = dataLogicList[i].databaseId; //物理库ID
+              obj.storageType = dataLogicList[i].storageType; //资料类型
+              obj.logicFlag = dataLogicList[i].logicFlag; //资料类型
               newDataclasslogic.push(obj);
             }
-            this.materialData.dataclasslogic = newDataclasslogic;
+            this.materialData.dataLogicList = newDataclasslogic;
           }
           console.log(this.materialData);
-          this.saveData(handleMessage, refreshWhich);
+          // this.saveData(handleMessage, refreshWhich);
         }
       });
     },
@@ -453,7 +444,7 @@ export default {
             type: "error",
             message: response.msg
           });
-          this.materialData.dataclasslogic = this.dataclasslogicOld;
+          this.materialData.dataLogicList = this.dataclasslogicOld;
         }
       });
     },

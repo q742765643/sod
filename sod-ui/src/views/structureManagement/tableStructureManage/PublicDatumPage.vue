@@ -4,57 +4,77 @@
       <i class="el-icon-s-home"></i>
       {{this.handleObj.name+'（四级编码:'+this.handleObj.id+'）'}}
     </div>
-    <div class="tableCon" v-show="tableShow">
+    <div class="tableCon" v-show="!tableShow">
       <p>没有与此公共元数据对应的表结构信息</p>
       <el-button type="primary" plain @click="addTableMsg">定义表结构信息</el-button>
     </div>
-    <div class="tableCon" v-show="!tableShow">
+    <div class="tableCon" v-show="tableShow">
       <el-radio-group
         size="small"
         v-model="tabPosition"
         v-for="(item,index) in publicTopList"
         :key="index"
         style="margin-bottom:10px;"
-        @change="changeRadioBtn"
+        @change="changeRadioBtn(item.ID)"
       >
-        <el-radio-button :label="item.logic_id" style="margin-right:10px;">{{item.logic_name}}</el-radio-button>
+        <el-radio-button :label="item.LOGIC_NAME" :value="item.ID" style="margin-right:10px;"></el-radio-button>
       </el-radio-group>
-      <el-table
-        :data="tableDataParent"
-        highlight-current-row
-        @current-change="handleCurrentChange"
-        border
-      >
-        <el-table-column prop="storage_name" label="存储名称"></el-table-column>
-        <el-table-column prop="storage_tablename" label="存储表名"></el-table-column>
-        <el-table-column prop="storage_code" label="存储编码"></el-table-column>
-        <el-table-column prop="storage_metadatacode" label="公共元数据编码"></el-table-column>
-        <el-table-column label="表描述">{{'查看'}}</el-table-column>
-      </el-table>
-      <div class="childTableBox" v-show="childShow">
-        <el-table :data="tableDataChild" border>
-          <el-table-column prop="db_ele_code" label="公共元数据字段"></el-table-column>
-          <el-table-column prop="c_element_code" label="字段名称"></el-table-column>
-          <el-table-column prop="user_ele_code" label="服务名称"></el-table-column>
-          <el-table-column prop="ele_name" label="中文简称"></el-table-column>
-          <el-table-column prop="type" label="数据类型"></el-table-column>
-          <el-table-column prop="accuracy" label="数据精度"></el-table-column>
-          <el-table-column prop="unit" label="要素单位(英文)"></el-table-column>
-          <el-table-column prop="unit_cn" label="要素单位(中文)"></el-table-column>
-          <el-table-column prop="is_null" label="是否可空"></el-table-column>
+      <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-table
+          :data="tableDataParent"
+          highlight-current-row
+          @current-change="handleCurrentChange"
+          border
+        >
+          <el-table-column prop="nameCn" label="存储名称" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="tableName" label="存储表名"></el-table-column>
+          <el-table-column prop="dataServiceId" label="存储编码"></el-table-column>
+          <el-table-column prop="storage_metadatacode" label="公共元数据编码">{{this.handleObj.id}}</el-table-column>
+          <el-table-column label="表描述" width="100">
+            <el-link type="primary" :underline="false">查看</el-link>
+          </el-table-column>
         </el-table>
-        <el-table :data="tableIndexChild" border>
-          <el-table-column prop="index_name" label="索引名称"></el-table-column>
-          <el-table-column prop="index_column" label="索引列集合"></el-table-column>
-          <el-table-column prop="index_type" label="索引类型"></el-table-column>
-        </el-table>
-      </div>
+        <div class="childTableBox" v-show="childShow">
+          <el-table :data="tableDataChild" border>
+            <el-table-column
+              label="公共元数据字段"
+              prop="dbEleCode"
+              width="200px"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              label="字段编码"
+              prop="celementCode"
+              width="200px"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              label="服务代码"
+              prop="userEleCode"
+              width="200px"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
+            <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
+          </el-table>
+          <el-table :data="tableIndexChild" border>
+            <el-table-column label="索引名称" prop="indexName"></el-table-column>
+            <el-table-column label="索引列" prop="indexColumn"></el-table-column>
+            <el-table-column label="索引类型" prop="indexType"></el-table-column>
+          </el-table>
+        </div>
+      </el-scrollbar>
     </div>
   </section>
 </template>
 
 <script>
-import { findByDatabaseDefineId } from "@/api/structureManagement/tableStructureManage/index";
+import {
+  getLogicByDdataId,
+  dataTableGcl
+} from "@/api/structureManagement/tableStructureManage/index";
 export default {
   name: "PublicDatumPage",
   props: {
@@ -64,7 +84,7 @@ export default {
   },
   data() {
     return {
-      publicTopList: ["Analysis", "Caching", "Observation", "Product"],
+      publicTopList: [],
       tabPosition: "",
       tableDataParent: [],
       tableDataChild: [],
@@ -79,30 +99,26 @@ export default {
   methods: {
     initRadioGroup(paramsObj) {
       console.log(paramsObj);
-      findByDatabaseDefineId({ dDataId: paramsObj.id }).then(res => {
+      getLogicByDdataId({ dDataId: paramsObj.id }).then(res => {
         if (res.code == 200) {
           if (res.data.length > 0) {
             this.publicTopList = res.data;
-            this.tabPosition = res.data[0].logic_id;
-            this.initTable();
-            this.tableShow = false;
-          } else {
+            this.tabPosition = res.data[0].LOGIC_NAME;
+            console.log(this.tabPosition);
+            this.changeRadioBtn(res.data[0].ID);
             this.tableShow = true;
+          } else {
+            this.tableShow = false;
           }
         }
       });
     },
-    initTable() {
-      this.axios
-        .get(interfaceObj.TableStructure_toCreateTable, {
-          params: {
-            base_type: this.tabPosition,
-            c_datum_code: this.handleObj.id
-          }
-        })
+    initTable(val) {
+      console.log(val);
+      dataTableGcl({ classLogic: val })
         .then(res => {
-          if (res.data.returnCode == 0) {
-            this.tableDataParent = res.data.rows;
+          if (res.code == 200) {
+            this.tableDataParent = res.data;
           }
         })
         .catch(error => {
@@ -113,29 +129,14 @@ export default {
       this.$emit("showMaterialSingle", "新增资料");
     },
     // 点击行，查看表格
-    handleCurrentChange(val) {
-      // 获取字段表格
-      this.axios
-        .get(interfaceObj.TableStructure_getColumnInfo, {
-          params: { table_id: val.table_id }
-        })
-        .then(res => {
-          this.tableDataChild = res.data.data;
-        })
-        .catch(error => {});
-      // 获取索引表格
-      this.axios
-        .get(interfaceObj.TableStructure_getTableIndex, {
-          params: { table_id: val.table_id }
-        })
-        .then(res => {
-          this.tableIndexChild = res.data.data;
-        })
-        .catch(error => {});
+    handleCurrentChange(row) {
+      // 获取字段表row格
+      this.tableDataChild = row.columns;
+      this.tableIndexChild = row.tableIndexList;
       this.childShow = true;
     },
     changeRadioBtn(val) {
-      this.initTable();
+      this.initTable(val);
     }
   }
 };

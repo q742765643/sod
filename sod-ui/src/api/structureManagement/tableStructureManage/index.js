@@ -16,6 +16,14 @@ export function getLogicByDdataId(query) {
     params: query
   })
 }
+// 根据公共元数据树查询表格
+export function dataTableGcl(query) {
+  return request({
+    url: baseUrl + '/dm/dataTable/gcl',
+    method: 'get',
+    params: query
+  })
+}
 
 // 删除资料/目录
 export function delByClass(data) {
