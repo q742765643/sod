@@ -18,6 +18,7 @@ import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -51,6 +52,8 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     private DictDataService dictDataService;
     @Autowired
     private JobInfoMapper jobInfoMapper;
+    @Autowired
+    private DiSendService diSendService;
     @GrpcHthtClient
     private DatabaseService databaseService;
     @GrpcHthtClient
@@ -95,7 +98,8 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
 
     }
 
-    public BackUpDto selectBackupByParam(String databaseId,String dataClassId){
+    @Override
+    public BackUpDto selectBackupByParam(String databaseId, String dataClassId){
         PageForm pageForm=new PageForm(1,1);
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(databaseId)){
@@ -125,6 +129,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
         this.getDataBaseAndClassId(backupEntity);
         backupEntity=this.saveNotNull(backupEntity);
+        diSendService.sendBackup(backupEntity);
         jobInfoService.start(backupMapstruct.toDto(backupEntity));
 
     }
@@ -132,15 +137,20 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     public void updateBackup(BackUpDto backUpDto){
         BackupEntity backupEntity=backupMapstruct.toEntity(backUpDto);
         this.getDataBaseAndClassId(backupEntity);
-        this.saveNotNull(backupEntity);
+        backupEntity=this.saveNotNull(backupEntity);
+        diSendService.sendBackup(backupEntity);
         jobInfoService.start(backUpDto);
     }
     @Override
     public void deleteBackupByIds(String[] backupIds){
         this.deleteByIds(Arrays.asList(backupIds));
+        for(int i=0;i<backupIds.length;i++){
+            diSendService.sendDeleteDi(backupIds[i]);
+        }
         jobInfoService.stopByIds(Arrays.asList(backupIds));
     }
 
+    @Override
     public List<Map<String,Object>> findDatabase(){
         List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("backup_database");
         List<String> dicts=new ArrayList<>();

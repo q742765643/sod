@@ -20,6 +20,7 @@ import com.piesat.schedule.rpc.dto.clear.ClearDto;
 import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -50,6 +51,8 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     private DataBaseService dataBaseService;
     @Autowired
     private JobInfoMapper jobInfoMapper;
+    @Autowired
+    private DiSendService diSendService;
     @GrpcHthtClient
     private DictDataService dictDataService;
     @Override
@@ -121,19 +124,24 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
         clearEntity=this.saveNotNull(clearEntity);
+        diSendService.sendClear(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
     }
     @Override
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
-        this.saveNotNull(clearEntity);
+        clearEntity=this.saveNotNull(clearEntity);
+        diSendService.sendClear(clearEntity);
         jobInfoService.start(clearDto);
 
     }
     @Override
     public void deleteClearByIds(String[] clearIds){
         this.deleteByIds(Arrays.asList(clearIds));
+        for(int i=0;i<clearIds.length;i++){
+            diSendService.sendDeleteDi(clearIds[i]);
+        }
         jobInfoService.stopByIds(Arrays.asList(clearIds));
 
     }

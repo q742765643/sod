@@ -469,6 +469,17 @@
                   where a.data_class_id = b.data_class_id and b.sdb_id = #{sdbId} and b.examine_status = 1
     </select>
 
+    <select id="getRecordSpecialByTdbId" resultType="java.util.Map">
+        select  b.data_class_id,b.database_id,b.apply_authority,b.empower_authority,b.examine_status,b.failure_reason,d.data_service_name,d.table_name,e.class_name,
+                c.database_name,cc.database_name as special_database_name,
+                e.is_access,e.d_data_id
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE b,T_SOD_DATABASE c,T_SOD_DATABASE_DEFINE cc,T_SOD_DATA_TABLE d,T_SOD_DATA_LOGIC f, T_SOD_DATA_CLASS e
+        where b.data_class_id = f.data_class_id and b.database_id = f.database_id and f.id = d.class_logic_id
+              and b.database_id=c.id and c.database_define_id=cc.id
+              and b.data_class_id=e.data_class_id
+              and b.sdb_id=#{sdbId} and b.data_class_id not in (select dar.data_class_id from T_SOD_DATA_AUTHORITY_APPLY daa left join T_SOD_DATA_AUTHORITY_RECORD dar on daa.id=dar.apply_id and daa.user_id=#{user_id})
+    </select>
+
     <!--根据用户ID从创建申请表取得其他用户创建并且没有被该用户引用的所有专题库信息-->
     <select id="getAllOtherRecordByUserId" resultType="java.util.Map">
        select * from T_SOD_DATABASE_SPECIAL
