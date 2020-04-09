@@ -1,5 +1,7 @@
 package com.piesat.dm.rpc.service;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.utils.DateUtils;
 import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
@@ -16,6 +18,16 @@ import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
+import com.piesat.schedule.dao.sync.SyncConfigDao;
+import com.piesat.schedule.dao.sync.SyncFilterDao;
+import com.piesat.schedule.dao.sync.SyncMappingDao;
+import com.piesat.schedule.dao.sync.SyncTaskDao;
+import com.piesat.schedule.entity.sync.SyncConfigEntity;
+import com.piesat.schedule.entity.sync.SyncFilterEntity;
+import com.piesat.schedule.entity.sync.SyncMappingEntity;
+import com.piesat.schedule.entity.sync.SyncTaskEntity;
+import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +60,16 @@ public class ImportData {
     private DatabaseDefineDao databaseDefineDao;
     @Autowired
     private DatabaseDao databaseDao;
+    @Autowired
+    private DataTableService dataTableService;
+    @GrpcHthtClient
+    private SyncConfigDao syncConfigDao;
+    @GrpcHthtClient
+    private SyncMappingDao syncMappingDao;
+    @GrpcHthtClient
+    private SyncTaskDao syncTaskDao;
+    @GrpcHthtClient
+    private SyncFilterDao syncFilterDao;
 
 
     public void implAll(){
@@ -56,6 +78,7 @@ public class ImportData {
 //        importDatumData();
 //        impLogicDefine();
 //        importDatabaseData();
+        //importSyncTask();
     }
 
 
@@ -273,6 +296,241 @@ public class ImportData {
             this.datumTypeInfoDao.save(dte);
         }
     }
+
+    public void importSyncTask(){
+        String sql = "select * from SYNC_TASK";
+        List<Map> tasks = CodeDOM.getList(sql);
+        for (Map<String, Object> m : tasks) {
+
+            SyncTaskEntity syncTaskEntity = new SyncTaskEntity();
+
+            String target_database_id = this.toString(m.get("TARGET_DATABASE_ID"));
+            List<DatabaseEntity> databaseEntity = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", target_database_id);
+            target_database_id = databaseEntity.get(0).getId();
+
+            String source_table = this.toString(m.get("SOURCE_TABLE"));
+            String sourceMappingIDs = "";
+            String[] sourceTables = source_table.split(",");
+            for(String sourceTable : sourceTables){
+                String sourceMappingID = saveSync(sourceTable,target_database_id,"K");
+                if(StringUtils.isNotEmpty(sourceMappingIDs)){
+                    sourceMappingIDs = sourceMappingIDs + "," + sourceMappingID;
+                }else{
+                    sourceMappingIDs = sourceMappingID;
+                }
+            }
+
+            String slave_tables = this.toString(m.get("SLAVE_TABLES"));
+            String slaveMappingID  = "";
+            if(StringUtils.isNotEmpty(slave_tables)){
+                slaveMappingID = saveSync(slave_tables,target_database_id,"V");
+            }
+
+            /*String id = this.toString(m.get("TASK_ID"));
+            if(StringUtils.isNotEmpty(id)){
+                syncTaskEntity.setId(id);
+            }*/
+
+            String task_name = this.toString(m.get("TASK_NAME"));
+            if(StringUtils.isNotEmpty(task_name)){
+                syncTaskEntity.setTaskName(task_name);
+            }
+
+            Integer sync_type = Integer.valueOf(this.toString(m.get("SYNC_TYPE")));
+            syncTaskEntity.setSyncType(sync_type);
+
+            String data_source_id = this.toString(m.get("DATA_SOURCE_ID"));
+            syncTaskEntity.setDataSourceId(data_source_id);
+
+            String data_flow_direction_id = this.toString(m.get("DATA_FLOW_DIRECTION_ID"));
+            syncTaskEntity.setDataFlowDirectionId(data_flow_direction_id);
+
+            String source_database_id = this.toString(m.get("SOURCE_DATABASE_ID"));
+            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", source_database_id);
+            source_database_id = databaseEntity1.get(0).getId();
+            syncTaskEntity.setSourceDatabaseId(source_database_id);
+
+            //String target_database_id = this.toString(m.get("TARGET_DATABASE_ID"));
+            syncTaskEntity.setTargetDatabaseId(target_database_id);
+
+            syncTaskEntity.setSourceTable(sourceMappingIDs);
+
+            String source_table_datecolumn = this.toString(m.get("SOURCE_TABLE_DATECOLUMN"));
+            syncTaskEntity.setSourceTableDatecolumn(source_table_datecolumn);
+
+            Integer batch_amount = Integer.valueOf(this.toString(m.get("BATCH_AMOUNT")));
+            syncTaskEntity.setBatchAmount(batch_amount);
+
+            String begin_time = this.toString(m.get("BEGIN_TIME"));
+            if(StringUtils.isNotEmpty(begin_time)){
+                Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, begin_time);
+                syncTaskEntity.setBeginTime(date);
+            }
+
+            String last_success_time = this.toString(m.get("LAST_SUCCESS_TIME"));
+            if(StringUtils.isNotEmpty(last_success_time)){
+                Date Date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, last_success_time);
+                syncTaskEntity.setBeginTime(Date);
+            }
+
+            String has_modify = this.toString(m.get("HAS_MODIFY"));
+            syncTaskEntity.setHasModify(has_modify);
+
+            if(StringUtils.isNotEmpty(slaveMappingID)){
+                syncTaskEntity.setSlaveTables(slaveMappingID);
+            }
+
+            String link_key = this.toString(m.get("LINK_KEY"));
+            if(StringUtils.isNotEmpty(link_key)){
+                syncTaskEntity.setLinkKey(link_key);
+            }
+
+            Integer sync_period = Integer.valueOf(this.toString(m.get("SYNC_PERIOD")));
+            syncTaskEntity.setSyncPeriod(sync_period);
+
+            String di_off = this.toString(m.get("DI_OFF"));
+            syncTaskEntity.setDiOff(di_off);
+
+            String discard_on_duplicate = this.toString(m.get("DISCARD_ON_DUPLICATE"));
+            syncTaskEntity.setDiscardOnDuplicate(discard_on_duplicate);
+
+            String exec_ip = this.toString(m.get("EXEC_IP"));
+            if(StringUtils.isNotEmpty(exec_ip)){
+                syncTaskEntity.setExecIp(exec_ip);
+            }
+
+            Integer exec_port = Integer.valueOf(this.toString(m.get("EXEC_PORT")));
+            syncTaskEntity.setExecPort(exec_port);
+
+            String create_user = this.toString(m.get("CREATE_USER"));
+            syncTaskEntity.setCreateBy(create_user);
+
+            Integer target_type = Integer.valueOf(this.toString(m.get("TARGET_TYPE")));
+            syncTaskEntity.setTargetType(target_type);
+
+
+
+            //查找源表id
+            List<Map<String, Object>> databaseIdAndTableName = dataTableService.getByDatabaseIdAndTableName(source_database_id, source_table_name);
+            String source_table_Id = this.toString(databaseIdAndTableName.get(0).get("id"));
+
+            syncTaskEntity.setSourceTableId(source_table_Id);
+
+            syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
+
+        }
+
+
+    }
+    String source_table_name = "";
+    public String saveSync(String mappingId,String databaseId,String flag){
+            String sql = "select * from SYNC_MAPPING where RECORD_ID='"+mappingId+"'";
+            List<Map> mapping = CodeDOM.getList(sql);
+            String sourceMappingID = "";
+
+            for (Map<String, Object>  mapp: mapping) {
+
+                if(flag.equals("K")){
+                    source_table_name = this.toString(mapp.get("SOURCE_TABLE_NAME"));
+                }
+
+                String source_table_id = this.toString(mapp.get("SOURCE_TABLE_ID"));
+                String filerIDS = "";
+                //源表有过滤字段
+                if(StringUtils.isNotEmpty(source_table_id)){
+                    String[] filters = source_table_id.split(",");
+                    for(String filterId:filters){
+                        sql = "select * from sync_filter where RECORD_ID='"+filterId+"'";
+                        List<Map> filterMaps = CodeDOM.getList(sql);
+                        if(filterMaps != null && filterMaps.size()>0){
+                            for(Map<String, Object>  filter: filterMaps){
+                                String column_name = this.toString(filter.get("COLUMN_NAME"));
+                                String filter_values = this.toString(filter.get("FILTER_VALUES"));
+                                String column_oper = this.toString(filter.get("COLUMN_OPER"));
+                                if(StringUtils.isNotEmpty(column_name) && StringUtils.isNotEmpty(filter_values) && StringUtils.isNotEmpty(column_oper)){
+                                    SyncFilterEntity syncFilterEntity = new SyncFilterEntity();
+                                    syncFilterEntity.setColumnName(column_name);
+                                    syncFilterEntity.setFilterValues(filter_values);
+                                    syncFilterEntity.setColumnOper(column_oper);
+                                    SyncFilterEntity filterEntity = syncFilterDao.saveNotNull(syncFilterEntity);
+                                    if(StringUtils.isNotEmpty(filerIDS)){
+                                        filerIDS = filerIDS + ","+ filterEntity.getId();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //必须是有值得
+                String source_table_name = this.toString(mapp.get("SOURCE_TABLE_NAME"));
+
+                String target_table_name = this.toString(mapp.get("TARGET_TABLE_NAME"));
+
+                //必须是有值得
+                String target_table_id = this.toString(mapp.get("TARGET_TABLE_ID"));
+                String configID = "";
+                if(StringUtils.isNotEmpty(target_table_id)){
+                    sql = "select * from sync_config where RECORD_ID='"+target_table_id+"'";
+                    List<Map> configMaps = CodeDOM.getList(sql);//根据主键查询，只能查出一条
+                    if(configMaps != null && configMaps.size()>0){
+                        String unique_keys = this.toString(configMaps.get(0).get("UNIQUE_KEYS"));
+                        String ifpatitions = this.toString(configMaps.get(0).get("IFPATITIONS"));
+                        String partition_keys = this.toString(configMaps.get(0).get("PARTITION_KEYS"));
+                        /*String data_key = this.toString(configMaps.get(0).get("DATA_KEY"));*/
+                        String is_kv = this.toString(configMaps.get(0).get("IS_KV"));
+                        String d_data_id = this.toString(configMaps.get(0).get("D_DATA_ID"));
+                        //查目标表id   根据存储编码，物理库id，表名
+                        List<Map<String, Object>> databaseIdAndTableName = dataTableService.getByDatabaseIdAndTableName(databaseId, target_table_name);
+                        String target_table_Id = this.toString(databaseIdAndTableName.get(0).get("ID"));
+                        SyncConfigEntity syncConfigEntity = new SyncConfigEntity();
+                        if(StringUtils.isNotEmpty(d_data_id)){
+                            syncConfigEntity.setDDataId(d_data_id);
+                        }
+                        if(StringUtils.isNotEmpty(ifpatitions)){
+                            syncConfigEntity.setIfpatitions(ifpatitions);
+                        }
+                        if(StringUtils.isNotEmpty(is_kv)){
+                            syncConfigEntity.setIsKv(is_kv);
+                        }
+                        if(StringUtils.isNotEmpty(partition_keys)){
+                            syncConfigEntity.setPartitionKeys(partition_keys);
+                        }
+                        if(StringUtils.isNotEmpty(unique_keys)){
+                            syncConfigEntity.setUniqueKeys(unique_keys);
+                        }
+                        if(StringUtils.isNotEmpty(target_table_Id)){
+                            syncConfigEntity.setTargetTableId(target_table_Id);
+                        }
+                        syncConfigEntity = syncConfigDao.saveNotNull(syncConfigEntity);
+                        configID = this.toString(syncConfigEntity.getId());
+                    }
+                }
+
+                //mapp
+                String mappss = this.toString(mapp.get("MAPPING"));
+
+                SyncMappingEntity syncMappingEntity = new SyncMappingEntity();
+                syncMappingEntity.setMapping(mappss);
+                if(StringUtils.isNotEmpty(filerIDS)){
+                    syncMappingEntity.setSourceTableId(filerIDS);
+                }
+                syncMappingEntity.setSourceTableName(source_table_name);
+                syncMappingEntity.setTargetTableId(configID);
+                syncMappingEntity.setTargetTableName(target_table_name);
+                syncMappingEntity = syncMappingDao.saveNotNull(syncMappingEntity);
+                if(StringUtils.isNotEmpty(sourceMappingID)){
+                    sourceMappingID = sourceMappingID + "," + syncMappingEntity.getId();
+                }else{
+                    sourceMappingID = String.valueOf(syncMappingEntity.getId());
+                }
+            }
+
+        return sourceMappingID;
+    }
+
+
+
 
     public void impLogicDefine(){
         String sql = "select * from DMIN_DB_LOGIC_DEFINE";
