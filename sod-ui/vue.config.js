@@ -63,35 +63,12 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
-      // 韦立国
-      [process.env.VUE_APP_DB_API]: {
-        target: `http://10.1.10.80:2345`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_DB_API]: ""
-        }
-      },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
         target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYSTEM]: ""
-        }
-      },
-      [process.env.VUE_APP_DIC_WLG]: {
-        target: `http://192.168.1.102:2345`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_DIC_WLG]: ""
-        }
-      },
-      // 吴磊
-      [process.env.VUE_APP_WLEI]: {
-        target: `http://localhost:8007`,
-        changeOrigin: true,
-        pathRewrite: {
-          ["^" + process.env.VUE_APP_WLEI]: ""
         }
       }
     },
