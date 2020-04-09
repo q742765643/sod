@@ -18,12 +18,16 @@ import com.piesat.schedule.rpc.vo.Server;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.internal.DnsNameResolverProvider;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.proxy.InvocationHandler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: sod
@@ -77,8 +81,16 @@ public class GrpcServiceProxy<T>  implements InvocationHandler {
             channel=grpcChannel.get(serviceName);
         }else{
 
-            channel= ManagedChannelBuilder.forAddress(grpcServer.getHost(), grpcServer.getGrpcPort()).nameResolverFactory(new
-                    DnsNameResolverProvider()).usePlaintext(true).build();
+            /*channel= ManagedChannelBuilder.forAddress(grpcServer.getHost(), grpcServer.getGrpcPort()).nameResolverFactory(new
+                    DnsNameResolverProvider()).usePlaintext(true).build();*/
+            channel = ManagedChannelBuilder.forAddress(grpcServer.getHost(), grpcServer.getGrpcPort())
+                    .defaultLoadBalancingPolicy("round_robin")
+                    .nameResolverFactory(new DnsNameResolverProvider())
+                    .usePlaintext().build();
+            /*channel  = NettyChannelBuilder
+                    .forAddress(grpcServer.getHost(),grpcServer.getGrpcPort())
+                    .sslContext(GrpcSslContexts.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
+                    .build();*/
             grpcChannel.put(serviceName,channel);
         }
         GrpcResponse response = grpcClientService.handle(serializeType, request,channel);

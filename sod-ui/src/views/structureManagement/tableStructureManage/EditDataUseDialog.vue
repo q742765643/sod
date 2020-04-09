@@ -2,7 +2,7 @@
   <section class="editDataUseDialog">
     <div class="materialCon selScrollBar">
       <el-table :data="tableData" border class="selScrollBar">
-        <el-table-column label="数据用途选择" prop="logic_name">
+        <el-table-column label="数据用途选择" prop="logicName">
           <template slot-scope="scope">
             <el-checkbox
               :checked="scope.row.logicIschecked"
@@ -49,8 +49,8 @@
                 <el-option
                   v-for="(item,index) in scope.row.specialArr"
                   :key="index"
-                  :label="item.special_database_name"
-                  :value="item.databaseId"
+                  :label="item.databaseName"
+                  :value="item.id"
                 ></el-option>
               </template>
             </el-select>
@@ -100,18 +100,18 @@ export default {
             if (this.handleArry && this.handleArry.length > 0) {
               this.handleArry.forEach(element => {
                 let obj = {};
-                if (single.logicId == element.logicId) {
+                if (single.logicFlag == element.logicFlag) {
                   this.$set(single, "logicIschecked", true);
-                  obj.logicId = single.logicId;
+                  obj.logicFlag = single.logicFlag;
                   this.clickLogicName(single);
                   single.logicStorageTypesEntityList.forEach(item => {
-                    if (item.key == element.storageType) {
+                    if (item.storageType == element.storageType) {
                       this.$set(single, "typeIschecked", item.storageName);
                       this.tableTypeChange(single, item.storageName);
                     }
                   });
                   single.logicDatabaseEntityList.forEach(async item => {
-                    if (item.databaseName == element.physicsName) {
+                    if (item.databaseName == element.databasePName) {
                       this.$set(
                         single,
                         "physicsNameIschecked",
@@ -122,19 +122,12 @@ export default {
                         item.databaseId,
                         item.databaseName
                       );
-                      this.$set(
-                        single,
-                        "selectModel",
-                        element.special_database_name
-                      );
+                      this.$set(single, "selectModel", element.databaseName);
                       this.aboutHandleSpecial.forEach(s => {
-                        if (
-                          s.special_database_name ==
-                          element.special_database_name
-                        ) {
+                        if (s.databaseName == element.databaseName) {
                           obj.specialArr = [s];
 
-                          this.tableSpecialArrChange(obj, s.databaseId);
+                          this.tableSpecialArrChange(obj, s.id);
                         }
                       });
                     }
@@ -156,19 +149,23 @@ export default {
     clickLogicName(row) {
       if (row.checkType) {
         this.tableData.find((single, index) => {
-          if (single.logicId === row.logicId) {
-            let chosekey = single.logicId;
+          if (single.logicFlag === row.logicFlag) {
+            let chosekey = single.logicFlag;
             single.checkType = false;
             delete this.choseRowsObj[chosekey];
           }
         });
       } else {
         this.tableData.find((single, index) => {
-          if (single.id === row.logicStorageTypesEntityList[0].logicId) {
-            let chosekey = single.id;
+          if (single.logicFlag === row.logicFlag) {
+            let chosekey = single.logicFlag;
             single.checkType = true;
             this.choseRowsObj[chosekey] = {};
-            this.choseRowsObj[chosekey].logicId = chosekey;
+            if (row.version || row.id) {
+              this.choseRowsObj[chosekey].id = row.id;
+              this.choseRowsObj[chosekey].version = row.version;
+            }
+            this.choseRowsObj[chosekey].logicFlag = row.logicFlag;
             this.choseRowsObj[chosekey].logicName = row.logicName;
           }
         });
@@ -176,11 +173,10 @@ export default {
     },
     //获取专题库数据
     async getSpecialLib(item, id, name) {
-      let chosekey = item.id;
-      this.choseRowsObj[chosekey].physicsName = name;
+      let chosekey = item.logicFlag;
+      this.choseRowsObj[chosekey].databasePName = name;
       await findByDatabaseDefineId({ id: id })
         .then(res => {
-          debugger;
           if (res.code == 200) {
             this.aboutHandleSpecial = res.data;
             item.specialArr = res.data;
@@ -205,7 +201,7 @@ export default {
       let getType = "";
       getType = obj.storageType;
 
-      let chosekey = row.id;
+      let chosekey = row.logicFlag;
       this.choseRowsObj[chosekey].storageName = value;
       this.choseRowsObj[chosekey].storageType = getType;
     },
@@ -213,14 +209,14 @@ export default {
     tableSpecialArrChange(row, value) {
       let obj = {};
       obj = row.specialArr.find(item => {
-        return item.databaseId === value;
+        return item.id === value;
       });
       let getSpecialName = "";
-      getSpecialName = obj.special_database_name;
+      getSpecialName = obj.databaseName;
 
-      let chosekey = row.logicId;
-      this.choseRowsObj[chosekey].special = value;
-      this.choseRowsObj[chosekey].special_database_name = getSpecialName;
+      let chosekey = row.logicFlag;
+      this.choseRowsObj[chosekey].databaseId = value;
+      this.choseRowsObj[chosekey].databaseName = getSpecialName;
     },
     // 确认
     makeSureSave() {
@@ -236,23 +232,25 @@ export default {
           if (this.choseRowsObj[choseKeyArry[i]].storageType == undefined) {
             this.$message.error(
               "请选择" +
-                this.choseRowsObj[choseKeyArry[i]].logic_name +
+                this.choseRowsObj[choseKeyArry[i]].logicName +
                 "的存储类型"
             );
             return false;
           } else if (
-            this.choseRowsObj[choseKeyArry[i]].physicsName == undefined
+            this.choseRowsObj[choseKeyArry[i]].databasePName == undefined
           ) {
             this.$message.error(
               "请选择" +
-                this.choseRowsObj[choseKeyArry[i]].logic_name +
+                this.choseRowsObj[choseKeyArry[i]].logicName +
                 "的数据库"
             );
             return false;
-          } else if (this.choseRowsObj[choseKeyArry[i]].special == undefined) {
+          } else if (
+            this.choseRowsObj[choseKeyArry[i]].databaseId == undefined
+          ) {
             this.$message.error(
               "请选择" +
-                this.choseRowsObj[choseKeyArry[i]].logic_name +
+                this.choseRowsObj[choseKeyArry[i]].logicName +
                 "的专题库"
             );
             return false;

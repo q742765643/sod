@@ -8,10 +8,12 @@ import com.piesat.schedule.client.annotation.HtJson;
 import com.piesat.schedule.client.vo.DiSendVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,8 +30,20 @@ import java.util.Map;
  *@author  zzj
  *@创建时间  2019/5/7 13:28
  **/
+@Component
 public class DiSendUtil {
     private static final Logger logger = LoggerFactory.getLogger(DiSendUtil.class);
+    private static String eidiUrl;
+    private static String transferUrl;
+
+    @Value("${EIDIURL}")
+    public static void setEidiUrl(String eidiUrl) {
+        DiSendUtil.eidiUrl = eidiUrl;
+    }
+    @Value("${TRANSFERURL}")
+    public static void setTransferUrl(String transferUrl) {
+        DiSendUtil.transferUrl = transferUrl;
+    }
 
     public static void send(long occurTime, String message, DiSendVo diSendVo) {
         diSendVo.setSystem("SOD");
@@ -62,23 +76,21 @@ public class DiSendUtil {
         RestTemplate rst = new RestTemplate();
 
         logger.info("di-json信息:{}",JSON.toJSONString(map,SerializerFeature.WriteNullStringAsEmpty));
-        /*String transferurl =PropertiesUtil.getInstance().getProperties("application.properties").getProperty("TRANSFERURL");
-        String url =PropertiesUtil.getInstance().getProperties("application.properties").getProperty("EIDIURL");
         boolean result=false;
 
         ResponseEntity<String> stringResponseEntity = null;
         try {
-            stringResponseEntity = rst.postForEntity(transferurl, httpEntity, String.class);
+            //stringResponseEntity = rst.postForEntity(transferUrl, httpEntity, String.class);
             result=true;
         } catch (RestClientException e) {
             e.printStackTrace();
         }
         if(!result){
-            stringResponseEntity = rst.postForEntity(url, httpEntity, String.class);
+            stringResponseEntity = rst.postForEntity(eidiUrl, httpEntity, String.class);
             logger.info("di发送返回信息:{}",JSON.toJSONString(stringResponseEntity));
         }else{
             logger.info("transferurl发送返回信息:{}",JSON.toJSONString(stringResponseEntity));
-        }*/
+        }
 
 
 
@@ -104,5 +116,6 @@ public class DiSendUtil {
         }
         return null;
     }
+
 
 }

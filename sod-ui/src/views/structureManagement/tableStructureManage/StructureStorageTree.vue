@@ -1,25 +1,26 @@
 <template>
   <!-- 存储元数据树 -->
   <section class="structureStorageTree">
-    <el-tree
-      class="selScrollBar"
-      :data="storageTree"
-      :props="defaultProps"
-      node-key="id"
-      :default-expanded-keys="expandedKeys"
-      @node-click="handleNodeClick"
-      :highlight-current="true"
-      ref="storageTree"
-    >
-      <span
-        class="custom-tree-node"
-        slot-scope="{ node, data }"
-        @mouseleave="mouseleave(data,$event)"
-        @mouseover="mouseover(data,$event)"
+    <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
+      <el-tree
+        :data="storageTree"
+        :props="defaultProps"
+        node-key="id"
+        :default-expanded-keys="expandedKeys"
+        @node-click="handleNodeClick"
+        :highlight-current="true"
+        ref="storageTree"
       >
-        <span class="el-tree-node__label">{{ node.label }}</span>
-      </span>
-    </el-tree>
+        <span
+          class="custom-tree-node"
+          slot-scope="{ node, data }"
+          @mouseleave="mouseleave(data,$event)"
+          @mouseover="mouseover(data,$event)"
+        >
+          <span class="el-tree-node__label">{{ node.label }}</span>
+        </span>
+      </el-tree>
+    </el-scrollbar>
     <div class="dialog-footer" slot="footer">
       <el-button type="primary" @click="makeSureSave">确认</el-button>
       <el-button @click="cancleSave">取消</el-button>
@@ -88,9 +89,11 @@ export default {
 
 <style lang="scss">
 .structureStorageTree {
-  .el-tree {
-    overflow-y: auto;
-    max-height: 290px;
+  .el-scrollbar {
+    height: 290px;
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
   .el-tree--highlight-current
     .el-tree-node.is-current

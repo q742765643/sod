@@ -274,16 +274,17 @@ export default {
     },
     // 显示未创建、显示全部
     handleShowTree(type) {
+      let classBox = document.getElementsByClassName("classifyTree");
       //初始化资料分类树
       if (this.showAll == "primary" && type == "all") {
         this.showNoCreat = "primary";
         this.showAll = "";
+        classBox[0].classList.remove("disActive");
       } else if (this.showNoCreat == "primary" && type == "noCreat") {
         this.showNoCreat = "";
         this.showAll = "primary";
+        classBox[0].classList.add("disActive");
       }
-      let classBox = document.getElementsByClassName("classifyTree");
-      classBox[0].classList.remove("disActive");
     },
     //查询分类树
     sourceTopSearch() {
