@@ -422,7 +422,7 @@ export default {
             this.materialData.dataLogicList = newDataclasslogic;
           }
           console.log(this.materialData);
-          // this.saveData(handleMessage, refreshWhich);
+          this.saveData(handleMessage, refreshWhich);
         }
       });
     },
