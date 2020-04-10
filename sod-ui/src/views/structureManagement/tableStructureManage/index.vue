@@ -144,7 +144,6 @@
         :isSourceTree="isSourceTree"
         :editNodeId="editNodeId"
         :editMaterial="editMaterial"
-        :editMaterialArry="editMaterialArry"
         @addOrEditSuccess="addOrEditSuccess"
         @closeMaterialDialog="closeMaterialDialog"
         ref="myHandleChildren"
@@ -227,7 +226,6 @@ export default {
       materialSingleTitle: "", //资料分类树  资料弹出层标题
       editNodeId: "", //资料树编辑id
       editMaterial: "", //资料编辑id
-      editMaterialArry: [], //资料编辑数据用途
       structureManageVisible: false, //表结构管理弹出层
       structureManageTitle: "", //表结构管理弹出层title
       rowData: {},
@@ -259,7 +257,6 @@ export default {
     //新增，编辑资料树  或者  资料
     showMaterialSingle(operateType) {
       console.log(operateType);
-      this.editMaterialArry = [];
       if (operateType.title === "新增资料树节点") {
         this.materialSingleTitle = operateType.title;
         this.isSourceTree = true;
@@ -273,7 +270,6 @@ export default {
       } else if (operateType === "新增资料") {
         this.materialSingleTitle = operateType;
         this.editMaterial = "";
-        this.editMaterialArry = [];
         this.isSourceTree = false;
       } else if (operateType === "编辑资料") {
         if (this.currentRow == null || this.currentRow.length == 0) {
@@ -285,17 +281,6 @@ export default {
         } else {
           this.materialSingleTitle = operateType;
           this.editMaterial = this.currentRow[0].DATA_CLASS_ID;
-          this.currentRow.forEach((item, index) => {
-            let obj = {};
-            obj.logic_id = item.logic_id;
-            obj.logic_name = item.LOGIC_NAME;
-            obj.storage_name = item.name_cn;
-            obj.STORAGE_TYPE = item.STORAGE_TYPE;
-            obj.physicsName = item.database_name;
-            obj.special = item.database_id;
-            obj.special_database_name = item.special_database_name;
-            this.editMaterialArry.push(obj);
-          });
           this.isSourceTree = false;
           // 获取详情
         }
@@ -534,12 +519,12 @@ export default {
     //新增、编辑后刷新数据
     addOrEditSuccess(operateType) {
       this.currentRow = [];
-      if (operateType == "handleTree") {
+      /*  if (operateType == "handleTree") {
         this.$refs.classifyTree.initMethodsTree(this.whichTree);
       } else {
         this.searchFun("search");
-      }
-
+      } */
+      this.$refs.classifyTree.initMethodsTree(this.whichTree);
       this.materialSingleVisible = false;
     },
     //关闭新增或编辑资料弹出层

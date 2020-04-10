@@ -135,7 +135,7 @@
         update t_sod_storage_configuration set  ${column} = ${value} where  id = #{id}
     </update>
     <!--修改存储结构概览状态-->
-    <select id="getByDatabaseIdAndTableName">
+    <select id="getByDatabaseIdAndTableName" resultType="java.util.Map">
         select a.* from  t_sod_data_table a, t_sod_data_logic b where a.class_logic_id = b.id and a.table_name=#{tableName} and b.database_id = #{databaseId}
     </select>
 

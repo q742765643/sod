@@ -44,10 +44,27 @@ export function databaseNodesGetById(query) {
   });
 }
 // 新增
-export function databaseNodesSave(data) {
+export function databaseDefineSave(data) {
   return request({
-    url: baseUrl + "/dm/databaseNodes/save",
+    url: baseUrl + "/dm/databaseDefine/save",
     method: "post",
     data: data
+  });
+}
+// 查详情
+export function databaseDefineGet(query) {
+  return request({
+    url: baseUrl + "/dm/databaseDefine/get",
+    method: "get",
+    params: query
+  });
+}
+
+// 根据父id查询专题库列表
+export function findByDatabaseDefineId(query) {
+  return request({
+    url: baseUrl + "/dm/database/findByDatabaseDefineId",
+    method: "get",
+    params: query
   });
 }
