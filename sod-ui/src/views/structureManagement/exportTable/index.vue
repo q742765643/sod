@@ -7,18 +7,18 @@
           <el-option
             v-for="(item,index) in logicList"
             :key="index"
-            :label="item.logic_name"
-            :value="item.logic_id"
+            :label="item.logicName"
+            :value="item.id"
           ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="数据库：">
-        <el-select v-model="queryParams.databaseId" size="small" @change="handleQuery">
+        <el-select v-model="queryParams.database_id" size="small" @change="handleQuery">
           <el-option
             v-for="(item,index) in databaseList"
             :key="index"
-            :label="item.database_name"
-            :value="item.database_id"
+            :label="item.databaseName"
+            :value="item.id"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -122,7 +122,13 @@
 </template>
 <script>
 import treeTransfer from "el-tree-transfer"; // 引入
-
+import {
+  logicDefineList,
+  databaseList,
+  dataTree,
+  exportTable,
+  exportSQL
+} from "@/api/structureManagement/exportTable";
 export default {
   components: {
     treeTransfer
@@ -134,7 +140,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        databaseId: "",
+        database_id: "",
         logic_id: ""
       },
       logicList: [],
@@ -220,8 +226,21 @@ export default {
       isIndeterminate: false
     };
   },
-  created() {},
+  created() {
+    this.getLogicList(); //获取数据用途列表
+    this.getDatabaseList(); //获取数据库列表
+  },
   methods: {
+    getLogicList() {
+      logicDefineList().then(response => {
+        this.logicList = response.data;
+      });
+    },
+    getDatabaseList() {
+      databaseList().then(response => {
+        this.databaseList = response.data;
+      });
+    },
     handleQuery() {},
     // 监听穿梭框组件添加
     addTreeInfo(fromData, toData, obj) {

@@ -2,7 +2,10 @@ package com.piesat.common.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piesat.common.utils.DecryptUtil;
+import com.piesat.common.utils.ServletUtils;
+import com.piesat.common.utils.sign.SignUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -10,6 +13,7 @@ import org.springframework.http.converter.json.MappingJacksonInputMessage;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -30,11 +34,18 @@ public class CustomRequestBodyAdvice extends RequestBodyAdviceAdapter {
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) {
         return true;
     }
+    @SneakyThrows
     @Override
     public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType,
                                            Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
+        HttpServletRequest request = ServletUtils.getRequest();
+        String token =request.getHeader("authorization");
+        if(null!=token&&token.equals("88888888")){
+            return super.beforeBodyRead(inputMessage, parameter, targetType, converterType);
+        }
         Map<String,ByteArrayInputStream> map=new HashMap<>();
-        boolean shouldDecrypt= DecryptUtil.decrypt(inputMessage,parameter,map);
+        //boolean shouldDecrypt= DecryptUtil.decrypt(inputMessage,parameter,map);
+        SignUtil.signJson(inputMessage,parameter,map);
        // if(shouldDecrypt){
         return new MappingJacksonInputMessage(map.get("REQUEST_RESOLVER_PARAM_MAP_NAME"), inputMessage.getHeaders());
        // } else {

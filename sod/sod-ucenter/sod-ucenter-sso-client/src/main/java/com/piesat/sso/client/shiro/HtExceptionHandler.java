@@ -2,6 +2,7 @@ package com.piesat.sso.client.shiro;
 
 import com.alibaba.fastjson.JSON;
 import com.piesat.common.utils.OwnException;
+import com.piesat.common.utils.SignException;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import org.apache.shiro.authz.AuthorizationException;
@@ -32,6 +33,10 @@ public class HtExceptionHandler implements HandlerExceptionResolver  {
         logger.error(mess);
         if (e instanceof UnauthorizedException || e instanceof AuthorizationException) {
              resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_403_ERROR);
+            return outJson(request, response, resultT);
+        }
+        if (e instanceof SignException) {
+            resultT.setErrorMessage(e.getMessage());
             return outJson(request, response, resultT);
         }
         if(mess.length()>500){

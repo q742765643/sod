@@ -113,15 +113,15 @@ DITASKADDURL: http://10.20.67.109/bdtiming/openapi/taskConfig/add?apikey=e10adc3
 DITASKDELURL: http://10.20.67.109/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
 
 log:
-  path: ./log
+  path: E:/log
   level: INFO
-
+  
 serverfile:
   dbfile: D:/upload/
   filePath: D:/upload/
 
 fileUpload:
-  savaPath:  D:/upload
+  savaPath: /zzj/upload
   httpPath: /upload
 product:
   enable: true

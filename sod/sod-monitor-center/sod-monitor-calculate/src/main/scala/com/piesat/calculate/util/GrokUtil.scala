@@ -9,7 +9,9 @@ import io.krakens.grok.api.{Grok, GrokCompiler, Match}
   */
 class GrokUtil {
   def getMesssge(message: String): String = {
-    val pattern: String = "%{CATALINA_JAVA_DATA}  \\[%{JAVA_NAME}\\] - \\[ %{LOGLEVEL} \\]  %{MESSAGE}"
+    //val pattern: String = "%{CATALINA_JAVA_DATA}  \\[%{JAVA_NAME}\\] - \\[ %{LOGLEVEL} \\]  %{MESSAGE}"
+    val pattern: String = "%{CATALINA_JAVA_DATA}  %{LOGLEVEL} %{NUMBER} --- \\[%{JAVA_NAME}\\] %{JAVA_NAME}   :%{MESSAGE}"
+
     val grokCompiler: GrokCompiler = GrokCompiler.newInstance
     grokCompiler.registerDefaultPatterns()
     grokCompiler.registerPatternFromClasspath("/patterns/java")
