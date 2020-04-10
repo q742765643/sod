@@ -406,12 +406,12 @@ export default {
             let dataLogicList = this.materialData.dataLogicList;
             this.dataclasslogicOld = dataLogicList;
             let newDataclasslogic = [];
-            debugger;
             for (var i = 0; i < dataLogicList.length; i++) {
               let obj = {};
               if (dataLogicList[i].id) {
                 obj.id = dataLogicList[i].id;
                 obj.version = dataLogicList[i].version;
+                obj.createTime = dataLogicList[i].createTime;
               }
               obj.dataClassId = this.materialData.dataClassId; //存储编码
               obj.databaseId = dataLogicList[i].databaseId; //物理库ID
