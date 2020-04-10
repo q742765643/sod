@@ -9,6 +9,7 @@ import com.piesat.common.filter.CustomEncryptHttpWrapper;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DecryptUtil;
 import com.piesat.common.utils.sign.SignAuthUtil;
+import com.piesat.common.utils.sign.SignUtil;
 import com.piesat.common.vo.HttpReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanMap;
@@ -45,7 +46,7 @@ public class HthtInterceptor implements HandlerInterceptor {
         String appId = request.getHeader("appId");
         String token =request.getHeader("authorization");
         String oldAppId="";
-        if(!StringUtils.isEmpty(token)){
+        /*if(!StringUtils.isEmpty(token)){
             oldAppId=token;
             String sign=request.getHeader("sign");
             SignAuthUtil.checkSign(sign,oldAppId);
@@ -55,13 +56,14 @@ public class HthtInterceptor implements HandlerInterceptor {
             oldAppId=appId;
             SignAuthUtil.checkSign(sign,oldAppId);
 
-        }
+        }*/
         if(null!=request.getContentType()){
             if (StringUtils.substringMatch(request.getContentType(), 0, MediaType.APPLICATION_JSON_VALUE)) {
                 return true;
             }
         }
-        DecryptUtil.decrypt(request,response,o);
+        SignUtil.signParam(request,response,o);
+        //DecryptUtil.decrypt(request,response,o);
         return true;
     }
     @Override

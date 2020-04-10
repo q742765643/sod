@@ -6,7 +6,7 @@ import {
 } from 'element-ui'
 import store from '@/store'
 import {
-  getToken
+  getToken,createSign
 } from '@/utils/auth'
 import {
   Encrypt
@@ -29,13 +29,6 @@ service.interceptors.request.use(
   config => {
     if (getToken()) {
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
-      let sign = {
-        "timestampHt": new Date().getTime(),
-        "uuidHt": uuid(),
-        "appIdHt": rsaencrypt(getToken())
-      }
-      config.headers['sign'] = Encrypt(JSON.stringify(sign))
-
     }
 
     let data = ""
@@ -47,22 +40,35 @@ service.interceptors.request.use(
     if (typeof config.params != 'undefined') {
       data = Encrypt(JSON.stringify(config.params))
       const param = {
-        "sign": "111111",
-        "data": data
+        "timestamp":new Date().getTime(),
+        "nonce": uuid(),
+        "data": JSON.stringify(config.params)
       }
+      let sign =createSign(param)
+      param.sign=sign
       config.params = param
+
     } else if (typeof config.data != 'undefined') {
-      data = Encrypt(JSON.stringify(config.data))
-      const param = {
+      //data = Encrypt(JSON.stringify(config.data))
+     /* const param = {
         "sign": "111111",
         "data": data
+      }*/
+      const param = {
+        "timestamp":new Date().getTime(),
+        "nonce": uuid(),
+        "data": JSON.stringify(config.data)
       }
+      let sign =createSign(param)
+      param.sign=sign
       config.data = param
     } else {
       const param = {
-        "sign": "111111",
-        "data": ""
+        "timestamp":new Date().getTime(),
+        "nonce": uuid(),
       }
+      let sign =createSign(param)
+      param.sign=sign
       config.params = param
     }
     return config

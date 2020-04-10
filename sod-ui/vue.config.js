@@ -11,12 +11,12 @@ const name = defaultSettings.title || "存储管理系统"; // 标题
 const port = process.env.port || process.env.npm_config_port || 80; // 端口
 
 // vue.config.js 配置说明
-//官方vue.config.js 参考文档 http://cli.vuejs.org/zh/config/#css-loaderoptions
+//官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
 // 这里只列一部分，具体配置参考文档
 module.exports = {
   // 部署生产环境和开发环境下的URL。
   // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上
-  // 例如 http://www.ruoyi.vip/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 http://www.ruoyi.vip/admin/，则设置 baseUrl 为 /admin/。
+  // 例如 https://www.ruoyi.vip/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.ruoyi.vip/admin/，则设置 baseUrl 为 /admin/。
   publicPath: process.env.NODE_ENV === "production" ? "/" : "/",
   // 在npm run build 或 yarn build 时 ，生成文件的目录名称（要和baseUrl的生产环境路径一致）（默认dist）
   outputDir: "dist",
@@ -31,9 +31,9 @@ module.exports = {
     host: "0.0.0.0",
     port: port,
     proxy: {
-      // detail: http://cli.vuejs.org/config/#devserver-proxy
+      // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `https://10.1.6.117:8082`,
+        target: `https://localhost:8082`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_BASE_API]: ""
@@ -41,7 +41,7 @@ module.exports = {
       },
       //ucenter
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `https://10.1.6.117:8005`,
+        target: `https://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
@@ -49,7 +49,7 @@ module.exports = {
       },
       //schedule
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `https://10.1.6.117:8005`,
+        target: `https://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -57,18 +57,41 @@ module.exports = {
       },
       // dm模块
       [process.env.VUE_APP_DM]: {
-        target: `https://10.1.6.117:8005`,
+        target: `https://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
+      // 韦立国
+      [process.env.VUE_APP_DB_API]: {
+        target: `https://10.1.10.80:2345`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_DB_API]: ""
+        }
+      },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
-        target: `https://10.1.6.117:8005`,
+        target: `https://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYSTEM]: ""
+        }
+      },
+      [process.env.VUE_APP_DIC_WLG]: {
+        target: `https://192.168.1.102:2345`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_DIC_WLG]: ""
+        }
+      },
+      // 吴磊
+      [process.env.VUE_APP_WLEI]: {
+        target: `https://localhost:8007`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_WLEI]: ""
         }
       }
     },
@@ -115,7 +138,7 @@ module.exports = {
       .end();
 
     config
-      // http://webpack.js.org/configuration/devtool/#development
+      // https://webpack.js.org/configuration/devtool/#development
       .when(process.env.NODE_ENV === "development", config =>
         config.devtool("cheap-source-map")
       );

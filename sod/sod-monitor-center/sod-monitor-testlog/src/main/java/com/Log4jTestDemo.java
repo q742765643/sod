@@ -20,13 +20,14 @@ public class Log4jTestDemo {
      * @param args
      */
     public static void main(String[] args) {
-        String pattern="%{CATALINA_JAVA_DATA}  \\[%{JAVA_NAME}\\] - \\[ %{LOGLEVEL} \\]  %{MESSAGE}";
+        //String pattern="%{CATALINA_JAVA_DATA}  \\[%{JAVA_NAME}\\] - \\[ %{LOGLEVEL} \\]  %{MESSAGE}";
        //        String pattern="\\[%{CATALINA_JAVA_DATA}\\] \\[%{JAVA_NAME}\\] \\[%{LOGLEVEL} \\] %{JAVACLASS} - %{MESSAGE}";
+        String pattern="%{CATALINA_JAVA_DATA}  %{LOGLEVEL} %{NUMBER} --- \\[%{JAVA_NAME}\\] %{JAVA_NAME}   :%{MESSAGE}";
 
         //String pattern="%{YEAR}-%{MONTHNUM}-%{MONTHDAY} %{HOUR}:?%{MINUTE}(?::?%{SECOND}) %{JAVACLASS} %{MYSELF} %{LOGLEVEL} %{MYSELF}";
         String message = "2020-03-13 16:18:01  [ main:1321137 ] - [ DEBUG ]  {'name':'卢本伟\n" +
                 "','age':24,'Hero':{'name':'Fizz','Position':'Mid','charactor':'killer'},'nickNames':['五五开','芦苇','white'],'Honors':[{'year':2011,'name':'TGA总决赛冠军'},{'year':2013,'name':'S3全球总决赛中国区冠军'},{'year':2013,'name':'S3全球总决赛亚军'}]}";
-
+        message="2020-04-08 09:35:28.127  INFO 209960 --- [           main] c.p.s.client.ScheduleClientApplication   : Started ScheduleClientApplication in 15.317 seconds (JVM running for 16.101)";
         //String message="[2020-03-12 09:36:13.752] [main1-11] [INFO ] o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 504ms. Found 35 repository interfaces.";
         /* Match match = null;
         try {
