@@ -224,8 +224,6 @@ export default {
   },
   data() {
     return {
-      databaseNodesList: [],
-      databaseAdministratorList: [],
       //专题列表
       physicsSpecialList: [],
       //当前选中列
@@ -325,7 +323,7 @@ export default {
           this.$message.error("请正确填写存储信息列表");
           return;
         }
-        this.$set(element, "databaseid", this.msgFormDialog.id);
+        this.$set(element, "databaseId", this.msgFormDialog.id);
       });
       //验证账户信息列表的必填项是否输入
       this.msgFormDialog.databaseAdministratorList.forEach(element => {
@@ -377,16 +375,13 @@ export default {
             this.flag = false;
           }
         } else {
-          this.databaseAdministratorList =
-            response.data.databaseAdministratorList;
-          this.databaseNodesList = response.data.databaseNodesList;
           this.msgFormDialog = response.data;
         }
       });
     },
     //取消按钮
     cancelDialog() {
-      this.$emit("cancelMsgHandle");
+      this.$emit("cancelDialog");
     },
     //选中行
     handleSelectionChange(val) {
@@ -417,7 +412,11 @@ export default {
     },
     //存储信息
     getPhysicsStorage() {
-      this.msgFormDialog.databaseNodesList = this.databaseNodesList;
+      this.msgFormDialog.databaseNodesList.forEach((element, index) => {
+        if (!element.id) {
+          this.msgFormDialog.databaseNodesList.splice(index, 1);
+        }
+      });
     },
     //存储信息添加一行
     addPhysicsStorage() {
@@ -443,7 +442,11 @@ export default {
     },
     //账户列表查询页
     getPhysicsUser() {
-      this.msgFormDialog.databaseAdministratorList = this.databaseAdministratorList;
+      this.msgFormDialog.databaseAdministratorList.forEach((element, index) => {
+        if (!element.id) {
+          this.msgFormDialog.databaseAdministratorList.splice(index, 1);
+        }
+      });
     },
     //账户列表页添加一行
     addPhysicsUser() {

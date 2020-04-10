@@ -66,7 +66,7 @@
         :formatter="function(row){return row.dataAuthorityRecordList.length}"
       ></el-table-column>
       <el-table-column prop="examine_status" label="状态" :formatter="statusShow"></el-table-column>
-      <el-table-column label="操作" width="260px">
+      <el-table-column label="操作" width="120px">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-view" @click="viewCell(scope.row)">查看</el-button>
         </template>

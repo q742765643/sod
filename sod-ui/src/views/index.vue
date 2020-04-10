@@ -129,7 +129,7 @@
         </el-col>
 
         <el-col :span="8">
-          <div class="colBox">
+          <div class="colBox" style="height:390px;">
             <span class="homeTitle">帮助文档</span>
             <div class="documentBox">
               <div class="documentList" v-for="(item,index) in documentList" :key="index">
@@ -265,21 +265,25 @@ export default {
     // 代办跳页
     goPageUrl(name) {
       if (name == "新增资料审核") {
-        this.$router.push("/DRegistrationAudit");
+        this.$router.push("/authorityAudit/DRegistration");
       } else if (name == "数据授权审核") {
-        this.$router.push({
+        /*  this.$router.push({
           name: "资料访问权限审核",
           params: { status: "01" }
-        });
+        }); */
+        this.$router.push("/authorityAudit/materialPower");
       } else if (name == "数据库账户审核") {
-        this.$router.push({ name: "数据库访问账户", params: { status: "0" } });
+        // this.$router.push({ name: "数据库访问账户", params: { status: "0" } });
+        this.$router.push("/authorityAudit/DBaccount");
       } else if (name == "业务专题库审核") {
-        this.$router.push({
+        /* this.$router.push({
           name: "专题库审核",
           params: { status: "1" }
-        });
+        }); */
+        this.$router.push("/authorityAudit/topicLibraryAudit");
       } else if (name == "云数据库审核") {
-        this.$router.push({ name: "云数据库审核", params: { status: "01" } });
+        this.$router.push("/authorityAudit/cloudDBaudit");
+        // this.$router.push({ name: "云数据库审核", params: { status: "01" } });
       }
     },
     // 按资料分类的chart
@@ -975,7 +979,11 @@ section {
 .box-card {
   margin-bottom: 22px;
 }
-
+.el-carousel__item,
+.colBox,
+section {
+  border-radius: 4px;
+}
 /* 系统banner */
 //  background: url("~@/assets/home/images/banner.png") no-repeat top center;
 </style>

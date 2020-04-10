@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { storageFieldList } from "@/api/structureManagement/overviewStorage";
+import { storageFieldList } from "@/api/structureManagement/filedSearch";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 export default {

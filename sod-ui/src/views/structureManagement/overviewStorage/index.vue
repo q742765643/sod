@@ -3,16 +3,16 @@
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途:">
-        <el-input size="small" v-model="queryParams.logic_name" placeholder="请输入数据用途" />
+        <el-input size="small" v-model="queryParams.logicName" placeholder="请输入数据用途" />
       </el-form-item>
       <el-form-item label="数据库:">
-        <el-input size="small" v-model="queryParams.database_name" placeholder="请输入数据库" />
+        <el-input size="small" v-model="queryParams.databaseName" placeholder="请输入数据库" />
       </el-form-item>
       <el-form-item label="资料名称:">
-        <el-input size="small" v-model="queryParams.class_name" placeholder="请输入资料名称" />
+        <el-input size="small" v-model="queryParams.className" placeholder="请输入资料名称" />
       </el-form-item>
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
+        <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
 
       <el-form-item>
@@ -24,14 +24,14 @@
     </el-form>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column prop="class_name" label="资料名称" width="180" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="TABLE_NAME" label="表名称" width="200" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="DATA_CLASS_ID" label="存储编码" width="140"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码" width="140"></el-table-column>
-      <el-table-column prop="LOGIC_NAME" label="数据用途" width="120"></el-table-column>
-      <el-table-column prop="database_name1" label="数据库" width="130"></el-table-column>
+      <el-table-column prop="CLASS_NAME" label="资料名称" width="200"></el-table-column>
+      <el-table-column prop="TABLE_NAME" label="表名称" width="180"></el-table-column>
+      <el-table-column prop="DATA_CLASS_ID" label="存储编码"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
+      <el-table-column prop="LOGIC_NAME" label="数据用途"></el-table-column>
+      <el-table-column prop="DATABASE_NAME" label="数据库"></el-table-column>
       <el-table-column prop="p_special_database_name" label="专题名" width="100"></el-table-column>
-      <el-table-column label="参数配置" width="340">
+      <el-table-column label="参数配置" width="240">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button
@@ -88,7 +88,7 @@
           <el-button disabled v-else size="mini">恢复</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="130px">
+      <el-table-column label="操作" width="140px">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -187,7 +187,7 @@
 </template>
 
 <script>
-import { storageFieldList } from "@/api/structureManagement/overviewStorage";
+import { storageConfigurationList } from "@/api/structureManagement/overviewStorage";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 // 数据恢复
@@ -207,10 +207,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        logic_name: "",
-        database_name: "",
-        table_name: "",
-        class_name: ""
+        logicName: "",
+        databaseName: "",
+        tableName: "",
+        className: ""
       },
       total: 0,
       tableData: [],
@@ -247,7 +247,8 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      storageFieldList(this.queryParams).then(response => {
+      console.log(this.queryParams);
+      storageConfigurationList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -320,8 +321,18 @@ export default {
   }
 };
 </script>
-<style lang="css" scoped>
+<style lang="scss" scoped>
 .searchBox {
   margin-bottom: 20px;
+}
+.el-table {
+  font-size: 12px;
+  .el-button--mini {
+    padding: 6px;
+    margin-left: 0;
+  }
+  .el-button--text {
+    padding: 6px 2px;
+  }
 }
 </style>

@@ -68,3 +68,20 @@ export function findByDatabaseDefineId(query) {
     params: query
   });
 }
+
+// 多个删除
+export function delByIds(query) {
+  return request({
+    url: baseUrl + "/dm/databaseDefine/delByIds",
+    method: "delete",
+    params: query
+  });
+}
+
+export function conStatus(query) {
+  return request({
+    url: baseUrl + "/dm/databaseDefine/conStatus",
+    method: "get",
+    params: query
+  });
+}
