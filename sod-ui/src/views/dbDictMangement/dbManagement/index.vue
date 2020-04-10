@@ -37,8 +37,7 @@
       v-loading="loading"
       :data="tableData"
       row-key="id"
-      @current-change="handleSelectionChange"
-      @select="selectSingleTable"
+      @selection-change="handleSelectionChange"
       ref="singleTable"
       highlight-current-row
     >
@@ -132,6 +131,9 @@ export default {
     this.getList();
   },
   methods: {
+    cancelMsgHandle() {
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -156,18 +158,20 @@ export default {
     showDialog(type) {
       if (type == "add") {
         this.dialogTitle = "添加";
-        this.handleMsgObj = null;
+        this.handleMsgObj = {};
+        this.msgFormDialog = true;
       } else {
+        if (this.choserow.length != 1) {
+          this.$message.error("请选择一条数据!");
+          return;
+        }
         this.dialogTitle = "编辑";
+        this.handleMsgObj = this.choserow[0];
+        this.msgFormDialog = true;
       }
-
-      this.msgFormDialog = true;
     },
     handleTrue() {},
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-      this.msgFormDialog = false;
-    },
+
     beforeAvatarUpload(file) {
       const isJSON = file.type === "application/json";
       if (!isJSON) {
@@ -229,23 +233,9 @@ export default {
       // }没有display_control这个参数，暂时都显示
       return "显示";
     },
-    // 单选
+    // 表格选择
     handleSelectionChange(val) {
       this.choserow = val;
-      this.$refs.singleTable.clearSelection();
-      this.$refs.singleTable.toggleRowSelection(val, true);
-    },
-    selectSingleTable(selection, row) {
-      if (selection.length > 0) {
-        this.$refs.singleTable.setchoserow(row);
-        this.$refs.singleTable.clearSelection();
-        this.$refs.singleTable.toggleRowSelection(row, true);
-        this.choserow = row;
-      } else {
-        this.choserow = null;
-        this.$refs.singleTable.setchoserow([]);
-        this.$refs.singleTable.clearSelection();
-      }
     }
   }
 };

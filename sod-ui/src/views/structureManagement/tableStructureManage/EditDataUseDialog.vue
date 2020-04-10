@@ -166,6 +166,7 @@ export default {
               console.log(editElement.id);
               this.choseRowsObj[chosekey].id = editElement.id;
               this.choseRowsObj[chosekey].version = editElement.version;
+              this.choseRowsObj[chosekey].createTime = editElement.createTime;
             }
             this.choseRowsObj[chosekey].logicFlag = row.logicFlag;
             this.choseRowsObj[chosekey].logicName = row.logicName;
