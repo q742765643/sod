@@ -45,16 +45,17 @@
       row-key="id"
       @current-change="handleCurrentChange"
     >
-      <el-table-column type="index" min-width="20" label=" " :index="table_index"></el-table-column>
-      <el-table-column prop="database_name" label="专题库名称" sortable min-width="200"></el-table-column>
-      <el-table-column prop="database_type" label="数据库类型" sortable min-width="200"></el-table-column>
-      <el-table-column prop="database_instance" label="专题库实例" sortable min-width="100"></el-table-column>
-      <el-table-column prop="database_schema_name" label="专题名ID" sortable min-width="100"></el-table-column>
-      <el-table-column prop="database_desc" label="专题库描述" sortable min-width="120"></el-table-column>
-      <el-table-column prop="address" label="操作" min-width="100">
+      <el-table-column type="index" label=" " :index="table_index"></el-table-column>
+      <el-table-column prop="database_name" label="专题库名称"></el-table-column>
+      <el-table-column prop="database_type" label="数据库类型"></el-table-column>
+      <el-table-column prop="database_instance" label="专题库实例"></el-table-column>
+      <el-table-column prop="database_schema_name" label="专题名ID"></el-table-column>
+      <el-table-column prop="database_desc" label="专题库描述"></el-table-column>
+      <el-table-column prop="address" label="操作" width="120">
         <template slot-scope="scope">
           <el-button
             icon="el-icon-tickets"
+            size="small"
             type="text"
             @click="getHistoricalReport(scope.row)"
           >历史报告列表</el-button>
@@ -91,10 +92,10 @@
     <el-dialog title="历史报告表" :visible.sync="historyDialog" width="80%" height="50%" v-dialogDrag>
       <el-table ref="singleTable" :data="historyData" highlight-current-row border stripe>
         <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
-        <el-table-column prop="database_id" label="检查ID" sortable min-width="200"></el-table-column>
+        <el-table-column prop="database_id" label="检查ID" sortable></el-table-column>
         <el-table-column prop="file_name" label="报告名称" sortable min-width="300"></el-table-column>
-        <el-table-column prop="create_time" label="生成时间" sortable min-width="200"></el-table-column>
-        <el-table-column prop="address" label="操作" min-width="100">
+        <el-table-column prop="create_time" label="生成时间" sortable></el-table-column>
+        <el-table-column prop="address" label="操作">
           <template slot-scope="scope1">
             <el-button
               icon="el-icon-tickets"
@@ -120,15 +121,11 @@
 
 <script>
 import {
-  listRole,
-  getRole,
-  delRole,
-  addRole,
-  updateRole,
-  exportRole,
-  dataScope,
-  changeRoleStatus
-} from "@/api/system/role";
+  consistencyCheckList,
+  deleteById,
+  downloadDfcheckFile,
+  consistencyCheckSave
+} from "@/api/structureManagement/consistencyCheck";
 export default {
   components: {},
   data() {
@@ -180,13 +177,11 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
-        }
-      );
+      consistencyCheckList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
     handleCurrentChange(val) {
       this.currentRow = val;

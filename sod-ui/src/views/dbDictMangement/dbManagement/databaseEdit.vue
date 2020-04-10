@@ -325,6 +325,7 @@ export default {
           this.$message.error("请正确填写存储信息列表");
           return;
         }
+        this.$set(element, "databaseid", this.msgFormDialog.id);
       });
       //验证账户信息列表的必填项是否输入
       this.msgFormDialog.databaseAdministratorList.forEach(element => {
