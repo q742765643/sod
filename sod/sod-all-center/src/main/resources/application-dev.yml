@@ -121,7 +121,7 @@ serverfile:
   filePath: D:/upload/
 
 fileUpload:
-  savaPath:  E:/upload
+  savaPath: /zzj/upload
   httpPath: /upload
 product:
   enable: true

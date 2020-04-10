@@ -27,5 +27,7 @@ public enum OperatorType
     INTERFACE,
 
     THRID,
+
+    CAS,
 }
 

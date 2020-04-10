@@ -35,35 +35,41 @@ public class HtAuthenticationFilter extends FormAuthenticationFilter {
     private static String THRID_LOGIN_APP_ID="THRID_LOGIN_APP_ID:";
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        request.setAttribute("isValidate",true);
         Subject subject = getSubject(request, response);
-        String appId = WebUtils.toHttp(request).getHeader("appId");
-        if(null!=appId&&!"".equals(appId)){
-            RedisUtil redisUtil=SpringUtil.getBean(RedisUtil.class);
-            boolean check=this.validatAppId(appId);
-            if(check){
-                return check;
-            }
-            ResultT<Map<String,Object>> resultT=new ResultT<>();
-            HttpServletRequest req = (HttpServletRequest) request;
-            try {
-                UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
-                token.setLoginType("1");
-                token.setRequest(req);
-                token.setOperatorType(OperatorType.INTERFACE.ordinal());
-                subject.login(token);
-                redisUtil.set(THRID_LOGIN_APP_ID+appId,subject.getSession().getId(),18000);
-                this.recordLogininfor(req,appId,resultT);
-                return true;
-            } catch (Exception e) {
-                resultT.setErrorMessage("接口登陆失败");
-                this.recordLogininfor(req,appId,resultT);
-                logger.error(OwnException.get(e));
-                return false;
+        boolean isLogin=subject.isAuthenticated();
+        if(!isLogin){
+            String appId = WebUtils.toHttp(request).getHeader("appId");
+            if(null!=appId&&!"".equals(appId)) {
+                RedisUtil redisUtil = SpringUtil.getBean(RedisUtil.class);
+                boolean check = this.validatAppId(appId);
+                if (check) {
+                    return check;
+                }
+                ResultT<Map<String, Object>> resultT = new ResultT<>();
+                HttpServletRequest req = (HttpServletRequest) request;
+                try {
+                    UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
+                    token.setLoginType("1");
+                    token.setRequest(req);
+                    token.setOperatorType(OperatorType.INTERFACE.ordinal());
+                    subject.login(token);
+                    redisUtil.set(THRID_LOGIN_APP_ID + appId, subject.getSession().getId(), 18000);
+                    this.recordLogininfor(req, appId, resultT);
+                } catch (Exception e) {
+                    resultT.setErrorMessage("接口登陆失败");
+                    this.recordLogininfor(req, appId, resultT);
+                    logger.error(OwnException.get(e));
+
+                }
             }
 
-        }else{
-            return subject.isAuthenticated();
+            isLogin=subject.isAuthenticated();
         }
+
+
+        return isLogin;
+
     }
 
     @Override
