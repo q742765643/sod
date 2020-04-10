@@ -84,6 +84,7 @@ export default {
     };
   },
   created() {
+    console.log(this.handleArry);
     this.getTableData();
   },
   methods: {
@@ -103,7 +104,7 @@ export default {
                 if (single.logicFlag == element.logicFlag) {
                   this.$set(single, "logicIschecked", true);
                   obj.logicFlag = single.logicFlag;
-                  this.clickLogicName(single);
+                  this.clickLogicName(single, element);
                   single.logicStorageTypesEntityList.forEach(item => {
                     if (item.storageType == element.storageType) {
                       this.$set(single, "typeIschecked", item.storageName);
@@ -146,7 +147,7 @@ export default {
     },
 
     //数据用途可用不可用控制
-    clickLogicName(row) {
+    clickLogicName(row, editElement) {
       if (row.checkType) {
         this.tableData.find((single, index) => {
           if (single.logicFlag === row.logicFlag) {
@@ -161,9 +162,10 @@ export default {
             let chosekey = single.logicFlag;
             single.checkType = true;
             this.choseRowsObj[chosekey] = {};
-            if (row.version || row.id) {
-              this.choseRowsObj[chosekey].id = row.id;
-              this.choseRowsObj[chosekey].version = row.version;
+            if (editElement && editElement.id) {
+              console.log(editElement.id);
+              this.choseRowsObj[chosekey].id = editElement.id;
+              this.choseRowsObj[chosekey].version = editElement.version;
             }
             this.choseRowsObj[chosekey].logicFlag = row.logicFlag;
             this.choseRowsObj[chosekey].logicName = row.logicName;
