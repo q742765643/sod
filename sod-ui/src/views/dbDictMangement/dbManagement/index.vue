@@ -23,12 +23,7 @@
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          @click="outDataBasePhysicss('物理库定义导出')"
-          icon="el-icon-download"
-          size="small"
-        >导出</el-button>
+        <el-button type="success" @click="exportData()" icon="el-icon-download" size="small">导出</el-button>
       </el-col>
     </el-row>
 
@@ -55,16 +50,16 @@
         width="100"
         :formatter="getDisplyControl"
       ></el-table-column>
-      <el-table-column prop="check_conn" label="运行状态" width="100">
+      <el-table-column prop="checkConn" label="运行状态" width="100">
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.check_conn==='1'?true:false"
+            v-if="scope.row.checkConn=='1'?true:false"
             type="text"
             size="mini"
             icon="fa fa-chain"
           >连接正常</el-button>
           <el-button
-            v-if="scope.row.check_conn!=='1'?true:false"
+            v-if="scope.row.checkConn!='1'?true:false"
             @click="checkError(scope.row)"
             type="text"
             size="mini"
@@ -94,7 +89,14 @@
 </template>
 
 <script>
-import { defineList, delList } from "@/api/dbDictMangement/dbManagement";
+var baseUrl = process.env.VUE_APP_DM;
+import { Encrypt } from "@/utils/htencrypt";
+import {
+  defineList,
+  delList,
+  delByIds,
+  conStatus
+} from "@/api/dbDictMangement/dbManagement";
 import handleDataBase from "@/views/dbDictMangement/dbManagement/databaseEdit";
 import "font-awesome/css/font-awesome.css";
 export default {
@@ -131,7 +133,8 @@ export default {
     this.getList();
   },
   methods: {
-    cancelMsgHandle() {
+    cancelDialog() {
+      this.msgFormDialog = false;
       this.handleQuery();
     },
     // table自增定义方法
@@ -170,8 +173,6 @@ export default {
         this.msgFormDialog = true;
       }
     },
-    handleTrue() {},
-
     beforeAvatarUpload(file) {
       const isJSON = file.type === "application/json";
       if (!isJSON) {
@@ -195,15 +196,22 @@ export default {
     },
 
     deleteCell() {
-      if (this.choserow && this.choserow.id) {
+      if (this.choserow.length > 0) {
         this.$confirm("数据删除后将无法恢复,确认删除?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         })
           .then(() => {
-            delList({ id: this.choserow.id }).then(response => {
-              this.getList();
+            let ids = [];
+            this.choserow.forEach(element => {
+              ids.push(element.id);
+            });
+            delByIds({ ids: ids.join(",") }).then(response => {
+              if (response.code == 200) {
+                this.$message({ message: "删除成功", type: "success" });
+                this.handleQuery();
+              }
             });
           })
           .catch(() => {});
@@ -211,10 +219,22 @@ export default {
         this.$message.error("请选择需要删除的数据库！");
       }
     },
-    tableExoprt() {},
-    outDataBasePhysicss() {},
-    cancelDialog() {},
-    checkError() {},
+    exportData() {
+      let obj = this.queryParams;
+      let flieData = Encrypt(JSON.stringify(obj)); //加密
+      flieData = encodeURIComponent(flieData); //转码
+      window.location.href =
+        baseUrl + "/databaseDefine/export?sign=111111&data=" + flieData;
+    },
+    checkError(row) {
+      conStatus({ id: row.id }).then(res => {
+        if (res.code == 200) {
+          this.$message({ message: res.msg, type: "success" });
+        } else {
+          this.$message({ message: res.msg, type: "error" });
+        }
+      });
+    },
     //状态转换
     getMainBak(row) {
       let result = row.mainbak_type == "1" ? "主库" : "备份库";

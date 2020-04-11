@@ -1,0 +1,99 @@
+/* 主色调 */
+$themeColor: #304156;
+$fontColor: #fff;
+$fontActiveColor: #409eff;
+$boderColor: #ebeef5;
+
+.el-dialog__body {
+  padding-top: 0;
+}
+
+html,
+body,
+.systemBox {
+  width: 100%;
+  height: 100%;
+  color: $fontColor;
+}
+
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+
+.systemBox {
+  .systemAside {
+    width: 200px;
+    background: $themeColor;
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+
+    .el-menu {
+      border: none;
+
+      a {
+        text-decoration: none;
+        color: $fontColor !important;
+      }
+
+      a.router-link-active {
+        color: $fontActiveColor !important;
+      }
+
+      .el-submenu__title i {
+        color: $fontColor !important;
+      }
+    }
+  }
+
+  .systemMain {
+    margin-left: 200px;
+  }
+
+  .systemContainer {
+    margin-top: 50px;
+  }
+
+  .systemNeader {
+    z-index: 1000;
+    width: 100%;
+    height: 50px !important;
+    background: $themeColor;
+    position: fixed;
+    box-shadow: 0 5px 10px -5px rgba(38, 52, 69, 0.5);
+    // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .queryBox {
+    padding: 10px;
+    background: #fff;
+    border: 1px solid $boderColor;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .queryBox::before {
+    content: '';
+    width: 3px;
+    height: 100%;
+    background: $fontActiveColor;
+    position: absolute;
+    top: 0;
+    left: -2px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+  }
+
+  .el-table th {
+    background-color: #f8f8f9;
+  }
+
+  .toolBar {
+    margin-bottom: 10px;
+
+  }
+
+  .formFooter {
+    text-align: right;
+  }
+}

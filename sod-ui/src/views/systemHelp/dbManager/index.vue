@@ -35,6 +35,7 @@
             class="detail"
           >主要解决信息数据的高效存贮、安全管理与快速检索等问题，主要功能包括数据字典、内存管理、事务管理、语法分析器、集成管理工具集等，提供数据定义、数据操作功能、数据库的运行管理、数据库的建立和维护功能。</p>
           <el-button type="primary" size="small" @click="xuguDownload">客户端下载</el-button>
+          <!-- <a href="/public/XuGuToolkit_X64.rar" download="XuGuToolkit_X64">客户端下载</a> -->
         </el-col>
       </el-row>
     </section>
@@ -102,7 +103,9 @@ export default {
   },
   created() {},
   methods: {
-    xuguDownload() {},
+    xuguDownload() {
+      // window.location.href = "@/public/XuGuToolkit_X64.rar";
+    },
     webClick() {
       window.location.href = "http://10.40.17.54:8038/cmadaasmng/";
     },

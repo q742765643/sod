@@ -52,31 +52,31 @@ export default {
         this.superChose = [
           {
             label: "资料用途",
-            value: "logic_name"
+            value: "logicName"
           },
           {
             label: "数据库",
-            value: "database_name"
+            value: "databaseName"
           },
           {
             label: "资料名称",
-            value: "class_name"
+            value: "className"
           },
           {
             label: "表名称",
-            value: "table_name"
+            value: "tableName"
           },
           {
             label: "存储编码",
-            value: "data_class_id"
+            value: "dataClassId"
           },
           {
             label: "四级编码",
-            value: "d_data_id"
+            value: "DDataId"
           },
           {
             label: "专题库名称",
-            value: "special_database_name"
+            value: "specialDatabaseName"
           }
         ];
       } else if (this.superDialogObj.pageName == "存储字段检索") {
