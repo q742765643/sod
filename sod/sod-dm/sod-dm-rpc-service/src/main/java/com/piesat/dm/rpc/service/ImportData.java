@@ -6,20 +6,24 @@ import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.dao.dataapply.CloudDatabaseApplyDao;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
+import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.dataclass.DatumTypeInfoDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
+import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.dataapply.CloudDatabaseApplyEntity;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.dataclass.*;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
+import com.piesat.dm.entity.special.*;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.dao.clear.ClearDao;
@@ -35,6 +39,8 @@ import com.piesat.schedule.entity.sync.SyncConfigEntity;
 import com.piesat.schedule.entity.sync.SyncFilterEntity;
 import com.piesat.schedule.entity.sync.SyncMappingEntity;
 import com.piesat.schedule.entity.sync.SyncTaskEntity;
+import com.piesat.ucenter.dao.system.PortalAuzDao;
+import com.piesat.ucenter.entity.system.PortalAuzEntity;
 import com.xugu.cloudjdbc.Clob;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +93,20 @@ public class ImportData {
     private ClearDao clearDao;
     @Autowired
     private CloudDatabaseApplyDao cloudDatabaseApplyDao;
+    @Autowired
+    private DatabaseUserDao databaseUserDao;
+    @GrpcHthtClient
+    private PortalAuzDao portalAuzDao;
+    @Autowired
+    private DatabaseSpecialDao databaseSpecialDao;
+    @Autowired
+    private DatabaseSpecialReadWriteDao databaseSpecialReadWriteDao;
+    @Autowired
+    private DatabaseSpecialTreeDao databaseSpecialTreeDao;
+    @Autowired
+    private DatabaseSpecialAuthorityDao databaseSpecialAuthorityDao;
+    @Autowired
+    private DatabaseSpecialAccessDao databaseSpecialAccessDao;
 
 
     public void implAll(){
@@ -100,7 +120,10 @@ public class ImportData {
         //importCloudDatabase();
         //importBackUp();
         //importMove();
-        importClear();
+        //importClear();
+        //importDatabaseUser();
+        //importPortalAuz();
+        importSpecial();
     }
 
 
@@ -1115,4 +1138,322 @@ public class ImportData {
 
     }
 
+    //数据库访问账户
+    public void importDatabaseUser() {
+
+        String sql = "select * from dmin_db_account";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String user_id = toString(m.get("USER_ID"));
+            String databaseup_id = toString(m.get("DATABASEUP_ID"));
+            String databaseup_password = toString(m.get("DATABASEUP_PASSWORD"));
+            String serial_no = toString(m.get("SERIAL_NO"));
+            String database_id = toString(m.get("DATABASE_ID"));
+            String databaseup_desc = toString(m.get("DATABASEUP_DESC"));
+            String apply_material = toString(m.get("APPLY_MATERIAL"));
+            String create_time = toString(m.get("CREATE_TIME"));
+            String examiner = toString(m.get("EXAMINER"));
+            String examine_status = toString(m.get("EXAMINE_STATUS"));
+            String examine_time = toString(m.get("EXAMINE_TIME"));
+            String failure_reason = toString(m.get("FAILURE_REASON"));
+            String databaseup_ip_segment = toString(m.get("DATABASEUP_IP_SEGMENT"));
+            String databaseup_ip = toString(m.get("DATABASEUP_IP"));
+            String apply_database_id = toString(m.get("APPLY_DATABASE_ID"));
+            String remarks = toString(m.get("REMARKS"));
+            String source = toString(m.get("SOURCE"));
+
+            DatabaseUserEntity databaseUserEntity = new DatabaseUserEntity();
+
+            if(StringUtils.isNotEmpty(apply_database_id)){
+                databaseUserEntity.setApplyDatabaseId(apply_database_id);
+            }
+            if(StringUtils.isNotEmpty(apply_material)){
+                databaseUserEntity.setApplyMaterial(apply_material);
+            }
+            if(StringUtils.isNotEmpty(databaseup_desc)){
+                databaseUserEntity.setDatabaseUpDesc(databaseup_desc);
+            }
+            if(StringUtils.isNotEmpty(databaseup_id)){
+                databaseUserEntity.setDatabaseUpId(databaseup_id);
+            }
+            if(StringUtils.isNotEmpty(databaseup_ip)){
+                databaseUserEntity.setDatabaseUpIp(databaseup_ip);
+            }
+            if(StringUtils.isNotEmpty(databaseup_ip_segment)){
+                databaseUserEntity.setDatabaseUpIpSegment(databaseup_ip_segment);
+            }
+            if(StringUtils.isNotEmpty(databaseup_password)){
+                databaseUserEntity.setDatabaseUpPassword(databaseup_password);
+            }
+            if(StringUtils.isNotEmpty(database_id)){
+                databaseUserEntity.setExamineDatabaseId(database_id);
+            }
+            if(StringUtils.isNotEmpty(examine_status)){
+                databaseUserEntity.setExamineStatus(examine_status);
+            }
+            if(StringUtils.isNotEmpty(examine_time)){
+                Date Date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
+                databaseUserEntity.setExamineTime(Date);
+            }
+            if(StringUtils.isNotEmpty(examiner)){
+                databaseUserEntity.setExaminer(examiner);
+            }
+            if(StringUtils.isNotEmpty(failure_reason)){
+                databaseUserEntity.setFailureReason(failure_reason);
+            }
+            if(StringUtils.isNotEmpty(user_id)){
+                databaseUserEntity.setUserId(user_id);
+            }
+
+            databaseUserDao.saveNotNull(databaseUserEntity);
+        }
+    }
+
+    //用户角色审核
+    public void importPortalAuz() {
+        String sql = "select * from DMIN_PORTAL_AUZ";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String account = toString(m.get("ACCOUNT"));
+            String employer = toString(m.get("EMPLOYER"));
+            String username = toString(m.get("USERNAME"));
+            String status = toString(m.get("STATUS"));
+            String createtime = toString(m.get("CREATETIME"));
+            String updatetime = toString(m.get("UPDATETIME"));
+
+            PortalAuzEntity portalAuzEntity = new PortalAuzEntity();
+            portalAuzEntity.setAccount(account);
+            if(StringUtils.isNotEmpty(employer)){
+                portalAuzEntity.setPost(employer);
+            }
+            if(StringUtils.isNotEmpty(status)){
+                portalAuzEntity.setStatus(status);
+            }
+            if(StringUtils.isNotEmpty(username)){
+                portalAuzEntity.setUsername(username);
+            }
+
+            portalAuzDao.saveNotNull(portalAuzEntity);
+        }
+    }
+
+    //专题库审核
+    public void importSpecial() {
+        String sql = "select * from dmin_special_db_createapply";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String tdb_id = toString(m.get("TDB_ID"));
+            String tdb_name = toString(m.get("TDB_NAME"));
+            String tdb_img = toString(m.get("TDB_IMG"));
+            String unit_id = toString(m.get("UNIT_ID"));
+            String user_id = toString(m.get("USER_ID"));
+            String apply_time = toString(m.get("APPLY_TIME"));
+            String uses = toString(m.get("USES"));
+            String apply_file_path = toString(m.get("APPLY_FILE_PATH"));
+            String examiner = toString(m.get("EXAMINER"));
+            String examine_status = toString(m.get("EXAMINE_STATUS"));
+            String examine_time = toString(m.get("EXAMINE_TIME"));
+            String cause = toString(m.get("CAUSE"));
+            String use_status = toString(m.get("USE_STATUS"));
+            String database_id = toString(m.get("DATABASE_ID"));
+            String database_schema_id = toString(m.get("DATABASE_SCHEMA_ID"));
+            String database_id_use = toString(m.get("DATABASE_ID_USE"));
+            String sort_no = toString(m.get("SORT_NO"));
+
+            DatabaseSpecialEntity databaseSpecialEntity = new DatabaseSpecialEntity();
+            if(StringUtils.isNotEmpty(apply_time)){
+                Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time);
+                databaseSpecialEntity.setCreateTime(date);
+            }
+            if(StringUtils.isNotEmpty(apply_file_path)){
+                databaseSpecialEntity.setApplyMaterial(apply_file_path);
+            }
+
+            databaseSpecialEntity.setDatabaseId(database_id);
+            databaseSpecialEntity.setDatabaseSchema(database_schema_id);
+            databaseSpecialEntity.setExamineStatus(examine_status);
+            if(StringUtils.isNotEmpty(examine_time)){
+                Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
+                databaseSpecialEntity.setExamineTime(date);
+            }
+            if(StringUtils.isNotEmpty(examiner)){
+                databaseSpecialEntity.setExaminer(examiner);
+            }
+            if(StringUtils.isNotEmpty(cause)){
+                databaseSpecialEntity.setFailureReason(cause);
+            }
+            databaseSpecialEntity.setSdbImg(tdb_img);
+            databaseSpecialEntity.setSdbName(tdb_name);
+            if(StringUtils.isNotEmpty(sort_no)){
+                databaseSpecialEntity.setSortNo(sort_no);
+            }
+            databaseSpecialEntity.setUseStatus(use_status);
+            databaseSpecialEntity.setUserId(user_id);
+            databaseSpecialEntity.setUses(uses);
+
+            databaseSpecialEntity = databaseSpecialDao.saveNotNull(databaseSpecialEntity);
+
+            //更新数据库中的专题库id
+            List<DatabaseEntity> databaseEntities = databaseDao.findByTdbId(tdb_id);
+            if(databaseEntities != null && databaseEntities.size()>0){
+                for(DatabaseEntity databaseEntity : databaseEntities){
+                    databaseEntity.setTdbId(databaseSpecialEntity.getId());
+                    databaseDao.saveNotNull(databaseEntity);
+                }
+            }
+
+            sql = "select * from dmin_special_db_readwrite where tdb_id='"+tdb_id+"'";
+            List<Map> readwriteList = CodeDOM.getList(sql);
+            if(readwriteList != null && readwriteList.size() > 0){
+                for (Map<String, Object> rwMap : readwriteList) {
+                    String data_class_id = toString(rwMap.get("DATA_CLASS_ID"));
+                    String logic_id = toString(rwMap.get("LOGIC_ID"));
+                    String apply_authority = toString(rwMap.get("APPLY_AUTHORITY"));
+                    String real_authority = toString(rwMap.get("REAL_AUTHORITY"));
+                    Integer authorize = Integer.valueOf(toString(rwMap.get("AUTHORIZE")));
+                    String cause1 = toString(rwMap.get("CAUSE"));
+                    String type_id = toString(rwMap.get("TYPE_ID"));
+                    String apply_time1 = toString(rwMap.get("APPLY_TIME"));
+                    Integer data_type = Integer.valueOf(toString(rwMap.get("DATA_TYPE")));
+
+                    DatabaseSpecialReadWriteEntity readWriteEntity = new DatabaseSpecialReadWriteEntity();
+
+                    if(StringUtils.isNotEmpty(apply_time1)){
+                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time1);
+                        readWriteEntity.setCreateTime(date);
+                    }
+                    if(StringUtils.isNotEmpty(apply_authority)){
+                        readWriteEntity.setApplyAuthority(Integer.valueOf(apply_authority));
+                    }
+                    readWriteEntity.setDataClassId(data_class_id);
+                    readWriteEntity.setDataType(data_type);
+
+                    sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+logic_id+"'";
+                    List<Map> databaseList = CodeDOM.getList(sql);
+                    if(databaseList != null){
+                        String  database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
+                        String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                        String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                        String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+
+                        if(data_type.intValue() == 2){//引用资料
+                            if(database_classify.equals("物理库")){
+                                List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", logic_id);
+                                readWriteEntity.setDatabaseId(databaseEntity1.get(0).getId());
+                            }else{
+                                List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                                readWriteEntity.setDatabaseId(defineId.get(0).getId());
+                            }
+                        }else{//私有资料
+                            List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                            readWriteEntity.setDatabaseId(defineId.get(0).getId());
+                        }
+                    }
+                    if(StringUtils.isNotEmpty(real_authority)){
+                        readWriteEntity.setEmpowerAuthority(Integer.valueOf(real_authority));
+                    }
+                    readWriteEntity.setExamineStatus(authorize);
+                    //readWriteEntity.setExamineTime();
+                    readWriteEntity.setFailureReason(cause1);
+                    readWriteEntity.setSdbId(databaseSpecialEntity.getId());
+
+                    databaseSpecialReadWriteDao.saveNotNull(readWriteEntity);
+
+                }
+            }
+
+            sql = "select * from dmin_special_db_tree where tdb_id='"+tdb_id+"'";
+            List<Map> treeList = CodeDOM.getList(sql);
+            if(treeList != null && treeList.size()>0){
+                for (Map<String, Object> treeMap : treeList) {
+                    String type_id = toString(treeMap.get("TYPE_ID"));
+                    String type_name = toString(treeMap.get("TYPE_NAME"));
+                    String parent_id = toString(treeMap.get("PARENT_ID"));
+                    String sort = toString(treeMap.get("SORT"));
+                    DatabaseSpecialTreeEntity treeEntity = new DatabaseSpecialTreeEntity();
+                    treeEntity.setTypeId(type_id);
+                    treeEntity.setTypeName(type_name);
+                    treeEntity.setParentId(parent_id);
+                    if(StringUtils.isNotEmpty(sort)){
+                        treeEntity.setSort(Integer.valueOf(sort));
+                    }
+                    treeEntity.setSdbId(databaseSpecialEntity.getId());
+                    databaseSpecialTreeDao.saveNotNull(treeEntity);
+                }
+            }
+
+            sql = "select * from dmin_special_db_authority where tdb_id='"+tdb_id+"'";
+            List<Map> authorityList = CodeDOM.getList(sql);
+            if(authorityList != null && authorityList.size() > 0){
+                for (Map<String, Object> authorityMap : authorityList) {
+                    String create_table = toString(authorityMap.get("CREATE_TABLE"));
+                    String delete_table = toString(authorityMap.get("DELETE_TABLE"));
+                    String table_data_access = toString(authorityMap.get("TABLE_DATA_ACCESS"));
+                    String database_id1 = toString(authorityMap.get("DATABASE_ID"));
+                    DatabaseSpecialAuthorityEntity authorityEntity = new DatabaseSpecialAuthorityEntity();
+                    if(StringUtils.isNotEmpty(create_table)){
+                        authorityEntity.setCreateTable(Integer.valueOf(create_table));
+                    }
+                    authorityEntity.setDatabaseId(database_id1);
+                    if(StringUtils.isNotEmpty(delete_table)){
+                        authorityEntity.setDeleteTable(Integer.valueOf(delete_table));
+                    }
+                    authorityEntity.setSdbId(databaseSpecialEntity.getId());
+                    if(StringUtils.isNotEmpty(table_data_access)){
+                        authorityEntity.setTableDataAccess(Integer.valueOf(table_data_access));
+                    }
+                    databaseSpecialAuthorityDao.saveNotNull(authorityEntity);
+                }
+            }
+
+            sql = "select * from dmin_special_db_accessapply where tdb_id='"+tdb_id+"'";
+            List<Map> accessList = CodeDOM.getList(sql);
+            if(accessList != null && accessList.size() > 0){
+                for (Map<String, Object> accessMap : accessList) {
+                    String access_authority = toString(accessMap.get("ACCESS_AUTHORITY"));
+                    String user_id1 = toString(accessMap.get("USER_ID"));
+                    String apply_time1 = toString(accessMap.get("APPLY_TIME"));
+                    String uses1 = toString(accessMap.get("USES"));
+                    String examiner1 = toString(accessMap.get("EXAMINER"));
+                    String examine_status1 = toString(accessMap.get("EXAMINE_STATUS"));
+                    String examine_time1 = toString(accessMap.get("EXAMINE_TIME"));
+                    String cause1 = toString(accessMap.get("CAUSE"));
+                    String use_status1 = toString(accessMap.get("USE_STATUS"));
+
+                    DatabaseSpecialAccessEntity accessEntity = new DatabaseSpecialAccessEntity();
+                    if(StringUtils.isNotEmpty(apply_time1)){
+                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time1);
+                        accessEntity.setCreateTime(date);
+                    }
+                    if(StringUtils.isNotEmpty(access_authority)){
+                        accessEntity.setAccessAuthority(Integer.valueOf(access_authority));
+                    }
+                    if(StringUtils.isNotEmpty(examine_status1)){
+                        accessEntity.setExamineStatus(examine_status1);
+                    }
+                    if(StringUtils.isNotEmpty(examine_time1)){
+                        Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time1);
+                        accessEntity.setExamineTime(date);
+                    }
+                    if(StringUtils.isNotEmpty(examiner1)){
+                        accessEntity.setExaminer(examiner1);
+                    }
+                    if(StringUtils.isNotEmpty(cause1)){
+                        accessEntity.setFailureReason(cause1);
+                    }
+                    accessEntity.setSdbId(databaseSpecialEntity.getId());
+                    if(StringUtils.isNotEmpty(use_status1)){
+                        accessEntity.setUseStatus(use_status1);
+                    }
+                    accessEntity.setUserId(user_id1);
+                    accessEntity.setUses(uses1);
+                    databaseSpecialAccessDao.saveNotNull(accessEntity);
+
+                }
+            }
+
+
+
+        }
+    }
 }

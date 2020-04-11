@@ -9,6 +9,8 @@ import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -37,6 +39,19 @@ public class DatabaseSpecialController {
     @Autowired
     private DatabaseSpecialAuthorityService databaseSpecialAuthorityService;
 
+
+    @ApiOperation(value = "分页查询")
+    @RequiresPermissions("dm:databaseSpecial:page")
+    @GetMapping(value = "/page")
+    public ResultT<PageBean<DatabaseSpecialDto>> getPage(DatabaseSpecialDto databaseSpecialDto,
+                                     @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                     @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        ResultT<PageBean<DatabaseSpecialDto>> resultT=new ResultT<>();
+        PageForm<DatabaseSpecialDto> pageForm=new PageForm<>(pageNum,pageSize,databaseSpecialDto);
+        PageBean pageBean=databaseSpecialService.getPage(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
 
     @PostMapping(value = "/save")
     @ApiOperation(value = "添加", notes = "添加")
