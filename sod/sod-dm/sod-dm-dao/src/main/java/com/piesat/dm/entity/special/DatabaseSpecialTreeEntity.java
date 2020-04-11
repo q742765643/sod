@@ -14,7 +14,7 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "T_SOD_DATABASE_SPECIAL")
+@Table(name = "T_SOD_DATABASE_SPECIAL_TREE")
 public class DatabaseSpecialTreeEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
