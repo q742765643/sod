@@ -34,58 +34,39 @@
       <el-table-column label="参数配置" width="240">
         <template slot-scope="scope">
           <!-- 存储结构 -->
-          <el-button
-            v-if="scope.row.STORAGE_DEFINE_IDENTIFIER!=3"
-            size="mini"
-            @click="databaseShow(scope.row)"
-          >
+          <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
+            <i class="btnRound orangRound"></i>存储结构
+          </el-button>
+          <el-button v-else size="mini" @click="databaseShow(scope.row)">
             <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
 
-          <el-button disabled v-else size="mini">
-            <i class="btnRound orangRound"></i>存储结构
-          </el-button>
-
           <!-- 迁移清除 -->
-          <el-button
-            v-if="scope.row.STORAGE_MOVECLEAN_IDENTIFIER!=3"
-            size="mini"
-            @click="handleCleanAndTransfer(scope.row)"
-          >
+          <el-button disabled v-if="scope.row.STORAGE_MOVECLEAN_IDENTIFIER==3" size="mini">
+            <i class="btnRound orangRound"></i>迁移清除
+          </el-button>
+          <el-button v-else size="mini" @click="handleCleanAndTransfer(scope.row)">
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移清除
           </el-button>
 
-          <el-button disabled v-else size="mini">
-            <i class="btnRound orangRound"></i>迁移清除
-          </el-button>
-
           <!-- 备份 -->
-          <el-button
-            v-if="scope.row.STORAGE_BACKUP_IDENTIFIER!='3'"
-            size="mini"
-            @click="handleBackUp(scope.row)"
-          >
+          <el-button disabled v-if="scope.row.STORAGE_BACKUP_IDENTIFIER==3" size="mini">
+            <i class="btnRound orangRound"></i>备份
+          </el-button>
+          <el-button v-else size="mini" @click="handleBackUp(scope.row)">
             <i
               class="btnRound blueRound"
-              v-if="scope.row.STORAGE_BACKUP_IDENTIFIER=='1'&&scope.row.BACKUP_ID"
+              v-if="scope.row.STORAGE_BACKUP_IDENTIFIER==1&&scope.row.BACKUP_ID"
             ></i>
             <i class="btnRound orangRound" v-else></i>备份
           </el-button>
 
-          <el-button disabled v-else size="mini">
-            <i class="btnRound orangRound"></i>备份
-          </el-button>
-
           <!-- 恢复 -->
-          <el-button
-            v-if="scope.row.STORAGE_ARCHIVING_IDENTIFIER!=3"
-            size="mini"
-            @click="openRecoverDialog(scope.row)"
-          >恢复</el-button>
-          <el-button disabled v-else size="mini">恢复</el-button>
+          <el-button disabled v-if="scope.row.STORAGE_ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
+          <el-button v-else size="mini" @click="openRecoverDialog(scope.row)">恢复</el-button>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="140px">
