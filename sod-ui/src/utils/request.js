@@ -6,7 +6,8 @@ import {
 } from 'element-ui'
 import store from '@/store'
 import {
-  getToken,createSign
+  getToken,
+  createSign
 } from '@/utils/auth'
 import {
   Encrypt
@@ -22,7 +23,7 @@ const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   //baseURL: process.env.VUE_APP_BASE_API,
   // 超时
-   timeout: 30000
+  timeout: 30000
 })
 // request拦截器
 service.interceptors.request.use(
@@ -40,35 +41,35 @@ service.interceptors.request.use(
     if (typeof config.params != 'undefined') {
       data = Encrypt(JSON.stringify(config.params))
       const param = {
-        "timestamp":new Date().getTime(),
+        "timestamp": new Date().getTime(),
         "nonce": uuid(),
         "data": JSON.stringify(config.params)
       }
-      let sign =createSign(param)
-      param.sign=sign
+      let sign = createSign(param)
+      param.sign = sign
       config.params = param
 
     } else if (typeof config.data != 'undefined') {
       //data = Encrypt(JSON.stringify(config.data))
-     /* const param = {
-        "sign": "111111",
-        "data": data
-      }*/
+      /* const param = {
+         "sign": "111111",
+         "data": data
+       }*/
       const param = {
-        "timestamp":new Date().getTime(),
+        "timestamp": new Date().getTime(),
         "nonce": uuid(),
         "data": JSON.stringify(config.data)
       }
-      let sign =createSign(param)
-      param.sign=sign
+      let sign = createSign(param)
+      param.sign = sign
       config.data = param
     } else {
       const param = {
-        "timestamp":new Date().getTime(),
+        "timestamp": new Date().getTime(),
         "nonce": uuid(),
       }
-      let sign =createSign(param)
-      param.sign=sign
+      let sign = createSign(param)
+      param.sign = sign
       config.params = param
     }
     return config
@@ -95,9 +96,11 @@ service.interceptors.response.use(res => {
           type: 'warning'
         }
       ).then(() => {
-        store.dispatch('LogOut').then(() => {
+        localStorage.clear();
+        window.location.href = "http://localhost/login";
+        /* store.dispatch('LogOut').then(() => {
           location.reload() // 为了重新实例化vue-router对象 避免bug
-        })
+        }) */
       })
     } else if (code !== 200) {
       Notification.error({

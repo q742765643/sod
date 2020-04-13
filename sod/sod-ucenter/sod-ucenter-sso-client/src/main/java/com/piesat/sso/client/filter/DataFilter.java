@@ -12,6 +12,7 @@ import com.piesat.sso.client.util.SignUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;

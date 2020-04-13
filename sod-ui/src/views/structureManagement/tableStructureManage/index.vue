@@ -309,9 +309,9 @@ export default {
         this.otherMain = true;
         this.publicMain = false;
         if (checkedNodeStr && checkedNodeStr != "search") {
-          this.searchObj.stringList = checkedNodeStr.split(",");
+          this.searchObj.stringList = checkedNodeStr;
         } else if (checkedNodeStr == "" && checkedNodeStr != "search") {
-          this.searchObj.stringList = [];
+          this.searchObj.stringList = "";
         }
         console.log(this.searchObj);
         getListBYIn(this.searchObj).then(response => {

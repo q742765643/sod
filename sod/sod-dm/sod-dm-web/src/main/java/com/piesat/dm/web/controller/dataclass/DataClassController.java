@@ -2,8 +2,12 @@ package com.piesat.dm.web.controller.dataclass;
 
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.core.parser.DatabaseType;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
-import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.*;
+import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -30,6 +34,12 @@ import java.util.Map;
 public class DataClassController {
     @Autowired
     private DataClassService dataClassService;
+    @Autowired
+    private DataLogicService dataLogicService;
+    @Autowired
+    private DatabaseService databaseService;
+    @Autowired
+    private GrpcService grpcService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataClass:add")
@@ -38,6 +48,8 @@ public class DataClassController {
     public ResultT save(@RequestBody DataClassDto dataClassDto) {
         try {
             DataClassDto save = this.dataClassService.saveDto(dataClassDto);
+            List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
+            save.setDataLogicList(dataLogicDtos);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,6 +76,30 @@ public class DataClassController {
     public ResultT findByClassId(String id) {
         try {
             DataClassDto dataClassDto = this.dataClassService.findByDataClassId(id);
+            List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(id);
+            List<DatabaseDto> all = this.databaseService.all();
+            List<LogicDefineDto> allLogicDefine = this.grpcService.getAllLogicDefine();
+            for (DataLogicDto dl : byDataClassId) {
+                for (LogicDefineDto ld : allLogicDefine) {
+                    if (dl.getLogicFlag().equals(ld.getLogicFlag())) {
+                        dl.setLogicName(ld.getLogicName());
+                        for (DatabaseDto ldd : all) {
+                            if (dl.getDatabaseId().equals(ldd.getId())) {
+                                dl.setDatabaseName(ldd.getDatabaseName());
+                                dl.setDatabasePId(ldd.getDatabaseDefine().getId());
+                                dl.setDatabasePName(ldd.getDatabaseDefine().getDatabaseName());
+                            }
+                        }
+                        List<LogicStorageTypesDto> logicStorageTypesEntityList = ld.getLogicStorageTypesEntityList();
+                        for (LogicStorageTypesDto ls : logicStorageTypesEntityList) {
+                            if (dl.getStorageType().equals(ls.getStorageType())) {
+                                dl.setStorageName(ls.getStorageName());
+                            }
+                        }
+                    }
+                }
+            }
+            dataClassDto.setDataLogicList(byDataClassId);
             return ResultT.success(dataClassDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +151,7 @@ public class DataClassController {
     @ApiOperation(value = "查询资料分类(parentId=0)")
     @RequiresPermissions("dm:dataClass:findAllCategory")
     @GetMapping(value = "/findAllCategory")
-    public ResultT findAllCategory(){
+    public ResultT findAllCategory() {
         try {
             this.dataClassService.findAllCategory();
             return ResultT.success();

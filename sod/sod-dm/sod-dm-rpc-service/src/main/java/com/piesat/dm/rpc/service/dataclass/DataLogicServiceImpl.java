@@ -45,6 +45,13 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    public List<DataLogicDto> saveList(List<DataLogicDto> dataLogicList) {
+        List<DataLogicEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
+        List<DataLogicEntity> save = this.save(dataLogicEntities);
+        return this.dataLogicMapper.toDto(save);
+    }
+
+    @Override
     public List<DataLogicDto> all() {
         List<DataLogicEntity> all = this.getAll();
         return this.dataLogicMapper.toDto(all);

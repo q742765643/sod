@@ -228,16 +228,16 @@ export default {
     },
     checkError(row) {
       conStatus({ id: row.id }).then(res => {
-        if (res.code == 200) {
-          this.$message({ message: res.msg, type: "success" });
+        if (res.data.checkConn == 1) {
+          this.$message({ message: '连接正常', type: "success" });
         } else {
-          this.$message({ message: res.msg, type: "error" });
+          this.$message({ message: '连接异常', type: "error" });
         }
       });
     },
     //状态转换
     getMainBak(row) {
-      let result = row.mainbak_type == "1" ? "主库" : "备份库";
+      let result = row.mainBakType == "1" ? "主库" : "备份库";
       return result;
     },
     getDisplyControl(row) {

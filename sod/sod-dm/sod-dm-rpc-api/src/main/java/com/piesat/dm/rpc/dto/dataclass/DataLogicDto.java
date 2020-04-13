@@ -26,15 +26,23 @@ public class DataLogicDto {
      */
     private String logicFlag;
 
+    private String logicName;
+
     /**
      * storage_type
      */
     private String storageType;
 
+    private String storageName;
+
     /**
      * database_type
      */
     private String databaseId;
+    private String databasePId;
+
+    private String databaseName;
+    private String databasePName;
 
     private Boolean isComplete;
 

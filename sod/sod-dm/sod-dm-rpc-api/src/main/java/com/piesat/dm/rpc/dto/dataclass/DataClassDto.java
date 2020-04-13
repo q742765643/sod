@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.dto.dataclass;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 资料分类
@@ -86,5 +87,7 @@ public class DataClassDto {
     private String delFlag;
 
     private Integer version;
+
+    private List<DataLogicDto> dataLogicList;
 
 }

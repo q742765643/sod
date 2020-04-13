@@ -22,9 +22,15 @@ public interface DatabaseDefineService {
 
     void delete(String id);
 
+    void delByIds(String ids);
+
     List<DatabaseDefineDto> all();
+
+    List<DatabaseDefineDto> export(DatabaseDefineDto databaseDefineDto);
 
     List<DatabaseDefineDto> findByType(String databaseType);
 
     PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
+
+    DatabaseDefineDto conStatus(String id);
 }

@@ -48,4 +48,10 @@ public class DatabaseNodesServiceImpl extends BaseService<DatabaseNodesEntity> i
         DatabaseNodesEntity databaseNodesEntity = this.getById(id);
         return this.databaseNodesMapper.toDto(databaseNodesEntity);
     }
+
+    @Override
+    public List<DatabaseNodesDto> findByDatabaseId(String id) {
+        List<DatabaseNodesEntity> databaseNodesEntity = this.databaseNodesDao.findByDatabaseId(id);
+        return this.databaseNodesMapper.toDto(databaseNodesEntity);
+    }
 }
