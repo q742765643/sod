@@ -25,12 +25,6 @@ public class DataAuthorityApplyEntity extends BaseEntity {
     private String userId;
 
     /**
-     * 申请时间
-     */
-    @Column(name = "apply_time")
-    private Date applyTime;
-
-    /**
      * 审核状态
      * 01：待审、02：已审
      */
