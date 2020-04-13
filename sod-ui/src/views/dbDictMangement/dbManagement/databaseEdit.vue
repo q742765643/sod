@@ -212,8 +212,10 @@
 import {
   databaseDefineSave,
   databaseDefineGet,
-  findByDatabaseDefineId
+  findByDatabaseDefineId,
+  conStatus
 } from "@/api/dbDictMangement/dbManagement";
+
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -389,25 +391,16 @@ export default {
     },
     //测试数据库连接
     checkParam() {
-      debugger;
-      if (this.physicsUserList.length > 0) {
-        let testConn = this.msgFormDialog;
-        this.$set(testConn, "userName", this.physicsUserList[0].userName);
-        this.$set(testConn, "passWord", this.physicsUserList[0].passWord);
-        this.axios
-          .post(interfaceObj.dataBaseManage_checkParam, testConn)
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.$message({
-                message: res.data.returnMessage,
-                type: "success"
-              });
-            } else {
-              this.$message.error(res.data.returnMessage);
-            }
-          });
+      if (this.msgFormDialog.id) {
+        conStatus({ id: this.msgFormDialog.id }).then(res => {
+          if (res.data.checkConn == 1) {
+            this.$message({ message: "连接正常", type: "success" });
+          } else {
+            this.$message({ message: "连接异常", type: "error" });
+          }
+        });
       } else {
-        this.$message.error("未创建数据库用户");
+        this.$message({ message: "数据库ID不能为空", type: "error" });
       }
     },
     //存储信息
