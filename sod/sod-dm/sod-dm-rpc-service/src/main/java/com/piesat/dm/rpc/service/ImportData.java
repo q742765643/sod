@@ -1494,6 +1494,25 @@ public class ImportData {
             String database_id = toString(m.get("DATABASE_ID"));//申请时是否有database_id
 
             NewdataApplyEntity newdataApplyEntity = new NewdataApplyEntity();
+            if(StringUtils.isNotEmpty(database_id)){
+                String database_id_new = "";
+                sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+database_id+"'";
+                List<Map> databaseList = CodeDOM.getList(sql);
+                if(databaseList != null && databaseList.size() > 0){
+                    String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
+                    String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                    String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                    String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+                    if(database_classify.equals("物理库")){
+                        List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
+                        database_id_new = databaseEntity1.get(0).getId();
+                    }else{
+                        List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                        database_id_new = defineId.get(0).getId();
+                    }
+                }
+                newdataApplyEntity.setDatabaseId(database_id_new);
+            }
             newdataApplyEntity.setDDataId(d_data_id);
             if(StringUtils.isNotEmpty(data_class_id)){
                 newdataApplyEntity.setDataClassId(data_class_id);
@@ -1595,6 +1614,15 @@ public class ImportData {
                     storageConfigurationDao.saveNotNull(storageConfigurationEntity);
                 }
             }
+        }
+    }
+
+    //一致性检查
+    public void importconsistencyCheck() {
+        String sql = "select * from dmin_data_newdata_apply";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String d_data_id = toString(m.get("D_DATA_ID"));
         }
     }
 }

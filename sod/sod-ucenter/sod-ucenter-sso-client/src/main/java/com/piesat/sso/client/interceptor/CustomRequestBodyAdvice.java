@@ -1,9 +1,8 @@
-package com.piesat.common.interceptor;
+package com.piesat.sso.client.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.piesat.common.utils.DecryptUtil;
 import com.piesat.common.utils.ServletUtils;
-import com.piesat.common.utils.sign.SignUtil;
+import com.piesat.sso.client.util.SignUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.MethodParameter;
@@ -26,7 +25,7 @@ import java.util.Map;
  * @创建人 zzj
  * @创建时间 2019/11/14 13:53
  */
-@ControllerAdvice
+//@ControllerAdvice
 @RequiredArgsConstructor
 public class CustomRequestBodyAdvice extends RequestBodyAdviceAdapter {
     private final ObjectMapper objectMapper;

@@ -53,7 +53,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new RequestParamMethodArgumentResolver(beanFactory,true));
-        argumentResolvers.add(currentUserArgumentResolver);
+        //argumentResolvers.add(currentUserArgumentResolver);
         // 注册Spring data jpa pageable的参数分解器
        // argumentResolvers.add(new CurrentUserArgumentResolver());
     }
@@ -113,11 +113,20 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
       //注册自定义拦截器，添加拦截路径和排除拦截路径
+      HthtInterceptor hthtInterceptor=null;
+      try {
+          Class clazz = Class.forName("com.piesat.sso.client.interceptor.SsoHthtInterceptor");
+          hthtInterceptor= (HthtInterceptor) clazz.newInstance();
 
-      registry.addInterceptor(new HthtInterceptor()).addPathPatterns("/**")
+      } catch (Exception e) {
+          hthtInterceptor=new HthtInterceptor();
+          e.printStackTrace();
+      }
+     /* registry.addInterceptor(hthtInterceptor).addPathPatterns("*//**")
               //.excludePathPatterns("/loginPage","/login")
               .excludePathPatterns("/error")
-              .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/doc.html");
+              .excludePathPatterns("/swagger-resources*//**", "/webjars*//**", "/v2*//**", "/doc.html");*/
+
   }
 
     @Override

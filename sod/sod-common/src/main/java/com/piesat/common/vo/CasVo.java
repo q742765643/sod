@@ -17,5 +17,7 @@ public class CasVo implements Serializable {
     private String sign;
     private String data;
     private String userId;
+    private String pwd;
+
 }
 

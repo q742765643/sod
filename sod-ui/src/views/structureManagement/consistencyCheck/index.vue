@@ -46,11 +46,11 @@
       @current-change="handleCurrentChange"
     >
       <el-table-column type="index" label=" " :index="table_index"></el-table-column>
-      <el-table-column prop="database_name" label="专题库名称"></el-table-column>
-      <el-table-column prop="database_type" label="数据库类型"></el-table-column>
-      <el-table-column prop="database_instance" label="专题库实例"></el-table-column>
-      <el-table-column prop="database_schema_name" label="专题名ID"></el-table-column>
-      <el-table-column prop="database_desc" label="专题库描述"></el-table-column>
+      <el-table-column prop="databaseName" label="专题库名称"></el-table-column>
+      <el-table-column prop="databaseDto.databaseDefine.databaseType" label="数据库类型"></el-table-column>
+      <el-table-column prop="databaseDto.databaseDefine.databaseInstance" label="专题库实例"></el-table-column>
+      <el-table-column prop="databaseDto.schemaName" label="专题库模式"></el-table-column>
+      <!--<el-table-column prop="database_desc" label="专题库描述"></el-table-column>-->
       <el-table-column prop="address" label="操作" width="120">
         <template slot-scope="scope">
           <el-button
@@ -202,7 +202,9 @@ export default {
       this.addDataDialog = true;
     },
     deleteData() {},
-    addReportRecord() {},
+    addReportRecord() {
+
+    },
     downloadHistoricalReport() {},
     getHistoryData() {}
   }

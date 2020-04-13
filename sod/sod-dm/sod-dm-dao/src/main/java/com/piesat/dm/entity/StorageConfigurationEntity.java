@@ -26,19 +26,19 @@ public class StorageConfigurationEntity extends BaseEntity {
     /**
      * 逻辑库ID
      */
-    @Column(name = "logic_id", length = 20, nullable = false)
+    @Column(name = "logic_id", length = 20)
     private String logicId;
 
     /**
      * 物理库ID
      */
-    @Column(name = "database_id", length = 50, nullable = false)
+    @Column(name = "database_id", length = 50)
     private String databaseId;
 
     /**
      * 资料存储编码
      */
-    @Column(name = "data_class_id", length = 50, nullable = false)
+    @Column(name = "data_class_id", length = 50)
     private String dataClassId;
 
     /**
