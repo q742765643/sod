@@ -4,11 +4,16 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.parser.DatabaseInfo;
+import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +34,10 @@ import java.util.List;
 public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity> implements DatabaseDefineService {
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseDao databaseDao;
+    @Autowired
+    private DatabaseInfo databaseInfo;
     @Autowired
     private DatabaseDefineMapper databaseDefineMapper;
 
@@ -47,6 +57,20 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     public List<DatabaseDefineDto> all() {
         List<DatabaseDefineEntity> all = this.getAll();
         return this.databaseDefineMapper.toDto(all);
+    }
+
+    @Override
+    public List<DatabaseDefineDto> export(DatabaseDefineDto databaseDefineDto) {
+        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(databaseDefineDto.getId())) {
+            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getId());
+        }
+        if (StringUtils.isNotBlank(databaseDefineDto.getDatabaseName())) {
+            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getDatabaseName());
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        List<DatabaseDefineDto> all = this.getAll(ssb.generateSpecification(), sort);
+        return all;
     }
 
     @Override
@@ -71,8 +95,33 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     }
 
     @Override
+    public DatabaseDefineDto conStatus(String id) {
+        DatabaseDefineDto dotById = this.getDotById(id);
+        DatabaseDto database = new DatabaseDto();
+        database.setDatabaseDefine(dotById);
+        try {
+            DatabaseDcl db = DatabaseUtil.getDatabase(database, databaseInfo);
+            db.closeConnect();
+            dotById.setCheckConn(1);
+        } catch (Exception e) {
+            dotById.setCheckConn(2);
+        }
+        this.saveDto(dotById);
+        return dotById;
+    }
+
+    @Override
     public DatabaseDefineDto getDotById(String id) {
         DatabaseDefineEntity databaseDefineEntity = this.getById(id);
         return this.databaseDefineMapper.toDto(databaseDefineEntity);
+    }
+
+    @Override
+    public void delByIds(String ids) {
+        String[] split = ids.split(",");
+        this.deleteByIds(Arrays.asList(split));
+        for (String id:split) {
+            this.databaseDao.deleteByDatabaseDefine_Id(id);
+        }
     }
 }

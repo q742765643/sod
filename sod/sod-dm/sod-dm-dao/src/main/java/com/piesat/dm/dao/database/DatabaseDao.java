@@ -31,4 +31,6 @@ public interface DatabaseDao extends BaseDao<DatabaseEntity> {
     List<DatabaseEntity> findByDatabaseDefine_Id(String id);
 
     List<DatabaseEntity> findByDatabaseClassifyAndDatabaseDefineId(String databaseClassify,String databaseDefineId);
+
+    void deleteByDatabaseDefine_Id(String id);
 }
