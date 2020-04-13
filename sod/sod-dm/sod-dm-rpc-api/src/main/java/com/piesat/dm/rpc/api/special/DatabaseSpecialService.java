@@ -6,6 +6,8 @@ import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import java.util.List;
 import java.util.Map;
@@ -73,4 +75,6 @@ public interface DatabaseSpecialService {
     List<Map<String,Object>> getAllOtherRecordByUserId(String userId,String useStatus);
 
     List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId,String useStatus);
+
+    public PageBean getPage(PageForm<DatabaseSpecialDto> pageForm);
 }

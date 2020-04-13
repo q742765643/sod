@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.service.special;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.core.api.DatabaseDcl;
@@ -35,6 +37,8 @@ import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAuthorityMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +87,22 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     public List<DatabaseSpecialDto> all() {
         List<DatabaseSpecialEntity> all = this.getAll();
         return this.databaseSpecialMapper.toDto(all);
+    }
+
+    @Override
+    public PageBean getPage(PageForm<DatabaseSpecialDto> pageForm) {
+        DatabaseSpecialEntity databaseSpecialEntity = this.databaseSpecialMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(databaseSpecialEntity.getExamineStatus())){
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseSpecialEntity.getExamineStatus());
+        }
+        if(StringUtils.isNotNullString(databaseSpecialEntity.getSdbName())){
+            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getSdbName());
+        }
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
+        List<DatabaseSpecialEntity> databaseSpecialEntities = (List<DatabaseSpecialEntity>) pageBean.getPageData();
+        pageBean.setPageData(databaseSpecialMapper.toDto(databaseSpecialEntities));
+        return pageBean;
     }
 
     @Override
@@ -378,6 +398,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByUserIdAndUseStatus(userId, useStatus);
         return databaseSpecialMapper.toDto(databaseSpecialEntities);
     }
+
 
     /**
      * 授权
