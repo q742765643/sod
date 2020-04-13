@@ -82,13 +82,9 @@ public class HtShiroRealm extends AuthorizingRealm {
 
         if ("1".equals(token.getLoginType())) {
             userDto = userService.selectUserByAppId(username);
-            String passWord=String.valueOf(token.getPassword());
-            if(!passWord.equals(userDto.getPassword())){
-                System.out.println(passWord);
-            }
             SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                     userDto, //用户名
-                    new Md5Hash(passWord, username, 2).toString(), //密码
+                    new Md5Hash(String.valueOf(token.getPassword()), username, 2).toString(), //密码
                     salt,
                     getName() );
             return authenticationInfo;
