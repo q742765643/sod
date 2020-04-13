@@ -18,12 +18,11 @@ import javax.persistence.*;
 public class ConsistencyCheckEntity extends BaseEntity {
 
     /**
-     * 与数据库定义关联id
+     * 与数据库关联id
      * database_id
      */
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "database_id")
-    private DatabaseEntity databaseEntity;
+    @Column(name = "database_id",length = 50)
+    private String databaseId;
 
     /**
      * 数据库名称

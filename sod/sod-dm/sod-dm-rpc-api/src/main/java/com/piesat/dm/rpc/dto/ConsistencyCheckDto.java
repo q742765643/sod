@@ -13,13 +13,15 @@ import lombok.Data;
 public class ConsistencyCheckDto {
 
     /**
-     * 与数据库定义关联id
+     * 与数据库关联id
      * database_id
      */
-    private DatabaseDto databaseDto;
+    private String databaseId;
 
     /**
      * 数据库名称
      */
     private String databaseName;
+
+    private DatabaseDto databaseDto;
 }

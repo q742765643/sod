@@ -47,7 +47,7 @@ public class NewdataApplyEntity extends BaseEntity {
     /**
      * 数据库ID
     */
-    @Column(name = "database_id", length = 64, nullable = false)
+    @Column(name = "database_id", length = 64)
     private String databaseId;
 
     /**
@@ -66,7 +66,7 @@ public class NewdataApplyEntity extends BaseEntity {
      * 常用使用条件字段
      * 辅助管理员建索引，多个字段用逗号分隔
      */
-    @Column(name = "freuse_field", length = 50)
+    @Column(name = "freuse_field", length = 200)
     private String freuseField;
 
     /**

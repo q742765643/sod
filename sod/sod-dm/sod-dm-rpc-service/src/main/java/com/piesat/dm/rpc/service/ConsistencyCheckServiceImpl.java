@@ -54,7 +54,14 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<ConsistencyCheckEntity> consistencyCheckEntities= (List<ConsistencyCheckEntity>) pageBean.getPageData();
-        pageBean.setPageData(consistencyCheckMapper.toDto(consistencyCheckEntities));
+        List<ConsistencyCheckDto> consistencyCheckDtos = consistencyCheckMapper.toDto(consistencyCheckEntities);
+        if(consistencyCheckDtos != null && consistencyCheckDtos.size()>0){
+            for(ConsistencyCheckDto consistencyCheckDto : consistencyCheckDtos){
+                DatabaseDto databaseDto = databaseService.getDotById(consistencyCheckDto.getDatabaseId());
+                consistencyCheckDto.setDatabaseDto(databaseDto);
+            }
+        }
+        pageBean.setPageData(consistencyCheckDtos);
         return pageBean;
     }
 
