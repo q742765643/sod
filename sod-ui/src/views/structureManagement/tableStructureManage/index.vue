@@ -213,7 +213,7 @@ export default {
       tableStructureManageContral: false,
       treeIdOfDR: this.$route.params.treeIdOfDR,
       searchObj: {
-        classIds: "",
+        stringList: "",
         className: "",
         dDataId: ""
       },
@@ -290,7 +290,7 @@ export default {
     // 左侧tab点击时获取树的url
     getTreeUrlOfTab(tree) {
       this.whichTree = tree;
-      this.searchObj.classIds = "";
+      this.searchObj.stringList = "";
       this.searchObj.className = "";
       this.searchObj.dDataId = "";
     },
@@ -299,7 +299,7 @@ export default {
         this.tableName = treeRefreshData.name;
       }
       this.treeRefreshData = treeRefreshData;
-      // this.searchObj.classIds = "";
+      // this.searchObj.stringList = "";
       if (checkedNodeStr && checkedNodeStr.style) {
         this.handleObj = checkedNodeStr;
         this.otherMain = false;
@@ -309,9 +309,9 @@ export default {
         this.otherMain = true;
         this.publicMain = false;
         if (checkedNodeStr && checkedNodeStr != "search") {
-          this.searchObj.classIds = checkedNodeStr.split(",");
+          this.searchObj.stringList = checkedNodeStr.split(",");
         } else if (checkedNodeStr == "" && checkedNodeStr != "search") {
-          this.searchObj.classIds = [];
+          this.searchObj.stringList = [];
         }
         console.log(this.searchObj);
         getListBYIn(this.searchObj).then(response => {
