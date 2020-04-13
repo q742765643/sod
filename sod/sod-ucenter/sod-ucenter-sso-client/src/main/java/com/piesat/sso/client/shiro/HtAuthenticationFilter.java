@@ -1,5 +1,6 @@
 package com.piesat.sso.client.shiro;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.ip.AddressUtils;
@@ -9,6 +10,7 @@ import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.ucenter.rpc.api.monitor.LoginInfoService;
 import com.piesat.ucenter.rpc.dto.monitor.LoginInfoDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.ReturnCodeEnum;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -20,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -35,46 +39,54 @@ public class HtAuthenticationFilter extends FormAuthenticationFilter {
     private static String THRID_LOGIN_APP_ID="THRID_LOGIN_APP_ID:";
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        request.setAttribute("isValidate",true);
         Subject subject = getSubject(request, response);
-        boolean isLogin=subject.isAuthenticated();
-        if(!isLogin){
-            String appId = WebUtils.toHttp(request).getHeader("appId");
-            if(null!=appId&&!"".equals(appId)) {
-                RedisUtil redisUtil = SpringUtil.getBean(RedisUtil.class);
-                boolean check = this.validatAppId(appId);
-                if (check) {
-                    return check;
-                }
-                ResultT<Map<String, Object>> resultT = new ResultT<>();
-                HttpServletRequest req = (HttpServletRequest) request;
-                try {
-                    UsernamePasswordToken token = new UsernamePasswordToken(appId, "");
-                    token.setLoginType("1");
-                    token.setRequest(req);
-                    token.setOperatorType(OperatorType.INTERFACE.ordinal());
-                    subject.login(token);
-                    redisUtil.set(THRID_LOGIN_APP_ID + appId, subject.getSession().getId(), 18000);
-                    this.recordLogininfor(req, appId, resultT);
-                } catch (Exception e) {
-                    resultT.setErrorMessage("接口登陆失败");
-                    this.recordLogininfor(req, appId, resultT);
-                    logger.error(OwnException.get(e));
-
-                }
+        String appId = WebUtils.toHttp(request).getHeader("appId");
+        if(null!=appId&&!"".equals(appId)){
+            RedisUtil redisUtil=SpringUtil.getBean(RedisUtil.class);
+            boolean check=this.validatAppId(appId);
+            if(check){
+                check= subject.isAuthenticated();
+            }
+            if(check){
+                return check;
+            }
+            ResultT<Map<String,Object>> resultT=new ResultT<>();
+            HttpServletRequest req = (HttpServletRequest) request;
+            try {
+                UsernamePasswordToken token = new UsernamePasswordToken(appId, "1111111");
+                token.setLoginType("1");
+                token.setRequest(req);
+                token.setOperatorType(OperatorType.CAS.ordinal());
+                subject.login(token);
+                redisUtil.set(THRID_LOGIN_APP_ID+appId,subject.getSession().getId(),18000);
+                this.recordLogininfor(req,appId,resultT);
+                return true;
+            } catch (Exception e) {
+                resultT.setErrorMessage("接口登陆失败");
+                this.recordLogininfor(req,appId,resultT);
+                logger.error(OwnException.get(e));
+                return false;
             }
 
-            isLogin=subject.isAuthenticated();
+        }else{
+            return subject.isAuthenticated();
         }
-
-
-        return isLogin;
 
     }
 
     @Override
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
-        return super.onAccessDenied(servletRequest,servletResponse);
+        //return super.onAccessDenied(servletRequest,servletResponse);
+        HttpServletResponse resp = (HttpServletResponse) servletResponse;
+        resp.setContentType("application/json; charset=utf-8");
+        ResultT<String> resultT=new ResultT<>();
+        resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_401_ERROR);
+        PrintWriter out = resp.getWriter();
+        out.print(JSON.toJSONString(resultT));
+        out.flush();
+        out.close();
+        return false;
+
     }
 
     private boolean validatAppId(String appId){
