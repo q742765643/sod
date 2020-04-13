@@ -115,8 +115,8 @@ public class DiSendService{
             headers.add("Accept", MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(map), headers);
             RestTemplate rst = new RestTemplate();
-            ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskdelurl, httpEntity, String.class);
-            System.out.println("di发送返回信息:"+JSON.toJSONString(stringResponseEntity));
+           // ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskdelurl, httpEntity, String.class);
+            //System.out.println("di发送返回信息:"+JSON.toJSONString(stringResponseEntity));
         } catch (RestClientException e) {
             e.printStackTrace();
         }

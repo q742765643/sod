@@ -220,13 +220,13 @@ public class MybatisInterceptor implements Interceptor {
             }
             Map<String, Object> map = JSON.parseObject(param, Map.class);
 
-            List<Map<String, String>> mapList = (List<Map<String, String>>) map.get("orderBy");
+           Map<String, String> mapList = (Map<String, String>) map.get("orderBy");
             if (null == mapList || mapList.isEmpty()) {
                 return "";
 
             }
-            mapList.forEach(smap-> {
-                String name =smap.get("name");
+            mapList.forEach((k,v)-> {
+                String name =k.trim();
                 if(name.indexOf(".")!=-1){
                     name=name.substring(name.lastIndexOf(".")+1);
                 }
@@ -250,7 +250,7 @@ public class MybatisInterceptor implements Interceptor {
                         }
                     }
                 }
-                addSql.append(name).append(" ").append(smap.get("sort")).append(",");
+                addSql.append(name).append(" ").append(v).append(",");
             });
             String sql=addSql.toString();
             return sql.substring(0,sql.length()-1);

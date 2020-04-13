@@ -47,43 +47,54 @@ public class HtShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
-        UserDto userDto = null;
         String username = (String) authenticationToken.getPrincipal();
+        ByteSource salt = ByteSource.Util.bytes(username);
         UserService userService = SpringUtil.getBean(UserService.class);
-
+        UserDto userDto = null;
         if ("0".equals(token.getLoginType())) {
             userDto = userService.selectUserByUserName(username);
-        } else {
-            userDto = userService.selectUserByAppId(username);
+            if (userDto == null) {
+                throw new UnknownAccountException();
+            }
+            if (userDto.getStatus().equals("1")) { //账户冻结
+                throw new LockedAccountException();
+            }
+            if (null != token.getRequest()) {
+                UserAgent userAgent = UserAgent.parseUserAgentString(token.getRequest().getHeader("User-Agent"));
+                String ip = IpUtils.getIpAddr(token.getRequest());
+                userDto.setLoginIp(ip);
+                userDto.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
+                userDto.setBrowser(userAgent.getBrowser().getName());
+                userDto.setOs(userAgent.getOperatingSystem().getName());
+            }
+            userDto.setParams(token.getParam());
+            userDto.setOperatorType(token.getOperatorType());
+            userDto.setLoginDate(new Date());
+            SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+                    userDto, //用户名
+                    userDto.getPassword(), //密码
+                    salt,
+                    getName()  //realm name
+            );
+            return authenticationInfo;
         }
-        if (userDto == null) {
-            throw new UnknownAccountException();
-        }
-        if (userDto.getStatus().equals("1")) { //账户冻结
-            throw new LockedAccountException();
-        }
+
+
         if ("1".equals(token.getLoginType())) {
-            userDto.setPassword(new Md5Hash("", username, 2).toString());
+            userDto = userService.selectUserByAppId(username);
+            String passWord=String.valueOf(token.getPassword());
+            if(!passWord.equals(userDto.getPassword())){
+                System.out.println(passWord);
+            }
+            SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+                    userDto, //用户名
+                    new Md5Hash(passWord, username, 2).toString(), //密码
+                    salt,
+                    getName() );
+            return authenticationInfo;
         }
-        ByteSource salt = ByteSource.Util.bytes(username);
-        if (null != token.getRequest()) {
-            UserAgent userAgent = UserAgent.parseUserAgentString(token.getRequest().getHeader("User-Agent"));
-            String ip = IpUtils.getIpAddr(token.getRequest());
-            userDto.setLoginIp(ip);
-            userDto.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
-            userDto.setBrowser(userAgent.getBrowser().getName());
-            userDto.setOs(userAgent.getOperatingSystem().getName());
-        }
-        userDto.setParams(token.getParam());
-        userDto.setOperatorType(token.getOperatorType());
-        userDto.setLoginDate(new Date());
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userDto, //用户名
-                userDto.getPassword(), //密码
-                salt,
-                getName()  //realm name
-        );
-        return authenticationInfo;
+
+        return null;
     }
 
 }

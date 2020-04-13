@@ -36,7 +36,7 @@ import java.util.*;
  * @创建时间 2019/11/13 17:57
  */
 
-//@WebFilter(urlPatterns = { "/*" }, filterName = "DataFilter")
+@WebFilter(urlPatterns = { "/*" }, filterName = "DataFilter")
 @Slf4j
 @RequiredArgsConstructor
 public class DataFilter extends OncePerRequestFilter {
