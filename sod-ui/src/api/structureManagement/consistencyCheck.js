@@ -30,3 +30,11 @@ export function consistencyCheckSave(data) {
     data: data
   });
 }
+
+export function getDatabaseName(query) {
+  return request({
+    url: baseUrl + "/dm/database/getDatabaseName",
+    method: "get",
+    params: query
+  });
+}

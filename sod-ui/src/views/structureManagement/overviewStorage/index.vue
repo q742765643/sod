@@ -30,16 +30,16 @@
       <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
       <el-table-column prop="LOGIC_NAME" label="数据用途"></el-table-column>
       <el-table-column prop="DATABASE_NAME" label="数据库"></el-table-column>
-      <el-table-column prop="p_special_database_name" label="专题名" width="100"></el-table-column>
+      <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" width="100"></el-table-column>
       <el-table-column label="参数配置" width="240">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button
-            v-if="scope.row.storage_define_identifier!='3'"
+            v-if="scope.row.STORAGE_DEFINE_IDENTIFIER!=3"
             size="mini"
             @click="databaseShow(scope.row)"
           >
-            <i class="btnRound blueRound" v-if="scope.row.storage_define_identifier==1"></i>
+            <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
 
@@ -49,12 +49,12 @@
 
           <!-- 迁移清除 -->
           <el-button
-            v-if="scope.row.data_moveclean_identifier!='3'"
+            v-if="scope.row.STORAGE_MOVECLEAN_IDENTIFIER!=3"
             size="mini"
             @click="handleCleanAndTransfer(scope.row)"
           >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
-            <i class="btnRound blueRound" v-if="null!=scope.row.clear_id&&scope.row.clear_id!=''"></i>
+            <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移清除
           </el-button>
 
@@ -64,13 +64,13 @@
 
           <!-- 备份 -->
           <el-button
-            v-if="scope.row.data_backup_identifier!='3'"
+            v-if="scope.row.STORAGE_BACKUP_IDENTIFIER!='3'"
             size="mini"
             @click="handleBackUp(scope.row)"
           >
             <i
               class="btnRound blueRound"
-              v-if="scope.row.data_backup_identifier=='1'&&scope.row.backup_id!=null&&scope.row.backup_id!=''"
+              v-if="scope.row.STORAGE_BACKUP_IDENTIFIER=='1'&&scope.row.BACKUP_ID"
             ></i>
             <i class="btnRound orangRound" v-else></i>备份
           </el-button>
@@ -81,7 +81,7 @@
 
           <!-- 恢复 -->
           <el-button
-            v-if="scope.row.data_archiving_identifier!='3'"
+            v-if="scope.row.STORAGE_ARCHIVING_IDENTIFIER!=3"
             size="mini"
             @click="openRecoverDialog(scope.row)"
           >恢复</el-button>
@@ -133,24 +133,24 @@
       <el-checkbox
         @change="changeSetting"
         v-model="checked3"
-        false-label="data_moveclean_identifier*"
-        true-label="data_moveclean_identifier"
+        false-label="STORAGE_MOVECLEAN_IDENTIFIER*"
+        true-label="STORAGE_MOVECLEAN_IDENTIFIER"
         label="迁移清除"
         border
       ></el-checkbox>
       <el-checkbox
         @change="changeSetting"
         v-model="checked4"
-        false-label="data_backup_identifier*"
-        true-label="data_backup_identifier"
+        false-label="STORAGE_BACKUP_IDENTIFIER*"
+        true-label="STORAGE_BACKUP_IDENTIFIER"
         label="备份"
         border
       ></el-checkbox>
       <el-checkbox
         @change="changeSetting"
         v-model="checked5"
-        false-label="data_archiving_identifier*"
-        true-label="data_archiving_identifier"
+        false-label="STORAGE_ARCHIVING_IDENTIFIER*"
+        true-label="STORAGE_ARCHIVING_IDENTIFIER"
         label="恢复"
         border
       ></el-checkbox>
@@ -187,7 +187,11 @@
 </template>
 
 <script>
-import { storageConfigurationList } from "@/api/structureManagement/overviewStorage";
+import {
+  storageConfigurationList,
+  updateColumnValue,
+  deleteColumnValue
+} from "@/api/structureManagement/overviewStorage";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 // 数据恢复
@@ -269,7 +273,21 @@ export default {
     settingCell(row) {
       this.dialogSetting = true;
     },
-    deleteCell() {},
+    deleteCell(row) {
+      deleteColumnValue({ id: row.id }).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
+      });
+    },
     // 关闭高级搜索
     closeSuperSearch() {
       this.dialogSuperSearch = false;
@@ -282,7 +300,7 @@ export default {
     },
     changeSetting(event) {
       let settingObj = {};
-      // settingObj.id = this.rowId;
+      settingObj.id = this.rowId;
 
       if (event.indexOf("*") == -1) {
         // 可用
@@ -293,21 +311,19 @@ export default {
         settingObj.value = 3;
         settingObj.column = event.split("*")[0];
       }
-      // this.axios
-      //   .post(interfaceObj.StructureView_config, settingObj, {
-      //     headers: {
-      //       "Content-Type": "application/json;charset=UTF-8"
-      //     }
-      //   })
-      //   .then(res => {
-      //     if (res.data.returnCode == 0) {
-      //       this.$message({
-      //         type: "success",
-      //         message: "配置成功"
-      //       });
-      //       this.searchFun();
-      //     }
-      //   });
+      updateColumnValue(settingObj).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
+      });
       console.log(settingObj);
     },
     // 数据恢复

@@ -75,10 +75,10 @@
         <el-form-item label="数据库选择:">
           <el-select style="width:80%;" v-model="addOptionValue" placeholder="请选择添加数据库">
             <el-option
-              v-for="item in addoptions"
-              :key="item.database_name"
-              :label="item.database_name"
-              :value="item.database_id"
+              v-for="item in databaseNameOptions"
+              :key="item.ID"
+              :label="item.DATABASE_NAME"
+              :value="item.ID"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -124,7 +124,8 @@ import {
   consistencyCheckList,
   deleteById,
   downloadDfcheckFile,
-  consistencyCheckSave
+  consistencyCheckSave,
+  getDatabaseName
 } from "@/api/structureManagement/consistencyCheck";
 export default {
   components: {},
@@ -142,7 +143,7 @@ export default {
       addOptionValue: "",
       // 添加弹窗
       addDataDialog: false,
-      addoptions: [],
+      databaseNameOptions: [],
       //  历史报告
       historyDialog: false,
       historyData: [],
@@ -156,6 +157,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getOptions();
   },
   methods: {
     // table自增定义方法
@@ -185,6 +187,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentRow = val;
+    },
+    getOptions() {
+      getDatabaseName().then(response => {
+        this.databaseNameOptions = response.data;
+      });
     },
     /*点击历史报告列表事件 */
     getHistoricalReport(row) {
