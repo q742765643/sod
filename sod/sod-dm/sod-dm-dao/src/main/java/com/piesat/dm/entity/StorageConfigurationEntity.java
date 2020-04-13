@@ -17,11 +17,11 @@ import javax.persistence.Table;
 @Table(name = "T_SOD_STORAGE_CONFIGURATION")
 public class StorageConfigurationEntity extends BaseEntity {
 
-   /* *//**
+    /**
      * T_SOD_DATA_LOGIC表id
-     *//*
+     */
     @Column(name = "class_logic_id", length = 255, unique=true)
-    private String classLogicId;*/
+    private String classLogicId;
 
     /**
      * 逻辑库ID

@@ -47,8 +47,8 @@ public class NewdataApplyEntity extends BaseEntity {
     /**
      * 数据库ID
     */
-   /* @Column(name = "database_id", length = 64, nullable = false)
-    private String databaseId;*/
+    @Column(name = "database_id", length = 64, nullable = false)
+    private String databaseId;
 
     /**
      * 表英文名称

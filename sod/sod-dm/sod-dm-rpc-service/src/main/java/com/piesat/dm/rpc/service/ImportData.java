@@ -3,7 +3,9 @@ package com.piesat.dm.rpc.service;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.dm.common.codedom.CodeDOM;
+import com.piesat.dm.dao.StorageConfigurationDao;
 import com.piesat.dm.dao.dataapply.CloudDatabaseApplyDao;
+import com.piesat.dm.dao.dataapply.NewdataApplyDao;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
@@ -14,7 +16,9 @@ import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.special.*;
+import com.piesat.dm.entity.StorageConfigurationEntity;
 import com.piesat.dm.entity.dataapply.CloudDatabaseApplyEntity;
+import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
@@ -107,6 +111,10 @@ public class ImportData {
     private DatabaseSpecialAuthorityDao databaseSpecialAuthorityDao;
     @Autowired
     private DatabaseSpecialAccessDao databaseSpecialAccessDao;
+    @Autowired
+    private NewdataApplyDao newdataApplyDao;
+    @Autowired
+    private StorageConfigurationDao storageConfigurationDao;
 
 
     public void implAll(){
@@ -123,7 +131,8 @@ public class ImportData {
         //importClear();
         //importDatabaseUser();
         //importPortalAuz();
-        importSpecial();
+        //importSpecial();
+        //importNewData();
     }
 
 
@@ -1454,6 +1463,138 @@ public class ImportData {
 
 
 
+        }
+    }
+
+    //数据注册审核
+    public void importNewData() {
+        String sql = "select * from dmin_data_newdata_apply";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String d_data_id = toString(m.get("D_DATA_ID"));
+            String data_class_id = toString(m.get("DATA_CLASS_ID"));
+            String table_name = toString(m.get("TABLE_NAME"));
+            String logic_id = toString(m.get("LOGIC_ID"));
+            String datafreq = toString(m.get("DATAFREQ"));
+            String freusefield = toString(m.get("FREUSEFIELD"));
+            String ispublish = toString(m.get("ISPUBLISH"));
+            String memo = toString(m.get("MEMO"));
+            String uses = toString(m.get("USES"));
+            String file_path = toString(m.get("FILE_PATH"));
+            String user_id = toString(m.get("USER_ID"));
+            String apply_time = toString(m.get("APPLY_TIME"));
+            String examiner = toString(m.get("EXAMINER"));
+            String examine_status = toString(m.get("EXAMINE_STATUS"));
+            String examine_time = toString(m.get("EXAMINE_TIME"));
+            String remark = toString(m.get("REMARK"));
+            String storage_create = toString(m.get("STORAGE_CREATE"));
+            String dataorigin = toString(m.get("DATAORIGIN"));
+            String data_service_id = toString(m.get("DATA_SERVICE_ID"));
+            String data_prop = toString(m.get("DATA_PROP"));
+            String database_id = toString(m.get("DATABASE_ID"));//申请时是否有database_id
+
+            NewdataApplyEntity newdataApplyEntity = new NewdataApplyEntity();
+            newdataApplyEntity.setDDataId(d_data_id);
+            if(StringUtils.isNotEmpty(data_class_id)){
+                newdataApplyEntity.setDataClassId(data_class_id);
+            }
+            newdataApplyEntity.setDataFreq(datafreq);
+            newdataApplyEntity.setDataOrigin(dataorigin);
+            if(StringUtils.isNotEmpty(data_prop)){
+                newdataApplyEntity.setDataProp(data_prop);
+            }
+            if(StringUtils.isNotEmpty(data_service_id)){
+                newdataApplyEntity.setDataServiceId(data_service_id);
+            }
+            if(StringUtils.isNotEmpty(examine_status)){
+                newdataApplyEntity.setExamineStatus(Integer.valueOf(examine_status));
+            }
+            if(StringUtils.isNotEmpty(examine_time)){
+                Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
+                newdataApplyEntity.setExamineTime(date);
+            }
+            if(StringUtils.isNotEmpty(examiner)){
+                newdataApplyEntity.setExaminer(examiner);
+            }
+            if(StringUtils.isNotEmpty(freusefield)){
+                newdataApplyEntity.setFreuseField(freusefield);
+            }
+            if(StringUtils.isNotEmpty(ispublish)){
+                newdataApplyEntity.setIsPublish(Integer.valueOf(ispublish));
+            }
+            newdataApplyEntity.setLogicId(logic_id);
+            if(StringUtils.isNotEmpty(memo)){
+                newdataApplyEntity.setMemo(memo);
+            }
+            if(StringUtils.isNotEmpty(remark)){
+                newdataApplyEntity.setRemark(remark);
+            }
+            newdataApplyEntity.setTableName(table_name);
+            newdataApplyEntity.setUserId(user_id);
+            newdataApplyDao.saveNotNull(newdataApplyEntity);
+
+            //保存存储策略
+            if(StringUtils.isNotEmpty(data_class_id)){
+                sql = "select * from dmin_storage_configuration where data_class_id='"+data_class_id+"'";
+                List<Map> storageList = CodeDOM.getList(sql);
+                for (Map<String, Object> storageMap : storageList) {
+                    String logic_id1 = toString(storageMap.get("LOGIC_ID"));
+                    String database_id1 = toString(storageMap.get("DATABASE_ID"));
+                    String storage_define_identifier = toString(storageMap.get("STORAGE_DEFINE_IDENTIFIER"));
+                    String data_sync_identifier = toString(storageMap.get("DATA_SYNC_IDENTIFIER"));
+                    String data_moveclean_identifier = toString(storageMap.get("DATA_MOVECLEAN_IDENTIFIER"));
+                    String data_backup_identifier = toString(storageMap.get("DATA_BACKUP_IDENTIFIER"));
+                    String data_archiving_identifier = toString(storageMap.get("DATA_ARCHIVING_IDENTIFIER"));
+                    String sync_id = toString(storageMap.get("SYNC_ID"));
+                    String clear_id = toString(storageMap.get("CLEAR_ID"));
+                    String backup_id = toString(storageMap.get("BACKUP_ID"));
+                    //查出来data_logic_id
+                    String data_logic_id = "";
+                    //database_id1对应新库的id
+                    String database_id_new = "";
+                    sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+database_id1+"'";
+                    List<Map> databaseList = CodeDOM.getList(sql);
+                    if(databaseList != null && databaseList.size() > 0){
+                        String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
+                        String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                        String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                        String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+                        if(database_classify.equals("物理库")){
+                            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id1);
+                            database_id_new = databaseEntity1.get(0).getId();
+                        }else{
+                            List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                            database_id_new = defineId.get(0).getId();
+                        }
+                    }
+
+                    List<DataLogicEntity> dataLogicEntities = dataLogicDao.findByDataClassIdAndDatabaseIdAndLogicFlag(data_class_id, database_id_new, logic_id1);
+                    if(dataLogicEntities != null && dataLogicEntities.size()>0){
+                        data_logic_id = dataLogicEntities.get(0).getId();
+                    }
+
+                    StorageConfigurationEntity storageConfigurationEntity = new StorageConfigurationEntity();
+                    if(StringUtils.isNotEmpty(data_logic_id)){
+                        storageConfigurationEntity.setClassLogicId(data_logic_id);
+                    }
+                    if(StringUtils.isNotEmpty(storage_define_identifier)){
+                        storageConfigurationEntity.setStorageDefineIdentifier(Integer.valueOf(storage_define_identifier));
+                    }
+                    if(StringUtils.isNotEmpty(data_sync_identifier)){
+                        storageConfigurationEntity.setSyncIdentifier(Integer.valueOf(data_sync_identifier));
+                    }
+                    if(StringUtils.isNotEmpty(data_moveclean_identifier)){
+                        storageConfigurationEntity.setMovecleanIdentifier(Integer.valueOf(data_moveclean_identifier));
+                    }
+                    if(StringUtils.isNotEmpty(data_backup_identifier)){
+                        storageConfigurationEntity.setBackupIdentifier(Integer.valueOf(data_backup_identifier));
+                    }
+                    if(StringUtils.isNotEmpty(data_archiving_identifier)){
+                        storageConfigurationEntity.setArchivingIdentifier(Integer.valueOf(data_archiving_identifier));
+                    }
+                    storageConfigurationDao.saveNotNull(storageConfigurationEntity);
+                }
+            }
         }
     }
 }
