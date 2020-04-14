@@ -220,8 +220,8 @@ export default {
       alarmOptions: [],
       databaseOptions: [],
       dataClassIdOptions: [],
-      conditionsOptions:[],
-      clearConditionsOptions:[],
+      conditionsOptions: [],
+      clearConditionsOptions: [],
       msgFormDialog: {
         databaseId: "",
         dataClassId: "",
@@ -286,7 +286,10 @@ export default {
       this.clearConditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
-    if (this.handleObj.pageName == "资料存储策略") {
+    if (
+      this.handleObj.pageName == "资料存储策略" ||
+      this.handleObj.pageName == "存储结构概览"
+    ) {
       this.msgFormDialog.databaseId = this.handleObj.databaseId;
       await this.selectByDatabaseIds(
         this.handleObj.databaseId,

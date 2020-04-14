@@ -40,7 +40,6 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="近时备份条件" prop="conditions">
-
             <el-select
               v-model="msgFormDialog.conditions"
               placeholder="请选择近时备份条件"
@@ -186,8 +185,8 @@ export default {
       databaseOptions: [],
       dataClassIdOptions: [],
       storageDirectoryOptions: [],
-      conditionsOptions:[],
-      secondConditionsOptions:[],
+      conditionsOptions: [],
+      secondConditionsOptions: [],
       msgFormDialog: {
         ddataId: "",
         dataClassId: "",
@@ -249,15 +248,18 @@ export default {
       this.secondConditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
-    if (this.handleObj.pageName == "资料存储策略") {
+    if (
+      this.handleObj.pageName == "资料存储策略" ||
+      this.handleObj.pageName == "存储结构概览"
+    ) {
       this.msgFormDialog = this.handleObj;
       await this.selectByDatabaseIds(
         this.handleObj.databaseId,
         this.handleObj.dataClassId
       );
-      // this.msgFormDialog.databaseId = this.handleObj.databaseId;
       await this.selectTable(this.handleObj.dataClassId);
     }
+
     // 查看详情
     if (this.handleObj.id) {
       await getBackup(this.handleObj.id).then(response => {

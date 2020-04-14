@@ -153,7 +153,7 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="账户列表" name="three" v-if="handleMsgObj.id">
+      <el-tab-pane label="账户列表" name="three">
         <el-form>
           <el-form-item class="manageBtn" style="float:right;">
             <el-button type="primary" size="small" @click="addPhysicsUser" icon="el-icon-plus">添加</el-button>
@@ -192,7 +192,7 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="专题列表" name="four">
+      <el-tab-pane label="专题列表" name="four" v-if="handleMsgObj.id">
         <el-table :data="physicsSpecialList" border stripe style="width: 100%;">
           <el-table-column type="index" width="50"></el-table-column>
           <el-table-column prop="databaseName" label="专题名"></el-table-column>

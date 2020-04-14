@@ -31,7 +31,7 @@
       <el-table-column prop="LOGIC_NAME" label="数据用途"></el-table-column>
       <el-table-column prop="DATABASE_NAME" label="数据库"></el-table-column>
       <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" width="100"></el-table-column>
-      <el-table-column label="参数配置" width="240">
+      <el-table-column label="参数配置" width="280">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
@@ -42,30 +42,38 @@
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
 
-          <!-- 迁移清除 -->
-          <el-button disabled v-if="scope.row.STORAGE_MOVECLEAN_IDENTIFIER==3" size="mini">
-            <i class="btnRound orangRound"></i>迁移清除
+          <!-- 迁移 -->
+
+          <el-button v-if="scope.row.MOVE_ST==1" size="mini" @click="handleMoveMethods(scope.row)">
+            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+            <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
+            <i class="btnRound orangRound" v-else></i>迁移
           </el-button>
-          <el-button v-else size="mini" @click="handleCleanAndTransfer(scope.row)">
+
+          <!-- 清除 -->
+          <el-button
+            v-if="scope.row.CLEAR_ST==1"
+            size="mini"
+            @click="handleClearMethods(scope.row)"
+          >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
-            <i class="btnRound orangRound" v-else></i>迁移清除
+            <i class="btnRound orangRound" v-else></i>清除
           </el-button>
 
           <!-- 备份 -->
-          <el-button disabled v-if="scope.row.STORAGE_BACKUP_IDENTIFIER==3" size="mini">
-            <i class="btnRound orangRound"></i>备份
-          </el-button>
-          <el-button v-else size="mini" @click="handleBackUpMethods(scope.row)">
-            <i
-              class="btnRound blueRound"
-              v-if="scope.row.STORAGE_BACKUP_IDENTIFIER==1&&scope.row.BACKUP_ID"
-            ></i>
+          <el-button
+            v-if="scope.row.BACKUP_ST==1"
+            size="mini"
+            @click="handleBackUpMethods(scope.row)"
+          >
+            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+            <i class="btnRound blueRound" v-if="scope.row.BACKUP_ID"></i>
             <i class="btnRound orangRound" v-else></i>备份
           </el-button>
 
           <!-- 恢复 -->
-          <el-button disabled v-if="scope.row.STORAGE_ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
+          <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
           <el-button v-else size="mini" @click="openRecoverDialog(scope.row)">恢复</el-button>
         </template>
       </el-table-column>
@@ -108,30 +116,38 @@
       v-dialogDrag
       title="选择需要配置的选项"
       :visible.sync="dialogSetting"
-      width="500px"
+      width="600px"
       :before-close="handleClose"
     >
       <el-checkbox
         @change="changeSetting"
         v-model="checked3"
-        false-label="STORAGE_MOVECLEAN_IDENTIFIER*"
-        true-label="STORAGE_MOVECLEAN_IDENTIFIER"
-        label="迁移清除"
+        false-label="move_identifier*"
+        true-label="move_identifier"
+        label="迁移"
+        border
+      ></el-checkbox>
+      <el-checkbox
+        @change="changeSetting"
+        v-model="checked3"
+        false-label="clean_identifier*"
+        true-label="clean_identifier"
+        label="清除"
         border
       ></el-checkbox>
       <el-checkbox
         @change="changeSetting"
         v-model="checked4"
-        false-label="STORAGE_BACKUP_IDENTIFIER*"
-        true-label="STORAGE_BACKUP_IDENTIFIER"
+        false-label="backup_identifier*"
+        true-label="backup_identifier"
         label="备份"
         border
       ></el-checkbox>
       <el-checkbox
         @change="changeSetting"
         v-model="checked5"
-        false-label="STORAGE_ARCHIVING_IDENTIFIER*"
-        true-label="STORAGE_ARCHIVING_IDENTIFIER"
+        false-label="archiving_identifier*"
+        true-label="archiving_identifier"
         label="恢复"
         border
       ></el-checkbox>
@@ -182,21 +198,23 @@
       :visible.sync="handleCLeadupDialog"
       :before-close="handleClose"
       width="1100px"
+      v-dialogDrag
     >
       <handleClear
         v-if="handleCLeadupDialog"
         :handleObj="handleMsgObj"
-        @closeClearDialog="closeClearDialog"
+        @cancelHandle="handleClose"
       />
     </el-dialog>
     <!-- 迁移配置信息 -->
     <el-dialog
       :title="dialogMsgTitle"
-      :visible.sync="handleMsgDialog"
+      :visible.sync="handleMoveDialog"
       width="1200px"
       :before-close="handleClose"
+      v-dialogDrag
     >
-      <handleMove @handleClose="handleClose" v-if="handleMsgDialog" :handleObj="handleMsgObj"></handleMove>
+      <handleMove @cancelHandle="handleClose" v-if="handleMoveDialog" :handleObj="handleMsgObj"></handleMove>
     </el-dialog>
     <!-- 备份 -->
     <el-dialog
@@ -204,11 +222,12 @@
       :visible.sync="handleBackupDialog"
       :before-close="handleClose"
       width="72%"
+      v-dialogDrag
     >
       <handleBackUp
         v-if="handleBackupDialog"
         :handleObj="handleMsgObj"
-        @handleClose="handleClose"
+        @cancelHandle="handleClose"
         ref="myHandleChild"
       />
     </el-dialog>
@@ -274,7 +293,7 @@ export default {
       handleCLeadupDialog: false,
       handleBackupDialog: false,
       handleDataRecoveryDialog: false,
-      handleMsgDialog: false,
+      handleMoveDialog: false,
       innerCheckMD5Visible: false,
 
       // 设置
@@ -282,6 +301,7 @@ export default {
       checked3: "",
       checked4: "",
       checked5: "",
+      rowId: "",
       // 数据恢复
       handleDataRecoveryDialog: false,
       innerCheckMD5Visible: false, //md5校验
@@ -323,110 +343,71 @@ export default {
       this.structureManageTitle = row.class_name;
       this.structureManageVisible = true;
     },
-    handleCleanAndTransfer(row) {
-      if (row.STORAGE_MOVECLEAN_IDENTIFIER != 3) {
-        if (
-          row.STORAGE_MOVECLEAN_IDENTIFIER == 1 &&
-          (row.database_type == "cassandra" || row.database_type == "ali_ots")
-        ) {
-          //flag添加或修改表中，3添加，2修改
-          let flag = 3;
-          if (row.CLEAR_ID) {
-            flag = 2;
-          }
-          // this.handleCLeadupDialog = true;
-          // tbdataClearAdd
-        } else {
-          //flag添加或修改表中，3添加，2修改
-          let flag = 3;
-          let databasetype = 2;
-          this.handleMsgObj.handle = "存储结构概览-新增";
-          this.dialogMsgTitle = "添加迁移清除配置信息";
-          // this.dialogCleanupTitle = '添加迁移清除配置信息'
-          if (row.DATABASE_ID && row.parent_id.indexOf("FIDB") > -1) {
-            databasetype = 1;
-          }
-          if (null != row.CLEAR_ID && row.CLEAR_ID != "") {
-            flag = 2;
-            this.handleMsgObj.handle = "存储结构概览-编辑";
-            this.dialogMsgTitle = "编辑迁移清除配置信息";
-          }
-          this.handleMsgObj.physics_database = row.parent_id;
-          this.handleMsgObj.data_class_id = row.data_class_id;
-          this.handleMsgObj.database_type = databasetype;
-          this.handleMsgObj.data_service_name = row.data_service_name;
-          console.log(this.handleMsgObj);
-          // 判断去哪个页面
-          this.axios
-            .get(interfaceObj.findDataBaseMap + "?proName=migrateandclear")
-            .then(res => {
-              let list = res.data.data;
-              let rec = {};
-              rec = list.find(item => {
-                return (
-                  item.TEXT ===
-                  row.database_name + "_" + row.special_database_name
-                );
-              });
-              if (rec.value.indexOf("#1") > 0) {
-                // 文件
-                // 跳转迁移
-                this.handleMsgDialog = true;
-              } else if (rec.value.indexOf("#2") > 0) {
-                // 历史
-                // 跳转结构化数据类型清除
-                if (this.dialogMsgTitle == "编辑迁移清除配置信息") {
-                  this.axios
-                    .post(interfaceObj.databaseTransfer_findbyDataClassId, {
-                      databaseId: row.DATABASE_ID,
-                      dataClassId: row.data_class_id,
-                      type: 2
-                    })
-                    .then(res => {
-                      if (res.data.returnCode == 0) {
-                        this.handleMsgObj = res.data.data.transfer;
-                        console.log(this.handleMsgObj);
-                        this.handleCLeadupDialog = true;
-                      }
-                    });
-                } else {
-                  this.handleMsgObj.pageName = "存储结构概览";
-                  this.handleCLeadupDialog = true;
-                }
-              } else {
-                console.log("11");
-              }
-            });
-        }
-      }
-    },
-    handleBackUpMethods(row) {
-      if (row.data_backup_identifier == 1 && row.backup_id) {
-        // openUpdateBackupDialog 修改
-        this.axios
-          .get(interfaceObj.getByTaskId, { params: { taskId: row.backup_id } })
-          .then(res => {
-            this.handleObj = res.data.data;
-            this.dialogBackupTitle = "修改";
-            this.handleBackupDialog = true;
-          });
+    // 数据迁移
+    handleMoveMethods(row) {
+      this.handleMsgObj = {};
+      if (row.MOVE_ID) {
+        this.handleMsgObj.id = row.MOVE_ID;
+        this.dialogMsgTitle = "编辑";
       } else {
-        this.handleObj = {};
-        let arry = [];
-        arry.push(row.data_class_id);
-        this.handleObj.databaseId = row.database_id;
-        this.handleObj.dataclass_value = arry;
-        this.handleObj.pageName = "存储结构概览备份";
-        this.dialogBackupTitle = "新增";
-        this.handleBackupDialog = true;
-        // openBackDialog 新曾
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
       }
+      this.handleMoveDialog = true;
     },
+    // 数据清除
+    handleClearMethods(row) {
+      this.handleMsgObj = {};
+      if (row.CLEAR_ID) {
+        this.handleMsgObj.id = row.CLEAR_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleCLeadupDialog = true;
+    },
+    // 数据备份
+    handleBackUpMethods(row) {
+      this.handleMsgObj = {};
+      if (row.BACKUP_ID) {
+        this.handleMsgObj.id = row.BACKUP_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleBackupDialog = true;
+    },
+    // 数据恢复
     openRecoverDialog() {
-      // handleObj
+      this.handleMsgObj = {};
+      if (row.id) {
+        this.handleMsgObj.id = row.id;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
       this.handleDataRecoveryDialog = true;
+
+      /* this.handleMsgObj = {};
+      this.handleMsgObj.databaseId = row.DATABASE_ID;
+      this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+      this.handleMsgObj.class_name = row.CLASS_NAME;
+      this.handleMsgObj.database_name = row.DATABASE_NAME;
+      this.handleDataRecoveryDialog = true; */
     },
     settingCell(row) {
+      this.rowId = row.ID;
       this.dialogSetting = true;
     },
     deleteCell(row) {
@@ -456,14 +437,14 @@ export default {
       this.handleCLeadupDialog = false;
       this.handleBackupDialog = false;
       this.handleDataRecoveryDialog = false;
-      this.handleMsgDialog = false;
+      this.handleMoveDialog = false;
       this.structureManageVisible = false;
       this.getList();
     },
     changeSetting(event) {
       let settingObj = {};
       settingObj.id = this.rowId;
-
+      console.log(settingObj);
       if (event.indexOf("*") == -1) {
         // 可用
         settingObj.value = 2;
@@ -477,7 +458,7 @@ export default {
         if (response.code == 200) {
           this.$message({
             type: "success",
-            message: "删除成功"
+            message: "配置成功"
           });
         } else {
           this.$message({
@@ -486,7 +467,6 @@ export default {
           });
         }
       });
-      console.log(settingObj);
     },
     // 数据恢复
     handleRecover(msgFormDialog) {
