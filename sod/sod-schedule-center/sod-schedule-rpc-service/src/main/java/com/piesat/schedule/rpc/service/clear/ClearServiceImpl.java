@@ -7,7 +7,11 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
@@ -55,6 +59,10 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     private DiSendService diSendService;
     @GrpcHthtClient
     private DictDataService dictDataService;
+    @GrpcHthtClient
+    private DataLogicService dataLogicService;
+    @GrpcHthtClient
+    private StorageConfigurationService storageConfigurationService;
     @Override
     public BaseDao<ClearEntity> getBaseDao() {
         return clearDao;
@@ -126,6 +134,14 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         clearEntity=this.saveNotNull(clearEntity);
         diSendService.sendClear(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
+        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
+        for (DataLogicDto dl : dataLogic) {
+            StorageConfigurationDto scd = new StorageConfigurationDto();
+            scd.setClassLogicId(dl.getId());
+            scd.setBackupIdentifier(1);
+            scd.setBackupId(clearEntity.getId());
+            this.storageConfigurationService.updateDataAuthorityConfig(scd);
+        }
     }
     @Override
     public void updateClear(ClearDto clearDto){

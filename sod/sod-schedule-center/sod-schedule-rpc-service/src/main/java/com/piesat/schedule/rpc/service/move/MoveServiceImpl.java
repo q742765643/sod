@@ -7,7 +7,11 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
@@ -54,6 +58,10 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
     private DiSendService diSendService;
     @GrpcHthtClient
     private DictDataService dictDataService;
+    @GrpcHthtClient
+    private DataLogicService dataLogicService;
+    @GrpcHthtClient
+    private StorageConfigurationService storageConfigurationService;
     @Override
     public BaseDao<MoveEntity> getBaseDao() {
         return moveDao;
@@ -126,6 +134,14 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         moveEntity=this.saveNotNull(moveEntity);
         diSendService.sendMove(moveEntity);
         jobInfoService.start(moveMapstruct.toDto(moveEntity));
+        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), moveEntity.getTableName());
+        for (DataLogicDto dl : dataLogic) {
+            StorageConfigurationDto scd = new StorageConfigurationDto();
+            scd.setClassLogicId(dl.getId());
+            scd.setBackupIdentifier(1);
+            scd.setBackupId(moveEntity.getId());
+            this.storageConfigurationService.updateDataAuthorityConfig(scd);
+        }
     }
     @Override
     public void updateMove(MoveDto moveDto){
