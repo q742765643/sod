@@ -5,6 +5,8 @@ import com.piesat.common.utils.DateUtils;
 import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.dao.StorageConfigurationDao;
 import com.piesat.dm.dao.dataapply.CloudDatabaseApplyDao;
+import com.piesat.dm.dao.dataapply.DataAuthorityApplyDao;
+import com.piesat.dm.dao.dataapply.DataAuthorityRecordDao;
 import com.piesat.dm.dao.dataapply.NewdataApplyDao;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
@@ -18,6 +20,8 @@ import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.StorageConfigurationEntity;
 import com.piesat.dm.entity.dataapply.CloudDatabaseApplyEntity;
+import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
+import com.piesat.dm.entity.dataapply.DataAuthorityRecordEntity;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
@@ -115,6 +119,10 @@ public class ImportData {
     private NewdataApplyDao newdataApplyDao;
     @Autowired
     private StorageConfigurationDao storageConfigurationDao;
+    @Autowired
+    private DataAuthorityApplyDao dataAuthorityApplyDao;
+    @Autowired
+    private DataAuthorityRecordDao dataAuthorityRecordDao;
 
 
     public void implAll(){
@@ -133,6 +141,7 @@ public class ImportData {
         //importPortalAuz();
         //importSpecial();
         //importNewData();
+        importDataAuthority();
     }
 
 
@@ -1617,12 +1626,80 @@ public class ImportData {
         }
     }
 
-    //一致性检查
-    public void importconsistencyCheck() {
-        String sql = "select * from dmin_data_newdata_apply";
+    //数据访问权限审核
+    public void importDataAuthority() {
+        String sql = "select * from dmin_db_dataauthority_apply";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String d_data_id = toString(m.get("D_DATA_ID"));
+            String apply_id = toString(m.get("APPLY_ID"));
+            String user_id = toString(m.get("USER_ID"));
+            String apply_time = toString(m.get("APPLY_TIME"));
+            String audit_status = toString(m.get("AUDIT_STATUS"));
+            String examiner = toString(m.get("EXAMINER"));
+            String examine_time = toString(m.get("EXAMINE_TIME"));
+
+            DataAuthorityApplyEntity dataAuthorityApplyEntity = new DataAuthorityApplyEntity();
+
+            dataAuthorityApplyEntity.setAuditStatus(audit_status);
+            if(StringUtils.isNotEmpty(examine_time)){
+                Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
+                dataAuthorityApplyEntity.setExamineTime(date);
+            }
+            if(StringUtils.isNotEmpty(examiner)){
+                dataAuthorityApplyEntity.setExaminer(examiner);
+            }
+            dataAuthorityApplyEntity.setUserId(user_id);
+            //dataAuthorityApplyEntity = dataAuthorityApplyDao.saveNotNull(dataAuthorityApplyEntity);
+
+            sql = "select * from dmin_db_dataauthority where apply_id='"+apply_id+"'";
+            List<Map> recordList = CodeDOM.getList(sql);
+            if(recordList != null && recordList.size() > 0){
+                for (Map<String, Object> recordMap : recordList) {
+                    String data_class_id = toString(recordMap.get("DATA_CLASS_ID"));
+                    String database_id = toString(recordMap.get("DATABASE_ID"));
+                    String apply_authority = toString(recordMap.get("APPLY_AUTHORITY"));
+                    String authorize = toString(recordMap.get("AUTHORIZE"));
+                    String cause = toString(recordMap.get("CAUSE"));
+                    String qtdb_id = toString(recordMap.get("QTDB_ID"));
+
+                    DataAuthorityRecordEntity dataAuthorityRecordEntity = new DataAuthorityRecordEntity();
+                    if(StringUtils.isNotEmpty(apply_authority)){
+                        dataAuthorityRecordEntity.setApplyAuthority(Integer.valueOf(apply_authority));
+                    }
+                    if(StringUtils.isNotEmpty(authorize)){
+                        dataAuthorityRecordEntity.setAuthorize(Integer.valueOf(authorize));
+                    }
+                    if(StringUtils.isNotEmpty(cause)){
+                        dataAuthorityRecordEntity.setCause(cause);
+                    }
+                    dataAuthorityRecordEntity.setDataClassId(data_class_id);
+                    if(StringUtils.isNotEmpty(database_id)){
+                        String database_id_new = "";
+                        sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+database_id+"'";
+                        List<Map> databaseList = CodeDOM.getList(sql);
+                        if(databaseList != null && databaseList.size() > 0){
+                            String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
+                            String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                            String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                            String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+                            if(database_classify.equals("物理库")){
+                                List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
+                                database_id_new = databaseEntity1.get(0).getId();
+                            }else{
+                                List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                                database_id_new = defineId.get(0).getId();
+                                dataAuthorityRecordEntity.setQtdbId(defineId.get(0).getTdbId());
+                            }
+                        }
+                        if(StringUtils.isNotEmpty(database_id_new)){
+                            dataAuthorityRecordEntity.setDatabaseId(database_id_new);
+                        }
+                    }
+                    dataAuthorityApplyEntity.getDataAuthorityRecordList().add(dataAuthorityRecordEntity);
+                    //dataAuthorityRecordDao.saveNotNull(dataAuthorityRecordEntity);
+                }
+            }
+            dataAuthorityApplyEntity = dataAuthorityApplyDao.saveNotNull(dataAuthorityApplyEntity);
         }
     }
 }

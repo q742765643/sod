@@ -237,7 +237,7 @@ export default {
     },
     //状态转换
     getMainBak(row) {
-      let result = row.mainbak_type == "1" ? "主库" : "备份库";
+      let result = row.mainBakType == "1" ? "主库" : "备份库";
       return result;
     },
     getDisplyControl(row) {

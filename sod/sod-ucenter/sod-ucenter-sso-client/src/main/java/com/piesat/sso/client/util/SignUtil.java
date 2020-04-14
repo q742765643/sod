@@ -145,8 +145,9 @@ public class SignUtil {
             }
         }
         CasVo casVo=JSON.parseObject(JSON.toJSONString(map),CasVo.class);
-        request.putHeader("appId",casVo.getUserId());
         if(null!=casVo.getData()&&!"".equals(casVo.getData())){
+            request.putHeader("appId",casVo.getUserId());
+            request.putHeader("pwd",casVo.getPwd());
             Map<String,Object> data=JSON.parseObject(casVo.getData(),Map.class);
             Map<String,String[]> parameterMap=new HashMap<>();
 
@@ -168,18 +169,20 @@ public class SignUtil {
                 }
             }
             request.putParameterMap(parameterMap);
-
+            checkSign(casVo,map);
         }
-        checkSign(casVo,map);
 
 
 
 
     }
     public static void signJson(CasVo casVo,String data, WrapperedRequest wrapRequest) throws Exception {
-        wrapRequest.putHeader("appId",casVo.getUserId());
-        Map<String,Object> signMap=JSON.parseObject(data,Map.class);
-        checkSign(casVo,signMap);
+        if(null!=casVo.getData()&&!"".equals(casVo.getData())) {
+            wrapRequest.putHeader("appId", casVo.getUserId());
+            wrapRequest.putHeader("pwd",casVo.getPwd());
+            Map<String, Object> signMap = JSON.parseObject(data, Map.class);
+            checkSign(casVo, signMap);
+        }
 
     }
 
