@@ -24,6 +24,25 @@ body .el-table th.gutter {
   display: table-cell !important;
 }
 
+.blueRound {
+  background: #1e9fff;
+}
+
+.orangRound {
+  background: #ff5722;
+}
+
+.btnRound {
+  border-radius: 50%;
+  margin-top: 4px;
+  margin-right: 4px;
+  height: 6px;
+  width: 6px;
+  display: inline-block;
+  vertical-align: top;
+  overflow: hidden;
+}
+
 // 侧边栏的树
 .elTreeAsideBox {
   border-right: 1px solid $boderColor;

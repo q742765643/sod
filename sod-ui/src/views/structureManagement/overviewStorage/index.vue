@@ -31,20 +31,31 @@
       <el-table-column prop="LOGIC_NAME" label="数据用途"></el-table-column>
       <el-table-column prop="DATABASE_NAME" label="数据库"></el-table-column>
       <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" width="100"></el-table-column>
-      <el-table-column label="参数配置" width="280">
+      <el-table-column label="参数配置" width="360">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
             <i class="btnRound orangRound"></i>存储结构
           </el-button>
-          <el-button v-else size="mini" @click="databaseShow(scope.row)">
+          <el-button v-else size="mini" @click="handledDBShowMethods(scope.row)">
             <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
-
+          <!-- 数据同步 -->
+          <el-button disabled v-if="scope.row.SYNC_IDENTIFIER == 3" size="mini">
+            <i class="btnRound orangRound"></i>数据同步
+          </el-button>
+          <el-button v-else size="mini" @click="handlSyncShowMethods(scope.row)">
+            <i class="btnRound blueRound" v-if="scope.row.SYNC_ID"></i>
+            <i class="btnRound orangRound" v-else></i>数据同步
+          </el-button>
           <!-- 迁移 -->
 
-          <el-button v-if="scope.row.MOVE_ST==1" size="mini" @click="handleMoveMethods(scope.row)">
+          <el-button
+            v-if="scope.row.MOVE_ST==1"
+            size="mini"
+            @click="handlMoveShowMethods(scope.row)"
+          >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
@@ -54,7 +65,7 @@
           <el-button
             v-if="scope.row.CLEAR_ST==1"
             size="mini"
-            @click="handleClearMethods(scope.row)"
+            @click="handlClearShowMethods(scope.row)"
           >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
@@ -74,7 +85,7 @@
 
           <!-- 恢复 -->
           <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
-          <el-button v-else size="mini" @click="openRecoverDialog(scope.row)">恢复</el-button>
+          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="140px">
@@ -163,22 +174,9 @@
     >
       <DataRecovery
         v-if="handleDataRecoveryDialog"
-        :handleObj="handleObj"
-        @handleRecover="handleRecover"
+        :handleObj="handleMsgObj"
+        @handleRecover="handleClose"
       />
-      <el-dialog
-        width="90%"
-        title="MD5校验"
-        :visible.sync="innerCheckMD5Visible"
-        append-to-body
-        v-dialogDrag
-      >
-        <chechExe
-          v-if="innerCheckMD5Visible"
-          :handlecheckObj="handlecheckObj"
-          @handleMd5="handleMd5"
-        />
-      </el-dialog>
     </el-dialog>
 
     <!-- 表结构管理 存储结构 -->
@@ -231,6 +229,15 @@
         ref="myHandleChild"
       />
     </el-dialog>
+    <!-- 数据同步 -->
+    <el-dialog :title="dialogMsgTitle" :visible.sync="handleSyncDialog" width="80%" v-dialogDrag>
+      <handleSync
+        v-if="handleSyncDialog"
+        :handleObj="handleMsgObj"
+        @resetQuery="handleClose"
+        ref="myHandleServer"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -244,8 +251,6 @@ import {
 import SuperSearch from "@/components/superSearch";
 // 数据恢复
 import DataRecovery from "@/views/structureManagement/overviewStorage/handleDataRecovery";
-// md5校验
-import chechExe from "@/views/structureManagement/overviewStorage/handelchechExe";
 //表结构管理--弹出层
 import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
 // 迁移配置信息
@@ -254,15 +259,17 @@ import handleMove from "@/views/schedule/move/handleMove";
 import handleClear from "@/views/schedule/clear/handleClear";
 // 结构化数据备份配置弹窗
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
+// 数据同步
+import handleSync from "@/views/schedule/dataSync/handleSync";
 export default {
   components: {
     SuperSearch,
     DataRecovery,
-    chechExe,
     StructureManageTable,
     handleMove,
     handleClear,
-    handleBackUp
+    handleBackUp,
+    handleSync
   },
   data() {
     return {
@@ -294,7 +301,7 @@ export default {
       handleBackupDialog: false,
       handleDataRecoveryDialog: false,
       handleMoveDialog: false,
-      innerCheckMD5Visible: false,
+      handleSyncDialog: false, //数据同步
 
       // 设置
       dialogSetting: false,
@@ -303,9 +310,7 @@ export default {
       checked5: "",
       rowId: "",
       // 数据恢复
-      handleDataRecoveryDialog: false,
-      innerCheckMD5Visible: false, //md5校验
-      handlecheckObj: {} //md5校验
+      handleDataRecoveryDialog: false
     };
   },
   created() {
@@ -338,13 +343,28 @@ export default {
       this.superObj.pageName = "存储结构概览";
       this.dialogSuperSearch = true;
     },
-    databaseShow(row) {
+    // 存储结构
+    handledDBShowMethods(row) {
       this.rowData = row;
       this.structureManageTitle = row.class_name;
       this.structureManageVisible = true;
     },
+    // 数据同步
+    handlSyncShowMethods(row) {
+      this.handleMsgObj = {};
+      if (row.SYNC_ID) {
+        this.handleMsgObj.id = row.SYNC_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleSyncDialog = true;
+    },
     // 数据迁移
-    handleMoveMethods(row) {
+    handlMoveShowMethods(row) {
       this.handleMsgObj = {};
       if (row.MOVE_ID) {
         this.handleMsgObj.id = row.MOVE_ID;
@@ -358,7 +378,7 @@ export default {
       this.handleMoveDialog = true;
     },
     // 数据清除
-    handleClearMethods(row) {
+    handlClearShowMethods(row) {
       this.handleMsgObj = {};
       if (row.CLEAR_ID) {
         this.handleMsgObj.id = row.CLEAR_ID;
@@ -386,25 +406,15 @@ export default {
       this.handleBackupDialog = true;
     },
     // 数据恢复
-    openRecoverDialog() {
+    handlRecoverMethods(row) {
       this.handleMsgObj = {};
-      if (row.id) {
-        this.handleMsgObj.id = row.id;
-        this.dialogMsgTitle = "编辑";
-      } else {
-        this.handleMsgObj.databaseId = row.DATABASE_ID;
-        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
-        this.handleMsgObj.pageName = "存储结构概览";
-        this.dialogMsgTitle = "新增";
-      }
-      this.handleDataRecoveryDialog = true;
-
-      /* this.handleMsgObj = {};
       this.handleMsgObj.databaseId = row.DATABASE_ID;
       this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
       this.handleMsgObj.class_name = row.CLASS_NAME;
       this.handleMsgObj.database_name = row.DATABASE_NAME;
-      this.handleDataRecoveryDialog = true; */
+      this.handleMsgObj.pageName = "存储结构概览";
+      this.dialogMsgTitle = "数据恢复";
+      this.handleDataRecoveryDialog = true;
     },
     settingCell(row) {
       this.rowId = row.ID;
@@ -439,6 +449,7 @@ export default {
       this.handleDataRecoveryDialog = false;
       this.handleMoveDialog = false;
       this.structureManageVisible = false;
+      this.handleSyncDialog = false;
       this.getList();
     },
     changeSetting(event) {
@@ -467,15 +478,7 @@ export default {
           });
         }
       });
-    },
-    // 数据恢复
-    handleRecover(msgFormDialog) {
-      if (msgFormDialog) {
-      }
-      this.handleDataRecoveryDialog = false;
-    },
-    // md5
-    handleMd5() {}
+    }
   }
 };
 </script>

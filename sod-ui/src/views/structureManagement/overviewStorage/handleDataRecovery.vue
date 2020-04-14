@@ -1,78 +1,45 @@
 <template>
   <section class="handleDataRecoveryDialog">
-    <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog" label-width="120px">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="数据库名称" prop="databaseId">
-            <el-input size="small" v-model="msgFormDialog.database_name" disabled></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="资料名称" prop="dataClassId">
-            <el-input size="small" v-model="msgFormDialog.class_name" disabled></el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
-
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="目录" prop="rootDirectory">
-            <el-select size="small" v-model="msgFormDialog.rootDirectory">
-              <el-option
-                v-for="(item,index) in rootList"
-                :key="index"
-                :label="item.TEXT"
-                :value="item.VALUE"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="执行端口和IP" prop="execIp">
-            <el-select size="small" v-model="msgFormDialog.execIp">
-              <el-option
-                v-for="(item,index) in execIpList"
-                :key="index"
-                :label="item.TEXT"
-                :value="item.VALUE"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="选择时间">
-            <el-date-picker
-              size="small"
-              v-model="msgFormDialog.timeQuantum"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label>
-            <el-button
-              type="primary"
-              @click="searchFun('ruleForm')"
-              size="small"
-              icon="el-icon-search"
-            >查询</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
-
-      <el-row>
-        <el-col :span="24">
-          <el-form-item label="恢复文件列表">
-            <el-input size="small" type="textarea" readonly v-model="msgFormDialog.filePath"></el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
+    <el-form
+      :rules="rules"
+      ref="ruleForm"
+      :model="msgFormDialog"
+      label-width="100px"
+      :inline="true"
+      class="searchBox"
+    >
+      <el-form-item label="数据库名称" prop="databaseId">
+        <el-input size="small" v-model="msgFormDialog.database_name" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="资料名称" prop="dataClassId">
+        <el-input size="small" v-model="msgFormDialog.class_name" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="目录" prop="path">
+        <el-select size="small" v-model="msgFormDialog.path">
+          <el-option
+            v-for="dict in storageDirectoryOptions"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="getTreeList" size="small" icon="el-icon-search">查询</el-button>
+      </el-form-item>
     </el-form>
+    <p style="font-size:14px">恢复文件列表</p>
+    <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-tree
+        ref="eltree"
+        node-key="id"
+        show-checkbox
+        :data="treedata"
+        :props="defaultProps"
+        :load="loadNode"
+        lazy
+      ></el-tree>
+    </el-scrollbar>
 
     <!-- 确定取消 -->
     <div slot="footer" class="dialog-footer">
@@ -80,17 +47,16 @@
       <el-button @click="handleRecover('false')">取 消</el-button>
     </div>
     <el-dialog
-      width="70%"
-      :title="innerTreeTitle"
-      :visible.sync="innerTreeVisible"
+      width="90%"
+      title="MD5校验"
+      :visible.sync="innerCheckMD5Visible"
       append-to-body
       v-dialogDrag
     >
-      <InnerTree
-        v-if="innerTreeVisible"
-        :handleInnerObj="handleInnerObj"
-        @handleInnerTrue="handleInnerTrue"
-        @handleInnerCancel="handleInnerCancel"
+      <chechExe
+        v-if="innerCheckMD5Visible"
+        :handlecheckObj="handlecheckObj"
+        @handleMd5Cancel="handleMd5Cancel"
         ref="myHandleChild"
       />
     </el-dialog>
@@ -98,12 +64,20 @@
 </template>
 
 <script>
-import { englishAndNumValidation } from "@/components/commonVaildate.js";
-import InnerTree from "@/views/structureManagement/overviewStorage/handleGetDataFileList";
+// 树转换
+import { newTeam } from "@/components/commonVaildate";
+// md5校验
+import chechExe from "@/views/structureManagement/overviewStorage/handelchechExe";
+// 接口
+import {
+  getDataFileList,
+  md5Check,
+  getFileChidren
+} from "@/api/schedule/dataRecovery";
 export default {
   name: "handleDataRecoveryDialog",
   components: {
-    InnerTree
+    chechExe
   },
   props: {
     handleObj: {
@@ -112,21 +86,22 @@ export default {
   },
   data() {
     return {
-      selectDSLabel: "",
-      dataclass_data: [],
-      rootList: [],
-      execIpList: [],
-      searchObj: {},
-      innerTreeTitle: "",
-      innerTreeVisible: false,
-      handleInnerObj: [],
+      loading: true,
+      treedata: [],
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      storageDirectoryOptions: [], //目录
+      // 查询
       msgFormDialog: {
         databaseId: "",
         dataClassId: "",
-        timeQuantum: "",
-        execIp: "",
-        filePath: ""
+        path: ""
       },
+      // md5
+      innerCheckMD5Visible: false,
+      handlecheckObj: {},
       rules: {
         databaseId: [
           { required: true, message: "请选择数据库", trigger: "change" }
@@ -134,98 +109,97 @@ export default {
         dataClassId: [
           { required: true, message: "请选择资料", trigger: "change" }
         ],
-        rootDirectory: [
-          { required: true, message: "请选择目录", trigger: "change" }
-        ],
-        execIp: [
-          { required: true, message: "请选择执行IP和端口", trigger: "change" }
-        ]
+        path: [{ required: true, message: "请选择目录", trigger: "change" }]
       }
     };
   },
   created() {
-    this.searchObj = this.handleObj;
-    // this.axios
-    //   .get(interfaceObj.databaseBackup_DataBaseFromDir, {
-    //     params: { type: 38 }
-    //   })
-    //   .then(res => {
-    //     this.rootList = res.data.data;
-    //   });
-    // this.axios.get(interfaceObj.databaseRecover_getIpList).then(res => {
-    //   this.execIpList = res.data.data;
-    // });
-    // this.initServerDetail();
+    this.msgFormDialog = this.handleObj;
+    // 获取目录
+    this.getDicts("backup_storage_directory").then(response => {
+      this.storageDirectoryOptions = response.data;
+    });
   },
   methods: {
-    // 获取详情
-    initServerDetail() {
-      this.msgFormDialog = this.searchObj;
-    },
-
-    searchFun(formName) {
+    getTreeList(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let searchFileObj = {};
-          searchFileObj = this.msgFormDialog;
-          searchFileObj.storageDirectory = this.msgFormDialog.rootDirectory;
-          if (this.msgFormDialog.length > 0) {
-            searchFileObj.beginTime = this.msgFormDialog.timeQuantum[0];
-            searchFileObj.endTime = this.msgFormDialog.timeQuantum[1];
-          }
-
-          this.axios
-            .post(interfaceObj.databaseRecover_getDataFileList, searchFileObj)
-            .then(res => {
-              this.innerTreeTitle =
-                "物理库:" +
-                this.selectDSLabel +
-                " | 存储编码:" +
-                this.msgFormDialog.dataClassId;
-              this.handleInnerObj = res.data.data;
-              this.innerTreeVisible = true;
-            });
+          this.loading = true;
+          console.log(this.msgFormDialog);
+          getDataFileList(this.msgFormDialog).then(res => {
+            // 第一级的pid为空
+            this.treedata = newTeam(res.data, "");
+            console.log(this.treedata);
+          });
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    handleInnerTrue(newArry) {
-      var ids = "";
-      for (var i = 0; i < newArry.length; i++) {
-        if (i == newArry.length - 1) {
-          ids += newArry[i].id;
-        } else {
-          ids += newArry[i].id + ",";
-        }
+    // 树的懒加载
+    loadNode(node, resolve) {
+      if (node.level === 0 || node.data.isParent == false) {
+        return resolve([]);
+      } else {
+        getFileChidren({ childrenPath: node.data.id }).then(res => {
+          resolve(res.data);
+        });
       }
-      this.msgFormDialog.filePath = ids;
-      this.innerTreeVisible = false;
-    },
-    handleInnerCancel() {
-      this.innerTreeVisible = false;
     },
     handleRecover(formName) {
       if (formName == "false") {
         this.$emit("handleRecover", false);
         return;
       }
-      if (!this.msgFormDialog.filePath) {
-        this.$message({
-          type: "error",
-          message: "请选择恢复文件列表"
-        });
-        return false;
-      }
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$emit("handleRecover", this.msgFormDialog);
+          let checkedArry = this.$refs.eltree.getCheckedKeys();
+          if (checkedArry.length == 0) {
+            this.msgError("请选择一条数据");
+            return;
+          }
+          let obj = {};
+          obj.databaseId = this.msgFormDialog.databaseId;
+          obj.paths = checkedArry;
+          console.log(obj);
+          md5Check(obj).then(res => {
+            if (res.code == 200) {
+              this.handlecheckObj = {};
+              this.handlecheckObj = this.msgFormDialog;
+              this.handlecheckObj.pathList = res.data;
+              this.innerCheckMD5Visible = true;
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
         }
       });
+    },
+    // mds校验
+    handleExe() {
+      let checkedArry = this.$refs.eltree.getCheckedKeys();
+      if (checkedArry.length == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      let obj = {};
+      obj.databaseId = this.msgFormDialog.databaseId;
+      obj.paths = checkedArry;
+      console.log(obj);
+      md5Check(obj).then(res => {
+        if (res.code == 200) {
+          this.handlecheckObj = {};
+          this.handlecheckObj = this.msgFormDialog;
+          this.handlecheckObj.pathList = res.data;
+          this.innerCheckMD5Visible = true;
+        }
+      });
+    },
+    // 确认 md5
+    handleMd5Cancel() {
+      this.innerCheckMD5Visible = false;
     }
   }
 };
@@ -233,32 +207,15 @@ export default {
 
 <style lang="scss">
 .handleDataRecoveryDialog {
-  .el-select {
-    width: 100%;
+  .el-scrollbar {
+    margin: 10px 0;
+    padding-top: 10px;
+    height: 300px;
+    border: 1px solid #c0c4cc;
+    border-radius: 2px;
   }
-  .box-card {
-    margin-bottom: 20px;
-  }
-  .el-form-item__content {
-    display: flex;
-  }
-  .el-card__header {
-    position: relative;
-    padding-left: 40px;
-  }
-  .el-card__header:before {
-    content: "";
-    position: absolute;
-    width: 4px;
-    left: 20px;
-    top: 12px;
-    height: 55%;
-    background-color: #409eff;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
-  .switchBox .el-form-item__content {
-    margin-top: 10px;
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
 }
 </style>
