@@ -133,6 +133,12 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    public List<DataLogicDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
+        List<DataLogicEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
+        return this.dataLogicMapper.toDto(dataLogic);
+    }
+
+    @Override
     public DataLogicDto getDotById(String id) {
         DataLogicEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);
