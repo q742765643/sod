@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.StorageConfigurationDao;
 import com.piesat.dm.entity.StorageConfigurationEntity;
+import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
@@ -34,6 +35,8 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     private StorageConfigurationMapper storageConfigurationMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private MybatisModifyMapper mybatisModifyMapper;
     @Autowired
     private DataClassService dataClassService;
 
@@ -108,5 +111,11 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     @Override
     public void deleteByDataClassId(String dataClassId) {
         this.storageConfigurationDao.deleteByDataClassId(dataClassId);
+    }
+
+    @Override
+    public void updateDataAuthorityConfig(StorageConfigurationDto storageConfigurationDto) {
+        StorageConfigurationEntity storageConfigurationEntity = this.storageConfigurationMapper.toEntity(storageConfigurationDto);
+        this.mybatisModifyMapper.updateDataAuthorityConfig(storageConfigurationEntity);
     }
 }

@@ -23,23 +23,23 @@ public class StorageConfigurationEntity extends BaseEntity {
     @Column(name = "class_logic_id", length = 255, unique=true)
     private String classLogicId;
 
-    /**
-     * 逻辑库ID
-     */
-    @Column(name = "logic_id", length = 20)
-    private String logicId;
-
-    /**
-     * 物理库ID
-     */
-    @Column(name = "database_id", length = 50)
-    private String databaseId;
-
-    /**
-     * 资料存储编码
-     */
-    @Column(name = "data_class_id", length = 50)
-    private String dataClassId;
+//    /**
+//     * 逻辑库ID
+//     */
+//    @Column(name = "logic_id", length = 20)
+//    private String logicId;
+//
+//    /**
+//     * 物理库ID
+//     */
+//    @Column(name = "database_id", length = 50)
+//    private String databaseId;
+//
+//    /**
+//     * 资料存储编码
+//     */
+//    @Column(name = "data_class_id", length = 50)
+//    private String dataClassId;
 
     /**
      * 存储结构创建标识

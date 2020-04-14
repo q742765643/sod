@@ -2,6 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.piesat.dm.mapper.MybatisModifyMapper">
 
-
+    <update id="updateDataAuthorityConfig" parameterType="StorageConfigurationEntity">
+        update t_sod_data_authority_record
+        <set>
+            <if test="syncIdentifier != null">
+                sync_identifier = #{syncIdentifier},
+            </if>
+            <if test="cleanIdentifier != null">
+                clean_identifier = #{cleanIdentifier},
+            </if>
+            <if test="moveIdentifier != null">
+                move_identifier = #{moveIdentifier},
+            </if>
+            <if test="backupIdentifier != null">
+                backup_identifier = #{backupIdentifier},
+            </if>
+        </set>
+        where  class_logic_id = #{classLogicId}
+    </update>
 
 </mapper>

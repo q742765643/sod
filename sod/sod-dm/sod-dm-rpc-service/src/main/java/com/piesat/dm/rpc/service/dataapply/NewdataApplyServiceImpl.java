@@ -152,9 +152,6 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
                 //添加存储策略
                 StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
                 storageConfigurationDto.setClassLogicId(dataLogicDto1.getId());
-                storageConfigurationDto.setLogicId(dataLogicDto.getLogicFlag());
-                storageConfigurationDto.setDatabaseId(dataLogicDto.getDatabaseId());
-                storageConfigurationDto.setDataClassId(dataLogicDto.getDataClassId());
                 storageConfigurationDto.setStorageDefineIdentifier(2);
                 storageConfigurationDto.setSyncIdentifier(2);
                 storageConfigurationDto.setCleanIdentifier(2);
@@ -195,9 +192,6 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
             //添加修改后的存储策略
             StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
             storageConfigurationDto.setClassLogicId(dataLogicDto1.getId());
-            storageConfigurationDto.setLogicId(dataLogicDto.getLogicFlag());
-            storageConfigurationDto.setDatabaseId(dataLogicDto.getDatabaseId());
-            storageConfigurationDto.setDataClassId(dataLogicDto.getDataClassId());
             storageConfigurationDto.setStorageDefineIdentifier(2);
             storageConfigurationDto.setSyncIdentifier(2);
             storageConfigurationDto.setMoveIdentifier(2);

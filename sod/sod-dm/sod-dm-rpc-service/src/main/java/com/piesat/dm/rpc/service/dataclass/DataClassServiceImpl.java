@@ -21,7 +21,9 @@ import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -57,6 +59,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Autowired
     private ShardingDao shardingDao;
     @Autowired
+    private DataLogicService dataLogicService;
+    @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private TableColumnDao tableColumnDao;
@@ -71,7 +75,15 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public DataClassDto saveDto(DataClassDto dataClassDto) {
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
         dataClassEntity = this.save(dataClassEntity);
-        return this.dataClassMapper.toDto(dataClassEntity);
+        List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
+        byDataClassId.removeAll(dataClassDto.getDataLogicList());
+        for (DataLogicDto d:byDataClassId ) {
+            dataLogicService.deleteById(d.getId());
+        }
+        List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
+        DataClassDto dataClassDto1 = this.dataClassMapper.toDto(dataClassEntity);
+        dataClassDto1.setDataLogicList(dataLogicDtos);
+        return dataClassDto1;
     }
 
     @Override

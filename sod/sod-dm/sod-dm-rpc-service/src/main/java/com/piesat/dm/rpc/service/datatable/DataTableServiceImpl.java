@@ -95,6 +95,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
+    public void deleteByClassLogicId(String classLogicId) {
+        this.dataTableDao.deleteByClassLogic_Id(classLogicId);
+    }
+
+    @Override
     public List<DataTableDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         return this.dataTableMapper.toDto(tableEntities);
@@ -300,5 +305,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             return ResultT.failed(e.getMessage());
         }
         return ResultT.success();
+    }
+
+    @Override
+    public List<DataTableDto> findByTableNameAndDatabaseId(String tableName, String databaseId) {
+        List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseId(tableName, databaseId);
+        return this.dataTableMapper.toDto(dataTables);
     }
 }

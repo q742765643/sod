@@ -131,7 +131,7 @@ public class GrpcService {
             StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).get();
             if (column.equals("storage_define_identifier")) {
                 //删除存储结构
-                dataClassService.deleteByDataClassId(storage.getDataClassId());
+                dataLogicService.deleteById(storage.getClassLogicId());
             } else if (column.equals("sync_identifier")) {
                 //删除同步配置
                 String task_id = storage.getSyncId();
@@ -176,7 +176,7 @@ public class GrpcService {
     public ResultT deleteById(String id) {
         StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).get();
         //删除存储结构
-        dataClassService.deleteByDataClassId(storage.getDataClassId());
+        dataLogicService.deleteById(storage.getClassLogicId());
         //删除同步配置
         if (StringUtils.isNotNullString(storage.getSyncId())) {
             SyncTaskDto syncTaskDto = syncTaskService.getDtoById(storage.getSyncId());

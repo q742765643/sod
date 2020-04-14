@@ -54,8 +54,6 @@ public class DataClassController {
         }
         try {
             DataClassDto save = this.dataClassService.saveDto(dataClassDto);
-            List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
-            save.setDataLogicList(dataLogicDtos);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

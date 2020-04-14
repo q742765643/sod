@@ -8,6 +8,7 @@ import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
@@ -34,7 +35,8 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     private DataLogicMapper dataLogicMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
-
+    @Autowired
+    private DataTableService dataTableService;
 
     @Override
     public BaseDao<DataLogicEntity> getBaseDao() {
@@ -53,9 +55,6 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
         if (isAdd) {
             StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
             storageConfigurationDto.setClassLogicId(dataLogicEntity.getId());
-            storageConfigurationDto.setLogicId(dataLogicDto.getLogicFlag());
-            storageConfigurationDto.setDatabaseId(dataLogicDto.getDatabaseId());
-            storageConfigurationDto.setDataClassId(dataLogicDto.getDataClassId());
             storageConfigurationDto.setStorageDefineIdentifier(2);
             storageConfigurationDto.setSyncIdentifier(2);
             storageConfigurationDto.setCleanIdentifier(2);
@@ -80,9 +79,6 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             if (isAdd) {
                 StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
                 storageConfigurationDto.setClassLogicId(d.getId());
-                storageConfigurationDto.setLogicId(d.getLogicFlag());
-                storageConfigurationDto.setDatabaseId(d.getDatabaseId());
-                storageConfigurationDto.setDataClassId(d.getDataClassId());
                 storageConfigurationDto.setStorageDefineIdentifier(2);
                 storageConfigurationDto.setSyncIdentifier(2);
                 storageConfigurationDto.setCleanIdentifier(2);
@@ -140,6 +136,13 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     public DataLogicDto getDotById(String id) {
         DataLogicEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        DataLogicDto dotById = this.getDotById(id);
+        dataTableService.deleteByClassLogicId(dotById.getId());
+        this.delete(id);
     }
 
 }

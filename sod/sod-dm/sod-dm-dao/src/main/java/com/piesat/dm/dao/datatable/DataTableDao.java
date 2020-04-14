@@ -30,4 +30,6 @@ public interface DataTableDao extends BaseDao<DataTableEntity> {
     int updateById(String table_name, String id);
 
     List<DataTableEntity> findByDataServiceIdAndClassLogicId(String dataClassId, String databaseId);
+
+    List<DataTableEntity> findByTableNameAndClassLogic_DatabaseId(String tableName,String databaseId);
 }

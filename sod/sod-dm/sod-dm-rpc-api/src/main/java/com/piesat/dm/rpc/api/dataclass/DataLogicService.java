@@ -24,6 +24,8 @@ public interface DataLogicService {
 
     void delete(String id);
 
+    void deleteById(String id);
+
     List<DataLogicDto> all();
 
     List<Map<String, Object>> getByDataClassIds(List<String> ids);

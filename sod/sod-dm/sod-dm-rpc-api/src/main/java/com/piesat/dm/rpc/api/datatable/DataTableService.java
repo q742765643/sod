@@ -25,6 +25,8 @@ public interface DataTableService {
 
     void delete(String id);
 
+    void deleteByClassLogicId(String classLogicId);
+
     List<DataTableDto> all();
 
     List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
@@ -51,4 +53,6 @@ public interface DataTableService {
     ResultT paste(String copyId,String pasteId);
 
     ResultT createTable(TableSqlDto tableSqlDto);
+
+    List<DataTableDto> findByTableNameAndDatabaseId(String tableName,String databaseId);
 }

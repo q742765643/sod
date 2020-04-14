@@ -17,20 +17,20 @@ import lombok.Data;
 public class StorageConfigurationDto {
 
     private String classLogicId;
-    /**
-     * 逻辑库ID
-     */
-    private String logicId;
-
-    /**
-     * 物理库ID
-     */
-    private String databaseId;
-
-    /**
-     * 资料存储编码
-     */
-    private String dataClassId;
+//    /**
+//     * 逻辑库ID
+//     */
+//    private String logicId;
+//
+//    /**
+//     * 物理库ID
+//     */
+//    private String databaseId;
+//
+//    /**
+//     * 资料存储编码
+//     */
+//    private String dataClassId;
 
     /**
      * 存储结构创建标识

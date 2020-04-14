@@ -370,14 +370,14 @@
     <select id="getRecordByApplyIdMysql" resultType="java.util.Map" parameterType="java.util.Map">
         select distinct d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
-            (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.database_id,c.table_name,e.database_name special_database_name,ee.database_name
+            (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.id class_logic_id,b.database_id,c.table_name,e.database_name special_database_name,ee.database_name
              from T_SOD_DATA_CLASS a
              left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,1,1) = f.data_class_id
              left join T_SOD_DATA_LOGIC b on a.data_class_id = b.data_class_id
              left join T_SOD_DATA_TABLE c on c.class_logic_id = b.id
              left join T_SOD_DATABASE e on b.database_id = e.id
              left join T_SOD_DATABASE_DEFINE ee on e.database_define_id = ee.id ) dd
-        on (d.database_id = dd.database_id and d.data_class_id = dd.data_class_id)
+        on (d.class_logic_id = dd.class_logic_id)
         <where>
             <if test="map.applyId != null and map.applyId  != ''">
                 d.apply_id = #{map.applyId}
@@ -408,14 +408,14 @@
     <select id="getRecordByApplyId" resultType="java.util.Map" parameterType="java.util.Map">
         select distinct d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
-                 (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.database_id,c.table_name,e.database_name special_database_name,ee.database_name
+                 (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.database_id,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name
                   from T_SOD_DATA_CLASS a
                            left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
                            left join T_SOD_DATA_LOGIC b on a.data_class_id = b.data_class_id
                            left join T_SOD_DATA_TABLE c on c.class_logic_id = b.id
                            left join T_SOD_DATABASE e on b.database_id = e.id
                            left join T_SOD_DATABASE_DEFINE ee on e.database_define_id = ee.id ) dd
-                 on (d.database_id = dd.database_id and d.data_class_id = dd.data_class_id)
+                 on (d.class_logic_id = dd.class_logic_id )
         <where>
             <if test="map.applyId != null and map.applyId  != ''">
                 d.apply_id = #{map.applyId}
@@ -517,7 +517,7 @@
             sdd.database_name,
             sdc.class_name
         from t_sod_data_authority_record dd
-             left join t_sod_data_logic dl on dl.database_id = dd.database_id and dl.data_class_id = dd.data_class_id
+             left join t_sod_data_logic dl on dl.id = dd.class_logic_id
              left join t_sod_data_table dt on dt.class_logic_id = dl.id
              left join t_sod_data_authority_apply da on dd.apply_id = da.id
              left join t_sod_database sdb on dd.database_id = sdb.id
@@ -546,7 +546,7 @@
             sdd.database_name,
             sdc.class_name
         from t_sod_data_authority_record dd
-                 left join t_sod_data_logic dl on dl.database_id = dd.database_id and dl.data_class_id = dd.data_class_id
+                 left join t_sod_data_logic dl on dl.id = dd.class_logic_id
                  left join t_sod_data_table dt on dt.class_logic_id = dl.id
                  left join t_sod_data_authority_apply da on dd.apply_id = da.id
                  left join t_sod_database sdb on dd.database_id = sdb.id
