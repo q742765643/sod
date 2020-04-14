@@ -308,8 +308,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
-    public List<DataTableDto> findByTableNameAndDatabaseId(String tableName, String databaseId) {
-        List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseId(tableName, databaseId);
+    public List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName, String databaseId,String dataclassId) {
+        List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseIdAndClassLogic_DataClassId(tableName, databaseId,dataclassId);
         return this.dataTableMapper.toDto(dataTables);
     }
 }
