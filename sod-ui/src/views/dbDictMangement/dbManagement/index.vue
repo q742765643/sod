@@ -23,7 +23,13 @@
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success" @click="exportData()" icon="el-icon-download" size="small">导出</el-button>
+        <handleExport
+          :handleExportObj="handleExportObj"
+          :btnText="btnText"
+          :exportUrl="exportUrl"
+          @exportData="exportData"
+        />
+        <!-- <el-button type="success" @click="exportData()" icon="el-icon-download" size="small">导出</el-button> -->
       </el-col>
     </el-row>
 
@@ -89,8 +95,6 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_DM;
-import { Encrypt } from "@/utils/htencrypt";
 import {
   defineList,
   delList,
@@ -99,9 +103,12 @@ import {
 } from "@/api/dbDictMangement/dbManagement";
 import handleDataBase from "@/views/dbDictMangement/dbManagement/databaseEdit";
 import "font-awesome/css/font-awesome.css";
+import handleExport from "@/components/export";
+
 export default {
   components: {
-    handleDataBase
+    handleDataBase,
+    handleExport
   },
   data() {
     return {
@@ -115,6 +122,12 @@ export default {
       },
       tableData: [],
       total: 0,
+      handleExportObj: {
+        databaseName: "",
+        id: ""
+      },
+      btnText: "导出",
+      exportUrl: "/dm/databaseDefine/export",
       // 导入
       actionUrl: "",
       showFile: false,
@@ -133,6 +146,11 @@ export default {
     this.getList();
   },
   methods: {
+    exportData() {
+      this.handleExportObj.id = this.queryParams.id;
+      this.handleExportObj.databaseName = this.queryParams.databaseName;
+      console.log(this.handleExportObj);
+    },
     cancelDialog() {
       this.msgFormDialog = false;
       this.handleQuery();
@@ -219,19 +237,13 @@ export default {
         this.$message.error("请选择需要删除的数据库！");
       }
     },
-    exportData() {
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/databaseDefine/export?sign=111111&data=" + flieData;
-    },
+
     checkError(row) {
       conStatus({ id: row.id }).then(res => {
         if (res.data.checkConn == 1) {
-          this.$message({ message: '连接正常', type: "success" });
+          this.$message({ message: "连接正常", type: "success" });
         } else {
-          this.$message({ message: '连接异常', type: "error" });
+          this.$message({ message: "连接异常", type: "error" });
         }
       });
     },

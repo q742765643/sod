@@ -4,7 +4,7 @@
       <!-- <div style="height:420px;"></div> -->
       <el-carousel height="420px" trigger="click">
         <el-carousel-item :key="index" v-for="(item, index) in bannerList">
-          <img :src="item.src" />
+          <img :src="item.src" @click="bannerGoPage(index)" />
         </el-carousel-item>
       </el-carousel>
     </section>
@@ -242,6 +242,13 @@ export default {
     }
   },
   methods: {
+    // banner页面跳转
+    bannerGoPage(index) {
+      this.$router.push({
+        name: "业务场景说明",
+        params: { pageFlag: "pageFlag" + index }
+      });
+    },
     // 代办提醒
     getEventList() {
       findUndoCount().then(res => {

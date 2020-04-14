@@ -20,7 +20,7 @@
           <p class="imgtips">存储资源使用</p>
         </el-col>
       </el-row>
-      <h5 class="title">新增资料维护业务流程</h5>
+      <h5 class="title" id="pageFlag0">新增资料维护业务流程</h5>
       <div class="stepBox">
         <p class="stepTitle">
           <i class="fa fa-bookmark"></i>
@@ -69,7 +69,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <h5 class="title">已有资料信息管理业务流程</h5>
+      <h5 class="title" id="pageFlag1">已有资料信息管理业务流程</h5>
       <div class="stepBox">
         <p class="stepTitle">
           <i class="fa fa-bookmark"></i>
@@ -120,7 +120,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <h5 class="title">用户资料访问业务流程</h5>
+      <h5 class="title" id="pageFlag2">用户资料访问业务流程</h5>
       <div class="stepBox">
         <p class="stepTitle">
           <i class="fa fa-bookmark"></i>
@@ -159,7 +159,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <h5 class="title">用户存储资源使用业务流程</h5>
+      <h5 class="title" id="pageFlag3">用户存储资源使用业务流程</h5>
       <div class="stepBox">
         <p class="stepTitle">
           <i class="fa fa-bookmark"></i>
@@ -202,9 +202,15 @@
 import "font-awesome/css/font-awesome.css";
 export default {
   data() {
-    return {};
+    return {
+      pageFlag: this.$route.params.pageFlag
+    };
   },
-  created() {},
+  mounted() {
+    if (this.pageFlag) {
+      document.querySelector("#" + this.pageFlag).scrollIntoView(true);
+    }
+  },
   methods: {}
 };
 </script>

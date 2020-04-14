@@ -33,7 +33,7 @@ import {
 import Pagination from "@/components/Pagination";
 
 import './utils/directives.js'
-
+const uuid = require('uuid/v4')
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey

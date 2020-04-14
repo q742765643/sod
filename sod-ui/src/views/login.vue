@@ -175,7 +175,7 @@ export default {
     rgb(25, 150, 253) 85%
   );
   .wrap {
-    width: 75%;
+    width: 80%;
     text-align: right;
     background: url("../assets/image/login-bg.png") no-repeat;
     background-size: 100% 100%;

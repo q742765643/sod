@@ -217,6 +217,7 @@ export default {
         userName: "",
         databaseName: ""
       };
+      this.dateRange = [];
       this.handleQuery();
     },
     // 状态
@@ -236,7 +237,7 @@ export default {
       }
     },
     handleAdd() {
-      this.dialogTitle = "新增数据库账户审核";
+      this.dialogTitle = "新增云数据库申请";
       this.handleObj = {};
       this.handleDialog = true;
     },
@@ -256,7 +257,7 @@ export default {
     },
     viewCell(row) {
       getById({ id: row.id }).then(response => {
-        this.dialogTitle = "数据库账户审核";
+        this.dialogTitle = "云数据库申请";
         this.handleObj = response.data;
         this.handleDialog = true;
       });
@@ -277,7 +278,6 @@ export default {
         })
         .catch(() => {});
     },
-    analysisCell(row) {},
     handleDialogClose() {
       this.handleDialog = false;
       this.handleObj = {};

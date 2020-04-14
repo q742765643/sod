@@ -35,7 +35,12 @@
             class="detail"
           >主要解决信息数据的高效存贮、安全管理与快速检索等问题，主要功能包括数据字典、内存管理、事务管理、语法分析器、集成管理工具集等，提供数据定义、数据操作功能、数据库的运行管理、数据库的建立和维护功能。</p>
           <el-button type="primary" size="small" @click="xuguDownload">客户端下载</el-button>
-          <!-- <a href="/public/XuGuToolkit_X64.rar" download="XuGuToolkit_X64">客户端下载</a> -->
+          <handleExport
+            :handleExportObj="xuguExportObj"
+            btnText="客户端下载"
+            :exportUrl="exportUrl"
+            @exportData="exportData"
+          />
         </el-col>
       </el-row>
     </section>
@@ -99,7 +104,12 @@
 import { testExport } from "@/components/commonVaildate.js";
 export default {
   data() {
-    return {};
+    return {
+      exportUrl: "/api/dbfile/downloadFile",
+      xuguExportObj: {
+        xuguclient: "E:/sod/sod_all/static/虚谷数据库V9.0.zip"
+      }
+    };
   },
   created() {},
   methods: {

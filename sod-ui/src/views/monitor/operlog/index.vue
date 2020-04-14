@@ -229,7 +229,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        title: undefined,
+        title: this.$route.params.title,
         operName: undefined,
         businessType: undefined,
         status: undefined

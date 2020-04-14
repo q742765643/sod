@@ -56,6 +56,10 @@
               <el-form-item label="是否管理字段">
                 <span>{{ props.row.isManager }}</span>
               </el-form-item>
+              <el-form-item label="是否修改数据库">
+                <span>{{ props.row.updateDatabase }}</span>
+              </el-form-item>
+
               <el-form-item label="默认值">
                 <span>{{ props.row.defaultValue }}</span>
               </el-form-item>
@@ -360,6 +364,18 @@
             <el-input placeholder="序号" v-model="columnEditData.serialNumber" size="small"></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否修改数据库">
+            <el-switch
+              v-model="columnEditData.updateDatabase"
+              active-color="#13ce66"
+              inactive-color="#909399"
+              :active-value="true"
+              :inactive-value="false"
+            ></el-switch>
+          </el-form-item>
+        </el-col>
+
         <div class="clear"></div>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -751,6 +767,7 @@ export default {
           "isPrimaryKey",
           "nameCn",
           "isManager",
+          "updateDatabase",
           "defaultValue",
           "serialNumber"
         ];
@@ -1053,6 +1070,7 @@ export default {
           obj.switch = element.switch;
           obj.id = this.tableInfo.id;
           obj.isManager = false;
+          obj.updateDatabase = false;
           obj.isPrimaryKey = false;
           obj.isShow = false;
           obj.nameCn = element.c_notes;

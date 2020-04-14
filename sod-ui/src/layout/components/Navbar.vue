@@ -26,10 +26,10 @@
           <div class="divInfo">
             <ul class="ulInfoBox">
               <li v-for="(item,index) in infoList" :key="index">
-                <p class="editMsg">{{item.action}}</p>
+                <p class="editMsg">{{item.title}}</p>
                 <p class="editInfo">
-                  <span>{{item.username}}</span>
-                  <span>{{item.operTime}}</span>
+                  <span>{{item.operName}}</span>
+                  <span>{{ parseTime(item.operTime) }}</span>
                 </p>
               </li>
             </ul>
@@ -41,7 +41,7 @@
         </el-popover>
       </template>
 
-      <el-badge :value="12" class="right-menu-item hover-effect">
+      <el-badge :value="uncheckNum" class="right-menu-item hover-effect" style="padding-top:2px;">
         <i class="el-icon-bell weightIcon"></i>
       </el-badge>
 
@@ -75,7 +75,8 @@ import Screenfull from "@/components/Screenfull";
 import SizeSelect from "@/components/SizeSelect";
 import Search from "@/components/HeaderSearch";
 import RuoYi from "@/components/RuoYi";
-
+import { findUndoCount } from "@/api/index";
+import { list } from "@/api/monitor/operlog";
 export default {
   components: {
     Breadcrumb,
@@ -87,8 +88,13 @@ export default {
   },
   data() {
     return {
+      uncheckNum: 0,
       infoList: []
     };
+  },
+  created() {
+    this.getEventList();
+    this.getChangeEditList();
   },
   computed: {
     ...mapGetters(["sidebar", "avatar", "device"]),
@@ -108,6 +114,23 @@ export default {
     toggleSideBar() {
       this.$store.dispatch("app/toggleSideBar");
     },
+    // 获取库表修改通知
+    getChangeEditList() {
+      let obj = { pageNum: 1, pageSize: 3, title: "表结构管理", params: {} };
+      list(obj).then(response => {
+        this.infoList = response.data.pageData;
+      });
+    },
+    getEventList() {
+      findUndoCount().then(res => {
+        let data = res.data;
+        this.uncheckNum =
+          data.xzzl.uncheck +
+          data.sjkzh.uncheck +
+          data.ywztk.uncheck +
+          data.ysjk.uncheck;
+      });
+    },
     async logout() {
       this.$confirm("确定注销并退出系统吗？", "提示", {
         confirmButtonText: "确定",
@@ -119,7 +142,12 @@ export default {
         });
       });
     },
-    viewAll() {}
+    viewAll() {
+      this.$router.push({
+        name: "操作日志",
+        params: { title: "表结构管理" }
+      });
+    }
   }
 };
 </script>
@@ -248,7 +276,7 @@ export default {
   }
 }
 .el-badge__content.is-fixed {
-  top: 14px;
+  top: 16px;
   right: 16px;
 }
 .weightIcon {
