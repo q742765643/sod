@@ -41,6 +41,8 @@ import com.piesat.dm.rpc.service.dataclass.LogicDefineServiceImpl;
 import com.piesat.dm.rpc.service.datatable.DatabaseSqlService;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
+import com.piesat.schedule.rpc.api.move.MoveService;
+import com.piesat.schedule.rpc.api.recover.MetaRecoverLogService;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
@@ -109,9 +111,13 @@ public class GrpcService {
     @GrpcHthtClient
     private ClearService clearService;
     @GrpcHthtClient
+    private MoveService moveService;
+    @GrpcHthtClient
     private SyncTaskService syncTaskService;
     @GrpcHthtClient
     private BackupService backupService;
+    @GrpcHthtClient
+    private MetaRecoverLogService metaRecoverLogService;
     @GrpcHthtClient
     private SqlTemplateService sqlTemplateService;
     @GrpcHthtClient
@@ -135,17 +141,29 @@ public class GrpcService {
                         syncTaskService.deleteSync(task_id);
                     }
                 }
-            } else if (column.equals("moveclean_identifier")) {
+            } else if (column.equals("move_identifier")) {
+                //删除迁移清楚
+                String taskId = storage.getClearId();
+                if (StringUtils.isNotNullString(taskId)) {
+                    moveService.deleteMoveByIds(new String[]{taskId});
+                }
+            }  else if (column.equals("clean_identifier")) {
                 //删除迁移清楚
                 String taskId = storage.getClearId();
                 if (StringUtils.isNotNullString(taskId)) {
                     clearService.deleteClearByIds(new String[]{taskId});
                 }
-            } else if (column.equals("backup_identifier")) {
+            }else if (column.equals("backup_identifier")) {
                 //删除备份
                 String taskId = storage.getBackupId();
                 if (StringUtils.isNotNullString(taskId)) {
                     backupService.deleteBackupByIds(new String[]{taskId});
+                }
+            }else if (column.equals("archiving_identifier")) {
+                //恢复
+                String taskId = storage.getClearId();
+                if (StringUtils.isNotNullString(taskId)) {
+                    metaRecoverLogService.deleteMetaRecoverLogByIds(new String[]{taskId});
                 }
             }
         }

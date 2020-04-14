@@ -1612,7 +1612,8 @@ public class ImportData {
                         storageConfigurationEntity.setSyncIdentifier(Integer.valueOf(data_sync_identifier));
                     }
                     if(StringUtils.isNotEmpty(data_moveclean_identifier)){
-                        storageConfigurationEntity.setMovecleanIdentifier(Integer.valueOf(data_moveclean_identifier));
+                        storageConfigurationEntity.setMoveIdentifier(Integer.valueOf(data_moveclean_identifier));
+                        storageConfigurationEntity.setCleanIdentifier(Integer.valueOf(data_moveclean_identifier));
                     }
                     if(StringUtils.isNotEmpty(data_backup_identifier)){
                         storageConfigurationEntity.setBackupIdentifier(Integer.valueOf(data_backup_identifier));
