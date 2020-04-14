@@ -1,6 +1,7 @@
 package com.piesat.dm.web.controller.dataclass;
 
 import com.alibaba.fastjson.JSONArray;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
@@ -19,6 +20,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +48,10 @@ public class DataClassController {
     @Log(title = "资料分类管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataClassDto dataClassDto) {
+        DataClassDto byDataClassId = this.dataClassService.findByDataClassId(dataClassDto.getDataClassId());
+        if (StringUtils.isEmpty(dataClassDto.getId())&&byDataClassId != null) {
+            return ResultT.failed("存储编码已经存在！");
+        }
         try {
             DataClassDto save = this.dataClassService.saveDto(dataClassDto);
             List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
@@ -222,9 +228,10 @@ public class DataClassController {
     @ApiOperation(value = "根据目录查询资料")
     @RequiresPermissions("dm:dataClass:getListBYIn")
     @GetMapping(value = "/getListBYIn")
-    public ResultT getListBYIn(List<String> classIds, String className, String dDataId) {
+    public ResultT getListBYIn(String stringList, String className, String dDataId) {
         try {
-            List<Map<String, Object>> all = this.dataClassService.getListBYIn(classIds, className, dDataId);
+            String[] split = stringList.split(",");
+            List<Map<String, Object>> all = this.dataClassService.getListBYIn(Arrays.asList(split), className, dDataId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

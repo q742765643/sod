@@ -35,13 +35,6 @@ public class DataAuthorityApplyDto extends BaseDto {
     private String telephone;
 
     /**
-     * 申请时间
-     */
-    private Date applyTime;
-
-    private Date endTime;
-
-    /**
      * 审核状态
      * 01：待审、02：已审
      */

@@ -40,7 +40,11 @@
 
     <!--查询存储结构概览-->
     <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select f.class_name,b.table_name,c.logic_name,a.data_class_id, f.d_data_id,e.database_name special_database_name,ee.database_name,h.*
+        select f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE, f.D_DATA_ID,e.DATABASE_NAME SPECIAL_DATABASE_NAME,ee.DATABASE_NAME,ee.DATABASE_TYPE,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = ee.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = ee.id) BACKUP_ST,
+        h.*
         from t_sod_data_class f
         INNER join t_sod_data_logic a on a.DATA_CLASS_ID = f.DATA_CLASS_ID
         left join t_sod_database e on a.DATABASE_ID = e.id
@@ -51,17 +55,17 @@
         <where>
             f.type = 2
             <if test="map.database_name != null and map.database_name  != ''">
-                AND ee.database_name like '${map.database_name}%'
+                AND ee.database_name like '%${map.database_name}%'
             </if>
             <if test="map.special_database_name != null and map.special_database_name  != ''">
-                AND e.database_name like '${map.special_database_name}%'
+                AND e.database_name like '%${map.special_database_name}%'
             </if>
             <!-- 结构树 -->
             <if test="map.class_name != null and map.class_name  != ''">
-                AND f.class_name like '${map.class_name}%'
+                AND f.class_name like '%${map.class_name}%'
             </if>
             <if test="map.parent_id != null and map.parent_id  != ''">
-                AND f.data_class_id like '${map.parent_id}%'
+                AND f.data_class_id like '%${map.parent_id}%'
             </if>
             <!-- 表 -->
             <if test="map.table_name != null and map.table_name != ''">
@@ -79,11 +83,11 @@
             </if>
             <!-- 四级编码 -->
             <if test="map.d_data_id != null and map.d_data_id  != ''">
-                AND f.d_data_id like '${map.d_data_id}%'
+                AND f.d_data_id like '%${map.d_data_id}%'
             </if>
             <!-- 逻辑库 -->
             <if test="map.logic_name != null and map.logic_name  != ''">
-                AND c.logic_name like '${map.logic_name}%'
+                AND c.logic_name like '%${map.logic_name}%'
             </if>
         </where>
     </select>
