@@ -15,6 +15,8 @@ import lombok.Data;
  */
 @Data
 public class StorageConfigurationDto {
+
+    private String classLogicId;
     /**
      * 逻辑库ID
      */
@@ -43,10 +45,17 @@ public class StorageConfigurationDto {
     private Integer syncIdentifier;
 
     /**
-     * 数据迁移清除配置标识符
+     * 数移清除配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
-    private Integer movecleanIdentifier;
+    private Integer cleanIdentifier;
+
+
+    /**
+     * 数据迁移配置标识符
+     * 1：已创建，2：未创建，3：不需配置
+     */
+    private Integer moveIdentifier;
 
     /**
      * 数据备份配置标识符

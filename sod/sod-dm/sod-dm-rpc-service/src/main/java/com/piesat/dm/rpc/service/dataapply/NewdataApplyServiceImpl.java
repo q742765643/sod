@@ -148,15 +148,17 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
             List<DataLogicDto> dataLogicDtoList = newdataApplyDto.getDataLogicDtoList();
             for(DataLogicDto dataLogicDto : dataLogicDtoList){
                 //添加资料用途分类
-                dataLogicService.saveDto(dataLogicDto);
+                DataLogicDto dataLogicDto1 = dataLogicService.saveDto(dataLogicDto);
                 //添加存储策略
                 StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
+                storageConfigurationDto.setClassLogicId(dataLogicDto1.getId());
                 storageConfigurationDto.setLogicId(dataLogicDto.getLogicFlag());
                 storageConfigurationDto.setDatabaseId(dataLogicDto.getDatabaseId());
                 storageConfigurationDto.setDataClassId(dataLogicDto.getDataClassId());
                 storageConfigurationDto.setStorageDefineIdentifier(2);
                 storageConfigurationDto.setSyncIdentifier(2);
-                storageConfigurationDto.setMovecleanIdentifier(2);
+                storageConfigurationDto.setCleanIdentifier(2);
+                storageConfigurationDto.setMoveIdentifier(2);
                 storageConfigurationDto.setBackupIdentifier(2);
                 storageConfigurationDto.setArchivingIdentifier(2);
                 storageConfigurationService.saveDto(storageConfigurationDto);
@@ -186,18 +188,20 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         List<DataLogicDto> dataLogicDtoList = newdataApplyDto.getDataLogicDtoList();
         for(DataLogicDto dataLogicDto : dataLogicDtoList){
             //添加资料用途分类
-            dataLogicService.saveDto(dataLogicDto);
+            DataLogicDto dataLogicDto1 = dataLogicService.saveDto(dataLogicDto);
 
             //删除修改前的存储策略,如果一条策略的logic_id  database_id  dataclass_id均为改动，则不删除
             //storageConfigurationService.
             //添加修改后的存储策略
             StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
+            storageConfigurationDto.setClassLogicId(dataLogicDto1.getId());
             storageConfigurationDto.setLogicId(dataLogicDto.getLogicFlag());
             storageConfigurationDto.setDatabaseId(dataLogicDto.getDatabaseId());
             storageConfigurationDto.setDataClassId(dataLogicDto.getDataClassId());
             storageConfigurationDto.setStorageDefineIdentifier(2);
             storageConfigurationDto.setSyncIdentifier(2);
-            storageConfigurationDto.setMovecleanIdentifier(2);
+            storageConfigurationDto.setMoveIdentifier(2);
+            storageConfigurationDto.setCleanIdentifier(2);
             storageConfigurationDto.setBackupIdentifier(2);
             storageConfigurationDto.setArchivingIdentifier(2);
             storageConfigurationService.saveDto(storageConfigurationDto);

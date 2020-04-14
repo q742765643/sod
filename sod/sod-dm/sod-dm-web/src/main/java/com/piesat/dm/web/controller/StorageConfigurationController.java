@@ -188,7 +188,7 @@ public class StorageConfigurationController {
         return storageConfigurationGrpcService.updateColumnValue(id, column, value);
     }
 
-    @DeleteMapping(value = "/updateColumnValue")
+    @DeleteMapping(value = "/deleteColumnValue")
     @ApiOperation(value = "根据ID删除资料以及配置", notes = "根据ID删除资料以及配置")
     public ResultT<String> deleteById(String id) {
         return storageConfigurationGrpcService.deleteById(id);

@@ -56,11 +56,19 @@ public class StorageConfigurationEntity extends BaseEntity {
     private Integer syncIdentifier;
 
     /**
-     * 数据迁移清除配置标识符
+     * 数据清除配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
-    @Column(name = "moveclean_identifier")
-    private Integer movecleanIdentifier;
+    @Column(name = "clean_identifier")
+    private Integer cleanIdentifier;
+
+
+    /**
+     * 数据迁移配置标识符
+     * 1：已创建，2：未创建，3：不需配置
+     */
+    @Column(name = "move_identifier")
+    private Integer moveIdentifier;
 
     /**
      * 数据备份配置标识符
@@ -83,10 +91,16 @@ public class StorageConfigurationEntity extends BaseEntity {
     private String syncId;
 
     /**
-     * 迁移清楚任务ID
+     * 清楚任务ID
      */
     @Column(name = "clear_id", length = 60)
     private String clearId;
+
+    /**
+     * 迁移任务ID
+     */
+    @Column(name = "move_id", length = 60)
+    private String moveId;
 
     /**
      * 备份任务ID
