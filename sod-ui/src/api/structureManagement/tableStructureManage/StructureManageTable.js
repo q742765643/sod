@@ -317,3 +317,20 @@ export function managefieldPage(query) {
     params: query
   })
 }
+
+// 基本信息查询
+export function getDataClassBaseInfo(query) {
+  return request({
+    url: baseUrl + '/dm/classbaseinfo/getDataClassBaseInfo',
+    method: 'get',
+    params: query
+  })
+}
+// 基本信息编辑
+export function saveDataClassBaseInfo(query) {
+  return request({
+    url: baseUrl + '/dm/classbaseinfo/saveDataClassBaseInfo',
+    method: 'get',
+    params: query
+  })
+}

@@ -42,7 +42,7 @@
 
     <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" :index="table_index" min-width="10" label=" "></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码" sortable min-width="100"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" min-width="100"></el-table-column>
       <el-table-column prop="TYPE_NAME" label="数据名称" min-width="90" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="username" label="申请人" min-width="80"></el-table-column>
       <el-table-column prop="deptName" label="机构" min-width="60"></el-table-column>
@@ -50,7 +50,6 @@
       <el-table-column
         prop="CREATE_TIME"
         label="申请时间"
-        sortable
         min-width="100"
         :show-overflow-tooltip="true"
       >

@@ -3,84 +3,84 @@
     <el-form ref="formClass" :model="tableFormObject" :rules="rules" label-width="140px">
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="c_rpindname" label="负责人名:">
-            <el-input v-model="tableFormObject.c_rpindname" size="small"></el-input>
+          <el-form-item prop="crpindname" label="负责人名:">
+            <el-input v-model="tableFormObject.crpindname" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="c_mainfreq" label="维护和更新频率:">
-            <el-input v-model="tableFormObject.c_mainfreq" size="small"></el-input>
+          <el-form-item prop="cmainfreq" label="维护和更新频率:">
+            <el-input v-model="tableFormObject.cmainfreq" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="c_datascal" label="空间分辨率:">
-            <el-input v-model="tableFormObject.c_datascal" size="small"></el-input>
+          <el-form-item prop="cdatascal" label="空间分辨率:">
+            <el-input v-model="tableFormObject.cdatascal" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="c_geodesc" label="地理覆盖描述:">
-            <el-input v-model="tableFormObject.c_geodesc" size="small"></el-input>
+          <el-form-item prop="cgeodesc" label="地理覆盖描述:">
+            <el-input v-model="tableFormObject.cgeodesc" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="c_eastbl" label="最东经度:">
-            <el-input v-model="tableFormObject.c_eastbl" size="small"></el-input>
+          <el-form-item prop="ceastbl" label="最东经度:">
+            <el-input v-model="tableFormObject.ceastbl" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="c_westbl" label="最西经度:">
-            <el-input v-model="tableFormObject.c_westbl" size="small"></el-input>
+          <el-form-item prop="cwestbl" label="最西经度:">
+            <el-input v-model="tableFormObject.cwestbl" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="c_northbl" label="最北纬度:">
-            <el-input v-model="tableFormObject.c_northbl" size="small"></el-input>
+          <el-form-item prop="cnorthbl" label="最北纬度:">
+            <el-input v-model="tableFormObject.cnorthbl" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="c_southbl" label="最南纬度:">
-            <el-input v-model="tableFormObject.c_southbl" size="small"></el-input>
+          <el-form-item prop="csouthbl" label="最南纬度:">
+            <el-input v-model="tableFormObject.csouthbl" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="c_nettype" label="站网:">
-            <el-input v-model="tableFormObject.c_nettype" size="small"></el-input>
+          <el-form-item prop="cnettype" label="站网:">
+            <el-input v-model="tableFormObject.cnettype" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="c_netname" label="站网名称:">
-            <el-input v-model="tableFormObject.c_netname" size="small"></el-input>
+          <el-form-item prop="cnetname" label="站网名称:">
+            <el-input v-model="tableFormObject.cnetname" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="c_creat_name" label="申请人名称:">
-            <el-input v-model="tableFormObject.c_creat_name" size="small"></el-input>
+          <el-form-item prop="ccreatName" label="申请人名称:">
+            <el-input v-model="tableFormObject.ccreatName" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="c_checker" label="审核人名称:">
-            <el-input v-model="tableFormObject.c_checker" size="small"></el-input>
+          <el-form-item prop="cchecker" label="审核人名称:">
+            <el-input v-model="tableFormObject.cchecker" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-form-item prop="c_source" label="数据源:">
-          <el-input type="textarea" v-model="tableFormObject.c_source" size="small"></el-input>
+        <el-form-item prop="csource" label="数据源:">
+          <el-input type="textarea" v-model="tableFormObject.csource" size="small"></el-input>
         </el-form-item>
       </el-row>
       <el-row>
-        <el-form-item prop="c_idabs" label="数据说明:">
-          <el-input type="textarea" v-model="tableFormObject.c_idabs" size="small"></el-input>
+        <el-form-item prop="cidabs" label="数据说明:">
+          <el-input type="textarea" v-model="tableFormObject.cidabs" size="small"></el-input>
         </el-form-item>
       </el-row>
     </el-form>
@@ -91,6 +91,10 @@
   </div>
 </template>
 <script>
+import {
+  getDataClassBaseInfo,
+  saveDataClassBaseInfo
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "handleTableBaseMsg",
   props: {
@@ -102,62 +106,58 @@ export default {
     return {
       //添加form表单初始化
       tableFormObject: {
-        c_rpindname: "",
-        c_mainfreq: "",
-        c_datascal: "",
-        c_geodesc: "",
-        c_eastbl: "",
-        c_westbl: "",
-        c_northbl: "",
-        c_southbl: "",
-        c_nettype: "",
-        c_netname: "",
-        c_creat_name: "",
-        c_source: "",
-        c_idabs: ""
+        crpindname: "",
+        cmainfreq: "",
+        cdatascal: "",
+        cgeodesc: "",
+        ceastbl: "",
+        cwestbl: "",
+        cnorthbl: "",
+        csouthbl: "",
+        cnettype: "",
+        cnetname: "",
+        ccreatName: "",
+        csource: "",
+        cidabs: ""
       },
       //检查规则
       rules: {
-        c_rpindname: [
+        crpindname: [
           { required: true, message: "请输入负责人名", trigger: "blur" }
         ],
-        c_mainfreq: [
+        cmainfreq: [
           { required: true, message: "请输入维护和更新频率", trigger: "blur" }
         ],
-        c_datascal: [
+        cdatascal: [
           { required: true, message: "请输入空间分布率", trigger: "blur" }
         ],
-        c_geodesc: [
+        cgeodesc: [
           { required: true, message: "请输入地理覆盖描述", trigger: "blur" }
         ],
-        c_eastbl: [
+        ceastbl: [
           { required: true, message: "请输入最东经度", trigger: "blur" }
         ],
-        c_westbl: [
+        cwestbl: [
           { required: true, message: "请输入最西经度", trigger: "blur" }
         ],
-        c_northbl: [
+        cnorthbl: [
           { required: true, message: "请输入最北纬度", trigger: "blur" }
         ],
-        c_southbl: [
+        csouthbl: [
           { required: true, message: "请输入最南纬度", trigger: "blur" }
         ],
-        c_nettype: [{ required: true, message: "请输入站网", trigger: "blur" }],
-        c_netname: [
+        cnettype: [{ required: true, message: "请输入站网", trigger: "blur" }],
+        cnetname: [
           { required: true, message: "请输入站网名称", trigger: "blur" }
         ],
-        c_creat_name: [
+        ccreatName: [
           { required: true, message: "请输入申请人名称", trigger: "blur" }
         ],
-        c_checker: [
+        cchecker: [
           { required: true, message: "请输入审核人名称", trigger: "blur" }
         ],
-        c_source: [
-          { required: true, message: "请输入数据源", trigger: "blur" }
-        ],
-        c_idabs: [
-          { required: true, message: "请输入数据说明", trigger: "blur" }
-        ]
+        csource: [{ required: true, message: "请输入数据源", trigger: "blur" }],
+        cidabs: [{ required: true, message: "请输入数据说明", trigger: "blur" }]
       }
     };
   },
@@ -166,19 +166,14 @@ export default {
   },
   methods: {
     init() {
-      if (this.handleId != undefined) {
+      this.tableFormObject.id = this.handleId;
+      if (this.handleId) {
         // 获取基本信息
-        this.axios
-          .get(
-            interfaceObj.TableStructure_getBaseInfo +
-              "?data_class_id=" +
-              this.handleId
-          )
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.tableFormObject = res.data.data;
-            }
-          });
+        getDataClassBaseInfo({ id: this.handleId }).then(res => {
+          if (res.code == 200) {
+            this.tableFormObject = res.data;
+          }
+        });
       }
     },
     //保存用户
@@ -186,20 +181,18 @@ export default {
       //校验表单
       this.$refs[formClass].validate(valid => {
         if (valid) {
-          this.axios
-            .post(interfaceObj.TableStructure_addBaseInfo, this.tableFormObject)
-            .then(res => {
-              if (res.data.returnCode == 0) {
-                this.$message({ message: "编辑成功", type: "success" });
-                this.$emit("handleClose");
-              } else {
-                this.$message({
-                  message: res.data.returnMessage,
-                  type: "warning"
-                });
-                return;
-              }
-            });
+          getDataClassBaseInfo(this.tableFormObject).then(res => {
+            if (res.data.returnCode == 0) {
+              this.$message({ message: "编辑成功", type: "success" });
+              this.$emit("handleClose");
+            } else {
+              this.$message({
+                message: res.data.returnMessage,
+                type: "warning"
+              });
+              return;
+            }
+          });
         }
       });
     },

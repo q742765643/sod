@@ -167,7 +167,7 @@ export default {
       Info: {
         table_name: "",
         name_cn: "",
-        data_service_id: "",
+        dataServiceId: "",
         tableDesc: ""
       },
       childTableType: this.tableType,
@@ -327,7 +327,7 @@ export default {
     },
     // 基础信息编辑
     baseMsgEdit() {
-      this.handleId = this.Info.data_service_id;
+      this.handleId = this.Info.dataServiceId;
       this.baseMsgEditDialog = true;
     },
     handleClose() {
