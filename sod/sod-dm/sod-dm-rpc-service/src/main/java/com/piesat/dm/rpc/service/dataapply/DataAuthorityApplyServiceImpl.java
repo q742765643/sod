@@ -84,12 +84,12 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(),userId);
         }
         if(StringUtils.isNotNullString((String) dataAuthorityApplyEntity.getParamt().get("beginTime"))){
-            specificationBuilder.add("applyTime",SpecificationOperator.Operator.ges.name(),(String) dataAuthorityApplyEntity.getParamt().get("beginTime"));
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) dataAuthorityApplyEntity.getParamt().get("beginTime"));
         }
         if(StringUtils.isNotNullString((String) dataAuthorityApplyEntity.getParamt().get("endTime"))){
-            specificationBuilder.add("applyTime",SpecificationOperator.Operator.les.name(),(String) dataAuthorityApplyEntity.getParamt().get("endTime"));
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) dataAuthorityApplyEntity.getParamt().get("endTime"));
         }
-        Sort sort = Sort.by(Sort.Direction.DESC,"auditStatus","applyTime");
+        Sort sort = Sort.by(Sort.Direction.DESC,"auditStatus","createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<DataAuthorityApplyEntity> dataAuthorityApplyEntities = (List<DataAuthorityApplyEntity>) pageBean.getPageData();
 

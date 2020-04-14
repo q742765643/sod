@@ -263,8 +263,8 @@
           <el-col :span="12">
             <el-form-item label="目标存储类型" prop="targetType">
               <el-select size="medium" v-model="msgFormDialog.targetType">
-                <el-option label="数据库存储" value="0"></el-option>
-                <el-option label="文件存储" value="1"></el-option>
+                <el-option label="数据库存储" :value="0"></el-option>
+                <el-option label="文件存储" :value="1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -507,7 +507,8 @@ export default {
         targetRelation: [], //源表和目标表的映射关系
         slaveRelation: {}, //源表值表和目标表值表的映射关系
         sourceVTableId: "", //源表值表id
-        targetVTableId: "" //目标表值表id
+        targetVTableId: "", //目标表值表id
+        targetType: 0 //目标存储类型
       },
       rules: {
         taskName: [
@@ -581,6 +582,17 @@ export default {
       // 查详情
       await this.initDetail();
     }
+    if (this.handleObj.pageName == "存储结构概览") {
+      this.msgFormDialog.targetDatabaseId = this.handleObj.databaseId; //目标库
+      this.msgFormDialog.targetTable = this.handleObj.dataClassId; //目标表
+      // 目标表下拉框
+      await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
+      await this.targetTableChange(this.msgFormDialog.targetTable, "");
+      if (this.msgFormDialog.targetTables.length == 2) {
+        this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
+        await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
+      }
+    }
   },
   methods: {
     async initDetail() {
@@ -605,7 +617,7 @@ export default {
         this.stableFilterForm.domains.push(obj);
       });
       //todo
-      this.msgFormDialog.targetType = "0";
+      this.msgFormDialog.targetType = 0;
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");

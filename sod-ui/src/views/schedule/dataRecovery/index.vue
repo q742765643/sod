@@ -307,7 +307,6 @@ export default {
       this.loading = true;
       console.log(this.queryParams);
       getDataFileList(this.queryParams).then(res => {
-        this.treeJson = res.data;
         // 第一级的pid为空
         this.treedata = newTeam(res.data, "");
         console.log(this.treedata);

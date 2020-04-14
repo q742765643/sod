@@ -141,7 +141,7 @@ public class ImportData {
         //importPortalAuz();
         //importSpecial();
         //importNewData();
-        importDataAuthority();
+        //importDataAuthority();
     }
 
 
