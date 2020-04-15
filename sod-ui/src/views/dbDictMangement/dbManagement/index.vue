@@ -25,11 +25,10 @@
       <el-col :span="1.5">
         <handleExport
           :handleExportObj="handleExportObj"
-          :btnText="btnText"
-          :exportUrl="exportUrl"
+          btnText="导出"
+          exportUrl="/dm/databaseDefine/export"
           @exportData="exportData"
         />
-        <!-- <el-button type="success" @click="exportData()" icon="el-icon-download" size="small">导出</el-button> -->
       </el-col>
     </el-row>
 
@@ -126,8 +125,7 @@ export default {
         databaseName: "",
         id: ""
       },
-      btnText: "导出",
-      exportUrl: "/dm/databaseDefine/export",
+
       // 导入
       actionUrl: "",
       showFile: false,

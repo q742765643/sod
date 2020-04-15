@@ -14,14 +14,26 @@
       <el-form-item label="表名称:">
         <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
+    </el-form>
 
-      <el-form-item>
+    <el-row :gutter="10" class="handleTableBox">
+      <el-col :span="1.5">
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button size="small" type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
         </el-button>
-      </el-form-item>
-    </el-form>
+      </el-col>
+      <el-col :span="1.5">
+        <handleExport
+          :handleExportObj="handleExportObj"
+          btnText="导出"
+          exportUrl="exportUrl"
+          @exportData="exportData"
+        />
+      </el-col>
+    </el-row>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column prop="CLASS_NAME" label="资料名称" width="200"></el-table-column>
@@ -288,6 +300,7 @@ export default {
       // 高级搜索
       dialogSuperSearch: false,
       superObj: {},
+      handleExportObj: {},
       // 弹窗
       rowData: {}, //当前行
       structureManageTitle: "", //存储结构标题
@@ -317,6 +330,10 @@ export default {
     this.getList();
   },
   methods: {
+    exportData() {
+      this.handleExportObj = this.queryParams;
+      console.log(this.handleExportObj);
+    },
     // table自增定义方法
     table_index(index) {
       return (

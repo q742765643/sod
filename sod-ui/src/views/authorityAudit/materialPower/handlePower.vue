@@ -7,7 +7,7 @@
       <el-form-item label="权限" prop="roleKey">
         <el-input size="medium" v-model="msgFormDialog.roleKey" readonly></el-input>
       </el-form-item>
-      <el-form-item label="默认通过" prop="sectionId">
+      <el-form-item label="默认通过">
         <el-radio-group v-model="msgFormDialog.enable">
           <el-radio :label="0">通过</el-radio>
           <el-radio :label="1">不通过</el-radio>
@@ -34,7 +34,6 @@ export default {
         // 这里定义弹框内的参数
         name: "是否默认通过所有申请资料的读权限",
         roleKey: "读权限",
-        sectionId: "",
         enable: 1,
         description: ""
       },
@@ -43,12 +42,7 @@ export default {
         roleKey: [
           { required: true, message: "请输入角色KEY", trigger: "blur" }
         ],
-        sectionId: [
-          { required: true, message: "请选择所属科室", trigger: "change" }
-        ],
-        enable: [
-          { required: true, message: "请选择是否禁用", trigger: "change" }
-        ],
+
         description: [
           { required: true, message: "请输入描述", trigger: "blur" }
         ]
