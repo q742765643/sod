@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 const baseUrl = process.env.VUE_APP_DM;
 // 查询表格
-export function specialList(query) {
+export function pageList(query) {
   return request({
-    url: baseUrl + '/dm/databaseSpecial/specialList',
+    url: baseUrl + '/dm/databaseSpecial/page',
     method: 'get',
     params: query
   })
