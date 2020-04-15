@@ -226,6 +226,11 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 		InputStream in = null;
 		if(file.exists()){
 			try {
+				String fileName = new String(file.getName().getBytes("UTF-8"), "iso-8859-1");
+				response.setCharacterEncoding("UTF-8");
+				response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+				response.addHeader("Content-Length", "" + file.length());
+				response.setContentType("application/octet-stream");
 				OutputStream out = response.getOutputStream();
 				in = new FileInputStream(file);
 				byte buffer[] = new byte[1024];
