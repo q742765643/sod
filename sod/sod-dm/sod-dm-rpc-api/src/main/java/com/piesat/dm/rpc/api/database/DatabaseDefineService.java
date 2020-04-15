@@ -26,7 +26,7 @@ public interface DatabaseDefineService {
 
     List<DatabaseDefineDto> all();
 
-    List<DatabaseDefineDto> export(DatabaseDefineDto databaseDefineDto);
+    List<DatabaseDefineDto> export(String id, String databaseName);
 
     List<DatabaseDefineDto> findByType(String databaseType);
 

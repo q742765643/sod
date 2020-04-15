@@ -102,9 +102,9 @@ public class DatabaseDefineController {
     @ApiOperation(value = "导出")
     @RequiresPermissions("dm:databaseDefine:export")
     @GetMapping(value = "/export")
-    public void export(DatabaseDefineDto databaseDefineDto, HttpServletRequest request, HttpServletResponse response) {
+    public void export(String id, String databaseName, HttpServletRequest request, HttpServletResponse response) {
 
-        List<DatabaseDefineDto> all = this.databaseDefineService.export(databaseDefineDto);
+        List<DatabaseDefineDto> all = this.databaseDefineService.export(id, databaseName);
         ArrayList<String> headList = new ArrayList<>();
         headList.add("物理库ID");
         headList.add("物理库名称");
@@ -125,7 +125,8 @@ public class DatabaseDefineController {
             strings.add(ddd.getDatabaseType());
             strings.add(ddd.getDatabaseIp());
             strings.add(ddd.getMainBakType() == 1 ? "主" : "备");
-            strings.add(ddd.getDatabaseCapacity().toString());
+            Integer databaseCapacity = ddd.getDatabaseCapacity();
+            strings.add(databaseCapacity == null ? "" : databaseCapacity.toString());
             if (ddd.getUserDisplayControl() == 1) {
                 strings.add("显示");
             } else {

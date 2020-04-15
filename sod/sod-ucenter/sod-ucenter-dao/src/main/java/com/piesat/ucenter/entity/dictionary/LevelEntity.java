@@ -43,7 +43,7 @@ public class LevelEntity extends BaseEntity {
     /**
      * 层次的英文描述，代码缩写来源
      */
-    @Column(name="level_properity", length=50)
+    @Column(name="level_properity", length=100)
     private String levelProperity;
 
     /**

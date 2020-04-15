@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
+ * 服务代码管理
  * @author yaya
  * @description TODO
  * @date 2020/2/13 14:44

@@ -36,7 +36,7 @@ public class TableDataStatisticsEntity extends BaseEntity {
     private Date endTime;
 
     @Column(name = "record_count", length = 255)
-    private long recordCount;
+    private Double recordCount;
 
     @Column(name = "day_total", length = 255)
     private int dayTotal;

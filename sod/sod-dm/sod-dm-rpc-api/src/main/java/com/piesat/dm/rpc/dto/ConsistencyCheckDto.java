@@ -1,6 +1,8 @@
 package com.piesat.dm.rpc.dto;
 
+import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.util.BaseDto;
 import lombok.Data;
 
 
@@ -10,7 +12,7 @@ import lombok.Data;
  * @date 2020/2/14 11:03
  */
 @Data
-public class ConsistencyCheckDto {
+public class ConsistencyCheckDto extends BaseDto {
 
     /**
      * 与数据库关联id

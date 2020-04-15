@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service.datatable;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.core.parser.DatabaseType;
@@ -15,7 +16,9 @@ import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
+import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
@@ -68,6 +71,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Autowired
     private TableForeignKeyDao tableForeignKeyDao;
     @Autowired
+    private StorageConfigurationService storageConfigurationService;
+    @Autowired
     private TableForeignKeyMapper tableForeignKeyMapper;
 
     @Override
@@ -77,8 +82,15 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public DataTableDto saveDto(DataTableDto dataTableDto) {
+        boolean isAdd = StringUtils.isEmpty(dataTableDto.getId()) ? true : false;
         DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
         dataTableEntity = this.save(dataTableEntity);
+        if (isAdd) {
+            StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
+            storageConfigurationDto.setClassLogicId(dataTableEntity.getClassLogic().getId());
+            storageConfigurationDto.setStorageDefineIdentifier(1);
+            storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
+        }
         return this.dataTableMapper.toDto(dataTableEntity);
     }
 
@@ -308,8 +320,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
-    public List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName, String databaseId,String dataclassId) {
-        List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseIdAndClassLogic_DataClassId(tableName, databaseId,dataclassId);
+    public List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName, String databaseId, String dataclassId) {
+        List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseIdAndClassLogic_DataClassId(tableName, databaseId, dataclassId);
         return this.dataTableMapper.toDto(dataTables);
     }
 }

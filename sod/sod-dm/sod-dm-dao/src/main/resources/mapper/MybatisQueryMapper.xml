@@ -143,7 +143,17 @@
     <update id="updateStorageConfigurationStatus">
         update t_sod_storage_configuration set  ${column} = ${value} where  id = #{id}
     </update>
-    <!--修改存储结构概览状态-->
+
+    <select id="findStorageConfigurationByDataClassId" resultType="java.util.Map">
+        select a.*,b.database_id,b.data_class_id,b.logic_flag
+        from t_sod_storage_configuration a,t_sod_data_logic b
+        where a.class_logic_id = b.id and b.data_class_id = #{dataClassId}
+    </select>
+
+    <delete id="deleteStorageConfigurationByDataClassId">
+        delete from t_sod_storage_configuration where class_logic_id in(select id from t_sod_data_logic where data_class_id = #{dataClassId});
+    </delete>
+
     <select id="getByDatabaseIdAndTableName" resultType="java.util.Map">
         select a.* from  t_sod_data_table a, t_sod_data_logic b where a.class_logic_id = b.id and a.table_name=#{tableName} and b.database_id = #{databaseId}
     </select>

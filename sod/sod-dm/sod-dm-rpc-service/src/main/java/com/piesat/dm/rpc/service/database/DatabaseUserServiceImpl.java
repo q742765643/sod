@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service.database;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
@@ -18,6 +19,7 @@ import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
+import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         List<DatabaseUserEntity> databaseUserEntityList= (List<DatabaseUserEntity>) pageBean.getPageData();
         pageBean.setPageData(databaseUserMapper.toDto(databaseUserEntityList));
         return pageBean;
+    }
+
+    @Override
+    public void exportData(String examineStatus) {
+        List<DatabaseUserEntity> byExamineStatus = this.databaseUserDao.findByExamineStatus(examineStatus);
+        ExcelUtil<DatabaseUserEntity> util=new ExcelUtil(DatabaseUserEntity.class);
+        util.exportExcel(byExamineStatus,"数据库访问账户信息");
     }
 
     @Override

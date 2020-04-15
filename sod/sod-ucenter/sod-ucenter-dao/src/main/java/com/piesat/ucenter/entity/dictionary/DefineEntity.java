@@ -50,7 +50,7 @@ public class DefineEntity extends BaseEntity {
     /**
      * 备注
      */
-    @Column(name="area_desc" ,length = 10)
+    @Column(name="area_desc" ,length = 30)
     private String areaDesc;
 
 }

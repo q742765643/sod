@@ -7,7 +7,9 @@ import com.piesat.dm.entity.datatable.CmccElementEntity;
 import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
+import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.datatable.TableColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     @Autowired
     private TableColumnDao tableColumnDao;
     @Autowired
+    private DataTableService dataTableService;
+    @Autowired
     private TableColumnMapper tableColumnMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
@@ -41,6 +45,9 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     public TableColumnDto saveDto(TableColumnDto tableColumnDto) {
         TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(tableColumnDto);
         tableColumnEntity = this.save(tableColumnEntity);
+        if (tableColumnDto.getUpdateDatabase()){
+            DataTableDto datatable = dataTableService.getDotById(tableColumnDto.getTableId());
+        }
         return this.tableColumnMapper.toDto(tableColumnEntity);
     }
 

@@ -1,6 +1,7 @@
 package com.piesat.sod.system.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,14 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value="数据库文档Controller",tags = {"数据库文档操作接口"})
 public class DbFileController {
-	
-	
+
+
 	@Autowired
 	private DbFileService dbFileService;
-	
+
 	/**
 	 * 获取数据库文件分页数据接口
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2019年11月20日下午3:25:52
 	 * @param request
@@ -52,16 +53,16 @@ public class DbFileController {
 			PageForm<DbFileDto> pageForm = new PageForm<>(pageNum,pageSize,dbFileDto);
 			PageBean page = dbFileService.findPageData(pageForm);
 			return ResultT.success(page);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  上传文件
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2019年11月21日上午11:12:41
 	 * @param request
@@ -82,7 +83,7 @@ public class DbFileController {
 	}
 	/**
 	 *  数据库文档删除
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2019年12月23日上午8:28:15
 	 * @param request
@@ -101,7 +102,14 @@ public class DbFileController {
 			e.printStackTrace();
 			return ResultT.failed(e.getMessage());
 		}
-		
+
+	}
+
+	@ApiOperation(value="静态文件下载接口",notes="静态文件下载接口")
+	@RequiresPermissions("api:dbfile:downloadFile")
+	@GetMapping("/api/dbfile/downloadFile")
+	public void downloadFile(HttpServletResponse response, String name){
+		this.dbFileService.downloadFile(response,name);
 	}
 
 }

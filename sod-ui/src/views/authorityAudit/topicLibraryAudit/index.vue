@@ -91,7 +91,7 @@
 
 <script>
 import {
-  specialList,
+  pageList,
   deleteList
 } from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
@@ -158,7 +158,7 @@ export default {
     getList() {
       this.loading = true;
       console.log(this.queryParams);
-      specialList(this.queryParams).then(response => {
+      pageList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;

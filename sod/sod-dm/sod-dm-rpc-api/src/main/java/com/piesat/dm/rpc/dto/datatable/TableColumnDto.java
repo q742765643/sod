@@ -101,6 +101,8 @@ public class TableColumnDto {
      */
     private String databaseType;
 
+    private Boolean updateDatabase;
+
     /**
      * serial_number
      */

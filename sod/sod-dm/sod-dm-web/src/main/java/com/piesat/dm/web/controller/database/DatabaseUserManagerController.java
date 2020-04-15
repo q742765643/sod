@@ -4,6 +4,7 @@ import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -254,5 +255,12 @@ public class DatabaseUserManagerController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @ApiOperation(value = "导出")
+    @RequiresPermissions("dm:databaseUser:exportData")
+    @GetMapping(value = "/exportData")
+    public void exportData(String examineStatus) {
+        this.databaseUserService.exportData(examineStatus);
     }
 }

@@ -46,6 +46,7 @@
       @current-change="handleCurrentChange"
     >
       <el-table-column type="index" label=" " :index="table_index"></el-table-column>
+      <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="databaseName" label="专题库名称"></el-table-column>
       <el-table-column prop="databaseDto.databaseDefine.databaseType" label="数据库类型"></el-table-column>
       <el-table-column prop="databaseDto.databaseDefine.databaseInstance" label="专题库实例"></el-table-column>
@@ -71,9 +72,12 @@
       @pagination="getList"
     />
     <el-dialog title="添加" :visible.sync="addDataDialog" width="40%" v-dialogDrag>
-      <el-form>
+      <el-form
+        :rules="rules"
+        ref="ruleForm"
+        :model="msgFormDialog">
         <el-form-item label="数据库选择:">
-          <el-select style="width:80%;" v-model="addOptionValue" placeholder="请选择添加数据库">
+          <el-select style="width:80%;" v-model="msgFormDialog.databaseId" placeholder="请选择添加数据库" @change="databaseChange">
             <el-option
               v-for="item in databaseNameOptions"
               :key="item.ID"
@@ -84,7 +88,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="addReportRecord()">确 定</el-button>
+        <el-button type="primary" @click="addReportRecord('ruleForm')">确 定</el-button>
         <el-button @click="addDataDialog= false">取 消</el-button>
       </div>
     </el-dialog>
@@ -120,93 +124,128 @@
 </template>
 
 <script>
-import {
-  consistencyCheckList,
-  deleteById,
-  downloadDfcheckFile,
-  consistencyCheckSave,
-  getDatabaseName
-} from "@/api/structureManagement/consistencyCheck";
-export default {
-  components: {},
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        database_name: ""
-      },
-      total: 0,
-      tableData: [],
-      addOptionValue: "",
-      // 添加弹窗
-      addDataDialog: false,
-      databaseNameOptions: [],
-      //  历史报告
-      historyDialog: false,
-      historyData: [],
-      historyTotal: 0,
-      historyObj: {
-        pageNum: 1,
-        pageSize: 10,
-        historyID: ""
-      }
-    };
-  },
-  created() {
-    this.getList();
-    this.getOptions();
-  },
-  methods: {
-    // table自增定义方法
-    table_index(index) {
-      return (
-        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
-      );
+  import {
+    consistencyCheckList,
+    deleteById,
+    downloadDfcheckFile,
+    consistencyCheckSave,
+    getDatabaseName
+  } from "@/api/structureManagement/consistencyCheck";
+  export default {
+    components: {},
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          database_name: ""
+        },
+        total: 0,
+        tableData: [],
+        msgFormDialog: {
+          databaseId:"",
+          databaseName:""
+        },
+        // 添加弹窗
+        addDataDialog: false,
+        databaseNameOptions: [],
+        //  历史报告
+        historyDialog: false,
+        historyData: [],
+        historyTotal: 0,
+        historyObj: {
+          pageNum: 1,
+          pageSize: 10,
+          historyID: ""
+        },
+        rules: {
+          taskName: [
+            { required: true, message: "请输入任务名称", trigger: "change" }
+          ]
+        }
+      };
     },
-    table_index_history(index) {
-      return (
-        (this.historyObj.pageNum - 1) * this.historyObj.pageSize + index + 1
-      );
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
+    created() {
       this.getList();
+      this.getOptions();
     },
-    /** 查询列表 */
-    getList() {
-      this.loading = true;
-      consistencyCheckList(this.queryParams).then(response => {
-        this.tableData = response.data.pageData;
-        this.total = response.data.totalCount;
-        this.loading = false;
-      });
-    },
-    handleCurrentChange(val) {
-      this.currentRow = val;
-    },
-    getOptions() {
-      getDatabaseName().then(response => {
-        this.databaseNameOptions = response.data;
-      });
-    },
-    /*点击历史报告列表事件 */
-    getHistoricalReport(row) {
-      this.historyDialog = true;
-    },
-    progressDownLoad() {},
-    addReportData() {
-      this.addDataDialog = true;
-    },
-    deleteData() {},
-    addReportRecord() {
+    methods: {
+      // table自增定义方法
+      table_index(index) {
+        return (
+          (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+        );
+      },
+      table_index_history(index) {
+        return (
+          (this.historyObj.pageNum - 1) * this.historyObj.pageSize + index + 1
+        );
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 查询列表 */
+      getList() {
+        this.loading = true;
+        consistencyCheckList(this.queryParams).then(response => {
+          this.tableData = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
+        });
+      },
+      handleCurrentChange(val) {
+        this.currentRow = val;
+      },
+      getOptions() {
+        getDatabaseName().then(response => {
+          this.databaseNameOptions = response.data;
+        });
+      },
+      /*点击历史报告列表事件 */
+      getHistoricalReport(row) {
+        this.historyDialog = true;
+      },
+      progressDownLoad() {},
+      addReportData() {
+        this.addDataDialog = true;
+      },
+      deleteData() {},
+      addReportRecord(formName) {
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            consistencyCheckSave(this.msgFormDialog).then(res => {
+              if (res.code == "200") {
+                this.$message({
+                  type: "success",
+                  message: "添加成功"
+                });
+                this.$emit("resetQuery");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "添加失败"
+                });
+              }
+            });
 
-    },
-    downloadHistoricalReport() {},
-    getHistoryData() {}
-  }
-};
+          }else{
+            return false;
+          }
+        })
+      },
+      downloadHistoricalReport() {},
+      getHistoryData() {},
+      databaseChange(databaseId) {
+        let databaseInfo = {};
+        databaseInfo = this.databaseNameOptions.find(item => {
+          return item.ID === databaseId;
+        });
+        this.msgFormDialog.databaseName = databaseInfo.DATABASE_NAME;
+      },
+    }
+  };
 </script>

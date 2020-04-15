@@ -76,4 +76,6 @@ public interface DatabaseUserService {
      * @return
      */
     PageBean selectPageList(PageForm<DatabaseUserDto> pageForm);
+
+    void exportData(String examineStatus);
 }
