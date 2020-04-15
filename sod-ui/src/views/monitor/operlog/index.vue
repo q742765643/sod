@@ -98,13 +98,13 @@
         >清空</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
+        <handleExport
           v-hasPermi="['system:config:export']"
-        >导出</el-button>
+          :handleExportObj="queryParams"
+          baseUrl="UCENTER"
+          btnText="导出"
+          exportUrl="/monitor/operlog/export"
+        />
       </el-col>
     </el-row>
 
@@ -113,6 +113,7 @@
       :data="list"
       row-key="id"
       @selection-change="handleSelectionChange"
+      @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="系统模块" prop="title" />
@@ -122,7 +123,7 @@
       <el-table-column label="主机" prop="operIp" width="130" :show-overflow-tooltip="true" />
       <el-table-column label="操作地点" prop="operLocation" />
       <el-table-column label="操作状态" prop="status" :formatter="statusFormat" />
-      <el-table-column label="操作日期" prop="operTime" width="180">
+      <el-table-column label="操作日期" prop="operTime" width="180" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.operTime) }}</span>
         </template>
@@ -193,16 +194,17 @@
 </template>
 
 <script>
+import handleExport from "@/components/export";
 import {
   list,
   delOperlog,
   cleanOperlog,
   exportOperlog
 } from "@/api/monitor/operlog";
-var baseUrl = process.env.VUE_APP_UCENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
-
 export default {
+  components: {
+    handleExport
+  },
   data() {
     return {
       // 遮罩层
@@ -232,7 +234,12 @@ export default {
         title: this.$route.params.title,
         operName: undefined,
         businessType: undefined,
-        status: undefined
+        status: undefined,
+        params: {
+          orderBy: {
+            operTime: "desc"
+          }
+        }
       }
     };
   },
@@ -246,6 +253,16 @@ export default {
     });
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.operTime = "asc";
+      } else {
+        orderBy.operTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.getList();
+    },
     /** 查询登录日志 */
     getList() {
       this.loading = true;
@@ -318,16 +335,6 @@ export default {
           this.msgSuccess("清空成功");
         })
         .catch(function() {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      let flieData = Encrypt(
-        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
-      );
-      flieData = encodeURIComponent(flieData);
-
-      window.location.href =
-        baseUrl + "/monitor/operlog/export?sign=111111&data=" + flieData;
     }
   }
 };

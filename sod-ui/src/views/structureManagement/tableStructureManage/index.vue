@@ -36,7 +36,7 @@
                 </el-form-item>
               </el-form>
             </div>
-            <div class="sourceOperate handleTableBox">
+            <div class="sourceOperate">
               <el-button
                 type="primary"
                 size="small"
@@ -568,6 +568,10 @@ export default {
     }
 
     .tableTop {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      align-items: center;
       .sourceOperate {
         display: flex;
         justify-content: flex-end;
@@ -575,6 +579,7 @@ export default {
           margin-left: 0px;
           border-radius: 0px;
           border-left: 1px solid #9dd5f6;
+          padding: 9px 6px;
         }
 
         .el-button:first-child {

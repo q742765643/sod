@@ -22,7 +22,13 @@
             <el-input size="small" :disabled="true" v-model="msgFormDialog.phoneNum"></el-input>
           </el-form-item>
           <el-form-item label="申请材料">
-            <el-button size="small" type="primary" @click="downloadfile()">点击下载</el-button>
+            <handleExport
+              :handleExportObj="handleExportObj"
+              baseUrl="DM"
+              btnText="点击下载"
+              exportUrl="/dm/databaseUser/download"
+              @click="downloadfile()"
+            />
           </el-form-item>
           <el-form-item label="排序">
             <el-input size="small" v-model="msgFormDialog.sortNO"></el-input>
@@ -225,7 +231,7 @@
 </template>
 
 <script>
-import { Encrypt } from "@/utils/htencrypt";
+import handleExport from "@/components/export";
 import {
   getById,
   getAuthorityBySdbId,
@@ -235,10 +241,11 @@ import {
   empowerDatabaseSpecial,
   update
 } from "@/api/authorityAudit/topicLibraryAudit";
-import { download } from "@/api/authorityAudit/DBaccount";
-var baseUrl = process.env.VUE_APP_DM;
 export default {
   name: "handleLiberyDialog",
+  components: {
+    handleExport
+  },
   props: {
     handleObj: {
       type: Object
@@ -246,6 +253,7 @@ export default {
   },
   data() {
     return {
+      handleExportObj: {},
       searchObj: {},
       msgFormDialog: {},
       searchLibraryObj: {
@@ -301,18 +309,12 @@ export default {
     },
     //申请材料下载
     downloadfile() {
-      if (this.msgFormDialog.applyMaterial == "") {
+      if (!this.msgFormDialog.applyMaterial) {
         this.$message({ type: "warning", message: "文件不存在" });
         return;
       }
-      let path = this.msgFormDialog.applyMaterial;
-      let obj = {
-        filepath: path
-      };
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/dm/databaseUser/download?sign=111111&data=" + flieData;
+      this.handleExportObj = {};
+      this.handleExportObj.applyMaterial = this.msgFormDialog.applyMaterial;
     },
     // 获取专题库基本信息|专题库授权
     initDetail() {

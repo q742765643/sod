@@ -10,6 +10,29 @@
             class="baseForm"
             label-width="140px"
           >
+            <el-form-item prop="schemaName" label="模式名:">
+              <el-input
+                size="small"
+                v-model="msgFormDialog.databaseDto.schemaName"
+                placeholder="请输入数据库实例"
+              />
+            </el-form-item>
+
+            <el-form-item label="数据库分类:">
+              <el-input
+                size="small"
+                disabled="disabled"
+                v-model="msgFormDialog.databaseDto.databaseClassify"
+              />
+            </el-form-item>
+            <el-form-item label="数据库名称:">
+              <el-input
+                size="small"
+                disabled="disabled"
+                v-model="msgFormDialog.databaseDto.databaseName"
+                placeholder="请输入数据库实例"
+              />
+            </el-form-item>
             <el-form-item prop="id" label="数据库ID:">
               <el-input
                 size="small"
@@ -213,7 +236,8 @@ import {
   databaseDefineSave,
   databaseDefineGet,
   findByDatabaseDefineId,
-  conStatus
+  conStatus,
+  findBaseByPId
 } from "@/api/dbDictMangement/dbManagement";
 
 export default {
@@ -232,6 +256,12 @@ export default {
       currentRow: null,
       //编辑页面列
       msgFormDialog: {
+        databaseDto: {
+          schemaName: "",
+          databaseClassify: "物理库",
+          databaseName: "基础库"
+        },
+
         id: "",
         databaseName: "",
         serialNumber: "",
@@ -377,6 +407,13 @@ export default {
             this.flag = false;
           }
         } else {
+          if (!response.data.databaseDto) {
+            response.data.databaseDto = {
+              schemaName: "",
+              databaseClassify: "物理库",
+              databaseName: "基础库"
+            };
+          }
           this.msgFormDialog = response.data;
         }
       });

@@ -639,23 +639,31 @@ export default {
           type: "warning"
         });
       } else {
-        let ids = [];
-        this.selColumnData.forEach(element => {
-          ids.push(element.id);
-        });
-        console.log(ids.join(","));
-        tableColumnDel({ ids: ids.join(",") }).then(response => {
-          if (response.code == 200) {
-            this.$message({ message: "删除成功", type: "success" });
-            this.getCodeTable();
-          } else {
-            this.$message({
-              message: "删除失败",
-              type: "warning"
+        this.$confirm("确认要删除选中字段吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            let ids = [];
+            this.selColumnData.forEach(element => {
+              ids.push(element.id);
             });
-            return;
-          }
-        });
+            console.log(ids.join(","));
+            tableColumnDel({ ids: ids.join(",") }).then(response => {
+              if (response.code == 200) {
+                this.$message({ message: "删除成功", type: "success" });
+                this.getCodeTable();
+              } else {
+                this.$message({
+                  message: "删除失败",
+                  type: "warning"
+                });
+                return;
+              }
+            });
+          })
+          .catch(() => {});
       }
     },
 

@@ -109,8 +109,8 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="字典名称" prop="dictName" :show-overflow-tooltip="true" />
-      <el-table-column label="字典类型" :show-overflow-tooltip="true">
+      <el-table-column label="字典名称" prop="dictName" :show-overflow-tooltip="true" width="240" />
+      <el-table-column label="字典类型" :show-overflow-tooltip="true" width="240">
         <template slot-scope="scope">
           <router-link :to="'/dict/type/data/' + scope.row.id" class="link-type">
             <span>{{ scope.row.dictType }}</span>

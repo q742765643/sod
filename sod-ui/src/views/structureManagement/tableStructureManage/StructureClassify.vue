@@ -58,7 +58,12 @@
           @node-click="sourceNodeClick"
           ref="elTree"
         >
-          <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span
+            class="custom-tree-node"
+            slot-scope="{ node, data }"
+            @mouseleave="mouseleave(data,$event)"
+            @mouseover="mouseover(data,$event)"
+          >
             <span class="el-tree-node__label">
               <i :class="data.icon"></i>
               {{ node.label }}
@@ -132,10 +137,16 @@ export default {
     this.initMethodsTree("资料分类树");
   },
   methods: {
+    mouseleave(data, $event) {
+      $event.currentTarget.innerHTML = data.name;
+    },
+    mouseover(data, $event) {
+      $event.currentTarget.innerHTML = data.name + "(" + data.id + ")";
+    },
     // 树的搜索方法
     filterNode(value, data) {
       if (!value) return true;
-      return data.name.indexOf(value) !== -1;
+      return data.name.indexOf(value) !== -1 && data.disabled != true;
     },
     // 初始化树 同步
     async initMethodsTree(whichTree) {
