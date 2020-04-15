@@ -29,6 +29,10 @@ public interface MybatisQueryMapper {
 
     void updateStorageConfigurationStatus(@Param("id") String id, @Param("column") String column, @Param("value") String value);
 
+    List<Map<String, Object>> findStorageConfigurationByDataClassId(@Param("dataClassId") String dataClassId);
+
+    void deleteStorageConfigurationByDataClassId(@Param("dataClassId") String dataClassId);
+
     void updateNewdataApplyStatus(@Param("entity") NewdataApplyEntity newdataApplyEntity);
 
     List<Map<String, Object>> getByUserIdAndApplyId(@Param("entity") NewdataApplyEntity newdataApplyEntity);

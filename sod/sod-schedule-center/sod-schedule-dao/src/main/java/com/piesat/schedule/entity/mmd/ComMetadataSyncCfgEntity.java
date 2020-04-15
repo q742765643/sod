@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2711537570477549135L;
 	/**
@@ -42,7 +42,7 @@ public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 	@Column(name="API_URL",length=200)
 	private String apiUrl;
 	/**
-	 * 接口类型 
+	 * 接口类型
 	 * 1:全量同步
 	 * 2:增量同步
 	 */
@@ -56,7 +56,7 @@ public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 	/**
 	 *  启动时间
 	 */
-	@Column(name="START_TIME",length=5)
+	@Column(name="START_TIME",length=50)
 	private String startTime;
 	/**
 	 *  启动时间单位
@@ -68,12 +68,12 @@ public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 	 */
 	@Column(name="PRIMARY_KEY",length=200)
 	private String primaryKey;
-	
+
 	/**
 	 * 描述
 	 */
 	@Transient
 	private String description;
-	
+
 
 }

@@ -22,7 +22,7 @@ public interface StorageConfigurationService {
 
     Map<String,Object> exportTable(Map<String,String> map);
 
-    List<StorageConfigurationDto> findByDataClassId(String dataClassId);
+    List<Map<String,Object>> findByDataClassId(String dataClassId);
 
     void deleteByDataClassId(String dataClassId);
 

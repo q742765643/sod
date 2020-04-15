@@ -86,9 +86,9 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         List<Map<String,Object>> lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
         if(lists != null && lists.size()>0){
             for(int i=0;i<lists.size();i++){
-                if(lists.get(i).get("DATA_CLASS_ID") != null && !"".equals(lists.get(i).get("DATA_CLASS_ID"))){
-                    List<StorageConfigurationDto> storageConfigurationDtos = storageConfigurationService.findByDataClassId((String) lists.get(i).get("DATA_CLASS_ID"));
-                    lists.get(i).put("storageConfigurations",storageConfigurationDtos);
+                if(StringUtils.isNotNull(lists.get(i).get("DATA_CLASS_ID"))){
+                    List<Map<String, Object>> storageConfigurationList = storageConfigurationService.findByDataClassId((String) lists.get(i).get("DATA_CLASS_ID"));
+                    lists.get(i).put("storageConfigurations",storageConfigurationList);
                 }
             }
         }

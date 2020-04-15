@@ -103,14 +103,13 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     }
 
     @Override
-    public List<StorageConfigurationDto> findByDataClassId(String dataClassId) {
-        List<StorageConfigurationEntity> storageConfigurationEntities =  this.storageConfigurationDao.findByDataClassId(dataClassId);
-        return this.storageConfigurationMapper.toDto(storageConfigurationEntities);
+    public List<Map<String,Object>> findByDataClassId(String dataClassId) {
+        return mybatisQueryMapper.findStorageConfigurationByDataClassId(dataClassId);
     }
 
     @Override
     public void deleteByDataClassId(String dataClassId) {
-        this.storageConfigurationDao.deleteByDataClassId(dataClassId);
+        this.mybatisQueryMapper.deleteStorageConfigurationByDataClassId(dataClassId);
     }
 
     @Override
