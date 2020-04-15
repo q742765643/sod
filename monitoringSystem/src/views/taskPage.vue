@@ -28,6 +28,24 @@
       <el-col :span="16">
         <div class="colBox">
           <h6>基础资源</h6>
+          <div class="baseContant">
+            <el-row :gutter="20">
+              <el-col :span="6" v-for="(item,index) in baseResourcesList" :key="index">
+                <div class="itemBox">
+                  <div class="left">
+                    <img src="../assets//images/base.png" alt />
+                    <p>{{item.baseIp}}</p>
+                  </div>
+                  <div class="right">
+                    <p v-for="(ele,eindex) in item.info" :key="eindex">
+                      <span class="name">{{ele.name}}：</span>
+                      <span>{{ele.value}}</span>
+                    </p>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+          </div>
         </div>
       </el-col>
       <el-col :span="8">
@@ -77,6 +95,18 @@ export default {
           date: "2016-05-03",
           name: "王小虎",
           address: "正常"
+        }
+      ],
+      baseResourcesList: [
+        {
+          baseIp: "10.20.64.41",
+          info: [
+            { name: "CPU", value: "4.1%" },
+            { name: "内存", value: "75.4%" },
+            { name: "网络", value: "正常" },
+            { name: "进程", value: "正常" },
+            { name: "磁盘", value: "正常" }
+          ]
         }
       ]
     };
@@ -455,6 +485,39 @@ export default {
   }
   .el-table--enable-row-hover .el-table__body tr:hover > td {
     background-color: #112e4f !important;
+  }
+  .baseContant {
+    width: 92%;
+    padding: 14px 20px;
+    margin: 0 auto;
+    border-right: 1px solid #115ea7;
+    background: rgba(0, 0, 0, 0.2);
+    .itemBox {
+      display: flex;
+      background: url("../assets/images/basebk.png") no-repeat;
+      background-size: 100% 100%;
+      padding-top: 10px;
+      font-size: 12px;
+      padding-bottom: 6px;
+      img {
+        width: 32%;
+        margin-bottom: 4px;
+      }
+      div {
+        flex: 1;
+        color: #5ccbe7;
+        span.name {
+          opacity: 0.75;
+        }
+      }
+      .right {
+        p {
+          text-align: left;
+          padding-bottom: 2px;
+          font-size: 11px;
+        }
+      }
+    }
   }
 }
 </style>
