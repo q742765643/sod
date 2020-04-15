@@ -119,13 +119,13 @@
             >删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button
-              type="success"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
+            <handleExport
               v-hasPermi="['system:user:export']"
-            >导出</el-button>
+              :handleExportObj="queryParams"
+              baseUrl="UCENTER"
+              btnText="导出"
+              exportUrl="/system/user/export"
+            />
           </el-col>
         </el-row>
 
@@ -293,8 +293,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_UCENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
+import handleExport from "@/components/export";
 import {
   listUser,
   getUser,
@@ -312,7 +311,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  components: { Treeselect },
+  components: { Treeselect, handleExport },
   data() {
     return {
       // 遮罩层
@@ -608,16 +607,6 @@ export default {
           this.msgSuccess("删除成功");
         })
         .catch(function() {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      let flieData = Encrypt(
-        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
-      );
-      flieData = encodeURIComponent(flieData);
-
-      window.location.href =
-        baseUrl + "/system/user/export?sign=111111&data=" + flieData;
     }
   }
 };

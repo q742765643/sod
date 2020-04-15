@@ -3,7 +3,6 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_DM;
 const uuid = require("uuid/v4");
 import { createSign } from "@/utils/auth";
 export default {
@@ -15,6 +14,9 @@ export default {
       type: String
     },
     exportUrl: {
+      type: String
+    },
+    baseUrl: {
       type: String
     }
   },
@@ -33,8 +35,19 @@ export default {
       let sign = createSign(param);
       param.sign = sign;
 
+      let exportBase = "";
+      if (this.baseUrl == "DM") {
+        exportBase = process.env.VUE_APP_DM;
+      }
+      if (this.baseUrl == "SCHEDULE") {
+        exportBase = process.env.VUE_APP_SCHEDULE_CENTER_API;
+      }
+      if (this.baseUrl == "UCENTER") {
+        exportBase = process.env.VUE_APP_UCENTER_API;
+      }
+
       window.location.href =
-        baseUrl +
+        exportBase +
         this.exportUrl +
         "?data=" +
         param.data +

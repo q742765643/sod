@@ -24,10 +24,10 @@
       </el-col>
       <el-col :span="1.5">
         <handleExport
-          :handleExportObj="handleExportObj"
+          :handleExportObj="queryParams"
+          baseUrl="DM"
           btnText="导出"
           exportUrl="/dm/databaseDefine/export"
-          @exportData="exportData"
         />
       </el-col>
     </el-row>
@@ -121,11 +121,6 @@ export default {
       },
       tableData: [],
       total: 0,
-      handleExportObj: {
-        databaseName: "",
-        id: ""
-      },
-
       // 导入
       actionUrl: "",
       showFile: false,
@@ -144,11 +139,6 @@ export default {
     this.getList();
   },
   methods: {
-    exportData() {
-      this.handleExportObj.id = this.queryParams.id;
-      this.handleExportObj.databaseName = this.queryParams.databaseName;
-      console.log(this.handleExportObj);
-    },
     cancelDialog() {
       this.msgFormDialog = false;
       this.handleQuery();

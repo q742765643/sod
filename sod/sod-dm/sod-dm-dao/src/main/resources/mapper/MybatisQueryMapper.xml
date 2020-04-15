@@ -402,7 +402,7 @@
         left join T_SOD_DATA_TABLE c on c.class_logic_id = b.id
         left join T_SOD_DATABASE e on b.database_id = e.id
         left join T_SOD_DATABASE_DEFINE ee on e.database_define_id = ee.id ) dd
-        on (d.class_logic_id = dd.class_logic_id)
+        on (d.data_class_id = dd.data_class_id and d.database_id = dd.database_id)
         <where>
             <if test="map.applyId != null and map.applyId  != ''">
                 d.apply_id = #{map.applyId}
@@ -442,7 +442,7 @@
         left join T_SOD_DATA_TABLE c on c.class_logic_id = b.id
         left join T_SOD_DATABASE e on b.database_id = e.id
         left join T_SOD_DATABASE_DEFINE ee on e.database_define_id = ee.id ) dd
-        on (d.class_logic_id = dd.class_logic_id )
+        on (d.data_class_id = dd.data_class_id and d.database_id = dd.database_id)
         <where>
             <if test="map.applyId != null and map.applyId  != ''">
                 d.apply_id = #{map.applyId}

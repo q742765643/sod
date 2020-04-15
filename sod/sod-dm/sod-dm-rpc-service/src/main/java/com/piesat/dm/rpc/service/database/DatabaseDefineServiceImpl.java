@@ -9,10 +9,12 @@ import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
+import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +40,8 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     @Autowired
     private DatabaseDao databaseDao;
     @Autowired
+    private DatabaseMapper databaseMapper;
+    @Autowired
     private DatabaseInfo databaseInfo;
     @Autowired
     private DatabaseDefineMapper databaseDefineMapper;
@@ -48,9 +53,21 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
 
     @Override
     public DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto) {
+        DatabaseDto databaseDto = databaseDefineDto.getDatabaseDto();
+        if (StringUtils.isEmpty(databaseDto.getId())){
+            databaseDto.setCreateTime(new Date());
+        }
+        if (StringUtils.isEmpty(databaseDefineDto.getId())){
+            databaseDefineDto.setCreateTime(new Date());
+        }
         DatabaseDefineEntity databaseDefineEntity = this.databaseDefineMapper.toEntity(databaseDefineDto);
         DatabaseDefineEntity save = this.save(databaseDefineEntity);
-        return this.databaseDefineMapper.toDto(save);
+        DatabaseEntity databaseEntity = this.databaseMapper.toEntity(databaseDto);
+        databaseEntity.setDatabaseDefine(save);
+        databaseEntity = this.databaseDao.saveNotNull(databaseEntity);
+        DatabaseDefineDto databaseDefineDto1 = this.databaseDefineMapper.toDto(save);
+        databaseDefineDto1.setDatabaseDto(this.databaseMapper.toDto(databaseEntity));
+        return databaseDefineDto1;
     }
 
     @Override
@@ -113,7 +130,13 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     @Override
     public DatabaseDefineDto getDotById(String id) {
         DatabaseDefineEntity databaseDefineEntity = this.getById(id);
-        return this.databaseDefineMapper.toDto(databaseDefineEntity);
+        DatabaseDefineDto databaseDefineDto = this.databaseDefineMapper.toDto(databaseDefineEntity);
+        List<DatabaseEntity> databaseEntities = this.databaseDao.findByDatabaseDefine_IdAndDatabaseName(id, "基础库");
+        if (databaseEntities.size()>0){
+            DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntities).get(0);
+            databaseDefineDto.setDatabaseDto(databaseDto);
+        }
+        return databaseDefineDto;
     }
 
     @Override

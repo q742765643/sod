@@ -24,7 +24,12 @@
           icon="el-icon-plus"
           v-hasPermi="['DBaccount:role:add']"
         >新增</el-button>
-        <el-button size="small" type="success" icon="el-icon-download" @click="downloadTable">导出</el-button>
+        <handleExport
+          :handleExportObj="queryParams"
+          baseUrl="DM"
+          btnText="导出"
+          exportUrl="/dm/databaseUser/exportData"
+        />
       </el-form-item>
     </el-form>
 
@@ -96,9 +101,11 @@
 <script>
 import { databaseUserAll, deleteList } from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
+import handleExport from "@/components/export";
 export default {
   components: {
-    handleAccount
+    handleAccount,
+    handleExport
   },
   data() {
     return {
@@ -147,7 +154,6 @@ export default {
       this.handleObj = {};
       this.handleDialog = true;
     },
-    downloadTable() {},
     //查看原因
     viewReason(row) {
       this.$alert(row.failure_reason, "拒绝原因", {
