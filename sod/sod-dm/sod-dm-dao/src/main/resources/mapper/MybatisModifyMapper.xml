@@ -17,6 +17,18 @@
             <if test="backupIdentifier != null">
                 backup_identifier = #{backupIdentifier},
             </if>
+            <if test="syncId != null">
+                sync_id = #{syncId},
+            </if>
+            <if test="clearId != null">
+                clear_id = #{clearId},
+            </if>
+            <if test="moveId != null">
+                move_id = #{moveId},
+            </if>
+            <if test="backupId != null">
+                backup_id = #{backupId},
+            </if>
         </set>
         where  class_logic_id = #{classLogicId}
     </update>
