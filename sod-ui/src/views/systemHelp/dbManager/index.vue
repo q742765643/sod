@@ -34,7 +34,12 @@
           <p
             class="detail"
           >主要解决信息数据的高效存贮、安全管理与快速检索等问题，主要功能包括数据字典、内存管理、事务管理、语法分析器、集成管理工具集等，提供数据定义、数据操作功能、数据库的运行管理、数据库的建立和维护功能。</p>
-          <handleExport :handleExportObj="xuguExportObj" btnText="客户端下载" :exportUrl="exportUrl" />
+          <handleExport
+            :handleExportObj="xuguExportObj"
+            btnText="客户端下载"
+            :exportUrl="exportUrl"
+            baseUrl="DM"
+          />
         </el-col>
       </el-row>
     </section>
@@ -57,8 +62,18 @@
           <p
             class="detail"
           >GBase 8a实现大数据的全数据（结构化数据、半结构化数据和非结构化数据）存储管理和高效分析，在百TB至PB级数据规模下实现数据查询的秒级响应；节省50%-90%存储空间；节省50%-90%的投资和运维成本；实现千亿级文本条目全文检索的秒级响应；提供全过程可视化的数据查询分析及展现工具。</p>
-          <el-button type="primary" size="small" @click="gBaseDownload">客户端下载</el-button>
-          <el-button type="primary" size="small" @click="webClick">WEB端浏览</el-button>
+          <handleExport
+            :handleExportObj="GBaseExportObj"
+            btnText="客户端下载"
+            :exportUrl="exportUrl"
+            baseUrl="DM"
+          />
+          <handleExport
+            :handleExportObj="webExportObj"
+            btnText="WEB端浏览"
+            :exportUrl="exportUrl"
+            baseUrl="DM"
+          />
         </el-col>
         <el-col :span="8" class="imgBox">
           <img src="@/views/systemHelp/dbManager/img/xugu2.jpg" alt />
@@ -88,6 +103,12 @@
             class="detail"
           >Cassandra是一种无性能损耗的高拓展性和可用性的分布式数据库。线性的可伸缩性以及被商品级硬件设施和云基础架构验证的容错技术使它成为任务关键型数据存储的良好平台。Cassandra支持跨多个数据中心的副本备份是非常棒的，为使用者提供低延迟和即使某个区域停电也能正常运转的放心。</p>
           <el-button type="primary" size="small" @click="CASSANDRADownLoad">客户端下载</el-button>
+          <handleExport
+            :handleExportObj="CASSANDRAExportObj"
+            baseUrl="DM"
+            btnText="客户端下载"
+            :exportUrl="exportUrl"
+          />
         </el-col>
       </el-row>
     </section>
@@ -104,7 +125,14 @@ export default {
     return {
       exportUrl: "/api/dbfile/downloadFile",
       xuguExportObj: {
-        "xugu-client": "E:/sod/sod_all/static/虚谷数据库V9.0.zip"
+        name: "xugu-client"
+      },
+      GBaseExportObj: {
+        name: "gbase-client"
+      },
+      webExportObj: {},
+      CASSANDRAExportObj: {
+        name: "cassandra-client"
       }
     };
   },

@@ -1,5 +1,5 @@
 <template>
-  <div class="scrollMain" @scroll="scrollEvent">
+  <div class="scrollMain">
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-tabs v-model="tableActive" @tab-click="manageTabsClick">
         <el-tab-pane v-if="tabs.db" label="表结构" name="db">
@@ -547,24 +547,7 @@ export default {
         this.$refs["serveRef"].forParent();
       }
     },
-    handleScroll() {
-      var sideNav = document.getElementById("rightNav");
-      var btns = sideNav.getElementsByTagName("li"); //按钮
-
-      //2.点击按钮可以跳转到对应楼层
-      for (var i = 0; i < btns.length; i++) {
-        //绑定索引
-        btns[i].index = i;
-        btns[i].onclick = function() {
-          //排他
-          for (var j = 0; j < btns.length; j++) {
-            btns[j].className = "";
-          }
-          this.className = "active";
-        };
-      }
-    },
-    scrollEvent(e) {
+    handleScroll(e) {
       // 滚动滑轮，到达临界点的时候，按钮跟着高亮显示
       // console.log(e.srcElement.scrollTop);
       var scrollTop = e.srcElement.scrollTop; //滚动距离
@@ -582,17 +565,35 @@ export default {
           btns[i].className = "active";
         }
       }
+    },
+    floorClick() {
+      var sideNav = document.getElementById("rightNav");
+      var btns = sideNav.getElementsByTagName("li"); //按钮
+
+      //2.点击按钮可以跳转到对应楼层
+      for (var i = 0; i < btns.length; i++) {
+        //绑定索引
+        btns[i].index = i;
+        btns[i].onclick = function() {
+          //排他
+          for (var j = 0; j < btns.length; j++) {
+            btns[j].className = "";
+          }
+          this.className = "active";
+        };
+      }
     }
   },
   mounted() {
+    this.floorClick();
+    window.addEventListener("scroll", this.handleScroll, true);
     this.getTableInfo();
     this.getDir();
     // this.getOptionsData();
     //
-    // this.handleScroll();
   },
   beforeDestroy() {
-    // window.removeEventListener("scroll", this.scrollEvent);
+    window.removeEventListener("scroll", this.handleScroll);
   }
 };
 </script>
@@ -600,7 +601,7 @@ export default {
 <style lang="scss">
 .scrollMain {
   position: absolute;
-  top: 70px;
+  top: 48px;
   bottom: 0;
   left: 20px;
   right: 20px;

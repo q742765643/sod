@@ -93,13 +93,13 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
+        <handleExport
           v-hasPermi="['system:dict:export']"
-        >导出</el-button>
+          :handleExportObj="queryParams"
+          baseUrl="SCHEDULE"
+          btnText="导出"
+          exportUrl="/api/schedule/uploadDown/downFile"
+        />
       </el-col>
     </el-row>
 
@@ -222,9 +222,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
-import { downFile } from "@/api/system/metadataBackup";
+import handleExport from "@/components/export";
 import {
   listBackupLog,
   getBackupLog,
@@ -233,6 +231,9 @@ import {
 import { formatDate } from "@/utils/index";
 
 export default {
+  components: {
+    handleExport
+  },
   data() {
     return {
       // 遮罩层
@@ -354,27 +355,6 @@ export default {
           this.msgSuccess("删除成功");
         })
         .catch(function() {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/backupLog/export?sign=111111&data=" + flieData;
-    },
-    handleDownload(row) {
-      let obj = {
-        path: row.storageDirectory + "/" + row.fileName
-      };
-      console.log(obj);
-      let flieData = Encrypt(JSON.stringify(obj));
-      flieData = encodeURIComponent(flieData);
-
-      window.location.href =
-        baseUrl +
-        "/api/schedule/uploadDown/downFile?sign=111111&data=" +
-        flieData;
     }
   }
 };

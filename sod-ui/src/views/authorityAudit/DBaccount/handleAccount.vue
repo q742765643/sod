@@ -113,14 +113,14 @@
                 <em>点击上传</em>（只能上传docx文件）
               </div>
             </el-upload>
-            <el-button
-              type="primary"
-              size="small"
-              icon="el-icon-download"
+            <handleExport
               class="reloaddemo"
-              @click="demoClick"
               v-show="isHideAdd"
-            >模板下载</el-button>
+              :handleExportObj="handleExportObj"
+              baseUrl="DM"
+              btnText="模板下载"
+              exportUrl="/dm/databaseDefine/export"
+            />
             <el-input
               size="small"
               type="text"
@@ -129,14 +129,15 @@
               v-show="isHide"
               style="width:92%;"
             ></el-input>
-            <el-button
-              type="success"
-              class="methodReload"
-              size="small"
-              icon="el-icon-download"
+            <handleExport
               v-show="isHide"
+              class="methodReload"
+              :handleExportObj="handleExportObj"
+              baseUrl="DM"
+              btnText="下载"
               @click="downloadWord"
-            >下载</el-button>
+              exportUrl="/dm/databaseUser/download"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="3"></el-col>
@@ -177,7 +178,8 @@
 </template>
 
 <script>
-import { Encrypt } from "@/utils/htencrypt";
+var baseUrl = process.env.VUE_APP_DM;
+import handleExport from "@/components/export";
 import {
   databaseList,
   addTable,
@@ -186,7 +188,6 @@ import {
   download,
   update
 } from "@/api/authorityAudit/DBaccount";
-var baseUrl = process.env.VUE_APP_DM;
 import {
   unstartnumValidation,
   englishAndNumValidation,
@@ -195,6 +196,9 @@ import {
 } from "@/components/commonVaildate.js";
 export default {
   name: "handleAccountDialog",
+  components: {
+    handleExport
+  },
   props: {
     handleObj: {
       type: Object
@@ -260,6 +264,10 @@ export default {
       },
       palceholderIp: "指定IP样例:192.168.1.1",
       dataBaseBox: [],
+      handleExportObj: {
+        "databaseuser-application":
+          "E:/sod/sod_all/static/大数据云平台存储账户申请模板.docx"
+      }, //模板下载
       rules: {
         databaseUpId: [
           { required: true, validator: idValidate, trigger: "blur" }
@@ -441,30 +449,11 @@ export default {
         });
       }
     },
-    demoClick() {
-      let url = interfaceObj.demoWordUrl + "大数据云平台存储账户申请模板.docx";
-      this.axios
-        .get(interfaceObj.download + "?filepath=" + url)
-        .then(data => {
-          testExport(interfaceObj.download + "?filepath=" + url);
-        })
-        .catch(function(error) {
-          testExport(interfaceObj.download + "?filepath=" + url);
-        });
-    },
+
     // 查看详情时的下载
     downloadWord() {
-      let path = this.msgFormDialog.applyMaterial;
-      let obj = {
-        filepath: path
-      };
-      let flieData = Encrypt(JSON.stringify(obj));
-      flieData = encodeURIComponent(flieData);
-      console.log(
-        baseUrl + "/dm/databaseUser/download?sign=111111&data=" + flieData
-      );
-      window.location.href =
-        baseUrl + "/dm/databaseUser/download?sign=111111&data=" + flieData;
+      this.handleExportObj = {};
+      this.handleExportObj.filepath = this.msgFormDialog.applyMaterial;
     },
 
     trueDialog(formName) {

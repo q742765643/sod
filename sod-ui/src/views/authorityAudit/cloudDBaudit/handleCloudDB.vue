@@ -161,7 +161,12 @@
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <el-button type="primary" size="small" icon="el-icon-download" @click="demoClick">模板下载</el-button>
+              <handleExport
+                :handleExportObj="handleExportObj"
+                baseUrl="DM"
+                btnText="模板下载"
+                exportUrl="/dm/databaseDefine/export"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -194,11 +199,13 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="单位审核材料" prop="examineMaterial">
-              <el-button
-                size="small"
-                v-model="msgFormDialog.examineMaterial"
+              <handleExport
                 @click="downloadWord"
-              >下载查看审核文件</el-button>
+                :handleExportObj="handleExportObj"
+                baseUrl="DM"
+                btnText="下载查看审核文件"
+                exportUrl="/dm/cloudDatabaseApply/download"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -367,9 +374,7 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DM;
-import { Encrypt } from "@/utils/htencrypt";
-const uuid = require("uuid/v4");
-import { createSign } from "@/utils/auth";
+import handleExport from "@/components/export";
 import {
   getDictDataByType,
   editCldb,
@@ -384,6 +389,9 @@ import {
 
 export default {
   name: "handleCloudDialog",
+  components: {
+    handleExport
+  },
   props: {
     handleObj: {
       type: Object
@@ -429,6 +437,10 @@ export default {
     };
 
     return {
+      handleExportObj: {
+        "clouddatabase-application":
+          "E:/sod/sod_all/static/云数据库申请表模板.docx"
+      },
       passwordType: "",
       isReason: false,
       isDetail: false,
@@ -551,41 +563,10 @@ export default {
         this.passwordType = "password";
       }
     },
-    demoClick() {
-      let url = interfaceObj.demoWordUrl + "云数据库申请表模板.docx";
-      this.axios
-        .get(interfaceObj.download + "?examineMaterial=" + url)
-        .then(data => {
-          testExport(interfaceObj.download + "?examineMaterial=" + url);
-        })
-        .catch(function(error) {
-          testExport(interfaceObj.download + "?examineMaterial=" + url);
-        });
-    },
     // 查看详情时的下载
     downloadWord() {
-      let path = this.msgFormDialog.examineMaterial;
-      let obj = {
-        filepath: path
-      };
-      const param = {
-        timestamp: new Date().getTime(),
-        nonce: uuid(),
-        data: JSON.stringify(obj)
-      };
-      let sign = createSign(param);
-      param.sign = sign;
-
-      window.location.href =
-        baseUrl +
-        "/dm/cloudDatabaseApply/download?data=" +
-        param.data +
-        "&timestamp=" +
-        param.timestamp +
-        "&nonce=" +
-        param.nonce +
-        "&sign=" +
-        param.sign;
+      this.handleExportObj = {};
+      this.handleExportObj.examineMaterial = this.msgFormDialog.examineMaterial;
     },
     // 上传限制
     handleExceed() {

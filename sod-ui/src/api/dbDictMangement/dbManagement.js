@@ -35,10 +35,11 @@ export function databaseNodesDelete(query) {
     params: query
   });
 }
+
 // 查详情
-export function databaseNodesGetById(query) {
+export function findBaseByPId(query) {
   return request({
-    url: baseUrl + "/dm/databaseNodes/get",
+    url: baseUrl + "/dm/database/findBaseByPId",
     method: "get",
     params: query
   });
