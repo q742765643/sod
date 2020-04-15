@@ -193,6 +193,10 @@ export default {
     statusShow(row) {
       let result = row.auditStatus == "02" ? "已审核" : "待审核";
       return result;
+    },
+    cancelHandle() {
+      this.handleQuery();
+      this.handleDialog = false;
     }
   }
 };

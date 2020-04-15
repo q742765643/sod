@@ -13,24 +13,6 @@
           </el-form-item>
         </el-col>
         <el-col :span="7">
-          <el-row>
-            <el-col :span="22">
-              <el-form-item label="密码" prop="databaseUpPassword">
-                <el-input
-                  size="small"
-                  :type="passwordType"
-                  v-model="msgFormDialog.databaseUpPassword"
-                  :disabled="userDiasbled"
-                  placeholder="密码"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="2">
-              <i :class="passwordType === 'password' ? 'eye' : 'el-icon-view'" @click="showPwd"></i>
-            </el-col>
-          </el-row>
-        </el-col>
-        <el-col :span="7">
           <el-form-item label="申请绑定IP" prop="databaseUpIp">
             <el-input
               size="small"
@@ -248,24 +230,6 @@ export default {
       }
     };
 
-    const ipValidate = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error("请输入IP地址"));
-      } else if (
-        this.msgFormDialog.databaseUpIpSegment == 1 &&
-        !ipUrlValidation(value)
-      ) {
-        callback(new Error("请输入正确IP地址"));
-      } else if (
-        this.msgFormDialog.databaseUpIpSegment == 2 &&
-        !ipUrlValidation2(value)
-      ) {
-        callback(new Error("请输入正确IP段地址"));
-      } else {
-        callback();
-      }
-    };
-
     return {
       ipArryForm: {
         domains: [
@@ -287,7 +251,6 @@ export default {
       userBox: [], //获取所有用户
       msgFormDialog: {
         databaseUpId: "USR_", //UP账户ID
-        databaseUpPassword: "", //UP账户密码
         databaseUpIp: "", //UP账户IP
         databaseUpIpSegment: "1", //UP账户IP可选区间
         applyDatabaseId: [], //物理库ID
@@ -301,14 +264,12 @@ export default {
         databaseUpId: [
           { required: true, validator: idValidate, trigger: "blur" }
         ],
-        databaseUpPassword: [
-          { required: true, validator: passwordValidate, trigger: "blur" }
-        ],
+
         databaseUpIp: [
-          { required: true, validator: ipValidate, trigger: "blur" }
+          { required: true, message: "请输入IP地址", trigger: "blur" }
         ],
         applyDatabaseId: [
-          { required: true, message: "请选择数据库", trigger: "blur" }
+          { required: true, message: "请选择数据库", trigger: "change" }
         ],
         databaseUpDesc: [
           { required: true, message: "请输入用途说明", trigger: "blur" }
@@ -353,6 +314,16 @@ export default {
       arrys.forEach(element => {
         ips.push(element.value);
       });
+      for (let i = 0; i < ips.length; i++) {
+        if (!ipUrlValidation(ips[i]) && !ipUrlValidation2(ips[i])) {
+          this.$message({
+            type: "error",
+            message: "请输入正确IP地址"
+          });
+          return;
+        }
+      }
+
       this.msgFormDialog.databaseUpIp = ips.join(",");
       this.$refs[formName].resetFields();
       this.innerVisible = false;

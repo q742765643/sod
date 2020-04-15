@@ -2,7 +2,7 @@
   <div class="scrollMain" @scroll="scrollEvent">
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-tabs v-model="tableActive" @tab-click="manageTabsClick">
-        <el-tab-pane v-if="tabs.db" label="存储结构" name="db">
+        <el-tab-pane v-if="tabs.db" label="表结构" name="db">
           <el-container class="structureManageTable">
             <el-main id="box">
               <el-form

@@ -1,6 +1,6 @@
 <template>
   <div class="handleTableBaseMsg">
-    <el-form ref="formClass" :model="tableFormObject" :rules="rules" label-width="140px">
+    <el-form ref="formClass" :model="tableFormObject" label-width="140px">
       <el-row>
         <el-col :span="12">
           <el-form-item prop="crpindname" label="负责人名:">

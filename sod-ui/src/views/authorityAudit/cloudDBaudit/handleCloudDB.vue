@@ -368,6 +368,8 @@
 <script>
 var baseUrl = process.env.VUE_APP_DM;
 import { Encrypt } from "@/utils/htencrypt";
+const uuid = require("uuid/v4");
+import { createSign } from "@/utils/auth";
 import {
   getDictDataByType,
   editCldb,
@@ -566,12 +568,24 @@ export default {
       let obj = {
         filepath: path
       };
-      let flieData = Encrypt(JSON.stringify(obj));
-      flieData = encodeURIComponent(flieData);
+      const param = {
+        timestamp: new Date().getTime(),
+        nonce: uuid(),
+        data: JSON.stringify(obj)
+      };
+      let sign = createSign(param);
+      param.sign = sign;
+
       window.location.href =
         baseUrl +
-        "/dm/cloudDatabaseApply/download?sign=111111&data=" +
-        flieData;
+        "/dm/cloudDatabaseApply/download?data=" +
+        param.data +
+        "&timestamp=" +
+        param.timestamp +
+        "&nonce=" +
+        param.nonce +
+        "&sign=" +
+        param.sign;
     },
     // 上传限制
     handleExceed() {
