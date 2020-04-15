@@ -191,7 +191,7 @@ public class ImportData {
         //importEleDataDefine();
         //importGridAreaDefine();
         //importGridEleDecodeDefine();
-        importGridLayerLevel();
+        //importGridLayerLevel();
     }
 
 
