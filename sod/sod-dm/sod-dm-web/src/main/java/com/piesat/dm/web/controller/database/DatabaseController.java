@@ -128,6 +128,14 @@ public class DatabaseController {
         return ResultT.success(all);
     }
 
+    @ApiOperation(value = "根据父id查询基础库")
+    @RequiresPermissions("dm:database:findBaseByPId")
+    @GetMapping(value = "/findBaseByPId")
+    public ResultT findBaseByPId(String id) {
+        List<DatabaseDto> all = this.databaseService.findByDatabaseDefineIdAndDatabaseName(id,"基础库");
+        return ResultT.success(all);
+    }
+
 
     @ApiOperation(value = "根据用户ID查询可用物理库的信息")
     @RequiresPermissions("dm:database:findByUserId")

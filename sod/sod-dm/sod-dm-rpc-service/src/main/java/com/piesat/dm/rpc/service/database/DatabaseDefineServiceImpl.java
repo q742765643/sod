@@ -60,17 +60,17 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     }
 
     @Override
-    public List<DatabaseDefineDto> export(DatabaseDefineDto databaseDefineDto) {
+    public List<DatabaseDefineDto> export(String id, String databaseName) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
-        if (StringUtils.isNotBlank(databaseDefineDto.getId())) {
-            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getId());
+        if (StringUtils.isNotBlank(id)) {
+            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), id);
         }
-        if (StringUtils.isNotBlank(databaseDefineDto.getDatabaseName())) {
-            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getDatabaseName());
+        if (StringUtils.isNotBlank(databaseName)) {
+            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseName);
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        List<DatabaseDefineDto> all = this.getAll(ssb.generateSpecification(), sort);
-        return all;
+        List<DatabaseDefineEntity> all = this.getAll(ssb.generateSpecification(), sort);
+        return this.databaseDefineMapper.toDto(all);
     }
 
     @Override

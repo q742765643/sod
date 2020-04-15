@@ -8,6 +8,7 @@ server:
       max-threads: 10
       background-processor-delay: 30
       basedir: ${user.home}/tomcat/
+  max-http-header-size: 15360
   ssl:
    key-store: classpath:keystore.https
    key-store-password: qwe123
@@ -90,6 +91,7 @@ mybatis:
   callSettersOnNulls:  true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
 #分页插件
 pagehelper:
   helper-dialect: mysql
@@ -113,17 +115,28 @@ DITASKADDURL: http://10.20.67.109/bdtiming/openapi/taskConfig/add?apikey=e10adc3
 DITASKDELURL: http://10.20.67.109/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
 
 log:
-  path: E:/log
+  path: D:/log
   level: INFO
-  
+
 serverfile:
   dbfile: D:/upload/
   filePath: D:/upload/
+  static:
+    template:
+      add-column: E:/sod/sod_all/static/字段模板.xlsx
+      clouddatabase-application: E:/sod/sod_all/static/云数据库申请表模板.docx
+      databaseuser-application: E:/sod/sod_all/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: E:/sod/sod_all/static/个人数据注册上传模板.xlsx
+      topic-application: E:/sod/sod_all/static/专题库申请表模板.docx
+    database-client:
+      xugu-client: E:/sod/sod_all/static/虚谷数据库V9.0.zip
+      gbase-client: E:/sod/sod_all/static/GBaseDataStudio.zip
+      cassandra-client: E:/sod/sod_all/static/Dbeaver.zip
+
 
 fileUpload:
   savaPath: /zzj/upload
   httpPath: /upload
 product:
   enable: true
-
-
+debug: true
