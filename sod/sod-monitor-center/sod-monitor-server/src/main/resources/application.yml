@@ -50,7 +50,7 @@ spring:
         cluster-nodes: 10.211.55.7:9300 # 配置IP及端口号
         cluster-name: elasticsearch
   main:
-      allow-bean-definition-overriding: true
+      allow-bean-definition-overriding: false
 mybatis:
   #callSettersOnNulls:  true
   #type-aliases-package: com.piesat.*.entity

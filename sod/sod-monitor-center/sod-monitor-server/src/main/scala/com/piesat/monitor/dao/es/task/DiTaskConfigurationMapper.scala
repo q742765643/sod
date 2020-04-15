@@ -15,4 +15,7 @@ trait DiTaskConfigurationMapper {
 
   def findById(id:String):DiTaskConfiguration
 
+  def selectAlias:JavaList[String]
+
+
 }

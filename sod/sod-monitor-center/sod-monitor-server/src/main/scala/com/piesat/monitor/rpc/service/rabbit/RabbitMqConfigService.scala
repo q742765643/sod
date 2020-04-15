@@ -49,4 +49,8 @@ class RabbitMqConfigService  @Autowired()(rabbitMqConfigDao: RabbitMqConfigDao, 
   def delete(id:String):Unit={
     rabbitMqConfigDao.deleteById(id)
   }
+  def selectAlias:JavaList[String]={
+    rabbitMqConfigMapper.selectAlias
+  }
+
 }

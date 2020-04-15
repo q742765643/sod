@@ -42,4 +42,7 @@ class SshEntity {
   @BeanProperty
   var hostName:String=_
 
+  @BeanProperty
+  var alias:String=_
+
 }

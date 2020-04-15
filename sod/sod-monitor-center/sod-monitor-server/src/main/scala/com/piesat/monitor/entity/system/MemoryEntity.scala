@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.annotations.ApiModelProperty
 import lombok.Data
 import org.springframework.context.annotation.Bean
+import org.springframework.format.annotation.DateTimeFormat
 
 import scala.beans.BeanProperty
 
@@ -35,8 +36,10 @@ class MemoryEntity {
   var usedPct:Float=_
   @BeanProperty
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var startTime:Date=_
   @BeanProperty
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   var endTime:Date=_
 

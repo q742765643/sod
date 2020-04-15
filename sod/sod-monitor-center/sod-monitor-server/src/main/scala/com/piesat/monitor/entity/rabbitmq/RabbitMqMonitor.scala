@@ -6,6 +6,7 @@ import java.util.Date
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.annotations.ApiModelProperty
 import org.springframework.data.elasticsearch.annotations.Document
+import org.springframework.format.annotation.DateTimeFormat
 
 import scala.beans.BeanProperty
 
@@ -52,10 +53,16 @@ class RabbitMqMonitor {
   @BeanProperty
   @Transient
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var startTime:Date=_
   @BeanProperty
   @Transient
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var endTime:Date=_
 
+  @Transient
+  @ApiModelProperty("别名")
+  @BeanProperty
+  var alias:String=_
 }

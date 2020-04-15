@@ -48,6 +48,7 @@ object TransferAnalyze {
         var objectMapper = new ObjectMapper()
         var result = new GrokUtil().getMesssge(x.message).trim
         if (result.startsWith("DI_ALL_PROCESS=")) {
+          //System.out.print(result)
           result = result.replace("DI_ALL_PROCESS=", "")
           var stationLevel: StationLevelEntity = objectMapper.readValue(result, classOf[StationLevelEntity])
           var stationLevelFiled: StationLevelFiledEntity = stationLevel.getStationLevelFiledEntity
@@ -76,7 +77,9 @@ object TransferAnalyze {
           stationLevel.groupKey = groupKey
           val date = dateFormat.format(stationLevel.ddateTime)
           var l = EsUtil.getWhere("transfer_analyze-" + date, filter)
+          System.out.print("第一步:"+l)
           if (l > 0) {
+            System.out.print("ss===="+l)
             stationLevel.isCount = 1
           } else {
             stationLevel.isCount = 0
@@ -87,6 +90,7 @@ object TransferAnalyze {
         }
       } catch {
         case ex: Exception => {
+          ex.getStackTrace
           print(ex)
         };
           null
@@ -94,6 +98,7 @@ object TransferAnalyze {
 
     }).filter(x => {
       if (x != null && x.id != null) {
+        System.out.println(x.groupKey)
         true
       } else {
         false

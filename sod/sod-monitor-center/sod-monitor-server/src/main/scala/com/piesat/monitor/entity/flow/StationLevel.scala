@@ -6,6 +6,7 @@ import java.util.Date
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonProperty}
 import io.swagger.annotations.ApiModelProperty
 import org.springframework.data.elasticsearch.annotations.Document
+import org.springframework.format.annotation.DateTimeFormat
 
 import scala.beans.BeanProperty
 
@@ -213,9 +214,11 @@ class StationLevel {
   @BeanProperty
   @Transient
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var startTime:Date=_
   @BeanProperty
   @Transient
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   var endTime:Date=_
 

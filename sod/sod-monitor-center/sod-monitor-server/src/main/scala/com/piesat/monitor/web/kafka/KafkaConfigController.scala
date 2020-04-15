@@ -70,6 +70,14 @@ class KafkaConfigController  @Autowired()(kafkaConfigService: KafkaConfigService
     resultT.setData(list);
     return resultT
   }
+  @GetMapping(Array("/selectAlias"))
+  @ApiOperation(value = "查询别名", notes = "查询别名")
+  def selectAlias:ResultT[JavaList[String]]={
+    var list = kafkaConfigService.selectAlias;
+    var resultT = new ResultT[JavaList[String]]()
+    resultT.setData(list);
+    return resultT
+  }
 
 
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.{JsonFormat, JsonProperty}
 import lombok.Data
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.{DateFormat, Document, Field, FieldType}
+import org.springframework.format.annotation.DateTimeFormat
 
 import scala.beans.BeanProperty
 
@@ -112,10 +113,12 @@ class DiTaskExecute{
   @BeanProperty
   var ddateTime: Date = _
 
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @Transient
   @BeanProperty
   var startTime:Date=_
 
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @Transient
   @BeanProperty
   var endTime:Date=_

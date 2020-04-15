@@ -25,9 +25,18 @@
         rabbitmq_config
         where 1=1
         <if test="address != null and address != ''">
-            AND address= '%${address}%'
+            AND address LIKE '%${address}%'
+        </if>
+        <if test="alias != null and alias != ''">
+            AND alias LIKE '%${alias}%'
         </if>
         ORDER BY createTime desc
     </select>
-
+    <select id="selectAlias"  resultType="java.lang.String">
+        select
+        alias
+        from
+        rabbitmq_config
+        GROUP by alias
+    </select>
 </mapper>

@@ -68,4 +68,11 @@
         di_task_configuration
         where id=#{id}
     </select>
+    <select id="selectAlias"  resultType="java.lang.String">
+        select
+        SEND_PHYS
+        from
+        di_task_configuration
+        GROUP by SEND_PHYS
+    </select>
 </mapper>

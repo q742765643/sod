@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty
 import lombok.Data
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.{DateFormat, Document, Field, FieldType}
+import org.springframework.format.annotation.DateTimeFormat
 
 import scala.beans.BeanProperty
 
@@ -80,8 +81,10 @@ class ProcessEntity {
 
    @BeanProperty
    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
    var startTime:Date=_
    @BeanProperty
+   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
    var endTime:Date=_
 

@@ -1,5 +1,6 @@
 package com.piesat.monitor.entity.kafka
 
+import java.beans.Transient
 import java.util.Date
 
 import com.fasterxml.jackson.annotation.JsonFormat
@@ -7,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty
 
 import scala.beans.BeanProperty
 import java.util.{List => JavaList}
+
+import org.springframework.format.annotation.DateTimeFormat
 
 /**
   * Created by zzj on 2020/3/31.
@@ -35,11 +38,19 @@ class KafkaMonitor {
   @BeanProperty
   var groupId:String=_
   @BeanProperty
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   var startTime:Date=_
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
   @BeanProperty
   var endTime:Date=_
   @BeanProperty
   var groupIds:JavaList[String]=_
+
+  @Transient
+  @ApiModelProperty("别名")
+  @BeanProperty
+  var alias:String=_
+
 }

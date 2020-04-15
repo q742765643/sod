@@ -7,6 +7,7 @@ import com.piesat.util.page.{PageBean, PageForm}
 import io.swagger.annotations.{Api, ApiOperation}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation._
+import java.util.{List => JavaList}
 
 /**
   * Created by zzj on 2020/3/23.
@@ -59,6 +60,15 @@ class RabbitMqConfigController  @Autowired()(rabbitMqConfigService: RabbitMqConf
     resultT.setData(rabbitMqConfig)
     return resultT
 
+  }
+
+  @GetMapping(Array("/selectAlias"))
+  @ApiOperation(value = "查询别名", notes = "查询别名")
+  def selectAlias:ResultT[JavaList[String]]={
+    var list = rabbitMqConfigService.selectAlias;
+    var resultT = new ResultT[JavaList[String]]()
+    resultT.setData(list);
+    return resultT
   }
 
 }

@@ -14,7 +14,7 @@ class GrokUtil {
 
     val grokCompiler: GrokCompiler = GrokCompiler.newInstance
     grokCompiler.registerDefaultPatterns()
-    grokCompiler.registerPatternFromClasspath("/patterns/java")
+    grokCompiler.registerPatternFromClasspath("/patterns/javaht")
     val grok: Grok = grokCompiler.compile(pattern)
     val grokMatch: Match = grok.`match`(message)
     val capture: util.Map[String, AnyRef] = grokMatch.capture

@@ -15,4 +15,6 @@ trait KafkaConfigMapper {
 
   def selectGroupId(kafkaConfig: KafkaConfig):JavaList[String]
 
+  def selectAlias:JavaList[String]
+
 }
