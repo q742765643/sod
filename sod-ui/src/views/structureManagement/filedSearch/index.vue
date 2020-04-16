@@ -91,11 +91,14 @@
 
 <script>
 import { storageFieldList } from "@/api/structureManagement/filedSearch";
+//表结构管理--弹出层
+import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 export default {
   components: {
-    SuperSearch
+    SuperSearch,
+    StructureManageTable
   },
   data() {
     return {
