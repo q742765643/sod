@@ -60,7 +60,14 @@
               />
             </el-form-item>
             <el-form-item prop="databaseType" label="数据库类型:">
-              <el-input size="small" v-model="msgFormDialog.databaseType" placeholder="请输入数据库类型" />
+              <el-select v-model="msgFormDialog.databaseType">
+                <el-option
+                  v-for="item in dictsList"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
+                ></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item prop="driverClassName" label="数据库驱动:">
               <el-input
@@ -213,6 +220,14 @@
               <el-input v-model="scope.row.introduction"></el-input>
             </template>
           </el-table-column>
+          <el-table-column prop="3" label="是否管理账户">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.isManager">
+                <el-option label="是" :value="true"></el-option>
+                <el-option label="否" :value="false"></el-option>
+              </el-select>
+            </template>
+          </el-table-column>
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="专题列表" name="four" v-if="handleMsgObj.id">
@@ -239,6 +254,7 @@ import {
   conStatus,
   findBaseByPId
 } from "@/api/dbDictMangement/dbManagement";
+import { getDicts } from "@/api/system/dict/data";
 
 export default {
   name: "filedSearchDeploy",
@@ -250,6 +266,7 @@ export default {
   },
   data() {
     return {
+      dictsList: [],
       //专题列表
       physicsSpecialList: [],
       //当前选中列
@@ -324,6 +341,7 @@ export default {
     };
   },
   async created() {
+    await this.getDictsList();
     //点击编辑时处理
     if (this.handleMsgObj.id) {
       this.isDbIdDisable = true;
@@ -340,6 +358,13 @@ export default {
     }
   },
   methods: {
+    async getDictsList() {
+      getDicts("sys_database_type").then(response => {
+        if (response.code == 200) {
+          this.dictsList = response.data;
+        }
+      });
+    },
     //添加或修改数据库基本信息的保存按钮
     async trueDialog(formName) {
       //验证基本信息页的必填项是否输入
@@ -483,7 +508,8 @@ export default {
       this.msgFormDialog.databaseAdministratorList.push({
         userName: "",
         passWord: "",
-        introduction: ""
+        introduction: "",
+        isManager: true
       });
     },
     //账户列表页删除一行
