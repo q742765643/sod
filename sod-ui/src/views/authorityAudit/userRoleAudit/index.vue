@@ -23,12 +23,12 @@
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="account" label="账户名称"></el-table-column>
       <el-table-column prop="username" label="用户名称"></el-table-column>
       <el-table-column prop="post" label="部门"></el-table-column>
-      <el-table-column prop="updateTime" label="申请时间">
+      <el-table-column prop="updateTime" label="申请时间" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -112,7 +112,11 @@ export default {
         status: "",
         username: "",
         nameSourceDB: "",
-        time: ["", ""]
+        params: {
+          orderBy: {
+            updateTime: "desc"
+          }
+        }
       },
 
       total: 0,
@@ -125,6 +129,16 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.updateTime = "asc";
+      } else {
+        orderBy.updateTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -151,8 +165,7 @@ export default {
         pageSize: 10,
         status: "",
         username: "",
-        nameSourceDB: "",
-        time: ["", ""]
+        nameSourceDB: ""
       };
       this.handleQuery();
     },
@@ -205,7 +218,7 @@ export default {
   }
 };
 </script>
-<style lang="css" scoped>
+<style scoped>
 .searchBox {
   margin-bottom: 24px;
 }

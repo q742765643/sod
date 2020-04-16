@@ -54,7 +54,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+      @pagination="getList('')"
     />
     <!-- 高级搜索 -->
     <el-dialog
