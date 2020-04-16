@@ -14,7 +14,7 @@ class SystemConfig {
   def loadEnv() = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     //    设置检查点时间为5秒
-    env.enableCheckpointing(50000)
+    env.enableCheckpointing(5000)
     //    设置检查模式  恰好一次
     env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
 
@@ -39,7 +39,7 @@ class SystemConfig {
     var systemConfig: Properties = loadProperties("application.properties")
     var ownConfig: Properties = loadProperties(path)
     val kafkaProps = new Properties()
-    kafkaProps.setProperty("zookeeper.connect", systemConfig.getProperty("ht.zookeeper.host"))
+    //kafkaProps.setProperty("zookeeper.connect", systemConfig.getProperty("ht.zookeeper.host"))
     kafkaProps.setProperty("bootstrap.servers", systemConfig.getProperty("ht.kafka.bootstrap-servers"))
     kafkaProps.setProperty("group.id", ownConfig.getProperty("ht.kafka.group.id"))
     kafkaProps

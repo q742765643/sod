@@ -13,4 +13,7 @@ import com.piesat.monitor.entity.ssh.SshEntity
 trait SshMapper {
   def list(sshEntity: SshEntity):JavaList[SshEntity]
 
+  def selectAlias:JavaList[String]
+
+
 }

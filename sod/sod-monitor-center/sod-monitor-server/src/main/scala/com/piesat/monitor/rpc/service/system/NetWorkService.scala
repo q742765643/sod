@@ -1,11 +1,14 @@
 package com.piesat.monitor.rpc.service.system
 
-import java.util.{List => JavaList}
+import java.util
+import java.util.{Date, List => JavaList}
 
 import com.piesat.monitor.dao.es.system.{CpuMapper, NetWorkMapper}
 import com.piesat.monitor.entity.system.{CpuEntity, NetWorkEntity}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.util.DateUtil
+
 import scala.collection.JavaConversions._
 
 /**
@@ -16,6 +19,9 @@ class NetWorkService @Autowired()(netWorkMapper: NetWorkMapper){
 
   def list(netWorkEntity: NetWorkEntity):JavaList[NetWorkEntity]={
       netWorkEntity.setDataset("system.network")
+      var map:util.Map[String,Date]=DateUtil.getStartAndEnd10()
+      netWorkEntity.startTime=map.get("startTime")
+      netWorkEntity.endTime=map.get("endTime")
       var netList=netWorkMapper.list(netWorkEntity)
       var i=0;
       for(ne:NetWorkEntity<- netList){

@@ -13,4 +13,7 @@ import org.apache.ibatis.annotations.Mapper
 trait RabbitMqConfigMapper {
   def list(rabbitMqConfig: RabbitMqConfig):JavaList[RabbitMqConfig]
 
+  def selectAlias:JavaList[String]
+
+
 }

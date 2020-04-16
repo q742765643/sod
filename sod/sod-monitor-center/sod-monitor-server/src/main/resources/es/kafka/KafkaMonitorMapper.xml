@@ -46,7 +46,7 @@
             AND  "kafka.consumergroup.id" = #{groupId}
         </if>
         <if test="address != null and address != ''">
-            AND  "kafka.consumergroup.broker.address" = #{address}
+            AND  "kafka.consumergroup.broker.address" like '%${address}'
         </if>
         <if test="groupIds != null">
             AND

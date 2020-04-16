@@ -14,6 +14,8 @@
         <result column="passWord"  property="passWord" />
         <result column="createTime"  property="createTime"  />
         <result column="hostName"  property="hostName" />
+        <result column="alias"  property="alias" />
+
     </resultMap>
     <sql id="Base_Column_List">
          id,
@@ -32,13 +34,23 @@
         "ssh"
         where 1=1
         <if test="ip != null and ip != ''">
-            AND ip= '%${ip}%'
+            AND ip like  '%${ip}%'
         </if>
         <if test="hostName!= null and hostName != ''">
             AND hostName like '%${hostName}%'
         </if>
+        <if test="alias != null and alias != ''">
+            AND alias like '%${alias}%'
+        </if>
 
          ORDER BY createTime desc
+    </select>
+    <select id="selectAlias"  resultType="java.lang.String">
+        select
+        alias
+        from
+        ssh
+        GROUP by alias
     </select>
 
 </mapper>

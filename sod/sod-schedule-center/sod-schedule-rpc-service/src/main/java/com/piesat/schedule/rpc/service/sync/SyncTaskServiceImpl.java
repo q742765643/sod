@@ -9,9 +9,13 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.UUID;
+import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
+import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
@@ -69,6 +73,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     private ShardingService shardingService;
     @GrpcHthtClient
     private DataTableService dataTableService;
+    @GrpcHthtClient
+    private DataLogicService dataLogicService;
+    @GrpcHthtClient
+    private StorageConfigurationService storageConfigurationService;
 
 
     @Override
@@ -181,6 +189,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @Override
     @Transactional(readOnly = false)
     public SyncTaskDto saveDto(SyncTaskDto syncTaskDto) {
+        List<String> targetTableIds = new ArrayList<String>();
+
         //将源表过滤字段信息存到sync_filter表中，
         String filterRecordIds = syncFilterSaveDto(syncTaskDto);
 
@@ -191,7 +201,9 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             Map<String, Object>  targetRelation = targetRelationList.get(i);
             String targetTableId = (String) targetRelation.get("targetTableId");
             String mapping = (String)targetRelation.get("mapping");
+            targetTableIds.add(targetTableId);
 
+            //保存
             String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(),targetTableId,mapping,filterRecordIds,StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
             if(sourceIds.length()>0) {
                 sourceIds.append(",").append(mappingRecordId);
@@ -218,8 +230,32 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
+
+        //修改存储策略配置
+        updateStorageConfiguration(targetTableIds,syncTaskDto.getTargetDatabaseId(),1,syncTaskEntity.getId());
+
         return this.syncTaskMapstruct.toDto(syncTaskEntity);
     }
+
+    //修改存储策略配置
+    public void updateStorageConfiguration(List<String> targetTableIds,String targetDatabaseId,Integer syncIdentifier,String taskId){
+        if(targetTableIds != null && targetTableIds.size() > 0){
+            for(String targetTableId : targetTableIds){
+                DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
+                List<DataLogicDto> dataLogicDtos = dataLogicService.getDataLogic(targetTableDto.getDataServiceId(), targetDatabaseId, targetTableDto.getTableName());
+                if(dataLogicDtos != null && dataLogicDtos.size()>0){
+                    for(DataLogicDto dataLogicDto : dataLogicDtos){
+                        StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
+                        storageConfigurationDto.setClassLogicId(dataLogicDto.getId());
+                        storageConfigurationDto.setSyncIdentifier(syncIdentifier);
+                        storageConfigurationDto.setSyncId(taskId);
+                        storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
+                    }
+                }
+            }
+        }
+    }
+
 
     @Override
     @Transactional(readOnly = false)
@@ -406,12 +442,18 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @Override
     @Transactional(readOnly = false)
     public void deleteSync(String taskId) {
-        deleteConfigFilter(taskId);
+        List<String> targetTableIds = deleteConfigFilter(taskId);
+
+        //修改存储策略配置
+        SyncTaskDto syncTaskDto = this.getDtoById(taskId);
+        updateStorageConfiguration(targetTableIds,syncTaskDto.getTargetDatabaseId(),2,"");
+
         //删除synctask表
         syncTaskDao.deleteById(taskId);
     }
 
-    public void deleteConfigFilter(String taskId){
+    public List<String> deleteConfigFilter(String taskId){
+        List<String> targetTableIds = new ArrayList<String>();
         SyncTaskDto syncTaskDto = this.getDtoById(taskId);
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         // 调用服务
@@ -441,6 +483,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             }
             //删除config
             if(StringUtils.isNotNullString(syncMappingEntity.getTargetTableId())){
+                SyncConfigEntity syncConfigEntity = syncConfigDao.findById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
+                targetTableIds.add(syncConfigEntity.getTargetTableId());
                 syncConfigDao.deleteById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
             }
             //删除mapping表
@@ -448,7 +492,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }
 
         //删除dimessage表
-
+        return targetTableIds;
     }
 
     @Override

@@ -14,8 +14,7 @@ object KafkaTaskDemo {
   def main(args: Array[String]): Unit = {
     val prop = new Properties
     // 指定请求的kafka集群列表
-    prop.put("bootstrap.servers", "10.211.55.7:9092") // 指定响应方式
-    prop.setProperty("zookeeper.connect", "10.211.55.7:2181")
+    prop.put("bootstrap.servers", "meteo_cloud1:9092,meteo_cloud2:9092,meteo_cloud3:9092") // 指定响应方式
 
     //prop.put("acks", "0")
     prop.put("acks", "all")
@@ -35,7 +34,7 @@ object KafkaTaskDemo {
     val producer = new KafkaProducer[String, String](prop)
     var objectMapper = new ObjectMapper()
     // 模拟一些数据并发送给kafka
-    for (i <- 1 to 1) {
+    for (i <- 1 to 1000) {
       var kafkaMessege: KafkaMessege = new KafkaMessege()
       var diTaskConfiguration: DiTaskConfiguration = new DiTaskConfiguration()
       diTaskConfiguration.taskId="AAAAA"
@@ -53,11 +52,11 @@ object KafkaTaskDemo {
       diTaskConfiguration.isDelete=0
       var messege = objectMapper.writeValueAsString(diTaskConfiguration)
       print(messege)
-      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ]  " + messege
+      kafkaMessege.message = "2020-04-08 09:35:28.127  INFO 209960 --- [           main] c.p.s.client.ScheduleClientApplication   :DI_TASK_CONFIG=" + messege
       // 得到返回值
-      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("task", objectMapper.writeValueAsString(kafkaMessege))).get()
+      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("ditaskconfcollect", objectMapper.writeValueAsString(kafkaMessege))).get()
       println(rmd.toString)
-      Thread.sleep(3000)
+      //Thread.sleep(3000)
     }
 
 

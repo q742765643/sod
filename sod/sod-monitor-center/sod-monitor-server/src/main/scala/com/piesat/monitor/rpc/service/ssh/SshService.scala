@@ -49,4 +49,8 @@ class SshService  @Autowired()(sshDao: SshDao, sshMapper:SshMapper)
   def delete(id:String):Unit={
     sshDao.deleteById(id)
   }
+  def selectAlias:JavaList[String]={
+    sshMapper.selectAlias
+  }
+
 }

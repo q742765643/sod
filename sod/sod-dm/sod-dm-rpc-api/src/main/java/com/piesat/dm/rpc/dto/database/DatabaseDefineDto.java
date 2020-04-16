@@ -116,4 +116,6 @@ public class DatabaseDefineDto {
     private Set<DatabaseAdministratorDto> databaseAdministratorList;
 
     private Set<DatabaseNodesDto> databaseNodesList;
+
+    private DatabaseDto databaseDto;
 }

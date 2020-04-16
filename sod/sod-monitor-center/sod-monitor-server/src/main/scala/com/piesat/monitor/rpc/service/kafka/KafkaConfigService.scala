@@ -48,4 +48,8 @@ class KafkaConfigService  @Autowired()(kafkaConfigDao: KafkaConfigDao, kafkaConf
   def delete(id:String):Unit={
     kafkaConfigDao.deleteById(id)
   }
+  def selectAlias:JavaList[String]={
+    kafkaConfigMapper.selectAlias
+  }
+
 }

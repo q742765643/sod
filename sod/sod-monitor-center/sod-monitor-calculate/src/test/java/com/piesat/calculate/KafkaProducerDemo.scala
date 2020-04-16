@@ -14,8 +14,8 @@ object KafkaProducerDemo {
   def main(args: Array[String]): Unit = {
     val prop = new Properties
     // 指定请求的kafka集群列表
-    prop.put("bootstrap.servers", "10.211.55.7:9092") // 指定响应方式
-    prop.setProperty("zookeeper.connect", "10.211.55.7:2181")
+    prop.put("bootstrap.servers", "meteo_cloud1:9092,meteo_cloud2:9092,meteo_cloud3:9092") // 指定响应方式
+    //prop.setProperty("zookeeper.connect", "meteo_cloud2:2181")
 
     //prop.put("acks", "0")
     prop.put("acks", "all")
@@ -26,7 +26,7 @@ object KafkaProducerDemo {
     // 指定value的序列化方式
     prop.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
     // 配置超时时间
-    prop.put("request.timeout.ms", "60000")
+    prop.put("request.timeout.ms", "6000")
     //prop.put("batch.size", "16384")
     //prop.put("linger.ms", "1")
     //prop.put("buffer.memory", "33554432")
@@ -63,11 +63,10 @@ object KafkaProducerDemo {
       stationLevel.setStationLevelFiledEntity(stationLevelFiled)
       var messege = objectMapper.writeValueAsString(stationLevel)
       print(messege)
-      kafkaMessege.message = "2020-03-16 17:00:13  [ main:6004 ] - [ DEBUG ] " + messege
+      kafkaMessege.message = "2020-04-08 09:35:28.127  INFO 209960 --- [           main] c.p.s.client.ScheduleClientApplication   :DI_ALL_PROCESS=" + messege
       // 得到返回值
-      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("test", objectMapper.writeValueAsString(kafkaMessege))).get()
+      val rmd: RecordMetadata = producer.send(new ProducerRecord[String, String]("transferanalyze", objectMapper.writeValueAsString(kafkaMessege))).get()
       println(rmd.toString)
-      Thread.sleep(3000)
     }
 
 

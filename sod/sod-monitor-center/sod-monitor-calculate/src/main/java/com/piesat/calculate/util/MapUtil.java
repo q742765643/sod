@@ -2,8 +2,6 @@ package com.piesat.calculate.util;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

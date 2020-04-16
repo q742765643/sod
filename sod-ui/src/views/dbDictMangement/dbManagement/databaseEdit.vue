@@ -10,7 +10,7 @@
             class="baseForm"
             label-width="140px"
           >
-            <el-form-item prop="schemaName" label="模式名:">
+            <el-form-item prop="schemaName" label="模式名称:">
               <el-input
                 size="small"
                 v-model="msgFormDialog.databaseDto.schemaName"

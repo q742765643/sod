@@ -122,13 +122,16 @@ class EsSink[T] {
       new ElasticsearchSinkFunction[T] { //参数element就是上面清洗好的数据格式
 
         def createIndexRequest(element: T): IndexRequest = {
+
           var objectMapper = new ObjectMapper
           val entity = element.asInstanceOf[BaseEntity]
+          System.out.println("第二步:"+entity.id)
           var id = entity.id
           val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
           val date = dateFormat.format(entity.ddateTime)
           //EsUtil.createIndex(indexName + "-" + date,element.asInstanceOf[Object])
           var map=MapUtil.objectToMapInsert(element)
+          System.out.print("第二步:"+id)
           return Requests.indexRequest()
             .index(indexName + "-" + date)
             .`type`("doc").id(id)

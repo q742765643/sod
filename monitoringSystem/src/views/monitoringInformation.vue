@@ -287,7 +287,7 @@ export default {
       var myChart = echarts.init(document.getElementById("networkFlowChart"));
       myChart.setOption({
         title: {
-          text: "cpu使用率情况",
+          text: "网络流量",
           left: "left",
           textStyle: {
             fontSize: 14,

@@ -36,4 +36,9 @@ class DiTaskConfigurationService  @Autowired()(diTaskConfigurationMapper:DiTaskC
     pageBean
   }
 
+  def selectAlias:JavaList[String]={
+    diTaskConfigurationMapper.selectAlias
+  }
+
+
 }

@@ -38,6 +38,18 @@ public class DateUtil {
         map.put("endTime",endTime);
         return map;
     }
+    public static Map<String,Date> getStartAndEnd10(){
+        Map<String,Date> map=new HashMap<>();
+        Date endTime=new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endTime);
+        cal.add(Calendar.MINUTE, -10);
+        Date startTime=cal.getTime();
+        map.put("startTime",startTime);
+        map.put("endTime",endTime);
+        return map;
+    }
+
 
 }
 

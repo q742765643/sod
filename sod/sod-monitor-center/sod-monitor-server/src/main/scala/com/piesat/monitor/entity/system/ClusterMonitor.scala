@@ -8,6 +8,7 @@ import scala.beans.BeanProperty
 import java.util.{Date, List => JavaList}
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import org.springframework.format.annotation.DateTimeFormat
 
 /**
   * Created by zzj on 2020/4/2.
@@ -49,11 +50,13 @@ class ClusterMonitor {
   @Transient
   @BeanProperty
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var startTime:Date=_
 
   @Transient
   @BeanProperty
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var endTime:Date=_
 
 }
