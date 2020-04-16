@@ -106,6 +106,18 @@ serverfile:
   dbfile: D:/upload/
   filePath: D:/upload/
 
+  static:
+    template:
+      add-column: D:/sod/sod_all/static/字段模板.xlsx
+      clouddatabase-application: D:/sod/sod_all/static/云数据库申请表模板.docx
+      databaseuser-application: D:/sod/sod_all/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: D:/sod/sod_all/static/个人数据注册上传模板.xlsx
+      topic-application: D:/sod/sod_all/static/专题库申请表模板.docx
+    database-client:
+      xugu-client: D:/sod/sod_all/static/虚谷数据库V9.0.zip
+      gbase-client: D:/sod/sod_all/static/GBaseDataStudio.zip
+      cassandra-client: D:/sod/sod_all/static/Dbeaver.zip
+
 fileUpload:
   savaPath:  D:/upload
   httpPath: /upload

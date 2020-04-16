@@ -78,6 +78,11 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     }
 
     @Override
+    public void deleteRecordByIds(List<String> ids) {
+        this.deleteByIds(ids);
+    }
+
+    @Override
     public Map<String, List<List<String>>> downloadDfcheckFile(String databaseId) {
         //获取数据库详细信息
         DatabaseDto databaseDto = databaseService.getDotById(databaseId);

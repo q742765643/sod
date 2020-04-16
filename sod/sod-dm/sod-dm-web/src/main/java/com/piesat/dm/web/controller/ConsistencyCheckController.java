@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author yaya
@@ -68,6 +66,19 @@ public class ConsistencyCheckController {
     {
         ResultT<String> resultT=new ResultT<>();
         this.consistencyCheckService.deleteById(id);
+        return resultT;
+    }
+
+    @DeleteMapping("/deleteByIds/{ids}")
+    @ApiOperation(value = "批量删除", notes = "批量删除")
+    public ResultT<String> deleteByIds(@PathVariable String[] ids)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        List<String> list=new ArrayList();
+        if(ids.length>0){
+            list= Arrays.asList(ids);
+            this.consistencyCheckService.deleteRecordByIds(list);
+        }
         return resultT;
     }
 
