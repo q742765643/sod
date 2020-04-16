@@ -1,7 +1,14 @@
 package com.piesat.dm.web.controller;
 
+import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.FileUploadUtils;
+import com.piesat.dm.entity.ConsistencyCheckHistoryEntity;
+import com.piesat.dm.rpc.api.ConsistencyCheckHistoryService;
 import com.piesat.dm.rpc.api.ConsistencyCheckService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.dto.ConsistencyCheckDto;
+import com.piesat.dm.rpc.dto.ConsistencyCheckHistoryDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -10,10 +17,14 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -29,6 +40,15 @@ public class ConsistencyCheckController {
     @Autowired
     private ConsistencyCheckService consistencyCheckService;
 
+    @Autowired
+    private ConsistencyCheckHistoryService consistencyCheckHistoryService;
+
+    @Autowired
+    private DatabaseService databaseService;
+
+    @Value("${serverfile.dfcheck}")
+    private String fileAddress;
+
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     public ResultT<PageBean> list(ConsistencyCheckDto consistencyCheckDto,
@@ -41,6 +61,20 @@ public class ConsistencyCheckController {
 
         return resultT;
     }
+
+    @GetMapping("/historyList")
+    @ApiOperation(value = "历史报告列表", notes = "历史报告列表")
+    public ResultT<PageBean> historyList(ConsistencyCheckHistoryDto consistencyCheckHistoryDto,
+                                         @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                         @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<ConsistencyCheckHistoryDto> pageForm = new PageForm<>(pageNum, pageSize, consistencyCheckHistoryDto);
+        PageBean pageBean = consistencyCheckHistoryService.selectPageList(pageForm);
+        resultT.setData(pageBean);
+
+        return resultT;
+    }
+
 
 
     /**
@@ -82,11 +116,39 @@ public class ConsistencyCheckController {
         return resultT;
     }
 
+    @PostMapping(value = "/downHistoryDfcheckFile")
+    @ApiOperation(value = "历史报告下载", notes = "历史报告下载")
+    public void downHistoryDfcheckFile(HttpServletResponse response, String filename,String file_directory){
+        try {
+            filename = URLDecoder.decode(filename,"UTF-8");
+            file_directory = URLDecoder.decode(file_directory,"UTF-8");
+            FileInputStream fis = new FileInputStream(file_directory);
+            response.reset();
+            response.setContentType("bin");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename,"UTF-8"));
+            // 循环取出流中的数据
+            byte[] b = new byte[200];
+            int len;
+
+            while ((len = fis.read(b)) > 0){
+                response.getOutputStream().write(b, 0, len);
+            }
+            fis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @PostMapping(value = "/downloadDfcheckFile")
     @ApiOperation(value = "生成差异报告", notes = "生成差异报告")
-    public void downloadDfcheckFile(HttpServletRequest request, HttpServletResponse response){
-       String databaseId =  request.getParameter("databaseId");
-       Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseId);
+    public void downloadDfcheckFile(String databaseId, HttpServletResponse response){
+        DatabaseDto databaseDto = databaseService.getDotById(databaseId);
+
+        String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"+"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH");
+
+
+        Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseId);
 
         // 创建一个webbook，对应一个Excel文件
         HSSFWorkbook wb = new HSSFWorkbook();
@@ -102,6 +164,35 @@ public class ConsistencyCheckController {
 
         sheetThree(wb,style,compileResults.get("shardingResult"));
 
+        // 将文件存到指定位置
+        String filePath = fileAddress +"/"+ fileName;
+        FileUploadUtils.uploadFileExl(wb,filePath);
+
+        //保存差异检查历史表
+        //判断同一时刻的文件是否存在
+        List<ConsistencyCheckHistoryDto> historys = consistencyCheckHistoryService.findHistoryByDatabaseIdAndFileName(databaseId, fileName);
+        if(historys != null && historys.size()>0){
+            ConsistencyCheckHistoryDto consistencyCheckHistoryDto = historys.get(0);
+            //更新时间
+            consistencyCheckHistoryService.saveDto(consistencyCheckHistoryDto);
+        }else{
+            ConsistencyCheckHistoryDto consistencyCheckHistoryDto = new ConsistencyCheckHistoryDto();
+            consistencyCheckHistoryDto.setDatabaseId(databaseId);
+            consistencyCheckHistoryDto.setFileName(fileName);
+            consistencyCheckHistoryDto.setFileDirectory(filePath);
+            consistencyCheckHistoryService.saveDto(consistencyCheckHistoryDto);
+        }
+
+        //下载
+        try {
+            response.setContentType("application/x-msdownload;");
+            response.setHeader("Content-disposition", "attachment;filename="
+                    + new String(fileName.getBytes("utf-8"), "ISO8859-1"));
+            wb.write(response.getOutputStream());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void sheetOne(HSSFWorkbook wb,HSSFCellStyle style,List<List<String>> compileResult){

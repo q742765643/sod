@@ -54,5 +54,7 @@ public interface DataTableService {
 
     ResultT createTable(TableSqlDto tableSqlDto);
 
+    ResultT existTable(TableSqlDto tableSqlDto);
+
     List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName,String databaseId,String dataclassId);
 }

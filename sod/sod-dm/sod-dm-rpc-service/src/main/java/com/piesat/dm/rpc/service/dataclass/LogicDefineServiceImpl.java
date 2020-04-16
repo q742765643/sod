@@ -9,7 +9,10 @@ import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
 import com.piesat.util.page.PageBean;
@@ -36,6 +39,8 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     private LogicDefineMapper logicDefineMapper;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseDefineService databaseDefineService;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
 
@@ -69,7 +74,19 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
             specificationBuilder.add("logicName", SpecificationOperator.Operator.likeAll.name(),logicDefineDto.getLogicName());
         }
         List<LogicDefineEntity> logicDefineEntities = this.getAll(specificationBuilder.generateSpecification());
-        return this.logicDefineMapper.toDto(logicDefineEntities);
+        List<DatabaseDefineDto> all = this.databaseDefineService.all();
+        List<LogicDefineDto> logicDefineDtos = this.logicDefineMapper.toDto(logicDefineEntities);
+        for (LogicDefineDto logicDefineDto1 : logicDefineDtos) {
+            List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto1.getLogicDatabaseEntityList();
+            for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
+                for (com.piesat.dm.rpc.dto.database.DatabaseDefineDto DatabaseDefineDto : all) {
+                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
+                    }
+                }
+            }
+        }
+        return logicDefineDtos;
     }
 
     @Override
@@ -92,7 +109,6 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<LogicDefineEntity> logicDefineEntities= (List<LogicDefineEntity>) pageBean.getPageData();
         List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
-
         pageBean.setPageData(logicDefineDtos);
         return pageBean;
     }

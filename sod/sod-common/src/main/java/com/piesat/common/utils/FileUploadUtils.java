@@ -2,6 +2,7 @@ package com.piesat.common.utils;
 
 import com.piesat.common.config.WebMvcConfig;
 import com.piesat.util.ResultT;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -11,6 +12,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -79,5 +81,24 @@ public class FileUploadUtils {
         return pathFileName;
     }
 
+    public static void uploadFileExl (HSSFWorkbook wb, String filePath) {
+        try {
+            File dirPath = new File(filePath);
+            if (!dirPath.exists()) {
+                dirPath.mkdirs();
+            }
+
+            // 新建一输出流
+            FileOutputStream fout = new FileOutputStream(filePath);
+            // 存盘
+            wb.write(fout);
+            // 清空缓冲区
+            fout.flush();
+            // 结束关闭
+            fout.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 

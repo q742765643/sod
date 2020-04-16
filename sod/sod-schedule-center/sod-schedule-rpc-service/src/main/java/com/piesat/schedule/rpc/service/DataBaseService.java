@@ -92,7 +92,7 @@ public class DataBaseService
         dataRetrieval.setProfileName(databaseName+"_"+dataName);
         dataRetrieval.setParentId(parentId);
         dataRetrieval.setPrimaryKey(primaryKey);
-        dataRetrieval.setVTableName("");
+        //dataRetrieval.setVTableName("");
         if(null!=tableForeignKeyDto){
             dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDto));
         }

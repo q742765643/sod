@@ -33,6 +33,7 @@ public class TableSqlServiceImpl extends BaseService<TableSqlEntity> implements 
 
     @Override
     public TableSqlDto saveDto(TableSqlDto tableSqlDto) {
+        this.tableSqlDao.deleteByDatabaseIdAndTableName(tableSqlDto.getDatabaseId(),tableSqlDto.getTableName());
         TableSqlEntity tableSqlEntity = this.tableSqlMapper.toEntity(tableSqlDto);
         tableSqlEntity = this.save(tableSqlEntity);
         return this.tableSqlMapper.toDto(tableSqlEntity);

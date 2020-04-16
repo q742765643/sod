@@ -20,7 +20,7 @@ import java.util.Objects;
 @Component
 public class RedisLock {
     public static final String LOCK_PREFIX = "lock:";
-    public static final int LOCK_EXPIRE = 60000; // ms
+    public static final int LOCK_EXPIRE = 6000; // ms
 
     @Autowired
     @Qualifier("redisTemplate")
