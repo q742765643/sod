@@ -83,19 +83,19 @@ export default {
         this.superChose = [
           {
             label: "公共元数据库字段",
-            value: "db_ele_code"
+            value: "dbEleCode"
           },
           {
             label: "字段名称",
-            value: "c_element_code"
+            value: "CElementCode"
           },
           {
             label: "服务名称",
-            value: "user_ele_code"
+            value: "userEleCode"
           },
           {
             label: "中文简称",
-            value: "ele_name"
+            value: "eleName"
           },
           {
             label: "数据类型",
@@ -107,15 +107,15 @@ export default {
           },
           {
             label: "资料名称",
-            value: "class_name"
+            value: "className"
           },
           {
             label: "表名称",
-            value: "table_name"
+            value: "tableName"
           },
           {
             label: "数据用途",
-            value: "logic_name"
+            value: "logicName"
           }
         ];
       } else if (this.superDialogObj.pageName == "非结构化数据迁移配置") {
