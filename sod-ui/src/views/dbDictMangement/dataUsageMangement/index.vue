@@ -26,9 +26,9 @@
         <handleExport
           v-hasPermi="['system:dict:export']"
           :handleExportObj="queryParams"
-          baseUrl="SCHEDULE"
+          baseUrl="DM"
           btnText="导出"
-          exportUrl=" "
+          exportUrl="/dm/logicDefine/exportTable"
         />
       </el-col>
     </el-row>
