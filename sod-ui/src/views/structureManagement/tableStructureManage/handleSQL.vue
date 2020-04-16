@@ -101,27 +101,12 @@ export default {
           type: "error"
         });
         return;
-      } else if (this.msgFormDialog.insertSql == "") {
-        this.$message({
-          message: "INSERT不能为空",
-          type: "error"
-        });
-        return;
-      } else if (this.msgFormDialog.selectSql == "") {
-        this.$message({
-          message: "SELECT不能为空",
-          type: "error"
-        });
-        return;
       }
-      let tableSql = {};
-      tableSql.createSql = this.msgFormDialog.createSql;
-      tableSql.insertSql = this.msgFormDialog.insertSql;
-      tableSql.selectSql = this.msgFormDialog.selectSql;
+
       saveSql({
         databaseId: this.handleSQLObj.DATABASE_ID,
         tableName: this.tableObj.tableName,
-        tableSql: tableSql
+        tableSql: this.msgFormDialog.createSql
       }).then(res => {
         if (res.code == 200) {
           this.$message({
@@ -143,18 +128,6 @@ export default {
           type: "error"
         });
         return;
-      } else if (this.msgFormDialog.insertSql == "") {
-        this.$message({
-          message: "INSERT不能为空",
-          type: "error"
-        });
-        return;
-      } else if (this.msgFormDialog.selectSql == "") {
-        this.$message({
-          message: "SELECT不能为空",
-          type: "error"
-        });
-        return;
       }
       existTable({
         databaseId: this.handleSQLObj.DATABASE_ID,
@@ -171,7 +144,7 @@ export default {
             createTable({
               databaseId: this.handleSQLObj.DATABASE_ID,
               tableName: this.tableObj.tableName,
-              tableSql: tableSql
+              tableSql: this.msgFormDialog.createSql
             }).then(res => {
               if (res.code == 200) {
                 this.$message({
