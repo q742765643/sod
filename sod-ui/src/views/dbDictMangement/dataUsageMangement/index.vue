@@ -202,7 +202,6 @@ export default {
         });
       }
     },
-    tableExoprt() {},
     cancelDialog() {
       this.msgFormDialog = false;
       this.handleQuery();
