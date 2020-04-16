@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 /**
  * @program: sod
@@ -42,17 +43,27 @@ import java.util.Set;
  **/
 @Slf4j
 public class GbaseBusiness extends BaseBusiness{
+    public static Semaphore semaphore= new Semaphore(50);
+
     @Override
     public void backUpKtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT) {
-        StringBuilder sql=new StringBuilder();
-        String tempFilePath=strategyVo.getTempPtah()+"/"+backupLogEntity.getFileName()+".txt";
-        sql.append("rmt:select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions());
-        this.executeCmd(sql,backupLogEntity.getTableName(),backupLogEntity.getParentId(),tempFilePath,resultT);
-        if(!resultT.isSuccess()){
-            return;
+        try {
+            semaphore.acquire();
+            StringBuilder sql=new StringBuilder();
+            String tempFilePath=strategyVo.getTempPtah()+"/"+backupLogEntity.getFileName()+".txt";
+            sql.append("rmt:select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions());
+            this.executeCmd(sql,backupLogEntity.getTableName(),backupLogEntity.getParentId(),tempFilePath,resultT);
+            if(!resultT.isSuccess()){
+                return;
+            }
+            this.writeTxt(strategyVo.getIndexPath(),backupLogEntity.getTableName(),
+                    backupLogEntity.getFileName()+".txt",resultT);
+        } catch (Exception e) {
+            resultT.setErrorMessage(OwnException.get(e));
+            e.printStackTrace();
+        }finally {
+            semaphore.release();
         }
-        this.writeTxt(strategyVo.getIndexPath(),backupLogEntity.getTableName(),
-                backupLogEntity.getFileName()+".txt",resultT);
 
     }
 

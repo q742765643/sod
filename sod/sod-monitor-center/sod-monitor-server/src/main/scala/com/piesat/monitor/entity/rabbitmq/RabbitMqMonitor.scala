@@ -5,6 +5,7 @@ import java.util.Date
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.annotations.ApiModelProperty
+import lombok.Data
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.format.annotation.DateTimeFormat
 
@@ -13,7 +14,8 @@ import scala.beans.BeanProperty
 /**
   * Created by zzj on 2020/4/1.
   */
-class RabbitMqMonitor {
+@Data
+class RabbitMqMonitor  {
   @ApiModelProperty("采集时间")
   @BeanProperty
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss:SSS", timezone = "GMT+8")

@@ -80,7 +80,7 @@ public class DiSendUtil {
 
         ResponseEntity<String> stringResponseEntity = null;
         try {
-            //stringResponseEntity = rst.postForEntity(transferUrl, httpEntity, String.class);
+            stringResponseEntity = rst.postForEntity(transferUrl, httpEntity, String.class);
             result=true;
         } catch (RestClientException e) {
             e.printStackTrace();

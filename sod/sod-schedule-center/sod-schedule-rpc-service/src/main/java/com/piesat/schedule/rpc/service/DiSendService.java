@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
 import com.piesat.schedule.rpc.vo.DiTaskConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -27,6 +29,7 @@ import java.util.Map;
  * @创建人 zzj
  * @创建时间 2019/4/11 11:09
  */
+@Slf4j
 @Service
 public class DiSendService{
     @Value("${DITASKADDURL}")
@@ -100,9 +103,10 @@ public class DiSendService{
             headers.add("Accept", MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> httpEntity = new HttpEntity<>(messge, headers);
             RestTemplate rst = new RestTemplate();
-            //ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskaddurl, httpEntity, String.class);
-            System.out.println("di发送信息:"+messge);
-        } catch (RestClientException e) {
+            ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskaddurl, httpEntity, String.class);
+            log.info("di返回送信息:"+JSON.toJSONString(stringResponseEntity));
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
             e.printStackTrace();
         }
     }
@@ -115,10 +119,11 @@ public class DiSendService{
             headers.add("Accept", MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(map), headers);
             RestTemplate rst = new RestTemplate();
-           // ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskdelurl, httpEntity, String.class);
-            //System.out.println("di发送返回信息:"+JSON.toJSONString(stringResponseEntity));
-        } catch (RestClientException e) {
-            e.printStackTrace();
+            ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskdelurl, httpEntity, String.class);
+            log.info("di发送返回信息:"+JSON.toJSONString(stringResponseEntity));
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
+
         }
     }
 }

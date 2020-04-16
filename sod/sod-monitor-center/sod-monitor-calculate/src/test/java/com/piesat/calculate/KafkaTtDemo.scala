@@ -15,7 +15,7 @@ object KafkaTtDemo {
     val prop = new Properties
     // 指定请求的kafka集群列表
     prop.put("bootstrap.servers", "10.211.55.7:9092") // 指定响应方式
-
+    prop.put("zookeeper.connect","10.211.55.7:2181")
     //prop.put("acks", "0")
     prop.put("acks", "all")
     // 请求失败重试次数

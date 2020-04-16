@@ -1,4 +1,3 @@
-/*
 //
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by Fernflower decompiler)
@@ -48,13 +47,13 @@ class JdbcHttpClient {
 
     Cursor query(String sql, List<SqlTypedParamValue> params, RequestMeta meta) throws SQLException {
         int fetch = meta.fetchSize() > 0?meta.fetchSize():this.conCfg.pageSize();
-        SqlQueryRequest sqlRequest = new SqlQueryRequest(sql, params, this.conCfg.zoneId(), fetch, TimeValue.timeValueMillis(meta.timeoutInMs()), TimeValue.timeValueMillis(meta.queryTimeoutInMs()), (ToXContent)null, Boolean.FALSE, (String)null, new RequestInfo(Mode.JDBC), this.conCfg.fieldMultiValueLeniency(), this.conCfg.indexIncludeFrozen(), Boolean.valueOf(this.conCfg.binaryCommunication()));
+        SqlQueryRequest sqlRequest = new SqlQueryRequest(sql, params, this.conCfg.zoneId(), fetch, TimeValue.timeValueMillis(meta.timeoutInMs()), TimeValue.timeValueMillis(meta.queryTimeoutInMs()), (ToXContent)null, (String)null, new RequestInfo(Mode.JDBC), this.conCfg.fieldMultiValueLeniency());
         SqlQueryResponse response = this.httpClient.query(sqlRequest);
         return new DefaultCursor(this, response.cursor(), this.toJdbcColumnInfo(response.columns()), response.rows(), meta);
     }
 
     Tuple<String, List<List<Object>>> nextPage(String cursor, RequestMeta meta) throws SQLException {
-        SqlQueryRequest sqlRequest = new SqlQueryRequest(cursor, TimeValue.timeValueMillis(meta.timeoutInMs()), TimeValue.timeValueMillis(meta.queryTimeoutInMs()), new RequestInfo(Mode.JDBC), this.conCfg.binaryCommunication());
+        SqlQueryRequest sqlRequest = new SqlQueryRequest(cursor, TimeValue.timeValueMillis(meta.timeoutInMs()), TimeValue.timeValueMillis(meta.queryTimeoutInMs()), new RequestInfo(Mode.JDBC));
         SqlQueryResponse response = this.httpClient.query(sqlRequest);
         return new Tuple(response.cursor(), response.rows());
     }
@@ -78,10 +77,6 @@ class JdbcHttpClient {
     }
 
     private void checkServerVersion() throws SQLException {
-       */
-/* if(this.serverInfo.majorVersion != Version.CURRENT.major || this.serverInfo.minorVersion != Version.CURRENT.minor || this.serverInfo.revisionVersion != Version.CURRENT.revision) {
-            throw new SQLException("This version of the JDBC driver is only compatible with Elasticsearch version " + Version.CURRENT.toString() + ", attempting to connect to a server version " + this.serverInfo.versionString());
-        }*//*
 
     }
 
@@ -97,4 +92,3 @@ class JdbcHttpClient {
         return cols;
     }
 }
-*/

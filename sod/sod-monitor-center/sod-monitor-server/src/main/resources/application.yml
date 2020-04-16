@@ -33,7 +33,7 @@ spring:
   datasource:
       es:
         driver-class-name: org.elasticsearch.xpack.sql.jdbc.EsDriver
-        url: jdbc:es://http://10.211.55.7:9200
+        url: jdbc:es://http://10.1.100.69:9200
       general:
         driver-class-name: com.mysql.jdbc.Driver
         url: jdbc:mysql://10.1.6.117:8000/sod
@@ -47,8 +47,8 @@ spring:
         maxActive: 20
   data:
       elasticsearch:
-        cluster-nodes: 10.211.55.7:9300 # 配置IP及端口号
-        cluster-name: elasticsearch
+        cluster-nodes: 10.1.100.69:9300,10.1.100.75:9300,10.1.100.96:9300 # 配置IP及端口号
+        cluster-name: htht
   main:
       allow-bean-definition-overriding: false
 mybatis:
