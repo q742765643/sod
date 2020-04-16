@@ -26,7 +26,7 @@ public class DatabaseUtil {
         String databaseType = database.getDatabaseDefine().getDatabaseType();
         String databaseUrl = database.getDatabaseDefine().getDatabaseUrl();
         String databaseIp = database.getDatabaseDefine().getDatabaseIp();
-        int port = Integer.getInteger(database.getDatabaseDefine().getDatabasePort());
+        int port = Integer.parseInt(database.getDatabaseDefine().getDatabasePort());
         Set<DatabaseAdministratorDto> dal = database.getDatabaseDefine().getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
         for (DatabaseAdministratorDto da : dal) {
@@ -47,6 +47,29 @@ public class DatabaseUtil {
         return db;
     }
 
+    public static DatabaseDcl getPubDatabase(DatabaseDto database, DatabaseInfo databaseInfo) throws Exception {
+        DatabaseDcl db = null;
+        String databaseType = database.getDatabaseDefine().getDatabaseType();
+        String databaseUrl = database.getDatabaseDefine().getDatabaseUrl();
+        String databaseIp = database.getDatabaseDefine().getDatabaseIp();
+        int port = Integer.parseInt(database.getDatabaseDefine().getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = database.getDatabaseDefine().getDatabaseAdministratorList();
+        DatabaseAdministratorDto dad = null;
+        if (dal.size()>0){
+            dad = dal.iterator().next();
+        }
+        if (dad == null) {
+            throw new Exception("数据库用户不存在");
+        }
+        if (databaseInfo.getXugu().equals(databaseType)) {
+            db = new Xugu(databaseUrl, dad.getUserName(), dad.getPassWord());
+        } else if (databaseInfo.getGbase8a().equals(databaseType)) {
+            db = new Gbase8a(databaseUrl, dad.getUserName(), dad.getPassWord());
+        } else if (databaseInfo.getCassandra().equals(databaseType)) {
+            db = new Cassandra(databaseIp, port, dad.getUserName(), dad.getPassWord(), database.getSchemaName());
+        }
+        return db;
+    }
 
     public static DatabaseAdministratorDto getManagerUser(List<DatabaseAdministratorDto> list) {
         DatabaseAdministratorDto m = null;

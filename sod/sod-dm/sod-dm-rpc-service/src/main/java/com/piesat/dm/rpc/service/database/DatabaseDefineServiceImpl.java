@@ -117,11 +117,16 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         DatabaseDto database = new DatabaseDto();
         database.setDatabaseDefine(dotById);
         try {
-            DatabaseDcl db = DatabaseUtil.getDatabase(database, databaseInfo);
-            db.closeConnect();
-            dotById.setCheckConn(1);
+            DatabaseDcl db = DatabaseUtil.getPubDatabase(database, databaseInfo);
+            if (db!=null){
+                db.closeConnect();
+                dotById.setCheckConn(1);
+            }else {
+                dotById.setCheckConn(2);
+            }
         } catch (Exception e) {
             dotById.setCheckConn(2);
+            e.printStackTrace();
         }
         this.saveDto(dotById);
         return dotById;
