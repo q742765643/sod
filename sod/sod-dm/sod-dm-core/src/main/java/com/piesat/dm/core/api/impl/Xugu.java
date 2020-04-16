@@ -240,10 +240,11 @@ public class Xugu extends DatabaseDclAbs {
             while (rs.next()) {
                 num++;
             }
-            return ResultT.success(num);
+            if (num>0)return ResultT.success(true);
+            else return ResultT.success(false);
         } catch (SQLException e) {
             if (e.getMessage().contains("表或视图") && e.getMessage().contains("不存在")) {
-                return ResultT.success(-1);
+                return ResultT.success(false);
             } else {
                 e.printStackTrace();
                 return ResultT.failed(e.getMessage());

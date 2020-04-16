@@ -211,11 +211,12 @@ public class Gbase8a extends DatabaseDclAbs {
             while (rs.next()) {
                 num++;
             }
-            return ResultT.success(num);
+            if (num>0)return ResultT.success(true);
+            else return ResultT.success(false);
         } catch (SQLException e) {
             e.printStackTrace();
             if (e.getMessage().contains("doesn't exist")) {
-                return ResultT.success(-1);
+                return ResultT.success(false);
             } else {
                 e.printStackTrace();
                 return ResultT.failed(e.getMessage());

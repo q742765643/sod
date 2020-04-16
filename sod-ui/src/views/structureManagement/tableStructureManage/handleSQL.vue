@@ -9,8 +9,20 @@
         </el-col>
         <el-col :span="12" class="btnColBox">
           <el-button @click="createSql" size="small" type="primary" icon="el-icon-money" plain>生成SQL</el-button>
-          <el-button @click="saveSql" size="small" type="primary" icon="el-icon-wallet" plain>保存SQL</el-button>
-          <el-button size="small" type="primary" icon="el-icon-first-aid-kit" plain>创建物理表</el-button>
+          <el-button
+            @click="handleSaveSql"
+            size="small"
+            type="primary"
+            icon="el-icon-wallet"
+            plain
+          >保存SQL</el-button>
+          <el-button
+            size="small"
+            @click="createBase"
+            type="primary"
+            icon="el-icon-first-aid-kit"
+            plain
+          >创建物理表</el-button>
         </el-col>
       </el-row>
 
@@ -35,7 +47,11 @@
 <script>
 // import { interfaceObj } from "@/urlConfig.js";
 import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
-import { getSql } from "@/api/structureManagement/tableStructureManage/handleSQL";
+import {
+  getSql,
+  saveSql,
+  createTable
+} from "@/api/structureManagement/tableStructureManage/handleSQL";
 
 export default {
   name: "handleSQLDialog",
@@ -78,81 +94,75 @@ export default {
         this.msgFormDialog.selectSql = res.data.selectSql;
       });
     },
-    saveSql() {
+    handleSaveSql() {
       if (this.msgFormDialog.createSql == "") {
         this.$message({
           message: "CREATE不能为空",
           type: "error"
         });
         return;
-      } else if (this.msgFormDialog.insertSql == "") {
+      }
+
+      saveSql({
+        databaseId: this.handleSQLObj.DATABASE_ID,
+        tableName: this.tableObj.tableName,
+        tableSql: this.msgFormDialog.createSql
+      }).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            message: "保存成功",
+            type: "success"
+          });
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          });
+        }
+      });
+    },
+    createBase() {
+      if (this.msgFormDialog.createSql == "") {
         this.$message({
-          message: "INSERT不能为空",
-          type: "error"
-        });
-        return;
-      } else if (this.msgFormDialog.selectSql == "") {
-        this.$message({
-          message: "SELECT不能为空",
+          message: "CREATE不能为空",
           type: "error"
         });
         return;
       }
-      this.axios
-        .get(interfaceObj.TableStructure_selectTableSql, {
-          params: {
-            table_name: this.tableObj.table_name,
-            database_id: this.handleSQLObj.database_id
-          }
-        })
+      existTable({
+        databaseId: this.handleSQLObj.DATABASE_ID,
+        tableName: this.tableObj.tableName
+      })
         .then(res => {
-          debugger;
-          if (res.data.data.length > 0) {
-            this.$confirm(
-              "此sql语句在数据库中已存在！是否删除并重新保存?",
-              "温馨提示",
-              {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消"
-                // type: "info"
-              }
-            )
-              .then(() => {
-                this.trueSave();
-              })
-              .catch(() => {});
-          } else {
-            this.trueSave();
-          }
-        })
-        .catch(error => {});
-    },
-    trueSave() {
-      let table_sql = {};
-      table_sql.createSql = this.msgFormDialog.createSql;
-      table_sql.insertSql = this.msgFormDialog.insertSql;
-      table_sql.selectSql = this.msgFormDialog.selectSql;
-      this.axios
-        .post(interfaceObj.TableStructure_saveSql, {
-          database_id: this.handleSQLObj.database_id,
-          table_name: this.tableObj.table_name,
-          table_sql: table_sql
-        })
-        .then(res => {
-          if (res.data.returnCode == "0") {
+          if (res.data) {
             this.$message({
-              message: "保存成功",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: res.data.returnMessage,
+              message: "表已存在",
               type: "error"
             });
+            return;
+          } else {
+            createTable({
+              databaseId: this.handleSQLObj.DATABASE_ID,
+              tableName: this.tableObj.tableName,
+              tableSql: this.msgFormDialog.createSql
+            }).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  message: "创建成功",
+                  type: "success"
+                });
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
+            });
           }
         })
         .catch(error => {});
     },
+    trueSave() {},
 
     trueDialog(formName) {}
   }

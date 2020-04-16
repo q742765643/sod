@@ -594,7 +594,7 @@
         b.C_SOURCE cSource,d.C_NETNAME cNetname,a.C_NETTYPE cNettype,
         f.C_CREAT_NAME cCreatName,f.C_CHECKER cChecker,
         g.C_RPINDNAME cRpindname,aa.use_base_info useBaseInfo from
-        DMIN_DATA_CLASS_TABLE aa
+        T_SOD_DATA_CLASS aa
         left join
         dmin_data_class_baseinfo aaa on aa.data_class_id = aaa.data_class_id
         left join

@@ -250,4 +250,16 @@ public class DataTableController {
         }
     }
 
+
+    @ApiOperation(value = "表结构是否存在")
+    @RequiresPermissions("dm:dataTable:existTable")
+    @GetMapping(value = "/existTable")
+    public ResultT existTable(TableSqlDto tableSqlDto) {
+        try {
+            return this.dataTableService.createTable(tableSqlDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }
