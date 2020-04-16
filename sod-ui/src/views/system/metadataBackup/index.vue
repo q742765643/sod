@@ -42,7 +42,12 @@
             <el-button size="small" type="danger" @click="deleteShow()" icon="el-icon-delete">删除同步任务</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
+            <handleExport
+              :handleExportObj="queryParams"
+              baseUrl="SCHEDULE"
+              btnText="导出"
+              exportUrl="/schedule/metaBackup/export"
+            />
           </el-col>
         </el-row>
         <el-table
@@ -158,12 +163,12 @@
         </el-form>
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
-            <el-button
-              size="small"
-              type="success"
-              @click="handleLogExport"
-              icon="el-icon-download"
-            >导出</el-button>
+            <handleExport
+              :handleExportObj="rowlogForm"
+              baseUrl="SCHEDULE"
+              btnText="导出"
+              exportUrl="/schedule/metaBackupLog/export"
+            />
           </el-col>
         </el-row>
         <el-table
@@ -199,12 +204,14 @@
                 icon="el-icon-reading"
                 @click="showDetailDialog(scope.row)"
               >查看详情</el-button>
-              <el-button
-                type="text"
-                size="mini"
-                icon="el-icon-download"
+
+              <handleExport
                 @click="download(scope.row)"
-              >下载</el-button>
+                :handleExportObj="handleExportObj"
+                baseUrl="SCHEDULE"
+                btnText="下载"
+                exportUrl="/api/schedule/uploadDown/downFile"
+              />
               <el-button
                 type="text"
                 size="mini"
@@ -224,7 +231,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="50%">
-      <handleExport @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExport>
+      <handleExportD @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExportD>
     </el-dialog>
     <el-dialog
       v-dialogDrag
@@ -289,8 +296,6 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import {
@@ -306,13 +311,16 @@ import {
   downFile
 } from "@/api/system/metadataBackup";
 //增加查看弹框
-import handleExport from "@/views/system/metadataBackup/handleExport";
+import handleExportD from "@/views/system/metadataBackup/handleExport";
+import handleExport from "@/components/export";
 export default {
   components: {
+    handleExportD,
     handleExport
   },
   data() {
     return {
+      handleExportObj: {},
       activeName: "first",
       // 遮罩层
       loading: true,
@@ -522,17 +530,8 @@ export default {
       });
     },
     download(row) {
-      let path = row.storageDirectory;
-      let obj = {
-        path: path
-      };
-      let flieData = Encrypt(JSON.stringify(obj));
-      flieData = encodeURIComponent(flieData);
-
-      window.location.href =
-        baseUrl +
-        "/api/schedule/uploadDown/downFile?sign=111111&data=" +
-        flieData;
+      this.handleExportObj = {};
+      this.handleExportObj.path = row.storageDirectory;
     },
     deleteLog(row) {
       this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
@@ -561,20 +560,6 @@ export default {
         };
         this.queryListLog();
       }
-    },
-    handleExport() {
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/metaBackup/export?sign=111111&data=" + flieData;
-    },
-    handleLogExport() {
-      let obj = this.rowlogForm;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/metaBackupLog/export?sign=111111&data=" + flieData;
     }
   }
 };

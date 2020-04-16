@@ -23,12 +23,13 @@
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          @click="outDataBasePhysicss('逻辑库定义导出')"
-          icon="el-icon-download"
-          size="small"
-        >导出</el-button>
+        <handleExport
+          v-hasPermi="['system:dict:export']"
+          :handleExportObj="queryParams"
+          baseUrl="SCHEDULE"
+          btnText="导出"
+          exportUrl=" "
+        />
       </el-col>
     </el-row>
 
@@ -89,9 +90,11 @@ import {
   getById
 } from "@/api/dbDictMangement/dataUsageMangement";
 import dataUsageEdit from "@/views/dbDictMangement/dataUsageMangement/dataUsageEdit";
+import handleExport from "@/components/export";
 export default {
   components: {
-    dataUsageEdit
+    dataUsageEdit,
+    handleExport
   },
   data() {
     return {
@@ -200,7 +203,6 @@ export default {
       }
     },
     tableExoprt() {},
-    outDataBasePhysicss() {},
     cancelDialog() {
       this.msgFormDialog = false;
       this.handleQuery();

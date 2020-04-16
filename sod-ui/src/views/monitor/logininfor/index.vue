@@ -82,13 +82,13 @@
         >清空</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
+        <handleExport
           v-hasPermi="['system:logininfor:export']"
-        >导出</el-button>
+          :handleExportObj="queryParams"
+          baseUrl="UCENTER"
+          btnText="导出"
+          exportUrl="/monitor/logininfor/export"
+        />
       </el-col>
     </el-row>
 
@@ -97,6 +97,7 @@
       :data="list"
       row-key="id"
       @selection-change="handleSelectionChange"
+      @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="用户名称" prop="userName" />
@@ -106,7 +107,7 @@
       <el-table-column label="操作系统" prop="os" />
       <el-table-column label="登录状态" prop="status" :formatter="statusFormat" />
       <el-table-column label="操作信息" prop="msg" />
-      <el-table-column label="登录日期" prop="loginTime" width="180">
+      <el-table-column label="登录日期" prop="loginTime" width="180" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.loginTime) }}</span>
         </template>
@@ -124,15 +125,17 @@
 </template>
 
 <script>
+import handleExport from "@/components/export";
 import {
   list,
   delLogininfor,
   cleanLogininfor,
   exportLogininfor
 } from "@/api/monitor/logininfor";
-var baseUrl = process.env.VUE_APP_UCENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
 export default {
+  components: {
+    handleExport
+  },
   data() {
     return {
       // 遮罩层
@@ -155,7 +158,12 @@ export default {
         pageSize: 10,
         ipaddr: undefined,
         userName: undefined,
-        status: undefined
+        status: undefined,
+        params: {
+          orderBy: {
+            loginTime: "desc"
+          }
+        }
       }
     };
   },
@@ -166,6 +174,16 @@ export default {
     });
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.loginTime = "asc";
+      } else {
+        orderBy.loginTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     /** 查询登录日志列表 */
     getList() {
       this.loading = true;
@@ -229,16 +247,6 @@ export default {
           this.msgSuccess("清空成功");
         })
         .catch(function() {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      let flieData = Encrypt(
-        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
-      );
-      flieData = encodeURIComponent(flieData);
-
-      window.location.href =
-        baseUrl + "/monitor/logininfor/export?sign=111111&data=" + flieData;
     }
   }
 };

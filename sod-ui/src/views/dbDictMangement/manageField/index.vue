@@ -43,7 +43,12 @@
             <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="success" icon="el-icon-download" @click="exportData()">导出</el-button>
+            <handleExport
+              :handleExportObj="queryParams"
+              baseUrl="DM"
+              btnText="导出"
+              exportUrl="/managefield/export"
+            />
           </el-col>
         </el-row>
         <el-table :data="tableData" highlight-current-row @selection-change="handleSelectionChange">
@@ -83,12 +88,9 @@
   </div>
 </template>
 <script>
-var baseUrl = process.env.VUE_APP_SYSTEM;
-import { Encrypt } from "@/utils/htencrypt";
-
 import handleTree from "@/views/dbDictMangement/manageField/handleTree";
 import handleDict from "@/views/dbDictMangement/manageField/handleDict";
-
+import handleExport from "@/components/export";
 import {
   findAllManageGroup,
   findManageFieldByPk,
@@ -101,7 +103,8 @@ import {
 export default {
   components: {
     handleTree,
-    handleDict
+    handleDict,
+    handleExport
   },
   data() {
     return {
@@ -137,14 +140,6 @@ export default {
     await this.getTreeData();
   },
   methods: {
-    // 下载
-    exportData() {
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/managefield/export?sign=111111&data=" + flieData;
-    },
     // 查询字段分组
     async getTreeData() {
       await findAllManageGroup().then(res => {

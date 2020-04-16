@@ -122,8 +122,7 @@
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
       <el-table-column label="执行策略" prop="jobCron" :show-overflow-tooltip="true" />
       <el-table-column label="状态" prop="triggerStatus" :formatter="statusFormat" />
-      <el-table-column label="任务描述" prop="jobDesc" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" prop="createTime" width="200">
+      <el-table-column label="创建时间" prop="createTime" width="160">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>

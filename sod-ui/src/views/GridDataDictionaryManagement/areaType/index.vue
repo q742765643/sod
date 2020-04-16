@@ -17,19 +17,7 @@
         <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-upload
-          class="upload-demo"
-          :action="actionUrl"
-          multiple
-          :limit="1"
-          :show-file-list="showFile"
-          :before-upload="beforeAvatarUpload"
-          :on-success="handleAvatarSuccess"
-          :header="importHeaders"
-          ref="upload"
-        >
-          <el-button size="small" type="success" icon="el-icon-upload2">导入</el-button>
-        </el-upload>
+        <input-excel @getResult="getMyExcelData" btnText="导入"></input-excel>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="success" @click="tableExoprt()" icon="el-icon-download">导出</el-button>
@@ -99,6 +87,8 @@
 </template>
 
 <script>
+// 上传
+import inputExcel from "@/components/excelXlsx/upload";
 import {
   defineList,
   defineSave,
@@ -107,6 +97,9 @@ import {
   detailById
 } from "@/api/GridDataDictionaryManagement/areaType";
 export default {
+  components: {
+    inputExcel
+  },
   data() {
     return {
       // 遮罩层
@@ -118,12 +111,7 @@ export default {
       },
       tableData: [],
       total: 0,
-      // 导入
-      actionUrl: "",
-      showFile: false,
-      importHeaders: {
-        enctype: "multipart/form-data"
-      },
+
       choserow: [],
       // 弹窗
       dialogTitle: "",
@@ -169,6 +157,24 @@ export default {
     this.getList();
   },
   methods: {
+    getMyExcelData(data) {
+      // data 为读取的excel数据，在这里进行处理该数据
+      console.log(data);
+      data.forEach(element => {
+        element.id = "";
+      });
+      defineSave(data).then(response => {
+        if (response.code == 200) {
+          this.msgSuccess("导入成功");
+          this.handleQuery();
+        } else {
+          this.$message({
+            type: "error",
+            message: "操作失败"
+          });
+        }
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -217,6 +223,7 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.resetForm(formName);
+                this.handleQuery();
               } else {
                 this.msgError(response.msg);
               }
@@ -226,6 +233,7 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess("编辑成功");
                 this.resetForm(formName);
+                this.handleQuery();
               } else {
                 this.msgError(response.msg);
               }
@@ -242,27 +250,7 @@ export default {
       this.msgFormDialog = false;
       this.getList();
     },
-    beforeAvatarUpload(file) {
-      const isJSON = file.type === "application/json";
-      if (!isJSON) {
-        this.$message.error("导入文件只能是 JSON 格式!");
-      }
-    },
-    handleAvatarSuccess(res, file) {
-      if (res.returnCode == 0) {
-        this.$message({
-          type: "success",
-          message: "导入成功"
-        });
-        this.getList();
-      } else {
-        this.$message({
-          type: "error",
-          message: "导入失败"
-        });
-      }
-      this.$refs.upload.clearFiles();
-    },
+
     handleSelectionChange(val) {
       this.choserow = val;
     },
@@ -289,3 +277,10 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.handleTableBox {
+  .el-button.el-button--mini {
+    padding: 9px 15px;
+  }
+}
+</style>

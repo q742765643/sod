@@ -51,7 +51,7 @@
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" min-width="15" label=" "></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
-      <el-table-column prop="taskName" width="120px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column
         :show-overflow-tooltip="true"
         prop="dataSourceId"
@@ -78,7 +78,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
-      <el-table-column label="操作" min-width="450">
+      <el-table-column label="操作" min-width="400">
         <template slot-scope="scope">
           <el-button
             type="text"

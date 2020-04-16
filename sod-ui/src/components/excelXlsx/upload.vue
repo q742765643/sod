@@ -1,18 +1,28 @@
 <template>
-  <span style="margin-right:10px">
+  <span>
     <input
       class="input-file"
       type="file"
       @change="exportData"
       accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
     />
-    <el-button type="primary" size="mini" icon="el-icon-upload" @click="btnClick">上传Excel表格数据</el-button>
+    <el-button
+      type="primary"
+      size="mini"
+      icon="el-icon-upload"
+      @click="btnClick"
+    >{{btnText == undefined?'上传Excel表格数据':btnText}}</el-button>
   </span>
 </template>
  
 <script>
 import XLSX from "xlsx";
 export default {
+  props: {
+    btnText: {
+      type: String
+    }
+  },
   data() {
     return {};
   },

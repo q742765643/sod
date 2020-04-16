@@ -444,7 +444,12 @@
           <input-excel @getResult="getMyExcelData"></input-excel>
         </el-col>
         <el-col :span="12">
-          <el-button type="success" size="small" @click="exportCode('demo')">下载模板</el-button>
+          <handleExport
+            :handleExportObj="handleExportObj"
+            baseUrl="DM"
+            btnText="下载模板"
+            exportUrl="/api/dbfile/downloadFile"
+          />
         </el-col>
       </el-row>
     </el-dialog>
@@ -458,6 +463,7 @@ import inputExcel from "@/components/excelXlsx/upload";
 import { exportExcel } from "@/components/excelXlsx/js/download";
 // 拖拽组件
 import draggable from "vuedraggable";
+import handleExport from "@/components/export";
 import {
   findByTableId,
   tableColumnDel,
@@ -475,10 +481,14 @@ export default {
   props: { tableInfo: Object, tableType: String, rowData: Object },
   components: {
     draggable,
-    inputExcel
+    inputExcel,
+    handleExport
   },
   data() {
     return {
+      handleExportObj: {
+        name: "add-column"
+      },
       tableStructureManageContral: false,
       codeTitle: "新增字段",
       dialogStatus: {
@@ -1132,6 +1142,9 @@ export default {
   }
   .demo-table-expand {
     padding-left: 122px;
+    .el-form-item {
+      width: 20%;
+    }
   }
 }
 .dragBox {

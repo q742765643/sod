@@ -14,7 +14,12 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" size="small" icon="el-icon-search" @click="handleQuery">查询</el-button>
-        <el-button type="success" size="small" icon="el-icon-download" @click="handleExport">导出</el-button>
+        <handleExport
+          :handleExportObj="queryParams"
+          baseUrl="DM"
+          btnText="导出"
+          exportUrl="/dm/databaseDefine/export"
+        />
       </el-form-item>
     </el-form>
 
@@ -39,12 +44,12 @@
 </template>
 <script>
 import { getBaseData } from "@/api/structureManagement/tableStructureManage/StructureMaterialList";
-var baseUrl = process.env.VUE_APP_DM;
-import { Encrypt } from "@/utils/htencrypt";
+
+import handleExport from "@/components/export";
 //分页组件
 export default {
   name: "structureMaterialList",
-  components: {},
+  components: { handleExport },
   data() {
     return {
       queryParams: {
@@ -72,14 +77,6 @@ export default {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
       });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/dm/dataClass/exportBaseData?sign=111111&data=" + flieData;
     }
   }
 };

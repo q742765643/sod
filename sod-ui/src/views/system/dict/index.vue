@@ -92,13 +92,12 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:dict:export']"
-        >导出</el-button>
+        <handleExport
+          :handleExportObj="queryParams"
+          baseUrl="UCENTER"
+          btnText="导出"
+          exportUrl="/system/dict/type/export"
+        />
       </el-col>
     </el-row>
 
@@ -191,10 +190,11 @@ import {
   updateType,
   exportType
 } from "@/api/system/dict/type";
-var baseUrl = process.env.VUE_APP_UCENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
-
+import handleExport from "@/components/export";
 export default {
+  components: {
+    handleExport
+  },
   data() {
     return {
       // 遮罩层
@@ -353,16 +353,6 @@ export default {
           this.msgSuccess("删除成功");
         })
         .catch(function() {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      let flieData = Encrypt(
-        JSON.stringify(this.addDateRange(this.queryParams, this.dateRange))
-      );
-      flieData = encodeURIComponent(flieData);
-
-      window.location.href =
-        baseUrl + "/system/dict/type/export?sign=111111&data=" + flieData;
     }
   }
 };

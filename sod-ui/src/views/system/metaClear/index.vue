@@ -42,7 +42,12 @@
             <el-button size="small" type="danger" @click="deleteShow" icon="el-icon-delete">删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
+            <handleExport
+              :handleExportObj="queryParams"
+              baseUrl="SCHEDULE"
+              btnText="导出"
+              exportUrl="/schedule/metaClear/export"
+            />
           </el-col>
         </el-row>
         <el-table
@@ -142,12 +147,12 @@
         </el-form>
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
-            <el-button
-              size="small"
-              type="success"
-              @click="handleLogExport"
-              icon="el-icon-download"
-            >导出</el-button>
+            <handleExport
+              :handleExportObj="rowlogForm"
+              baseUrl="SCHEDULE"
+              btnText="导出"
+              exportUrl="/schedule/metaClearLog/export"
+            />
           </el-col>
         </el-row>
         <el-table
@@ -240,8 +245,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
-import { Encrypt } from "@/utils/htencrypt";
+import handleExport from "@/components/export";
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import { startTask, stopTask, execute } from "@/api/system/metadataBackup";
@@ -259,7 +263,8 @@ import {
 import handleClear from "@/views/system/metaClear/handleClear";
 export default {
   components: {
-    handleClear
+    handleClear,
+    handleExport
   },
   data() {
     return {
@@ -401,14 +406,6 @@ export default {
       };
       this.getMetaBackupList();
     },
-    handleExport() {
-      // metaClearExport(this.queryParams).then(response => {});
-      let obj = this.queryParams;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/metaClear/export?sign=111111&data=" + flieData;
-    },
 
     statusFormat(row, column) {
       return this.selectDictLabel(this.statusOptions, row.handleCode);
@@ -473,13 +470,6 @@ export default {
       });
     },
 
-    handleLogExport() {
-      let obj = this.rowlogForm;
-      let flieData = Encrypt(JSON.stringify(obj)); //加密
-      flieData = encodeURIComponent(flieData); //转码
-      window.location.href =
-        baseUrl + "/schedule/metaClearLog/export?sign=111111&data=" + flieData;
-    },
     deleteLog(row) {
       this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
         confirmButtonText: "确定",
