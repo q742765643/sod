@@ -109,8 +109,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    String password="admin";
                    try {
                        for(DatabaseAdministratorDto administratorDto:databaseAdministratorDtos){
-                           userName=administratorDto.getUserName();
-                           password=administratorDto.getPassWord();
+                           if(administratorDto.getIsManager()) {
+                               userName = administratorDto.getUserName();
+                               password = administratorDto.getPassWord();
+                               break;
+                           }
                        }
                    } catch (Exception e) {
                        e.printStackTrace();

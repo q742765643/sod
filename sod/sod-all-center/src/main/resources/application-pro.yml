@@ -71,7 +71,7 @@ spring:
   redis:
     host: 10.40.79.18
     port: 6379
-    timeout: 5000
+    timeout: 50000
     password:
 mybatis:
   type-aliases-package: com.piesat.*.entity

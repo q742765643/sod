@@ -39,12 +39,16 @@ import java.util.*;
 @Component
 public class EiSendUtil {
     private static final Logger logger = LoggerFactory.getLogger(EiSendUtil.class);
-    private static String eidiUrl;
-    private static String transferUrl;
+    private static String EIDIURL;
+    private static String TRANSFERURL;
 
-    @Value("${EIDIURL}")
-    public static void setEidiUrl(String eidiUrl) {
-        EiSendUtil.eidiUrl = eidiUrl;
+    @Value("${EIDI.URL}")
+    public void setEidiUrl(String eidiUrl) {
+        EIDIURL = eidiUrl;
+    }
+    @Value("${TRANSFER.URL}")
+    public  void setTransferUrl(String transferUrl) {
+        TRANSFERURL = transferUrl;
     }
     public static void send(EiSendVo eiSendVo, int type, String kIndex, long occurTime, ResultT<String> resultT) {
         eiSendVo.setSystem("SOD");
@@ -93,7 +97,7 @@ public class EiSendUtil {
         HttpEntity<String> httpEntity = new HttpEntity<>("[" + JSONObject.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty) + "]", headers);
         RestTemplate rst = new RestTemplate();
         try {
-            ResponseEntity<String> stringResponseEntity = rst.postForEntity(eidiUrl, httpEntity, String.class);
+            ResponseEntity<String> stringResponseEntity = rst.postForEntity(EIDIURL, httpEntity, String.class);
             logger.info("ei发送返回信息:{}", JSON.toJSONString(stringResponseEntity));
         } catch (RestClientException e) {
             e.printStackTrace();

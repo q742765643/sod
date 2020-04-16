@@ -1,7 +1,9 @@
 package com.piesat.schedule.client.service;
 
+import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.EiSendUtil;
 import com.piesat.schedule.client.util.TableForeignKeyUtil;
 import com.piesat.schedule.entity.DatabaseOperationVo;
@@ -15,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,8 +96,21 @@ public class DatabaseOperationService {
         return databaseOperationMapper.selectXuguPartition(schemaName,tableName);
     }
 
-    public int deletePartition(String tableName,String partName){
-        return databaseOperationMapper.deletePartition(tableName,partName);
+    public int deletePartition(String tableName,String partName,ResultT<String> resultT) throws SQLException {
+        DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+        Connection conn=null;
+        try {
+             conn= dynamicDataSource.getConnection();
+             String sql = "alter table " + tableName + " drop partition " + partName+" wait 120000";
+             resultT.setSuccessMessage(sql);
+             Statement getPartis = conn.createStatement();
+             getPartis.execute(sql);
+        } finally {
+           if(conn!=null){
+               conn.close();
+           }
+        }
+        return 0 ;
     }
 
     public List<Map<String,Object>> selectByKCondition(String parentId,String table,String conditions,ResultT<String> resultT){

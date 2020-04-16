@@ -658,14 +658,15 @@
         SELECT a.id id,a.data_class_id dataClassId,a.logic_flag logicFlag,a.storage_type storageType,a.database_id databaseId,a.is_complete isComplete,a.version,a.createTime
          FROM T_SOD_DATA_LOGIC a INNER JOIN T_SOD_DATA_TABLE b ON a.id = b.class_logic_id
         <where>
+            1=1
             <if test="dataclassId != null and dataclassId != ''">
-                a.data_class_id = #{dataclassId}
+                and a.data_class_id = #{dataclassId}
             </if>
             <if test="databaseId != null and databaseId != ''">
-                a.database_id = #{databaseId}
+                and  a.database_id = #{databaseId}
             </if>
             <if test="tableName != null and tableName != ''">
-                b.table_name = #{tableName}
+                and b.table_name = #{tableName}
             </if>
         </where>
 

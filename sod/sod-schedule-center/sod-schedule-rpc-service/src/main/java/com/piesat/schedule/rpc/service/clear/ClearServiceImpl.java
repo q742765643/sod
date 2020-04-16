@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -128,6 +129,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
 
     }
     @Override
+    @Transactional
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
@@ -144,6 +146,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         }
     }
     @Override
+    @Transactional
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
