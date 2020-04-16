@@ -320,6 +320,20 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
+    public ResultT existTable(TableSqlDto tableSqlDto) {
+        DatabaseEntity databaseEntity = this.databaseDao.findById(tableSqlDto.getDatabaseId()).get();
+        DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
+        try {
+            DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            ResultT resultT = database.existTable(databaseDto.getSchemaName(), tableSqlDto.getTableName());
+            return resultT;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @Override
     public List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName, String databaseId, String dataclassId) {
         List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseIdAndClassLogic_DataClassId(tableName, databaseId, dataclassId);
         return this.dataTableMapper.toDto(dataTables);

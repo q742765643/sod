@@ -199,10 +199,11 @@ public class Cassandra implements DatabaseDcl {
                 it.next();
                 no++;
             }
-            return ResultT.success(no);
+            if (no>0)return ResultT.success(true);
+            else return ResultT.success(false);
         } catch (Exception e) {
             if (e.getMessage().contains("unconfigured table")) {
-                return ResultT.success(-1);
+                return ResultT.success(false);
             } else {
                 e.printStackTrace();
                 return ResultT.failed(e.getMessage());

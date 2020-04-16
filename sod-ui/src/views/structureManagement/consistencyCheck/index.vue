@@ -11,13 +11,12 @@
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button
-          size="small"
+        <handleExport
           v-hasPermi="['consistencyCheck:role:creat']"
-          type="primary"
-          icon="el-icon-document"
-          @click="progressDownLoad()"
-        >生成差异报告</el-button>
+          baseUrl="DM"
+          btnText="生成差异报告"
+          exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
+        />
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -133,8 +132,9 @@ import {
   consistencyCheckSave,
   getDatabaseName
 } from "@/api/structureManagement/consistencyCheck";
+import handleExport from "@/components/export";
 export default {
-  components: {},
+  components: { handleExport },
   data() {
     return {
       // 遮罩层

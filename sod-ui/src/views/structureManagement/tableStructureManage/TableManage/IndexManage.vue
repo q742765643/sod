@@ -140,7 +140,7 @@ export default {
       });
     },
     trueIndex() {
-      this.indexForm.id = this.tableInfo.id;
+      this.indexForm.tableId = this.tableInfo.id;
       this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
       console.log(this.indexForm);
       tableIndexSave(this.indexForm).then(response => {
