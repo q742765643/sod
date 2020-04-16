@@ -10,11 +10,15 @@ import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.vo.EiSendVo;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,9 +36,16 @@ import java.util.*;
  * @描述
  * @创建时间 2019/5/8 11:00
  **/
+@Component
 public class EiSendUtil {
     private static final Logger logger = LoggerFactory.getLogger(EiSendUtil.class);
+    private static String eidiUrl;
+    private static String transferUrl;
 
+    @Value("${EIDIURL}")
+    public static void setEidiUrl(String eidiUrl) {
+        EiSendUtil.eidiUrl = eidiUrl;
+    }
     public static void send(EiSendVo eiSendVo, int type, String kIndex, long occurTime, ResultT<String> resultT) {
         eiSendVo.setSystem("SOD");
         eiSendVo.setKindex(kIndex);
@@ -82,9 +93,8 @@ public class EiSendUtil {
         HttpEntity<String> httpEntity = new HttpEntity<>("[" + JSONObject.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty) + "]", headers);
         RestTemplate rst = new RestTemplate();
         try {
-            //String url = PropertiesUtil.getInstance().getProperties("application.properties").getProperty("EIDIURL");
-            //ResponseEntity<String> stringResponseEntity = rst.postForEntity(url, httpEntity, String.class);
-            //logger.info("ei发送返回信息:{}", JSON.toJSONString(stringResponseEntity));
+            ResponseEntity<String> stringResponseEntity = rst.postForEntity(eidiUrl, httpEntity, String.class);
+            logger.info("ei发送返回信息:{}", JSON.toJSONString(stringResponseEntity));
         } catch (RestClientException e) {
             e.printStackTrace();
         }

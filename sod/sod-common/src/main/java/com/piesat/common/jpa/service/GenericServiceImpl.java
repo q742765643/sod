@@ -305,14 +305,14 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
                 return sort;
             }
             Map<String, Object> map = JSON.parseObject(param, Map.class);
-            List<Map<String, String>> mapList = (List<Map<String, String>>) map.get("orderBy");
+            Map<String, String> mapList = (Map<String, String>) map.get("orderBy");
             if (null == mapList || mapList.isEmpty()) {
                 return sort;
             }
             List<Sort.Order> orders=new ArrayList<Sort.Order>();
-            mapList.forEach(smap-> {
-                String name = smap.get("name");
-                String sortT = smap.get("sort");
+            mapList.forEach((k,v)-> {
+                String name =k.trim();
+                String sortT =v;
                 orders.add( new Sort.Order(Sort.Direction.fromString(sortT), name));
             });
             if(!orders.isEmpty()){

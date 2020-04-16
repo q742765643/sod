@@ -89,7 +89,9 @@
         </dependency>
     </dependencies>
     <build>
+<!--
         <sourceDirectory>src/main/scala</sourceDirectory>
+-->
 
         <!--解决idea打包没有xml-->
         <resources>

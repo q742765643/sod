@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 /**
  * @program: sod
@@ -43,6 +44,8 @@ import java.util.Set;
  **/
 @Slf4j
 public class XuguBusiness extends BaseBusiness{
+    public static Semaphore semaphore= new Semaphore(3);
+
     @Override
     public void backUpKtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT)  {
         StringBuilder sql=new StringBuilder();
@@ -51,6 +54,7 @@ public class XuguBusiness extends BaseBusiness{
 
         String tempFilePath=strategyVo.getTempPtah()+"/"+backupLogEntity.getFileName()+".exp";
         try {
+            semaphore.acquire();
             select2File.expparttab2(backupLogEntity.getTableName(),tempFilePath,sql,backupLogEntity.getParentId());
             strategyVo.setKfilePath(tempFilePath);
             ExpMetadata expMetadata=new ExpMetadata();
@@ -64,6 +68,8 @@ public class XuguBusiness extends BaseBusiness{
             log.error("备份K表{}失败,sql{},错误{}",backupLogEntity.getTableName(),sql.toString(), OwnException.get(e));
             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_14_ERROR.getKey());
             EiSendUtil.xuguException(backupLogEntity.getParentId(),resultT);
+        }finally {
+            semaphore.release();
         }
 
     }
