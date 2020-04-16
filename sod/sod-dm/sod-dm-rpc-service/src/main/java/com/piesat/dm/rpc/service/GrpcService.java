@@ -344,7 +344,7 @@ public class GrpcService {
                 }
                 map.put("createSql", createSql);
                 map.put("insertSql", insertSql);
-                map.put("querySql", querySql);
+                map.put("selectSql", querySql);
                 return ResultT.success(map);
             }
         } catch (Exception e) {

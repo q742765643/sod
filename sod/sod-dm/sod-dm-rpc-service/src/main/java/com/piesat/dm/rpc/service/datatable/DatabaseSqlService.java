@@ -52,7 +52,7 @@ public class DatabaseSqlService {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
             column.append(" COMMENT '").append(ds.getEleName()).append("'");
-            if (i < dataStructures.size() - 1) column.append(",<br/>");
+            if (i < dataStructures.size() - 1) column.append(",\n");
             columns.append(column);
         }
         String dp_shard = "";
@@ -86,7 +86,7 @@ public class DatabaseSqlService {
             } else {
                 Index_type = "INDEX";
             }
-            indexColumn.append("<br/>CREATE " + Index_type + "");
+            indexColumn.append("\nCREATE " + Index_type + "");
             indexColumn.append(" " + el.getIndexName());
             indexColumn.append(" ON " + schema + "." + dataTable.getTableName());
             indexColumn.append(" (");
@@ -174,7 +174,7 @@ public class DatabaseSqlService {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
             column.append(" COMMENT '").append(ds.getEleName()).append("'");
-            if (i < dataStructures.size() - 1) column.append(",<br/>");
+            if (i < dataStructures.size() - 1) column.append(",\n");
             columns.append(column);
         }
         String dp_shard = "";
@@ -246,7 +246,7 @@ public class DatabaseSqlService {
             if (StringUtils.isBlank(dataType)) {
                 throw new Exception("Cassandra不支持字段：" + type);
             }
-            String column = ds.getDbEleCode() + " " + dataType + ",<br/>";
+            String column = ds.getDbEleCode() + " " + dataType + ",\n";
             columns.append(column);
             if (is_kv_k) {
                 key_columns.add(ds.getDbEleCode());
