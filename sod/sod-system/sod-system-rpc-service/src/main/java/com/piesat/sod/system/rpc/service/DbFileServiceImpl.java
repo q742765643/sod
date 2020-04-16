@@ -1,6 +1,7 @@
 package com.piesat.sod.system.rpc.service;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
@@ -222,13 +223,13 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 		}else if ("cassandra-client".equals(name)){
 			file = new File(cassandraClient);
 		}
-
+		System.out.println(file.getPath());
 		InputStream in = null;
 		if(file.exists()){
 			try {
-				String fileName = new String(file.getName().getBytes("UTF-8"), "iso-8859-1");
+				String fileName = file.getName();
 				response.setCharacterEncoding("UTF-8");
-				response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+				response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
 				response.addHeader("Content-Length", "" + file.length());
 				response.setContentType("application/octet-stream");
 				OutputStream out = response.getOutputStream();
@@ -251,6 +252,5 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 			}
 		}
 	}
-
 
 }

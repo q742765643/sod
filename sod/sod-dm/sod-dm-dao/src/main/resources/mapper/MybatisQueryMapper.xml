@@ -42,7 +42,7 @@
     <!--查询存储结构概览-->
     <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select
-        f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,
+        f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,a.id LOGIC_ID,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,
         f.D_DATA_ID,e.DATABASE_NAME SPECIAL_DATABASE_NAME,ee.DATABASE_NAME,ee.DATABASE_TYPE,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = ee.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
@@ -97,10 +97,14 @@
     </select>
     <!--存储字段检索-->
     <select id="storageFieldList" parameterType="java.util.Map" resultType="java.util.Map">
-        select g.*, c.logic_name, f.class_name, b.table_name
+        select g.*, c.LOGIC_NAME, f.CLASS_NAME,f.D_DATA_ID, b.TABLE_NAME,a.id LOGIC_ID,a.DATA_CLASS_ID,a.LOGIC_FLAG,
+        a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,e.DATABASE_NAME SPECIAL_DATABASE_NAME,
+        ee.DATABASE_NAME,ee.DATABASE_TYPE
         from t_sod_data_class f
         left join t_sod_data_logic a on (a.DATA_CLASS_ID = f.DATA_CLASS_ID AND f.type = 2 )
         left join t_sod_logic_define c on a.logic_flag = c.logic_flag
+        left join t_sod_database e on a.DATABASE_ID = e.id
+        left join t_sod_database_define ee on e.database_define_id = ee.id
         left join t_sod_data_table b on a.id = b.CLASS_LOGIC_ID
         left join t_sod_data_table_column g on b.id = g.table_id
         <where>
@@ -655,8 +659,9 @@
     </select>
 
     <select id="getDataLogic" resultType="DataLogicEntity" parameterType="String">
-        SELECT a.id id,a.data_class_id dataClassId,a.logic_flag logicFlag,a.storage_type storageType,a.database_id databaseId,a.is_complete isComplete,a.version,a.createTime
-         FROM T_SOD_DATA_LOGIC a INNER JOIN T_SOD_DATA_TABLE b ON a.id = b.class_logic_id
+        SELECT a.id id,a.data_class_id dataClassId,a.logic_flag logicFlag,a.storage_type storageType,a.database_id
+        databaseId,a.is_complete isComplete,a.version,a.createTime
+        FROM T_SOD_DATA_LOGIC a INNER JOIN T_SOD_DATA_TABLE b ON a.id = b.class_logic_id
         <where>
             1=1
             <if test="dataclassId != null and dataclassId != ''">

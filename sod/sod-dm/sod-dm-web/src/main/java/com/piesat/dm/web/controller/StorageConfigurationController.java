@@ -79,44 +79,36 @@ public class StorageConfigurationController {
 
     @GetMapping("/storageFieldList")
     @ApiOperation(value = "存储字段检索条件分页查询", notes = "存储字段检索条件分页查询")
-    public ResultT<PageBean> storageFieldList(StorageConfigurationDto storageConfigurationDto,
+    public ResultT<PageBean> storageFieldList(StorageConfigParam scp,
                                               @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         Map<String, String> map = new HashMap<String, String>();
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())) {
-                map.put("class_name", storageConfigurationDto.getDataClassDto().getClassName());
-            }
+        if (StringUtils.isNotNullString(scp.getClassName())) {
+            map.put("class_name", scp.getClassName());
         }
-        if (storageConfigurationDto.getLogicDefineDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())) {
-                map.put("logic_name", storageConfigurationDto.getLogicDefineDto().getLogicName());
-            }
+        if (StringUtils.isNotNullString(scp.getLogicName())) {
+            map.put("logic_name", scp.getLogicName());
         }
-        if (storageConfigurationDto.getDataTableDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())) {
-                map.put("table_name", storageConfigurationDto.getDataTableDto().getTableName());
-            }
+        if (StringUtils.isNotNullString(scp.getTableName())) {
+            map.put("table_name", scp.getTableName());
         }
-        if (storageConfigurationDto.getTableColumnDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getCElementCode())) {
-                map.put("c_element_code", storageConfigurationDto.getTableColumnDto().getCElementCode());
-            }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getDbEleCode())) {
-                map.put("db_ele_code", storageConfigurationDto.getTableColumnDto().getDbEleCode());
-            }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getUserEleCode())) {
-                map.put("user_ele_code", storageConfigurationDto.getTableColumnDto().getUserEleCode());
-            }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getEleName())) {
-                map.put("ele_name", storageConfigurationDto.getTableColumnDto().getEleName());
-            }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getType())) {
-                map.put("type", storageConfigurationDto.getTableColumnDto().getType());
-            }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getTableColumnDto().getAccuracy())) {
-                map.put("accuracy", storageConfigurationDto.getTableColumnDto().getAccuracy());
-            }
+        if (StringUtils.isNotNullString(scp.getCElementCode())) {
+            map.put("c_element_code", scp.getCElementCode());
+        }
+        if (StringUtils.isNotNullString(scp.getDbEleCode())) {
+            map.put("db_ele_code", scp.getDbEleCode());
+        }
+        if (StringUtils.isNotNullString(scp.getUserEleCode())) {
+            map.put("user_ele_code", scp.getUserEleCode());
+        }
+        if (StringUtils.isNotNullString(scp.getEleName())) {
+            map.put("ele_name", scp.getEleName());
+        }
+        if (StringUtils.isNotNullString(scp.getType())) {
+            map.put("type", scp.getType());
+        }
+        if (StringUtils.isNotNullString(scp.getAccuracy())) {
+            map.put("accuracy", scp.getAccuracy());
         }
 
         ResultT<PageBean> resultT = new ResultT<>();
