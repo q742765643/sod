@@ -72,12 +72,14 @@
       @pagination="getList"
     />
     <el-dialog title="添加" :visible.sync="addDataDialog" width="40%" v-dialogDrag>
-      <el-form
-        :rules="rules"
-        ref="ruleForm"
-        :model="msgFormDialog">
+      <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog">
         <el-form-item label="数据库选择:">
-          <el-select style="width:80%;" v-model="msgFormDialog.databaseId" placeholder="请选择添加数据库" @change="databaseChange">
+          <el-select
+            style="width:80%;"
+            v-model="msgFormDialog.databaseId"
+            placeholder="请选择添加数据库"
+            @change="databaseChange"
+          >
             <el-option
               v-for="item in databaseNameOptions"
               :key="item.ID"
@@ -124,128 +126,154 @@
 </template>
 
 <script>
-  import {
-    consistencyCheckList,
-    deleteById,
-    downloadDfcheckFile,
-    consistencyCheckSave,
-    getDatabaseName
-  } from "@/api/structureManagement/consistencyCheck";
-  export default {
-    components: {},
-    data() {
-      return {
-        // 遮罩层
-        loading: true,
-        queryParams: {
-          pageNum: 1,
-          pageSize: 10,
-          database_name: ""
-        },
-        total: 0,
-        tableData: [],
-        msgFormDialog: {
-          databaseId:"",
-          databaseName:""
-        },
-        // 添加弹窗
-        addDataDialog: false,
-        databaseNameOptions: [],
-        //  历史报告
-        historyDialog: false,
-        historyData: [],
-        historyTotal: 0,
-        historyObj: {
-          pageNum: 1,
-          pageSize: 10,
-          historyID: ""
-        },
-        rules: {
-          taskName: [
-            { required: true, message: "请输入任务名称", trigger: "change" }
-          ]
-        }
-      };
+import {
+  consistencyCheckList,
+  deleteById,
+  downloadDfcheckFile,
+  consistencyCheckSave,
+  getDatabaseName
+} from "@/api/structureManagement/consistencyCheck";
+export default {
+  components: {},
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        database_name: ""
+      },
+      total: 0,
+      tableData: [],
+      msgFormDialog: {
+        databaseId: "",
+        databaseName: ""
+      },
+      // 添加弹窗
+      addDataDialog: false,
+      databaseNameOptions: [],
+      //  历史报告
+      historyDialog: false,
+      historyData: [],
+      historyTotal: 0,
+      historyObj: {
+        pageNum: 1,
+        pageSize: 10,
+        historyID: ""
+      },
+      rules: {
+        taskName: [
+          { required: true, message: "请输入任务名称", trigger: "change" }
+        ]
+      }
+    };
+  },
+  created() {
+    this.getList();
+    this.getOptions();
+  },
+  methods: {
+    // table自增定义方法
+    table_index(index) {
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
-    created() {
+    table_index_history(index) {
+      return (
+        (this.historyObj.pageNum - 1) * this.historyObj.pageSize + index + 1
+      );
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
-      this.getOptions();
     },
-    methods: {
-      // table自增定义方法
-      table_index(index) {
-        return (
-          (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
-        );
-      },
-      table_index_history(index) {
-        return (
-          (this.historyObj.pageNum - 1) * this.historyObj.pageSize + index + 1
-        );
-      },
-      /** 搜索按钮操作 */
-      handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
-      },
-      /** 查询列表 */
-      getList() {
-        this.loading = true;
-        consistencyCheckList(this.queryParams).then(response => {
-          this.tableData = response.data.pageData;
-          this.total = response.data.totalCount;
-          this.loading = false;
+    /** 查询列表 */
+    getList() {
+      this.loading = true;
+      consistencyCheckList(this.queryParams).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
+    },
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
+    getOptions() {
+      getDatabaseName().then(response => {
+        this.databaseNameOptions = response.data;
+      });
+    },
+    /*点击历史报告列表事件 */
+    getHistoricalReport(row) {
+      this.historyDialog = true;
+    },
+    progressDownLoad() {},
+    addReportData() {
+      this.addDataDialog = true;
+    },
+    deleteData() {
+      if (this.currentRow.length == 0) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
         });
-      },
-      handleCurrentChange(val) {
-        this.currentRow = val;
-      },
-      getOptions() {
-        getDatabaseName().then(response => {
-          this.databaseNameOptions = response.data;
-        });
-      },
-      /*点击历史报告列表事件 */
-      getHistoricalReport(row) {
-        this.historyDialog = true;
-      },
-      progressDownLoad() {},
-      addReportData() {
-        this.addDataDialog = true;
-      },
-      deleteData() {},
-      addReportRecord(formName) {
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            consistencyCheckSave(this.msgFormDialog).then(res => {
-              if (res.code == "200") {
-                this.$message({
-                  type: "success",
-                  message: "添加成功"
-                });
-                this.$emit("resetQuery");
-              } else {
-                this.$message({
-                  type: "error",
-                  message: "添加失败"
-                });
-              }
-            });
-
-          }else{
-            return false;
-          }
-        })
-      },
-      downloadHistoricalReport() {},
-      getHistoryData() {},
-      databaseChange(databaseId) {
-        let databaseInfo = {};
-        databaseInfo = this.databaseNameOptions.find(item => {
-          return item.ID === databaseId;
-        });
-        this.msgFormDialog.databaseName = databaseInfo.DATABASE_NAME;
-      },
+        return;
+      }
+      let ids = [];
+      array.forEach(element => {
+        ids.push(element.id);
+      });
+      deleteById({ ids: ids.join(",") }).then(response => {
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: "删除成功"
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: "删除失败"
+          });
+        }
+      });
+    },
+    addReportRecord(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          consistencyCheckSave(this.msgFormDialog).then(res => {
+            if (res.code == "200") {
+              this.$message({
+                type: "success",
+                message: "添加成功"
+              });
+              this.$emit("resetQuery");
+              this.handleQuery();
+              this.addDataDialog = false;
+            } else {
+              this.$message({
+                type: "error",
+                message: "添加失败"
+              });
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    },
+    downloadHistoricalReport() {},
+    getHistoryData() {},
+    databaseChange(databaseId) {
+      let databaseInfo = {};
+      databaseInfo = this.databaseNameOptions.find(item => {
+        return item.ID === databaseId;
+      });
+      this.msgFormDialog.databaseName = databaseInfo.DATABASE_NAME;
     }
-  };
+  }
+};
 </script>
