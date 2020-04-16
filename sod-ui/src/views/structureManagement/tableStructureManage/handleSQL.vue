@@ -140,7 +140,12 @@ export default {
               type: "error"
             });
             return;
-          } else {
+          }else if(res.data == null){
+            this.$message({
+              message: res.msg,
+              type: "error"
+            });
+          }else {
             createTable({
               databaseId: this.handleSQLObj.DATABASE_ID,
               tableName: this.tableObj.tableName,
