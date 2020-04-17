@@ -33,13 +33,13 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="databaseUpId" label="账户ID" width="120px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="userRealname" label="关联用户" width="100px"></el-table-column>
       <el-table-column prop="department" label="机构" width="140px"></el-table-column>
       <el-table-column prop="phoneNum" label="联系方式" width="120px"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="160px">
+      <el-table-column prop="createTime" label="创建时间" width="160px" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -114,7 +114,12 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examineStatus: ""
+        examineStatus: "",
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
 
       total: 0,
@@ -148,7 +153,16 @@ export default {
         this.loading = false;
       });
     },
-
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     addCell() {
       this.dialogTitle = "新增数据库账户审核";
       this.handleObj = {};

@@ -11,21 +11,35 @@ body {
 
 .el-table {
   font-size: 13px;
+
+  th,
+  td {
+    text-align: center;
+  }
+
+  td {
+    padding: 4px 2px;
+  }
+
+  th {
+    border-bottom: 1px solid #dfe6ec;
+  }
+
+  th.gutter {
+    display: table-cell !important;
+  }
+
+  .el-link {
+    font-size: 13px;
+  }
 }
 
-.el-table th,
-.el-table td {
-  text-align: center;
-}
+
 
 .app-main>.app-container {
   background: #fff;
   margin: 20px;
   margin-top: 0;
-}
-
-body .el-table th.gutter {
-  display: table-cell !important;
 }
 
 .blueRound {
@@ -87,6 +101,9 @@ body .el-table th.gutter {
 }
 
 
+
+
+
 // 没有labelwidth的formitem
 .unitFormItem {
   .el-form-item__content {
@@ -98,9 +115,7 @@ body .el-table th.gutter {
   text-align: right;
 }
 
-.el-table td {
-  padding: 4px 2px;
-}
+
 
 
 .red {

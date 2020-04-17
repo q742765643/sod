@@ -3,13 +3,13 @@
     <!-- 存储字段检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.table_name" placeholder="请输入表名称" />
+        <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
       <el-form-item label="中文简称:">
-        <el-input size="small" v-model="queryParams.ele_name" placeholder="请输入中文简称" />
+        <el-input size="small" v-model="queryParams.eleName" placeholder="请输入中文简称" />
       </el-form-item>
       <el-form-item label="字段名称:">
-        <el-input size="small" v-model="queryParams.c_element_code" placeholder="请输入字段名称" />
+        <el-input size="small" v-model="queryParams.CElementCode" placeholder="请输入字段名称" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleQuery" icon="el-icon-search" size="small">查询</el-button>
@@ -54,7 +54,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+      @pagination="getList('')"
     />
     <!-- 高级搜索 -->
     <el-dialog
@@ -70,27 +70,49 @@
         ref="supersearchinfo"
       />
     </el-dialog>
+    <!-- 表结构管理 -->
+    <el-dialog
+      :title="`表结构管理(${structureManageTitle})`"
+      :visible.sync="structureManageVisible"
+      width="100%"
+      :fullscreen="true"
+      :before-close="closeStructureManage"
+      top="0"
+      class="scrollDialog"
+    >
+      <StructureManageTable
+        ref="scrollDiv"
+        v-if="structureManageVisible"
+        v-bind:parentRowData="rowData"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { storageFieldList } from "@/api/structureManagement/filedSearch";
+//表结构管理--弹出层
+import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 export default {
   components: {
-    SuperSearch
+    SuperSearch,
+    StructureManageTable
   },
   data() {
     return {
+      rowData: [],
+      structureManageVisible: false,
+      structureManageTitle: "",
       // 遮罩层
       loading: true,
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        table_name: "",
-        ele_name: "",
-        c_element_code: ""
+        tableName: "",
+        eleName: "",
+        CElementCode: ""
       },
       total: 0,
       tableData: [],
@@ -142,6 +164,15 @@ export default {
     // 弹框取消
     handleClose() {
       this.dialogSuperSearch = false;
+    },
+    viewCell(row) {
+      this.rowData = row;
+      this.structureManageTitle = row.CLASS_NAME;
+      this.structureManageVisible = true;
+    },
+    closeStructureManage() {
+      this.handleQuery();
+      this.structureManageVisible = false;
     }
   }
 };

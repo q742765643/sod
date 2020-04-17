@@ -163,7 +163,7 @@
                 <el-row>
                   <el-col :span="4">
                     <el-form-item label="字段分组">
-                      <el-select v-model="searchMmdata.group_id" size="small">
+                      <el-select v-model="searchMmdata.groupId" size="small">
                         <el-option label="全部" value></el-option>
                         <el-option
                           v-for="item in AllManageGroup"
@@ -181,7 +181,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="中文名称">
-                      <el-input v-model="searchMmdata.db_ele_name" placeholder="中文名称" size="small"></el-input>
+                      <el-input v-model="searchMmdata.dbEleName" placeholder="中文名称" size="small"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
@@ -213,7 +213,7 @@
               <el-table-column type="selection" width="55"></el-table-column>
               <el-table-column label="字段名称" prop="dbEleCode"></el-table-column>
               <el-table-column label="服务名称" prop="userEleCode"></el-table-column>
-              <el-table-column label="中文名称" prop="db_ele_name"></el-table-column>
+              <el-table-column label="中文名称" prop="dbEleName"></el-table-column>
               <el-table-column label="字段短名" prop="eleName"></el-table-column>
               <el-table-column label="类型" prop="type"></el-table-column>
               <el-table-column label="字段精度" prop="data_precision" width="90px"></el-table-column>
@@ -508,9 +508,9 @@ export default {
         c_datumtype: ""
       },
       searchMmdata: {
-        group_id: "",
+        groupId: "",
         dbEleCode: "",
-        db_ele_name: "",
+        dbEleName: "",
         userEleCode: ""
       },
       dataTypes: [],
@@ -1077,7 +1077,7 @@ export default {
             obj.isNull = false;
             obj.isUpdate = false;
           } else if (tabActive == "second") {
-            obj.eleName = element.db_ele_name;
+            obj.eleName = element.dbEleName;
             obj.dbEleCode = element.dbEleCode;
             obj.celementCode = element.dbEleCode;
             obj.type = element.type;
