@@ -1,140 +1,196 @@
 <template>
   <!--监测信息 -->
   <div class="taskTemp">
-    <h4>
-      <span>基础资源监控</span>
-      <div>
-        <img src="../assets/images/header-bg-cipas.png" />
-      </div>
-    </h4>
-    <el-row :gutter="8" class="fristRow">
-      <el-col :span="8">
-        <div class="colBox">
-          <h6>任务执行情况</h6>
-          <div class="firstLineClass">
-            <el-table :data="tableData" stripe style="width: 100%">
-              <el-table-column prop="name" label="统计任务" align="center" min-width="80"></el-table-column>
-              <el-table-column prop="back" label="备份任务" align="center" min-width="80"></el-table-column>
-              <el-table-column prop="qianyi" label="迁移任务" align="center" min-width="80"></el-table-column>
-              <el-table-column prop="clear" label="清楚任务" align="center" min-width="80"></el-table-column>
-            </el-table>
+    <happy-scroll hide-horizontal color="rgba(0,0,0,0.1)" size="1">
+      <h4>
+        <span>基础资源监控</span>
+        <div>
+          <img src="../assets/images/header-bg-cipas.png" />
+        </div>
+      </h4>
+      <el-row :gutter="8" class="fristRow">
+        <el-col :span="8">
+          <div class="colBox">
+            <h6>任务执行情况</h6>
+            <div class="firstLineClass">
+              <el-table :data="tableData" stripe style="width: 100%">
+                <el-table-column prop="taskState" label="统计任务" align="center" min-width="80"></el-table-column>
+                <el-table-column prop="backup" label="备份任务" align="center" min-width="80"></el-table-column>
+                <el-table-column prop="move" label="迁移任务" align="center" min-width="80"></el-table-column>
+                <el-table-column prop="clear" label="清除任务" align="center" min-width="80"></el-table-column>
+              </el-table>
+            </div>
           </div>
-        </div>
-      </el-col>
-      <el-col :span="8">
-        <div class="colBox">
-          <h6>集群各节点状态</h6>
-          <el-row>
-            <el-form :inline="true" :model="formInline" size="mini" class="demo-form-inline">
-              <el-form-item label="更新时间：">
-                <span>{{formInline.time}}</span>
-              </el-form-item>
-              <el-form-item label="IP网段：">
-                <span>{{formInline.IP}}</span>
-              </el-form-item>
-              <el-form-item>
-                <span>
-                  <i class="iconRound successIcon"></i>
-                  正常({{formInline.ok}}个)
-                </span>
-                <span>
-                  <i class="iconRound errorIcon"></i>
-                  异常({{formInline.ok}}个)
-                </span>
-              </el-form-item>
-            </el-form>
-          </el-row>
-          <el-row class="contentClass">
-            <span v-for="(item,index) in contentList" :key="index">
-              <i v-if="item.type==1" class="iconRound successIcon"></i>
-              <i v-else class="iconRound errorIcon"></i>
-              正常
-            </span>
-          </el-row>
-          <el-row>
-            <el-form :inline="true" :model="formInline" size="mini" class="demo-form-inline">
-              <!--  <el-form-item label="集群使用情况"> -->
-              <el-progress :text-inside="true" :stroke-width="14" :percentage="70"></el-progress>
-              <!--   </el-form-item> -->
-            </el-form>
-          </el-row>
-        </div>
-      </el-col>
-      <el-col :span="8">
-        <div class="colBox">
-          <h6>kafka消息积压情况</h6>
-          <el-row class="firstLineClass">
-            <el-col :span="12">
-              <el-table :data="tableData1" stripe style="width: 100%">
-                <el-table-column prop="name" label="列队名称" align="center" min-width="100"></el-table-column>
-                <el-table-column prop="back" label="挤压数" align="center" min-width="40"></el-table-column>
-              </el-table>
-            </el-col>
-            <el-col :span="12">
-              <el-table :data="tableData1" stripe style="width: 100%">
-                <el-table-column prop="name" label="列队名称" align="center" min-width="100"></el-table-column>
-                <el-table-column prop="back" label="挤压数" align="center" min-width="40"></el-table-column>
-              </el-table>
-            </el-col>
-          </el-row>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="8" class="secondRow">
-      <el-col :span="16">
-        <div class="colBox">
-          <h6>基础资源</h6>
-          <div class="baseContant">
-            <el-row :gutter="15">
-              <el-col :span="6" v-for="(item,index) in baseResourcesList" :key="index">
-                <div class="itemBox">
-                  <div class="left">
-                    <img src="../assets//images/base.png" alt />
-                    <p>{{item.baseIp}}</p>
-                  </div>
-                  <div class="right">
-                    <p v-for="(ele,eindex) in item.info" :key="eindex">
-                      <span class="name">{{ele.name}}：</span>
-                      <span>{{ele.value}}</span>
-                    </p>
-                  </div>
-                </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="colBox">
+            <h6>集群各节点状态</h6>
+            <el-row>
+              <el-form :inline="true" :model="formInline" size="mini" class="demo-form-inline">
+                <el-form-item label="更新时间：">
+                  <span>{{formInline.time}}</span>
+                </el-form-item>
+                <el-form-item label="IP网段：">
+                  <span>{{formInline.IP}}</span>
+                </el-form-item>
+                <el-form-item>
+                  <span>
+                    <i class="iconRound successIcon"></i>
+                    正常({{formInline.normalNum}}个)
+                  </span>
+                  <span>
+                    <i class="iconRound errorIcon"></i>
+                    异常({{formInline.abnormalNum}}个)
+                  </span>
+                </el-form-item>
+              </el-form>
+            </el-row>
+            <el-row class="contentClass">
+              <span v-for="(item,index) in contentList" :key="index">
+                <i v-if="item.isNormal==1" class="iconRound successIcon"></i>
+                <i v-else class="iconRound errorIcon"></i>
+                {{item.ip}}
+              </span>
+            </el-row>
+            <el-row class="contentClass">
+              <el-col :span="5">集群使用情况 :</el-col>
+              <el-col :span="19">
+                <el-progress :stroke-width="10" :percentage="formInline.diskPct"></el-progress>
               </el-col>
             </el-row>
           </div>
-        </div>
-      </el-col>
-      <el-col :span="8">
-        <div class="colBox">
-          <h6>任务执行基础资源</h6>
-          <div class="baseContant smallbaseContant">
-            <el-row :gutter="10">
-              <el-col :span="12" v-for="(item,index) in baseResourcesList" :key="index">
-                <div class="itemBox">
-                  <div class="left">
-                    <img src="../assets//images/base.png" alt />
-                    <p>{{item.baseIp}}</p>
-                  </div>
-                  <div class="right">
-                    <p v-for="(ele,eindex) in item.info" :key="eindex">
-                      <span class="name">{{ele.name}}：</span>
-                      <span>{{ele.value}}</span>
-                    </p>
-                  </div>
-                </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="colBox">
+            <h6>kafka消息积压情况</h6>
+            <el-row class="firstLineClass">
+              <el-col :span="12">
+                <el-table :data="tableData1" stripe style="width: 100%">
+                  <el-table-column prop="topic" label="列队名称" align="center" min-width="100"></el-table-column>
+                  <el-table-column prop="consumerLag" label="挤压数" align="center" min-width="40"></el-table-column>
+                </el-table>
+              </el-col>
+              <el-col :span="12">
+                <el-table :data="tableData2" stripe style="width: 100%">
+                  <el-table-column prop="topic" label="列队名称" align="center" min-width="100"></el-table-column>
+                  <el-table-column prop="consumerLag" label="挤压数" align="center" min-width="40"></el-table-column>
+                </el-table>
               </el-col>
             </el-row>
           </div>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="8" class="fristRow">
-      <el-col :span="24">
-        <div class="colBox">
-          <h6>RabbitMq监控</h6>
-        </div>
-      </el-col>
-    </el-row>
+        </el-col>
+      </el-row>
+      <el-row :gutter="8" class="secondRow">
+        <el-col :span="16">
+          <div class="colBox">
+            <h6>基础资源</h6>
+            <div class="baseContant">
+              <el-row :gutter="15">
+                <el-col :span="6" v-for="(item,index) in baseResourcesList" :key="index">
+                  <div class="itemBox" @click="gotoNext(item)">
+                    <div class="left">
+                      <img src="../assets//images/base.png" alt />
+                      <p>{{item.baseIp}}</p>
+                    </div>
+                    <div class="right">
+                      <p v-for="(ele,eindex) in item.info" :key="eindex">
+                        <span class="name">{{ele.name}}：</span>
+                        <span>{{ele.value}}</span>
+                      </p>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="colBox">
+            <h6>任务执行基础资源</h6>
+            <div class="baseContant smallbaseContant">
+              <el-row :gutter="10">
+                <el-col :span="12" v-for="(item,index) in baseResourcesList" :key="index">
+                  <div class="itemBox" @click="gotoNext(item)">
+                    <div class="left">
+                      <img src="../assets//images/base.png" alt />
+                      <p>{{item.baseIp}}</p>
+                    </div>
+                    <div class="right">
+                      <p v-for="(ele,eindex) in item.info" :key="eindex">
+                        <span class="name">{{ele.name}}：</span>
+                        <span>{{ele.value}}</span>
+                      </p>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="8" class="thridRow">
+        <el-col :span="24">
+          <div class="colBox">
+            <h6>RabbitMq监控</h6>
+            <el-row class="firstLineClass">
+              <el-tabs v-model="editableTabsValue" type="card" @tab-click="getRabbitMonitorLag">
+                <el-tab-pane
+                  v-for="(item) in editableTabs"
+                  :key="item.name"
+                  :label="item.title"
+                  :name="item.name"
+                >
+                  <el-table :data="item.content" stripe style="width: 100%">
+                    <el-table-column
+                      prop="queueName"
+                      label="queueName"
+                      align="center"
+                      min-width="150"
+                    ></el-table-column>
+                    <el-table-column
+                      prop="readyCount"
+                      label="ReadyCount"
+                      align="center"
+                      min-width="100"
+                    ></el-table-column>
+                    <el-table-column
+                      prop="readyDetailsRate"
+                      label="ReadyDetail"
+                      align="center"
+                      min-width="100"
+                    ></el-table-column>
+                    <el-table-column
+                      prop="totalCount"
+                      label="TotalCount"
+                      align="center"
+                      min-width="100"
+                    ></el-table-column>
+                    <el-table-column
+                      prop="totalDetailsRate"
+                      label="TotalDetail"
+                      align="center"
+                      min-width="100"
+                    ></el-table-column>
+                    <el-table-column
+                      prop="unacknowledgedCount"
+                      label="UnackedCount"
+                      align="center"
+                      min-width="100"
+                    ></el-table-column>
+                    <el-table-column
+                      prop="unacknowledgedDetailsRate"
+                      label="UnackedDetail"
+                      align="center"
+                      min-width="100"
+                    ></el-table-column>
+                  </el-table>
+                </el-tab-pane>
+              </el-tabs>
+            </el-row>
+          </div>
+        </el-col>
+      </el-row>
+    </happy-scroll>
   </div>
 </template>
 
@@ -145,128 +201,233 @@ import { interfaceObj } from "@/urlConfig.js";
 export default {
   data() {
     return {
-      formInline: {
-        time: "2020-04-15 17:49:02",
-        IP: "192.168.1.2",
-        ok: 5
-      },
+      formInline: {},
       tableData: [
         {
-          name: "失败",
-          back: "1",
-          qianyi: "0",
+          taskState: "失败",
+          backup: "1",
+          move: "0",
           clear: "0"
         },
         {
-          name: "失败",
-          back: "1",
-          qianyi: "0",
+          taskState: "成功",
+          backup: "1",
+          move: "0",
           clear: "0"
         },
         {
-          name: "失败",
-          back: "1",
-          qianyi: "0",
+          taskState: "未执行",
+          backup: "1",
+          move: "0",
           clear: "0"
         },
         {
-          name: "失败",
-          back: "1",
-          qianyi: "0",
+          taskState: "应执行",
+          backup: "1",
+          move: "0",
           clear: "0"
         }
       ],
       tableData1: [
         {
-          name: "/zk437092645/article/details/8641486",
-          back: "394"
+          topic: "/zk437092645/article/details/8641486",
+          consumerLag: "394"
         },
         {
-          name: "/zk437092645/article/details/8641486",
-          back: "394"
+          topic: "/zk437092645/article/details/8641486",
+          consumerLag: "394"
         },
         {
-          name: "/zk437092645/article/details/8641486",
-          back: "394"
+          topic: "/zk437092645/article/details/8641486",
+          consumerLag: "394"
         }
       ],
-      contentList: [
-        { index: 1, type: 1 },
-        { index: 1, type: 1 },
-        { index: 1, type: 1 },
-        { index: 1, type: 1 },
-        { index: 1, type: 1 }
-      ],
-      baseResourcesList: [
+      tableData2: [
         {
-          baseIp: "10.20.64.41",
-          info: [
-            { name: "CPU", value: "4.1%" },
-            { name: "内存", value: "75.4%" },
-            { name: "网络", value: "正常" },
-            { name: "进程", value: "正常" },
-            { name: "磁盘", value: "正常" }
-          ]
+          topic: "/zk437092645/article/details/8641486",
+          consumerLag: "394"
         },
         {
-          baseIp: "10.20.64.41",
-          info: [
-            { name: "CPU", value: "4.1%" },
-            { name: "内存", value: "75.4%" },
-            { name: "网络", value: "正常" },
-            { name: "进程", value: "正常" },
-            { name: "磁盘", value: "正常" }
-          ]
+          topic: "/zk437092645/article/details/8641486",
+          consumerLag: "394"
         },
         {
-          baseIp: "10.20.64.41",
-          info: [
-            { name: "CPU", value: "4.1%" },
-            { name: "内存", value: "75.4%" },
-            { name: "网络", value: "正常" },
-            { name: "进程", value: "正常" },
-            { name: "磁盘", value: "正常" }
-          ]
-        },
-        {
-          baseIp: "10.20.64.41",
-          info: [
-            { name: "CPU", value: "4.1%" },
-            { name: "内存", value: "75.4%" },
-            { name: "网络", value: "正常" },
-            { name: "进程", value: "正常" },
-            { name: "磁盘", value: "正常" }
-          ]
-        },
-        {
-          baseIp: "10.20.64.41",
-          info: [
-            { name: "CPU", value: "4.1%" },
-            { name: "内存", value: "75.4%" },
-            { name: "网络", value: "正常" },
-            { name: "进程", value: "正常" },
-            { name: "磁盘", value: "正常" }
-          ]
+          topic: "/zk437092645/article/details/8641486",
+          consumerLag: "394"
         }
-      ]
+      ],
+      contentList: [],
+      baseResourcesList: [],
+      editableTabsValue: "",
+      editableTabs: [],
+      tabIndex: 2
     };
   },
-  created() {},
+  created() {
+    this.getTaskPerformance();
+    this.getTaskKafkaMonitorLag();
+    this.getRabbitAlias();
+    this.getTaskClusterNode();
+  },
   mounted() {},
-  methods: {}
+  methods: {
+    gotoNext(item) {
+      let iii = JSON.stringify(item);
+      this.$router.push({
+        name: "监测信息",
+        params: item
+      });
+      console.log(item);
+    },
+    /**获取任务执行情况*/
+    getTaskPerformance() {
+      this.axios.get(interfaceObj.groupbyTaskDuty).then(res => {
+        if (res.status == 200) {
+          this.tableData = res.data.data;
+        }
+      });
+    },
+    /**获取集群各节点状态*/
+    getTaskClusterNode() {
+      this.axios.get(interfaceObj.clusterMonitor).then(res => {
+        if (res.status == 200) {
+          this.formInline = res.data.data;
+          this.formInline.diskPct =
+            (this.formInline.diskPct * 100).toFixed(2) * 1;
+          this.formInline.time = this.formatDateTime(new Date());
+          if (res.data.data.cluserNode[0]) {
+            let ipa = res.data.data.cluserNode[0].ip.split(".");
+            this.formInline.IP = ipa[0] + ".XX.XX.XX";
+          } else {
+            this.formInline.IP = "XX.XX.XX.XX";
+          }
+          this.contentList = res.data.data.cluserNode;
+          this.baseResourcesList = [];
+          res.data.data.cluserNode.forEach(item => {
+            let indexobj = {};
+            indexobj.baseIp = item.ip;
+            indexobj.info = [];
+            indexobj.info.push({
+              name: "CPU",
+              value: (item.cpuPct * 100).toFixed(2) + "%"
+            });
+            indexobj.info.push({
+              name: "内存",
+              value: (item.memoryPct * 100).toFixed(2) + "%"
+            });
+            indexobj.info.push({
+              name: "网络",
+              value: this.getNormalText(item.netWorkIsNormal)
+            });
+            indexobj.info.push({
+              name: "进程",
+              value: this.getNormalText(item.processIsNormal)
+            });
+            indexobj.info.push({
+              name: "磁盘",
+              value: this.getNormalText(item.diskIsNormal)
+            });
+            this.baseResourcesList.push(indexobj);
+          });
+        }
+      });
+    },
+    /**文本格式修改函数*/
+    getNormalText(type) {
+      if (type == 1) {
+        return "正常";
+      } else {
+        return "异常";
+      }
+    },
+    /**获取kafka积压情况*/
+    getTaskKafkaMonitorLag() {
+      this.axios.get(interfaceObj.kafkaAlias).then(res => {
+        if (res.status == 200) {
+          let alias = res.data.data[0];
+          this.axios
+            .get(interfaceObj.kafkaMonitorLag + "?alias=" + alias)
+            .then(res => {
+              //console.log(res);
+              if (res.status == 200) {
+                if (res.data.data.length < 4) {
+                  if (res.data.data.length > 0) {
+                    this.tableData1 = res.data.data;
+                    this.tableData2 = [];
+                  }
+                } else if (res.data.data.length < 6) {
+                  this.tableData1 = res.data.data.slice(0, 3);
+                  this.tableData2 = res.data.data.slice(4);
+                }
+              }
+            });
+        }
+      });
+    },
+    /**获取Rabbit监控表格*/
+    getRabbitMonitorLag() {
+      let urlobj = { alias: this.editableTabsValue };
+      this.axios.post(interfaceObj.rabbitMonitorLag, urlobj).then(res => {
+        if (res.status == 200) {
+          this.editableTabs.forEach(item => {
+            if (item.name == this.editableTabsValue) {
+              item.content = res.data.data;
+            }
+          });
+        }
+        console.log(res);
+      });
+    },
+    /**获取Rabbit监控*/
+    getRabbitAlias() {
+      this.axios.get(interfaceObj.rabbitAlias).then(res => {
+        if (res.status == 200) {
+          res.data.data.forEach(item => {
+            let indexobj = { title: item, name: item, content: [] };
+            this.editableTabs = [];
+            this.editableTabs.push(indexobj);
+          });
+          this.editableTabsValue = res.data.data[0];
+          this.getRabbitMonitorLag();
+        }
+      });
+    },
+    /**日期格式转化*/
+    formatDateTime(date) {
+      var y = date.getFullYear();
+      var m = date.getMonth() + 1;
+      m = m < 10 ? "0" + m : m;
+      var d = date.getDate();
+      d = d < 10 ? "0" + d : d;
+      var h = date.getHours();
+      h = h < 10 ? "0" + h : h;
+      var minute = date.getMinutes();
+      minute = minute < 10 ? "0" + minute : minute;
+      var second = date.getSeconds();
+      second = second < 10 ? "0" + second : second;
+      return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
+    }
+  }
 };
 </script>
 <style lang="scss">
 .taskTemp {
   width: 100%;
-  height: 120vh;
-  background: #193154;
-  padding: 0 12px;
-  width: 100%;
   height: 100vh;
-  padding: 0;
+  background: #193154;
+  padding: 0 0px;
   text-align: center;
   overflow: hidden;
+  .happy-scroll {
+    width: 100%;
+    .happy-scroll-container {
+      width: 100%;
+      .happy-scroll-content {
+        width: 100%;
+        display: block;
+      }
+    }
+  }
   h4 {
     height: 50px;
     line-height: 30px;
@@ -284,13 +445,13 @@ export default {
       height: 15px;
     }
     position: relative;
-    padding: 0px;
     text-align: center;
   }
   .colBox {
     background: url("../assets/images/bg-task.png") no-repeat;
     height: 100%;
     position: relative;
+    padding-bottom: 10px;
     h6 {
       font-size: 14px;
       color: #2a6897;
@@ -333,21 +494,48 @@ export default {
     font-size: 10px;
     text-align: left;
     height: 80px;
+    color: #0ea9d6;
+    font-weight: 600;
+    .el-progress-bar__outer {
+      background-color: #115ea7;
+    }
+    .el-progress-bar__inner {
+      background-color: #03b8a1;
+    }
+    .el-progress__text {
+      font-size: 10px !important;
+      color: #0ea9d6;
+      font-weight: 600;
+    }
   }
   .fristRow {
+    width: 99%;
     padding: 5px 8px;
+    //margin-top: 5px;
     height: 185px;
     .el-col {
       height: 100%;
     }
   }
   .secondRow {
+    width: 99%;
     padding: 5px 8px;
-    height: 290px;
+    margin-top: 10px;
+    height: auto;
     .el-col {
       height: 100%;
     }
   }
+  .thridRow {
+    width: 99%;
+    padding: 5px 8px;
+    margin-bottom: 25px;
+    height: auto;
+    .el-col {
+      height: 100%;
+    }
+  }
+
   /* .el-table th {
     background: #112e4f;
   }
@@ -381,8 +569,10 @@ export default {
   }
   .demo-form-inline {
     font-size: 12px;
+    color: #0ea9d6;
     .el-form-item__label {
       padding: 0;
+      color: #0ea9d6;
     }
     .el-form-item--mini.el-form-item,
     .el-form-item--small.el-form-item {
@@ -461,6 +651,32 @@ export default {
       ~ .el-table__fixed {
       border-right: 2px solid rgba(0, 0, 0, 0.2);
     } */
+    .el-tabs--card > .el-tabs__header {
+      border-bottom: none;
+    }
+    .el-tabs--card > .el-tabs__header .el-tabs__nav {
+      border: none;
+    }
+    .el-tabs--card > .el-tabs__header .el-tabs__item:first-child {
+      border-left: 1px solid #0e689f;
+    }
+    .el-tabs__item {
+      border: 1px solid #0e689f;
+      padding: 0px 10px !important;
+      height: 20px;
+      line-height: 20px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #0e689f;
+      margin: 5px 5px;
+    }
+    .el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+      box-shadow: 0px 0px 5px #13717c;
+      color: #13717c;
+      font-weight: 600;
+      border-bottom-color: #0e689f;
+    }
   }
   .baseContant {
     width: 92%;
