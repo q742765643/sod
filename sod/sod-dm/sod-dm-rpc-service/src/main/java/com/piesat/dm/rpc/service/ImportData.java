@@ -52,6 +52,15 @@ import com.piesat.schedule.entity.sync.SyncConfigEntity;
 import com.piesat.schedule.entity.sync.SyncFilterEntity;
 import com.piesat.schedule.entity.sync.SyncMappingEntity;
 import com.piesat.schedule.entity.sync.SyncTaskEntity;
+import com.piesat.schedule.rpc.api.backup.BackupService;
+import com.piesat.schedule.rpc.api.clear.ClearService;
+import com.piesat.schedule.rpc.api.move.MoveService;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.schedule.rpc.dto.clear.ClearDto;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
+import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
+import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
+import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.sod.system.dao.*;
 import com.piesat.sod.system.entity.*;
 import com.piesat.sod.system.rpc.api.ManageFieldService;
@@ -164,6 +173,18 @@ public class ImportData {
     @Autowired
     private LevelDao levelDao;
 
+    @Autowired
+    private BackupService backupService;
+    @Autowired
+    private BackupMapstruct backupMapstruct;
+    @Autowired
+    private MoveMapstruct moveMapstruct;
+    @Autowired
+    private MoveService moveService;
+    @Autowired
+    private ClearMapstruct clearMapstruct;
+    @Autowired
+    private ClearService clearService;
 
 
     public void implAll(){
@@ -192,6 +213,8 @@ public class ImportData {
         //importGridAreaDefine();
         //importGridEleDecodeDefine();
         //importGridLayerLevel();
+
+        executeBackUpMove();
     }
 
 
@@ -916,6 +939,15 @@ public class ImportData {
                         break;
                     }
                 }
+                if(StringUtils.isNotEmpty(tableName)){
+                    for(DataTableEntity dataTableEntity: dataTableEntities){
+                        if(dataTableEntity.getDbTableType().equals("E")){
+                            String tableNameV = dataTableEntity.getTableName();
+                            backupEntity.setVTableName(tableNameV);
+                            break;
+                        }
+                    }
+                }
                 if(!StringUtils.isNotEmpty(tableName)){
                     tableName = dataTableEntities.get(0).getTableName();
                 }
@@ -948,6 +980,7 @@ public class ImportData {
                 backupEntity.setTriggerStatus(cron_status);
             }
             backupDao.saveNotNull(backupEntity);
+
         }
     }
 
@@ -2169,4 +2202,24 @@ public class ImportData {
         }
     }
 
+    public void executeBackUpMove(){
+        List<BackupEntity> backupEntityList = backupDao.findAll();
+        List<BackUpDto> backUpDtoList = backupMapstruct.toDto(backupEntityList);
+        for(BackUpDto backUpDto : backUpDtoList){
+            backupService.updateBackup(backUpDto);
+        }
+
+        List<MoveEntity> moveEntityList = moveDao.findAll();
+        List<MoveDto> moveDtoList = moveMapstruct.toDto(moveEntityList);
+        for(MoveDto moveDto : moveDtoList){
+            moveService.updateMove(moveDto);
+        }
+
+        List<ClearEntity> clearEntityList = clearDao.findAll();
+        List<ClearDto> clearDtoList = clearMapstruct.toDto(clearEntityList);
+        for(ClearDto clearDto : clearDtoList){
+            clearService.updateClear(clearDto);
+        }
+
+    }
 }

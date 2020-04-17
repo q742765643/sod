@@ -2,7 +2,7 @@
   <section class="handleExport">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="140px">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="10">
           <el-form-item label="任务名称" prop="taskName">
             <el-input size="small" v-model="msgFormDialog.taskName"></el-input>
           </el-form-item>
@@ -55,7 +55,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="14">
           <el-form-item label="数据库对象">
             <el-scrollbar wrap-class="scrollbar-wrapper">
               <el-tree
@@ -197,6 +197,7 @@ export default {
     },
     trueDialog(formName, type) {
       this.msgFormDialog.triggerStatus = 1;
+      let halfcheckedArry = this.$refs.eltree.getHalfCheckedKeys();
       let checkedArry = this.$refs.eltree.getCheckedKeys();
       if (checkedArry.length == 0) {
         this.msgError("请选择数据库对象");
@@ -204,6 +205,15 @@ export default {
       }
       let newArry = [];
       checkedArry.forEach(element => {
+        this.treeJson.forEach(t => {
+          if (element == t.nodeKey) {
+            let obj = {};
+            obj = t;
+            newArry.push(obj);
+          }
+        });
+      });
+      halfcheckedArry.forEach(element => {
         this.treeJson.forEach(t => {
           if (element == t.nodeKey) {
             let obj = {};
