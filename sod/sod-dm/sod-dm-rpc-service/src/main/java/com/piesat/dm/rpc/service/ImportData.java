@@ -175,9 +175,9 @@ public class ImportData {
 
         //importSyncTask();
         //importCloudDatabase();
-        //importBackUp();
-        //importMove();
-        //importClear();
+        importBackUp();
+        importMove();
+        importClear();
         //importDatabaseUser();
         //importPortalAuz();
         //importSpecial();
@@ -890,7 +890,7 @@ public class ImportData {
             }
 
             BackupEntity backupEntity = new BackupEntity();
-            backupEntity.setConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
+            backupEntity.setConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-0d}' and D_DATETIME>='{yyyy-MM-dd,-1d}'");
             backupEntity.setDataClassId(data_class_id);
             backupEntity.setDatabaseId(database_id);
             backupEntity.setDatabaseType(databaseEntity1.get(0).getDatabaseDefine().getDatabaseType());
@@ -901,7 +901,7 @@ public class ImportData {
             //backupEntity.setForeignKey();
             backupEntity.setParentId(parent_id);
             backupEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
-            backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-2d}' and D_DATETIME>='{yyyy-MM-dd,-3d}'");
+            backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
             backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUP");
 
 
@@ -990,8 +990,8 @@ public class ImportData {
 
 
             MoveEntity moveEntity = new MoveEntity();
-            moveEntity.setClearConditions("D_FILE_SAVE_HIERARCHY='1' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-30d}'");
-            moveEntity.setConditions("D_FILE_SAVE_HIERARCHY='0' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-30d}'");
+            moveEntity.setClearConditions("D_FILE_SAVE_HIERARCHY='1' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-100y}'");
+            moveEntity.setConditions("D_FILE_SAVE_HIERARCHY='0' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-100y}'");
             moveEntity.setDataClassId(data_class_id);
             moveEntity.setDatabaseId(database_id);
 
@@ -1002,7 +1002,7 @@ public class ImportData {
             moveEntity.setIsClear("1");
             moveEntity.setMoveLimit(86400);
             moveEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
-            moveEntity.setSourceDirectory("/zzj/soure");
+            moveEntity.setSourceDirectory("/CMADAAS/DATA");
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
@@ -1021,7 +1021,7 @@ public class ImportData {
                 }
                 moveEntity.setTableName(tableName);
             }
-            moveEntity.setTargetDirectory("/zzj/target");
+            moveEntity.setTargetDirectory("/CMADAAS/EXCHANGE/SOD/MOVE");
             moveEntity.setDatabaseType(databaseEntity1.get(0).getDatabaseDefine().getDatabaseType());
             moveEntity.setParentId(physics_database);
 
@@ -1105,7 +1105,7 @@ public class ImportData {
             clearEntity.setExecutorTimeout(2592000);//30天
             clearEntity.setIsAlarm("1");
 
-            clearEntity.setJobCron("00 00 00 01 * * *");
+            clearEntity.setJobCron("32 40 7 1/1 * ?");
             clearEntity.setTriggerStatus(0);
 
             clearDao.saveNotNull(clearEntity);
