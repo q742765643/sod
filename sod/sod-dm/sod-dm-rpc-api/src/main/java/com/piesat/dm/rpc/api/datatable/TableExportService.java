@@ -31,4 +31,21 @@ public interface TableExportService {
      * @return
      */
     String getDatabaseName(String physical_id);
+
+    /**
+     * 导出sql文件
+     * @param databaseId
+     * @param dataClassIds
+     * @param exportType
+     * @return
+     */
+    Map<String, Object> exportSqlFile(String databaseId, String dataClassIds, Integer exportType,String outFilePath);
+
+    /**
+     * 导出表结构-简版
+     * @param database_id
+     * @param data_class_ids
+     * @return
+     */
+    Map<String, Object> getExportMapSimple(String database_id, String data_class_ids);
 }

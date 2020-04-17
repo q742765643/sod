@@ -201,6 +201,21 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    public JSONArray getSimpleTree(){
+        List<DataClassEntity> all = this.getAll();
+        List l = new ArrayList();
+        for (DataClassEntity d : all) {
+            TreeLevel tl = new TreeLevel();
+            tl.setId(d.getDataClassId());
+            tl.setParentId(d.getParentId());
+            tl.setName(d.getClassName());
+            tl.setType("1");
+            l.add(tl);
+        }
+        return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
+    }
+
+    @Override
     public List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId) {
         return this.mybatisQueryMapper.getDataClassListBYIn(classIds, StringUtils.isNotBlank(className) ? "%" + className + "%" : null, StringUtils.isNotBlank(dDataId) ? "%" + dDataId + "%" : null);
     }
