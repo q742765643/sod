@@ -671,4 +671,45 @@
 
     </select>
 
+    <select id="getDataTypeList" parameterType="String" resultType="java.util.Map">
+        select * from t_sod_data_class where data_class_id in
+        (select distinct left(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
+    </select>
+
+    <select id="findByDataServiceId" resultType="java.util.Map" parameterType="String">
+        select a.* from t_sod_data_table a,t_sod_data_logic b
+        where a.data_service_id in(${dataClassIds})
+        and a.class_logic_id = b.id
+        AND b.database_id=#{databaseId}
+    </select>
+
+    <select id="findColumnByTableId" resultType="java.util.Map" parameterType="String">
+        select * from t_sod_data_table_column where table_id in(${tableId}) order by serial_number asc
+    </select>
+
+    <select id="findIndexByTableId" resultType="java.util.Map" parameterType="String">
+        select * from t_sod_data_table_index where table_id in(${tableId})
+    </select>
+
+    <select id="findShardByTableId" resultType="java.util.Map" parameterType="String">
+        select * from t_sod_data_table_sharding where table_id in(${tableId})
+    </select>
+
+    <select id="findByDatabaseDefine" resultType="java.util.Map" parameterType="String">
+        SELECT * FROM t_sod_database_define WHERE id=
+        (SELECT database_define_id FROM t_sod_database WHERE id=#{databaseId})
+    </select>
+
+    <select id="getSqlList" resultType="java.util.Map" parameterType="String">
+        SELECT M.data_service_id,M.data_service_name,M.table_name,N.table_sql FROM
+        (SELECT DISTINCT a.data_service_id,a.data_service_name,a.table_name,b.database_id
+        FROM t_sod_data_table a,t_sod_data_logic b
+        WHERE a.data_service_id in(${dataClassIds})
+        AND b.database_id = #{databaseId}
+        AND a.data_service_id = b.data_class_id)M
+        LEFT JOIN t_sod_data_table_sql N
+        ON M.database_id = N.database_id
+        AND M.table_name = N.table_name
+    </select>
+
 </mapper>

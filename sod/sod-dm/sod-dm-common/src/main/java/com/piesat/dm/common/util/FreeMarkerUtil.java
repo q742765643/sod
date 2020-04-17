@@ -16,14 +16,14 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 
 public class FreeMarkerUtil {
- 
+
 	private Configuration configuration = null;
- 
+
 	public FreeMarkerUtil() {
 		configuration = new Configuration();
 		configuration.setDefaultEncoding("utf-8");
 	}
- 
+
 	public File createDoc(Map<String, Object> dataMap, String fileName, String modelname,HttpServletRequest request){
 		Writer out = null;
 		FileOutputStream fos = null;
@@ -37,7 +37,7 @@ public class FreeMarkerUtil {
 				configuration.setDirectoryForTemplateLoading(file);
 			}else{
 				//模板文件不存在，将使用项目中备用的模板
-				configuration.setClassForTemplateLoading(FreeMarkerUtil.class, "/com/piesat/dm/common/util");
+				configuration.setClassForTemplateLoading(FreeMarkerUtil.class, "/com/piesat");
 			}
 			//取出模板文件
 			Template template = configuration.getTemplate(modelname);

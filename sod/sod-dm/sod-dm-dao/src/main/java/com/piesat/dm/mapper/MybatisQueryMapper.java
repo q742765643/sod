@@ -1,13 +1,14 @@
 package com.piesat.dm.mapper;
 
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.entity.datatable.CmccElementEntity;
-import com.piesat.dm.entity.datatable.DatumTableEntity;
+import com.piesat.dm.entity.datatable.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -103,4 +104,18 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getLogicByDdataId(@Param("dDataId") String dDataId);
 
     List<DataLogicEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
+
+    List<Map<String, Object>> getDataTypeList(@Param("dataClassIds") String dataClassIds);
+
+    List<Map<String, Object>> findByDataServiceId(@Param("dataClassIds") String dataClassIds,@Param("databaseId") String databaseId);
+
+    List<Map<String, Object>> findColumnByTableId(@Param("tableId") String tableId);
+
+    List<Map<String, Object>> findIndexByTableId(@Param("tableId") String tableId);
+
+    List<Map<String, Object>> findShardByTableId(@Param("tableId") String tableId);
+
+    Map<String, Object> findByDatabaseDefine(@Param("databaseId") String databaseId);
+
+    List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
 }
