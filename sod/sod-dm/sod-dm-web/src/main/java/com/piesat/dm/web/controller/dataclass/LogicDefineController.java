@@ -137,7 +137,7 @@ public class LogicDefineController {
         return resultT;
     }
 
-    @PostMapping(value = "/exportTable")
+    @GetMapping(value = "/exportTable")
     @ApiOperation(value = "导出", notes = "导出")
     public void exportTable(LogicDefineDto logicDefineDto, HttpServletRequest request, HttpServletResponse response){
         List<LogicDefineDto> logicDefineDtos = logicDefineService.findByParam(logicDefineDto);
@@ -163,9 +163,9 @@ public class LogicDefineController {
             }
             for(LogicDatabaseDto logicDatabaseDto:logic.getLogicDatabaseEntityList()){
                 if(StringUtils.isNotNullString(logicDatabases.toString())){
-                    logicDatabases.append(",").append(logicDatabaseDto.getDatabaseId());
+                    logicDatabases.append(",").append(logicDatabaseDto.getDatabaseName());
                 }else{
-                    logicDatabases.append(logicDatabaseDto.getDatabaseId());
+                    logicDatabases.append(logicDatabaseDto.getDatabaseName());
                 }
             }
             ArrayList<String> strings = new ArrayList<>();
@@ -177,7 +177,7 @@ public class LogicDefineController {
             strings.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(logic.getCreateTime()));
             lists.add(strings);
         }
-        ExportTableUtil.exportTable(request, response, headList, lists , "逻辑库定义导出");
+        ExportTableUtil.exportTable(request, response, headList, lists , "数据用途导出");
     }
 
     @ApiOperation(value = "根据用户id查询该用户账户中物理库对应的逻辑库信息")

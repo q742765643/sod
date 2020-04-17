@@ -1,5 +1,6 @@
 package com.piesat.schedule.rpc.service.move;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -12,6 +13,7 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
@@ -192,7 +194,7 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         List<Map<String,Object>> dataClassIds=new ArrayList<>();
 
         List<Map<String, Object>> mapList=dataBaseService.getByDatabaseId(dataBaseId);
-        List<String> isHave=jobInfoMapper.selectMoveDataClassId();
+        List<String> isHave=jobInfoMapper.selectMoveDataClassId(dataBaseId);
         for(Map<String, Object> map:mapList){
             String dataClass= (String) map.get("DATA_CLASS_ID");
             String className= (String) map.get("CLASS_NAME");
@@ -218,6 +220,18 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         moveEntity.setDatabaseType(dataRetrieval.getDatabaseType());
         moveEntity.setParentId(dataRetrieval.getParentId());
         moveEntity.setProfileName(dataRetrieval.getProfileName());
+        if(null==dataRetrieval.getForeignKey()||!StringUtils.isNotNullString(dataRetrieval.getVTableName())){
+            TableForeignKeyDto tableForeignKeyDto=new TableForeignKeyDto();
+            tableForeignKeyDto.setEleColumn("D_FILE_ID");
+            tableForeignKeyDto.setKeyColumn("D_FILE_ID");
+            List<TableForeignKeyDto> tableForeignKeyDtos=new ArrayList<>();
+            tableForeignKeyDtos.add(tableForeignKeyDto);
+            dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDtos));
+        }
+        if(!StringUtils.isNotNullString(dataRetrieval.getPrimaryKey())){
+            dataRetrieval.setPrimaryKey("D_FILE_ID");
+        }
+        moveEntity.setPrimaryKey(dataRetrieval.getPrimaryKey());
         moveEntity.setForeignKey(dataRetrieval.getForeignKey());
     }
     public List<MoveEntity> selectMoveList(MoveDto moveDto){

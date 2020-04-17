@@ -52,6 +52,15 @@ import com.piesat.schedule.entity.sync.SyncConfigEntity;
 import com.piesat.schedule.entity.sync.SyncFilterEntity;
 import com.piesat.schedule.entity.sync.SyncMappingEntity;
 import com.piesat.schedule.entity.sync.SyncTaskEntity;
+import com.piesat.schedule.rpc.api.backup.BackupService;
+import com.piesat.schedule.rpc.api.clear.ClearService;
+import com.piesat.schedule.rpc.api.move.MoveService;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.schedule.rpc.dto.clear.ClearDto;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
+import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
+import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
+import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.sod.system.dao.*;
 import com.piesat.sod.system.entity.*;
 import com.piesat.sod.system.rpc.api.ManageFieldService;
@@ -164,6 +173,18 @@ public class ImportData {
     @Autowired
     private LevelDao levelDao;
 
+    @Autowired
+    private BackupService backupService;
+    @Autowired
+    private BackupMapstruct backupMapstruct;
+    @Autowired
+    private MoveMapstruct moveMapstruct;
+    @Autowired
+    private MoveService moveService;
+    @Autowired
+    private ClearMapstruct clearMapstruct;
+    @Autowired
+    private ClearService clearService;
 
 
     public void implAll(){
@@ -175,9 +196,9 @@ public class ImportData {
 
         //importSyncTask();
         //importCloudDatabase();
-        //importBackUp();
-        //importMove();
-        //importClear();
+        importBackUp();
+        importMove();
+        importClear();
         //importDatabaseUser();
         //importPortalAuz();
         //importSpecial();
@@ -192,6 +213,8 @@ public class ImportData {
         //importGridAreaDefine();
         //importGridEleDecodeDefine();
         //importGridLayerLevel();
+
+        executeBackUpMove();
     }
 
 
@@ -890,7 +913,7 @@ public class ImportData {
             }
 
             BackupEntity backupEntity = new BackupEntity();
-            backupEntity.setConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
+            backupEntity.setConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-0d}' and D_DATETIME>='{yyyy-MM-dd,-1d}'");
             backupEntity.setDataClassId(data_class_id);
             backupEntity.setDatabaseId(database_id);
             backupEntity.setDatabaseType(databaseEntity1.get(0).getDatabaseDefine().getDatabaseType());
@@ -901,7 +924,7 @@ public class ImportData {
             //backupEntity.setForeignKey();
             backupEntity.setParentId(parent_id);
             backupEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
-            backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-2d}' and D_DATETIME>='{yyyy-MM-dd,-3d}'");
+            backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
             backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUP");
 
 
@@ -914,6 +937,15 @@ public class ImportData {
                     if(dataTableEntity.getDbTableType().equals("K")){
                         tableName = dataTableEntity.getTableName();
                         break;
+                    }
+                }
+                if(StringUtils.isNotEmpty(tableName)){
+                    for(DataTableEntity dataTableEntity: dataTableEntities){
+                        if(dataTableEntity.getDbTableType().equals("E")){
+                            String tableNameV = dataTableEntity.getTableName();
+                            backupEntity.setVTableName(tableNameV);
+                            break;
+                        }
                     }
                 }
                 if(!StringUtils.isNotEmpty(tableName)){
@@ -948,6 +980,7 @@ public class ImportData {
                 backupEntity.setTriggerStatus(cron_status);
             }
             backupDao.saveNotNull(backupEntity);
+
         }
     }
 
@@ -990,8 +1023,8 @@ public class ImportData {
 
 
             MoveEntity moveEntity = new MoveEntity();
-            moveEntity.setClearConditions("D_FILE_SAVE_HIERARCHY='1' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-30d}'");
-            moveEntity.setConditions("D_FILE_SAVE_HIERARCHY='0' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-30d}'");
+            moveEntity.setClearConditions("D_FILE_SAVE_HIERARCHY='1' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-100y}'");
+            moveEntity.setConditions("D_FILE_SAVE_HIERARCHY='0' and D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-100y}'");
             moveEntity.setDataClassId(data_class_id);
             moveEntity.setDatabaseId(database_id);
 
@@ -1002,7 +1035,7 @@ public class ImportData {
             moveEntity.setIsClear("1");
             moveEntity.setMoveLimit(86400);
             moveEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
-            moveEntity.setSourceDirectory("/zzj/soure");
+            moveEntity.setSourceDirectory("/CMADAAS/DATA");
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
@@ -1021,7 +1054,7 @@ public class ImportData {
                 }
                 moveEntity.setTableName(tableName);
             }
-            moveEntity.setTargetDirectory("/zzj/target");
+            moveEntity.setTargetDirectory("/CMADAAS/EXCHANGE/SOD/MOVE");
             moveEntity.setDatabaseType(databaseEntity1.get(0).getDatabaseDefine().getDatabaseType());
             moveEntity.setParentId(physics_database);
 
@@ -1105,7 +1138,7 @@ public class ImportData {
             clearEntity.setExecutorTimeout(2592000);//30天
             clearEntity.setIsAlarm("1");
 
-            clearEntity.setJobCron("00 00 00 01 * * *");
+            clearEntity.setJobCron("32 40 7 1/1 * ?");
             clearEntity.setTriggerStatus(0);
 
             clearDao.saveNotNull(clearEntity);
@@ -2169,4 +2202,24 @@ public class ImportData {
         }
     }
 
+    public void executeBackUpMove(){
+        List<BackupEntity> backupEntityList = backupDao.findAll();
+        List<BackUpDto> backUpDtoList = backupMapstruct.toDto(backupEntityList);
+        for(BackUpDto backUpDto : backUpDtoList){
+            backupService.updateBackup(backUpDto);
+        }
+
+        List<MoveEntity> moveEntityList = moveDao.findAll();
+        List<MoveDto> moveDtoList = moveMapstruct.toDto(moveEntityList);
+        for(MoveDto moveDto : moveDtoList){
+            moveService.updateMove(moveDto);
+        }
+
+        List<ClearEntity> clearEntityList = clearDao.findAll();
+        List<ClearDto> clearDtoList = clearMapstruct.toDto(clearEntityList);
+        for(ClearDto clearDto : clearDtoList){
+            clearService.updateClear(clearDto);
+        }
+
+    }
 }

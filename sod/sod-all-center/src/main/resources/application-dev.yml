@@ -9,11 +9,11 @@ server:
       background-processor-delay: 30
       basedir: ${user.home}/tomcat/
   max-http-header-size: 15360
-  ssl:
-   key-store: classpath:keystore.https
-   key-store-password: qwe123
-   keyStoreType: PKCS12
-   keyAlias: htht
+  #ssl:
+   #key-store: classpath:keystore.https
+   #key-store-password: qwe123
+   #keyStoreType: PKCS12
+   #keyAlias: htht
 
 grpc:
   server:

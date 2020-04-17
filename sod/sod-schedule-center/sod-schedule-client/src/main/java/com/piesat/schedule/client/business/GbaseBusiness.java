@@ -1,6 +1,7 @@
 package com.piesat.schedule.client.business;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
@@ -66,15 +67,30 @@ public class GbaseBusiness extends BaseBusiness{
         }
 
     }
-
+    //gabse 的bug 关联子查询有bug 只能改成in
     @Override
     public void backUpVtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT) {
         StringBuilder sql=new StringBuilder();
+        String fks=backupLogEntity.getForeignKey();
+        String kfk="";
+        String vfk="";
+        List<TableForeignKeyVo> tableForeignKeyVos= JSON.parseArray(fks,TableForeignKeyVo.class);
+        if(null!=tableForeignKeyVos&&tableForeignKeyVos.size()>0){
+            for(TableForeignKeyVo tableForeignKeyVo:tableForeignKeyVos){
+                vfk=tableForeignKeyVo.getEleColumn();
+                kfk=tableForeignKeyVo.getKeyColumn();
+                if(tableForeignKeyVo.getKeyColumn().toUpperCase().equals("D_RECORD_ID")){
+                    break;
+                }
+            }
+
+        }
+
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".txt";
-        sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a,");
-        sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
+        sql.append("rmt:select a.* from ").append(backupLogEntity.getVTableName()).append(" a where "+vfk+" in ");
+        sql.append("(select "+kfk+" from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") ");
         String fkconditoins=TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey(),resultT);
-        sql.append(" where ").append(fkconditoins);
+        //sql.append(" where ").append(fkconditoins);
         if(!resultT.isSuccess()){
             return;
         }
@@ -149,8 +165,8 @@ public class GbaseBusiness extends BaseBusiness{
     public void writeTxt(String indexPath,String tableName,String fileName,ResultT<String> resultT){
         StringBuilder msg=new StringBuilder();
         msg.append("---data "+tableName+"---").append("\r\n");
-        msg.append(fileName);
-        msg.append("---end data---");
+        msg.append(fileName).append("\r\n");
+        msg.append("---end data---").append("\r\n");
         ZipUtils.writetxt(indexPath,msg.toString(),resultT);
 
     }

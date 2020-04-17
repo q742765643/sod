@@ -8,11 +8,11 @@ server:
     max-threads: 10
     background-processor-delay: 30
     basedir: ${user.home}/tomcat/
-  ssl:
-    key-store: classpath:keystore.https
-    key-store-password: qwe123
-    keyStoreType: PKCS12
-    keyAlias: htht
+  #ssl:
+    #key-store: classpath:keystore.https
+    #key-store-password: qwe123
+    #keyStoreType: PKCS12
+    #keyAlias: htht
 grpc:
   server:
     port: 8006
@@ -71,7 +71,7 @@ spring:
   redis:
     host: 10.40.79.18
     port: 6379
-    timeout: 5000
+    timeout: 50000
     password:
 mybatis:
   type-aliases-package: com.piesat.*.entity
@@ -103,24 +103,25 @@ log:
   level: INFO
 
 serverfile:
-  dbfile: D:/upload/
-  filePath: D:/upload/
+  dbfile: /home/sod/file/upload/dbfile
+  filePath: /home/sod/file/upload/filePath
+  dfcheck: /home/sod/file/upload/dfcheck
 
   static:
     template:
-      add-column: D:/sod/sod_all/static/字段模板.xlsx
-      clouddatabase-application: D:/sod/sod_all/static/云数据库申请表模板.docx
-      databaseuser-application: D:/sod/sod_all/static/大数据云平台存储账户申请模板.docx
-      dataregister-application: D:/sod/sod_all/static/个人数据注册上传模板.xlsx
-      topic-application: D:/sod/sod_all/static/专题库申请表模板.docx
+      add-column: /home/sod/file/static/字段模板.xlsx
+      clouddatabase-application: /home/sod/file/static/云数据库申请表模板.docx
+      databaseuser-application: /home/sod/file/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: /home/sod/file/static/个人数据注册上传模板.xlsx
+      topic-application: /home/sod/file/static/专题库申请表模板.docx
     database-client:
-      xugu-client: D:/sod/sod_all/static/虚谷数据库V9.0.zip
-      gbase-client: D:/sod/sod_all/static/GBaseDataStudio.zip
-      cassandra-client: D:/sod/sod_all/static/Dbeaver.zip
+      xugu-client: /home/sod/file/static/虚谷数据库V9.0.zip
+      gbase-client: /home/sod/file/static/GBaseDataStudio.zip
+      cassandra-client: /home/sod/file/static/Dbeaver.zip
 
 fileUpload:
-  savaPath:  D:/upload
-  httpPath: /upload
+  savaPath:  /home/sod/file/upload/savePath
+  httpPath: /home/sod/file/upload/httpPath
 product:
   enable: true
 

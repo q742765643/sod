@@ -18,4 +18,10 @@ public class StorageConfigParam {
     private String logicName;
     private String tableName;
     private String dataClassId;
+    private String cElementCode;
+    private String dbEleCode;
+    private String userEleCode;
+    private String eleName;
+    private String type;
+    private String accuracy;
 }

@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TableSqlDao extends BaseDao<TableSqlEntity> {
+    void deleteByDatabaseIdAndTableName(String databaseId,String tableName);
 }

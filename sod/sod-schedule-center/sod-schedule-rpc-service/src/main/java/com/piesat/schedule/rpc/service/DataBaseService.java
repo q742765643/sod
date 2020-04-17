@@ -82,7 +82,7 @@ public class DataBaseService
         String ddataId= (String) mapResultT.get("D_DATA_ID");
         String primaryKey= (String) mapResultT.get("primaryKey");
         String dataName= (String) mapResultT.get("CLASSNAME");
-        TableForeignKeyDto tableForeignKeyDto= (TableForeignKeyDto) mapResultT.get("foreignKey");
+        List<TableForeignKeyDto> tableForeignKeyDtos= (List<TableForeignKeyDto>) mapResultT.get("foreignKey");
         dataRetrieval.setDatabaseType(databaseType);
         dataRetrieval.setDdataId(ddataId);
         dataRetrieval.setTableName(schemaName+"."+tableName);
@@ -92,10 +92,11 @@ public class DataBaseService
         dataRetrieval.setProfileName(databaseName+"_"+dataName);
         dataRetrieval.setParentId(parentId);
         dataRetrieval.setPrimaryKey(primaryKey);
-        dataRetrieval.setVTableName("");
-        if(null!=tableForeignKeyDto){
-            dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDto));
+        //dataRetrieval.setVTableName("");
+        if(null!=tableForeignKeyDtos&&tableForeignKeyDtos.size()>0){
+            dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDtos));
         }
+
         return dataRetrieval;
 
     }

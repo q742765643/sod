@@ -48,7 +48,11 @@ public class DiSendService{
         diTaskConfiguration.setTaskMaxTime(backupEntity.getExecutorFailRetryCount());
         diTaskConfiguration.setOffset(1);
         diTaskConfiguration.setAlarmtime(30);
-        diTaskConfiguration.setIsAlarm(Integer.parseInt(backupEntity.getIsAlarm()));
+        try {
+            diTaskConfiguration.setIsAlarm(Integer.parseInt(backupEntity.getIsAlarm()));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         diTaskConfiguration.setDataType(backupEntity.getDdataId());
         diTaskConfiguration.setHandleProcess(0);
         diTaskConfiguration.setSrc(0);

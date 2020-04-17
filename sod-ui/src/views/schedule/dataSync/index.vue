@@ -160,10 +160,13 @@ import { syncList, delSync, getSyncInfo } from "@/api/schedule/dataSync";
 import dailySync from "@/views/schedule/dataSync/dailySync";
 // 增加查看
 import handleSync from "@/views/schedule/dataSync/handleSync";
+// 高级搜索
+import SuperSearch from "@/components/superSearch";
 export default {
   components: {
     dailySync,
-    handleSync
+    handleSync,
+    SuperSearch
   },
   data() {
     return {

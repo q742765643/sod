@@ -120,7 +120,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
       } catch (Exception e) {
           hthtInterceptor=new HthtInterceptor();
-          e.printStackTrace();
+         // e.printStackTrace();
       }
      /* registry.addInterceptor(hthtInterceptor).addPathPatterns("*//**")
               //.excludePathPatterns("/loginPage","/login")

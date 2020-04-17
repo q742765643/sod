@@ -109,8 +109,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    String password="admin";
                    try {
                        for(DatabaseAdministratorDto administratorDto:databaseAdministratorDtos){
-                           userName=administratorDto.getUserName();
-                           password=administratorDto.getPassWord();
+                           if(administratorDto.getIsManager()) {
+                               userName = administratorDto.getUserName();
+                               password = administratorDto.getPassWord();
+                               break;
+                           }
                        }
                    } catch (Exception e) {
                        e.printStackTrace();
@@ -120,7 +123,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
                    connectVoMap.put(parentId, connectVo);
-                   if(!"cassandra".equals(databaseDto.getDatabaseDefine().getDatabaseType())){
+                   if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
 
                        String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
                        String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();

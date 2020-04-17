@@ -3,7 +3,7 @@
     <!-- 表结构导出 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据库用途：">
-        <el-select v-model="queryParams.logic_id" size="small" @change="handleQuery">
+        <el-select v-model="queryParams.use_id" size="small" filterable @change="handleQuery">
           <el-option
             v-for="(item,index) in logicList"
             :key="index"
@@ -13,11 +13,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="数据库：">
-        <el-select v-model="queryParams.database_id" size="small" @change="handleQuery">
+        <el-select v-model="queryParams.database_id" size="small" filterable @change="handleQuery">
           <el-option
             v-for="(item,index) in databaseList"
             :key="index"
-            :label="item.databaseName"
+            :label="item.databaseDefine.databaseName"
             :value="item.id"
           ></el-option>
         </el-select>
@@ -122,6 +122,7 @@
 </template>
 <script>
 import treeTransfer from "el-tree-transfer"; // 引入
+import { dataClassAll } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   logicDefineList,
   databaseList,
@@ -138,16 +139,14 @@ export default {
       // 遮罩层
       loading: true,
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
         database_id: "",
-        logic_id: ""
+        use_id: ""
       },
       logicList: [],
       databaseList: [],
       // 穿梭框
       fromTreeData: [
-        {
+        /*  {
           id: "1",
           pid: 0,
           label: "一级 1",
@@ -178,7 +177,7 @@ export default {
               ]
             }
           ]
-        }
+        } */
       ],
       toTreeData: [],
       modeTree: "transfer",
@@ -241,7 +240,16 @@ export default {
         this.databaseList = response.data;
       });
     },
-    handleQuery() {},
+    handleQuery() {
+      dataTree(this.queryParams).then(response => {
+        // this.setName(response.data);
+        this.fromTreeData = response.data;
+        // this.setName(response.data);
+      });
+      /*  dataClassAll().then(response => {
+          this.setName(response.data);
+      }); */
+    },
     // 监听穿梭框组件添加
     addTreeInfo(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的        {keys,nodes,halfKeys,halfNodes}对象
@@ -278,6 +286,20 @@ export default {
         this.isIndeterminate = true;
       } else {
         this.isIndeterminate = false;
+      }
+    },
+    setName(datas) {
+      //遍历树  获取id数组
+      for (var i in datas) {
+        datas[i].label = datas[i].name;
+        datas[i].disabled = "";
+        datas[i].pid = datas[i].parentId;
+        datas[i].parentId = undefined;
+        this.fromTreeData.push(datas[i]);
+        if (datas[i].children) {
+          this.fromTreeData.push(datas[i]);
+          this.setName(datas[i].children);
+        }
       }
     }
   }

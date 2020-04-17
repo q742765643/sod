@@ -1,5 +1,6 @@
 package com.piesat.schedule.client.util;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.vo.ReplaceVo;
 import com.piesat.schedule.util.DateExpressionEngine;
 import com.piesat.util.ResultT;
@@ -25,10 +26,13 @@ public class ExtractMessage {
     public static List<String> extractMessageByRegular(String msg) {
 
         List<String> list = new ArrayList<String>();
-        Matcher m = PATTERN.matcher(msg);
-        while (m.find()) {
-            list.add(m.group());
+        if(StringUtils.isNotNullString(msg)){
+            Matcher m = PATTERN.matcher(msg);
+            while (m.find()) {
+                list.add(m.group());
+            }
         }
+
         return list;
     }
 

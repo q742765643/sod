@@ -5,6 +5,7 @@ import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.service.databse.GbaseService;
 import com.piesat.schedule.client.service.databse.XuguService;
@@ -28,6 +29,7 @@ import com.piesat.util.ReturnCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -138,6 +140,7 @@ public class XuguBusiness extends BaseBusiness{
         DatabaseOperationService databaseOperationService= SpringUtil.getBean(DatabaseOperationService.class);
         List<Map<String,Object>> partList=databaseOperationService.selectXuguPartition(schemaName,table);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         if(partList!=null&&!partList.isEmpty()){
             for(Map<String,Object> map:partList){
                 String partiName= (String) map.get("PARTI_NAME");
@@ -150,20 +153,20 @@ public class XuguBusiness extends BaseBusiness{
                 while (true){
                     loopNum++;
                     try {
-                        databaseOperationService.deletePartition(tableName,partiName);
+                        databaseOperationService.deletePartition(tableName,partiName,resultT);
                         resultT.setSuccessMessage("删除表{},分区{}成功",tableName,partiName);
                         log.info("删除表{},分区{}成功",tableName,partiName);
+                        break;
                     } catch (Exception e) {
                         if(loopNum>3){
                             resultT.setErrorMessage("删除表{},分区{}异常;错误原因{}",tableName,partiName,OwnException.get(e));
                             log.error("删除表{},分区{}异常;错误原因{}",tableName,partiName,OwnException.get(e));
                             resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_12_ERROR.getKey());
                             EiSendUtil.partitionException(partiName,clearLogEntity.getParentId(),resultT);
-                            Thread.sleep(18000);
                             break;
                         }
                     }
-                    break;
+                    Thread.sleep(18000);
                 }
 
             }

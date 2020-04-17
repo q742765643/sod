@@ -300,6 +300,9 @@ public class BackupHandler implements BaseHandler {
         strategyVo.setTempZipPath(strategyVo.getTempPtah() + ".zip");
         resultT.setSuccessMessage("创建临时文件夹{}",strategyVo.getTempPtah());
         log.info("创建临时文件夹{}",strategyVo.getTempPtah());
+        if(new File(strategyVo.getTempPtah()).exists()){
+            FileUtil.delFile(new File(strategyVo.getTempPtah()),resultT);
+        }
         FileUtil.mkdirs(strategyVo.getTempPtah(), resultT);
         //FileUtil.createFile(strategyVo.getTempPtah(), resultT);
         FileUtil.mkdirs(backupLogEntity.getStorageDirectory(),resultT);

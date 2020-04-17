@@ -118,16 +118,21 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
     @Override
     public List<Map<String,String>> findDataBase(){
         List<Map<String,String>> maps=new ArrayList<>();
+        List<String> vaules=new ArrayList<>();
         List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("database_metaclear");
         List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
         for(DictDataDto dictDataDto:dictDataDtos){
             for(DatabaseDto databaseDto:databaseDtos){
                 if(databaseDto.getDatabaseDefine().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
                     Map<String,String> map=new HashMap<>();
-                    map.put("KEY",databaseDto.getId());
-                    map.put("VAULE",databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort());
-                    map.put("parentId",databaseDto.getDatabaseDefine().getId());
-                    maps.add(map);
+                    String adress=databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort();
+                    if(!vaules.contains(adress)) {
+                        vaules.add(adress);
+                        map.put("KEY", databaseDto.getId());
+                        map.put("VAULE", databaseDto.getDatabaseDefine().getDatabaseIp() + ":" + databaseDto.getDatabaseDefine().getDatabasePort());
+                        map.put("parentId", databaseDto.getDatabaseDefine().getId());
+                        maps.add(map);
+                    }
                 }
             }
         }

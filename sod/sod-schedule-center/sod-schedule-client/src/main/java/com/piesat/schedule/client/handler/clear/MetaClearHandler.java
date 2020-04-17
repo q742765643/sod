@@ -57,6 +57,7 @@ public class MetaClearHandler implements BaseHandler {
             metaClearEntity.setConditions(replaceVo.getMsg());
             resultT.setSuccessMessage("清除条件为{}",replaceVo.getMsg());
             metaClearLogEntity=this.insertMetaClearLog(metaClearLogEntity,resultT);
+            metaClearLogEntity.setConditions(metaClearEntity.getConditions());
             this.metaClearExecute(metaClearLogEntity,resultT);
         } catch (Exception e) {
             log.error(OwnException.get(e));

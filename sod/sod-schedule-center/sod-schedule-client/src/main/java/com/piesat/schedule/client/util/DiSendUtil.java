@@ -33,16 +33,16 @@ import java.util.Map;
 @Component
 public class DiSendUtil {
     private static final Logger logger = LoggerFactory.getLogger(DiSendUtil.class);
-    private static String eidiUrl;
-    private static String transferUrl;
+    private static String EIDIURL;
+    private static String TRANSFERURL;
 
-    @Value("${EIDIURL}")
-    public static void setEidiUrl(String eidiUrl) {
-        DiSendUtil.eidiUrl = eidiUrl;
+    @Value("${EIDI.URL}")
+    public void setEidiUrl(String eidiUrl) {
+        EIDIURL = eidiUrl;
     }
-    @Value("${TRANSFERURL}")
-    public static void setTransferUrl(String transferUrl) {
-        DiSendUtil.transferUrl = transferUrl;
+    @Value("${TRANSFER.URL}")
+    public  void setTransferUrl(String transferUrl) {
+        TRANSFERURL = transferUrl;
     }
 
     public static void send(long occurTime, String message, DiSendVo diSendVo) {
@@ -80,13 +80,14 @@ public class DiSendUtil {
 
         ResponseEntity<String> stringResponseEntity = null;
         try {
-            stringResponseEntity = rst.postForEntity(transferUrl, httpEntity, String.class);
+            stringResponseEntity = rst.postForEntity(TRANSFERURL, httpEntity, String.class);
             result=true;
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("di发送成功返回信息:{}",JSON.toJSONString(stringResponseEntity));
         if(!result){
-            stringResponseEntity = rst.postForEntity(eidiUrl, httpEntity, String.class);
+            stringResponseEntity = rst.postForEntity(EIDIURL, httpEntity, String.class);
             logger.info("di发送返回信息:{}",JSON.toJSONString(stringResponseEntity));
         }else{
             logger.info("transferurl发送返回信息:{}",JSON.toJSONString(stringResponseEntity));

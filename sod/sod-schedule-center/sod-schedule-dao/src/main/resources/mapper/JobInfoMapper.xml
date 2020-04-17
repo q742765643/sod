@@ -49,6 +49,7 @@
     <include refid="Base_Column_List" />
         from T_SOD_JOB_INFO where TRIGGER_STATUS=1
   </select>
+
   <select id="findTypeById" resultType="java.lang.String">
     SELECT TYPE FROM T_SOD_JOB_INFO WHERE ID=#{id}
   </select>
@@ -59,15 +60,15 @@
   </select>
   <select id="selectBackupDataClassId" resultType="java.lang.String">
    SELECT  A.DATA_CLASS_ID FROM
-    T_SOD_JOB_BACKUP_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
+    T_SOD_JOB_BACKUP_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID AND  A.DATABASE_ID = #{dataBaseId}
   </select>
   <select id="selectClearDataClassId" resultType="java.lang.String">
     SELECT  A.DATA_CLASS_ID FROM
-    T_SOD_JOB_CLEAR_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
+    T_SOD_JOB_CLEAR_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID AND  A.DATABASE_ID = #{dataBaseId}
   </select>
   <select id="selectMoveDataClassId" resultType="java.lang.String">
     SELECT  A.DATA_CLASS_ID FROM
-    T_SOD_JOB_MOVE_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID
+    T_SOD_JOB_MOVE_INFO A,T_SOD_JOB_INFO B WHERE A.ID = B.ID AND  A.DATABASE_ID = #{dataBaseId}
   </select>
   <update id="updateTriggerStatus">
     update  T_SOD_JOB_INFO set TRIGGER_STATUS=#{triggerStatus} where ID=#{id}

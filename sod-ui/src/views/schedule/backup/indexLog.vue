@@ -98,7 +98,7 @@
           :handleExportObj="queryParams"
           baseUrl="SCHEDULE"
           btnText="导出"
-          exportUrl="/api/schedule/uploadDown/downFile"
+          exportUrl="/schedule/backupLog/export"
         />
       </el-col>
     </el-row>
@@ -127,13 +127,14 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['schedule:backupLog:query']"
           >查看</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-download"
+
+          <handleExport
             @click="handleDownload(scope.row)"
-            v-hasPermi="['schedule:backupLog:download']"
-          >下载</el-button>
+            :handleExportObj="handleExportObj"
+            baseUrl="SCHEDULE"
+            btnText="下载"
+            exportUrl="/api/schedule/uploadDown/downFile"
+          />
           <el-button
             size="mini"
             type="text"
@@ -236,6 +237,7 @@ export default {
   },
   data() {
     return {
+      handleExportObj: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -355,6 +357,10 @@ export default {
           this.msgSuccess("删除成功");
         })
         .catch(function() {});
+    },
+    handleDownload(row) {
+      this.handleExportObj = {};
+      this.handleExportObj.path = row.storageDirectory + "/" + row.fileName;
     }
   }
 };

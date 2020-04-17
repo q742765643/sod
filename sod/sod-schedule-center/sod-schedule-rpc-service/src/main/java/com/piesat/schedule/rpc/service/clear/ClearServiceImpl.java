@@ -1,5 +1,6 @@
 package com.piesat.schedule.rpc.service.clear;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -12,6 +13,7 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -128,6 +131,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
 
     }
     @Override
+    @Transactional
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
@@ -144,6 +148,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         }
     }
     @Override
+    @Transactional
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
@@ -194,7 +199,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         List<Map<String,Object>> dataClassIds=new ArrayList<>();
 
         List<Map<String, Object>> mapList=dataBaseService.getByDatabaseId(dataBaseId);
-        List<String> isHave=jobInfoMapper.selectClearDataClassId();
+        List<String> isHave=jobInfoMapper.selectClearDataClassId(dataBaseId);
         for(Map<String, Object> map:mapList){
             String dataClass= (String) map.get("DATA_CLASS_ID");
             String className= (String) map.get("CLASS_NAME");
@@ -219,6 +224,15 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         clearEntity.setDatabaseType(dataRetrieval.getDatabaseType());
         clearEntity.setParentId(dataRetrieval.getParentId());
         clearEntity.setProfileName(dataRetrieval.getProfileName());
+        if(null==dataRetrieval.getForeignKey()||!StringUtils.isNotNullString(dataRetrieval.getVTableName())){
+            TableForeignKeyDto tableForeignKeyDto=new TableForeignKeyDto();
+            tableForeignKeyDto.setEleColumn("D_RECORD_ID");
+            tableForeignKeyDto.setKeyColumn("D_RECORD_ID");
+            List<TableForeignKeyDto> tableForeignKeyDtos=new ArrayList<>();
+            tableForeignKeyDtos.add(tableForeignKeyDto);
+            dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDtos));
+        }
+
         clearEntity.setForeignKey(dataRetrieval.getForeignKey());
     }
 
