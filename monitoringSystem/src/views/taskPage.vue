@@ -615,6 +615,7 @@ export default {
       padding: 4px 0;
       color: #008ec4;
       font-size: 10px;
+      pointer-events: none;
     }
     .el-table__header th {
       box-shadow: 0px 0px 5px #13717c inset;
