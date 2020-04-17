@@ -71,6 +71,14 @@ module.exports = {
           ["^" + process.env.VUE_APP_SYSTEM]: ""
         }
       },
+      //
+      [process.env.VUE_APP_DMWLEI]: {
+        target: `https://222.186.174.9:38623`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_DMWLEI]: ""
+        }
+      },
     },
     disableHostCheck: true
   },
