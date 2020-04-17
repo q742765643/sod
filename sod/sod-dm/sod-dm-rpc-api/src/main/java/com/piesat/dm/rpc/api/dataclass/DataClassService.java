@@ -68,4 +68,6 @@ public interface DataClassService {
     String findByParentId(String parentId);
 
     List<Map<String, Object>> getLogicByDdataId(String dDataId);
+
+    JSONArray getSimpleTree();
 }

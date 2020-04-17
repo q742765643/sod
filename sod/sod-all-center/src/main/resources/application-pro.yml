@@ -8,11 +8,11 @@ server:
     max-threads: 10
     background-processor-delay: 30
     basedir: ${user.home}/tomcat/
-  ssl:
-    key-store: classpath:keystore.https
-    key-store-password: qwe123
-    keyStoreType: PKCS12
-    keyAlias: htht
+  #ssl:
+    #key-store: classpath:keystore.https
+    #key-store-password: qwe123
+    #keyStoreType: PKCS12
+    #keyAlias: htht
 grpc:
   server:
     port: 8006

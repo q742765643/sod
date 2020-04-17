@@ -16,15 +16,11 @@ export default new Router({
       component: NoFound
     },
     {
-      path: "/",
-      redirect: "/monitoringInformation"
-    },
-    {
       path: "/flow",
       component: flow
     },
     {
-      path: "/task",
+      path: "/",
       component: task
     },
     {

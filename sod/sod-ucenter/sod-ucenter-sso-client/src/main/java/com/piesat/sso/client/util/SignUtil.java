@@ -168,6 +168,9 @@ public class SignUtil {
                     parameterMap.put(entry.getKey(),parmFit.split("&&&"));
                 }
             }
+            if(parameterMap.get("userId") == null ){
+                parameterMap.put("userId",null);
+            }
             request.putParameterMap(parameterMap);
             checkSign(casVo,map);
         }

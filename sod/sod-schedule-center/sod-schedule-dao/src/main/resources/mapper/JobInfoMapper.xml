@@ -49,6 +49,7 @@
     <include refid="Base_Column_List" />
         from T_SOD_JOB_INFO where TRIGGER_STATUS=1
   </select>
+
   <select id="findTypeById" resultType="java.lang.String">
     SELECT TYPE FROM T_SOD_JOB_INFO WHERE ID=#{id}
   </select>

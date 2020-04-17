@@ -3,6 +3,7 @@ package com.piesat.schedule.web.controller.job;
 import com.piesat.common.utils.OwnException;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.rpc.api.JobInfoService;
+import com.piesat.schedule.rpc.dto.JobInfoDto;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.util.ResultT;
@@ -105,5 +106,25 @@ public class JobInfoController {
         }
         return resultT;
     }
+
+    @GetMapping(value = "/executeAll")
+    @RequiresPermissions("schedule:job:execute")
+    @ApiOperation(value = "立即执行所有", notes = "立即执行所有")
+    public ResultT<String> executeAll(){
+        ResultT resultT=new ResultT();
+        try {
+            List<JobInfoDto> jobInfoDtos=jobInfoService.findJobList();
+            for(JobInfoDto jobInfoDto:jobInfoDtos){
+                jobInfoService.execute(jobInfoDto.getId());
+            }
+        } catch (Exception e) {
+
+            log.error(OwnException.get(e));
+            resultT.setErrorMessage("立即执行失败");
+        }
+        return resultT;
+    }
+
+
 }
 
