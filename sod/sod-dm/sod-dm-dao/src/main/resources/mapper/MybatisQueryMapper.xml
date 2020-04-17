@@ -655,7 +655,7 @@
     </select>
 
     <select id="getDataLogic" resultType="DataLogicEntity" parameterType="String">
-        SELECT a.id id,a.data_class_id dataClassId,a.logic_flag logicFlag,a.storage_type storageType,a.database_id databaseId,a.is_complete isComplete,a.version,a.createTime
+        SELECT a.id id,a.data_class_id dataClassId,a.logic_flag logicFlag,a.storage_type storageType,a.database_id databaseId,a.is_complete isComplete,a.version,a.create_time
          FROM T_SOD_DATA_LOGIC a INNER JOIN T_SOD_DATA_TABLE b ON a.id = b.class_logic_id
         <where>
             1=1

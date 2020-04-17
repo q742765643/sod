@@ -82,7 +82,7 @@ public class DiSendUtil {
         try {
             stringResponseEntity = rst.postForEntity(TRANSFERURL, httpEntity, String.class);
             result=true;
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         logger.info("di发送成功返回信息:{}",JSON.toJSONString(stringResponseEntity));

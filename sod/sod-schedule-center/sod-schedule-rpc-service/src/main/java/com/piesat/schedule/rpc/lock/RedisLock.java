@@ -78,7 +78,7 @@ public class RedisLock {
      */
     public void delete(String key) {
         try {
-            redisTemplate.delete(key);
+            redisTemplate.delete(LOCK_PREFIX+key);
         } catch (Exception e) {
             e.printStackTrace();
         }

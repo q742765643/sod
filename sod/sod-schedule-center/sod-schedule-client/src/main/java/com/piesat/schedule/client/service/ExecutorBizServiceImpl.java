@@ -48,19 +48,30 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
 
     @Override
     public void execute(JobInfoEntity jobInfo){
-        BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getExecutorHandler());
         executorService.execute(()->{
-            try {
-                baseHandler.execute(jobInfo);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            finally {
-                redisUtil.del(QUARTZ_HTHT_PERFORM+":"+jobInfo.getExecutorAddress()+":"+jobInfo.getId());
-                redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfo.getId());
-                redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfo.getId());
-            }
+            this.executeJob(jobInfo);
         });
+    }
+    public void executeJob(JobInfoEntity jobInfo){
+        try {
+            BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getExecutorHandler());
+            baseHandler.execute(jobInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            boolean flag=false;
+                while (!flag){
+                    try {
+                        redisUtil.del(QUARTZ_HTHT_PERFORM+":"+jobInfo.getExecutorAddress()+":"+jobInfo.getId());
+                        redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfo.getId());
+                        redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfo.getId());
+                        flag=true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        }
     }
     @Override
     public List<TreeVo> findMeta(String parentId, String databaseType){
