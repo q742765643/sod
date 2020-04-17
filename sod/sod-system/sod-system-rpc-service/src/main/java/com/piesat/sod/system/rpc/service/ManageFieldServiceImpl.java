@@ -1,6 +1,8 @@
 package com.piesat.sod.system.rpc.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,18 +262,23 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 
 	@Override
 	public List<ManageFieldDto> findData(ManageFieldDto dto) {
+		List<ManageFieldGroupEntity> byGroupId = this.manageFieldGroupDao.findByGroupId(dto.getGroupId());
+		Set<String> idSet = new HashSet<>();
+		for (ManageFieldGroupEntity m:byGroupId) {
+			idSet.add(m.getFieldId());
+		}
 		SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
 		if (StringUtils.isNotBlank(dto.getGroupId())) {
-			ssb.add("groupId", SpecificationOperator.Operator.likeAll.name(), dto.getGroupId());
+			ssb.add("id", SpecificationOperator.Operator.in.name(), idSet);
 		}
 		if (StringUtils.isNotBlank(dto.getDbEleCode())) {
-			ssb.add("dbEleCode", SpecificationOperator.Operator.eq.name(), dto.getDbEleCode());
+			ssb.add("dbEleCode", SpecificationOperator.Operator.likeAll.name(), dto.getDbEleCode());
 		}
 		if (StringUtils.isNotBlank(dto.getDbEleName())) {
-			ssb.add("dbEleName", SpecificationOperator.Operator.eq.name(), dto.getDbEleName());
+			ssb.add("dbEleName", SpecificationOperator.Operator.likeAll.name(), dto.getDbEleName());
 		}
 		if (StringUtils.isNotBlank(dto.getUserEleCode())) {
-			ssb.add("userEleCode", SpecificationOperator.Operator.eq.name(), dto.getUserEleCode());
+			ssb.add("userEleCode", SpecificationOperator.Operator.likeAll.name(), dto.getUserEleCode());
 		}
 		Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
 		List<ManageFieldDto> all = this.getAll(ssb.generateSpecification());

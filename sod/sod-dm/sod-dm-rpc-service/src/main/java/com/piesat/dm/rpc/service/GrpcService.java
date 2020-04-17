@@ -174,9 +174,14 @@ public class GrpcService {
     }
 
     public ResultT deleteById(String id) {
-        StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).get();
+        StorageConfigurationEntity storage = this.storageConfigurationDao.getOne(id);
+        if (storage==null){
+            return ResultT.failed("概览信息未配置");
+        }
         //删除存储结构
-        dataLogicService.deleteById(storage.getClassLogicId());
+        if (StringUtils.isNotEmpty(storage.getClassLogicId())){
+            dataLogicService.deleteById(storage.getClassLogicId());
+        }
         //删除同步配置
         if (StringUtils.isNotNullString(storage.getSyncId())) {
             SyncTaskDto syncTaskDto = syncTaskService.getDtoById(storage.getSyncId());
