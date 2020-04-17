@@ -98,8 +98,10 @@ gbaseserver:
   ip: 10.40.17.36
   user: sod
   pass: sod2019
-EIDIURL: http://10.20.67.139/store/openapi/v2/logs/push_batch?apikey=e10adc3949ba59abbe56e057f2gg88dd
-TRANSFERURL: http://127.0.0.1:29999/transfer
+EIDI:
+  URL: http://10.20.67.139/store/openapi/v2/logs/push_batch?apikey=e10adc3949ba59abbe56e057f2gg88dd
+TRANSFER:
+  URL: http://127.0.0.1:29999/transfer
 log:
   path: ./log
   level: INFO
