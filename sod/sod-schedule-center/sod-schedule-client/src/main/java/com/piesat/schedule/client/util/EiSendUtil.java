@@ -97,9 +97,9 @@ public class EiSendUtil {
         HttpEntity<String> httpEntity = new HttpEntity<>("[" + JSONObject.toJSONString(map, SerializerFeature.WriteNullStringAsEmpty) + "]", headers);
         RestTemplate rst = new RestTemplate();
         try {
-            ResponseEntity<String> stringResponseEntity = rst.postForEntity(EIDIURL, httpEntity, String.class);
+            ResponseEntity<String> stringResponseEntity = rst.postForEntity(TRANSFERURL, httpEntity, String.class);
             logger.info("ei发送返回信息:{}", JSON.toJSONString(stringResponseEntity));
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

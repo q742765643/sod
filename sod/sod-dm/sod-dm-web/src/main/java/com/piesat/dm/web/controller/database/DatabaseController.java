@@ -137,7 +137,7 @@ public class DatabaseController {
             if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
                 return ResultT.failed("请先创建存储账户！！！");
             }
-            List<DatabaseDto> databaseDtos = this.databaseService.findByDatabaseClassifyAndIdIn("物理库",Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
+            List<DatabaseDto> databaseDtos = this.databaseService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库",Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
             return ResultT.success(databaseDtos);
         } catch (Exception e) {
             e.printStackTrace();

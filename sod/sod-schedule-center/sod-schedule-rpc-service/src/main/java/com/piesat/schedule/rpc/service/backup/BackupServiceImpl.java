@@ -1,5 +1,6 @@
 package com.piesat.schedule.rpc.service.backup;
 
+import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -14,6 +15,7 @@ import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
@@ -204,7 +206,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         List<Map<String, Object>> dataClassIds = new ArrayList<>();
 
         List<Map<String, Object>> mapList = dataBaseService.getByDatabaseId(dataBaseId);
-        List<String> isHave = jobInfoMapper.selectBackupDataClassId();
+        List<String> isHave = jobInfoMapper.selectBackupDataClassId(dataBaseId);
         for (Map<String, Object> map : mapList) {
             String dataClass = (String) map.get("DATA_CLASS_ID");
             String className = (String) map.get("CLASS_NAME");
@@ -228,6 +230,25 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         backupEntity.setDatabaseType(dataRetrieval.getDatabaseType());
         backupEntity.setParentId(dataRetrieval.getParentId());
         backupEntity.setProfileName(dataRetrieval.getProfileName());
+        if(null==dataRetrieval.getForeignKey()||!StringUtils.isNotNullString(dataRetrieval.getVTableName())){
+            if(dataRetrieval.getParentId().toUpperCase().indexOf("FIDB")!=-1){
+                TableForeignKeyDto tableForeignKeyDto=new TableForeignKeyDto();
+                tableForeignKeyDto.setEleColumn("D_FILE_ID");
+                tableForeignKeyDto.setKeyColumn("D_FILE_ID");
+                List<TableForeignKeyDto> tableForeignKeyDtos=new ArrayList<>();
+                tableForeignKeyDtos.add(tableForeignKeyDto);
+                dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDtos));
+            }else{
+                TableForeignKeyDto tableForeignKeyDto=new TableForeignKeyDto();
+                tableForeignKeyDto.setEleColumn("D_RECORD_ID");
+                tableForeignKeyDto.setKeyColumn("D_RECORD_ID");
+                List<TableForeignKeyDto> tableForeignKeyDtos=new ArrayList<>();
+                tableForeignKeyDtos.add(tableForeignKeyDto);
+                dataRetrieval.setForeignKey(JSON.toJSONString(tableForeignKeyDtos));
+            }
+
+        }
+
         backupEntity.setForeignKey(dataRetrieval.getForeignKey());
     }
 

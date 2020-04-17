@@ -3,7 +3,7 @@
 
 <mapper namespace="com.piesat.schedule.mapper.database.GbaseOperationMapper">
     <select id="findGbaseUsers" resultType="java.util.Map">
-       select distinct user,uid from gbase.user
+       select distinct user,uid uuid from gbase.user
     </select>
     <select id="findGbaseInstance" resultType="java.lang.String">
         select schema_name  from information_schema.schemata
