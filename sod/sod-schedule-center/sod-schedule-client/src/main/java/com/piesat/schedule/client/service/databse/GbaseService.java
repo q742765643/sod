@@ -5,6 +5,7 @@ import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
+import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.CmdUtil;
 import com.piesat.schedule.client.util.EiSendUtil;
@@ -30,6 +31,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +65,9 @@ public class GbaseService {
         if (!users.isEmpty()) {
             for (Map<String, Object> user : users) {
                 TreeVo treeUser = new TreeVo();
-                treeUser.setId(user.get("USER") + "--" + user.get("UUID"));
+                treeUser.setId(String.valueOf(user.get("USER")).trim() + "--" + String.valueOf(user.get("UUID")).trim());
                 treeUser.setPId("用户");
-                treeUser.setName(user.get("USER") + "--" + user.get("UUID"));
+                treeUser.setName(String.valueOf(user.get("USER")).trim() + "--" + String.valueOf(user.get("UUID")).trim());
                 treeVos.add(treeUser);
             }
         }
@@ -220,8 +224,8 @@ public class GbaseService {
                 if (exit == 0) {
                     StringBuilder writePath = new StringBuilder();
                     writePath.append("---data " + table + "---").append("\r\n");
-                    writePath.append("DATA_" + table + ".txt");
-                    writePath.append("---end data---");
+                    writePath.append("DATA_" + table + ".txt").append("\r\n");
+                    writePath.append("---end data---").append("\r\n");
                     ZipUtils.writetxt(metadataVo.getIndexPath(), writePath.toString(), resultT);
                 } else {
                     resultT.setErrorMessage("表数据{}备份失败", table);
@@ -324,32 +328,56 @@ public class GbaseService {
 
 
     }
-    public void recoverGbaseData(String tableName,String path, ResultT<String> resultT) {
+    public void recoverGbaseData( String tableName,String path, ResultT<String> resultT) {
+        DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+        Connection conn = null;
         try {
+            conn= dynamicDataSource.getConnection();
+            Statement statement = conn.createStatement();
+
             StringBuilder sql = new StringBuilder();
             sql.append("load data infile ");
             sql.append("'sftp://").append(serverUser).append(":").append(serverPass);
             sql.append("@").append(serverIp).append(path).append("'");
             sql.append(" into table ").append(tableName);
             sql.append(" NULL_VALUE '\\\\N' DATETIME FORMAT '%Y-%m-%d %H:%i:%s.%f'   FIELDS TERMINATED BY ',' ");
-            gbaseOperationMapper.createGbaseUser(sql.toString());
+            //gbaseOperationMapper.createGbaseUser(sql.toString());
+            resultT.setSuccessMessage("恢复语句为:"+sql.toString());
+            statement.execute(sql.toString());
         } catch (Exception e) {
             resultT.setErrorMessage("表{}数据恢复失败",tableName);
            log.error(OwnException.get(e));
+        }finally {
+            if(null!=conn){
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
 
     public void recoverStructedData(RecoverMetaVo recoverMetaVo,RecoverLogEntity recoverLogEntity,ResultT<String> resultT){
         Map<String, String> map = ZipUtils.readFile(recoverMetaVo.getIndexPath(), resultT);
-        map.forEach((key, value) -> {
 
-            if(key.indexOf("---data ")!=-1){
-                String data=key.replace("---data ","").replace("---","");
-                String realPath = recoverMetaVo.getUnzipPath() + "/" + value;
-                this.recoverGbaseData(data,realPath,resultT);
-            }
-        });
+        try {
+            DataSourceContextHolder.setDataSource(recoverLogEntity.getParentId());
+            map.forEach((key, value) -> {
+
+                if (key.indexOf("---data ") != -1) {
+                    String data = key.replace("---data ", "").replace("---", "");
+                    String realPath = recoverMetaVo.getUnzipPath() + "/" + value;
+                    this.recoverGbaseData(data, realPath, resultT);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DataSourceContextHolder.clearDataSource();
+        }
+
 
     }
 

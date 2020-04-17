@@ -21,7 +21,10 @@ public class Tongjidaima {
     private static int i;//代码总行数
     private static int j;//文件个数
     public static void main(String[] args) throws IOException {
-        File file = new File("/zzj/git/hthtsod/sod");//需要统计行数的文件夹路径
+        String aa="aaaaa--sss";
+        String[] aaa=aa.split("--");
+        System.out.println(aaa[0]);
+        /*File file = new File("/zzj/git/hthtsod/sod");//需要统计行数的文件夹路径
         traverseFiles(file);//调用递归方法查看.java文件，用于统计行数
         System.out.println("所写文件个数："+j);
         System.out.println("所写代码总行数："+i);
@@ -34,7 +37,7 @@ public class Tongjidaima {
         Map<String,Object> map2=new HashMap<>();
         map2.put("orderBy",map);
         String bb=JSON.toJSONString(map2);
-        System.out.println(bb);
+        System.out.println(bb);*/
 
     }
     public static void traverseFiles(File file) throws IOException{

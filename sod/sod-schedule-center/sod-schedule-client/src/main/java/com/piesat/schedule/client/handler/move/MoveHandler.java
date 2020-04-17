@@ -111,19 +111,23 @@ public class MoveHandler implements BaseHandler {
             if(!resultT.isSuccess()){
                 return;
             }
-            long clearcount= databaseOperationService.selectTableCount(moveLogEntity.getParentId(),moveLogEntity.getTableName(),moveVo.getClearConditions(),resultT);
-            moveVo.setClearCount(clearcount);
+
             resultT.setSuccessMessage("开始nas迁移");
             log.info("开始nas迁移");
             this.moveExecute(moveVo,moveLogEntity,resultT);
-            if(clearcount==0){
-                resultT.setSuccessMessage("需要清除数为0条");
-                log.info("需要清除数为0条");
-            }
 
-            if("1".equals(moveEntity.getIsClear())&&clearcount>0){
 
-                this.clearExecute(moveVo,moveLogEntity,resultT);
+            if("1".equals(moveEntity.getIsClear())){
+                long clearcount= databaseOperationService.selectTableCount(moveLogEntity.getParentId(),moveLogEntity.getTableName(),moveVo.getClearConditions(),resultT);
+                moveVo.setClearCount(clearcount);
+                if(clearcount==0){
+                    resultT.setSuccessMessage("需要清除数为0条");
+                    log.info("需要清除数为0条");
+                }
+                if(clearcount>0){
+                    this.clearExecute(moveVo,moveLogEntity,resultT);
+
+                }
             }
         } catch (Exception e) {
             resultT.setErrorMessage("迁移异常:{}",OwnException.get(e));
@@ -243,7 +247,7 @@ public class MoveHandler implements BaseHandler {
             if(null!=minDate){
                 startTime=minDate.getTime();
             }
-            if(time>0&&startTime>0){
+            if(time!=0&&startTime!=0){
                 resultT.setSuccessMessage("按迁移频率开始切割");
                 log.info("按迁移频率开始切割");
                 String ytime=format.format(time);
@@ -356,19 +360,20 @@ public class MoveHandler implements BaseHandler {
             log.error("{}源目录错误",moveLogEntity.getSourceDirectory());
             return;
         }
-        String fkconditionsV=TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK,resultT);
-        if(!resultT.isSuccess()){
-            return;
-        }
-        String vconditions=  fkconditionsV+" and d_datetime='"+ddateTime+"'";
+
         if(null!=moveLogEntity.getVTableName()&&StringUtils.isNotNullString(moveLogEntity.getVTableName())){
+            String fkconditionsV=TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK,resultT);
+            if(!resultT.isSuccess()){
+                return;
+            }
+            String vconditions=  fkconditionsV+" and d_datetime='"+ddateTime+"'";
             this.deleteVIndex(moveLogEntity,vconditions,resultT);
             if(!resultT.isSuccess()){
                 return;
             }
         }
         String targetPath=storageSite.replace(moveLogEntity.getSourceDirectory(),moveLogEntity.getTargetDirectory());
-        FileUtil.copyFile(storageSite,targetPath,resultT);
+        FileUtil.copyMoveFile(storageSite,targetPath,resultT);
         if(!resultT.isSuccess()){
             return;
         }
@@ -389,12 +394,13 @@ public class MoveHandler implements BaseHandler {
         Date ddateTimed = (Date) mapK.get("D_DATETIME");
         String ddateTime=format.format(ddateTimed);
         String storageSite = (String) mapK.get("D_STORAGE_SITE");
-        String fkconditionsV=TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK,resultT);
-        if(!resultT.isSuccess()){
-            return;
-        }
-        String vconditions= fkconditionsV+"and  d_datetime='"+ddateTime+"'";
+
         if(null!=moveLogEntity.getVTableName()&&StringUtils.isNotNullString(moveLogEntity.getVTableName())){
+            String fkconditionsV=TableForeignKeyUtil.getMoveVsql(moveLogEntity.getForeignKey(),mapK,resultT);
+            if(!resultT.isSuccess()){
+                return;
+            }
+            String vconditions= fkconditionsV+"and  d_datetime='"+ddateTime+"'";
             this.deleteVIndex(moveLogEntity,vconditions,resultT);
             if(!resultT.isSuccess()){
                 return;

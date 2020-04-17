@@ -123,7 +123,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
                    connectVoMap.put(parentId, connectVo);
-                   if(!"cassandra".equals(databaseDto.getDatabaseDefine().getDatabaseType())){
+                   if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
 
                        String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
                        String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();

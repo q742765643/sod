@@ -21,11 +21,11 @@ public interface JobInfoMapper {
 
     public JobInfoEntity findById(String id);
 
-    public List<String> selectBackupDataClassId();
+    public List<String> selectBackupDataClassId(@Param("dataBaseId") String dataBaseId);
 
-    public List<String> selectClearDataClassId();
+    public List<String> selectClearDataClassId(@Param("dataBaseId") String dataBaseId);
 
-    public List<String> selectMoveDataClassId();
+    public List<String> selectMoveDataClassId(@Param("dataBaseId") String dataBaseId);
 
     public void updateTriggerStatus(@Param("triggerStatus")int triggerStatus, @Param("id")String id);
 

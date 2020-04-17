@@ -101,6 +101,25 @@ public class FileUtil {
             EiSendUtil.fileException(srcFile,resultT);
         }
     }
+    public static void copyMoveFile(String srcFile,String tagertFile,ResultT<String> resultT){
+        try {
+            if(!new File(tagertFile).getParentFile().exists()){
+                mkdirs(new File(tagertFile).getParentFile().getPath(),resultT);
+            }
+            if(new File(srcFile).exists()){
+                FileUtils.copyFile(new File(srcFile), new File(tagertFile));
+            }else{
+                resultT.setSuccessMessage(srcFile+"不存在");
+            }
+            log.info("移动文件{}到{}成功",srcFile,tagertFile);
+
+        } catch (IOException e) {
+            resultT.setErrorMessage("移动文件{}到{}失败,{}",srcFile,tagertFile,OwnException.get(e));
+            log.error("移动文件{}到{}失败,{}",srcFile,tagertFile,OwnException.get(e));
+            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_4_ERROR.getKey());
+            EiSendUtil.fileException(srcFile,resultT);
+        }
+    }
 
     public static void  delete(String path,ResultT<String> resultT){
         boolean isdelete=false;

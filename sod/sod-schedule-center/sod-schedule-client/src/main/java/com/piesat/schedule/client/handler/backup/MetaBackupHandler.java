@@ -62,9 +62,9 @@ public class MetaBackupHandler implements BaseHandler{
             if(metaBackupEntity.getIsStructure().indexOf("1")!=-1){
                 metadataVo.setExpData(true);
             }
-            /*if(metaBackupEntity.getParentId().indexOf("META")<0&&metadataVo.getTable().size()>1){
+            if(metaBackupEntity.getParentId().indexOf("META")<0&&metadataVo.getTable().size()>1){
                 metadataVo.setExpData(false);
-            }*/
+            }
             resultT.setSuccessMessage("获取备份内容");
             ReplaceVo replaceVo = new ReplaceVo();
             replaceVo.setMsg(metaBackupEntity.getStorageDirectory() + "/{databaseId}/{yyyy}/{yyyy-MM}/"+metaBackupEntity.getTaskName()+"_{yyyyMMddHHmmss}");
