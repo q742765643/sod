@@ -339,9 +339,15 @@ export default {
         this.msgError("请选择一条数据");
         return;
       }
+      let childArry = [];
+      checkedArry.forEach(element => {
+        if (element.parent == false) {
+          childArry.push(element);
+        }
+      });
       let obj = {};
       obj.databaseId = this.queryParams.databaseId;
-      obj.paths = checkedArry;
+      obj.paths = childArry;
       console.log(obj);
       md5Check(obj).then(res => {
         if (res.code == 200) {
