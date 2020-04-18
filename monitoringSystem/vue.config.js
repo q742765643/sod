@@ -9,7 +9,7 @@ module.exports = {
     port: 9090,
     proxy: {
       "/app": {
-        target: "http://192.168.2.04:8080",
+        target: "http://10.1.100.69:8008",
         changeOrigin: true,
         ws: true,
         pathRewrite: {

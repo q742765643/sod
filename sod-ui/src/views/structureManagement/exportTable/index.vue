@@ -3,7 +3,7 @@
     <!-- 表结构导出 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据库用途：">
-        <el-select v-model="queryParams.use_id" size="small" filterable @change="handleQuery">
+        <el-select v-model="queryParams.use_id" size="small" filterable>
           <el-option
             v-for="(item,index) in logicList"
             :key="index"
@@ -13,7 +13,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="数据库：">
-        <el-select v-model="queryParams.database_id" size="small" filterable @change="handleQuery">
+        <el-select v-model="queryParams.database_id" size="small" filterable>
           <el-option
             v-for="(item,index) in databaseList"
             :key="index"
@@ -22,6 +22,9 @@
           ></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item>
+        <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
+      </el-form-item>
     </el-form>
     <el-row :gutter="20">
       <el-col :span="16">
@@ -29,7 +32,7 @@
           :title="treeTitle"
           :from_data="fromTreeData"
           :to_data="toTreeData"
-          :defaultProps="{label:'label'}"
+          :defaultProps="defaultProps"
           @addBtn="addTreeInfo"
           @removeBtn="removeTreeInfo"
           :mode="modeTree"
@@ -71,7 +74,12 @@
               <el-divider></el-divider>
               <p>分库分表</p>
               <div style="text-align:right;">
-                <el-button icon="el-icon-bottom">导出</el-button>
+                <handleExport
+                  :handleExportObj="handleExportObj"
+                  btnText="导出"
+                  exportUrl="/api/com/downloadByPath"
+                  baseUrl="DM"
+                />
               </div>
             </el-tab-pane>
             <el-tab-pane label="表结构导出--简版" name="second">
@@ -108,10 +116,15 @@
             </el-tab-pane>
             <el-tab-pane label="sql导出" name="third">
               <p>导出方式</p>
-              <el-radio v-model="exportTyoe" label="1">导出到同一个文件</el-radio>
-              <el-radio v-model="exportTyoe" label="2">导出到多个文件</el-radio>
+              <el-radio v-model="exportTyoe" :label="1">导出到同一个文件</el-radio>
+              <el-radio v-model="exportTyoe" :label="2">导出到多个文件</el-radio>
               <div style="text-align:right;">
-                <el-button icon="el-icon-bottom">导出</el-button>
+                <handleExport
+                  :handleExportObj="handleExportObj"
+                  btnText="导出"
+                  exportUrl="/api/com/downloadByPath"
+                  baseUrl="DM"
+                />
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -122,6 +135,7 @@
 </template>
 <script>
 import treeTransfer from "el-tree-transfer"; // 引入
+import handleExport from "@/components/export";
 import { dataClassAll } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   logicDefineList,
@@ -132,10 +146,18 @@ import {
 } from "@/api/structureManagement/exportTable";
 export default {
   components: {
-    treeTransfer
+    treeTransfer,
+    handleExport
   },
   data() {
     return {
+      exportUrl: "",
+      handleExportObj: {},
+      //格式化tree数据
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
       // 遮罩层
       loading: true,
       queryParams: {
@@ -146,33 +168,46 @@ export default {
       databaseList: [],
       // 穿梭框
       fromTreeData: [
-        /*  {
+        /* {
           id: "1",
           pid: 0,
-          label: "一级 1",
+          name: "一级 1",
           children: [
             {
               id: "1-1",
               pid: "1",
-              label: "二级 1-1",
+              name: "二级 1-1",
               children: []
             },
             {
               id: "1-2",
               pid: "1",
-              label: "二级 1-2",
+              name: "二级 1-2",
               children: [
                 {
                   id: "1-2-1",
                   pid: "1-2",
                   children: [],
-                  label: "二级 1-2-1"
+                  name: "二级 1-2-1"
                 },
                 {
                   id: "1-2-2",
                   pid: "1-2",
-                  children: [],
-                  label: "二级 1-2-2"
+                  children: [
+                    {
+                      id: "1-3-1",
+                      pid: "1-2-2",
+                      name: "三级 1-3-1",
+                      children: [
+                        {
+                          id: "1-4-1",
+                          pid: "1-3-1",
+                          name: "四级 1-4-1"
+                        }
+                      ]
+                    }
+                  ],
+                  name: "二级 1-2-2"
                 }
               ]
             }
@@ -184,7 +219,7 @@ export default {
       treeTitle: ["数据库资料信息", "选择后的资料"],
       // 表信息导出
       activeName: "first",
-      exportTyoe: "1",
+      exportTyoe: 1,
       // 简版
       simpleObj: {
         db_ele_code: false, //公共元数据字段
@@ -222,7 +257,8 @@ export default {
         { key: "序号", value: "serial_number" },
         { key: "中文描述", value: "name_cn" }
       ],
-      isIndeterminate: false
+      isIndeterminate: false,
+      checkdTreesArry: []
     };
   },
   created() {
@@ -242,13 +278,8 @@ export default {
     },
     handleQuery() {
       dataTree(this.queryParams).then(response => {
-        // this.setName(response.data);
         this.fromTreeData = response.data;
-        // this.setName(response.data);
       });
-      /*  dataClassAll().then(response => {
-          this.setName(response.data);
-      }); */
     },
     // 监听穿梭框组件添加
     addTreeInfo(fromData, toData, obj) {
@@ -257,12 +288,21 @@ export default {
       console.log("fromData:", fromData);
       console.log("toData:", toData);
       console.log("obj:", obj);
+      obj.keys.forEach(element => {
+        this.checkdTreesArry.push(element);
+      });
+      this.handleExportClick();
     },
     // 监听穿梭框组件移除
     removeTreeInfo(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
       console.log("fromData:", fromData);
+      const newData = this.checkdTreesArry.filter(
+        l2 => obj.keys.findIndex(l1 => l2 === l1) !== -1
+      );
+      this.checkdTreesArry = newData;
+      this.handleExportClick();
     },
     handleClick() {},
     // 全选
@@ -288,18 +328,30 @@ export default {
         this.isIndeterminate = false;
       }
     },
-    setName(datas) {
-      //遍历树  获取id数组
-      for (var i in datas) {
-        datas[i].label = datas[i].name;
-        datas[i].disabled = "";
-        datas[i].pid = datas[i].parentId;
-        datas[i].parentId = undefined;
-        this.fromTreeData.push(datas[i]);
-        if (datas[i].children) {
-          this.fromTreeData.push(datas[i]);
-          this.setName(datas[i].children);
+    // 导出
+    handleExportClick() {
+      this.handleExportObj = {};
+      let ids = [];
+      this.checkdTreesArry.forEach(element => {
+        if (element.split(".").length == 4) {
+          ids.push(element);
         }
+      });
+      let obj = {};
+      obj.dataClassIds = ids.join(",");
+      obj.databaseId = this.queryParams.database_id;
+      if (this.activeName == "first") {
+        obj.use_id = this.queryParams.use_id;
+        exportTable(obj).then(response => {
+          if (response.code == 200) {
+            this.handleExportObj.filePath = response.data.filePath;
+          }
+        });
+      } else if (this.activeName == "second") {
+        obj.exportType = exportTyoe;
+        exportSQL(obj).then(response => {
+          this.handleExportObj.filePath = response.data.filePath;
+        });
       }
     }
   }
@@ -337,6 +389,12 @@ export default {
         }
       }
     }
+  }
+  .el-scrollbar {
+    height: calc(100% - 80px);
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
 }
 </style>

@@ -12,7 +12,8 @@
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <handleExport
-          v-hasPermi="['consistencyCheck:role:creat']"
+          @click="downloadDfcheckFile"
+          :handleExportObj="handleDfExportObj"
           baseUrl="DM"
           btnText="生成差异报告"
           exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
@@ -97,16 +98,18 @@
     <el-dialog title="历史报告表" :visible.sync="historyDialog" width="80%" height="50%" v-dialogDrag>
       <el-table ref="singleTable" :data="historyData" highlight-current-row border stripe>
         <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
-        <el-table-column prop="database_id" label="检查ID" sortable></el-table-column>
-        <el-table-column prop="file_name" label="报告名称" sortable min-width="300"></el-table-column>
-        <el-table-column prop="create_time" label="生成时间" sortable></el-table-column>
+        <el-table-column prop="database_id" label="检查ID"></el-table-column>
+        <el-table-column prop="file_name" label="报告名称" min-width="300"></el-table-column>
+        <el-table-column prop="create_time" label="生成时间"></el-table-column>
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope1">
-            <el-button
-              icon="el-icon-tickets"
-              type="text"
-              @click="downloadHistoricalReport(scope1.row)"
-            >下载</el-button>
+            <handleExport
+              @click="downloadHischeckFile(scope1.row)"
+              :handleExportObj="handleHisExportObj"
+              baseUrl="DM"
+              btnText="下载"
+              exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -130,13 +133,16 @@ import {
   deleteById,
   downloadDfcheckFile,
   consistencyCheckSave,
-  getDatabaseName
+  getDatabaseName,
+  historyList
 } from "@/api/structureManagement/consistencyCheck";
 import handleExport from "@/components/export";
 export default {
   components: { handleExport },
   data() {
     return {
+      handleDfExportObj: {},
+      handleHisExportObj: {},
       // 遮罩层
       loading: true,
       queryParams: {
@@ -160,7 +166,7 @@ export default {
       historyObj: {
         pageNum: 1,
         pageSize: 10,
-        historyID: ""
+        id: ""
       },
       rules: {
         taskName: [
@@ -202,6 +208,16 @@ export default {
     handleCurrentChange(val) {
       this.currentRow = val;
     },
+    downloadDfcheckFile() {
+      if (this.currentRow.length != 1) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+        return;
+      }
+      this.handleDfExportObj.databaseId = this.currentRow[0].databaseId;
+    },
     getOptions() {
       getDatabaseName().then(response => {
         this.databaseNameOptions = response.data;
@@ -210,8 +226,17 @@ export default {
     /*点击历史报告列表事件 */
     getHistoricalReport(row) {
       this.historyDialog = true;
+      this.historyObj.id = row.id;
+      historyList(this.historyObj).then(response => {
+        this.historyData = response.data.pageData;
+        this.historyTotal = response.data.totalCount;
+        this.loading = false;
+      });
     },
-    progressDownLoad() {},
+    downloadHischeckFile(row) {
+      this.handleHisExportObj.file_directory = row.file_directory;
+      this.handleHisExportObj.filename = row.filename;
+    },
     addReportData() {
       this.addDataDialog = true;
     },

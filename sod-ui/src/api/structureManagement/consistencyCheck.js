@@ -38,3 +38,11 @@ export function getDatabaseName(query) {
     params: query
   });
 }
+
+export function historyList(query) {
+  return request({
+    url: baseUrl + "/dm/consistencyCheck/historyList",
+    method: "get",
+    params: query
+  });
+}

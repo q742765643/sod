@@ -116,7 +116,7 @@ public class CassandraBusiness extends BaseBusiness{
             resultT.setSuccessMessage("{}修改前表级生存时间为{},单位为秒",tableName,defaultTime);
             String sql="ALTER TABLE "+tableName+" WITH "+conditions;
             resultT.setSuccessMessage("{}修改表级生存时间为sql{}",tableName,sql);
-            session.execute(sql);
+            //session.execute(sql);
         } catch (Exception e) {
             resultT.setErrorMessage("{}修改表级生存时间失败{}",tableName, OwnException.get(e));
         }

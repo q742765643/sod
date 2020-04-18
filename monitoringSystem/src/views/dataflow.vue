@@ -1,113 +1,165 @@
 <template>
   <!--监测信息 -->
   <div class="flowTemp">
-    <h4>
-      <span>数据全流程</span>
-      <div>
-        <img src="../assets/images/header-bg-cipas.png" />
-      </div>
-    </h4>
-    <el-row class="searchDiv">
-      <el-form :inline="true" :model="formInline">
-        <el-form-item label="四级编码:">
-          <el-select v-model="formInline.region" size="mini" placeholder="活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="资料名称:">
-          <el-input v-model="formInline.name" size="mini" placeholder="请输入资料名称"></el-input>
-        </el-form-item>
-        <el-form-item label="最新时次:">
-          <el-date-picker
-            v-model="formInline.time"
-            type="datetime"
-            size="mini"
-            placeholder="选择日期时间"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="mini">清空条件</el-button>
-        </el-form-item>
-      </el-form>
-    </el-row>
-    <el-row class="tableDiv">
-      <el-table :data="tableData" style="width: 100%;">
-        <el-table-column prop="date" label="资料名称" align="center" min-width="150"></el-table-column>
-        <el-table-column prop="date" label="最新时次" align="center" min-width="70"></el-table-column>
-        <el-table-column label="采集" align="center">
+    <happy-scroll hide-horizontal color="rgba(0,0,0,0.1)" size="1">
+      <h4>
+        <span>数据全流程</span>
+        <div>
+          <img src="../assets/images/header-bg-cipas.png" />
+        </div>
+      </h4>
+      <el-row class="searchDiv">
+        <el-form :inline="true" :model="formInline">
+          <el-form-item label="四级编码:">
+            <el-input v-model="formInline.dataType" size="mini" placeholder="请输入四级编码"></el-input>
+            <!-- <el-select v-model="formInline.region" size="mini" placeholder="活动区域">
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>-->
+          </el-form-item>
+          <el-form-item label="资料名称:">
+            <el-input v-model="formInline.name" size="mini" placeholder="请输入资料名称"></el-input>
+          </el-form-item>
+          <el-form-item label="最新时次:">
+            <el-date-picker
+              v-model="formInline.ddateTime"
+              type="datetime"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              size="mini"
+              placeholder="选择日期时间"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="mini" @click="searchTable">查询</el-button>
+            <el-button type="primary" size="mini" @click="clearSearch">清空条件</el-button>
+          </el-form-item>
+        </el-form>
+      </el-row>
+      <el-row class="tableDiv">
+        <el-table :data="tableData" style="width: 100%;">
+          <el-table-column prop="name" label="资料名称" align="center" min-width="150"></el-table-column>
+          <el-table-column prop="ddateTime" label="最新时次" align="center" min-width="50"></el-table-column>
+          <!-- <el-table-column label="采集" align="center">
           <el-table-column prop="name" align="center" label="站台可用率GTS实收数" min-width="80"></el-table-column>
-        </el-table-column>
-        <el-table-column label="收集" align="center">
-          <el-table-column prop="name" label="收缺/实收/应收" align="center" min-width="100">
-            <template slot-scope="scope2">
-              <el-link type="success" class="munberText" :underline="false">1</el-link>
-              <span>/</span>
-              <el-link type="success" class="munberText" :underline="false">1</el-link>
-              <span>/</span>
-              <el-link type="primary" class="munberText" :underline="false">1</el-link>
+          </el-table-column>-->
+          <el-table-column label="收集" align="center">
+            <el-table-column prop="name" label="收缺/实收/应收" align="center" min-width="100">
+              <template slot-scope="scope2">
+                <el-link
+                  type="success"
+                  class="munberText"
+                  :underline="false"
+                >{{scope2.row.collection_receivable*1-scope2.row.collection_realIncome*1}}</el-link>
+                <span>/</span>
+                <el-link
+                  type="success"
+                  class="munberText"
+                  :underline="false"
+                >{{scope2.row.collection_realIncome}}</el-link>
+                <span>/</span>
+                <el-link
+                  type="primary"
+                  class="munberText"
+                  :underline="false"
+                >{{scope2.row.collection_receivable}}</el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="及时率" align="center" min-width="70">
+              <template slot-scope="scope6">
+                <el-progress
+                  :text-inside="true"
+                  :stroke-width="15"
+                  :percentage="scope6.row.collection_jishi"
+                  status="success"
+                ></el-progress>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="到报率" align="center" min-width="70">
+              <template slot-scope="scope7">
+                <el-progress
+                  :text-inside="true"
+                  :stroke-width="15"
+                  :percentage="scope7.row.collection_daobao"
+                  status="success"
+                ></el-progress>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="分省到报率" align="center" min-width="70">
+              <template slot-scope="scope5">
+                <el-link type="primary" :underline="false">点击查看</el-link>
+              </template>
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="分发" align="center">
+            <el-table-column prop label="目的地" align="center" min-width="70"></el-table-column>
+            <el-table-column prop="name" label="收缺/实收/应收" align="center" min-width="120">
+              <template slot-scope="scope4">
+                <el-link
+                  type="success"
+                  class="munberText"
+                  :underline="false"
+                >{{scope4.row.distribute_receivable*1-scope4.row.distribute_realIncome*1}}</el-link>
+                <span>/</span>
+                <el-link
+                  type="success"
+                  class="munberText"
+                  :underline="false"
+                >{{scope4.row.distribute_realIncome}}</el-link>
+                <span>/</span>
+                <el-link
+                  type="primary"
+                  class="munberText"
+                  :underline="false"
+                >{{scope4.row.distribute_receivable}}</el-link>
+              </template>
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="处理入库" align="center">
+            <el-table-column prop="name" label="收缺/实收/应收" align="center" min-width="120">
+              <template slot-scope="scope3">
+                <el-link
+                  type="success"
+                  class="munberText"
+                  :underline="false"
+                >{{scope3.row.put_receivable*1-scope3.row.put_realIncome*1}}</el-link>
+                <span>/</span>
+                <el-link
+                  type="success"
+                  class="munberText"
+                  :underline="false"
+                >{{scope3.row.put_realIncome}}</el-link>
+                <span>/</span>
+                <el-link
+                  type="primary"
+                  class="munberText"
+                  :underline="false"
+                >{{scope3.row.put_receivable}}</el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="入库率" align="center" min-width="70">
+              <template slot-scope="scope9">
+                <el-progress
+                  :text-inside="true"
+                  :stroke-width="15"
+                  :percentage="scope9.row.input_lu"
+                  status="success"
+                ></el-progress>
+                <span>{{scope9.row.dataText}}</span>
+                <div>
+                  <span>{{scope9.row.timeText}}</span>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table-column>
+          <el-table-column prop="date" label="历史详情" align="center" min-width="100">
+            <template slot-scope="scope1">
+              <el-link type="primary" :underline="false">历史</el-link>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="及时率" align="center" min-width="70">
-            <template slot-scope="scope6">
-              <el-progress :text-inside="true" :stroke-width="15" :percentage="0" status="success"></el-progress>
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" label="到报率" align="center" min-width="70">
-            <template slot-scope="scope6">
-              <el-progress
-                :text-inside="true"
-                :stroke-width="15"
-                :percentage="100"
-                status="success"
-              ></el-progress>
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" label="分省到报率" align="center" min-width="70">
-            <template slot-scope="scope5">
-              <el-link type="primary" :underline="false">点击查看</el-link>
-            </template>
-          </el-table-column>
-        </el-table-column>
-        <el-table-column label="分发" align="center">
-          <el-table-column prop="name" label="目的地" align="center" min-width="70"></el-table-column>
-          <el-table-column prop="name" label="收缺/实收/应收" align="center" min-width="120">
-            <template slot-scope="scope4">
-              <el-link type="success" class="munberText" :underline="false">1</el-link>
-              <span>/</span>
-              <el-link type="success" class="munberText" :underline="false">1</el-link>
-              <span>/</span>
-              <el-link type="primary" class="munberText" :underline="false">1</el-link>
-            </template>
-          </el-table-column>
-        </el-table-column>
-        <el-table-column label="处理入库" align="center">
-          <el-table-column prop="name" label="收缺/实收/应收" align="center" min-width="120">
-            <template slot-scope="scope3">
-              <el-link type="success" class="munberText" :underline="false">1</el-link>
-              <span>/</span>
-              <el-link type="success" class="munberText" :underline="false">1</el-link>
-              <span>/</span>
-              <el-link type="primary" class="munberText" :underline="false">1</el-link>
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" label="入库率" align="center" min-width="70">
-            <template slot-scope="scope6">
-              <el-progress :text-inside="true" :stroke-width="15" :percentage="30" status="success"></el-progress>
-              <span>2020-04-14</span>
-              <div>
-                <span>17:23:44</span>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table-column>
-        <el-table-column prop="date" label="历史详情" align="center" min-width="100">
-          <template slot-scope="scope1">
-            <el-link type="primary" :underline="false">历史</el-link>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-row>
+        </el-table>
+      </el-row>
+    </happy-scroll>
   </div>
 </template>
 
@@ -118,7 +170,11 @@ import { interfaceObj } from "@/urlConfig.js";
 export default {
   data() {
     return {
-      formInline: {},
+      formInline: {
+        name: "",
+        dataType: "",
+        ddateTime: ""
+      },
       tableData: [
         {
           date: "2016-05-03",
@@ -179,277 +235,67 @@ export default {
       ]
     };
   },
-  created() {},
-  mounted() {
-    /* this.cpuLine();
-    this.innerStorageChart();
-    this.pieChart();
-    this.networkFlowChart(); */
+  created() {
+    this.getflowMonitorList("");
   },
+  mounted() {},
   methods: {
-    cpuLine() {
-      var myChart = echarts.init(document.getElementById("cpuUsageChart"));
-      // 绘制图表
-      myChart.setOption({
-        title: {
-          text: "cpu使用率情况",
-          left: "left",
-          textStyle: {
-            fontSize: 14,
-            fontWeight: "normal",
-            color: "#fff",
-            top: 10
-          }
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        color: ["#058ae5"],
-        calculable: true,
-        xAxis: {
-          type: "category",
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: "#fff"
-            }
-          },
-
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          axisLabel: {
-            // inside: true,
-            textStyle: {
-              color: "#fff"
-            }
-          }
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            textStyle: {
-              color: "#fff"
-            }
-          }
-        },
-        series: [
-          {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
-            type: "line",
-            itemStyle: {
-              normal: {
-                color: "#b93633"
-              }
-            }
-          }
-        ]
-      });
+    clearSearch() {
+      this.formInline = {
+        name: "",
+        dataType: "",
+        ddateTime: ""
+      };
+      this.getflowMonitorList("");
     },
-    innerStorageChart() {
-      var myChart = echarts.init(document.getElementById("innerStorageChart"));
-      // 绘制图表
-      myChart.setOption({
-        title: {
-          text: "内存使用率",
-          left: "left",
-          textStyle: {
-            fontSize: 14,
-            fontWeight: "normal",
-            color: "#fff",
-            top: 10
-          }
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        color: ["#058ae5"],
-        calculable: true,
-        xAxis: {
-          type: "category",
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: "#fff"
-            }
-          },
-
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          axisLabel: {
-            // inside: true,
-            textStyle: {
-              color: "#fff"
-            }
-          }
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            textStyle: {
-              color: "#fff"
-            }
-          }
-        },
-        series: [
-          {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
-            type: "line",
-            itemStyle: {
-              normal: {
-                color: "#2344d3"
-              }
-            },
-            areaStyle: {}
-          }
-        ]
-      });
+    searchTable() {
+      let searchtext = "";
+      if (this.formInline.name) {
+        searchtext = searchtext + "&name=" + this.formInline.name;
+      }
+      if (this.formInline.dataType) {
+        searchtext = searchtext + "&dataType=" + this.formInline.dataType;
+      }
+      if (this.formInline.ddateTime) {
+        let fff = this.formInline.ddateTime.split(" ")[1].split(":");
+        let endtime =
+          this.formInline.ddateTime.split(" ")[0] +
+          " " +
+          fff[0] +
+          ":" +
+          fff[1] +
+          ":" +
+          (fff[2] * 1 + 1).toString();
+        searchtext =
+          searchtext +
+          "&starttime=" +
+          this.formInline.ddateTime +
+          "&endTime" +
+          endtime;
+      }
+      if (searchtext.length > 0) {
+        searchtext = searchtext.substr(1);
+        searchtext = "?" + searchtext;
+      }
+      //console.log(searchtext);
+      this.getflowMonitorList(searchtext);
     },
-    pieChart() {
-      var myChart = echarts.init(document.getElementById("pieChart"));
-      // 绘制图表
-      myChart.setOption({
-        title: {
-          text: "磁盘使用率",
-          left: "left",
-          textStyle: {
-            fontSize: 14,
-            fontWeight: "normal",
-            color: "#fff",
-            top: 10
-          }
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b}: {c} ({d}%)"
-        },
-        legend: {
-          orient: "vertical",
-          left: 10,
-          top: 30,
-          textStyle: {
-            fontSize: 14,
-            fontWeight: "normal",
-            color: "#fff"
-          },
-          data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
-        },
-        series: [
-          {
-            name: "访问来源",
-            type: "pie",
-            radius: ["50%", "70%"],
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: "center"
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: "30",
-                fontWeight: "bold"
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: [
-              { value: 335, name: "直接访问" },
-              { value: 310, name: "邮件营销" },
-              { value: 234, name: "联盟广告" },
-              { value: 135, name: "视频广告" },
-              { value: 1548, name: "搜索引擎" }
-            ]
-          }
-        ]
-      });
-    },
-    networkFlowChart() {
-      var myChart = echarts.init(document.getElementById("networkFlowChart"));
-      myChart.setOption({
-        title: {
-          text: "cpu使用率情况",
-          left: "left",
-          textStyle: {
-            fontSize: 14,
-            fontWeight: "normal",
-            color: "#fff",
-            top: 10
-          }
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        color: ["#058ae5"],
-        calculable: true,
-        xAxis: {
-          type: "category",
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: "#fff"
-            }
-          },
-
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          axisLabel: {
-            // inside: true,
-            textStyle: {
-              color: "#fff"
-            }
-          }
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            textStyle: {
-              color: "#fff"
-            }
-          }
-        },
-        series: [
-          {
-            name: "邮件营销",
-            type: "line",
-            stack: "总量",
-            itemStyle: {
-              normal: {
-                color: "#2846ff"
-              }
-            },
-            data: [120, 132, 101, 134, 90, 230, 210]
-          },
-          {
-            name: "联盟广告",
-            type: "line",
-            stack: "总量",
-            itemStyle: {
-              normal: {
-                color: "#45c9b1"
-              }
-            },
-            data: [220, 182, 191, 234, 290, 330, 310]
-          }
-        ]
+    getflowMonitorList(txt) {
+      this.axios.get(interfaceObj.flowMonitorList + txt).then(res => {
+        this.tableData = res.data.data;
+        this.tableData.forEach(item => {
+          item.dataText = item.ddateTime.split(" ")[0];
+          item.timeText = item.ddateTime.split(" ")[1];
+          item.collection_jishi =
+            ((item.timely * 100) / item.collection_receivable).toFixed(2) * 1;
+          item.collection_daobao =
+            (
+              (item.collection_realIncome * 100) /
+              item.collection_receivable
+            ).toFixed(2) * 1;
+          item.input_lu =
+            ((item.put_realIncome * 100) / item.put_receivable).toFixed(2) * 1;
+        });
       });
     }
   }
@@ -462,6 +308,16 @@ export default {
   padding: 0;
   text-align: center;
   background: #1e4f86;
+  .happy-scroll {
+    width: 100%;
+    .happy-scroll-container {
+      width: 100%;
+      .happy-scroll-content {
+        width: 100%;
+        display: block;
+      }
+    }
+  }
   //padding:10px;
   h4 {
     height: 50px;
@@ -507,7 +363,7 @@ export default {
   }
   .tableDiv {
     margin: auto;
-    width: 99%;
+    //width: 94%;
     height: calc(100vh - 102px);
     border: 1px solid #2477b2;
     .el-table {
