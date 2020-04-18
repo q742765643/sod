@@ -120,6 +120,12 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     }
 
     @Override
+    public List<LogicDefineDto> findByLogicFlag(String logicFlag) {
+        List<LogicDefineEntity> logicDefineEntities = this.logicDefineDao.findByLogicFlag(logicFlag);
+        return this.logicDefineMapper.toDto(logicDefineEntities);
+    }
+
+    @Override
     public LogicDefineDto updateDto(LogicDefineDto logicDefineDto) {
         LogicDefineEntity logicDefineEntity=logicDefineMapper.toEntity(logicDefineDto);
         logicDefineEntity = this.saveNotNull(logicDefineEntity);

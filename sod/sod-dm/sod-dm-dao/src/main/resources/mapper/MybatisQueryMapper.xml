@@ -361,10 +361,9 @@
     <select id="getColumnByIdAndDDataId" resultType="java.util.Map">
         select distinct c_element_code,ele_name,type,unit,user_ele_code,is_null,accuracy,is_primary_key,serial_number
         from T_SOD_DATA_TABLE_COLUMN where table_id in
-        ( select t.id table_name
+        ( select t.id
         from T_SOD_NEWDATA_APPLY a
         left join T_SOD_DATA_LOGIC c on a.data_class_id = c.data_class_id
-        /*left join T_SOD_STORAGE_CONFIGURATION b on a.data_class_id=b.data_class_id*/
         left join T_SOD_DATA_TABLE t on c.id = t.class_logic_id
         <where>
             <if test="entity.id != null and entity.id  != ''">
@@ -702,6 +701,16 @@
     <select id="findByDatabaseDefine" resultType="java.util.Map" parameterType="String">
         SELECT * FROM t_sod_database_define WHERE id=
         (SELECT database_define_id FROM t_sod_database WHERE id=#{databaseId})
+    </select>
+
+    <select id="findByUserIdAndDatabaseDefineId1" resultType="java.util.Map" parameterType="String">
+        select a.id as "id",a.database_name || '【' || a.schema_name || '】' as "name",a.database_define_id as "physicId" from t_sod_database a
+        where a.database_classify = '物理库' and a.database_define_id = #{databaseDefineId}
+    </select>
+    <select id="findByUserIdAndDatabaseDefineId2" resultType="java.util.Map" parameterType="String">
+        select a.id as "id",a.database_name || '【' || a.schema_name || '】' as "name",a.database_define_id as "physicId" from t_sod_database a
+        left join t_sod_database_special b on a.tdb_id = b.id
+        where a.database_classify = '专题库' and b.EXAMINE_STATUS = '2' and b.USE_STATUS = '2' and a.database_define_id = #{databaseDefineId} and b.user_id = #{userId}
     </select>
 
     <select id="getSqlList" resultType="java.util.Map" parameterType="String">

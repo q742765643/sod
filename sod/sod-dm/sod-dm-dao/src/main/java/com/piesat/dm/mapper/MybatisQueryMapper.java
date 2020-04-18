@@ -117,5 +117,8 @@ public interface MybatisQueryMapper {
 
     Map<String, Object> findByDatabaseDefine(@Param("databaseId") String databaseId);
 
+    List<Map<String, Object>> findByUserIdAndDatabaseDefineId1(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
+    List<Map<String, Object>> findByUserIdAndDatabaseDefineId2(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
+
     List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
 }

@@ -58,7 +58,7 @@ public class DatabaseUserEntity extends BaseEntity {
     private String databaseUpDesc;
 
     /**
-     * 申请数据库ID
+     * 申请数据库ID,database_define的id
      */
     @Column(name = "apply_database_id")
     private String applyDatabaseId;

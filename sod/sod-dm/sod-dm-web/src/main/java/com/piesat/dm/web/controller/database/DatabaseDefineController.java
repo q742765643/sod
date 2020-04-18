@@ -1,8 +1,14 @@
 package com.piesat.dm.web.controller.database;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
+import com.piesat.dm.rpc.api.database.DatabaseUserService;
+import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,6 +37,10 @@ import java.util.List;
 public class DatabaseDefineController {
     @Autowired
     private DatabaseDefineService databaseDefineService;
+    @Autowired
+    private DatabaseUserService databaseUserService;
+    @Autowired
+    private LogicDefineService logicDefineService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:databaseDefine:add")
@@ -164,6 +175,38 @@ public class DatabaseDefineController {
         try {
             DatabaseDefineDto all = this.databaseDefineService.conStatus(id);
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据用户ID和逻辑库ID查询物理库的信息")
+    @RequiresPermissions("dm:databaseDefine:findByUserIdAndLogicId")
+    @GetMapping(value = "/findByUserIdAndLogicId")
+    public ResultT findByUserIdAndLogicId(String userId,String logicId) {
+        try {
+            //查询用户申请的up账户
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
+            if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
+                return ResultT.failed("请先创建存储账户！！！");
+            }
+            List<String> targetDatabaseIdList = new ArrayList<String>();
+            //用户可用的databaseId（父级databaseId）
+            List<String> list = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
+            //逻辑库对应的databaseId（父级databaseId）
+            List<LogicDefineDto> logicDefineDtos = logicDefineService.findByLogicFlag(logicId);
+            if(logicDefineDtos != null && logicDefineDtos.size() >0){
+                if(logicDefineDtos.get(0).getLogicDatabaseEntityList() != null && logicDefineDtos.get(0).getLogicDatabaseEntityList().size() > 0) {
+                    for (LogicDatabaseDto logicDatabaseDto : logicDefineDtos.get(0).getLogicDatabaseEntityList()) {
+                        if(list.contains(logicDatabaseDto.getDatabaseId())){
+                            targetDatabaseIdList.add(logicDatabaseDto.getDatabaseId());
+                        }
+                    }
+                }
+            }
+            List<DatabaseDefineDto> databaseDefineDtos = this.databaseDefineService.findByIdIn(targetDatabaseIdList);
+            return ResultT.success(databaseDefineDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

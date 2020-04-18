@@ -19,6 +19,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,6 @@ public class DatabaseController {
     private DatabaseDefineService databaseDefineService;
     @Autowired
     private DatabaseUserService databaseUserService;
-    @Autowired
-    private LogicDefineService logicDefineService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:database:add")
@@ -145,34 +144,6 @@ public class DatabaseController {
         }
     }
 
-    @ApiOperation(value = "根据用户ID和逻辑库ID查询物理库的信息")
-    @RequiresPermissions("dm:database:findByUserIdAndLogicId")
-    @GetMapping(value = "/findByUserIdAndLogicId")
-    public ResultT findByUserIdAndLogicId(String userId,String logicId) {
-        try {
-            //查询用户申请的up账户
-            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
-            if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
-                return ResultT.failed("请先创建存储账户！！！");
-            }
-            List<String> list = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
-            //逻辑库对应的物理库
-            LogicDefineDto logicDefineDto = logicDefineService.getDotById(logicId);
-            if(logicDefineDto != null && logicDefineDto.getLogicDatabaseEntityList() != null && logicDefineDto.getLogicDatabaseEntityList().size() > 0){
-                for(LogicDatabaseDto logicDatabaseDto: logicDefineDto.getLogicDatabaseEntityList()){
-                    list.add(logicDatabaseDto.getDatabaseId());
-                }
-            }
-            List<DatabaseDto> databaseDtos = this.databaseService.findByDatabaseClassifyAndIdIn("物理库",list);
-            return ResultT.success(databaseDtos);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
-
-
     @ApiOperation(value = "查询所有物理库/专题库")
     @RequiresPermissions("dm:database:findByDatabaseClassify")
     @GetMapping(value = "/findByDatabaseClassify")
@@ -186,4 +157,16 @@ public class DatabaseController {
         }
     }
 
+    @ApiOperation(value = "根据用户ID和数据库父ID查询可用专题库的信息")
+    @RequiresPermissions("dm:database:findByUserIdAndDatabaseDefineId")
+    @GetMapping(value = "/findByUserIdAndDatabaseDefineId")
+    public ResultT findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId) {
+        try {
+            List<Map<String,Object>> databaseDtos = this.databaseService.findByUserIdAndDatabaseDefineId(userId,databaseDefineId);
+            return ResultT.success(databaseDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

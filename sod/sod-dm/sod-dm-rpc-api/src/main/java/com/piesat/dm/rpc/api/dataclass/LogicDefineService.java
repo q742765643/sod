@@ -23,6 +23,8 @@ public interface LogicDefineService {
 
     List<LogicDefineDto> getAllLogicDefine();
 
+    List<LogicDefineDto> findByLogicFlag(String logicFlag);
+
     LogicDefineDto saveDto(LogicDefineDto logicDefineDto);
 
     LogicDefineDto getDotById(String id);

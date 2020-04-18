@@ -21,6 +21,8 @@ public interface NewdataApplyService {
 
     public PageBean selectPageList(PageForm<Map<String,Object>> pageForm);
 
+    NewdataApplyDto getDotById(String id);
+
     NewdataApplyDto saveDto(NewdataApplyDto newdataApplyDto);
 
     NewdataApplyDto updateDto(NewdataApplyDto newdataApplyDto);
@@ -38,8 +40,6 @@ public interface NewdataApplyService {
     ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto);
 
     List<DataTableDto> getDataTableByType(DataLogicDto dataLogicDto);
-
-    List<TableColumnDto> getNewdataTableField(String id);
 
     ResultT<String> addDataStructure(TableColumnDto tableColumnDto);
 

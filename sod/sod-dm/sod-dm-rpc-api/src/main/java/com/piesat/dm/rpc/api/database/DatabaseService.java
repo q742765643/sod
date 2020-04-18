@@ -38,4 +38,6 @@ public interface DatabaseService {
 
     List<DatabaseDto> findByDatabaseClassify(String databaseClassify);
 
+    List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
+
 }

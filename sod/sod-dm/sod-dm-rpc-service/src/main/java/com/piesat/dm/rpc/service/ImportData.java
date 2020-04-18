@@ -4,10 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.dao.StorageConfigurationDao;
-import com.piesat.dm.dao.dataapply.CloudDatabaseApplyDao;
-import com.piesat.dm.dao.dataapply.DataAuthorityApplyDao;
-import com.piesat.dm.dao.dataapply.DataAuthorityRecordDao;
-import com.piesat.dm.dao.dataapply.NewdataApplyDao;
+import com.piesat.dm.dao.dataapply.*;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
@@ -20,10 +17,7 @@ import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableDataStatisticsDao;
 import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.StorageConfigurationEntity;
-import com.piesat.dm.entity.dataapply.CloudDatabaseApplyEntity;
-import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
-import com.piesat.dm.entity.dataapply.DataAuthorityRecordEntity;
-import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
+import com.piesat.dm.entity.dataapply.*;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
@@ -143,6 +137,8 @@ public class ImportData {
     @Autowired
     private NewdataApplyDao newdataApplyDao;
     @Autowired
+    private NewdataTableColumnDao newdataTableColumnDao;
+    @Autowired
     private StorageConfigurationDao storageConfigurationDao;
     @Autowired
     private DataAuthorityApplyDao dataAuthorityApplyDao;
@@ -196,9 +192,9 @@ public class ImportData {
 
         //importSyncTask();
         //importCloudDatabase();
-        importBackUp();
-        importMove();
-        importClear();
+        //importBackUp();
+        //importMove();
+        //importClear();
         //importDatabaseUser();
         //importPortalAuz();
         //importSpecial();
@@ -214,7 +210,7 @@ public class ImportData {
         //importGridEleDecodeDefine();
         //importGridLayerLevel();
 
-        executeBackUpMove();
+        //executeBackUpMove();
     }
 
 
@@ -1563,6 +1559,7 @@ public class ImportData {
         String sql = "select * from dmin_data_newdata_apply";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
+            String apply_id = toString(m.get("APPLY_ID"));
             String d_data_id = toString(m.get("D_DATA_ID"));
             String data_class_id = toString(m.get("DATA_CLASS_ID"));
             String table_name = toString(m.get("TABLE_NAME"));
@@ -1642,10 +1639,47 @@ public class ImportData {
             }
             newdataApplyEntity.setTableName(table_name);
             newdataApplyEntity.setUserId(user_id);
-            newdataApplyDao.saveNotNull(newdataApplyEntity);
+            newdataApplyEntity = newdataApplyDao.saveNotNull(newdataApplyEntity);
+
+            //新增资料字段
+            sql = "select * from dmin_newdata_table_field where apply_id='"+apply_id+"'";
+            List<Map> fieldList = CodeDOM.getList(sql);
+            for (Map<String, Object> fieldMap : fieldList) {
+                String c_element_code = toString(fieldMap.get("C_ELEMENT_CODE"));
+                String ele_name = toString(fieldMap.get("ELE_NAME"));
+                String type = toString(fieldMap.get("TYPE"));
+                String accuracy = toString(fieldMap.get("ACCURACY"));
+                String unit = toString(fieldMap.get("UNIT"));
+                String is_null = toString(fieldMap.get("IS_NULL"));
+                String is_premary_key = toString(fieldMap.get("IS_PREMARY_KEY"));
+                String serial_number = toString(fieldMap.get("SERIAL_NUMBER"));
+
+                NewdataTableColumnEntity newdataTableColumnEntity = new NewdataTableColumnEntity();
+                newdataTableColumnEntity.setApplyId(newdataApplyEntity.getId());
+                newdataTableColumnEntity.setCElementCode(c_element_code);
+                newdataTableColumnEntity.setEleName(ele_name);
+                newdataTableColumnEntity.setType(type);
+                newdataTableColumnEntity.setAccuracy(accuracy);
+                if(StringUtils.isNotEmpty(unit)){
+                    newdataTableColumnEntity.setUnit(unit);
+                }
+                if("1".equals(is_null)){
+                    newdataTableColumnEntity.setIsNull(true);
+                }else{
+                    newdataTableColumnEntity.setIsNull(false);
+                }
+                if("1".equals(is_premary_key)){
+                    newdataTableColumnEntity.setIsPrimaryKey(true);
+                }else{
+                    newdataTableColumnEntity.setIsPrimaryKey(false);
+                }
+                newdataTableColumnEntity.setSerialNumber(Integer.valueOf(serial_number));
+                newdataTableColumnDao.saveNotNull(newdataTableColumnEntity);
+            }
+
 
             //保存存储策略
-            if(StringUtils.isNotEmpty(data_class_id)){
+            /*if(StringUtils.isNotEmpty(data_class_id)){
                 sql = "select * from dmin_storage_configuration where data_class_id='"+data_class_id+"'";
                 List<Map> storageList = CodeDOM.getList(sql);
                 for (Map<String, Object> storageMap : storageList) {
@@ -1706,7 +1740,7 @@ public class ImportData {
                     }
                     storageConfigurationDao.saveNotNull(storageConfigurationEntity);
                 }
-            }
+            }*/
         }
     }
 

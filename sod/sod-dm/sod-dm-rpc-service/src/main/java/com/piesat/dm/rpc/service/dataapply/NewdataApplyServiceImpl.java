@@ -6,7 +6,9 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataapply.NewdataApplyDao;
+import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
+import com.piesat.dm.entity.dataapply.NewdataTableColumnEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
@@ -33,9 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author yaya
@@ -73,6 +73,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     private ShardingService shardingService;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private NewdataTableColumnDao newdataTableColumnDao;
 
 
     @Override
@@ -96,6 +98,12 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         //获取当前页数据
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
         return pageBean;
+    }
+
+    @Override
+    public NewdataApplyDto getDotById(String id) {
+        NewdataApplyEntity newdataApplyEntity = this.getById(id);
+        return newdataApplyMapper.toDto(newdataApplyEntity);
     }
 
     @Override
@@ -254,12 +262,6 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
-    public List<TableColumnDto> getNewdataTableField(String id) {
-        List<TableColumnDto> tableField = tableColumnService.findByTableId(id);
-        return tableField;
-    }
-
-    @Override
     public ResultT<String> addDataStructure(TableColumnDto tableColumnDto) {
         TableColumnDto tableColumnDto1 = tableColumnService.saveDto(tableColumnDto);
         return ResultT.success();
@@ -297,7 +299,29 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public List<Map<String, Object>> getColumnByIdAndDDataId(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
-        return mybatisQueryMapper.getColumnByIdAndDDataId(newdataApplyEntity);
+        newdataApplyDto = this.getDotById(newdataApplyEntity.getId());
+
+        List<Map<String, Object>> resultMap = new ArrayList<Map<String, Object>>();
+        if(newdataApplyDto != null && StringUtils.isNotNullString(newdataApplyDto.getDataClassId())){
+            resultMap = mybatisQueryMapper.getColumnByIdAndDDataId(newdataApplyEntity);
+        }else{
+            List<NewdataTableColumnEntity> tableColumnEntities = newdataTableColumnDao.findByApplyId(newdataApplyDto.getId());
+            if(tableColumnEntities != null && tableColumnEntities.size() > 0){
+                for (NewdataTableColumnEntity newdataTableColumnEntity: tableColumnEntities){
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("C_ELEMENT_CODE",newdataTableColumnEntity.getCElementCode());
+                    map.put("ELE_NAME",newdataTableColumnEntity.getEleName());
+                    map.put("TYPE",newdataTableColumnEntity.getType());
+                    map.put("ACCURACY",newdataTableColumnEntity.getAccuracy());
+                    map.put("UNIT",newdataTableColumnEntity.getUnit());
+                    map.put("SERIAL_NUMBER",newdataTableColumnEntity.getSerialNumber());
+                    map.put("IS_NULL",newdataTableColumnEntity.getIsNull());
+                    map.put("IS_PRIMARY_KEY",newdataTableColumnEntity.getIsPrimaryKey());
+                    resultMap.add(map);
+                }
+            }
+        }
+        return resultMap;
     }
 
     @Override

@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface DatabaseDefineDao extends BaseDao<DatabaseDefineEntity> {
     List<DatabaseDefineEntity> findByDatabaseType(String databaseType);
+
+    List<DatabaseDefineEntity> findByIdIn(List<String> ids);
 }

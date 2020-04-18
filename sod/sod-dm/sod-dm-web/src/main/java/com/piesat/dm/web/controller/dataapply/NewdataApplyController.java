@@ -333,15 +333,6 @@ public class NewdataApplyController {
        return newdataApplyService.addOrUpdateDataTable(dataTableDto);
     }
 
-
-    //
-    @GetMapping("/getNewdataTableField/{id}")
-    @ApiOperation(value = "根据任务id获取表字段信息", notes = "根据任务id获取表字段信息")
-    public  ResultT<String> getNewdataTableField(@PathVariable String id){
-        List<TableColumnDto> newdataTableField = newdataApplyService.getNewdataTableField(id);
-        return ResultT.success();
-    }
-
     //addDataStructure
     @ApiOperation(value="添加表结构接口",notes="添加表结构接口")
     @PostMapping("/addDataStructure")
