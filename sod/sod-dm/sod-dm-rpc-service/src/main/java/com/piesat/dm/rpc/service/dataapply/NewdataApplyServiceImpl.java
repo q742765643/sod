@@ -12,6 +12,7 @@ import com.piesat.dm.entity.dataapply.NewdataTableColumnEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -75,6 +76,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private NewdataTableColumnDao newdataTableColumnDao;
+    @Autowired
+    private NewdataTableColumnService newdataTableColumnService;
 
 
     @Override
@@ -112,6 +115,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
+
 
     @Override
     public NewdataApplyDto updateDto(NewdataApplyDto newdataApplyDto) {
@@ -334,6 +338,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
             //删除表结构
             dataClassService.deleteByDataClassId(newdataApplyEntity.getDataClassId());
         }
+        //删除portal申请时携带的字段信息
+        newdataTableColumnService.deleteByApplyId(id);
         //删除申请信息
         this.delete(id);
     }

@@ -14,4 +14,6 @@ import java.util.List;
 @Repository
 public interface NewdataTableColumnDao extends BaseDao<NewdataTableColumnEntity> {
     List<NewdataTableColumnEntity> findByApplyId(String applyId);
+
+    void deleteByApplyId(String applyId);
 }
