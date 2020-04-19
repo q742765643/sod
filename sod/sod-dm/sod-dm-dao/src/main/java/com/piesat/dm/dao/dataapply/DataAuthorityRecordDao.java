@@ -16,4 +16,6 @@ public interface DataAuthorityRecordDao extends BaseDao<DataAuthorityRecordEntit
     List<DataAuthorityRecordEntity> findByApplyIdAndDataClassId(String applyId, String dataClassId);
 
     List<DataAuthorityRecordEntity> findByApplyIdAndDataClassIdAndDatabaseId(String applyId, String dataClassId,String databaseId);
+
+    List<DataAuthorityRecordEntity> findByDataClassIdAndAuthorize(String dataClassId,Integer authorize);
 }

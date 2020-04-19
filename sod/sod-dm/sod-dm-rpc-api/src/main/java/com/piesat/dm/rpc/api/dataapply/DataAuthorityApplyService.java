@@ -30,5 +30,7 @@ public interface DataAuthorityApplyService {
 
     void updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause);
 
+    Map<String,Object>  getAuthorDataByClassId(String dataClassId);
+
     void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id,String data_class_id,String database_id,Integer authorize, String cause);
 }

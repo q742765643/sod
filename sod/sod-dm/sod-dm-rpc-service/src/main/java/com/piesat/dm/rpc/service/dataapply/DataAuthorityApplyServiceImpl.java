@@ -16,6 +16,7 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
@@ -24,6 +25,7 @@ import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityApplyMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityRecordMapper;
@@ -63,6 +65,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private DatabaseUserService databaseUserService;
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private DataAuthorityRecordDao dataAuthorityRecordService;
+    @Autowired
+    private DataClassService dataClassService;
 
     @Override
     public BaseDao<DataAuthorityApplyEntity> getBaseDao() {
@@ -293,6 +299,15 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(),authorize,cause);
             }
         }
+    }
+
+    @Override
+    public Map<String, Object> getAuthorDataByClassId(String dataClassId) {
+        HashMap<String, Object> map = new HashMap<>();
+        DataClassDto dataClassDto = dataClassService.findByDataClassId(dataClassId);
+        //List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByDataClassIdAndAuthorize(dataClassId, 1);
+        map.put("access_control", dataClassDto.getIsAccess());
+        return map;
     }
 
     @Override
