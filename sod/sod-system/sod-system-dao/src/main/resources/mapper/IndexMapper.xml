@@ -131,11 +131,15 @@
 	<!-- 获取逻辑库资料统计数量 -->
 	<select id="findLogicCountData" resultType="java.util.Map">
 		select
-			count(data_class_id) as "num",logic_flag as "databaseLogic"
+			count(t1.data_class_id) as "num",t2.logic_flag as "databaseLogic", t2.logic_name as "logicName"
 		from
-			t_sod_data_logic
+			t_sod_data_logic t1 
+		left join 
+			t_sod_logic_define t2 on t1.logic_flag = t2.logic_flag
+	 	where 
+	 		t2.logic_flag is not null 
 		group by
-			logic_flag
+			t2.logic_flag,t2.logic_name
 	</select>
 	<!-- 获取专题库信息 -->
 	<select id="findSpecialDbList" resultType="java.util.Map">
