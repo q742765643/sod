@@ -14,7 +14,7 @@
   <select id="selectList" parameterType="com.piesat.ucenter.entity.system.PortalAuzEntity" resultMap="baseResultMap">
 		select
 			id,account,post,username,status,update_time,create_time
-		from 
+		from
 			t_sod_portal_auz
 		where
 			1=1
@@ -27,7 +27,5 @@
 		<if test="account != null and account != ''">
 			and account = #{account}
 		</if>
-		order by
-			create_time desc
   </select>
 </mapper>

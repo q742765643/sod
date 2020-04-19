@@ -10,6 +10,8 @@ import com.piesat.dm.rpc.mapper.dataapply.NewdataTableColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 /**
  * @author yaya
  * @description TODO
@@ -34,6 +36,7 @@ public class NewdataTableColumnServiceImpl extends BaseService<NewdataTableColum
         return this.newdataTableColumnMapper.toDto(newdataTableColumnEntity);
     }
 
+    @Transactional
     @Override
     public void deleteByApplyId(String applyId) {
         newdataTableColumnDao.deleteByApplyId(applyId);
