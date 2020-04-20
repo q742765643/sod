@@ -7,7 +7,9 @@ import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库账户管理
@@ -85,4 +87,8 @@ public interface DatabaseUserService {
      * @return
      */
     DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto);
+
+    DatabaseUserDto applyDatabaseUser(HttpServletRequest request);
+
+    Map<String, Object> dataAuthorityCancel(String user_id, String database_id, String data_class_id, Integer apply_authoritys, String mark);
 }

@@ -11,6 +11,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -101,6 +103,24 @@ public class DataLogicController {
         try {
             List<DataLogicDto> all = this.dataLogicService.findByDataClassId(dataClassId);
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据逻辑库类型标志获取资料列表")
+    @RequiresPermissions("dm:dataLogic:getTableByDBLogics")
+    @GetMapping(value = "/getTableByDBLogics")
+    public ResultT getTableByDBLogics(HttpServletRequest request) {
+        try {
+            String tdbId = request.getParameter("tdbId");
+            String[] logics = request.getParameterValues("logics");
+            List<String> logicList = new ArrayList<String>();
+            for (String logic : logics) {
+                logicList.add(logic);
+            }
+            Map<String, Object> map = this.dataLogicService.getTableByDBLogics(tdbId, logicList);
+            return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

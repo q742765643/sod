@@ -23,6 +23,7 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -191,5 +192,12 @@ public class CloudDatabaseApplyController {
         List<CloudDatabaseApplyDto> cloudDatabaseApplyDtos = this.cloudDatabaseApplyService.getByUserId(userId);
         resultT.setData(cloudDatabaseApplyDtos);
         return resultT;
+    }
+    @GetMapping(value = "/getRecentTime")
+    @ApiOperation(value = "根据存储编码和cts编码查询进线时间", notes = "根据存储编码和cts编码查询进线时间")
+    public ResultT getRecentTime(String classDataId, String ctsCode)
+    {
+        Map<String, Object> map = this.cloudDatabaseApplyService.getRecentTime(classDataId,ctsCode);
+        return ResultT.success(map);
     }
 }

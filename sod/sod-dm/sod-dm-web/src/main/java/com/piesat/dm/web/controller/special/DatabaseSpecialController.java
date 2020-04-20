@@ -19,6 +19,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,8 @@ public class DatabaseSpecialController {
     private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
     @Autowired
     private DatabaseSpecialAuthorityService databaseSpecialAuthorityService;
+    @Autowired
+    private DatabaseSpecialTreeServiceImpl databaseSpecialTreeService;
 
 
     @ApiOperation(value = "分页查询")
@@ -317,7 +320,191 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
-
+    @ApiOperation(value = "插入同一专题库下的多条记录")
+    @RequiresPermissions("dm:databaseSpecial:saveMultilRecord")
+    @GetMapping(value = "/saveMultilRecord")
+    @Log(title = "插入同一专题库下的多条记录", businessType = BusinessType.INSERT)
+    public  ResultT saveMultilRecord(HttpServletRequest request){
+        try {
+            Map<String, Object> map = this.databaseSpecialService.saveMultilRecord(request);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据用户id和专题库id查询")
+    @RequiresPermissions("dm:databaseSpecial:getdefeataudit")
+    @GetMapping(value = "/getdefeataudit")
+    public  ResultT getdefeataudit(String tdbId, String userId){
+        try {
+            DatabaseSpecialDto databaseSpecialDto =  this.databaseSpecialService.getdefeataudit(tdbId,userId);
+            return ResultT.success(databaseSpecialDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据用户id和专题库状态修改")
+    @RequiresPermissions("dm:databaseSpecial:updateBySql")
+    @GetMapping(value = "/updateBySql")
+    public  ResultT updateBySql(HttpServletRequest request){
+        try {
+            String tdbId = request.getParameter("tdbId");
+            String userId = request.getParameter("userId");
+            String cause = request.getParameter("cause");
+            String examineStatus = request.getParameter("examineStatus");
+            Map<String,Object> map =  this.databaseSpecialService.updateBySql(tdbId,userId,cause,examineStatus);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "下根据专题库ID号获取对应专题库信息和该专题库中对应数据信息")
+    @RequiresPermissions("dm:databaseSpecial:getRecordByTdbId")
+    @GetMapping(value = "/getRecordByTdbId")
+    public  ResultT getRecordByTdbId(String tdbId,String typeId, String cause){
+        try {
+            Map<String,Object> map =  this.databaseSpecialService.getRecordByTdbId(tdbId,typeId,cause);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据专题库ID号获取对应专题库信息和对应数据信息")
+    @RequiresPermissions("dm:databaseSpecial:getOneRecordByTdbId")
+    @GetMapping(value = "/getOneRecordByTdbId")
+    public  ResultT getOneRecordByTdbId(String tdbId,String typeId, String cause){
+        try {
+            Map<String,Object> map =  this.databaseSpecialService.getOneRecordByTdbId(tdbId,typeId,cause);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "修改资料申请状态")
+    @RequiresPermissions("dm:databaseSpecial:changeDataStatus")
+    @GetMapping(value = "/changeDataStatus")
+    public  ResultT changeDataStatus(String tdbId, String physical,String data_class_id){
+        try {
+            Map<String,Object> map =  this.databaseSpecialReadWriteService.changeDataStatus(tdbId,physical,data_class_id);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "专题库资料清单删除")
+    @RequiresPermissions("dm:databaseSpecial:deleteRecords")
+    @GetMapping(value = "/deleteRecords")
+    public  ResultT deleteRecords(HttpServletRequest request){
+        try {
+            Map<String,Object> map =  this.databaseSpecialReadWriteService.deleteRecords(request);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "保存专题库资料树")
+    @RequiresPermissions("dm:databaseSpecial:saveTreeData")
+    @GetMapping(value = "/saveTreeData")
+    public  ResultT saveTreeData(String tdbId, HttpServletRequest request){
+        try {
+            Map<String,Object> map =  this.databaseSpecialTreeService.saveTreeData(tdbId,request);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据专题库ID号和分类ID修改对应分类名称、上级分类、排序")
+    @RequiresPermissions("dm:databaseSpecial:updateOneRecordByTdbId")
+    @GetMapping(value = "/updateOneRecordByTdbId")
+    public  ResultT updateOneRecordByTdbId(HttpServletRequest request){
+        try {
+            Map<String,Object> map =  this.databaseSpecialTreeService.updateOneRecordByTdbId(request);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据专题库ID号和分类ID删除对应树信息")
+    @RequiresPermissions("dm:databaseSpecial:deleteRecordByTdbId")
+    @GetMapping(value = "/deleteRecordByTdbId")
+    public  ResultT deleteRecordByTdbId(String tdbId, String typeId){
+        try {
+            Map<String,Object> map =  this.databaseSpecialTreeService.deleteRecordByTdbId(tdbId,typeId);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据专题库ID和存储编码来修改分类ID")
+    @RequiresPermissions("dm:databaseSpecial:updateTypeIdByTdbId")
+    @GetMapping(value = "/updateTypeIdByTdbId")
+    public  ResultT updateTypeIdByTdbId(String tdbId, String dataClassId, String typeId){
+        try {
+            Map<String,Object> map =  this.databaseSpecialTreeService.updateTypeIdByTdbId(tdbId, dataClassId, typeId);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "获取平台中所有专题库")
+    @RequiresPermissions("dm:databaseSpecial:getAllSpecial")
+    @GetMapping(value = "/getAllSpecial")
+    public  ResultT getAllSpecial(String userId){
+        try {
+            Map<String,Object> map =  this.databaseSpecialService.getAllSpecial(userId);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "提交专题库引用申请并将一条记录插入数据表")
+    @RequiresPermissions("dm:databaseSpecial:saveOneRecord")
+    @GetMapping(value = "/saveOneRecord")
+    public  ResultT saveOneRecord(HttpServletRequest request){
+        try {
+            Map<String,Object> map =  this.databaseSpecialService.saveOneRecord(request);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "获取平台中废弃的专题库")
+    @RequiresPermissions("dm:databaseSpecial:getDiscardSpecial")
+    @GetMapping(value = "/getDiscardSpecial")
+    public  ResultT saveOneRecord(String userId){
+        try {
+            Map<String,Object> map =  this.databaseSpecialService.getDiscardSpecial(userId);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "专题库创建申请")
+    @RequiresPermissions("dm:databaseSpecial:saveCreateapply")
+    @GetMapping(value = "/saveCreateapply")
+    public  ResultT saveCreateapply(HttpServletRequest request){
+        try {
+            Map<String,Object> map =  this.databaseSpecialService.saveCreateapply(request);
+            return ResultT.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
 
 }

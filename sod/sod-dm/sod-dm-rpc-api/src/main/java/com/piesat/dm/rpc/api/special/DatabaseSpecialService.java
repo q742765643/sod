@@ -9,6 +9,7 @@ import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -84,4 +85,32 @@ public interface DatabaseSpecialService {
      * @return
      */
     PageBean selectPageList(PageForm<DatabaseSpecialDto> pageForm);
+
+    /**
+     * 专题库申请
+     * @param request
+     * @return
+     */
+    Map<String,Object> saveCreateapply(HttpServletRequest request);
+
+    /**
+     * 同一专题库下插入多条记录
+     * @param request
+     * @return
+     */
+    Map<String, Object> saveMultilRecord(HttpServletRequest request);
+
+    DatabaseSpecialDto getdefeataudit(String tdbId, String userId);
+
+    Map<String, Object> updateBySql(String tdbId, String userId, String cause, String examineStatus);
+
+    Map<String, Object> getRecordByTdbId(String tdbId, String userId, String cause);
+
+    Map<String, Object> getOneRecordByTdbId(String tdbId, String userId, String cause);
+
+    Map<String, Object> getAllSpecial(String userId);
+
+    Map<String, Object> saveOneRecord(HttpServletRequest request);
+
+    Map<String, Object> getDiscardSpecial(String userId);
 }
