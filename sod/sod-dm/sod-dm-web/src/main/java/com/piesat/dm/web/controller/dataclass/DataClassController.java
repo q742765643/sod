@@ -157,8 +157,8 @@ public class DataClassController {
     @GetMapping(value = "/findAllCategory")
     public ResultT findAllCategory() {
         try {
-            this.dataClassService.findAllCategory();
-            return ResultT.success();
+            List<DataClassDto> dataClassDtos = this.dataClassService.findAllCategory();
+            return ResultT.success(dataClassDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

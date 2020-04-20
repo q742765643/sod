@@ -131,14 +131,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         if (DatabaseType.databaseType.toLowerCase().equals("mysql")) {
             resultList = mybatisQueryMapper.getInfoByUserIdMysql(userId);
         } else {
-            List<Map<String, Object>> infoByUserId1 = mybatisQueryMapper.getInfoByUserId1(userId);
-            if(infoByUserId1 != null){
-                resultList.addAll(infoByUserId1);
-            }
-            List<Map<String, Object>> infoByUserId2 = mybatisQueryMapper.getInfoByUserId2(userId);
-            if(infoByUserId2 != null){
-                resultList.addAll(infoByUserId2);
-            }
+            resultList = mybatisQueryMapper.getInfoByUserId(userId);
         }
         for(Map<String, Object>  map : resultList){
             map.put("id",map.get("ID"));

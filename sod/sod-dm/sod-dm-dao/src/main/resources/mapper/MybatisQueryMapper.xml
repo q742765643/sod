@@ -218,7 +218,7 @@
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
         order by id asc
     </select>
-    <!--<select id="getInfoByUserId" resultType="java.util.Map">
+    <select id="getInfoByUserId" resultType="java.util.Map">
         select b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
                   left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
@@ -226,9 +226,8 @@
         select c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE a
                   left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
-        order by id asc
-    </select>-->
-    <select id="getInfoByUserId1" resultType="java.util.Map">
+    </select>
+    <!--<select id="getInfoByUserId1" resultType="java.util.Map">
         select distinct b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
                left join T_SOD_DATA_LOGIC d on a.class_logic_id = d.id
                left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
@@ -241,7 +240,7 @@
                 left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
                 left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
                 order by id asc
-    </select>
+    </select>-->
 
 
     <select id="getLogicByUserId" resultType="java.util.Map">
