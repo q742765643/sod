@@ -74,7 +74,8 @@ public class GenericDaoImpl<T, ID extends Serializable> extends SimpleJpaReposit
             mergedEntity = entity;
         } else {
             Optional<T> optional=this.findById(entityId);
-            if(optional!=null){
+
+            if(optional!=null&&optional.isPresent()){
                 managedEntity=optional.get();
             }
             if (managedEntity == null) {

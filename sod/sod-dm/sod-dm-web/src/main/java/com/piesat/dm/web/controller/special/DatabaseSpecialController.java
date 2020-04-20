@@ -146,7 +146,8 @@ public class DatabaseSpecialController {
     @PostMapping(value = "/update")
     public ResultT update(@RequestBody DatabaseSpecialDto databaseSpecialDto) {
         try {
-            DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
+            //DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
+            DatabaseSpecialDto save = new DatabaseSpecialDto();
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
