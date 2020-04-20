@@ -33,4 +33,6 @@ public interface DatabaseDefineService {
     PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
 
     DatabaseDefineDto conStatus(String id);
+
+    List<DatabaseDefineDto> findByIdIn(List<String> ids);
 }

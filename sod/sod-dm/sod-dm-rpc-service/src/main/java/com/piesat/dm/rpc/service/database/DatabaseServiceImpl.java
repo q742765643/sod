@@ -4,12 +4,15 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
+import net.sf.saxon.expr.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,9 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     private DatabaseDao databaseDao;
     @Autowired
     private DatabaseMapper databaseMapper;
+
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<DatabaseEntity> getBaseDao() {
@@ -86,6 +92,21 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public List<DatabaseDto> findByDatabaseClassify(String databaseClassify) {
         List<DatabaseEntity> databaseEntities = this.databaseDao.findByDatabaseClassify(databaseClassify);
         return this.databaseMapper.toDto(databaseEntities);
+    }
+
+    @Override
+    public List<Map<String, Object>> findByUserIdAndDatabaseDefineId(String userId, String databaseDefineId) {
+        //由于框架bug导致带union的sql报错，暂时分开写
+        List<Map<String,Object>> resultList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> byUserIdAndDatabaseDefineId1 = this.mybatisQueryMapper.findByUserIdAndDatabaseDefineId1(userId, databaseDefineId);
+        if(byUserIdAndDatabaseDefineId1 != null){
+            resultList.addAll(byUserIdAndDatabaseDefineId1);
+        }
+        List<Map<String, Object>> byUserIdAndDatabaseDefineId2 = this.mybatisQueryMapper.findByUserIdAndDatabaseDefineId2(userId, databaseDefineId);
+        if(byUserIdAndDatabaseDefineId2 != null){
+            resultList.addAll(byUserIdAndDatabaseDefineId2);
+        }
+        return resultList;
     }
 
     @Override

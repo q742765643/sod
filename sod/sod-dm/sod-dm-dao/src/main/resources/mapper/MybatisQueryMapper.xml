@@ -203,9 +203,9 @@
     </select>
 
     <select id="getTableInfoByClassId" resultType="java.util.Map">
-        select a.*,b.logic_name from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = c.id
+        select a.*,c.logic_name from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = b.id
                                          left join T_SOD_LOGIC_DEFINE c on b.logic_flag = c.logic_flag
-                                          where a.data_class_id=#{dataClassId}
+                                          where b.data_class_id=#{dataClassId}
     </select>
 
     <select id="getInfoByUserIdMysql" resultType="java.util.Map">
@@ -218,7 +218,7 @@
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
         order by id asc
     </select>
-    <select id="getInfoByUserId" resultType="java.util.Map">
+    <!--<select id="getInfoByUserId" resultType="java.util.Map">
         select b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
                   left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
@@ -227,7 +227,22 @@
                   left join T_SOD_DATA_CLASS b on a.data_class_id = b.data_class_id
                   left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
         order by id asc
+    </select>-->
+    <select id="getInfoByUserId1" resultType="java.util.Map">
+        select distinct b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
+               left join T_SOD_DATA_LOGIC d on a.class_logic_id = d.id
+               left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
+               left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+
     </select>
+    <select id="getInfoByUserId2" resultType="java.util.Map">
+        select distinct c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE a
+                left join T_SOD_DATA_LOGIC d on a.class_logic_id = d.id
+                left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
+                left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where a.user_id=#{userId}
+                order by id asc
+    </select>
+
 
     <select id="getLogicByUserId" resultType="java.util.Map">
         select distinct a.* from T_SOD_LOGIC_DEFINE a, T_SOD_LOGIC_DATABASE b where a.id = b.logic_id
@@ -336,7 +351,7 @@
     </update>
     <select id="getByUserIdAndApplyId" resultType="java.util.Map">
         select a.*,f.logic_name,d.id physicId,e.class_name dataName,
-        c.database_name || '[' || c.schema_name || ']' as schemaName,d.database_name || '[' || d.id || ']' as
+        c.database_name || '【' || c.schema_name || '】' as schemaName,d.database_name || '【' || d.id || '】' as
         physicName
         from T_SOD_NEWDATA_APPLY a
         left join T_SOD_LOGIC_DEFINE f on a.logic_id = f.logic_flag
@@ -361,12 +376,10 @@
     <select id="getColumnByIdAndDDataId" resultType="java.util.Map">
         select distinct c_element_code,ele_name,type,unit,user_ele_code,is_null,accuracy,is_primary_key,serial_number
         from T_SOD_DATA_TABLE_COLUMN where table_id in
-        ( select t.id table_name
+        ( select t.id
         from T_SOD_NEWDATA_APPLY a
-        left join T_SOD_STORAGE_CONFIGURATION b on a.data_class_id=b.data_class_id
-        left join T_SOD_DATA_LOGIC f on b.database_id = f.database_id and b.logic_id = f.logic_id and b.data_class_id =
-        f.data_class_id
-        left join T_SOD_DATA_TABLE t on f.id = t.class_logic_id
+        left join T_SOD_DATA_LOGIC c on a.data_class_id = c.data_class_id
+        left join T_SOD_DATA_TABLE t on c.id = t.class_logic_id
         <where>
             <if test="entity.id != null and entity.id  != ''">
                 a.id = #{entity.id}
@@ -703,6 +716,16 @@
     <select id="findByDatabaseDefine" resultType="java.util.Map" parameterType="String">
         SELECT * FROM t_sod_database_define WHERE id=
         (SELECT database_define_id FROM t_sod_database WHERE id=#{databaseId})
+    </select>
+
+    <select id="findByUserIdAndDatabaseDefineId1" resultType="java.util.Map" parameterType="String">
+        select a.id as "id",a.database_name || '【' || a.schema_name || '】' as "name",a.database_define_id as "physicId" from t_sod_database a
+        where a.database_classify = '物理库' and a.database_define_id = #{databaseDefineId}
+    </select>
+    <select id="findByUserIdAndDatabaseDefineId2" resultType="java.util.Map" parameterType="String">
+        select a.id as "id",a.database_name || '【' || a.schema_name || '】' as "name",a.database_define_id as "physicId" from t_sod_database a
+        left join t_sod_database_special b on a.tdb_id = b.id
+        where a.database_classify = '专题库' and b.EXAMINE_STATUS = '2' and b.USE_STATUS = '2' and a.database_define_id = #{databaseDefineId} and b.user_id = #{userId}
     </select>
 
     <select id="getSqlList" resultType="java.util.Map" parameterType="String">

@@ -2,8 +2,10 @@ package com.piesat.dm.web.controller.dataapply;
 
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -28,6 +30,8 @@ public class DataAuthorityApplyController {
 
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
+
+
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -140,6 +144,16 @@ public class DataAuthorityApplyController {
         }catch (Exception e){
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @GetMapping(value = "/getAuthorDataByClassId")
+    @ApiOperation(value = "根据资料编码获取授权信息", notes = "根据资料编码获取授权信息")
+    public ResultT getAuthorDataByClassId(String dataClassId)
+    {
+        ResultT resultT=new ResultT<>();
+        Map<String,Object> resultMap = this.dataAuthorityApplyService.getAuthorDataByClassId(dataClassId);
+        resultT.setData(resultMap);
+        return resultT;
     }
 
 }

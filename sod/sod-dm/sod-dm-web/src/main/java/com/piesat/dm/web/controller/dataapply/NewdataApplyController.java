@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
@@ -14,6 +15,7 @@ import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.dataapply.NewdataTableColumnDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
@@ -61,6 +63,8 @@ public class NewdataApplyController {
     private TableIndexService tableIndexService;
     @Autowired
     private ShardingService shardingService;
+    @Autowired
+    private NewdataTableColumnService newdataTableColumnService;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -85,8 +89,25 @@ public class NewdataApplyController {
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(@RequestBody NewdataApplyDto newdataApplyDto) {
         try {
+            newdataApplyDto.setDDataId("Z.9999.9999");
+            newdataApplyDto.setExamineStatus(1);
             NewdataApplyDto save = this.newdataApplyService.saveDto(newdataApplyDto);
             return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @PostMapping(value = "/saveColumns")
+    @ApiOperation(value = "批量添加字段信息", notes = "批量添加字段信息")
+    public ResultT saveColumns(@RequestBody List<NewdataTableColumnDto> newdataTableColumnDtos) {
+        try {
+            if(newdataTableColumnDtos != null){
+                for(NewdataTableColumnDto newdataTableColumnDto:newdataTableColumnDtos){
+                    this.newdataTableColumnService.saveDto(newdataTableColumnDto);
+                }
+            }
+            return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -122,6 +143,13 @@ public class NewdataApplyController {
     @ApiOperation(value = "根据申请id删除申请表和表结构数据", notes = "根据申请id删除申请表和表结构数据")
     public ResultT deleteById(String id){
         this.newdataApplyService.deleteById(id);
+        return ResultT.success();
+    }
+
+    @DeleteMapping("/deleteByIdPortal")
+    @ApiOperation(value = "根据申请id删除申请表和表结构数据(portal调用)", notes = "根据申请id删除申请表和表结构数据(portal调用)")
+    public ResultT deleteByIdPortal(@RequestBody NewdataApplyDto newdataApplyDto){
+        this.newdataApplyService.deleteById(newdataApplyDto.getId());
         return ResultT.success();
     }
 
@@ -331,15 +359,6 @@ public class NewdataApplyController {
     @PostMapping(value="/addOrUpdateDataTable")
     public ResultT<String> addOrUpdateDataTable(@RequestBody DataTableDto dataTableDto, HttpServletRequest request){
        return newdataApplyService.addOrUpdateDataTable(dataTableDto);
-    }
-
-
-    //
-    @GetMapping("/getNewdataTableField/{id}")
-    @ApiOperation(value = "根据任务id获取表字段信息", notes = "根据任务id获取表字段信息")
-    public  ResultT<String> getNewdataTableField(@PathVariable String id){
-        List<TableColumnDto> newdataTableField = newdataApplyService.getNewdataTableField(id);
-        return ResultT.success();
     }
 
     //addDataStructure

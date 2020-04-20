@@ -83,7 +83,8 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getInfoByUserIdMysql(@Param("userId") String userId);
 
-    List<Map<String, Object>> getInfoByUserId(@Param("userId") String userId);
+    List<Map<String, Object>> getInfoByUserId1(@Param("userId") String userId);
+    List<Map<String, Object>> getInfoByUserId2(@Param("userId") String userId);
 
     List<Map<String, Object>> querySpecialReadWriteBySdbId(@Param("sdbId") String sdbId);
 
@@ -116,6 +117,9 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> findShardByTableId(@Param("tableId") String tableId);
 
     Map<String, Object> findByDatabaseDefine(@Param("databaseId") String databaseId);
+
+    List<Map<String, Object>> findByUserIdAndDatabaseDefineId1(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
+    List<Map<String, Object>> findByUserIdAndDatabaseDefineId2(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
 
     List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
 	/**

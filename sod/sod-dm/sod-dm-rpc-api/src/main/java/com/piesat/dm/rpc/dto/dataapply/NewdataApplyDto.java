@@ -49,7 +49,7 @@ public class NewdataApplyDto {
     /**
      * 数据库ID
      */
-    /*private String databaseId;*/
+    private String databaseId;
     private List<DataLogicDto> dataLogicDtoList;
 
     /**
