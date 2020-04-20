@@ -2,14 +2,14 @@
   <div class="app-container">
     <!-- grib参数定义 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="GRIB格式:">
-        <el-input size="small" v-model="queryParams.gribVersion" placeholder="请输入GRIB格式" />
+      <el-form-item label="GRIB版本:">
+        <el-input size="small" v-model="queryParams.gribVersion" placeholder="请输入GRIB版本" />
       </el-form-item>
       <el-form-item label="参数编码:">
         <el-input size="small" v-model="queryParams.parameterId" placeholder="请输入参数编码" />
       </el-form-item>
-      <el-form-item label="代码简写:">
-        <el-input size="small" v-model="queryParams.eleCodeShort" placeholder="请输入代码简写" />
+      <el-form-item label="要素存储短名:">
+        <el-input size="small" v-model="queryParams.eleCodeShort" placeholder="请输入要素存储短名" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>

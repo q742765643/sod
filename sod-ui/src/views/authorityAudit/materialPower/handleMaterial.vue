@@ -17,9 +17,28 @@
         <el-form-item label="数据库账户名">
           <el-input v-model="formBaseInfo.DATABASE_UP_ID" readonly></el-input>
         </el-form-item>
-        <el-form-item label="数据库账户密码">
-          <el-input v-model="formBaseInfo.DATABASE_UP_PASSWORD" readonly></el-input>
-        </el-form-item>
+
+        <el-row>
+          <el-col :span="22">
+            <el-form-item label="数据库账户密码">
+              <el-input
+                v-model="formBaseInfo.DATABASE_UP_PASSWORD"
+                readonly
+                @blur="capsTooltip = false"
+                :type="passwordType"
+                name="password"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
+            <el-form-item class="unitFormItem">
+              <i
+                :class="passwordType === 'password' ? 'eye isEye' : 'el-icon-view isEye'"
+                @click="showPwd"
+              ></i>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-tab-pane>
     <el-tab-pane label="数据读写权限" name="second">
@@ -129,6 +148,7 @@ export default {
   },
   data() {
     return {
+      passwordType: "password",
       activeName: "first",
       formBaseInfo: {},
       queryParams: {},
@@ -152,6 +172,14 @@ export default {
     });
   },
   methods: {
+    // 眼睛开关
+    showPwd() {
+      if (this.passwordType === "password") {
+        this.passwordType = "";
+      } else {
+        this.passwordType = "password";
+      }
+    },
     handleClick() {
       if (this.activeName == "second") {
         this.handleQuery();

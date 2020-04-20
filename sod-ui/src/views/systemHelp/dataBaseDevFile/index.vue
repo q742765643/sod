@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- 数据库开发文档 -->
+    <!-- 数据库开发文档 2020/4/20 和数据库运维文档合并为数据库文档-->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="文档名称">
         <el-input size="small" v-model="queryParams.fileName"></el-input>
@@ -11,7 +11,7 @@
       <el-form-item label="上传时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.time"
+          v-model="dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -27,14 +27,15 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-upload
+          v-model="examineMaterial"
           class="upload-demo"
-          :action="uploadUrl"
-          multiple
+          accept=".docx, .pdf"
           :limit="1"
-          :show-file-list="showFile"
-          :before-upload="beforeUpload"
-          :on-success="handleAvatarSuccess"
-          ref="upload"
+          :action="upLoadUrl"
+          multiple
+          :on-success="successUpload"
+          :before-upload="handleBefore"
+          :data="uploadData"
         >
           <el-button size="small" type="primary" icon="el-icon-upload">上传</el-button>
         </el-upload>
@@ -49,13 +50,14 @@
       row-key="id"
       highlight-current-row
       @current-change="handleCurrentChange"
+      @sort-change="sortChange"
     >
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="fileName" label="文档名称"></el-table-column>
       <el-table-column prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
       <el-table-column prop="filePictrue" label="文档类型" width="100px"></el-table-column>
-      <el-table-column prop="updateTime" label="上传时间" width="180px"></el-table-column>
-      <el-table-column label="操作" width="260px">
+      <el-table-column prop="updateTime" label="上传时间" width="180px" sortable="custom"></el-table-column>
+      <el-table-column label="操作" width="100px">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -63,7 +65,6 @@
             icon="el-icon-download"
             @click="downloadFile(scope.row)"
           >下载文档</el-button>
-          <el-button type="text" size="mini" icon="el-icon-view" @click="viewFile(scope.row)">预览</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -79,6 +80,7 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_DM;
 import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
 export default {
   data() {
@@ -92,15 +94,21 @@ export default {
         fileSuffix: "",
         endDate: "",
         startDate: "",
-        time: ["", ""],
-        order: "desc",
-        fileType: "dev"
+        params: {
+          orderBy: {
+            updateTime: "desc"
+          }
+        },
+        fileType: ""
       },
+      dateRange: [],
       uoploaFile: "",
       total: 0,
       tableData: [],
       currentRow: null,
-      uploadUrl: "",
+      upLoadUrl: baseUrl + "/api/dbfile/upload",
+      uploadData: {},
+      examineMaterial: "",
       showFile: false
     };
   },
@@ -108,6 +116,16 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.updateTime = "asc";
+      } else {
+        orderBy.updateTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -122,15 +140,13 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      if (this.queryParams.time && this.queryParams.time.length > 0) {
-        this.queryParams.startDate = this.queryParams.time[0];
-        this.queryParams.endDate = this.queryParams.time[1];
-      }
-      getpage(this.queryParams).then(response => {
-        this.tableData = response.data.pageData;
-        this.total = response.data.totalCount;
-        this.loading = false;
-      });
+      getpage(this.addDateRange(this.queryParams, this.dateRange)).then(
+        response => {
+          this.tableData = response.data.pageData;
+          this.total = response.data.totalCount;
+          this.loading = false;
+        }
+      );
     },
     resetQuery() {
       this.queryParams = {
@@ -140,9 +156,9 @@ export default {
         fileSuffix: "",
         endDate: "",
         startDate: "",
-        time: ["", ""],
         order: "desc"
       };
+      this.dateRange = [];
       this.handleQuery();
     },
     handleCurrentChange(val) {
@@ -179,16 +195,10 @@ export default {
         });
       }
     },
-    beforeUpload(file) {
-      let fd = new FormData();
-      fd.append("file", file); //传文件
-      console.log(file);
-      console.log(fd);
-      upload(file).then(response => {
-        console.log(response);
-      });
+    handleBefore(file) {
+      this.uploadData.filename = file;
     },
-    handleAvatarSuccess(res, file) {
+    successUpload(res, file) {
       if (res.returnCode == 0) {
         this.$message({
           type: "success",
@@ -201,10 +211,10 @@ export default {
           message: "导入失败"
         });
       }
+      this.examineMaterial = res.msg;
       this.$refs.upload.clearFiles();
     },
-    downloadFile() {},
-    viewFile() {}
+    downloadFile() {}
   }
 };
 </script>

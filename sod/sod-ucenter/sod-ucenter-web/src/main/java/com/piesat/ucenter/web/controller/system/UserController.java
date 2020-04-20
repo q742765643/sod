@@ -153,4 +153,16 @@ public class UserController {
         userService.exportExcel(userDto);
     }
 
+    @RequiresPermissions("system:user:resetPwd")
+    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwd")
+    @ResponseBody
+    public ResultT resetPwdSave(@RequestBody UserDto user)
+    {
+        UserDto userDto= userService.selectUserById(user.getId());
+        userDto.setPassword(user.getPassword());
+        userService.updateUser(userDto);
+        return new ResultT<>();
+    }
+
 }

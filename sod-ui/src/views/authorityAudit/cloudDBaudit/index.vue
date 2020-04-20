@@ -53,11 +53,11 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="申请用户" width="120px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="department" label="申请单位" width="120px"></el-table-column>
-      <el-table-column prop="updateTime" label="申请时间" width="160px">
+      <el-table-column prop="updateTime" label="申请时间" width="160px" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -151,7 +151,12 @@ export default {
         pageSize: 10,
         examineStatus: "",
         userName: "",
-        databaseName: ""
+        databaseName: "",
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
       dateRange: [],
       auditStatus: [
@@ -186,6 +191,16 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (

@@ -38,6 +38,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -87,7 +88,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if(StringUtils.isNotBlank(databaseUserEntity.getExamineStatus())){
             specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseUserEntity.getExamineStatus());
         }
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
+        Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<DatabaseUserEntity> databaseUserEntityList= (List<DatabaseUserEntity>) pageBean.getPageData();
         List<DatabaseUserDto> databaseUserDtoList = databaseUserMapper.toDto(databaseUserEntityList);
         //获取数据库列表，查询展示数据库中文名称

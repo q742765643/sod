@@ -106,6 +106,7 @@ serverfile:
   dbfile: /home/sod/file/upload/dbfile
   filePath: /home/sod/file/upload/filePath
   dfcheck: /home/sod/file/upload/dfcheck
+  special: /home/sod/file/upload/special
 
   static:
     template:

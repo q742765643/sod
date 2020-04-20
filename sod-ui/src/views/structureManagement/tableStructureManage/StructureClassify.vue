@@ -58,15 +58,16 @@
           @node-click="sourceNodeClick"
           ref="elTree"
         >
-          <span
-            class="custom-tree-node"
-            slot-scope="{ node, data }"
-            @mouseleave="mouseleave(data,$event)"
-            @mouseover="mouseover(data,$event)"
-          >
+          <span class="custom-tree-node" slot-scope="{ node, data }">
             <span class="el-tree-node__label">
               <i :class="data.icon"></i>
-              {{ node.label }}
+              <el-popover
+                placement="top-start"
+                trigger="hover"
+                :content="node.label+'('+node.id+')'"
+              >
+                <el-button type="text" slot="reference">{{ node.label }}</el-button>
+              </el-popover>
             </span>
           </span>
         </el-tree>
@@ -137,12 +138,6 @@ export default {
     this.initMethodsTree("资料分类树");
   },
   methods: {
-    mouseleave(data, $event) {
-      $event.currentTarget.innerHTML = data.name;
-    },
-    mouseover(data, $event) {
-      $event.currentTarget.innerHTML = data.name + "(" + data.id + ")";
-    },
     // 树的搜索方法
     filterNode(value, data) {
       if (!value) return true;
@@ -389,6 +384,9 @@ export default {
     .el-tree {
       i {
         color: #409eff;
+      }
+      .el-button--text {
+        color: #606266;
       }
     }
 

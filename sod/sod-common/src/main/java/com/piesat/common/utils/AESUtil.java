@@ -22,9 +22,9 @@ import java.security.SecureRandom;
  */
 public class AESUtil {
     //使用AES-128-CBC加密模式，key需要为16位,key和iv可以相同！
-    private static String KEY = "1234567890123456";
+    private final static String KEY = "1234567890123421";
 
-    private static String IV = "1234567890123456";
+    private final static String IV = "1234567890123456";
 
 
     /**
@@ -118,16 +118,16 @@ public class AESUtil {
      */
     public static void main(String args[]) throws Exception {
 
-        String test1 = "sa";
+        String test1 = "123qweasdzxc";
         String test =new String(test1.getBytes(),"UTF-8");
         String data = null;
         String key =  KEY;
         String iv = IV;
         // /g2wzfqvMOeazgtsUVbq1kmJawROa6mcRAzwG1/GeJ4=
-        data = encrypt(test, key, iv);
+        data = aesEncrypt(test);
         System.out.println("数据："+test);
         System.out.println("加密："+data);
-        String jiemi =desEncrypt(data, key, iv).trim();
+        String jiemi =aesDecrypt(data).trim();
         System.out.println("解密："+jiemi);
 
 

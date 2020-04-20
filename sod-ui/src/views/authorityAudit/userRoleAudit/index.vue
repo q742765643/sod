@@ -13,7 +13,7 @@
           size="small"
           style="width: 240px"
         >
-          <el-option label="全部" value=" "></el-option>
+          <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>
           <el-option label="已审核" value="1"></el-option>
         </el-select>
