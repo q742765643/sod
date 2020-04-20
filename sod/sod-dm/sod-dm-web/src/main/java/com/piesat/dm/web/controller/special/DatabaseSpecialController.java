@@ -1,6 +1,7 @@
 package com.piesat.dm.web.controller.special;
 
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
@@ -342,7 +343,7 @@ public class DatabaseSpecialController {
     @GetMapping(value = "/getdefeataudit")
     public  ResultT getdefeataudit(String tdbId, String userId){
         try {
-            DatabaseSpecialDto databaseSpecialDto =  this.databaseSpecialService.getdefeataudit(tdbId,userId);
+            DatabaseSpecialAccessEntity databaseSpecialDto =  this.databaseSpecialService.getdefeataudit(tdbId,userId);
             return ResultT.success(databaseSpecialDto);
         } catch (Exception e) {
             e.printStackTrace();

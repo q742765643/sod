@@ -1000,7 +1000,7 @@
         where sdb_id=#{tdbId} and DATA_CLASS_ID=#{dataClassId}
     </update>
     <!-- 下面根据用户ID取得用户创建的专题库（要求：审核状态为审核通过） -->
-    <select id="getAllSpecial" resultMap="BaseResultMap" parameterType="String">
+    <select id="getAllSpecial" resultType="DatabaseSpecialEntity" parameterType="String">
         select
         <include refid="Base_Column_List" />
         from T_SOD_DATABASE_SPECIAL
@@ -1008,7 +1008,7 @@
         order by APPLY_TIME desc
     </select>
     <!-- 下面根据用户ID和专题库ID取得用户专题库申请信息 -->
-    <select id="getAllRecordByUserId" parameterType="String" resultMap="BaseResultMap">
+    <select id="getAllRecordByUserId" parameterType="String" resultType="DatabaseSpecialEntity">
         select
         <include refid="Base_Column_List" />
         from T_SOD_DATABASE_SPECIAL_ACCESS
@@ -1105,7 +1105,7 @@
             </if>
         </where>
     </update>
-    <select id="getRecentOnlineTime" resultMap="timeResult">
+    <select id="getRecentOnlineTime" resultType = "java.util.Map">
 			select
 				databegintime as "BEGIN_TIME", dataendtime as "END_TIME"
 			from
@@ -1113,4 +1113,8 @@
 			where
 				PRODUCTIONCODE = #{ctsCode}
     </select>
+    <sql id="Base_Column_List" >
+	    TDB_ID, TDB_NAME, TDB_IMG, UNIT_ID, USER_ID, APPLY_TIME, USES, APPLY_FILE_PATH, EXAMINER,
+	    EXAMINE_STATUS, EXAMINE_TIME, CAUSE, USE_STATUS ,SORT_NO
+  	</sql>
 </mapper>

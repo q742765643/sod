@@ -1,5 +1,8 @@
 package com.piesat.dm.rpc.service.special;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -15,20 +18,20 @@ import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
-import com.piesat.dm.dao.special.DatabaseSpecialAuthorityDao;
-import com.piesat.dm.dao.special.DatabaseSpecialDao;
-import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
-import com.piesat.dm.dao.special.DatabaseSpecialTreeDao;
+import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
+import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialTreeEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
+import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
@@ -38,8 +41,13 @@ import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAuthorityMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
+import com.piesat.util.GetAllUserInfo;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.RequestContext;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,6 +96,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
+    @Autowired
+    private DatabaseSpecialAccessDao  databaseSpecialAccessDao;
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
         return databaseSpecialDao;
@@ -650,7 +660,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 else if("USES".equals(key))
                 {
                     //下面设置用途。
-                    dbApply.setUse((String)val);
+                    dbApply.setUses((String)val);
                 }
                 else if("APPLY_FILE_PATH".equals(key))
                 {
@@ -862,12 +872,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public DatabaseSpecialDto getdefeataudit(String tdbId, String userId) {
-        DatabaseSpecialDto specialdb = new DatabaseSpecialDto();
-        specialdb.setId(tdbId);
+    public DatabaseSpecialAccessEntity getdefeataudit(String tdbId, String userId) {
+        DatabaseSpecialAccessEntity specialdb = new DatabaseSpecialAccessEntity();
+        specialdb.setSdbId(tdbId);
         specialdb.setUserId(userId);
-        DatabaseSpecialEntity special = databaseSpecialDao.getdefeataudit(tdbId,userId);
-        return databaseSpecialMapper.toDto(special);
+        DatabaseSpecialAccessEntity special = databaseSpecialAccessDao.findBySdbIdAndUserId(tdbId,userId);
+        return special;
     }
 
     @Override
@@ -951,7 +961,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 String strApplyTime=sdf.format(applyTime);
                 createApplyData.put("APPLY_TIME", strApplyTime);
                 //下面取得用途。
-                createApplyData.put("USES", oneRecord.getUse());
+                createApplyData.put("USES", oneRecord.getUses());
                 //下面取得申请材料路径。
                 createApplyData.put("APPLY_FILE_PATH", oneRecord.getApplyMaterial());
                 //下面取得审核人。
@@ -1017,7 +1027,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 String strApplyTime=sdf.format(applyTime);
                 createApplyData.put("APPLY_TIME", strApplyTime);
                 //下面取得用途。
-                createApplyData.put("USES", oneRecord.getUse());
+                createApplyData.put("USES", oneRecord.getUses());
                 //下面取得申请材料路径。
                 createApplyData.put("APPLY_FILE_PATH", oneRecord.getApplyMaterial());
                 //下面取得审核人。
@@ -1078,12 +1088,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 for(DatabaseSpecialEntity obj1 : dataList){
                     //根据用户id获取用户信息
                     String userInfo =  new GetAllUserInfo().getUserInfo((String) obj1.getUserId());
-                    com.alibaba.fastjson.JSONObject jsonobject = JSON.parseObject(userInfo);
-                    if (jsonobject != null) {
-                        obj1.setUserRealname(jsonobject.getString("username"));
-                        obj1.setUserPhone(jsonobject.getString("phone"));
-                        obj1.setDepartment(jsonobject.getString("deptName"));
-                    }
+                    JSONObject jsonobject = JSON.parseObject(userInfo);
+//                    if (jsonobject != null) {
+//                        obj1.setus(jsonobject.getString("username"));
+//                        obj1.setUserPhone(jsonobject.getString("phone"));
+//                        obj1.setDepartment(jsonobject.getString("deptName"));
+//                    }
                     if(applyList!=null&&applyList.size()>0){
                         for(DatabaseSpecialAccessEntity obj2 : applyList){
                             if(obj1.getId().equals(obj2.getSdbId())){
@@ -1222,7 +1232,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
         try {
             // 下面根据传入的专题库ID取得所有对应资料。
-            List<DatabaseSpecialReadWriteEntity> dataList = databaseSpecialReadWriteDao.findByTdbId(tdbId);
+            List<DatabaseSpecialReadWriteEntity> dataList = databaseSpecialReadWriteDao.findBySdbId(tdbId);
             // 下面判断获取的记录数据个数。
             int dataNum = dataList.size();
             if (dataNum >= 1) {

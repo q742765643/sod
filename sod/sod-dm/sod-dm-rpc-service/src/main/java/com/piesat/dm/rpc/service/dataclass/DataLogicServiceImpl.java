@@ -1,10 +1,15 @@
 package com.piesat.dm.rpc.service.dataclass;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
+import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
+import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -161,7 +166,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(logics);
             //如果是向砖题库中追加资料，过滤掉之前选择过的资料
             if(!StringUtils.isBlank(tdbId)){
-                List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findByTdbId(tdbId);
+                List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findBySdbId(tdbId);
                 if(selectedList!=null&&selectedList.size()>0){
                     List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
                     for(Map<String,Object> notSelect :dataList){

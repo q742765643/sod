@@ -93,5 +93,16 @@ public class DatabaseSpecialDto extends BaseDto {
      * 数据库名称
      */
     private String databaseName;
-
+    /**
+     * 用户名
+     */
+    private String userName;
+    /**
+     * 部门
+     */
+    private String department;
+    /**
+     * 联系方式
+     */
+    private String userPhone;
 }

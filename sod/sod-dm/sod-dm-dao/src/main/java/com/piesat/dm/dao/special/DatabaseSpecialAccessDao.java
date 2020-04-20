@@ -2,6 +2,7 @@ package com.piesat.dm.dao.special;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
+import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DatabaseSpecialAccessDao extends BaseDao<DatabaseSpecialAccessEntity> {
+    DatabaseSpecialAccessEntity findBySdbIdAndUserId(String sdbId, String userId);
 }

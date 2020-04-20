@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.api.special;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -100,7 +101,7 @@ public interface DatabaseSpecialService {
      */
     Map<String, Object> saveMultilRecord(HttpServletRequest request);
 
-    DatabaseSpecialDto getdefeataudit(String tdbId, String userId);
+    DatabaseSpecialAccessEntity getdefeataudit(String tdbId, String userId);
 
     Map<String, Object> updateBySql(String tdbId, String userId, String cause, String examineStatus);
 
