@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.dto.special;
 
 import com.piesat.common.jpa.entity.BaseEntity;
 import com.piesat.util.BaseDto;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -76,4 +77,22 @@ public class DatabaseSpecialReadWriteDto extends BaseDto {
     private String typeId;
 
     private String userId;
+
+	@ApiParam("资料分类")
+    private String typeName;
+
+    @ApiParam("资料名称")
+    private String dataName;
+
+    @ApiParam("表名称")
+    private String tableName;
+
+    @ApiParam("数据库名称")
+    private String databaseName;
+
+    @ApiParam("专题库名称")
+    private String sdbName;
+
+    @ApiParam("四级编码")
+    private String dDataId;
 }

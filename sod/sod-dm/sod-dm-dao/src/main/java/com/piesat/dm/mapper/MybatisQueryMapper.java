@@ -118,4 +118,11 @@ public interface MybatisQueryMapper {
     Map<String, Object> findByDatabaseDefine(@Param("databaseId") String databaseId);
 
     List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
+	/**
+     * 查询专题库资料列表
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> getDatabaseSpecialReadWriteList(@Param("map")Map<String,Object> map);
+
 }

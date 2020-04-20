@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service.database;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
@@ -22,6 +23,7 @@ import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,10 +57,41 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public PageBean selectPageList(PageForm<DatabaseUserDto> pageForm) {
         DatabaseUserEntity databaseUserEntity=databaseUserMapper.toEntity(pageForm.getT());
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotBlank(databaseUserEntity.getExamineStatus())){
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseUserEntity.getExamineStatus());
+        }
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<DatabaseUserEntity> databaseUserEntityList= (List<DatabaseUserEntity>) pageBean.getPageData();
-        pageBean.setPageData(databaseUserMapper.toDto(databaseUserEntityList));
+        List<DatabaseUserDto> databaseUserDtoList = databaseUserMapper.toDto(databaseUserEntityList);
+        //获取数据库列表，查询展示数据库中文名称
+        List<DatabaseEntity> databaseEntityList = databaseDao.findAll();
+        if(databaseUserDtoList!=null&&databaseUserDtoList.size()>0&&databaseEntityList!=null&&databaseEntityList.size()>0){
+            for(DatabaseUserDto dto : databaseUserDtoList){
+                String[] applyDatabaseIdArray = dto.getApplyDatabaseId().split(",");
+                String applyDatabaseName = "";
+                for(String applyDatabaseId : applyDatabaseIdArray){
+                    for(DatabaseEntity databaseEntity : databaseEntityList){
+                        if(applyDatabaseId.equals(databaseEntity.getId())){
+                            applyDatabaseName += databaseEntity.getDatabaseDefine().getDatabaseName()+",";
+                        }
+                    }
+                }
+                if(applyDatabaseName.length()>0){
+                    applyDatabaseName = applyDatabaseName.substring(0,applyDatabaseName.length()-1);
+                }
+                dto.setApplyDatabaseName(applyDatabaseName);
+            }
+        }
+        pageBean.setPageData(databaseUserDtoList);
         return pageBean;
+    }
+
+	@Override
+    public DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto) {
+        this.delete(databaseUserDto.getId());
+        DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
+        this.save(databaseUserEntity);
+        return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
     @Override

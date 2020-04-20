@@ -50,7 +50,7 @@ public interface DatabaseSpecialService {
      * 数据库授权
      * @param databaseDto
      */
-    void empowerDatabaseSperial(DatabaseDto databaseDto);
+    void empowerDatabaseSpecial(DatabaseDto databaseDto);
 
     /**
      * 单独资料授权
@@ -77,4 +77,11 @@ public interface DatabaseSpecialService {
     List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId,String useStatus);
 
     public PageBean getPage(PageForm<DatabaseSpecialDto> pageForm);
+
+	/**
+     * 分页查询
+     * @param pageForm
+     * @return
+     */
+    PageBean selectPageList(PageForm<DatabaseSpecialDto> pageForm);
 }

@@ -82,6 +82,7 @@ public class TableExportController {
     @GetMapping(value = "/dataTree")
     public ResultT dataTree(String use_id,String database_id) {
         try {
+			System.out.println(use_id);
             JSONArray all = this.dataClassService.getSimpleTree();
             return ResultT.success(all);
         } catch (Exception e) {
@@ -108,7 +109,7 @@ public class TableExportController {
             String nowtime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             String outFileName = databaseName+"_"+nowtime+".doc";
             //导出文件
-            File file = new FreeMarkerUtil().createDoc(dataMap, outFilePath+"/"+outFileName,"template_simple.ftl",request);
+            File file = new FreeMarkerUtil().createDoc(dataMap, outFilePath+"/"+outFileName,"template_standard.ftl",request);
             System.out.println(file.getAbsolutePath());
             Map<String,Object> map = new HashMap<>();
             map.put("filePath",file.getAbsolutePath());
@@ -146,7 +147,7 @@ public class TableExportController {
         FileOutputStream fos = null;
         try {
             //构建数据结构
-            Map<String,Object> dataMap = tableExportService.getExportMapSimple(database_id,data_class_ids);
+            Map<String,Object> dataMap = tableExportService.getExportMapSimple(database_id,data_class_ids,request);
             //制作模板
             //boolean createModel = exportTableService.createModel(request);
             //用逻辑库名称和物理库名称拼接文件名称

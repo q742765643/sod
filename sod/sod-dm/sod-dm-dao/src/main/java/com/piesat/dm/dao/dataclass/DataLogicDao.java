@@ -23,4 +23,6 @@ public interface DataLogicDao extends BaseDao<DataLogicEntity> {
     List<DataLogicEntity> findByDataClassIdAndLogicFlagAndStorageType(String dataClassId, String logicFlag, String storageType);
 
     List<DataLogicEntity> findByDataClassIdAndDatabaseIdAndLogicFlag(String dataClassId,String databaseId,String logicFlag);
+	
+	DataLogicEntity findByDatabaseId(String databaseLogic);
 }

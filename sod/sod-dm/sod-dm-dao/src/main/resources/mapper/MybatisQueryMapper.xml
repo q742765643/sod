@@ -716,5 +716,30 @@
         ON M.database_id = N.database_id
         AND M.table_name = N.table_name
     </select>
+	<select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT DISTINCT a.sdb_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
+        b.d_data_id,b.class_name,c.class_name type_name,d.table_name,e.database_name
+        FROM t_sod_database_special_read_write a
+        LEFT JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
+        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON left(b.d_data_id,1) = c.d_data_id
+        LEFT JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
+        LEFT JOIN t_sod_database_define e ON a.database_id = e.id
+        WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType}
+        <if test="map.typeName != null and map.typeName != ''">
+            and c.class_name like '%${map.typeName}%'
+        </if>
+        <if test="map.dataName != null and map.dataName != ''">
+            and b.class_name like '%${map.dataName}%'
+        </if>
+        <if test="map.tableName != null and map.tableName != ''">
+            and d.table_name like '%${map.tableName}%'
+        </if>
+        <if test="map.applyAuthority != null and map.applyAuthority != ''">
+            and a.apply_authority = ${map.applyAuthority}
+        </if>
+        <if test="map.examineStatus != null and map.examineStatus != ''">
+            and a.examine_status = ${map.examineStatus}
+        </if>
+    </select>
 
 </mapper>

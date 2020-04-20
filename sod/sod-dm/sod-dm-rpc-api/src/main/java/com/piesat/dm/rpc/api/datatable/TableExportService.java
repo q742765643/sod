@@ -4,6 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.util.constant.GrpcConstant;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -45,7 +46,8 @@ public interface TableExportService {
      * 导出表结构-简版
      * @param database_id
      * @param data_class_ids
+     * @param request
      * @return
      */
-    Map<String, Object> getExportMapSimple(String database_id, String data_class_ids);
+    Map<String, Object> getExportMapSimple(String database_id, String data_class_ids, HttpServletRequest request);
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
@@ -13,6 +14,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -68,11 +70,14 @@ public class DatabaseSpecialController {
     @ApiOperation(value = "获取专题库列表")
     @RequiresPermissions("dm:databaseSpecial:specialList")
     @GetMapping(value = "/specialList")
-    public ResultT all() {
-        try {
-            List<DatabaseSpecialDto> all = this.databaseSpecialService.all();
-            return ResultT.success(all);
-        } catch (Exception e) {
+    public ResultT<PageBean> list(DatabaseSpecialDto databaseSpecialDto, int pageNum, int pageSize) {
+        try{
+            ResultT<PageBean> resultT = new ResultT<>();
+            PageForm<DatabaseSpecialDto> pageForm = new PageForm<>(pageNum, pageSize, databaseSpecialDto);
+            PageBean pageBean = databaseSpecialService.selectPageList(pageForm);
+            resultT.setData(pageBean);
+            return resultT;
+        }catch(Exception e){
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
@@ -94,9 +99,9 @@ public class DatabaseSpecialController {
     @ApiOperation(value = "获取专题库资料列表")
     @RequiresPermissions("dm:databaseSpecial:getSpecialDataList")
     @GetMapping(value = "/getSpecialDataList")
-    public ResultT getSpecialDataList(String sdbId,String dataType) {
+    public ResultT getSpecialDataList(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
         try {
-            List<DatabaseSpecialReadWriteDto> dataList = this.databaseSpecialReadWriteService.getDotList(sdbId,dataType);
+            List<DatabaseSpecialReadWriteDto> dataList = this.databaseSpecialReadWriteService.getDotList(databaseSpecialReadWriteDto);
             return ResultT.success(dataList);
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,16 +175,40 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "数据库授权")
-    @RequiresPermissions("dm:databaseSpecial:empowerDatabaseSperial")
-    @PostMapping(value = "/empowerDatabaseSperial")
-    public ResultT empowerDatabaseSperial(@RequestBody DatabaseDto DatabaseDto) {
+    @RequiresPermissions("dm:databaseSpecial:empowerDatabaseSpecial")
+    @PostMapping(value = "/empowerDatabaseSpecial")
+    public ResultT empowerDatabaseSpecial(@RequestBody SpecialParamVO specialParamVO) {
         try {
-            this.databaseSpecialService.empowerDatabaseSperial(DatabaseDto);
+            DatabaseDto databaseDto = new DatabaseDto();
+            databaseDto.setUserId(specialParamVO.getUserId());
+            DatabaseDefineDto databaseDefineDto = new DatabaseDefineDto();
+            databaseDefineDto.setDatabaseInstance(specialParamVO.getSimpleName());
+            databaseDto.setDatabaseDefine(databaseDefineDto);
+            databaseDto.setTdbId(specialParamVO.getSdbId());
+            databaseDto.setDatabaseSpecialAuthorityList(specialParamVO.getDatabaseSpecialAuthorityList());
+            databaseDto.setSchemaName(specialParamVO.getSimpleName());
+            this.databaseSpecialService.empowerDatabaseSpecial(databaseDto);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+	@Data
+    private static class SpecialParamVO{
+        //专题库ID
+        String sdbId;
+        //专题库名称
+        String sdbName;
+        //专题库简称
+        String simpleName;
+        //数据库ID
+        String databaseId;
+        //账户ID
+        String userId;
+        //权限列表
+        List<DatabaseSpecialAuthorityDto> DatabaseSpecialAuthorityList;
     }
 
     @ApiOperation(value = "资料授权-单独")
