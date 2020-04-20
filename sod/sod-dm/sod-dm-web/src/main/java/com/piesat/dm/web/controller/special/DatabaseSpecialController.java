@@ -9,6 +9,9 @@ import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
+import com.piesat.dm.rpc.service.special.DatabaseSpecialTreeServiceImpl;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -143,7 +146,8 @@ public class DatabaseSpecialController {
     @PostMapping(value = "/update")
     public ResultT update(@RequestBody DatabaseSpecialDto databaseSpecialDto) {
         try {
-            DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
+            //DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
+            DatabaseSpecialDto save = new DatabaseSpecialDto();
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

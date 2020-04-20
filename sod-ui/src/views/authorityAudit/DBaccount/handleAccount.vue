@@ -121,14 +121,20 @@
               btnText="模板下载"
               exportUrl="/dm/databaseDefine/export"
             />
+            <handlePreviewDocx
+              v-show="isHideAdd"
+              :handleDocxObj="handleDocxObj"
+              class="preViewBox"
+            />
             <el-input
               size="small"
               type="text"
               disabled
               v-model="msgFormDialog.applyMaterial"
               v-show="isHide"
-              style="width:92%;"
+              style="width:82%;"
             ></el-input>
+            <handlePreviewDocx v-show="isHide" :handleDocxObj="handleDocxObj" />
             <handleExport
               v-show="isHide"
               class="methodReload"
@@ -180,6 +186,7 @@
 <script>
 var baseUrl = process.env.VUE_APP_DM;
 import handleExport from "@/components/export";
+import handlePreviewDocx from "@/components/preview/previewDocx";
 import {
   databaseList,
   addTable,
@@ -197,7 +204,8 @@ import {
 export default {
   name: "handleAccountDialog",
   components: {
-    handleExport
+    handleExport,
+    handlePreviewDocx
   },
   props: {
     handleObj: {
@@ -265,9 +273,9 @@ export default {
       palceholderIp: "指定IP样例:192.168.1.1",
       dataBaseBox: [],
       handleExportObj: {
-        "databaseuser-application":
-          "E:/sod/sod_all/static/大数据云平台存储账户申请模板.docx"
+        name: "databaseuser-application"
       }, //模板下载
+      handleDocxObj: {}, //预览
       rules: {
         databaseUpId: [
           { required: true, validator: idValidate, trigger: "blur" }
@@ -292,7 +300,10 @@ export default {
     };
   },
   created() {
-    this.searchObj = this.handleObj;
+    if (this.handleObj.id) {
+      this.searchObj = this.handleObj;
+    }
+
     this.getDBlist();
     // this.getUserAll();
     this.initServerDetail();
@@ -365,6 +376,8 @@ export default {
         });
     },
     successUpload: function(response, file, fileList) {
+      this.handleDocxObj = {};
+      this.handleDocxObj.file = file.raw;
       this.msgFormDialog.applyMaterial = response.msg;
     },
 
@@ -386,7 +399,7 @@ export default {
         for (var i = 0; i < resdata.length; i++) {
           var obj = {};
           obj.key = resdata[i].id;
-          obj.label = resdata[i].databaseName;
+          obj.label = resdata[i].databaseDefine.databaseName;
           dataList.push(obj);
         }
 
@@ -606,6 +619,11 @@ export default {
   }
   .el-icon-view {
     background: none;
+  }
+  .preViewBox {
+    position: absolute;
+    right: 100px;
+    top: -2px;
   }
 }
 .ipDialog {

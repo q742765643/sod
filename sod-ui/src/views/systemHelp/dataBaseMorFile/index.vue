@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <!-- 数据库运维文档 -->
+    <!-- 数据库运维文档 2020/4/20 和数据库开发文档合并为数据库文档-->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="文档名称">
         <el-input size="small" v-model="queryParams.fileName"></el-input>

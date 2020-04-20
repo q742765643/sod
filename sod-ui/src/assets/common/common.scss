@@ -9,6 +9,36 @@ body {
   background: $backColor;
 }
 
+// docx 预览
+.resultDocxBox {
+  table {
+    border: 1px solid $boderColor;
+
+    td {
+      border: 1px solid $boderColor;
+    }
+  }
+}
+
+// 眼睛
+.eye.isEye,
+.el-icon-view.isEye {
+  cursor: pointer;
+  position: absolute;
+  font-size: 18px;
+  top: 12px;
+  width: 16px;
+  height: 16px;
+  z-index: 10;
+  background: url("../image/eye.png") no-repeat;
+  background-size: 100%;
+}
+
+.el-icon-view.isEye {
+  background: none;
+}
+
+// 表格
 .el-table {
   font-size: 13px;
 
@@ -31,6 +61,14 @@ body {
 
   .el-link {
     font-size: 13px;
+  }
+
+  .tableDownload {
+    border-color: transparent;
+    color: #1890ff;
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 

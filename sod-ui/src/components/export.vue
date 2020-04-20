@@ -1,5 +1,11 @@
 <template>
-  <el-button type="success" @click="exportData()" icon="el-icon-download" size="small">{{btnText}}</el-button>
+  <el-button
+    class="tableDownload"
+    type="success"
+    @click="exportData()"
+    icon="el-icon-download"
+    size="small"
+  >{{btnText}}</el-button>
 </template>
 
 <script>

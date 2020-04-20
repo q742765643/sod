@@ -33,7 +33,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `https://10.1.6.117:8082`,
+        target: `http://10.1.6.117:8082`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_BASE_API]: ""
@@ -41,7 +41,7 @@ module.exports = {
       },
       //ucenter
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `https://10.1.6.117:8005`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
@@ -49,7 +49,7 @@ module.exports = {
       },
       //schedule
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `https://10.1.6.117:8005`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -57,7 +57,7 @@ module.exports = {
       },
       // dm模块
       [process.env.VUE_APP_DM]: {
-        target: `https://10.1.6.117:8005`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""
@@ -65,7 +65,7 @@ module.exports = {
       },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
-        target: `https://10.1.6.117:8005`,
+        target: `http://10.1.6.117:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYSTEM]: ""
@@ -73,7 +73,7 @@ module.exports = {
       },
       //
       [process.env.VUE_APP_DMWLEI]: {
-        target: `https://222.186.174.9:38623`,
+        target: `http://103.219.29.214:18005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DMWLEI]: ""

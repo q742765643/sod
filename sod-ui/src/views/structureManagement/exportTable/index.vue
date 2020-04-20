@@ -345,6 +345,7 @@ export default {
         exportTable(obj).then(response => {
           if (response.code == 200) {
             this.handleExportObj.filePath = response.data.filePath;
+            console.log(this.handleExportObj);
           }
         });
       } else if (this.activeName == "second") {

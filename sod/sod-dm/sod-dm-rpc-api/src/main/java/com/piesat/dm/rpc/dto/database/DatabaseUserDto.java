@@ -93,4 +93,9 @@ public class DatabaseUserDto {
      * 申请数据库名称
      */
     private String applyDatabaseName;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }

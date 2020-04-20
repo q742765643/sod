@@ -559,7 +559,7 @@
             da.user_id,
             da.create_time as "apply_time",
             sdb.database_name as "schema_name",
-            sdb.schema_name as "schema_id"
+            sdb.schema_name as "schema_id",
             sdd.database_name,
             sdc.class_name
         from t_sod_data_authority_record dd
@@ -588,11 +588,11 @@
             da.user_id,
             da.create_time as "apply_time",
             sdb.database_name as "schema_name",
-            sdb.schema_name as "schema_id"
+            sdb.schema_name as "schema_id",
             sdd.database_name,
             sdc.class_name
         from t_sod_data_authority_record dd
-                 left join t_sod_data_logic dl on dl.id = dd.class_logic_id
+                 left join t_sod_data_logic dl on dl.data_class_id = dd.data_class_id
                  left join t_sod_data_table dt on dt.class_logic_id = dl.id
                  left join t_sod_data_authority_apply da on dd.apply_id = da.id
                  left join t_sod_database sdb on dd.database_id = sdb.id
