@@ -5,6 +5,7 @@ import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.util.constant.GrpcConstant;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,8 @@ public interface DatabaseSpecialReadWriteService {
     DatabaseSpecialReadWriteDto saveDto(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto);
 
     List<Map<String,Object>> getRecordSpecialByTdbId(String sdbId,String userId);
+
+    Map<String, Object> changeDataStatus(String tdbId, String physical, String data_class_id);
+
+    Map<String, Object> deleteRecords(HttpServletRequest request);
 }

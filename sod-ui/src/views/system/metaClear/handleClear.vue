@@ -2,7 +2,7 @@
   <section class="handleClear">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="140px">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="10">
           <el-form-item label="任务名称" prop="taskName">
             <el-input size="small" v-model="msgFormDialog.taskName"></el-input>
           </el-form-item>
@@ -43,7 +43,7 @@
             <el-input size="small" v-model="msgFormDialog.conditions"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="14">
           <el-form-item label="数据库对象">
             <el-scrollbar wrap-class="scrollbar-wrapper">
               <el-tree

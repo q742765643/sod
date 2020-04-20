@@ -26,6 +26,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -463,6 +464,19 @@ public class NewdataApplyController {
     }
 
     //selectYang样例数据查询
-
+    @ApiOperation(value="根据四级编码和申请单号申请删除")
+    @RequiresPermissions("api:newdataApply:delApply")
+    @PostMapping(value="/api/newdataApply/delApply")
+    public ResultT delApply(String applyId, String dDataId) {
+        Map<String, Object> map = this.newdataApplyService.delApply(applyId, dDataId);
+        return ResultT.success(map);
+    }
+    @ApiOperation(value="根据物理库获取实例id")
+    @RequiresPermissions("api:newdataApply:getSchemaInfo")
+    @PostMapping(value="/api/newdataApply/getSchemaInfo")
+    public ResultT getSchemaInfo(String physicId, String userId) {
+        Map<String, Object> map = this.newdataApplyService.getSchemaInfo(physicId, userId);
+        return ResultT.success(map);
+    }
 
 }

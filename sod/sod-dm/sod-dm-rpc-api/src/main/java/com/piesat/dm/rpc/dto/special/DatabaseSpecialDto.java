@@ -37,7 +37,7 @@ public class DatabaseSpecialDto extends BaseDto {
     /**
      * 用途
      */
-    private String use;
+    private String uses;
 
     /**
      * 申请材料
@@ -83,15 +83,15 @@ public class DatabaseSpecialDto extends BaseDto {
      * 排序
      */
     private String sortNo;
-	
+
 	/**
      * 专题库简称
      */
     private String simpleName;
-	
+
 	/**
      * 数据库名称
      */
     private String databaseName;
-	
+
 }

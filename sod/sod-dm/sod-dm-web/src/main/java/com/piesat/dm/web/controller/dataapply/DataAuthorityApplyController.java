@@ -11,6 +11,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -156,4 +157,48 @@ public class DataAuthorityApplyController {
         return resultT;
     }
 
+    @ApiOperation(value="获取用户资料申请列表")
+    @RequiresPermissions("api:dataAuthorityApply:getDataAuthorityList")
+    @PostMapping(value="/api/dataAuthorityApply/getDataAuthorityList")
+    public ResultT getDataAuthorityList(String userId, String applyAuthority, String logicId,String dataName,String category,String schemaId){
+        try {
+            Map<String, Object> map = dataAuthorityApplyService.getDataAuthorityList(userId, applyAuthority, logicId,dataName,category,schemaId);
+            return ResultT.success();
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value="根据四级编码获取用户信息")
+    @RequiresPermissions("api:dataAuthorityApply:getDataCreator")
+    @PostMapping(value="/api/dataAuthorityApply/getDataCreator")
+    public ResultT getDataCreator(String dataClassId){
+        try {
+            Map<String, Object> map = dataAuthorityApplyService.getDataCreator(dataClassId);
+            return ResultT.success();
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value="根据id删除资料记录")
+    @RequiresPermissions("api:dataAuthorityApply:deleteDataAuthorityById")
+    @PostMapping(value="/api/dataAuthorityApply/deleteDataAuthorityById")
+    public ResultT deleteDataAuthorityById(String applyId,String dataBaseId,String dataClassId){
+        try {
+            Map<String, Object> map = dataAuthorityApplyService.deleteDataAuthorityById(applyId,dataBaseId,dataClassId);
+            return ResultT.success();
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value="查看所有资料分类")
+    @RequiresPermissions("api:dataAuthorityApply:getDataCategory")
+    @PostMapping(value="/api/dataAuthorityApply/getDataCategory")
+    public ResultT getDataCategory(){
+        try {
+            Map<String, Object> map = dataAuthorityApplyService.getDataCategory();
+            return ResultT.success(map);
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

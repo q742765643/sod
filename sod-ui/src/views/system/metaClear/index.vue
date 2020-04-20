@@ -197,7 +197,7 @@
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="50%">
+    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="80%">
       <handleClear @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleClear>
     </el-dialog>
     <el-dialog
