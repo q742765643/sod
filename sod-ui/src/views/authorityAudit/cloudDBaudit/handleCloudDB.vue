@@ -438,8 +438,7 @@ export default {
 
     return {
       handleExportObj: {
-        "clouddatabase-application":
-          "E:/sod/sod_all/static/云数据库申请表模板.docx"
+        name: "clouddatabase-application"
       },
       passwordType: "",
       isReason: false,

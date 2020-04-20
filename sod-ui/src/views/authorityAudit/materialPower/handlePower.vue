@@ -51,18 +51,12 @@ export default {
   },
   created() {
     // this.getSectionList();
-    // this.initDetail();
+    if (this.handleObj.id) {
+      // 是详情
+      this.msgFormDialog = this.handleObj;
+    }
   },
   methods: {
-    // 获取详情
-    initDetail() {
-      if (this.handleObj.id == undefined) {
-        // 是新增
-      } else {
-        // 是详情
-        this.msgFormDialog = this.handleObj;
-      }
-    },
     getSectionList() {
       this.axios.post(interfaceObj.roleManageApi_querySectionName).then(res => {
         this.optionsList = res.data.data;
@@ -72,7 +66,22 @@ export default {
     trueDialog(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.handleObj.id == undefined) {
+          if (this.handleObj.id) {
+            // 编辑
+            this.axios
+              .post(interfaceObj.roleManageApi_updateRole, this.msgFormDialog)
+              .then(res => {
+                if (res.data.returnCode === "0") {
+                  this.$message({ message: "编辑成功", type: "success" });
+                  this.$emit("cancelHandle");
+                } else {
+                  this.$message({
+                    message: "编辑失败！",
+                    type: "error"
+                  });
+                }
+              });
+          } else {
             //判断用户名是否存在
             this.axios
               .post(interfaceObj.roleManageApi_queryRoleByRoleName, {
@@ -102,21 +111,6 @@ export default {
                     type: "warning"
                   });
                   return;
-                }
-              });
-          } else {
-            // 编辑
-            this.axios
-              .post(interfaceObj.roleManageApi_updateRole, this.msgFormDialog)
-              .then(res => {
-                if (res.data.returnCode === "0") {
-                  this.$message({ message: "编辑成功", type: "success" });
-                  this.$emit("cancelHandle");
-                } else {
-                  this.$message({
-                    message: "编辑失败！",
-                    type: "error"
-                  });
                 }
               });
           }
