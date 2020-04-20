@@ -70,8 +70,10 @@ public class MybatisInterceptor implements Interceptor {
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
+            if (selectBody instanceof SetOperationList){
+                return invocation.proceed();
+            }
             add=this.resetSql(entity.getParams(),selectBody,resultMaps);
-
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)) {
                 try {
 
@@ -92,6 +94,9 @@ public class MybatisInterceptor implements Interceptor {
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
+            if (selectBody instanceof SetOperationList){
+                return invocation.proceed();
+            }
             add=this.resetSql(entity.getParams(),selectBody,resultMaps);
 
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)) {
@@ -120,6 +125,9 @@ public class MybatisInterceptor implements Interceptor {
             Statement parse = pm.parse(new StringReader(originalSql));
             Select noOrderSelect = (Select)parse;
             SelectBody selectBody = noOrderSelect.getSelectBody();
+            if (selectBody instanceof SetOperationList){
+                return invocation.proceed();
+            }
             add=this.resetSql(pp,selectBody,resultMaps);
             if(com.piesat.common.utils.StringUtils.isNotNullString(add)){
                 try {
