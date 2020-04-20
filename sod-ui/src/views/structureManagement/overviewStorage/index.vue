@@ -41,7 +41,7 @@
       <el-table-column prop="LOGIC_NAME" label="数据用途"></el-table-column>
       <el-table-column prop="DATABASE_NAME" label="数据库"></el-table-column>
       <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" width="100"></el-table-column>
-      <el-table-column label="参数配置" width="360">
+      <el-table-column label="参数配置" width="380">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">

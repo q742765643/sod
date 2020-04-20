@@ -170,6 +170,7 @@ export default {
       this.handleQuery();
     },
     handleAdd() {
+      this.handleObj = {};
       this.handlepowerDialog = true;
     },
     downloadTable() {},

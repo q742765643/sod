@@ -33,70 +33,65 @@
         v-if="tableStructureManageContral"
       >同步服务名称</el-button>
     </el-button-group>
-    <el-scrollbar wrap-class="scrollbar-wrapper">
-      <el-table :data="columnData" border @selection-change="res=>selColumnData=res">
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" class="demo-table-expand">
-              <el-form-item label="是否可空">
-                <span>{{ props.row.isNull }}</span>
-              </el-form-item>
-              <el-form-item label="是否可改">
-                <span>{{ props.row.isUpdate }}</span>
-              </el-form-item>
-              <el-form-item label="是否显示">
-                <span>{{ props.row.isShow }}</span>
-              </el-form-item>
-              <el-form-item label="是否主键">
-                <span>{{ props.row.isPrimaryKey }}</span>
-              </el-form-item>
-              <el-form-item label="中文描述">
-                <span>{{ props.row.nameCn }}</span>
-              </el-form-item>
-              <el-form-item label="是否管理字段">
-                <span>{{ props.row.isManager }}</span>
-              </el-form-item>
-              <el-form-item label="是否修改数据库">
-                <span>{{ props.row.updateDatabase }}</span>
-              </el-form-item>
+    <!-- <el-scrollbar wrap-class="scrollbar-wrapper"> -->
+    <el-table :data="columnData" border @selection-change="res=>selColumnData=res" height="550">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" class="demo-table-expand">
+            <el-form-item label="是否可空">
+              <span>{{ props.row.isNull }}</span>
+            </el-form-item>
+            <el-form-item label="是否可改">
+              <span>{{ props.row.isUpdate }}</span>
+            </el-form-item>
+            <el-form-item label="是否显示">
+              <span>{{ props.row.isShow }}</span>
+            </el-form-item>
+            <el-form-item label="是否主键">
+              <span>{{ props.row.isPrimaryKey }}</span>
+            </el-form-item>
+            <el-form-item label="中文描述">
+              <span>{{ props.row.nameCn }}</span>
+            </el-form-item>
+            <el-form-item label="是否管理字段">
+              <span>{{ props.row.isManager }}</span>
+            </el-form-item>
+            <el-form-item label="是否修改数据库">
+              <span>{{ props.row.updateDatabase }}</span>
+            </el-form-item>
 
-              <el-form-item label="默认值">
-                <span>{{ props.row.defaultValue }}</span>
-              </el-form-item>
-              <el-form-item label="序号">
-                <span>{{ props.row.serialNumber }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column type="index" width="70"></el-table-column>
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column
-          label="公共元数据字段"
-          prop="dbEleCode"
-          width="200px"
-          v-if="tableStructureManageContral"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column
-          label="字段编码"
-          prop="celementCode"
-          width="200px"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column
-          label="服务代码"
-          prop="userEleCode"
-          width="200px"
-          v-if="tableStructureManageContral"
-          :show-overflow-tooltip="true"
-        ></el-table-column>
-        <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
-        <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
-      </el-table>
-    </el-scrollbar>
+            <el-form-item label="默认值">
+              <span>{{ props.row.defaultValue }}</span>
+            </el-form-item>
+            <el-form-item label="序号">
+              <span>{{ props.row.serialNumber }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column type="index" width="70"></el-table-column>
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column
+        label="公共元数据字段"
+        prop="dbEleCode"
+        width="200px"
+        v-if="tableStructureManageContral"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column label="字段编码" prop="celementCode" width="200px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column
+        label="服务代码"
+        prop="userEleCode"
+        width="200px"
+        v-if="tableStructureManageContral"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
+      <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
+    </el-table>
+    <!-- </el-table-column> -->
     <el-dialog
       v-dialogDrag
       width="80%"
@@ -965,41 +960,44 @@ export default {
           type: "error"
         });
       } else {
-        this.$alert(
+        this.$confirm(
           "是否插入" + this.selColumnData.length + "条质控字段",
-          "温馨提示",
+          "提示",
           {
             confirmButtonText: "确定",
-            callback: action => {
-              let publicRows = this.selColumnData;
-              publicRows.forEach(element => {
-                var switchObj = Object.assign({}, element);
-                var firstChar = element.celementCode.substr(0, 1);
-                let newCode = element.celementCode.replace(firstChar, "Q");
-                switchObj.eleName = element.eleName + "质量标志";
-                switchObj.celementCode = newCode;
-                switchObj.dbEleCode = newCode;
-                switchObj.id = "";
-                publicRows.push(switchObj);
-              });
-              console.log(publicRows);
-              tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
-                if (res.code == 200) {
-                  this.$message({
-                    message: "排序成功！",
-                    type: "success"
-                  });
-                  this.getCodeTable();
-                } else {
-                  this.$message({
-                    message: res.msg,
-                    type: "error"
-                  });
-                }
-              });
-            }
+            cancelButtonText: "取消",
+            type: "warning"
           }
-        );
+        )
+          .then(() => {
+            let publicRows = this.selColumnData;
+            publicRows.forEach(element => {
+              var switchObj = Object.assign({}, element);
+              var firstChar = element.celementCode.substr(0, 1);
+              let newCode = element.celementCode.replace(firstChar, "Q");
+              switchObj.eleName = element.eleName + "质量标志";
+              switchObj.celementCode = newCode;
+              switchObj.dbEleCode = newCode;
+              switchObj.id = "";
+              publicRows.push(switchObj);
+            });
+            console.log(publicRows);
+            tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  message: "排序成功！",
+                  type: "success"
+                });
+                this.getCodeTable();
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
+            });
+          })
+          .catch(() => {});
       }
     },
     // 同步服务
