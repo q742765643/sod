@@ -167,4 +167,6 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getSpecialAuthorizeList(String user_id);
 
     void updateDataAuthorityStatus(String apply_id, String database_id, String data_class_id, Integer authorize);
+
+    List<Map<String, Object>> getRecentOnlineTime(String ctsCode);
 }

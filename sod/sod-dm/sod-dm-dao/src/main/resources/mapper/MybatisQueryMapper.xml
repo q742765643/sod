@@ -1105,5 +1105,12 @@
             </if>
         </where>
     </update>
-
+    <select id="getRecentOnlineTime" resultMap="timeResult">
+			select
+				databegintime as "BEGIN_TIME", dataendtime as "END_TIME"
+			from
+				T_SOD_ARCHIVE_INFO
+			where
+				PRODUCTIONCODE = #{ctsCode}
+    </select>
 </mapper>

@@ -7,8 +7,12 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataapply.CloudDatabaseApplyDao;
 import com.piesat.dm.entity.dataapply.CloudDatabaseApplyEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.CloudDatabaseApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.mapper.dataapply.CloudDatabaseApplyMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -16,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -32,6 +38,10 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     @Autowired
     private CloudDatabaseApplyMapper cloudDatabaseApplyMapper;
 
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private DataClassService dataClassService;
     @Override
     public BaseDao<CloudDatabaseApplyEntity> getBaseDao() {
         return this.cloudDatabaseApplyDao;
@@ -122,5 +132,28 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         cloudDatabaseApplyEntity.setExamineStatus(examineStatus);
         cloudDatabaseApplyEntity = this.saveNotNull(cloudDatabaseApplyEntity);
         return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
+    }
+
+    @Override
+    public Map<String, Object> getRecentTime(String classDataId, String ctsCode) {
+        Map<String,Object> result = new HashMap<String,Object>();
+        try {
+            //获取近线时间
+            List<Map<String,Object>> recentOnlineList = mybatisQueryMapper.getRecentOnlineTime(ctsCode);
+            if(null != recentOnlineList && recentOnlineList.size()>0) {
+                result.put("recentOnline", recentOnlineList.get(0));
+            }
+            DataClassDto dataClassDto = this.dataClassService.findByDataClassId(classDataId);
+            if (dataClassDto != null){
+                int is_all_line = dataClassDto.getIsAllLine();
+                result.put("is_all_line", is_all_line);
+            }else {
+                result.put("is_all_line", 1);
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
