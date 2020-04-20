@@ -16,11 +16,10 @@ public interface DatabaseSpecialReadWriteService {
 
     /**
      * 获取专题库资料列表
-     * @param sdbId
-     * @param dataType
+     * @param databaseSpecialReadWriteDto
      * @return
      */
-    List<DatabaseSpecialReadWriteDto> getDotList(String sdbId, String dataType);
+    List<DatabaseSpecialReadWriteDto> getDotList(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto);
 
     List<DatabaseSpecialReadWriteDto> findBySdbIdAndDataClassId(String sdbId, String dataClassId);
 

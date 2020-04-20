@@ -12,6 +12,7 @@ import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.DatabaseSpecialAuthorityDao;
@@ -71,6 +72,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DataTableDao dataTableDao;
     @Autowired
     private DatabaseInfo databaseInfo;
+	@Autowired
+    private DatabaseDefineDao databaseDefineDao;
 
     @Autowired
     private DatabaseSpecialTreeDao databaseSpecialTreeDao;
@@ -120,7 +123,27 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public DatabaseSpecialDto getDotById(String id) {
         DatabaseSpecialEntity databaseSpecialEntity = this.getById(id);
-        return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
+        DatabaseSpecialDto databaseSpecialDto = this.databaseSpecialMapper.toDto(databaseSpecialEntity);
+        //为数据库中午名称赋值
+        if(databaseSpecialDto!=null){
+            String[] databaseArray = databaseSpecialDto.getDatabaseId().split(",");
+            //查询数据库信息列表
+            List<DatabaseDefineEntity> databaseDefineEntityList = databaseDefineDao.findAll();
+            String databaseName = "";
+            for(String databaseId : databaseArray){
+                for(DatabaseDefineEntity databaseDefineEntity : databaseDefineEntityList){
+                    //根据数据库ID判断数据库名称
+                    if(databaseId.equals(databaseDefineEntity.getId())){
+                        databaseName += databaseDefineEntity.getDatabaseName()+",";
+                    }
+                }
+            }
+            if(databaseName.length()>0){
+                databaseName = databaseName.substring(0,databaseName.length()-1);
+            }
+            databaseSpecialDto.setDatabaseName(databaseName);
+        }
+        return databaseSpecialDto;
     }
 
     @Override
@@ -135,7 +158,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
      * @param databaseDto
      */
     @Override
-    public void empowerDatabaseSperial(DatabaseDto databaseDto) {
+    public void empowerDatabaseSpecial(DatabaseDto databaseDto) {
         try {
             String userId = databaseDto.getUserId();
             DatabaseDefineDto databaseDefineDto = databaseDto.getDatabaseDefine();
@@ -223,6 +246,26 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+	@Override
+    public PageBean selectPageList(PageForm<DatabaseSpecialDto> pageForm) {
+        DatabaseSpecialEntity databaseSpecialEntity=databaseSpecialMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotBlank(databaseSpecialEntity.getExamineStatus())){
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseSpecialEntity.getExamineStatus());
+        }
+        if(StringUtils.isNotBlank(databaseSpecialEntity.getSdbName())){
+            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getSdbName());
+        }
+        if(StringUtils.isNotBlank(databaseSpecialEntity.getUserId())){
+            specificationBuilder.add("userId", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getUserId());
+        }
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
+        List<DatabaseSpecialEntity> databaseSpecialList= (List<DatabaseSpecialEntity>) pageBean.getPageData();
+        pageBean.setPageData(databaseSpecialMapper.toDto(databaseSpecialList));
+        return pageBean;
     }
 
     @Override

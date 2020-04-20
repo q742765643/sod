@@ -88,4 +88,9 @@ public class DatabaseUserDto {
      * 记录
      */
     private String remarks;
+
+    /**
+     * 申请数据库名称
+     */
+    private String applyDatabaseName;
 }

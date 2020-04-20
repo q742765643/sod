@@ -5,18 +5,17 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.dao.datatable.*;
-import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
-import jnr.ffi.Struct;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -307,7 +306,304 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
     }
 
     @Override
-    public Map<String, Object> getExportMapSimple(String database_id, String data_class_ids) {
+    public Map<String, Object> getExportMapSimple(String database_id, String data_class_ids, HttpServletRequest request) {
+        try{
+            String[] data_class_id_Array = data_class_ids.split(",");
+            // 工具类所用map读取
+            Map<String, Object> dataMapss = new HashMap<String, Object>();
+            // 最外层用于存放map的list集合
+            List<Map<String, Object>> arra = new ArrayList<Map<String, Object>>();
+            int titles = 1;
+            // 根据传过来的四级编码循环多表导出
+            for (String data_class_id : data_class_id_Array) {
+                Map<String, Object> dataMaps = new HashMap<String, Object>();
+
+                String[] exportColumns = request.getParameterValues("exportColumn");
+                String[] exportColumnIndexs = request.getParameterValues("exportColumnIndex");
+                String[] exportColumnKus = request.getParameterValues("exportColumnKu");
+
+                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id, database_id);
+
+                List<Map<String, Object>> KV = new ArrayList<Map<String, Object>>();
+
+                for (DataTableEntity dataTable : dataTableList) {
+                    Map<String, Object> dataMap = new HashMap<String, Object>();
+
+                    String table_id = dataTable.getId();
+                    String table_name = dataTable.getTableName();
+                    String data_service_name = dataTable.getDataServiceName();
+                    List<TableColumnEntity> tableColumnList = tableColumnDao.findByTableId(table_id);
+
+                    dataMap.put("titles", titles++);
+                    dataMap.put("cnName", data_service_name);
+                    if(table_name==null){
+                        dataMap.put("tableName", " ");
+                    }else{
+                        dataMap.put("tableName", table_name);
+                    }
+
+                    // 表结构部分
+                    List<Map<String, Object>> listInfo = new ArrayList<Map<String, Object>>();
+                    if (exportColumns == null) {
+                        for (TableColumnEntity tableColumn : tableColumnList) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            map.put("id", " ");
+                            map.put("db_ele_code", " ");
+                            map.put("c_element_code", " ");
+                            map.put("user_ele_code", " ");
+                            map.put("ele_name", " ");
+                            map.put("type", " ");
+                            map.put("accuracy", " ");
+                            map.put("unit", " ");
+                            map.put("unit_cn", " ");
+                            map.put("is_null", " ");
+                            map.put("is_update", " ");
+                            map.put("is_show", " ");
+                            map.put("is_premary_key", " ");
+                            map.put("name_cn", " ");
+                            map.put("is_manager", " ");
+                            map.put("serial_number", " ");
+                            listInfo.add(map);
+                        }
+                    } else if (exportColumns.length >= 1) {
+                        List<String> exportColumn = Arrays.asList(exportColumns);
+                        int num = 1;
+                        for (TableColumnEntity tableColumn : tableColumnList) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+
+                            map.put("id", num++);
+                            if (exportColumn.contains("db_ele_code")) {
+                                String db_ele_code = tableColumn.getDbEleCode();
+                                if(db_ele_code==null){
+                                    map.put("db_ele_code", " ");
+                                }else{
+                                    map.put("db_ele_code", db_ele_code);
+                                }
+                            } else {
+                                map.put("db_ele_code", " ");
+                            }
+                            if (exportColumn.contains("c_element_code")) {
+                                String c_element_code = tableColumn.getCElementCode();
+                                if(c_element_code==null){
+                                    map.put("c_element_code", " ");
+                                }else{
+                                    map.put("c_element_code", c_element_code);
+                                }
+                            } else {
+                                map.put("c_element_code", " ");
+                            }
+                            if (exportColumn.contains("user_ele_code")) {
+                                String user_ele_code = tableColumn.getUserEleCode();
+                                if(user_ele_code==null){
+                                    map.put("user_ele_code", " ");
+                                }else{
+                                    map.put("user_ele_code", user_ele_code);
+                                }
+                            } else {
+                                map.put("user_ele_code", " ");
+                            }
+                            if (exportColumn.contains("ele_name")) {
+                                String ele_name = tableColumn.getEleName();
+                                if(ele_name==null){
+                                    map.put("ele_name", " ");
+                                }else{
+                                    if (ele_name.contains("<")) {
+                                        map.put("ele_name", ele_name.replace("<", "&lt;"));
+                                    } else {
+                                        map.put("ele_name", ele_name);
+                                    }
+                                }
+                            } else {
+                                map.put("ele_name", " ");
+                            }
+                            if (exportColumn.contains("type")) {
+                                String type = tableColumn.getType();
+                                if(type==null){
+                                    map.put("type", " ");
+                                }else{
+                                    map.put("type", type);
+                                }
+                            } else {
+                                map.put("type", " ");
+                            }
+                            if (exportColumn.contains("accuracy")) {
+                                String accuracy = tableColumn.getAccuracy();
+                                if(accuracy==null){
+                                    map.put("accuracy", " ");
+                                }else{
+                                    map.put("accuracy", accuracy);
+                                }
+                            } else {
+                                map.put("accuracy", " ");
+                            }
+                            if (exportColumn.contains("unit")) {
+                                String unit = tableColumn.getUnit();
+                                if(unit==null){
+                                    map.put("unit", " ");
+                                }else{
+                                    map.put("unit", unit);
+                                }
+                                map.put("unit", unit);
+                            } else {
+                                map.put("unit", " ");
+                            }
+                            if (exportColumn.contains("unit_cn")) {
+                                String unit_cn = tableColumn.getUnitCn();
+                                if(unit_cn==null){
+                                    map.put("unit_cn", " ");
+                                }else{
+                                    map.put("unit_cn", unit_cn);
+                                }
+                            } else {
+                                map.put("unit_cn", " ");
+                            }
+                            if (exportColumn.contains("is_null")) {
+                                String Is_null = String.valueOf(tableColumn.getIsNull());
+                                if (Is_null.equals("true")) {
+                                    map.put("is_null", "是");
+                                } else {
+                                    map.put("is_null", "否");
+                                }
+                            } else {
+                                map.put("is_null", " ");
+                            }
+                            if (exportColumn.contains("is_update")) {
+                                String Is_update = String.valueOf(tableColumn.getIsUpdate());
+                                if (Is_update.equals("true")) {
+                                    map.put("is_update", "是");
+                                } else {
+                                    map.put("is_update", "否");
+                                }
+                            } else {
+                                map.put("is_update", " ");
+                            }
+                            if (exportColumn.contains("is_show")) {
+                                String Is_show = String.valueOf(tableColumn.getIsShow());
+                                if (Is_show.equals("true")) {
+                                    map.put("is_show", "是");
+                                } else {
+                                    map.put("is_show", "否");
+                                }
+                            } else {
+                                map.put("is_show", " ");
+                            }
+                            if (exportColumn.contains("is_premary_key")) {
+                                String Is_premary_key = String.valueOf(tableColumn.getIsPrimaryKey());
+                                if (Is_premary_key.equals("true")) {
+                                    map.put("is_premary_key", "是");
+                                } else {
+                                    map.put("is_premary_key", "否");
+                                }
+                            } else {
+                                map.put("is_premary_key", " ");
+                            }
+                            if (exportColumn.contains("name_cn")) {
+                                String name_cn = tableColumn.getNameCn();
+                                if(name_cn==null){
+                                    map.put("name_cn", " ");
+                                }else{
+                                    map.put("name_cn", name_cn);
+                                }
+                            } else {
+                                map.put("name_cn", " ");
+                            }
+                            if (exportColumn.contains("is_manager")) {
+                                String Is_manager = String.valueOf(tableColumn.getIsManager());
+                                if (Is_manager.equals("true")) {
+                                    map.put("is_manager", "是");
+                                } else {
+                                    map.put("is_manager", "否");
+                                }
+                            } else {
+                                map.put("is_manager", " ");
+                            }
+                            if (exportColumn.contains("serial_number")) {
+                                map.put("serial_number", tableColumn.getSerialNumber());
+                            } else {
+                                map.put("serial_number", " ");
+                            }
+                            listInfo.add(map);
+                        }
+                    }
+                    // 索引部分
+                    List<Map<String, Object>> listIndex = new ArrayList<Map<String, Object>>();
+                    List<TableIndexEntity> tableIndexList = tableIndexDao.findByTableId(table_id);
+                    int indexNum = 1;
+
+                    if (exportColumnIndexs == null) {
+                        // List<String> exportColumnIndex =
+                        // Arrays.asList(exportColumnIndexs);
+
+                        for (TableIndexEntity tableIndex : tableIndexList) {
+                            Map<String, Object> mapIndex = new HashMap<String, Object>();
+
+                            mapIndex.put("indexId", " ");
+                            mapIndex.put("indexType", " ");
+                            mapIndex.put("indexName", " ");
+                            mapIndex.put("indexColumn", " ");
+                            listIndex.add(mapIndex);
+                        }
+                    } else if (exportColumnIndexs.length >= 1) {
+                        List<String> exportColumnIndex = Arrays.asList(exportColumnIndexs);
+                        for (TableIndexEntity tableIndex : tableIndexList) {
+                            Map<String, Object> mapIndex = new HashMap<String, Object>();
+                            if (exportColumnIndex.contains("index")) {
+                                mapIndex.put("indexId", indexNum++);
+                                mapIndex.put("indexType", tableIndex.getIndexType());
+                                mapIndex.put("indexName", tableIndex.getIndexName());
+                                mapIndex.put("indexColumn", tableIndex.getIndexColumn());
+                            }
+                            listIndex.add(mapIndex);
+                        }
+                    }
+                    // 分库分表部分
+                    List<Map<String, Object>> listSharding = new ArrayList<Map<String, Object>>();
+                    List<ShardingEntity> shardingList = shardingDao.findByTableId(table_id);
+                    int shardNum = 1;
+                    if (exportColumnKus == null) {
+                        for (ShardingEntity sharding : shardingList) {
+                            Map<String, Object> mapSharding = new HashMap<String, Object>();
+
+                            mapSharding.put("shardId", " ");
+                            Integer sharding_type = sharding.getShardingType();
+                            if (sharding_type==1) {
+                                mapSharding.put("shardingType", "分表键");
+                            } else {
+                                mapSharding.put("shardingType", "分库键");
+                            }
+                            mapSharding.put("field", " ");
+                            listSharding.add(mapSharding);
+                        }
+                    } else if (exportColumnKus.length >= 1) {
+                        List<String> exportColumnKu = Arrays.asList(exportColumnKus);
+                        for (ShardingEntity sharding : shardingList) {
+                            Map<String, Object> mapSharding = new HashMap<String, Object>();
+                            if (exportColumnKu.contains("fenku")) {
+                                mapSharding.put("shardId", shardNum++);
+                                Integer sharding_type = sharding.getShardingType();
+                                if (sharding_type==1) {
+                                    mapSharding.put("shardingType", "分表键");
+                                } else {
+                                    mapSharding.put("shardingType", "分库键");
+                                }
+                                mapSharding.put("field", sharding.getColumnName());
+                            }
+                            listSharding.add(mapSharding);
+                        }
+                    }
+                    dataMap.put("listInfo", listInfo);
+                    dataMap.put("listIndex", listIndex);
+                    dataMap.put("listSharding", listSharding);
+                    KV.add(dataMap);
+                }
+                dataMaps.put("KV", KV);
+                arra.add(dataMaps);
+            }
+            dataMapss.put("arra", arra);
+            return dataMapss;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return null;
     }
 

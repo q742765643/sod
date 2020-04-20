@@ -32,4 +32,5 @@ public interface DataTableDao extends BaseDao<DataTableEntity> {
     List<DataTableEntity> findByDataServiceIdAndClassLogicId(String dataClassId, String databaseId);
 
     List<DataTableEntity> findByTableNameAndClassLogic_DatabaseIdAndClassLogic_DataClassId(String tableName,String databaseId,String dataclassId);
+
 }

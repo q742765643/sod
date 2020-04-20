@@ -78,4 +78,11 @@ public interface DatabaseUserService {
     PageBean selectPageList(PageForm<DatabaseUserDto> pageForm);
 
     void exportData(String examineStatus);
+	
+	/**
+     * 修改
+     * @param databaseUserDto
+     * @return
+     */
+    DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto);
 }

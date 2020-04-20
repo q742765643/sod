@@ -50,11 +50,16 @@ public class DatabaseUserManagerController {
     @RequiresPermissions("dm:databaseUser:all")
     @GetMapping("/all")
     public ResultT<PageBean> list(DatabaseUserDto databaseUserDto, int pageNum, int pageSize) {
-        ResultT<PageBean> resultT = new ResultT<>();
-        PageForm<DatabaseUserDto> pageForm = new PageForm<>(pageNum, pageSize, databaseUserDto);
-        PageBean pageBean = databaseUserService.selectPageList(pageForm);
-        resultT.setData(pageBean);
-        return resultT;
+        try{
+            ResultT<PageBean> resultT = new ResultT<>();
+            PageForm<DatabaseUserDto> pageForm = new PageForm<>(pageNum, pageSize, databaseUserDto);
+            PageBean pageBean = databaseUserService.selectPageList(pageForm);
+            resultT.setData(pageBean);
+            return resultT;
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "根据id查询")
@@ -124,9 +129,8 @@ public class DatabaseUserManagerController {
     @ApiOperation(value="申请文件下载接口")
     @RequiresPermissions("api:databaseUser:download")
     @GetMapping(value="/download")
-    public void download(HttpServletRequest request, HttpServletResponse response) {
-        String fullPath = request.getParameter("filePath");
-        File file = new File(fullPath);
+    public void download(String filepath,HttpServletRequest request, HttpServletResponse response) {
+        File file = new File(filepath);
         String fileName = file.getName();
 
         if(file.exists()){
@@ -225,6 +229,8 @@ public class DatabaseUserManagerController {
     @PostMapping(value = "/add")
     public ResultT save(@RequestBody DatabaseUserDto databaseUserDto) {
         try {
+			//默认待审核
+            databaseUserDto.setExamineStatus("0");
             DatabaseUserDto save = this.databaseUserService.saveDto(databaseUserDto);
             return ResultT.success(save);
         } catch (Exception e) {
@@ -242,14 +248,17 @@ public class DatabaseUserManagerController {
             if(databaseUserDto.getExamineStatus().equals("1")){
                 //数据库授权
                 boolean b = this.databaseUserService.empower(databaseUserDto);
+                b= true;
                 if(b){
-                    DatabaseUserDto update = this.databaseUserService.saveDto(databaseUserDto);
+                    databaseUserDto.setExamineStatus("1");
+                    DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
                     return ResultT.success(update);
                 }
                 return ResultT.success("数据库授权失败，审核操作未完成");
             }
             //审核不通过
-            DatabaseUserDto update = this.databaseUserService.saveDto(databaseUserDto);
+            databaseUserDto.setExamineStatus("2");
+            DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
             return ResultT.success(update);
         } catch (Exception e) {
             e.printStackTrace();

@@ -121,4 +121,11 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> findByUserIdAndDatabaseDefineId2(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
 
     List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
+	/**
+     * 查询专题库资料列表
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> getDatabaseSpecialReadWriteList(@Param("map")Map<String,Object> map);
+
 }
