@@ -69,7 +69,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private DataAuthorityRecordDao dataAuthorityRecordService;
     @Autowired
     private DataClassService dataClassService;
-
+    @Autowired
+    private DataTableDao dataTableDao;
     @Override
     public BaseDao<DataAuthorityApplyEntity> getBaseDao() {
         return this.dataAuthorityApplyDao;
@@ -319,6 +320,94 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }
         }
 
+    }
+    @Override
+    public Map<String, Object> getDataAuthorityList(String userId, String applyAuthority, String logicId, String dataName, String category, String schemaId) {
+        Map<String,Object> result = new HashMap<String,Object>();
+        Map<String,Object> paraMap = new HashMap<String,Object>();
+        paraMap.put("userId", userId);
+
+        if(null == userId || "".equals(userId)) {
+            result.put("returnMessage", "请登录");
+            result.put("returnCode", "-1002");
+            result.put("DS", null);
+            return result;
+        }
+        paraMap.put("applyAuthority", applyAuthority);
+        paraMap.put("logicId", logicId);
+        paraMap.put("dataName", dataName);
+        paraMap.put("category", category);
+        paraMap.put("schemaId", schemaId);
+        try {
+            List<Map<String,Object>> daList = mybatisQueryMapper.getDataAuthorityList(paraMap);
+            result.put("returnCode", "0");
+            result.put("returnMessage", "查询成功");
+            result.put("DS", daList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("returnCode","1");
+            result.put("returnMessage", "查询失败");
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getDataCreator(String dataClassId) {
+        Map<String,Object> result = new HashMap<String,Object>();
+        try {
+            DataTableEntity dataTableEntity = dataTableDao.findById(dataClassId).get();
+            String userId = dataTableEntity.getUserId();
+            if(!"admin".equals(userId)){
+                com.alibaba.fastjson.JSONObject obj = CmadaasApiUtil.getUserInfo(userId);
+                result.put("DS", obj);
+            }else{
+                result.put("DS", "admin");
+            }
+            result.put("returnCode", "0");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("returnCode", "1");
+            result.put("returnMessage", "查询失败 : "+e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId) {
+        Map<String,Object> result = new HashMap<String,Object>();
+        Map<String,Object> paraMap = new HashMap<String,Object>();
+        paraMap.put("applyId", applyId);
+        paraMap.put("dataBaseId", dataBaseId);
+        paraMap.put("dataClassId",dataClassId);
+        //删除前查询是否存在
+        try {
+            mybatisQueryMapper.delDataAuthorityByApplyId(paraMap);
+            mybatisQueryMapper.clearUselessApply();
+            result.put("returnCode", "0");
+            result.put("returnMessage", "删除成功。");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("returnCode", "1");
+            result.put("returnMessage", "删除失败 : "+e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getDataCategory() {
+        Map<String,Object> result = new HashMap<String,Object>();
+        try {
+            List<Map<String,Object>> categoryList = mybatisQueryMapper.getDataCategory();
+            result.put("returnCode", "0");
+            result.put("DS", categoryList);
+            result.put("returnMessage", "操作成功 。");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("returnCode", "1");
+            result.put("returnMessage", "操作失败 ："+e.getMessage());
+        }
+        return result;
     }
 
 }

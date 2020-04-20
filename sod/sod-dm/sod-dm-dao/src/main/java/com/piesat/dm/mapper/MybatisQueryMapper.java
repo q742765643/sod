@@ -5,6 +5,8 @@ import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.*;
+import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
+import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -127,5 +129,42 @@ public interface MybatisQueryMapper {
      * @return
      */
     List<Map<String, Object>> getDatabaseSpecialReadWriteList(@Param("map")Map<String,Object> map);
+    List<Map<String, Object>> queryTableBylogics(List<String> logics);
 
+    List<Map<String, Object>> getGroupConcat(List<String> logics);
+
+    List<Map<String, Object>> getRecordByTdbId(String tdbId, String typeId, String cause);
+
+    List<Map<String, Object>> getDataAuthorityList(Map<String, Object> paraMap);
+
+    void delDataAuthorityByApplyId(Map<String, Object> paraMap);
+
+    void clearUselessApply();
+
+    List<Map<String, Object>> getDataCategory();
+
+    List<Map<String, String>> getSchemaByPhysic(Map<String, Object> param);
+
+    List<Map<String, Object>> getAuthorizeRecordByTdbId(String tdbId, String typeId, String cause);
+
+    void changeDataStatus(Map<String, String> dataMap);
+
+    void changeDataAuthorStatus(Map<String, String> dataMap);
+
+    void deleteRecordByTdbId(Map<String, String> dataMap);
+
+    void deleteDataAuthor(Map<String, String> dataMap);
+
+    void delTreeUpdateTypeId(Map<String, String> paraMap);
+
+    void updateTypeIdByTdbId(Map<String, String> dataMap);
+
+    List<DatabaseSpecialEntity> getAllSpecial(int i);
+    List<DatabaseSpecialAccessEntity> getAllRecordByUserId(String userId);
+
+    void saveOneRecord(DatabaseSpecialAccessEntity oneRecord);
+
+    List<Map<String, Object>> getSpecialAuthorizeList(String user_id);
+
+    void updateDataAuthorityStatus(String apply_id, String database_id, String data_class_id, Integer authorize);
 }

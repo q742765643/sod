@@ -343,5 +343,43 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         //删除申请信息
         this.delete(id);
     }
+    @Override
+    public Map<String, Object> delApply(String applyId, String dDataId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            NewdataApplyEntity newdataApplyEntity = new NewdataApplyEntity();
+            newdataApplyEntity.setDDataId(dDataId);
+            newdataApplyEntity.setUserId(applyId);
+            newdataApplyEntity.setExamineStatus(4);
+            newdataApplyDao.save(newdataApplyEntity);
+            result.put("returnCode", "0");
+            result.put("returnMessage", "操作成功。");
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("returnCode", "1");
+            result.put("returnMessage", "操作失败 : " + e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getSchemaInfo(String physicId, String userId) {
+        Map<String,Object> result = new HashMap<String,Object>();
+        try {
+            Map<String,Object> param = new HashMap<String,Object>();
+            param.put("physicId", physicId);
+            param.put("userId", userId);
+            List<Map<String,String>> dataList = mybatisQueryMapper.getSchemaByPhysic(param);
+
+            result.put("returnCode", "0");
+            result.put("DS", dataList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("returnCode", "1");
+            result.put("returnMessage", "查询失败 : "+e.getMessage());
+        }
+        return result;
+    }
 }
