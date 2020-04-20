@@ -267,7 +267,12 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
     @Override
     public ResultT<String> addDataStructure(TableColumnDto tableColumnDto) {
-        TableColumnDto tableColumnDto1 = tableColumnService.saveDto(tableColumnDto);
+        try {
+            TableColumnDto tableColumnDto1 = tableColumnService.saveDto(tableColumnDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
         return ResultT.success();
     }
 

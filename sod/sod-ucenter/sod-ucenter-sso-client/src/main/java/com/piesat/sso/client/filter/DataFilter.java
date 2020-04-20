@@ -12,12 +12,16 @@ import com.piesat.sso.client.util.SignUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.AbstractMultipartHttpServletRequest;
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -55,28 +59,37 @@ public class DataFilter implements Filter {
     @SneakyThrows
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String requestBody = convertInputStreamToString(request.getInputStream());
-        if (null==requestBody||"".equals(requestBody)) {
+        String enctype = request.getContentType();
+        if (StringUtils.isNotBlank(enctype) && enctype.contains("multipart/form-data")){
             WrapperedRequest wrapRequest = new WrapperedRequest(
                     (HttpServletRequest) request);
-            //WrapperedResponse wrapResponse = new WrapperedResponse((HttpServletResponse) response);
             SignUtil.signParam(wrapRequest);
             filterChain.doFilter(wrapRequest, response);
+        }else {
+            String requestBody = convertInputStreamToString(request.getInputStream());
+            if (null==requestBody||"".equals(requestBody)) {
+                WrapperedRequest wrapRequest = new WrapperedRequest(
+                        (HttpServletRequest) request);
+                //WrapperedResponse wrapResponse = new WrapperedResponse((HttpServletResponse) response);
+                SignUtil.signParam(wrapRequest);
+                filterChain.doFilter(wrapRequest, response);
            /* byte[] data = wrapResponse.getResponseData();
             String responseBodyMw=new String(data);
             writeResponse(response, responseBodyMw);*/
-        } else {
-            CasVo casVo= JSON.parseObject(requestBody, CasVo.class);
-            WrapperedRequest wrapRequest = new WrapperedRequest(
-                    (HttpServletRequest) request, casVo.getData());
-            //WrapperedResponse wrapResponse = new WrapperedResponse((HttpServletResponse) response);
-            SignUtil.signJson(casVo,requestBody,wrapRequest);
-            filterChain.doFilter(wrapRequest, response);
+            } else {
+                CasVo casVo= JSON.parseObject(requestBody, CasVo.class);
+                WrapperedRequest wrapRequest = new WrapperedRequest(
+                        (HttpServletRequest) request, casVo.getData());
+                //WrapperedResponse wrapResponse = new WrapperedResponse((HttpServletResponse) response);
+                SignUtil.signJson(casVo,requestBody,wrapRequest);
+                filterChain.doFilter(wrapRequest, response);
            /* byte[] data = wrapResponse.getResponseData();
             String responseBodyMw=new String(data);
             writeResponse(response, responseBodyMw);*/
 
+            }
         }
+
 
     }
 

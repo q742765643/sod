@@ -2,8 +2,10 @@ package com.piesat.sso.client.shiro;
 
 import com.piesat.common.grpc.config.SpringUtil;
 
+import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.ip.IpUtils;
 import com.piesat.sso.client.util.AddressUtils;
+import com.piesat.ucenter.rpc.api.system.BizUserService;
 import com.piesat.ucenter.rpc.api.system.MenuService;
 import com.piesat.ucenter.rpc.api.system.RoleService;
 import com.piesat.ucenter.rpc.api.system.UserService;
@@ -50,6 +52,7 @@ public class HtShiroRealm extends AuthorizingRealm {
         String username = (String) authenticationToken.getPrincipal();
         ByteSource salt = ByteSource.Util.bytes(username);
         UserService userService = SpringUtil.getBean(UserService.class);
+        BizUserService bizUserService = SpringUtil.getBean(BizUserService.class);
         UserDto userDto = null;
         if ("0".equals(token.getLoginType())) {
             userDto = userService.selectUserByUserName(username);
@@ -81,10 +84,11 @@ public class HtShiroRealm extends AuthorizingRealm {
 
 
         if ("1".equals(token.getLoginType())) {
-            userDto = userService.selectUserByAppId(username);
+            userDto = bizUserService.findByBizUserId(username);
+            String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
             SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                     userDto, //用户名
-                    new Md5Hash(String.valueOf(token.getPassword()), username, 2).toString(), //密码
+                    new Md5Hash(pwd, username, 2).toString(), //密码
                     salt,
                     getName() );
             return authenticationInfo;
