@@ -766,5 +766,351 @@
             and a.examine_status = ${map.examineStatus}
         </if>
     </select>
-
+    <select id="queryTableBylogics" resultType="java.util.Map" parameterType="java.util.List">
+        select
+        d.table_name,d.data_class_id,t2.class_name as "dataName",
+        d.d_data_id,d.db_table_type,wm_concat(d.storage_type) storage_type,
+        t.data_class_id pid,t.class_name as "className",t.d_data_id pd_data_id,
+        dpd.special_database_name
+        FROM
+        t_sod_data_table d
+        inner join t_sod_data_class t on substr(d.data_class_id,0,1)=t.data_class_id
+        inner join T_SOD_DATA_LOGIC c on d.class_logic_id = c.id
+        inner join t_sod_data_class t2 on d.data_class_id = t2.data_class_id
+        inner join t_sod_database_define dpd on c.database_id = dpd.database_id
+        where  c.database_id in
+        <foreach collection="list" item="e" separator="," open="(" close=")">
+            #{e}
+        </foreach>
+        or  dpd.parent_id in
+        <foreach collection="list" item="e" separator="," open="(" close=")">
+            #{e}
+        </foreach>
+        group by
+        d.table_name,d.data_class_id,dataName,
+        d.d_data_id,d.db_table_type,t.data_class_id,className,t.d_data_id,
+        dpd.special_database_name
+        ORDER BY DATA_CLASS_ID
+    </select>
+    <select id="getGroupConcat" resultType="java.util.Map" parameterType="java.util.List">
+        select A.DATA_CLASS_ID,A.D_DATA_ID,A.DATA_SERVICE_NAME,WM_CONCAT(A.parent_id) logic,A.DATABASE_ID FROM(
+        select DISTINCT m.DATA_CLASS_ID,m.D_DATA_ID,m.DATA_SERVICE_NAME,dpd.parent_id,dpd.database_id
+        FROM t_sod_data_table m inner join T_SOD_DATA_LOGIC n
+        inner join t_sod_database_define dpd on n.database_id = dpd.database_id
+        on m.class_logic_id=n.id
+        WHERE dpd.parent_id in
+        <foreach collection="list" item="e" separator="," open="(" close=")">
+            #{e}
+        </foreach>
+        ) A
+        GROUP BY A.DATA_CLASS_ID,A.D_DATA_ID,A.DATA_SERVICE_NAME,DATABASE_ID
+        ORDER BY DATA_CLASS_ID
+    </select>
+    <select id="getRecordByTdbId" parameterType="String" resultType="java.util.Map">
+        select
+        d.DATA_CLASS_ID,d.DATA_SERVICE_NAME,d.D_DATA_ID,
+        b.APPLY_AUTHORITY,b.REAL_AUTHORITY,b.LOGIC_ID,
+        b.AUTHORIZE,b.CAUSE,c1.DATABASE_NAME,
+        d.TABLE_NAME,e.CLASS_NAME
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE b
+        inner join t_sod_data_table d on b.data_class_id = d.data_class_id
+        inner join t_sod_database_define c on b.LOGIC_ID = c.database_id
+        inner join t_sod_database_define c1 on c.parent_id = c1.database_id
+        inner join T_SOD_DATA_LOGIC f on d.class_logic_id = f.id and f.database_id = c.DATABASE_ID
+        inner join t_sod_data_class e on substr(d.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
+        where b.TDB_ID='${tdbId}'
+        <if test="status!=null and status !=''">
+            AND b.AUTHORIZE=${status}
+        </if>
+        <if test="typeId!=null and typeId !=''">
+            AND b.TYPE_ID=${typeId}
+        </if>
+    </select>
+    <!-- 获取资料申请 -->
+    <select id="getDataAuthorityList" resultType = "java.util.Map" parameterType="java.util.Map">
+        select
+        da.apply_id as "applyId", da.DATABASE_ID as "logicId", da.DATA_CLASS_ID as "dataClassId",
+        dct.CLASS_NAME as "dataName",da.APPLY_AUTHORITY as "applyAuthority",da.AUTHORIZE as "authorize",
+        dct1.CLASS_NAME as "categoryName" , daa.APPLY_TIME as "applyTime",da.CAUSE as "remark",
+        dpd1.database_name||'【'||dpd1.database_id||'】' as "physicName",dpd.database_id as "schemaId",
+        dpd.special_database_name || '【' ||dpd.database_schema_name||'】' as "schemaName"
+        from
+        T_SOD_DATA_AUTHORITY_RECORD da
+        inner join T_SOD_DATA_AUTHORITY_APPLY daa on da.apply_id = daa.user_id
+        inner join t_sod_data_class dct on da.data_class_id = dct.data_class_id
+        inner join t_sod_data_class dct1 on substr(da.DATA_CLASS_ID,0,1) = dct1.DATA_CLASS_ID
+        inner join t_sod_database_define dpd on da.database_id = dpd.database_id
+        inner join t_sod_database_define dpd1 on dpd.parent_id = dpd1.database_id
+        where 1=1
+        <if test="userId !=null and userId != ''">
+            and daa.USER_ID = #{userId}
+        </if>
+        <if test="applyAuthority != null and applyAuthority != ''">
+            and da.APPLY_AUTHORITY = #{applyAuthority}
+        </if>
+        <if test="logicId != null and logicId != ''">
+            and dpd1.DATABASE_ID = #{logicId}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            and dct.CLASS_NAME like CONCAT('%',#{dataName},'%')
+        </if>
+        <if test="category != null and category != ''">
+            and dct1.DATA_CLASS_ID = #{category}
+        </if>
+        <if test="schemaId != null and schemaId != ''">
+            and da.database_id = #{schemaId}
+        </if>
+        group by
+        da.userId, da.DATABASE_ID, da.DATA_CLASS_ID,
+        dct.CLASS_NAME,da.APPLY_AUTHORITY,da.AUTHORIZE,
+        dct1.CLASS_NAME, daa.APPLY_TIME,da.CAUSE,
+        dpd1.database_name||'【'||dpd1.database_id||'】',dpd.database_id,
+        dpd.special_database_name || '【' ||dpd.database_schema_name||'】'
+        order by daa.APPLY_TIME desc
+    </select>
+    <!-- 根据id删除资料申请记录 -->
+    <delete id="delDataAuthorityByApplyId" parameterType="java.util.Map">
+        delete from T_SOD_DATA_AUTHORITY_RECORD
+        where apply_id = #{applyId}
+        <if test="dataBaseId != null and dataBaseId !=''">
+            and DATABASE_ID = #{dataBaseId}
+        </if>
+        <if test="dataClassId != null and dataClassId != ''">
+            and DATA_CLASS_ID = #{dataClassId}
+        </if>
+    </delete>
+    <!-- 删除申请表中数据 -->
+    <delete id="clearUselessApply">
+    		delete from T_SOD_DATA_AUTHORITY_APPLY a
+    			where not exists (select 1 from  T_SOD_DATA_AUTHORITY_RECORD b where a.user_id = b.apply_id)
+    </delete>
+    <!-- 查询资料分类 -->
+    <select id="getDataCategory" resultType="java.util.Map">
+    		select DATA_CLASS_ID as "id", CLASS_NAME as "name"
+    		from T_SOD_DATA_CLASS
+    		where PARENT_CLASS_ID = '0'
+    		order by DATA_CLASS_ID asc
+    </select>
+    <!-- 根据物理库获取schema -->
+    <select id="getSchemaByPhysic" parameterType = "java.lang.String" resultType = "java.util.Map">
+        select database_id as "id", special_database_name ||'【'||database_schema_name||'】' as "name",database_id as "physicId" from t_sod_database_define
+        where database_classify = '物理库'
+        <if test="physicId != null and physicId != ''">
+            and database_id = #{physicId}
+        </if>
+        union
+        select dpd.database_id as "id",dpd.special_database_name ||'【'||dpd.database_schema_name||'】' as "name" ,dpd.parent_id as "physicId"
+        from t_sod_database_define dpd left join T_SOD_DATABASE_SPECIAL sdc
+        on dpd.tdb_id = sdc.tdb_id
+        where dpd.database_classify = '专题库'
+        and sdc.EXAMINE_STATUS = '2' and sdc.USE_STATUS = '2'
+        <if test="physicId != null and physicId != ''">
+            and dpd.parent_id = #{physicId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and sdc.user_id = #{userId}
+        </if>
+    </select>
+    <!-- 根据专题库ID查询关联资料，及资料相关四级编码，表名称，权限，物理库名称等 -->
+    <select id="getAuthorizeRecordByTdbId" parameterType="String" resultType="java.util.Map">
+        SELECT
+        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.TABLE_NAME,WM_CONCAT(M.APPLY_AUTHORITY) APPLY_AUTHORITY,
+        WM_CONCAT(M.REAL_AUTHORITY) REAL_AUTHORITY,WM_CONCAT(M.LOGIC_ID) PHYSICAL,WM_CONCAT(M.DATABASE_NAME) DATABASE_NAME,M.DATA_TYPE
+        FROM(
+        SELECT
+        DISTINCT d.DATA_CLASS_ID,d.DATA_SERVICE_NAME,d.D_DATA_ID,
+        b.APPLY_AUTHORITY,b.REAL_AUTHORITY,b.LOGIC_ID,c1.DATABASE_NAME,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE b
+        inner join t_sod_data_table d on b.data_class_id = d.data_class_id
+        inner join t_sod_database_define c on b.LOGIC_ID = c.database_id
+        inner join t_sod_database_define c1 on c.parent_id = c1.database_id
+        inner join T_SOD_DATA_LOGIC f on d.table_id = f.table_id and f.database_id = c.database_id
+        inner join t_sod_data_class e on substr(d.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
+        where b.TDB_ID= #{tdbId}
+        <if test="status!=null and status !=''">
+            AND b.AUTHORIZE=#{status}
+        </if>
+        <if test="typeId!=null and typeId !='0'.toString() and typeId != '9999'.toString()">
+            AND b.TYPE_ID=#{typeId}
+        </if>
+        <if test=" typeId == '0'.toString()">
+            and b.type_id != '9999'
+        </if>
+        <if test=" typeId == '9999'.toString()">
+            and (b.type_id = '9999' or b.type_id is null)
+        </if>
+        )M
+        GROUP BY M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.D_DATA_ID,M.TABLE_NAME,M.DATA_TYPE
+        ORDER BY M.DATA_CLASS_ID
+    </select>
+    <!-- 下面根据专题库ID和存储编码来修改分类ID -->
+    <update id="changeDataStatus" parameterType="java.util.Map">
+   		update T_SOD_DATABASE_SPECIAL_READ_WRITE
+		set AUTHORIZE=3
+		where sdb_id=#{tdbId} and DATA_CLASS_ID=#{data_class_id} and LOGIC_ID=#{physical}
+   	</update>
+    <!-- 修改datauathor表中数据 -->
+    <update id="changeDataAuthorStatus" parameterType="java.util.Map">
+    	update T_SOD_DATA_AUTHORITY_RECORD set AUTHORIZE = null
+    	where QTDB_ID = #{tdbId} and DATA_CLASS_ID=#{data_class_id} and DATABASE_ID = #{physical}
+    </update>
+    <!-- 下面根据专题库ID号、资料存储编码和物理库ID删除对应专题库信息 -->
+    <delete id="deleteRecordByTdbId" parameterType="Map">
+        delete from T_SOD_DATABASE_SPECIAL_READ_WRITE
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="tdbId != null and tdbId !=''">
+                and sdb_id=#{tdbId}
+            </if>
+            <if test="dataClassId != null and dataClassId !=''">
+                and DATA_CLASS_ID=#{dataClassId}
+            </if>
+            <if test="logicId != null and logicId !=''">
+                and LOGIC_ID=#{logicId}
+            </if>
+        </trim>
+    </delete>
+    <delete id="deleteDataAuthor" parameterType="java.util.Map">
+        delete from T_SOD_DATA_AUTHORITY_RECORD
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="tdbId != null and tdbId !=''">
+                and QTDB_ID=#{tdbId}
+            </if>
+            <if test="dataClassId != null and dataClassId !=''">
+                and DATA_CLASS_ID=#{dataClassId}
+            </if>
+            <if test="logicId != null and logicId !=''">
+                and DATABASE_ID=#{logicId}
+            </if>
+        </trim>
+    </delete>
+    <!-- 专题库删除节点的同时 更新节点下的资料为未分类 -->
+    <update id="delTreeUpdateTypeId" parameterType="java.util.Map">
+		update T_SOD_DATABASE_SPECIAL_READ_WRITE set type_id ='9999'
+		where sdb_id = #{tdb_id} and type_id = #{type_id}
+	</update>
+    <!-- 下面根据专题库ID和存储编码来修改分类ID -->
+    <update id="updateTypeIdByTdbId" parameterType="java.util.Map">
+        update T_SOD_DATABASE_SPECIAL_READ_WRITE
+        set
+        <trim suffixOverrides=",">
+            <if test="typeId != null and typeId !=''">
+                TYPE_ID=#{typeId},
+            </if>
+        </trim>
+        where sdb_id=#{tdbId} and DATA_CLASS_ID=#{dataClassId}
+    </update>
+    <!-- 下面根据用户ID取得用户创建的专题库（要求：审核状态为审核通过） -->
+    <select id="getAllSpecial" resultMap="BaseResultMap" parameterType="String">
+        select
+        <include refid="Base_Column_List" />
+        from T_SOD_DATABASE_SPECIAL
+        where  use_status=#{_parameter}
+        order by APPLY_TIME desc
+    </select>
+    <!-- 下面根据用户ID和专题库ID取得用户专题库申请信息 -->
+    <select id="getAllRecordByUserId" parameterType="String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from T_SOD_DATABASE_SPECIAL_ACCESS
+        where USER_ID = #{_parameter}
+    </select>
+    <!-- 插入一条记录 -->
+    <insert id="saveOneRecord" parameterType="com.piesat.dm.entity.special.DatabaseSpecialAccessEntity">
+        insert into dmin_special_db_accessapply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tdbId != null and tdbId != ''">
+                TDB_ID,
+            </if>
+            <if test="userId != null and userId !=''">
+                USER_ID,
+            </if>
+            <if test="accessAuthority != null">
+                ACCESS_AUTHORITY,
+            </if>
+            <if test="applyTime !=null">
+                APPLY_TIME,
+            </if>
+            <if test="uses != null and uses !='' ">
+                USES,
+            </if>
+            <if test="examiner != null and examiner !=''">
+                EXAMINER,
+            </if>
+            <if test="examineStatus != null and examineStatus !=''">
+                EXAMINE_STATUS,
+            </if>
+            <if test="examineTime != null">
+                EXAMINE_TIME,
+            </if>
+            <if test="cause != null and cause !=''">
+                CAUSE,
+            </if>
+            <if test="useStatus != null and useStatus !=''">
+                USE_STATUS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tdbId != null and tdbId != ''">
+                #{tdbId},
+            </if>
+            <if test="userId != null and userId !=''">
+                #{userId},
+            </if>
+            <if test="accessAuthority != null">
+                #{accessAuthority},
+            </if>
+            <if test="applyTime !=null">
+                #{applyTime},
+            </if>
+            <if test="uses != null and uses !='' ">
+                #{uses},
+            </if>
+            <if test="examiner != null and examiner !=''">
+                #{examiner},
+            </if>
+            <if test="examineStatus != null and examineStatus !=''">
+                #{examineStatus},
+            </if>
+            <if test="examineTime != null">
+                #{examineTime},
+            </if>
+            <if test="cause != null and cause !=''">
+                #{cause},
+            </if>
+            <if test="useStatus != null and useStatus !=''">
+                #{useStatus},
+            </if>
+        </trim>
+    </insert>
+    <!-- 根据用户id，查询该用户所有自建专题库下申请访问的资料(既包含申请访问资料，又包含私有资料) -->
+    <select id="getSpecialAuthorizeList" parameterType = "java.lang.String" resultType = "java.util.Map">
+       select a.*,b.*,c.table_name
+       from T_SOD_DATABASE_SPECIAL_READ_WRITE a left join T_SOD_DATABASE_SPECIAL b on b.TDB_ID = a.TDB_ID left join (
+	   select * from t_sod_data_table aa left join T_SOD_DATA_LOGIC bb on aa.TABLE_ID=bb.TABLE_ID) c on (c.DATA_CLASS_ID = a.DATA_CLASS_ID
+	   and c.database_id = a.LOGIC_ID)
+	   where c.USER_ID=#{userId} and a.AUTHORIZE=1 AND b.USE_STATUS ='2' AND b.EXAMINE_STATUS='2'"
+    </select>
+    <update id="updateDataAuthorityStatus">
+        update t_sod_data_authority_record
+        set AUTHORIZE=#{AUTHORIZE}
+        <where>
+            <if test="DATA_CLASS_ID != null">
+                and DATA_CLASS_ID = #{DATA_CLASS_ID},
+            </if>
+            <if test="DATABASE_ID != null  and DATABASE_ID  != ''">
+                and DATABASE_ID = #{DATABASE_ID}
+            </if>
+            <if test="apply_id != null  and apply_id  != ''">
+                and id = #{apply_id}
+            </if>
+        </where>
+    </update>
+    <select id="getRecentOnlineTime" resultMap="timeResult">
+			select
+				databegintime as "BEGIN_TIME", dataendtime as "END_TIME"
+			from
+				T_SOD_ARCHIVE_INFO
+			where
+				PRODUCTIONCODE = #{ctsCode}
+    </select>
 </mapper>

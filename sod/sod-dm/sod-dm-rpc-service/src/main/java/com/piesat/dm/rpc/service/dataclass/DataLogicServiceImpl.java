@@ -15,9 +15,7 @@ import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 资料用途分类
@@ -37,6 +35,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private DatabaseDao databaseDao;
+
+    @Autowired
+    private DatabaseSpecialReadWriteDao databaseSpecialReadWriteDao;
 
     @Override
     public BaseDao<DataLogicEntity> getBaseDao() {
@@ -150,5 +153,83 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
         dataTableService.deleteByClassLogicId(dotById.getId());
         this.delete(id);
     }
+    @Override
+    public Map<String, Object> getTableByDBLogics(String tdbId, List<String> logics) {
+        Map<String, Object> map = new HashMap();
+        try {
+            List<Map<String,Object>> dataList=mybatisQueryMapper.queryTableBylogics(logics);
+            List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(logics);
+            //如果是向砖题库中追加资料，过滤掉之前选择过的资料
+            if(!StringUtils.isBlank(tdbId)){
+                List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findByTdbId(tdbId);
+                if(selectedList!=null&&selectedList.size()>0){
+                    List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
+                    for(Map<String,Object> notSelect :dataList){
+                        for(DatabaseSpecialReadWriteEntity databaseSpecial :selectedList){
+                            if(notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDatabaseId().toString())){
+                                delectedList.add(notSelect);
+                            }
+                        }
+                    }
+                    dataList.removeAll(delectedList);
+                }
+            }
 
+            // 下面创建JSONArray对象，来存储查出的所有记录数据。
+            JSONArray data = new JSONArray();
+            HashSet<String> pp = new HashSet<String>();
+            if(dataList != null && dataList.size()>0){
+                for(int i=0;i<dataList.size();i++){
+                    Map<String,Object> dataTable = dataList.get(i);
+                    JSONObject pIdData = new JSONObject();
+                    if(!pp.contains(dataTable.get("PID"))){
+                        pIdData.put("id",dataTable.get("PID"));
+                        pIdData.put("pId","-1");
+                        pIdData.put("name",dataTable.get("className"));
+                        pIdData.put("d_data_id",dataTable.get("PD_DATA_ID"));
+                        pIdData.put("open","false");
+                        data.add(pIdData);
+                        pp.add(dataTable.get("PID").toString());
+                    }
+                    JSONObject oneData = new JSONObject();
+                    oneData.put("id", dataTable.get("DATA_CLASS_ID"));
+                    oneData.put("pId",dataTable.get("PID"));
+                    oneData.put("name", dataTable.get("dataName"));
+                    oneData.put("d_data_id", dataTable.get("D_DATA_ID"));
+                    oneData.put("table_name", dataTable.get("TABLE_NAME"));
+                    oneData.put("open","false");
+                    oneData.put("db_table_type",dataTable.get("DB_TABLE_TYPE"));
+                    oneData.put("storage_type",dataTable.get("STORAGE_TYPE"));
+                    oneData.put("special_database_name", dataTable.get("SPECIAL_DATABASE_NAME"));
+                    oneData.put("database_schema_name", dataTable.get("DATABASE_SCHEMA_NAME"));
+                    //如果是键表-要素表中的要素表，要隐藏
+                    if("E".equals(dataTable.get("DB_TABLE_TYPE")) && ((String)dataTable.get("STORAGE_TYPE")).contains("K")){
+                        oneData.put("isHidden",true);
+                    }
+                    //前台临时存储使用
+                    oneData.put("readOrWrite", "");
+                    for(int j=0;j<groupConcat.size();j++){
+                        Map<String,Object> group = groupConcat.get(j);
+                        oneData.put("database_id", group.get("DATABASE_ID"));
+                        if(dataTable.get("DATA_CLASS_ID").toString().equals(group.get("DATA_CLASS_ID")) && dataTable.get("D_DATA_ID").toString().equals(group.get("D_DATA_ID"))){
+                            oneData.put("physicalDB", group.get("LOGIC"));
+                            break;
+                        }
+                    }
+                    data.add(oneData);
+                }
+            }
+
+            map.put("data", data);
+            map.put("returnCode", 0);
+            map.put("returnMessage", "资料列表数据获取成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("returnCode", 1);
+            map.put("returnMessage", "资料列表数据获取失败");
+        }
+
+        //下面返回值。
+        return map;
+    }
 }

@@ -33,4 +33,12 @@ public interface DataAuthorityApplyService {
     Map<String,Object>  getAuthorDataByClassId(String dataClassId);
 
     void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id,String data_class_id,String database_id,Integer authorize, String cause);
+
+    Map<String, Object> getDataAuthorityList(String userId, String applyAuthority, String logicId, String dataName, String category, String schemaId);
+
+    Map<String, Object> getDataCreator(String dataClassId);
+
+    Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId);
+
+    Map<String, Object> getDataCategory();
 }

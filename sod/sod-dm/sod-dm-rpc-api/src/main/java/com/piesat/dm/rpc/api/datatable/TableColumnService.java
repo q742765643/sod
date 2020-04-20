@@ -15,7 +15,7 @@ import java.util.List;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface TableColumnService {
-    TableColumnDto saveDto(TableColumnDto tableColumnDto);
+    TableColumnDto saveDto(TableColumnDto tableColumnDto) throws Exception;
 
     List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList);
 

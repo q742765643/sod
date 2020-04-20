@@ -5,6 +5,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -28,4 +29,5 @@ public interface CloudDatabaseApplyService {
     CloudDatabaseApplyDto updateExamineStatus(String id,String examineStatus);
 
 
+    Map<String, Object> getRecentTime(String classDataId, String ctsCode);
 }

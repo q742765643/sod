@@ -23,9 +23,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库访问账户管理
@@ -271,5 +274,83 @@ public class DatabaseUserManagerController {
     @GetMapping(value = "/exportData")
     public void exportData(String examineStatus) {
         this.databaseUserService.exportData(examineStatus);
+    }
+    @ApiOperation(value = "数据库访问账户申请")
+    @RequiresPermissions("dm:databaseUser:applyDatabaseUser")
+    @PostMapping(value="applyDatabaseUser")
+    public ResultT applyDatabaseUser(HttpServletRequest request){
+        try {
+            DatabaseUserDto applyDatabaseUser = this.databaseUserService.applyDatabaseUser(request);
+            return ResultT.success(applyDatabaseUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "数据库访问账户修改")
+    @RequiresPermissions("dm:databaseUser:updateDatabaseUser")
+    @PostMapping(value="updateDatabaseUser")
+    public ResultT updateDatabaseUser(HttpServletRequest request){
+        try {
+            DatabaseUserDto updateDatabaseUser = this.databaseUserService.applyDatabaseUser(request);
+            return ResultT.success(updateDatabaseUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "数据库访问账户申请材料是否存在")
+    @RequiresPermissions("dm:databaseUser:fileIsExist")
+    @PostMapping(value="fileIsExist")
+    public ResultT fileIsExist(HttpServletRequest request){
+        try{
+            String fileNames = request.getParameter("apply_material");
+            fileNames = URLDecoder.decode(fileNames, "UTF-8");
+            String fileName = request.getSession().getServletContext().getRealPath("") + File.separator + "tupian"
+                    + File.separator + fileNames;
+            File testFile = new File(fileName);
+            if (!testFile.exists()) {
+                return ResultT.success("NO");
+            }
+            return ResultT.success("YES");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "判断用户是否存在数据库访问账户(已审核通过)")
+    @RequiresPermissions("dm:databaseUser:existUser")
+    @GetMapping(value = "/existUser")
+    public ResultT existUser(String userId) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
+            Map<String , Object> map = new HashMap<>();
+            if( null == databaseUserDto.getDatabaseUpId()||databaseUserDto.getDatabaseUpId().equals("")){
+                map.put("returnCode", 1);
+                map.put("returnMessage", "当前用户没有UP账户");
+                map.put("databaseUP_ID", "-");
+                map.put("databaseUP_PASSWORD", "-");
+                return ResultT.success(map);
+            }else{
+                map.put("returnCode", 0);
+                map.put("returnMessage", "当前用户存在UP账户");
+                map.put("databaseUP_ID", databaseUserDto.getDatabaseUpId());
+                map.put("databaseUP_PASSWORD", databaseUserDto.getDatabaseUpPassword());
+                map.put("examine_status", databaseUserDto.getExamineStatus());
+                return ResultT.success(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value="针对具体物理库撤销读写权限")
+    @RequiresPermissions("api:databaseUser:dataAuthorityCancel")
+    @PostMapping(value="/api/databaseUser/dataAuthorityCancel")
+    public ResultT dataAuthorityCancel(String user_id, String database_id, String data_class_id, String apply_authority, String mark){
+        // 针对具体库中表撤销读写权限
+        Integer apply_authoritys = Integer.parseInt(apply_authority);
+        Map<String, Object> map = databaseUserService.dataAuthorityCancel(user_id, database_id, data_class_id,apply_authoritys,mark);
+        return ResultT.success(map);
     }
 }
