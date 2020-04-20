@@ -1,5 +1,6 @@
 package com.piesat.dm.entity.database;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
@@ -24,36 +25,42 @@ public class DatabaseUserEntity extends BaseEntity {
     /**
      * 用户ID
      */
+    @Excel(name = "用户ID")
     @Column(name = "user_id")
     private String userId;
 
     /**
      * UP账户ID
      */
+    @Excel(name = "账户ID")
     @Column(name = "database_up_id")
     private String databaseUpId;
 
     /**
      * UP账户密码
      */
+    @Excel(name = "账户密码")
     @Column(name = "database_up_password")
     private String databaseUpPassword;
 
     /**
      * up账户IP
      */
+    @Excel(name = "UP账户IP")
     @Column(name = "database_up_ip")
     private String databaseUpIp;
 
     /**
      * UP账户IP区间
      */
+    @Excel(name = "UP账户区间")
     @Column(name = "database_up_ip_segment")
     private String databaseUpIpSegment;
 
     /**
      * UP账户描述
      */
+    @Excel(name = "UP账户描述")
     @Column(name = "database_up_desc")
     private String databaseUpDesc;
 
@@ -84,6 +91,7 @@ public class DatabaseUserEntity extends BaseEntity {
     /**
      * 审核时间
      */
+    @Excel(name = "审核时间")
     @Column(name = "examine_time")
     private Date examineTime;
 
@@ -96,6 +104,7 @@ public class DatabaseUserEntity extends BaseEntity {
     /**
      * 拒绝原因
      */
+    @Excel(name = "拒绝原因")
     @Column(name = "failure_reason")
     private String failureReason;
 
