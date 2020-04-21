@@ -8,14 +8,15 @@ module.exports = {
     host: "localhost",
     port: 9090,
     proxy: {
-      "/app": {
+      [process.env.VUE_APP_FTP_API]: {
         target: "http://10.1.100.69:8008",
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          "^/app": ""
+          ["^" + process.env.VUE_APP_FTP_API]: ""
         }
       }
+
     }
   },
   configureWebpack: () => ({

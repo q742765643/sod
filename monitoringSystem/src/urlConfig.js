@@ -1,4 +1,4 @@
-const adress = "/app";
+const adress = process.env.VUE_APP_BASE_API;
 const interfaceObj = {
   cpuUsage: adress + '/system/cpuUsage', //查询时间范围内cpu使用率
   fileUsage: adress + '/system/fileUsage', //查询磁盘使用信息
