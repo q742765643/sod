@@ -200,7 +200,6 @@
           <el-col :span="8">
             <el-form-item label="单位审核材料" prop="examineMaterial">
               <handleExport
-                @click="downloadWord"
                 :handleExportObj="handleExportObj"
                 baseUrl="DM"
                 btnText="下载查看审核文件"
@@ -344,12 +343,15 @@
             </el-row>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="实际分配CPU/内存" prop="newCpuMemory">
+            <el-form-item
+              label="实际分配CPU/内存"
+              prop="newCpuMemory"
+              v-if="msgFormDialog.storageLogic !='redis'&& msgFormDialog.storageLogic !='file'"
+            >
               <el-select
                 :disabled="isDetailStatus"
                 size="small"
                 v-model="msgFormDialog.newCpuMemory"
-                v-if="msgFormDialog.storageLogic !='redis'&& msgFormDialog.storageLogic !='file'"
               >
                 <el-option
                   v-for="(item,index) in cpuList"
@@ -562,11 +564,7 @@ export default {
         this.passwordType = "password";
       }
     },
-    // 查看详情时的下载
-    downloadWord() {
-      this.handleExportObj = {};
-      this.handleExportObj.examineMaterial = this.msgFormDialog.examineMaterial;
-    },
+
     // 上传限制
     handleExceed() {
       this.$message.warning("当前限制选择1个文件");
@@ -611,6 +609,8 @@ export default {
         // 修改
         this.msgFormDialog = this.searchObj;
         this.msgFormDialog.userId = this.searchObj.application_user;
+        this.handleExportObj = {};
+        this.handleExportObj.examineMaterial = this.msgFormDialog.examineMaterial;
         this.isDetail = true;
         if (this.msgFormDialog.examineStatus == "02") {
           this.examineStatus = true;

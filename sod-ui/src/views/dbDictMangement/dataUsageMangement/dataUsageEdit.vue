@@ -19,6 +19,7 @@
           v-model="msgFormDialog.storageType"
           :disabled="isDisabled"
           multiple="multiple"
+          @change="$forceUpdate()"
         >
           <el-option
             v-for="item in tableTypeList"
@@ -30,6 +31,7 @@
       </el-form-item>
       <el-form-item prop="databaseId" label="数据库名称:">
         <el-select
+          @change="$forceUpdate()"
           size="small"
           filterable
           v-model="msgFormDialog.databaseId"
@@ -115,19 +117,19 @@ export default {
       }
     };
   },
-  created() {
+  async created() {
     // 表类型
-    getAllStorageType().then(res => {
+    await getAllStorageType().then(res => {
       this.tableTypeList = res.data;
     });
     // 数据库
-    getDatabaseName().then(res => {
+    await getDatabaseName().then(res => {
       this.dbNamesList = res.data;
     });
-
     if (this.handleObj.id) {
       this.isDbIdDisable = true;
       this.msgFormDialog = this.handleObj;
+      console.log(this.msgFormDialog);
     } else {
       this.isDbIdDisable = false;
     }

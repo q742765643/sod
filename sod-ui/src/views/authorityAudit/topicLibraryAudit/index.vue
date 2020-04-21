@@ -47,7 +47,7 @@
           >
             <p>{{ scope.row.uses}}</p>
             <div slot="reference" class="name-wrapper">
-              <el-button type="primary" size="mini" plain class="tagpointer">查看用途</el-button>
+              <el-link :underline="false">查看用途</el-link>
             </div>
           </el-popover>
         </template>
@@ -83,17 +83,14 @@
         ref="myHandleServer"
       />
     </el-dialog>
-    <el-dialog title="专题库创建" :visible.sync="applyTopicDialog" width="1200px" v-dialogDrag>
+    <el-dialog title="专题库创建" :visible.sync="applyTopicDialog" width="1200px" v-dialogDrag top="5vh">
       <applyTopic v-if="applyTopicDialog" ref="applyTopicServer" @closedialog="closeeditDialog" />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {
-  pageList,
-  deleteList
-} from "@/api/authorityAudit/topicLibraryAudit";
+import { pageList, deleteList } from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 创建专题库

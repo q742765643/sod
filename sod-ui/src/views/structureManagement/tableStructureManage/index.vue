@@ -633,6 +633,10 @@ export default {
   .el-dialog__header {
     padding: 10px 20px;
     padding-left: 44px;
+    margin-bottom: 0;
+  }
+  .el-dialog__header:before {
+    top: 12px;
   }
   .el-dialog__headerbtn {
     top: 12px;
