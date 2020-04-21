@@ -253,9 +253,17 @@ public class SignUtil {
     public static void signJson(CasVo casVo, String data, WrapperedRequest wrapRequest, JSONObject object) throws Exception {
         if (null != casVo.getData() && !"".equals(casVo.getData())) {
             wrapRequest.putHeader("appId", casVo.getUserId());
-            wrapRequest.putHeader("pwd", casVo.getPwd());
             Map<String, Object> signMap = JSON.parseObject(data, Map.class);
             if (object.containsKey("interfaceId")){
+                BizUserService bizUserService = SpringUtil.getBean(BizUserService.class);
+                String userId = object.getString("userId");
+                UserDto userDto = bizUserService.findByBizUserId(userId);
+                if (userDto != null) {
+                    String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+                    object.put("pwd", password);
+                    casVo.setPwd(password);
+                }
+                wrapRequest.putHeader("pwd", casVo.getPwd());
                 List<String> paramList = new ArrayList<>();
                 for (Map.Entry<String, Object> entry : object.entrySet()) {
                     if (!entry.getKey().equals("sign")) {
@@ -266,6 +274,7 @@ public class SignUtil {
                 String paramStr = StringUtils.join(paramList, "&");
                 checkPortalSign(casVo,paramStr);
             }else {
+                wrapRequest.putHeader("pwd", casVo.getPwd());
                 checkSign(casVo, signMap);
             }
         }
