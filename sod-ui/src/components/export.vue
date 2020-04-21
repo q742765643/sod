@@ -51,6 +51,9 @@ export default {
       if (this.baseUrl == "UCENTER") {
         exportBase = process.env.VUE_APP_UCENTER_API;
       }
+      if (this.baseUrl == "DMWL") {
+        exportBase = process.env.VUE_APP_DMWLEI;
+      }
 
       window.location.href =
         exportBase +

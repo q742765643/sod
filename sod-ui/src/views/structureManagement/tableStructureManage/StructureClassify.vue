@@ -64,7 +64,7 @@
               <el-popover
                 placement="top-start"
                 trigger="hover"
-                :content="node.label+'('+node.id+')'"
+                :content="node.label+'('+data.id+')'"
               >
                 <el-button type="text" slot="reference">{{ node.label }}</el-button>
               </el-popover>
@@ -113,8 +113,8 @@ export default {
       operateNodeObj: {},
       checkedNodeArr: {}, //选中的资料树id集合
       editNodeId: "", //编辑资料树的id
-      showNoCreat: "primary",
-      showAll: "",
+      showNoCreat: "info",
+      showAll: "primary",
       myTreedata: [],
       whichTree: "资料分类树" //区分是哪颗树
     };
@@ -280,15 +280,16 @@ export default {
     },
     // 显示未创建、显示全部
     handleShowTree(type) {
+      debugger;
       let classBox = document.getElementsByClassName("classifyTree");
       //初始化资料分类树
-      if (this.showAll == "primary" && type == "all") {
-        this.showNoCreat = "primary";
-        this.showAll = "";
-        classBox[0].classList.remove("disActive");
-      } else if (this.showNoCreat == "primary" && type == "noCreat") {
-        this.showNoCreat = "";
+      if (type == "all") {
+        this.showNoCreat = "info";
         this.showAll = "primary";
+        classBox[0].classList.remove("disActive");
+      } else if (type == "noCreat") {
+        this.showNoCreat = "primary";
+        this.showAll = "info";
         classBox[0].classList.add("disActive");
       }
     },
@@ -379,6 +380,11 @@ export default {
       .el-button--small,
       .el-button--small.is-round {
         padding: 9px 10px;
+      }
+      .el-button--info {
+        color: #909399;
+        background: #f4f4f5;
+        border-color: #d3d4d6;
       }
     }
     .el-tree {

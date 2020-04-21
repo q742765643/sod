@@ -629,4 +629,13 @@ export default {
     }
   }
 }
+.scrollDialog {
+  .el-dialog__header {
+    padding: 10px 20px;
+    padding-left: 44px;
+  }
+  .el-dialog__headerbtn {
+    top: 12px;
+  }
+}
 </style>

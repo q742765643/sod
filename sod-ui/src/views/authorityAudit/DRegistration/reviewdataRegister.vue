@@ -93,7 +93,6 @@
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig";
 import { updateStatus } from "@/api/authorityAudit/DRegistration/reviewdataRegister";
 export default {
   name: "reviewDataRegister",
