@@ -78,11 +78,7 @@ public class HtAuthenticationFilter extends FormAuthenticationFilter {
                 UsernamePasswordToken utoken = new UsernamePasswordToken(appId, pwd);
                 utoken.setLoginType("1");
                 utoken.setRequest(req);
-                if ("api_manager".equals(appId)){
-                    utoken.setOperatorType(OperatorType.MANAGE.ordinal());
-                }else {
-                    utoken.setOperatorType(OperatorType.CAS.ordinal());
-                }
+                utoken.setOperatorType(OperatorType.CAS.ordinal());
                 subject.login(utoken);
                 redisUtil.set(THRID_LOGIN_APP_ID + appId, subject.getSession().getId(), 18000);
                 this.recordLogininfor(req, appId, resultT);
