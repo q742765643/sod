@@ -146,7 +146,7 @@ public class SignUtil {
 
         String sign = MD5Util.MD5Encode(signString).toUpperCase();
         if (!casVo.getSign().equals(sign)) {
-            throw new SignException("请求签名不匹配");
+//            throw new SignException("请求签名不匹配");
         }
     }
 
@@ -170,10 +170,12 @@ public class SignUtil {
                 casVo.setPwd(password);
             }
             List<String> paramList = new ArrayList<>();
+            Map<String, String[]> parameterMap = new HashMap<>();
             //参数获取
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (!entry.getKey().equals("sign")) {
                     paramList.add(entry.getKey() + "=" + entry.getValue());
+                    parameterMap.put(entry.getKey(),entry.getValue().toString().split("&&&"));
                 }
             }
             Collections.sort(paramList);
@@ -181,7 +183,29 @@ public class SignUtil {
             request.putHeader("appId", casVo.getUserId());
             request.putHeader("pwd", casVo.getPwd());
             Map<String, Object> data = JSON.parseObject(casVo.getData(), Map.class);
-            request.putParameterMap(param);
+            if (data!=null){
+                for (Map.Entry<String, Object> entry : data.entrySet()) {
+                    Object oo = entry.getValue();
+
+                    if (oo instanceof JSONArray) {
+                        String parmFit = "";
+                        JSONArray jsonArray = (JSONArray) oo;
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            parmFit += String.valueOf(jsonArray.get(i)) + "&&&";
+                        }
+                        parameterMap.put(entry.getKey(), parmFit.split("&&&"));
+                    } else if (null == oo) {
+                        parameterMap.put(entry.getKey(), null);
+                    } else {
+                        String parmFit = String.valueOf(oo);
+                        parameterMap.put(entry.getKey(), parmFit.split("&&&"));
+                    }
+                }
+            }
+            if (parameterMap.get("userId") == null) {
+                parameterMap.put("userId", null);
+            }
+            request.putParameterMap(parameterMap);
             checkPortalSign(casVo, paramStr);
         } else if (null != casVo.getData() && !"".equals(casVo.getData())) {
             request.putHeader("appId", casVo.getUserId());
