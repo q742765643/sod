@@ -382,7 +382,7 @@ export default {
         let chartstype = [];
         let chartsNum = [];
         data.forEach(element => {
-          chartstype.push(element.DATABASELOGIC);
+          chartstype.push(element.LOGICNAME);
           chartsNum.push(element.NUM);
         });
         var myChart = echarts.init(

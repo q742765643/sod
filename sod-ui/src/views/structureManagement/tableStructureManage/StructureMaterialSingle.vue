@@ -330,7 +330,7 @@ export default {
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
       this.materialData.parentId = checkNode.id;
-      if (this.tableStructureManageContral == false) {
+      if (this.tableStructureManageContral) {
         getNewDataClassId({ parentId: checkNode.id }).then(res => {
           if (res.code == 200) {
             this.materialData.dataClassId = res.data;
