@@ -161,7 +161,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
     {
         Set<String> roles = new HashSet<String>();
         // 管理员拥有所有权限
-        if (user.getId().equals("1"))
+        if (user.getId().equals("1")||"api_manager".equals(user.getId()))
         {
             roles.add("admin");
         }

@@ -2,6 +2,8 @@ package com.piesat.sso.client.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.piesat.common.filter.WrapperedRequest;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.AESUtil;
@@ -248,12 +250,24 @@ public class SignUtil {
     }
 
 
-    public static void signJson(CasVo casVo, String data, WrapperedRequest wrapRequest) throws Exception {
+    public static void signJson(CasVo casVo, String data, WrapperedRequest wrapRequest, JSONObject object) throws Exception {
         if (null != casVo.getData() && !"".equals(casVo.getData())) {
             wrapRequest.putHeader("appId", casVo.getUserId());
             wrapRequest.putHeader("pwd", casVo.getPwd());
             Map<String, Object> signMap = JSON.parseObject(data, Map.class);
-            checkSign(casVo, signMap);
+            if (object.containsKey("interfaceId")){
+                List<String> paramList = new ArrayList<>();
+                for (Map.Entry<String, Object> entry : object.entrySet()) {
+                    if (!entry.getKey().equals("sign")) {
+                        paramList.add(entry.getKey() + "=" + entry.getValue());
+                    }
+                }
+                Collections.sort(paramList);
+                String paramStr = StringUtils.join(paramList, "&");
+                checkPortalSign(casVo,paramStr);
+            }else {
+                checkSign(casVo, signMap);
+            }
         }
 
     }

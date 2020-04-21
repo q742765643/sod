@@ -2,6 +2,7 @@
 package com.piesat.sso.client.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piesat.common.filter.CustomEncryptHttpWrapper;
 import com.piesat.common.filter.WrapperedRequest;
@@ -77,11 +78,12 @@ public class DataFilter implements Filter {
             String responseBodyMw=new String(data);
             writeResponse(response, responseBodyMw);*/
             } else {
+                JSONObject jsonObject = JSONObject.parseObject(requestBody);
                 CasVo casVo= JSON.parseObject(requestBody, CasVo.class);
                 WrapperedRequest wrapRequest = new WrapperedRequest(
                         (HttpServletRequest) request, casVo.getData());
                 //WrapperedResponse wrapResponse = new WrapperedResponse((HttpServletResponse) response);
-                SignUtil.signJson(casVo,requestBody,wrapRequest);
+                SignUtil.signJson(casVo,requestBody,wrapRequest,jsonObject);
                 filterChain.doFilter(wrapRequest, response);
            /* byte[] data = wrapResponse.getResponseData();
             String responseBodyMw=new String(data);
