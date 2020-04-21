@@ -9,6 +9,24 @@ body {
   background: $backColor;
 }
 
+// 弹框
+.el-dialog__header {
+  border-bottom: 1px solid #dcdfe6;
+  background: #f5f7fa;
+  padding-left: 44px;
+}
+
+.el-dialog__header:before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: url("../image/home.png") no-repeat;
+  background-size: 100% 100%;
+  position: absolute;
+  left: 20px;
+  top: 12px;
+}
+
 // docx 预览
 .resultDocxBox {
   table {

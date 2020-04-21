@@ -56,7 +56,7 @@
       <el-table-column
         prop="EXAMINE_STATUS"
         label="审核状态"
-        width="60"
+        width="100"
         v-if="queryParams.examineStatus !==2 "
       >
         <template slot-scope="scope">
@@ -71,7 +71,7 @@
       <el-table-column
         prop="STORAGE_DEFINE_IDENTIFIER"
         label="存储构建"
-        min-width="70"
+        width="100"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -88,8 +88,8 @@
       <!-- 数据同步 -->
       <el-table-column
         prop="SYNC_IDENTIFIER"
-        label="存储构建"
-        min-width="70"
+        label="数据同步"
+        width="100"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -104,12 +104,7 @@
       </el-table-column>
 
       <!-- 迁移 -->
-      <el-table-column
-        prop="storageDefineIdentifier"
-        label="迁移"
-        min-width="70"
-        v-if="queryParams.examineStatus===2"
-      >
+      <el-table-column prop="MOVE_ST" label="迁移" width="80" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <!-- 迁移 -->
 
@@ -121,9 +116,10 @@
         </template>
       </el-table-column>
 
+      <!-- 清除 -->
       <el-table-column
-        prop="storageDefineIdentifier"
-        label="迁移"
+        prop="CLEAR_ST"
+        label="清除"
         min-width="70"
         v-if="queryParams.examineStatus===2"
       >
@@ -140,38 +136,40 @@
           </el-button>
         </template>
       </el-table-column>
+
+      <!-- 备份 -->
       <el-table-column
-        prop="storageDefineIdentifier"
+        prop="BACKUP_ST"
         label="备份"
         min-width="55"
         v-if="queryParams.examineStatus===2"
       >
-        <template slot-scope="scope5">
-          <el-button class="opBtn" size="mini" @click="handleBackUp(scope.row)">
-            <i
-              class="btnRound blueRound"
-              v-if="scope5.row.storageDefineIdentifier=='1'&&scope5.row.backupIdentifier!=null&&scope5.row.backupIdentifier!=''"
-            ></i>
-            <i class="btnRound orangRound" v-else></i>
-            备份
+        <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.BACKUP_ST==1"
+            size="mini"
+            @click="handleBackUpMethods(scope.row)"
+          >
+            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+            <i class="btnRound blueRound" v-if="scope.row.BACKUP_ID"></i>
+            <i class="btnRound orangRound" v-else></i>备份
           </el-button>
         </template>
       </el-table-column>
+
+      <!-- 恢复 -->
       <el-table-column
-        prop="storageDefineIdentifier"
+        prop="ARCHIVING_IDENTIFIER"
         label="恢复"
         min-width="55"
         v-if="queryParams.examineStatus===2"
       >
-        <template slot-scope="scope6">
-          <el-button
-            v-if="scope6.row.storageDefineIdentifier!='3'"
-            size="mini"
-            @click="openRecoverDialog(scope6.row)"
-          >恢复</el-button>
-          <el-button disabled v-else size="mini">恢复</el-button>
+        <template slot-scope="scope">
+          <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
+          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
         </template>
       </el-table-column>
+
       <el-table-column
         prop="EXAMINE_STATUS"
         label="操作"
@@ -217,22 +215,120 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+    <!-- 表结构管理 存储结构 -->
+    <el-dialog
+      :title="`表结构管理(${structureManageTitle})`"
+      :visible.sync="structureManageVisible"
+      width="100%"
+      :fullscreen="true"
+      :before-close="handleClose"
+      top="0"
+    >
+      <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
+    </el-dialog>
+    <!-- 数据同步 -->
+    <el-dialog :title="dialogMsgTitle" :visible.sync="handleSyncDialog" width="80%" v-dialogDrag>
+      <handleSync
+        v-if="handleSyncDialog"
+        :handleObj="handleMsgObj"
+        @resetQuery="handleClose"
+        ref="myHandleServer"
+      />
+    </el-dialog>
+    <!-- 迁移清除 结构化数据清除进度 -->
+    <el-dialog
+      :title="dialogMsgTitle"
+      :visible.sync="handleCLeadupDialog"
+      width="1100px"
+      v-dialogDrag
+    >
+      <handleClear
+        v-if="handleCLeadupDialog"
+        :handleObj="handleMsgObj"
+        @cancelHandle="handleClose"
+      />
+    </el-dialog>
+    <!-- 迁移配置信息 -->
+    <el-dialog :title="dialogMsgTitle" :visible.sync="handleMoveDialog" width="1200px" v-dialogDrag>
+      <handleMove @cancelHandle="handleClose" v-if="handleMoveDialog" :handleObj="handleMsgObj"></handleMove>
+    </el-dialog>
+    <!-- 备份 -->
+    <el-dialog :title="dialogMsgTitle" :visible.sync="handleBackupDialog" width="72%" v-dialogDrag>
+      <handleBackUp
+        v-if="handleBackupDialog"
+        :handleObj="handleMsgObj"
+        @cancelHandle="handleClose"
+        ref="myHandleChild"
+      />
+    </el-dialog>
+
+    <!-- 数据恢复 -->
+    <el-dialog v-dialogDrag title="结构化数据恢复" :visible.sync="handleDataRecoveryDialog" width="1100px">
+      <DataRecovery
+        v-if="handleDataRecoveryDialog"
+        :handleObj="handleMsgObj"
+        @handleRecover="handleClose"
+      />
+    </el-dialog>
+    <!-- 数据注册审核-->
+    <el-dialog :visible.sync="handleReDialog" fullscreen title="存储资料审核" v-dialogDrag>
+      <reviewDataRegister v-if="handleReDialog" :handleObj="handleObj" @cancelHandle="handleClose" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// / 数据恢复
+import DataRecovery from "@/views/structureManagement/overviewStorage/handleDataRecovery";
+//表结构管理--弹出层
+import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
+// 迁移配置信息
+import handleMove from "@/views/schedule/move/handleMove";
+// 迁移清除 结构化数据清除配置
+import handleClear from "@/views/schedule/clear/handleClear";
+// 结构化数据备份配置弹窗
+import handleBackUp from "@/views/schedule/backup/handleBackUp";
+// 数据同步
+import handleSync from "@/views/schedule/dataSync/handleSync";
+//数据注册审核
+import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataRegister";
 import {
   getDataClassify,
   getDataTable
 } from "@/api/authorityAudit/DRegistration/index";
 export default {
-  components: {},
+  components: {
+    DataRecovery,
+    StructureManageTable,
+    handleMove,
+    handleClear,
+    handleBackUp,
+    handleSync,
+    reviewDataRegister
+  },
   data() {
     return {
       queryParams: { pageNum: 1, pageSize: 10, DDataId: "", examineStatus: "" }, //查询
       dbtypeselect: [], //数据分类下拉框
       tableData: [], //表格
-      total: 0 //表格数
+      total: 0, //表格数
+      /* 弹出层 */
+      // 表结构管理
+      structureManageTitle: "",
+      structureManageVisible: false,
+      rowData: {}, //当前行，注：一定要和表结构管理列表的当前行一样
+      // 数据同步/迁移清除/配置
+      dialogMsgTitle: "",
+      handleMsgObj: {},
+
+      handleMoveDialog: false, //迁移
+      handleBackupDialog: false, //备份
+      handleDataRecoveryDialog: false, //恢复
+      handleSyncDialog: false, //同步
+      handleCLeadupDialog: false, //清除
+      /* 数据注册审核 */
+      handleReDialog: false
     };
   },
   created() {
@@ -274,7 +370,100 @@ export default {
       this.getList();
     },
     /* 增量同步元数据 */
-    handleAddSync() {}
+    handleAddSync() {},
+    /* 表格操作 */
+    // 存储结构
+    handledDBMethods(row) {
+      this.rowData = row;
+      this.structureManageTitle = row.class_name;
+      this.structureManageVisible = true;
+    },
+    // 数据同步
+    handlSyncMethods(row) {
+      this.handleMsgObj = {};
+      if (row.SYNC_ID) {
+        this.handleMsgObj.id = row.SYNC_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleSyncDialog = true;
+    },
+    // 数据迁移
+    handlMoveMethods(row) {
+      this.handleMsgObj = {};
+      if (row.MOVE_ID) {
+        this.handleMsgObj.id = row.MOVE_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleMoveDialog = true;
+    },
+    // 数据清除
+    handlClearMethods(row) {
+      this.handleMsgObj = {};
+      if (row.CLEAR_ID) {
+        this.handleMsgObj.id = row.CLEAR_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleCLeadupDialog = true;
+    },
+    // 数据备份
+    handleBackUpMethods(row) {
+      this.handleMsgObj = {};
+      if (row.BACKUP_ID) {
+        this.handleMsgObj.id = row.BACKUP_ID;
+        this.dialogMsgTitle = "编辑";
+      } else {
+        this.handleMsgObj.databaseId = row.DATABASE_ID;
+        this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+        this.handleMsgObj.pageName = "存储结构概览";
+        this.dialogMsgTitle = "新增";
+      }
+      this.handleBackupDialog = true;
+    },
+    // 数据恢复
+    handlRecoverMethods(row) {
+      this.handleMsgObj = {};
+      this.handleMsgObj.databaseId = row.DATABASE_ID;
+      this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;
+      this.handleMsgObj.class_name = row.CLASS_NAME;
+      this.handleMsgObj.database_name = row.DATABASE_NAME;
+      this.handleMsgObj.pageName = "存储结构概览";
+      this.dialogMsgTitle = "数据恢复";
+      this.handleDataRecoveryDialog = true;
+    },
+    // 审核
+    examineData(row) {},
+    // 删除
+    deleteList(row) {},
+    // 查看原因
+    showReason(row) {},
+    // 关闭弹窗
+    handleClose() {
+      this.handleMsgObj = {};
+      this.dialogSetting = false;
+      this.handleDSDialog = false;
+      this.handleCLeadupDialog = false;
+      this.handleBackupDialog = false;
+      this.handleDataRecoveryDialog = false;
+      this.handleMoveDialog = false;
+      this.structureManageVisible = false;
+      this.handleSyncDialog = false;
+      this.getList();
+    }
   }
 };
 </script>

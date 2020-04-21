@@ -139,10 +139,9 @@
               v-show="isHide"
               class="methodReload"
               :handleExportObj="handleExportObj"
-              baseUrl="DM"
+              baseUrl="DMWL"
               btnText="下载"
-              @click="downloadWord"
-              exportUrl="/dm/databaseUser/download"
+              exportUrl="/dm/fileUpDown/download"
             />
           </el-form-item>
         </el-col>
@@ -184,7 +183,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_DM;
+var baseUrl = process.env.VUE_APP_DMWLEI;
 import handleExport from "@/components/export";
 import handlePreviewDocx from "@/components/preview/previewDocx";
 import {
@@ -253,13 +252,12 @@ export default {
       },
       innerVisible: false,
       downUrl: "",
-      upLoadUrl: baseUrl + "/dm/databaseUser/api/databaseUser/upload",
+      upLoadUrl: baseUrl + "/dm/fileUpDown/uploadOne",
       isDisabled: false,
       userDiasbled: false,
       isHideAdd: true,
       isHide: false,
       passwordType: "password",
-      searchObj: {},
       userBox: [], //获取所有用户
       msgFormDialog: {
         databaseUpId: "USR_", //UP账户ID
@@ -300,10 +298,6 @@ export default {
     };
   },
   created() {
-    if (this.handleObj.id) {
-      this.searchObj = this.handleObj;
-    }
-
     this.getDBlist();
     // this.getUserAll();
     this.initServerDetail();
@@ -425,26 +419,26 @@ export default {
     },
     // 获取服务器详情
     async initServerDetail() {
-      if (!this.searchObj.id) {
-        // 新增
-      } else {
+      if (this.handleObj.id) {
         // 修改
-        if (this.searchObj.examine_status == "0") {
+        if (this.handleObj.examine_status == "0") {
           this.userDiasbled = false;
-        } else if (this.searchObj.examine_status == "2") {
+        } else if (this.handleObj.examine_status == "2") {
           this.userDiasbled = false;
-        } else if (this.searchObj.examine_status == "1") {
+        } else if (this.handleObj.examine_status == "1") {
           this.userDiasbled = true;
         }
         // this.isDisabled = true;
         this.isHide = true;
         this.isHideAdd = false;
-        await getById({ id: this.searchObj.id }).then(res => {
+        await getById({ id: this.handleObj.id }).then(res => {
           if (res.code == 200) {
             let data = res.data;
             data.applyDatabaseId = data.applyDatabaseId.split(",");
             console.log(data.applyDatabaseId);
             this.msgFormDialog = data;
+            this.handleExportObj = {};
+            this.handleExportObj.filePath = this.msgFormDialog.applyMaterial;
             /* this.msgFormDialog = res.data.data.databaseobj;
               // 回显数据库选择
               let transferDataList = res.data.data.databaseList;
@@ -460,13 +454,8 @@ export default {
                 interfaceObj.download + res.data.data.applyMaterial; */
           }
         });
+      } else {
       }
-    },
-
-    // 查看详情时的下载
-    downloadWord() {
-      this.handleExportObj = {};
-      this.handleExportObj.filepath = this.msgFormDialog.applyMaterial;
     },
 
     trueDialog(formName) {
@@ -503,8 +492,8 @@ export default {
               // 数据库账户审核 通过
               this.auditMethods("");
             }
-            /*  if (this.searchObj.record_id != undefined) {
-              this.msgFormDialog.record_id = this.searchObj.record_id;
+            /*  if (this.handleObj.record_id != undefined) {
+              this.msgFormDialog.record_id = this.handleObj.record_id;
             } */
           } else {
             console.log("error submit!!");
@@ -514,7 +503,7 @@ export default {
       }
     },
     cancelDialog(formName) {
-      if (!this.searchObj.id) {
+      if (!this.handleObj.id) {
         this.$refs[formName].resetFields();
         this.$emit("handleDialogClose");
       } else {
