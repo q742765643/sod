@@ -47,7 +47,7 @@
           <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
             <i class="btnRound orangRound"></i>存储结构
           </el-button>
-          <el-button v-else size="mini" @click="handledDBShowMethods(scope.row)">
+          <el-button v-else size="mini" @click="handledDBMethods(scope.row)">
             <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
@@ -55,28 +55,20 @@
           <el-button disabled v-if="scope.row.SYNC_IDENTIFIER == 3" size="mini">
             <i class="btnRound orangRound"></i>数据同步
           </el-button>
-          <el-button v-else size="mini" @click="handlSyncShowMethods(scope.row)">
+          <el-button v-else size="mini" @click="handlSyncMethods(scope.row)">
             <i class="btnRound blueRound" v-if="scope.row.SYNC_ID"></i>
             <i class="btnRound orangRound" v-else></i>数据同步
           </el-button>
           <!-- 迁移 -->
 
-          <el-button
-            v-if="scope.row.MOVE_ST==1"
-            size="mini"
-            @click="handlMoveShowMethods(scope.row)"
-          >
+          <el-button v-if="scope.row.MOVE_ST==1" size="mini" @click="handlMoveMethods(scope.row)">
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
           </el-button>
 
           <!-- 清除 -->
-          <el-button
-            v-if="scope.row.CLEAR_ST==1"
-            size="mini"
-            @click="handlClearShowMethods(scope.row)"
-          >
+          <el-button v-if="scope.row.CLEAR_ST==1" size="mini" @click="handlClearMethods(scope.row)">
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
             <i class="btnRound orangRound" v-else></i>清除
@@ -356,13 +348,13 @@ export default {
       this.dialogSuperSearch = true;
     },
     // 存储结构
-    handledDBShowMethods(row) {
+    handledDBMethods(row) {
       this.rowData = row;
       this.structureManageTitle = row.class_name;
       this.structureManageVisible = true;
     },
     // 数据同步
-    handlSyncShowMethods(row) {
+    handlSyncMethods(row) {
       this.handleMsgObj = {};
       if (row.SYNC_ID) {
         this.handleMsgObj.id = row.SYNC_ID;
@@ -376,7 +368,7 @@ export default {
       this.handleSyncDialog = true;
     },
     // 数据迁移
-    handlMoveShowMethods(row) {
+    handlMoveMethods(row) {
       this.handleMsgObj = {};
       if (row.MOVE_ID) {
         this.handleMsgObj.id = row.MOVE_ID;
@@ -390,7 +382,7 @@ export default {
       this.handleMoveDialog = true;
     },
     // 数据清除
-    handlClearShowMethods(row) {
+    handlClearMethods(row) {
       this.handleMsgObj = {};
       if (row.CLEAR_ID) {
         this.handleMsgObj.id = row.CLEAR_ID;

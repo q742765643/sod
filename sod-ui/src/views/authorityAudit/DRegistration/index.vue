@@ -78,7 +78,7 @@
           <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
             <i class="btnRound orangRound"></i>存储结构
           </el-button>
-          <el-button v-else size="mini" @click="handledDBShowMethods(scope.row)">
+          <el-button v-else size="mini" @click="handledDBMethods(scope.row)">
             <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
@@ -96,12 +96,14 @@
           <el-button disabled v-if="scope.row.SYNC_IDENTIFIER == 3" size="mini">
             <i class="btnRound orangRound"></i>数据同步
           </el-button>
-          <el-button v-else size="mini" @click="handlSyncShowMethods(scope.row)">
+          <el-button v-else size="mini" @click="handlSyncMethods(scope.row)">
             <i class="btnRound blueRound" v-if="scope.row.SYNC_ID"></i>
             <i class="btnRound orangRound" v-else></i>数据同步
           </el-button>
         </template>
       </el-table-column>
+
+      <!-- 迁移 -->
       <el-table-column
         prop="storageDefineIdentifier"
         label="迁移"
@@ -111,11 +113,7 @@
         <template slot-scope="scope">
           <!-- 迁移 -->
 
-          <el-button
-            v-if="scope.row.MOVE_ST==1"
-            size="mini"
-            @click="handlMoveShowMethods(scope.row)"
-          >
+          <el-button v-if="scope.row.MOVE_ST==1" size="mini" @click="handlMoveMethods(scope.row)">
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
