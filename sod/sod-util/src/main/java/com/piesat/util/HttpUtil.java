@@ -1,6 +1,6 @@
 package com.piesat.util;
 
-import com.sun.istack.internal.logging.Logger;
+//import com.sun.istack.internal.logging.Logger;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -16,12 +16,12 @@ import org.apache.http.util.EntityUtils;
 /** 后台请求发送工具
 *@description
 *@author weiliguo
-*@date 2018年11月15日上午8:53:08
+*@date
 *
 */
 public class HttpUtil {
 	
-	private static Logger logger = Logger.getLogger(HttpUtil.class);
+//	private static Logger logger = Logger.getLogger(HttpUtil.class);
 	
 	/**
 	 *  发送get请求
@@ -39,19 +39,19 @@ public class HttpUtil {
 		try {
 			client = HttpClients.createDefault();
 			
-			logger.info("开始发送get请求 , 请求地址 : "+url);
+//			logger.info("开始发送get请求 , 请求地址 : "+url);
 			HttpGet request = new HttpGet(url);
 			response = client.execute(request);
 			//请求发送成功
 			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				logger.info("get请求发送成功 , 请求地址 :"+url+" ");
+//				logger.info("get请求发送成功 , 请求地址 :"+url+" ");
 				resultStr = EntityUtils.toString(response.getEntity());
 			}else {
-				logger.config("get请求发送失败 :"+response.getStatusLine().getStatusCode()+",请求地址 :"+url);
+//				logger.config("get请求发送失败 :"+response.getStatusLine().getStatusCode()+",请求地址 :"+url);
 			}
 			
 		} catch (Exception e) {
-			logger.config("get请求异常 ,请求地址 :"+url +"异常信息 :"+e.getMessage());
+//			logger.config("get请求异常 ,请求地址 :"+url +"异常信息 :"+e.getMessage());
 		} finally {
 			try {
 				if(client != null) {
