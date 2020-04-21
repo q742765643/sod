@@ -271,9 +271,19 @@
         @handleRecover="handleClose"
       />
     </el-dialog>
+
     <!-- 数据注册审核-->
-    <el-dialog :visible.sync="handleReDialog" fullscreen title="存储资料审核" v-dialogDrag>
-      <reviewDataRegister v-if="handleReDialog" :handleObj="handleObj" @cancelHandle="handleClose" />
+    <el-dialog :visible.sync="handleReDialog" title="存储资料审核" width="1100px" v-dialogDrag>
+      <reviewDataRegister
+        v-if="handleReDialog"
+        :handleObj="handleMsgObj"
+        @cancelHandle="handleDataReg"
+      />
+    </el-dialog>
+
+    <!-- 存储资料审核步骤 -->
+    <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
+      <revieStepRegister v-if="reviewStep" :handleObj="handleMsgObj" @closeStep="closeStep" />
     </el-dialog>
   </div>
 </template>
@@ -293,6 +303,8 @@ import handleBackUp from "@/views/schedule/backup/handleBackUp";
 import handleSync from "@/views/schedule/dataSync/handleSync";
 //数据注册审核
 import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataRegister";
+//存储资料审核步骤
+import revieStepRegister from "@/views/authorityAudit/DRegistration/review/index";
 import {
   getDataClassify,
   getDataTable
@@ -305,7 +317,8 @@ export default {
     handleClear,
     handleBackUp,
     handleSync,
-    reviewDataRegister
+    reviewDataRegister,
+    revieStepRegister
   },
   data() {
     return {
@@ -370,7 +383,10 @@ export default {
       this.getList();
     },
     /* 增量同步元数据 */
-    handleAddSync() {},
+    handleAddSync() {
+      // todo
+      this.handleReDialog = true;
+    },
     /* 表格操作 */
     // 存储结构
     handledDBMethods(row) {
@@ -451,6 +467,21 @@ export default {
     deleteList(row) {},
     // 查看原因
     showReason(row) {},
+    // 关闭数据注册弹窗
+    handleDataReg(info) {
+      if (info) {
+        if (info == 3) {
+          // 拒绝
+        } else {
+          // 同意
+        }
+      } else {
+        this.getList();
+      }
+      this.handleReDialog = false;
+    },
+    // 关闭步骤
+    closeStep() {},
     // 关闭弹窗
     handleClose() {
       this.handleMsgObj = {};

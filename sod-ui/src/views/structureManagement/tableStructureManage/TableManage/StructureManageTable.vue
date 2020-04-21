@@ -448,7 +448,10 @@ export default {
           if (data.length == 0) {
             let obj = {
               nameCn: this.rowData.CLASS_NAME,
-              dataServiceId: this.rowData.DATA_CLASS_ID
+              dataServiceId: this.rowData.DATA_CLASS_ID,
+              classLogic: {
+                id: this.rowData.LOGIC_ID
+              }
             };
             this.elObj.tableInfo = obj;
             this.keyObj.tableInfo = obj;

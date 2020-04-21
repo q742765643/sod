@@ -65,7 +65,7 @@ module.exports = {
       },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
-        target: `http://10.1.6.117:8005`,
+        target: `http://192.168.1.100:2345`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYSTEM]: ""
