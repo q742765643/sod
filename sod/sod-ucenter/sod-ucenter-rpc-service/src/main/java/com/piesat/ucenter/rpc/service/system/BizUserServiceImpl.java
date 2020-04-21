@@ -48,6 +48,7 @@ public class BizUserServiceImpl extends BaseService<BizUserEntity> implements Bi
         UserDto user = null;
         if (bizUserEntity != null) {
             user = new UserDto();
+            user.setId(bizUserEntity.getBizUserId());
             user.setUserName(bizUserEntity.getBizUserId());
             user.setPassword(bizUserEntity.getPassword());
         }

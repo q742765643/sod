@@ -5,6 +5,7 @@ import com.piesat.ucenter.rpc.api.system.DeptService;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ public class BizUserController {
     private String outFilePath;
 
     @PostMapping(value = "/save")
+    @RequiresPermissions("system:bizuser:list")
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
         try {
