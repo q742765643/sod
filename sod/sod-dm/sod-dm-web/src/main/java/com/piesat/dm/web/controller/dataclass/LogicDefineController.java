@@ -181,7 +181,7 @@ public class LogicDefineController {
     }
 
     @ApiOperation(value = "根据用户id查询该用户账户中物理库对应的逻辑库信息")
-    @RequiresPermissions("dm:logicDefine:getLogicByUserId")
+    //@RequiresPermissions("dm:logicDefine:getLogicByUserId")
     @GetMapping(value = "/getLogicByUserId")
     public ResultT getLogicByUserId(String userId) {
         try {
