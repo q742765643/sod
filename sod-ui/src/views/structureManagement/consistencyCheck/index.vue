@@ -14,7 +14,6 @@
         <handleExport
           style="display:none;"
           ref="downloadDf"
-          :handleExportObj="handleExportObj"
           baseUrl="DM"
           btnText="生成差异报告"
           exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
@@ -150,7 +149,6 @@ export default {
   data() {
     return {
       currentRow: [],
-      handleExportObj: {},
       // 遮罩层
       loading: true,
       queryParams: {
@@ -224,9 +222,9 @@ export default {
         });
         return;
       }
-      this.handleExportObj = {};
-      this.handleExportObj.databaseId = this.currentRow[0].databaseId;
-      this.$refs.downloadDf.exportData();
+      let obj = {};
+      obj.databaseId = this.currentRow[0].databaseId;
+      this.$refs.downloadDf.exportData(obj);
     },
     getOptions() {
       getDatabaseName().then(response => {
@@ -244,10 +242,10 @@ export default {
       });
     },
     downloadHischeckFile(row) {
-      this.handleExportObj = {};
-      this.handleExportObj.file_directory = row.file_directory;
-      this.handleExportObj.filename = row.filename;
-      this.$refs.downloadDf.exportData();
+      let obj = {};
+      obj.file_directory = row.file_directory;
+      obj.filename = row.filename;
+      this.$refs.downloadDf.exportData(obj);
     },
     addReportData() {
       this.addDataDialog = true;

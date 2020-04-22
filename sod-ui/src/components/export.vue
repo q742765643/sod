@@ -31,8 +31,13 @@ export default {
   },
   created() {},
   methods: {
-    exportData() {
-      let obj = this.handleExportObj;
+    exportData(formObj) {
+      let obj;
+      if (formObj) {
+        obj = formObj;
+      } else {
+        obj = this.handleExportObj;
+      }
       const param = {
         timestamp: new Date().getTime(),
         nonce: uuid(),
