@@ -52,7 +52,6 @@ public class DataClassDto {
      */
     private String metaDataName;
 
-    private String creator;
     /**
      * access_control
      */
@@ -88,6 +87,8 @@ public class DataClassDto {
     private String delFlag;
 
     private Integer version;
+
+    private String createBy;
 
     private List<DataLogicDto> dataLogicList;
 

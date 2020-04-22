@@ -20,8 +20,10 @@ import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
@@ -66,6 +68,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private TableColumnDao tableColumnDao;
     @Autowired
     private TableIndexDao tableIndexDao;
+    @Autowired
+    private NewdataApplyService newdataApplyService;
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
         return dataClassDao;
@@ -73,8 +77,17 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public DataClassDto saveDto(DataClassDto dataClassDto) {
+        NewdataApplyDto newdataApplyDto = null;
+        if (StringUtils.isNotBlank(dataClassDto.getApplyId())){
+            newdataApplyDto = this.newdataApplyService.getDotById(dataClassDto.getApplyId());
+            dataClassDto.setCreateBy(newdataApplyDto.getUserId());
+        }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
         dataClassEntity = this.save(dataClassEntity);
+        if (newdataApplyDto!=null){
+            newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
+            this.newdataApplyService.saveDto(newdataApplyDto);
+        }
         List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
         byDataClassId.removeAll(dataClassDto.getDataLogicList());
         for (DataLogicDto d:byDataClassId ) {
