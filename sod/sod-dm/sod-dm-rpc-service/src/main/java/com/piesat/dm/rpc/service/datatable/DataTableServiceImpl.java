@@ -28,7 +28,9 @@ import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.datatable.TableForeignKeyMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,14 +84,25 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public DataTableDto saveDto(DataTableDto dataTableDto) {
-        boolean isAdd = StringUtils.isEmpty(dataTableDto.getId()) ? true : false;
         DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
+        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        dataTableEntity.setCreator(loginUser.getUserName());
         dataTableEntity = this.save(dataTableEntity);
-        if (isAdd) {
+        List<StorageConfigurationDto> sc = this.storageConfigurationService.findByClassLogicId(dataTableEntity.getClassLogic().getId());
+        if (sc!=null&&sc.size()>0) {
+            StorageConfigurationDto storageConfigurationDto = sc.get(0);
+            storageConfigurationDto.setStorageDefineIdentifier(1);
+            this.storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
+        }else {
             StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
             storageConfigurationDto.setClassLogicId(dataTableEntity.getClassLogic().getId());
             storageConfigurationDto.setStorageDefineIdentifier(1);
-            storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
+            storageConfigurationDto.setSyncIdentifier(2);
+            storageConfigurationDto.setCleanIdentifier(2);
+            storageConfigurationDto.setMoveIdentifier(2);
+            storageConfigurationDto.setBackupIdentifier(2);
+            storageConfigurationDto.setArchivingIdentifier(2);
+            this.storageConfigurationService.saveDto(storageConfigurationDto);
         }
         return this.dataTableMapper.toDto(dataTableEntity);
     }
