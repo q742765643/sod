@@ -468,6 +468,9 @@ export default {
             })
             .catch(() => {});
         } else {
+          this.multipleSelection.forEach(element => {
+            element.examineStatus = 1;
+          });
           this.editPowerBath();
         }
       } else {
