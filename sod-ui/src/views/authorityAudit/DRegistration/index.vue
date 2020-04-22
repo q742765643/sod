@@ -15,7 +15,7 @@
       </el-form-item>
 
       <el-form-item label="审核状态：">
-        <el-select v-model="queryParams.examineStatus">
+        <el-select v-model="queryParams.examineStatus" @change="handleQuery">
           <el-option label="待审核" :value="1"></el-option>
           <el-option label="通过" :value="2"></el-option>
           <el-option label="不通过" :value="3"></el-option>
@@ -42,9 +42,9 @@
     <!-- 表格 -->
     <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" :index="table_index" width="45" label=" "></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据分类" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据名称" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="TYPE_NAME" label="数据分类" width="160" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
+      <el-table-column prop="TYPE_NAME" label="数据名称" width="160" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="username" label="申请人"></el-table-column>
       <el-table-column prop="deptName" label="机构"></el-table-column>
       <el-table-column prop="phone" label="联系方式"></el-table-column>
@@ -57,10 +57,11 @@
         prop="EXAMINE_STATUS"
         label="审核状态"
         width="100"
-        v-if="queryParams.examineStatus !==2 "
+        v-if="queryParams.examineStatus !=2 "
       >
         <template slot-scope="scope">
           <span v-if="scope.row.EXAMINE_STATUS==1">待审核</span>
+          <span v-if="scope.row.EXAMINE_STATUS==2">审核通过</span>
           <span v-if="scope.row.EXAMINE_STATUS==3">审核不通过</span>
           <span v-if="scope.row.EXAMINE_STATUS==4">删除申请中</span>
           <span v-if="scope.row.EXAMINE_STATUS==5">已失效</span>
@@ -71,7 +72,7 @@
       <el-table-column
         prop="STORAGE_DEFINE_IDENTIFIER"
         label="存储构建"
-        width="100"
+        width="120"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -89,7 +90,7 @@
       <el-table-column
         prop="SYNC_IDENTIFIER"
         label="数据同步"
-        width="100"
+        width="120"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -104,7 +105,7 @@
       </el-table-column>
 
       <!-- 迁移 -->
-      <el-table-column prop="MOVE_ST" label="迁移" width="80" v-if="queryParams.examineStatus===2">
+      <el-table-column prop="MOVE_ST" label="迁移" width="100" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <!-- 迁移 -->
 
@@ -120,7 +121,7 @@
       <el-table-column
         prop="CLEAR_ST"
         label="清除"
-        min-width="70"
+        min-width="100"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -138,12 +139,7 @@
       </el-table-column>
 
       <!-- 备份 -->
-      <el-table-column
-        prop="BACKUP_ST"
-        label="备份"
-        min-width="55"
-        v-if="queryParams.examineStatus===2"
-      >
+      <el-table-column prop="BACKUP_ST" label="备份" width="100" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.BACKUP_ST==1"
@@ -161,7 +157,7 @@
       <el-table-column
         prop="ARCHIVING_IDENTIFIER"
         label="恢复"
-        min-width="55"
+        width="100"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -173,13 +169,12 @@
       <el-table-column
         prop="EXAMINE_STATUS"
         label="操作"
-        min-width="50"
+        width="80"
         v-if="queryParams.examineStatus!==5"
       >
         <template slot-scope="scope1">
           <el-button
             type="text"
-            plain
             size="mini"
             v-if="scope1.row.EXAMINE_STATUS===1"
             @click="examineData(scope1.row)"
@@ -187,7 +182,6 @@
             <i class="el-icon-s-management"></i>审核
           </el-button>
           <el-button
-            plain
             size="mini"
             type="text"
             v-if="scope1.row.EXAMINE_STATUS==2||scope1.row.EXAMINE_STATUS==4"
@@ -196,7 +190,6 @@
             <i class="el-icon-delete"></i>删除
           </el-button>
           <el-button
-            plain
             size="mini"
             type="text"
             v-if="scope1.row.EXAMINE_STATUS===3"
@@ -283,7 +276,12 @@
 
     <!-- 存储资料审核步骤 -->
     <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
-      <revieStepRegister v-if="reviewStep" :handleObj="handleMsgObj" @closeStep="closeStep" />
+      <revieStepRegister
+        v-if="reviewStep"
+        :handleObj="handleMsgObj"
+        @closeStep="closeStep"
+        :before-close="closeStep"
+      />
     </el-dialog>
   </div>
 </template>
@@ -322,6 +320,8 @@ export default {
   },
   data() {
     return {
+      reviewStep: false,
+      loading: true,
       queryParams: { pageNum: 1, pageSize: 10, DDataId: "", examineStatus: "" }, //查询
       dbtypeselect: [], //数据分类下拉框
       tableData: [], //表格
@@ -349,6 +349,7 @@ export default {
     getDataClassify().then(response => {
       this.dbtypeselect = response.data;
     });
+    this.getList();
   },
   methods: {
     // table自增定义方法
@@ -383,10 +384,7 @@ export default {
       this.getList();
     },
     /* 增量同步元数据 */
-    handleAddSync() {
-      // todo
-      this.handleReDialog = true;
-    },
+    handleAddSync() {},
     /* 表格操作 */
     // 存储结构
     handledDBMethods(row) {
@@ -462,7 +460,11 @@ export default {
       this.handleDataRecoveryDialog = true;
     },
     // 审核
-    examineData(row) {},
+    examineData(row) {
+      // todo
+      this.handleMsgObj = row;
+      this.handleReDialog = true;
+    },
     // 删除
     deleteList(row) {},
     // 查看原因
@@ -479,9 +481,13 @@ export default {
         this.getList();
       }
       this.handleReDialog = false;
+      this.reviewStep = true;
     },
     // 关闭步骤
-    closeStep() {},
+    closeStep() {
+      debugger;
+      this.reviewStep = false;
+    },
     // 关闭弹窗
     handleClose() {
       this.handleMsgObj = {};

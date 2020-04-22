@@ -93,7 +93,7 @@
         </el-table>
       </div>
     </div>
-    <div class="dialog-footer" slot="footer">
+    <div class="dialog-footer" slot="footer" v-if="!formPage">
       <el-button type="primary" @click="makeSureSave('materialForm')">确认</el-button>
       <el-button @click="cancleSave">取消</el-button>
     </div>
@@ -177,6 +177,9 @@ export default {
       type: String
     },
     editMaterial: {
+      type: String
+    },
+    formPage: {
       type: String
     }
   },
