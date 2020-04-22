@@ -27,9 +27,11 @@ import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -81,6 +83,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         if (StringUtils.isNotBlank(dataClassDto.getApplyId())){
             newdataApplyDto = this.newdataApplyService.getDotById(dataClassDto.getApplyId());
             dataClassDto.setCreateBy(newdataApplyDto.getUserId());
+        }else {
+            UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+            dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
         dataClassEntity = this.save(dataClassEntity);
