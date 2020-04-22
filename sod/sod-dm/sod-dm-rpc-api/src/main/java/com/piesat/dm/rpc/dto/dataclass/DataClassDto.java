@@ -52,6 +52,7 @@ public class DataClassDto {
      */
     private String metaDataName;
 
+    private String creator;
     /**
      * access_control
      */

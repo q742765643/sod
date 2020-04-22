@@ -73,6 +73,13 @@ public class DataClassEntity extends BaseEntity {
     private String metaDataName;
 
     /**
+     * 创建者
+     * creator
+     */
+    @Column(name = "creator", length = 255)
+    private String creator;
+
+    /**
      * access_control
      */
     @Column(name = "is_access", columnDefinition="integer DEFAULT 1 ")
