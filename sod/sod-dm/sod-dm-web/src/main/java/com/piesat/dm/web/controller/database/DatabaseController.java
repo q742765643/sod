@@ -128,7 +128,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "根据用户ID查询可用物理库的信息")
-    @RequiresPermissions("dm:database:findByUserId")
+    //@RequiresPermissions("dm:database:findByUserId")
     @GetMapping(value = "/findByUserId")
     public ResultT findByUserId(String userId) {
         try {
@@ -169,4 +169,6 @@ public class DatabaseController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+
 }
