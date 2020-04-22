@@ -341,7 +341,8 @@ export default {
       handleSyncDialog: false, //同步
       handleCLeadupDialog: false, //清除
       /* 数据注册审核 */
-      handleReDialog: false
+      handleReDialog: false,
+      applyId: "" //当前行的id
     };
   },
   created() {
@@ -462,6 +463,8 @@ export default {
     // 审核
     examineData(row) {
       // todo
+      this.applyId = row.ID;
+      this.handleMsgObj = {};
       this.handleMsgObj = row;
       this.handleReDialog = true;
     },
@@ -472,16 +475,15 @@ export default {
     // 关闭数据注册弹窗
     handleDataReg(info) {
       if (info) {
-        if (info == 3) {
-          // 拒绝
-        } else {
-          // 同意
-        }
+        this.handleMsgObj = {};
+        this.handleMsgObj = info;
+        this.handleMsgObj.applyId = this.applyId;
+        this.reviewStep = true;
       } else {
+        // 取消/拒绝
         this.getList();
       }
       this.handleReDialog = false;
-      this.reviewStep = true;
     },
     // 关闭步骤
     closeStep() {

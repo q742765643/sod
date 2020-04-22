@@ -13,9 +13,7 @@
         <!-- 新增/编辑资料 -->
         <StructureMaterialSingle
           :isSourceTree="isSourceTree"
-          :editNodeId="editNodeId"
-          :editMaterial="editMaterial"
-          :formPage="formPage"
+          :DRegistrationObj="handleMsgObj"
           @addOrEditSuccess="addOrEditSuccess"
           @cancelHandle="handleClose"
           ref="materialRef"
@@ -98,6 +96,7 @@ import handleMove from "@/views/schedule/move/handleMove";
 // 结构化数据备份配置弹窗
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 
+import { getDotById } from "@/api/authorityAudit/DRegistration/review/index";
 export default {
   components: {
     StructureMaterialSingle,
@@ -116,17 +115,18 @@ export default {
       stepNum: 0,
       formPage: "数据注册审核",
       isSourceTree: false, //资料
-      editNodeId: "", //资料树编辑id
-      editMaterial: "", //资料编辑id
       rowData: {},
-      handleMsgObj: {}, //同步/备份/迁移/清除
+      handleMsgObj: {}, //资料/同步/备份/迁移/清除
       structureManageVisible: false, //表结构管理
       structureManageTitle: "",
       tableData: [],
       currentRow: []
     };
   },
-  created() {},
+  created() {
+    this.handleMsgObj = this.handleObj;
+    console.log(this.handleMsgObj);
+  },
   methods: {
     nextStep() {
       if (this.stepNum == 0) {
@@ -134,7 +134,10 @@ export default {
       }
     },
 
-    addOrEditSuccess() {},
+    addOrEditSuccess() {
+      // 点击资料下一步 调用接口查询表名和字段，新增表名字段，然后查详情
+      console.log("hahah ");
+    },
     // 表格
     getTable() {
       getListBYIn(this.searchObj).then(response => {
