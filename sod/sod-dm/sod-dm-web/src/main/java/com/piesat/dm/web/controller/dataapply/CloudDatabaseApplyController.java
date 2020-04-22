@@ -130,6 +130,7 @@ public class CloudDatabaseApplyController {
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
         try {
+            cloudDatabaseApplyDto.setExamineStatus("01");
             CloudDatabaseApplyDto save = this.cloudDatabaseApplyService.saveDto(cloudDatabaseApplyDto);
             return ResultT.success(save);
         } catch (Exception e) {
@@ -148,7 +149,7 @@ public class CloudDatabaseApplyController {
         return resultT;
     }
 
-    @PutMapping("/updateExamineStatus")
+    @GetMapping("/updateExamineStatus")
     @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
     public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id,String examineStatus)
     {
@@ -174,6 +175,15 @@ public class CloudDatabaseApplyController {
     {
         ResultT<String> resultT=new ResultT<>();
         this.cloudDatabaseApplyService.deleteById(id);
+        return resultT;
+    }
+
+    @DeleteMapping("/deleteByIdPortal")
+    @ApiOperation(value = "根据id删除", notes = "根据id删除")
+    public ResultT<String> deleteByIdPortal(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        this.cloudDatabaseApplyService.deleteById(cloudDatabaseApplyDto.getId());
         return resultT;
     }
 

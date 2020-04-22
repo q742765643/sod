@@ -50,6 +50,9 @@ public class DatabaseUserManagerController {
     @Value("${serverfile.filePath}")
     private String fileAddress;
 
+    @Value("${businessParameters.databaseUserDefaultPassword}")
+    private String defaultPassword;
+
     @ApiOperation(value = "分页获取数据列表")
     @RequiresPermissions("dm:databaseUser:all")
     @GetMapping("/all")
@@ -213,7 +216,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "根据用户id和审核状态查询")
-    @RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
+    //@RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
     @GetMapping(value = "/findByUserIdAndExamineStatus")
     public ResultT findByUserIdAndExamineStatus(String userId,String examineStatus) {
         try {
@@ -353,5 +356,18 @@ public class DatabaseUserManagerController {
         Integer apply_authoritys = Integer.parseInt(apply_authority);
         Map<String, Object> map = databaseUserService.dataAuthorityCancel(user_id, database_id, data_class_id,apply_authoritys,mark);
         return ResultT.success(map);
+    }
+
+    @ApiOperation(value = "获取数据库访问账户默认密码（Portal调用）")
+    @GetMapping(value = "/getDefaultPassword")
+    public ResultT<String> getDefaultPassword() {
+        try {
+            ResultT<String> resultT = new ResultT<>();
+            resultT.setData(defaultPassword);
+            return resultT;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }

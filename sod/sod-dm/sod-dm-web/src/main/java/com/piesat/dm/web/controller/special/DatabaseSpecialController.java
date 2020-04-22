@@ -91,7 +91,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据id查询")
-    @RequiresPermissions("dm:databaseSpecial:getById")
+    //@RequiresPermissions("dm:databaseSpecial:getById")
     @GetMapping(value = "/getById")
     public ResultT get(String id) {
         try {
@@ -143,7 +143,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "修改专题库基本信息")
-    @RequiresPermissions("dm:databaseSpecial:update")
+    //@RequiresPermissions("dm:databaseSpecial:update")
     @PostMapping(value = "/update")
     public ResultT update(@RequestBody DatabaseSpecialDto databaseSpecialDto) {
         try {
@@ -157,8 +157,8 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据专题库id修改专题库使用状态")
-    @RequiresPermissions("dm:databaseSpecial:updateUseStatusById")
-    @PostMapping(value = "/updateUseStatusById")
+    //@RequiresPermissions("dm:databaseSpecial:updateUseStatusById")
+    @GetMapping(value = "/updateUseStatusById")
     public ResultT updateUseStatusById(String sdbId,String useStatus) {
         try {
             DatabaseSpecialDto save = this.databaseSpecialService.updateUseStatusById(sdbId, useStatus);
@@ -314,7 +314,7 @@ public class DatabaseSpecialController {
 
 
     @ApiOperation(value = "根据用户id和使用状态查询")
-    @RequiresPermissions("dm:databaseSpecial:getByUserIdAndUseStatus")
+    //@RequiresPermissions("dm:databaseSpecial:getByUserIdAndUseStatus")
     @GetMapping(value = "/getByUserIdAndUseStatus")
     public ResultT getByUserIdAndUseStatus(String userId,String useStatus) {
         try {
