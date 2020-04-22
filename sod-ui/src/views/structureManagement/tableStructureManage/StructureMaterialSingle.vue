@@ -288,6 +288,7 @@ export default {
         this.materialData.applyId = this.DRegistrationObj.applyId;
         this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
+        this.materialData.dataLogicList = this.DRegistrationObj.dataLogicList;
       }
     },
     //获取资料树，资料的数据

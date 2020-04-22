@@ -141,7 +141,8 @@ import {
   downloadDfcheckFile,
   consistencyCheckSave,
   getDatabaseName,
-  historyList
+  historyList,
+  deleteByIds
 } from "@/api/structureManagement/consistencyCheck";
 import handleExport from "@/components/export";
 export default {
@@ -263,8 +264,8 @@ export default {
       this.currentRow.forEach(element => {
         ids.push(element.id);
       });
-      deleteById({ ids: ids.join(",") }).then(response => {
-        if (res.code == 200) {
+      deleteByIds(ids.join(",")).then(response => {
+        if (response.code == 200) {
           this.$message({
             type: "success",
             message: "删除成功"

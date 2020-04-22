@@ -172,31 +172,33 @@
         width="80"
         v-if="queryParams.examineStatus!==5"
       >
-        <template slot-scope="scope1">
+        <template slot-scope="scope">
           <el-button
             type="text"
             size="mini"
-            v-if="scope1.row.EXAMINE_STATUS===1"
-            @click="examineData(scope1.row)"
+            v-if="scope.row.EXAMINE_STATUS===1"
+            @click="examineData(scope.row)"
           >
             <i class="el-icon-s-management"></i>审核
           </el-button>
           <el-button
             size="mini"
             type="text"
-            v-if="scope1.row.EXAMINE_STATUS==2||scope1.row.EXAMINE_STATUS==4"
-            @click="deleteList(scope1.row)"
+            v-if="scope.row.EXAMINE_STATUS==2||scope.row.EXAMINE_STATUS==4"
+            @click="deleteList(scope.row)"
           >
             <i class="el-icon-delete"></i>删除
           </el-button>
-          <el-button
-            size="mini"
-            type="text"
-            v-if="scope1.row.EXAMINE_STATUS===3"
-            @click="showReason(scope1.row)"
+          <el-popover
+            v-if="scope.row.EXAMINE_STATUS===3"
+            placement="top-start"
+            trigger="hover"
+            :content="scope.row.REMARK"
           >
-            <i class="el-icon-tickets"></i>原因
-          </el-button>
+            <el-button slot="reference" size="mini" type="text">
+              <i class="el-icon-tickets"></i>原因
+            </el-button>
+          </el-popover>
         </template>
       </el-table-column>
     </el-table>
@@ -342,7 +344,7 @@ export default {
       handleCLeadupDialog: false, //清除
       /* 数据注册审核 */
       handleReDialog: false,
-      applyId: "" //当前行的id
+      currentRow: {} //当前行
     };
   },
   created() {
@@ -463,21 +465,27 @@ export default {
     // 审核
     examineData(row) {
       // todo
-      this.applyId = row.ID;
+      this.currentRow = row;
       this.handleMsgObj = {};
       this.handleMsgObj = row;
       this.handleReDialog = true;
     },
     // 删除
     deleteList(row) {},
-    // 查看原因
-    showReason(row) {},
     // 关闭数据注册弹窗
     handleDataReg(info) {
       if (info) {
+        // 传到资料弹窗的数据
         this.handleMsgObj = {};
         this.handleMsgObj = info;
-        this.handleMsgObj.applyId = this.applyId;
+        this.handleMsgObj.applyId = this.currentRow.ID;
+        this.handleMsgObj.dataLogicList = [
+          {
+            logicName: this.currentRow.LOGIC_NAME,
+            databasePName: this.currentRow.LOGIC_NAME
+          }
+        ];
+
         this.reviewStep = true;
       } else {
         // 取消/拒绝

@@ -136,7 +136,7 @@ export default {
 
     addOrEditSuccess() {
       // 点击资料下一步 调用接口查询表名和字段，新增表名字段，然后查详情
-      console.log("hahah ");
+      getDotById({ id: this.handleObj.applyId }).then(response => {});
     },
     // 表格
     getTable() {

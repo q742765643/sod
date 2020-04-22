@@ -4,7 +4,7 @@ const baseUrl = process.env.VUE_APP_DM;
 export function getDotById(data) {
   return request({
     url: baseUrl + "/dm/newdataApply/getDotById",
-    method: "post",
+    method: "get",
     params: data
   });
 }
