@@ -42,12 +42,12 @@
     <!-- 表格 -->
     <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" :index="table_index" width="45" label=" "></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据分类" width="160" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据名称" width="160" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="username" label="申请人"></el-table-column>
-      <el-table-column prop="deptName" label="机构"></el-table-column>
-      <el-table-column prop="phone" label="联系方式"></el-table-column>
+      <el-table-column prop="TYPE_NAME" label="数据名称" width="240" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="WEB_USERNAME" label="申请人"></el-table-column>
+      <el-table-column prop="DEPT_NAME" label="机构"></el-table-column>
+      <el-table-column prop="PHONE" label="联系方式"></el-table-column>
       <el-table-column prop="CREATE_TIME" label="申请时间" width="160" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.CREATE_TIME) }}</span>

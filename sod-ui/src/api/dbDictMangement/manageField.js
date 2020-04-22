@@ -66,7 +66,7 @@ export function delManageField(data) {
 export function editManageField(data) {
   return request({
     url: baseUrl + "/managefield/editManageField",
-    method: "put",
-    params: data
+    method: "post",
+    data: data
   });
 }
