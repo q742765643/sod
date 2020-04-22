@@ -34,41 +34,14 @@
       >同步服务名称</el-button>
     </el-button-group>
     <!-- <el-scrollbar wrap-class="scrollbar-wrapper"> -->
-    <el-table :data="columnData" border @selection-change="res=>selColumnData=res" height="550">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" class="demo-table-expand">
-            <el-form-item label="是否可空">
-              <span>{{ props.row.isNull }}</span>
-            </el-form-item>
-            <el-form-item label="是否可改">
-              <span>{{ props.row.isUpdate }}</span>
-            </el-form-item>
-            <el-form-item label="是否显示">
-              <span>{{ props.row.isShow }}</span>
-            </el-form-item>
-            <el-form-item label="是否主键">
-              <span>{{ props.row.isPrimaryKey }}</span>
-            </el-form-item>
-            <el-form-item label="中文描述">
-              <span>{{ props.row.nameCn }}</span>
-            </el-form-item>
-            <el-form-item label="是否管理字段">
-              <span>{{ props.row.isManager }}</span>
-            </el-form-item>
-            <el-form-item label="是否修改数据库">
-              <span>{{ props.row.updateDatabase }}</span>
-            </el-form-item>
-
-            <el-form-item label="默认值">
-              <span>{{ props.row.defaultValue }}</span>
-            </el-form-item>
-            <el-form-item label="序号">
-              <span>{{ props.row.serialNumber }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
+    <el-table
+      :data="columnData"
+      border
+      @selection-change="res=>selColumnData=res"
+      height="550"
+      ref="selectionTable"
+      @row-click="handleClickTableRow"
+    >
       <el-table-column type="index" width="70"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
@@ -90,6 +63,15 @@
       <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
       <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
+      <el-table-column label="是否可空" prop="isNull" width="100px"></el-table-column>
+      <el-table-column label="是否可改" prop="isUpdate" width="100px"></el-table-column>
+      <el-table-column label="是否显示" prop="isShow" width="100px"></el-table-column>
+      <el-table-column label="是否主键" prop="isPrimaryKey" width="100px"></el-table-column>
+      <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
+      <el-table-column label="是否管理字段" prop="isManager" width="100px"></el-table-column>
+      <el-table-column label="是否修改数据库" prop="updateDatabase" width="140px"></el-table-column>
+      <el-table-column label="默认值" prop="defaultValue" width="100px"></el-table-column>
+      <el-table-column label="序号" prop="serialNumber" width="100px"></el-table-column>
     </el-table>
     <!-- </el-table-column> -->
     <el-dialog
@@ -532,6 +514,10 @@ export default {
     };
   },
   methods: {
+    // 选中就勾选
+    handleClickTableRow(row, event, column) {
+      this.$refs.selectionTable.toggleRowSelection(row);
+    },
     /* 复用字段 */
     getColumnTables() {
       this.getmatedata();

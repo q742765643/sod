@@ -192,7 +192,7 @@
                   v-else
                   type="danger"
                   icon="el-icon-close"
-                >已拒绝</el-link>
+                >已撤销</el-link>
               </template>
             </el-table-column>
             <el-table-column prop="examine_status" label="备注">
@@ -462,6 +462,7 @@ export default {
             .then(({ value }) => {
               this.multipleSelection.forEach(element => {
                 element.failureReason = value;
+                element.examineStatus = 2;
               });
               this.editPowerBath();
             })

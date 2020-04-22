@@ -57,7 +57,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row v-if="radio==1">
+        <el-row v-if="registerForm.radio==1">
           <el-col :span="24">
             <el-form-item label="备注信息">
               <el-input
@@ -69,7 +69,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row v-if="radio==2">
+        <el-row v-if="registerForm.radio==2">
           <el-col :span="24">
             <el-form-item label="拒绝原因">
               <el-input
@@ -116,7 +116,8 @@ export default {
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
-      updateStatus(checkobj).then(response => {
+      this.$emit("cancelHandle", this.registerForm);
+      /* updateStatus(checkobj).then(response => {
         if (response.code == 200) {
           this.$message({
             showClose: true,
@@ -129,7 +130,7 @@ export default {
             this.$emit("cancelHandle", 3);
           }
         }
-      });
+      }); */
     },
     closeFuc() {
       this.$emit("cancelHandle");

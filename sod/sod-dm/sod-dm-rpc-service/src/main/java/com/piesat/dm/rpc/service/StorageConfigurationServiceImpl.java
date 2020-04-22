@@ -117,4 +117,9 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
         StorageConfigurationEntity storageConfigurationEntity = this.storageConfigurationMapper.toEntity(storageConfigurationDto);
         this.mybatisModifyMapper.updateDataAuthorityConfig(storageConfigurationEntity);
     }
+
+    @Override
+    public List<StorageConfigurationDto> findByClassLogicId(String id) {
+        return this.storageConfigurationMapper.toDto(this.storageConfigurationDao.findByClassLogicId(id));
+    }
 }

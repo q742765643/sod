@@ -56,6 +56,7 @@ export function databaseDefineSave(data) {
 export function databaseDefineGet(query) {
   return request({
     url: baseUrl + "/dm/databaseDefine/get",
+    async: true,
     method: "get",
     params: query
   });

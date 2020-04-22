@@ -9,12 +9,58 @@
         <el-step title="数据备份"></el-step>
         <el-step title="完成"></el-step>
       </el-steps>
-      <el-card class="box-card" v-if="stepNum==0"></el-card>
-      <el-card class="box-card" v-if="stepNum==1"></el-card>
-      <el-card class="box-card" v-if="stepNum==2"></el-card>
-      <el-card class="box-card" v-if="stepNum==3"></el-card>
-      <el-card class="box-card" v-if="stepNum==4"></el-card>
-      <el-card class="box-card" v-if="stepNum==5">
+      <el-card class="box-card" shadow="never" v-if="stepNum==0">
+        <!-- 新增/编辑资料 -->
+        <StructureMaterialSingle
+          :isSourceTree="isSourceTree"
+          :editNodeId="editNodeId"
+          :editMaterial="editMaterial"
+          :formPage="formPage"
+          @addOrEditSuccess="addOrEditSuccess"
+          @cancelHandle="handleClose"
+          ref="materialRef"
+        />
+      </el-card>
+      <el-card class="box-card" shadow="never" v-if="stepNum==1">
+        <!-- 表结构管理 -->
+        <span>资料名称：{{CLASS_NAME}}</span>
+        <el-divider></el-divider>
+        <span>四级编码：{{D_DATA_ID}}</span>
+        <el-table
+          :data="tableData"
+          border
+          highlight-current-row
+          @current-change="handleCurrentChange"
+          :span-method="objectSpanMethod"
+          ref="singleTable"
+        >
+          <el-table-column label="数据用途" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="存储类型" prop="DICT_LABEL" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="数据库" prop="DATABASE_NAME_F" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="操作" width="320px">
+            <template slot-scope="scope">
+              <el-button size="small" @click="showStructureManage(scope.row)">
+                <i class="btnRound blueRound" v-if="scope.row.TABLECOUNT > scope.row.roundCount"></i>
+                <i class="btnRound orangRound" v-else></i>
+                表结构管理
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+      <el-card class="box-card" shadow="never" v-if="stepNum==2">
+        <!-- 同步 -->
+        <handleSync :handleObj="handleMsgObj" ref="syncRef" :formPage="formPage" />
+      </el-card>
+      <el-card class="box-card" shadow="never" v-if="stepNum==3">
+        <!-- 迁移 -->
+        <handleMove :handleObj="handleMsgObj" ref="moveRef" :formPage="formPage"></handleMove>
+      </el-card>
+      <el-card class="box-card" shadow="never" v-if="stepNum==4">
+        <!-- 备份 -->
+        <handleBackUp :handleObj="handleMsgObj" ref="backupRef" :formPage="formPage" />
+      </el-card>
+      <el-card class="box-card" shadow="never" v-if="stepNum==5">
         <span style="font-size: 26px;">完成</span>
       </el-card>
     </div>
@@ -22,11 +68,44 @@
       <el-button type="primary" v-if="stepNum!=5" @click="nextStep">下一步</el-button>
       <el-button type="primary" v-if="stepNum==5" @click="$emit('closeStep')">完成</el-button>
     </div>
+    <el-dialog
+      :title="`表结构管理(${structureManageTitle})`"
+      :visible.sync="structureManageVisible"
+      width="100%"
+      :fullscreen="true"
+      :before-close="closeStructureManage"
+      top="0"
+      class="scrollDialog"
+    >
+      <StructureManageTable
+        ref="scrollDiv"
+        v-if="structureManageVisible"
+        v-bind:parentRowData="rowData"
+      />
+    </el-dialog>
   </section>
 </template>
 
 <script>
+//新增、编辑资料--弹出层
+import StructureMaterialSingle from "@/views/structureManagement/tableStructureManage/StructureMaterialSingle";
+//表结构管理--弹出层
+import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
+// 数据同步
+import handleSync from "@/views/schedule/dataSync/handleSync";
+// 迁移配置信息
+import handleMove from "@/views/schedule/move/handleMove";
+// 结构化数据备份配置弹窗
+import handleBackUp from "@/views/schedule/backup/handleBackUp";
+
 export default {
+  components: {
+    StructureMaterialSingle,
+    StructureManageTable,
+    handleSync,
+    handleMove,
+    handleBackUp
+  },
   props: {
     handleObj: {
       type: Object
@@ -34,17 +113,120 @@ export default {
   },
   data() {
     return {
-      stepNum: 0
+      stepNum: 0,
+      formPage: "数据注册审核",
+      isSourceTree: false, //资料
+      editNodeId: "", //资料树编辑id
+      editMaterial: "", //资料编辑id
+      rowData: {},
+      handleMsgObj: {}, //同步/备份/迁移/清除
+      structureManageVisible: false, //表结构管理
+      structureManageTitle: "",
+      tableData: [],
+      currentRow: []
     };
   },
   created() {},
   methods: {
-    nextStep() {}
+    nextStep() {
+      if (this.stepNum == 0) {
+        this.$refs.materialRef.makeSureSave();
+      }
+    },
+
+    addOrEditSuccess() {},
+    // 表格
+    getTable() {
+      getListBYIn(this.searchObj).then(response => {
+        this.tableData = response.data;
+        if (this.tableData.length > 0) {
+          this.tableData.forEach((item, index) => {
+            item.roundCount =
+              item.STORAGE_TYPE == "K_E_table"
+                ? 1
+                : item.STORAGE_TYPE == "MK_table"
+                ? 1
+                : 0;
+          });
+          this.rowspan();
+        }
+      });
+    },
+    //显示表结构管理
+    showStructureManage(row) {
+      this.rowData = row;
+      console.log(row);
+      this.structureManageTitle = row.CLASS_NAME;
+      this.structureManageVisible = true;
+    },
+    // 选中行
+    handleCurrentChange(currentRow) {
+      if (currentRow == null) {
+        return;
+      }
+      this.currentRow = [];
+      this.tableData.forEach((item, index) => {
+        let obj = {};
+        if (item.DATA_CLASS_ID != null && currentRow.DATA_CLASS_ID != null) {
+          if (item.DATA_CLASS_ID == currentRow.DATA_CLASS_ID) {
+            this.currentRow.push(item);
+          }
+        }
+      });
+    },
+    handleClose() {},
+    closeStructureManage() {
+      this.structureManageVisible = false;
+    },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      //表格合并行
+      if (columnIndex === 0) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        };
+      }
+      if (columnIndex === 1) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        };
+      }
+    },
+    // 判断哪些需要合并
+    rowspan() {
+      this.spanArr = [];
+      this.position = 0;
+      this.tableData.forEach((item, index) => {
+        if (index === 0) {
+          this.spanArr.push(1);
+          this.position = 0;
+        } else {
+          if (
+            this.tableData[index].DATA_CLASS_ID ===
+            this.tableData[index - 1].DATA_CLASS_ID
+          ) {
+            this.spanArr[this.position] += 1;
+            this.spanArr.push(0);
+          } else {
+            this.spanArr.push(1);
+            this.position = index;
+          }
+        }
+      });
+    }
   }
 };
 </script>
 
 <style  lang="scss">
 .stepDreg {
+  .is-never-shadow {
+    margin: 20px auto;
+  }
 }
 </style>

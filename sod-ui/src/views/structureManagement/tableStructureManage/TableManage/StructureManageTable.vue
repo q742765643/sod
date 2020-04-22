@@ -405,6 +405,14 @@ export default {
           ds: false,
           pl: true,
           rg: true
+        },
+        L_table: {
+          table: { el: true, key: false, ka: false, key_el: false },
+          db: true,
+          dc: false,
+          ds: false,
+          pl: false,
+          rg: false
         }
       },
       dialogStatus: { publicMatedataDialog: false, columnDialog: false },
@@ -464,17 +472,6 @@ export default {
         }
       });
     },
-    getOptionsData() {
-      //获取下拉选项数据
-      // this.axios
-      //   .get(interfaceObj.TableStructure_getOptionsByType, {
-      //     params: { type: 2 }
-      //   })
-      //   .then(res => {
-      //     this.pubOptions.dataTypes = res.data.data;
-      //   })
-      //   .catch(error => {});
-    },
     elColumnEdit() {
       //点击要素字典编辑
       if (this.elObj.elColumnSel.length != 1) {
@@ -502,9 +499,6 @@ export default {
         );
         this.dialogStatus.columnDialog = true;
       }
-    },
-    elColumnEditSave() {
-      //保存字段信息
     },
     editDir() {
       this.isDirEdit = !this.isDirEdit;
@@ -551,21 +545,32 @@ export default {
       }
     },
     handleScroll(e) {
-      // 滚动滑轮，到达临界点的时候，按钮跟着高亮显示
-      // console.log(e.srcElement.scrollTop);
-      var scrollTop = e.srcElement.scrollTop; //滚动距离
-      var box = document.getElementById("box");
-      var lous = box.getElementsByClassName("floor"); //楼层
-      var sideNav = document.getElementById("rightNav");
-      var btns = sideNav.getElementsByTagName("li"); //按钮
-      for (var i = 0; i < lous.length; i++) {
-        if (scrollTop >= lous[i].offsetTop) {
-          // console.log(i);
-          //排他 设置高亮
-          for (var j = 0; j < btns.length; j++) {
-            btns[j].className = "";
+      if (e.target._prevClass == "scrollbar-wrapper el-scrollbar__wrap") {
+        // 滚动滑轮，到达临界点的时候，按钮跟着高亮显示
+        // console.log(e.srcElement.scrollTop);
+        var scrollTop = e.srcElement.scrollTop; //滚动距离
+        var scrollHeight = e.srcElement.scrollHeight; //滚动条高度
+        var clientHeight = e.srcElement.clientHeight; //可视高度
+        var box = document.getElementById("box");
+        var lous = box.getElementsByClassName("floor"); //楼层
+        var sideNav = document.getElementById("rightNav");
+        var btns = sideNav.getElementsByTagName("li"); //按钮
+        for (var i = 0; i < lous.length; i++) {
+          if (scrollTop >= lous[i].offsetTop) {
+            // console.log(i);
+            //排他 设置高亮
+            for (var j = 0; j < btns.length; j++) {
+              btns[j].className = "";
+            }
+            btns[i].className = "active";
           }
-          btns[i].className = "active";
+          if (scrollTop + clientHeight >= scrollHeight) {
+            for (var j = 0; j < btns.length; j++) {
+              btns[j].className = "";
+            }
+            // 把距离顶部的距离加上可视区域的高度 等于或者大于滚动条的总高度就是到达底部
+            btns[lous.length - 1].className = "active";
+          }
         }
       }
     },
@@ -592,8 +597,6 @@ export default {
     window.addEventListener("scroll", this.handleScroll, true);
     this.getTableInfo();
     this.getDir();
-    // this.getOptionsData();
-    //
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -605,7 +608,7 @@ export default {
 .scrollMain {
   position: absolute;
   top: 48px;
-  bottom: 0;
+  bottom: 14px;
   left: 20px;
   right: 20px;
   overflow: auto;

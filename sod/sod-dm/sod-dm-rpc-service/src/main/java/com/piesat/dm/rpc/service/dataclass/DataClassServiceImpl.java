@@ -354,37 +354,41 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public String findByParentId(String parentId) {
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdDesc(parentId);
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(parentId,2);
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
         if (parentId.length() > 8) {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
+                String newId = dataClassId.substring(0,dataClassId.length()-5);
                 int no;
                 try {
-                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 3));
+                    int l = dataClassId.length() > 13 ? 3 : 4;
+                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - l));
                 } catch (Exception e) {
-                    return parentId + ".M";
+                    return newId + ".M";
                 }
                 no++;
                 DecimalFormat df = new DecimalFormat("000");
                 String str = df.format(no);
-                return parentId + ".M" + str;
+                return newId + ".M" + str;
             } else {
                 return parentId + ".M001";
             }
         } else {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
+                String newId = dataClassId.substring(0,dataClassId.length()-5);
                 int no;
                 try {
-                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 4));
+                    int l = dataClassId.length() > 13 ? 3 : 4;
+                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - l));
                 } catch (Exception e) {
-                    return parentId + ".";
+                    return newId + ".";
                 }
                 no++;
                 DecimalFormat df = new DecimalFormat("0000");
                 String str = df.format(no);
-                return parentId + "." + str;
+                return newId + "." + str;
             } else {
                 return parentId + ".0001";
             }
