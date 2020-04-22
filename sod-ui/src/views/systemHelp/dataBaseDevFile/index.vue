@@ -26,6 +26,9 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-upload
           v-model="examineMaterial"
           class="upload-demo"
@@ -39,9 +42,6 @@
         >
           <el-button size="small" type="primary" icon="el-icon-upload">上传</el-button>
         </el-upload>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
     </el-row>
     <el-table

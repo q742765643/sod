@@ -26,7 +26,6 @@
                   v-for="(item,index) in logicDBArr"
                 ></el-option>
               </el-select>
-              <!--  <el-input v-model="registerForm.logic_id" :disabled="true"></el-input> -->
             </el-form-item>
           </el-col>
         </el-row>
@@ -53,8 +52,8 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="审核状态">
-              <el-radio v-model="radio" label="1">通过</el-radio>
-              <el-radio v-model="radio" label="2">不通过</el-radio>
+              <el-radio v-model="registerForm.radio" :label="1">通过</el-radio>
+              <el-radio v-model="registerForm.radio" :label="2">不通过</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
@@ -85,8 +84,8 @@
       </el-form>
     </el-card>
     <div class="dialog-footer">
-      <el-button type="primary" v-if="radio==1" @click="checkFuc(2)">通过</el-button>
-      <el-button type="warning" v-if="radio==2" @click="checkFuc(3)">拒绝</el-button>
+      <el-button type="primary" v-if="registerForm.radio==1" @click="checkFuc(2)">通过</el-button>
+      <el-button type="warning" v-if="registerForm.radio==2" @click="checkFuc(3)">拒绝</el-button>
       <el-button @click="closeFuc">取消</el-button>
     </div>
   </div>
@@ -97,15 +96,16 @@ import { updateStatus } from "@/api/authorityAudit/DRegistration/reviewdataRegis
 export default {
   name: "reviewDataRegister",
   props: {
-    registerForm: {
+    handleObj: {
       type: Object
     }
   },
   data() {
     return {
-      //registerForm: {},
-      logicDBArr: [],
-      radio: "1"
+      registerForm: {
+        radio: 1
+      },
+      logicDBArr: []
     };
   },
   created() {},
@@ -124,23 +124,28 @@ export default {
             type: "success"
           });
           if (type == 2) {
-            this.$emit("closeexamine", this.registerForm);
+            this.$emit("cancelHandle", this.registerForm);
           } else if (type == 3) {
-            this.$emit("closeexamine", type);
+            this.$emit("cancelHandle", 3);
           }
         }
       });
     },
     closeFuc() {
-      this.$emit("closeexamine", 3);
+      this.$emit("cancelHandle");
     }
   }
 };
 </script>
 
 <style lang="scss">
-.dialog-footer {
-  margin-top: 10px;
-  text-align: center;
+.reviewDataRegister {
+  .dialog-footer {
+    margin-top: 10px;
+    text-align: center;
+  }
+  .el-select {
+    width: 100%;
+  }
 }
 </style>

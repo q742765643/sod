@@ -359,18 +359,6 @@
             <el-input placeholder="序号" v-model="columnEditData.serialNumber" size="small"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
-          <el-form-item label="是否修改数据库">
-            <el-switch
-              v-model="columnEditData.updateDatabase"
-              active-color="#13ce66"
-              inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
-            ></el-switch>
-          </el-form-item>
-        </el-col>
-
         <div class="clear"></div>
       </el-form>
       <span slot="footer" class="dialog-footer">

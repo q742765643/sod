@@ -280,17 +280,16 @@ export default {
     },
     // 显示未创建、显示全部
     handleShowTree(type) {
-      debugger;
       let classBox = document.getElementsByClassName("classifyTree");
       //初始化资料分类树
       if (type == "all") {
         this.showNoCreat = "info";
         this.showAll = "primary";
-        classBox[0].classList.remove("disActive");
+        classBox[0].classList.add("disActive");
       } else if (type == "noCreat") {
         this.showNoCreat = "primary";
         this.showAll = "info";
-        classBox[0].classList.add("disActive");
+        classBox[0].classList.remove("disActive");
       }
     },
     //查询分类树
