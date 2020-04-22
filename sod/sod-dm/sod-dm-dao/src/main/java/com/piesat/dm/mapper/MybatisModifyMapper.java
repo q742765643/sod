@@ -1,6 +1,7 @@
 package com.piesat.dm.mapper;
 
 import com.piesat.dm.entity.StorageConfigurationEntity;
+import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,4 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface MybatisModifyMapper {
     void updateDataAuthorityConfig(StorageConfigurationEntity sce);
+
+    void modifyDatabaseSpecialReadWrite(DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity);
 }

@@ -104,7 +104,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         if (StringUtils.isNotBlank(databaseDefineDto.getDatabaseName())) {
             ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getDatabaseName());
         }
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "serialNumber");
         PageBean page = this.getPage(ssb.generateSpecification(), new PageForm(pageNum, pageSize), sort);
         List<DatabaseDefineEntity> pageData = (List<DatabaseDefineEntity>)page.getPageData();
         page.setPageData(this.databaseDefineMapper.toDto(pageData));

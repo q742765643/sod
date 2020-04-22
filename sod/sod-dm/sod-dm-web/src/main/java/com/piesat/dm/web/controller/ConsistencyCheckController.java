@@ -51,10 +51,12 @@ public class ConsistencyCheckController {
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(ConsistencyCheckDto consistencyCheckDto,
+    public ResultT<PageBean> list(@RequestParam(value = "database_name", defaultValue = "") String databaseName,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
+        ConsistencyCheckDto consistencyCheckDto = new ConsistencyCheckDto();
+        consistencyCheckDto.setDatabaseName(databaseName);
         PageForm<ConsistencyCheckDto> pageForm = new PageForm<>(pageNum, pageSize, consistencyCheckDto);
         PageBean pageBean = consistencyCheckService.selectPageList(pageForm);
         resultT.setData(pageBean);

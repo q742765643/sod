@@ -33,4 +33,23 @@
         where  class_logic_id = #{classLogicId}
     </update>
 
+    <update id="modifyDatabaseSpecialReadWrite" parameterType="databaseSpecialReadWriteEntity">
+        update t_sod_database_special_read_write
+        <set>
+            <if test="examineStatus != null">
+                examine_status = #{examineStatus},
+            </if>
+            <if test="failureReason != null">
+                failure_reason = #{failureReason},
+            </if>
+            <if test="examineTime != null">
+                examine_time = #{examineTime},
+            </if>
+            <if test="examiner != null">
+                examiner = #{examiner},
+            </if>
+        </set>
+        where  sdb_id = #{sdbId} and data_class_id = #{dataClassId}
+    </update>
+
 </mapper>

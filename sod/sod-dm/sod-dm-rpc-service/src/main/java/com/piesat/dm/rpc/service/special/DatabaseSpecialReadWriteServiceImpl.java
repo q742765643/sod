@@ -52,6 +52,8 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
             if(dataList!=null&&dataList.size()>0){
                 for(Map<String,Object> map : dataList){
                     DatabaseSpecialReadWriteDto dto = new DatabaseSpecialReadWriteDto();
+                    dto.setSdbId(map.get("SDB_ID")+"");
+                    dto.setDatabaseId(map.get("DATABASE_ID")+"");
                     dto.setTypeName(map.get("TYPE_NAME")+"");
                     dto.setDataName(map.get("CLASS_NAME")+"");
                     dto.setDataClassId(map.get("DATA_CLASS_ID")+"");

@@ -244,7 +244,7 @@ public class ManageFiledController {
 	 */
 	@RequiresPermissions("restApi:manageField:editManageField")
 	@Log(title = "管理字段管理", businessType = BusinessType.UPDATE)
-	@PutMapping(value="/editManageField")
+	@PostMapping(value="/editManageField")
 	@ApiOperation(value="编辑管理字段",notes="编辑管理字段")
 	public ResultT editManageField(ManageFieldDto manageFieldDto) {
 		log.info(">>>>>>>>编辑管理字段");
