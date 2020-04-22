@@ -291,6 +291,11 @@ export default {
       this.isEdit = !this.isEdit;
       let saveObj = {};
       saveObj.classLogic = this.Info.classLogic;
+      if (!saveObj.classLogic) {
+        saveObj.classLogic = {
+          id: this.rowData.LOGIC_ID
+        };
+      }
       saveObj.tableName = this.Info.tableName;
       saveObj.nameCn = this.Info.nameCn;
       saveObj.dataServiceId = this.Info.dataServiceId;

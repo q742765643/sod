@@ -12,12 +12,20 @@
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <handleExport
-          @click="downloadDfcheckFile"
-          :handleExportObj="handleDfExportObj"
+          style="display:none;"
+          ref="downloadDf"
+          :handleExportObj="handleExportObj"
           baseUrl="DM"
           btnText="生成差异报告"
           exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
         />
+
+        <el-button
+          size="small"
+          type="success"
+          icon="el-icon-download"
+          @click="handleDfFile()"
+        >生成差异报告</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -34,7 +42,7 @@
           v-hasPermi="['consistencyCheck:role:delete']"
           type="danger"
           icon="el-icon-delete"
-          @click="deleteData()"
+          @click="deleteData"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -43,7 +51,7 @@
       v-loading="loading"
       :data="tableData"
       row-key="id"
-      @current-change="handleCurrentChange"
+      @selection-change="handleCurrentChange"
     >
       <el-table-column type="index" label=" " :index="table_index"></el-table-column>
       <el-table-column type="selection" width="50"></el-table-column>
@@ -103,13 +111,12 @@
         <el-table-column prop="create_time" label="生成时间"></el-table-column>
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope1">
-            <handleExport
+            <el-button
+              icon="el-icon-tickets"
+              size="small"
+              type="text"
               @click="downloadHischeckFile(scope1.row)"
-              :handleExportObj="handleHisExportObj"
-              baseUrl="DM"
-              btnText="下载"
-              exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
-            />
+            >下载</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -141,8 +148,8 @@ export default {
   components: { handleExport },
   data() {
     return {
-      handleDfExportObj: {},
-      handleHisExportObj: {},
+      currentRow: [],
+      handleExportObj: {},
       // 遮罩层
       loading: true,
       queryParams: {
@@ -208,7 +215,7 @@ export default {
     handleCurrentChange(val) {
       this.currentRow = val;
     },
-    downloadDfcheckFile() {
+    handleDfFile() {
       if (this.currentRow.length != 1) {
         this.$message({
           type: "error",
@@ -216,7 +223,9 @@ export default {
         });
         return;
       }
-      this.handleDfExportObj.databaseId = this.currentRow[0].databaseId;
+      this.handleExportObj = {};
+      this.handleExportObj.databaseId = this.currentRow[0].databaseId;
+      this.$refs.downloadDf.exportData();
     },
     getOptions() {
       getDatabaseName().then(response => {
@@ -234,8 +243,10 @@ export default {
       });
     },
     downloadHischeckFile(row) {
-      this.handleHisExportObj.file_directory = row.file_directory;
-      this.handleHisExportObj.filename = row.filename;
+      this.handleExportObj = {};
+      this.handleExportObj.file_directory = row.file_directory;
+      this.handleExportObj.filename = row.filename;
+      this.$refs.downloadDf.exportData();
     },
     addReportData() {
       this.addDataDialog = true;
@@ -249,7 +260,7 @@ export default {
         return;
       }
       let ids = [];
-      array.forEach(element => {
+      this.currentRow.forEach(element => {
         ids.push(element.id);
       });
       deleteById({ ids: ids.join(",") }).then(response => {
