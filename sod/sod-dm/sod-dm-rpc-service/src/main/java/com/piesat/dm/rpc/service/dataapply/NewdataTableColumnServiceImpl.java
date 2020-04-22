@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author yaya
@@ -41,4 +42,11 @@ public class NewdataTableColumnServiceImpl extends BaseService<NewdataTableColum
     public void deleteByApplyId(String applyId) {
         newdataTableColumnDao.deleteByApplyId(applyId);
     }
+
+    @Override
+    public List<NewdataTableColumnDto> findByApplyId(String applyId) {
+        return this.newdataTableColumnMapper.toDto(this.newdataTableColumnDao.findByApplyId(applyId));
+    }
+
+
 }

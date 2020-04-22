@@ -22,6 +22,7 @@ import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.dataapply.NewdataTableColumnDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
@@ -29,6 +30,7 @@ import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.dataapply.NewdataApplyMapper;
+import com.piesat.dm.rpc.mapper.dataapply.NewdataTableColumnMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -77,6 +79,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Autowired
     private NewdataTableColumnDao newdataTableColumnDao;
     @Autowired
+    private NewdataTableColumnMapper newdataTableColumnMapper;
+    @Autowired
     private NewdataTableColumnService newdataTableColumnService;
 
 
@@ -106,7 +110,11 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public NewdataApplyDto getDotById(String id) {
         NewdataApplyEntity newdataApplyEntity = this.getById(id);
-        return newdataApplyMapper.toDto(newdataApplyEntity);
+        List<NewdataTableColumnEntity> byApplyId = newdataTableColumnDao.findByApplyId(id);
+        List<NewdataTableColumnDto> newdataTableColumnDtos = this.newdataTableColumnMapper.toDto(byApplyId);
+        NewdataApplyDto newdataApplyDto = newdataApplyMapper.toDto(newdataApplyEntity);
+        newdataApplyDto.setColumnList(newdataTableColumnDtos);
+        return newdataApplyDto;
     }
 
     @Override

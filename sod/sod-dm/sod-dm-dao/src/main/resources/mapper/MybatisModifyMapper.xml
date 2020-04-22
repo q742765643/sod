@@ -3,7 +3,7 @@
 <mapper namespace="com.piesat.dm.mapper.MybatisModifyMapper">
 
     <update id="updateDataAuthorityConfig" parameterType="StorageConfigurationEntity">
-        update t_sod_data_authority_record
+        update T_SOD_STORAGE_CONFIGURATION
         <set>
             <if test="syncIdentifier != null">
                 sync_identifier = #{syncIdentifier},
