@@ -88,6 +88,11 @@ public class DataClassDto {
 
     private Integer version;
 
+    private String createBy;
+
     private List<DataLogicDto> dataLogicList;
+
+    //portal申请id
+    private String applyId;
 
 }

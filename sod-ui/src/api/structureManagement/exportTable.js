@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-const baseUrl = process.env.VUE_APP_DMWLEI;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 
 // 数据用途列表
 export function logicDefineList(query) {

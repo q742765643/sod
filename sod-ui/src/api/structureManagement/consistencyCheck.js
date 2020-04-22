@@ -46,3 +46,11 @@ export function historyList(query) {
     params: query
   });
 }
+
+// 批量删除
+export function deleteByIds(query) {
+  return request({
+    url: baseUrl + "/dm/consistencyCheck/deleteByIds/" + query,
+    method: "delete",
+  });
+}

@@ -28,6 +28,7 @@ import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialTreeEntity;
+import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
@@ -49,6 +50,7 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -88,16 +90,17 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DatabaseInfo databaseInfo;
 	@Autowired
     private DatabaseDefineDao databaseDefineDao;
-
     @Autowired
     private DatabaseSpecialTreeDao databaseSpecialTreeDao;
-
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
     @Autowired
     private DatabaseSpecialAccessDao  databaseSpecialAccessDao;
+    @Autowired
+    private MybatisModifyMapper mybatisModifyMapper;
+
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
         return databaseSpecialDao;
@@ -119,7 +122,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         if(StringUtils.isNotNullString(databaseSpecialEntity.getSdbName())){
             specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getSdbName());
         }
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
+        Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<DatabaseSpecialEntity> databaseSpecialEntities = (List<DatabaseSpecialEntity>) pageBean.getPageData();
         pageBean.setPageData(databaseSpecialMapper.toDto(databaseSpecialEntities));
         return pageBean;
@@ -291,7 +295,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             //更新权限
             DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity = databaseSpecialReadWriteMapper
                     .toEntity(databaseSpecialReadWriteDto);
-            databaseSpecialReadWriteDao.save(databaseSpecialReadWriteEntity);
+            mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteEntity);
 
             if(databaseSpecialReadWriteDto.getDatabaseId()!="RADB"){
                 String userId = databaseSpecialReadWriteDto.getUserId();
@@ -333,7 +337,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     }
                 }
                 //更新数据库状态
-                databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
+                mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -521,7 +525,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            databaseVO.closeConnect();
+            if(databaseVO!=null){
+                databaseVO.closeConnect();
+            }
         }
     }
 
@@ -582,7 +588,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            databaseVO.closeConnect();
+            if(databaseVO!=null){
+                databaseVO.closeConnect();
+            }
         }
     }
     @Override

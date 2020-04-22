@@ -24,10 +24,10 @@
           <el-form-item label="申请材料">
             <handleExport
               :handleExportObj="handleExportObj"
+              :disabled="!msgFormDialog.applyMaterial"
               baseUrl="DM"
               btnText="点击下载"
-              exportUrl="/dm/databaseUser/download"
-              @click="downloadfile()"
+              exportUrl="/dm/fileUpDown/download"
             />
           </el-form-item>
           <el-form-item label="排序">
@@ -192,7 +192,7 @@
                   v-else
                   type="danger"
                   icon="el-icon-close"
-                >已拒绝</el-link>
+                >已撤销</el-link>
               </template>
             </el-table-column>
             <el-table-column prop="examine_status" label="备注">
@@ -307,21 +307,18 @@ export default {
         return "读写";
       }
     },
-    //申请材料下载
-    downloadfile() {
-      if (!this.msgFormDialog.applyMaterial) {
-        this.$message({ type: "warning", message: "文件不存在" });
-        return;
-      }
-      this.handleExportObj = {};
-      this.handleExportObj.applyMaterial = this.msgFormDialog.applyMaterial;
-    },
+
     // 获取专题库基本信息|专题库授权
     initDetail() {
       // 基本信息
       getById({ id: this.searchObj.id }).then(res => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
+          if (!this.msgFormDialog.applyMaterial) {
+            this.$message({ type: "warning", message: "文件不存在" });
+          }
+          this.handleExportObj = {};
+          this.handleExportObj.filePath = this.msgFormDialog.applyMaterial;
         }
       });
       // 数据库授权
@@ -465,11 +462,15 @@ export default {
             .then(({ value }) => {
               this.multipleSelection.forEach(element => {
                 element.failureReason = value;
+                element.examineStatus = 2;
               });
               this.editPowerBath();
             })
             .catch(() => {});
         } else {
+          this.multipleSelection.forEach(element => {
+            element.examineStatus = 1;
+          });
           this.editPowerBath();
         }
       } else {

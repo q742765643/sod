@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.dataapply;
 
+import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import lombok.Data;
 
@@ -135,4 +136,6 @@ public class NewdataApplyDto {
      * 资料属性
      */
     private String dataProp;
+
+    private List<NewdataTableColumnDto> ColumnList;
 }

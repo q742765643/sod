@@ -15,6 +15,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -160,7 +161,8 @@ public class UserController {
     public ResultT resetPwdSave(@RequestBody UserDto user)
     {
         UserDto userDto= userService.selectUserById(user.getId());
-        userDto.setPassword(user.getPassword());
+        String password = new Md5Hash(user.getPassword(),userDto.getUserName(),2).toString();
+        userDto.setPassword(password);
         userService.updateUser(userDto);
         return new ResultT<>();
     }

@@ -6,7 +6,13 @@
       <el-button type="primary" size="small" icon="el-icon-delete" @click="deleteIndex">删除</el-button>
     </el-button-group>
 
-    <el-table :data="indexItem" border @selection-change="res=>indexItemSel=res">
+    <el-table
+      :data="indexItem"
+      border
+      @selection-change="res=>indexItemSel=res"
+      ref="selectionTable"
+      @row-click="handleClickTableRow"
+    >
       <el-table-column type="index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="索引名称" prop="indexName"></el-table-column>
@@ -87,6 +93,10 @@ export default {
     };
   },
   methods: {
+    // 选中就勾选
+    handleClickTableRow(row, event, column) {
+      this.$refs.selectionTable.toggleRowSelection(row);
+    },
     cancel() {
       this.$refs["indexForm"].resetFields();
       this.dialogStatus.indexDialog = false;

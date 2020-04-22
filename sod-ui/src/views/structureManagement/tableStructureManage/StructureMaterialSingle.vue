@@ -93,7 +93,7 @@
         </el-table>
       </div>
     </div>
-    <div class="dialog-footer" slot="footer">
+    <div class="dialog-footer" slot="footer" v-if="!DRegistrationObj">
       <el-button type="primary" @click="makeSureSave('materialForm')">确认</el-button>
       <el-button @click="cancleSave">取消</el-button>
     </div>
@@ -178,6 +178,9 @@ export default {
     },
     editMaterial: {
       type: String
+    },
+    DRegistrationObj: {
+      type: Object
     }
   },
   data() {
@@ -270,14 +273,22 @@ export default {
         this.materialData.typeText = "资料";
       }
       //资料树  初始化
-      if (this.isSourceTree && this.editNodeId !== "") {
+      if (this.isSourceTree && this.editNodeId) {
         this.isDisabledEdit = true;
         this.getMaterialForm(this.editNodeId);
       }
       //资料  初始化
-      if (!this.isSourceTree && this.editMaterial !== "") {
+      if (!this.isSourceTree && this.editMaterial) {
         this.isDisabledEdit = true;
         this.getMaterialForm(this.editMaterial);
+      }
+
+      // 从数据注册审核来的资料
+      if (this.DRegistrationObj) {
+        this.materialData.applyId = this.DRegistrationObj.applyId;
+        this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
+        this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
+        this.materialData.dataLogicList = this.DRegistrationObj.dataLogicList;
       }
     },
     //获取资料树，资料的数据

@@ -20,14 +20,18 @@ import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -66,6 +70,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private TableColumnDao tableColumnDao;
     @Autowired
     private TableIndexDao tableIndexDao;
+    @Autowired
+    private NewdataApplyService newdataApplyService;
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
         return dataClassDao;
@@ -73,8 +79,20 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public DataClassDto saveDto(DataClassDto dataClassDto) {
+        NewdataApplyDto newdataApplyDto = null;
+        if (StringUtils.isNotBlank(dataClassDto.getApplyId())){
+            newdataApplyDto = this.newdataApplyService.getDotById(dataClassDto.getApplyId());
+            dataClassDto.setCreateBy(newdataApplyDto.getUserId());
+        }else {
+            UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+            dataClassDto.setCreateBy(loginUser.getUserName());
+        }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
         dataClassEntity = this.save(dataClassEntity);
+        if (newdataApplyDto!=null){
+            newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
+            this.newdataApplyService.saveDto(newdataApplyDto);
+        }
         List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
         byDataClassId.removeAll(dataClassDto.getDataLogicList());
         for (DataLogicDto d:byDataClassId ) {
@@ -354,37 +372,41 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public String findByParentId(String parentId) {
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdDesc(parentId);
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(parentId,2);
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
         if (parentId.length() > 8) {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
+                String newId = dataClassId.substring(0,dataClassId.length()-5);
                 int no;
                 try {
-                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 3));
+                    int l = dataClassId.length() > 13 ? 3 : 4;
+                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - l));
                 } catch (Exception e) {
-                    return parentId + ".M";
+                    return newId + ".M";
                 }
                 no++;
                 DecimalFormat df = new DecimalFormat("000");
                 String str = df.format(no);
-                return parentId + ".M" + str;
+                return newId + ".M" + str;
             } else {
                 return parentId + ".M001";
             }
         } else {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
+                String newId = dataClassId.substring(0,dataClassId.length()-5);
                 int no;
                 try {
-                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - 4));
+                    int l = dataClassId.length() > 13 ? 3 : 4;
+                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - l));
                 } catch (Exception e) {
-                    return parentId + ".";
+                    return newId + ".";
                 }
                 no++;
                 DecimalFormat df = new DecimalFormat("0000");
                 String str = df.format(no);
-                return parentId + "." + str;
+                return newId + "." + str;
             } else {
                 return parentId + ".0001";
             }

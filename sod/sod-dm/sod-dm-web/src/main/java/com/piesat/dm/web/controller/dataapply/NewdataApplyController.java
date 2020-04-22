@@ -161,11 +161,19 @@ public class NewdataApplyController {
        return ResultT.success(dataTypeList);
    }
 
-    @PostMapping(value = "/queryCheckByApplyId")
+    @GetMapping(value = "/queryCheckByApplyId")
     @ApiOperation(value = "根据申请id查询", notes = "根据申请id查询")
     public ResultT<Map<String,Object>> queryCheckByApplyId(String id){
         Map<String, Object> list = newdataApplyService.queryCheckByApplyId(id);
         return ResultT.success(list);
+    }
+
+
+    @GetMapping(value = "/getDotById")
+    @ApiOperation(value = "根据申请id查询所有信息", notes = "根据申请id查询所有信息")
+    public ResultT getDotById(String id){
+        NewdataApplyDto dotById = newdataApplyService.getDotById(id);
+        return ResultT.success(dotById);
     }
 
     /**

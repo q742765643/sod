@@ -31,6 +31,7 @@
         <if test="dDataId != null and dDataId != ''">
             AND A.d_data_id like CONCAT('%',#{dDataId},'%')
         </if>
+        ORDER BY A.DATA_CLASS_ID
     </select>
     <!--根据物理库查询dataLogic（MAP）-->
     <select id="getDataLogicByDatabaseId" parameterType="String" resultType="java.util.Map">
@@ -284,7 +285,7 @@
         (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1) ORDER BY ID) B
     </select>
 
-    <select id="getDatabaseClassTree" resultType="java.util.Map">
+    <select id="getDatabaseClassTree" resultType="java.util.Map" parameterType="String">
         SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END id,CLASS_NAME name,
         CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, #{id}) pId,DATA_CLASS_ID,TYPE  type,
         CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
@@ -314,9 +315,12 @@
 
     <!--新增注册资料-->
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.*, b.c_datumtype as type_name,c.logic_name from t_sod_newdata_apply a
+        select a.*, b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype type_pname,d.DEPT_NAME,d.PHONE
+        from t_sod_newdata_apply a
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
+        left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
         left join t_sod_logic_define c on a.logic_id = c.logic_flag
+        left join t_sod_biz_user d on a.user_id = d.biz_userid
         <where>
             <if test="map.status != null and map.status  != ''">
                 a.examine_status = #{map.status}
@@ -742,7 +746,7 @@
         AND M.table_name = N.table_name
     </select>
 	<select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
-        SELECT DISTINCT a.sdb_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
+        SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
         b.d_data_id,b.class_name,c.class_name type_name,d.table_name,e.database_name
         FROM t_sod_database_special_read_write a
         LEFT JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id

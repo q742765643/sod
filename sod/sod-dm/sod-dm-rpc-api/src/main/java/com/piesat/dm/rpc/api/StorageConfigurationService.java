@@ -27,4 +27,6 @@ public interface StorageConfigurationService {
     void deleteByDataClassId(String dataClassId);
 
     void updateDataAuthorityConfig(StorageConfigurationDto storageConfigurationDto);
+
+    List<StorageConfigurationDto> findByClassLogicId(String id);
 }

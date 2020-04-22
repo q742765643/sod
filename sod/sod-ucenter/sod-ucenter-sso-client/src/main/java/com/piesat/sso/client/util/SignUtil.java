@@ -148,7 +148,7 @@ public class SignUtil {
 
         String sign = MD5Util.MD5Encode(signString).toUpperCase();
         if (!casVo.getSign().equals(sign)) {
-//            throw new SignException("请求签名不匹配");
+            throw new SignException("请求签名不匹配");
         }
     }
 
