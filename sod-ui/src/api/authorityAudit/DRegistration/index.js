@@ -16,3 +16,12 @@ export function getDataTable(query) {
     params: query
   });
 }
+
+// 根据专题ID查数据库
+export function databaseGet(query) {
+  return request({
+    url: baseUrl + "/dm/database/get",
+    method: "get",
+    params: query
+  });
+}

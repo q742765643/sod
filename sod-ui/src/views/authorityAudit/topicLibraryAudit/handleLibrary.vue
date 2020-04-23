@@ -254,7 +254,6 @@ export default {
   data() {
     return {
       handleExportObj: {},
-      searchObj: {},
       msgFormDialog: {},
       searchLibraryObj: {
         key: "typeName",
@@ -293,9 +292,9 @@ export default {
     };
   },
   created() {
-    this.searchObj = this.handleObj;
-
-    this.initDetail();
+    if (this.handleObj.id) {
+      this.initDetail();
+    }
     this.searchLibraryFun();
     this.loadReadList();
   },
@@ -311,7 +310,7 @@ export default {
     // 获取专题库基本信息|专题库授权
     initDetail() {
       // 基本信息
-      getById({ id: this.searchObj.id }).then(res => {
+      getById({ id: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
           if (!this.msgFormDialog.applyMaterial) {
@@ -322,7 +321,7 @@ export default {
         }
       });
       // 数据库授权
-      getAuthorityBySdbId({ sdbId: this.searchObj.id }).then(res => {
+      getAuthorityBySdbId({ sdbId: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           if (res.data && res.data.length > 0) {
             this.databaseList = res.data;
@@ -357,14 +356,12 @@ export default {
           });
         }
       });
-      /* let editDBobj = {};
-      editDBobj.tdbId = this.searchObj.tdb_id; */
     },
     // 获取专题库资料列表
     searchLibraryFun() {
       let obj = {
         dataType: 1,
-        sdbId: this.searchObj.id
+        sdbId: this.handleObj.id
       };
       if (this.searchLibraryObj.valueText) {
         obj[this.searchLibraryObj.key] = this.searchLibraryObj.valueText;
@@ -378,7 +375,7 @@ export default {
     loadReadList() {
       let obj = {
         dataType: 2,
-        sdbId: this.searchObj.id
+        sdbId: this.handleObj.id
       };
       if (this.searchBaseLibraryObj.valueText) {
         obj[

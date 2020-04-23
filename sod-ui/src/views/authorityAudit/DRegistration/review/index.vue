@@ -95,6 +95,7 @@ import handleSync from "@/views/schedule/dataSync/handleSync";
 import handleMove from "@/views/schedule/move/handleMove";
 // 结构化数据备份配置弹窗
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
+import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 
 import { getDotById } from "@/api/authorityAudit/DRegistration/review/index";
 export default {
@@ -120,7 +121,8 @@ export default {
       structureManageVisible: false, //表结构管理
       structureManageTitle: "",
       tableData: [],
-      currentRow: []
+      currentRow: [],
+      returnMaterialInfo: {} //StructureMaterialSingle新增资料成功后返回的数据
     };
   },
   created() {
@@ -134,13 +136,12 @@ export default {
       }
     },
 
-    addOrEditSuccess() {
-      // 点击资料下一步 调用接口查询表名和字段，新增表名字段，然后查详情
-      getDotById({ id: this.handleObj.applyId }).then(response => {});
-    },
-    // 表格
-    getTable() {
-      getListBYIn(this.searchObj).then(response => {
+    addOrEditSuccess(returnInfo) {
+      console.log(returnInfo);
+      this.returnMaterialInfo = returnInfo;
+      // 表格
+      getListBYIn({ dDataId: returnInfo.dataClassId }).then(response => {
+        this.stepNum = 1;
         this.tableData = response.data;
         if (this.tableData.length > 0) {
           this.tableData.forEach((item, index) => {
@@ -155,12 +156,26 @@ export default {
         }
       });
     },
+
     //显示表结构管理
     showStructureManage(row) {
-      this.rowData = row;
-      console.log(row);
-      this.structureManageTitle = row.CLASS_NAME;
-      this.structureManageVisible = true;
+      // 传applyid 逗号隔开的id
+      let ids = [];
+      this.returnMaterialInfo.dataLogicList.forEach(element => {
+        ids.push(element.id);
+      });
+      let obj = {
+        applyId: this.handleObj.applyId,
+        classLogicIds: ids.join(",")
+      };
+      addApply(obj).then(res => {
+        if (res.code == 200) {
+          this.rowData = row;
+          console.log(row);
+          this.structureManageTitle = row.CLASS_NAME;
+          this.structureManageVisible = true;
+        }
+      });
     },
     // 选中行
     handleCurrentChange(currentRow) {

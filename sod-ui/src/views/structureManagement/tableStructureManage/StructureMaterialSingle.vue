@@ -289,6 +289,8 @@ export default {
         this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
         this.materialData.dataLogicList = this.DRegistrationObj.dataLogicList;
+        this.editUseShow = true;
+        console.log(this.materialData);
       }
     },
     //获取资料树，资料的数据
@@ -448,7 +450,11 @@ export default {
             //资料树节点 新增  编辑  isSourceTree:true   isSourceTree:false
             this.$emit("addOrEditSuccess", "handleTree");
           } else {
-            this.$emit("addOrEditSuccess", "handleTable");
+            if (this.DRegistrationObj) {
+              this.$emit("addOrEditSuccess", response.data);
+            } else {
+              this.$emit("addOrEditSuccess", "handleTable");
+            }
           }
         } else {
           this.$message({
@@ -538,10 +544,8 @@ export default {
       margin-bottom: 10px;
     }
   }
-  .materialCon {
-    max-height: calc(100vh - 170px);
-    overflow-y: auto;
-    margin-bottom: 10px;
+  .editDataUse {
+    margin-bottom: 20px;
   }
 }
 </style>

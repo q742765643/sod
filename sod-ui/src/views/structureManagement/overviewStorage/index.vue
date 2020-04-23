@@ -421,6 +421,7 @@ export default {
       this.handleDataRecoveryDialog = true;
     },
     settingCell(row) {
+      debugger;
       this.rowId = row.ID;
       this.dialogSetting = true;
     },
