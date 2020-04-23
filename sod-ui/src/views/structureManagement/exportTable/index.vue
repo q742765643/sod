@@ -82,12 +82,7 @@
                   baseUrl="DM"
                   ref="exportRef"
                 />
-                <el-button
-                  type="success"
-                  icon="el-icon-download"
-                  size="small"
-                  @click="exportClick"
-                >导出</el-button>
+                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
             <el-tab-pane label="表结构导出--简版" name="second">
@@ -119,7 +114,7 @@
                 <el-checkbox v-model="simpleObj.fenku">分库分表</el-checkbox>
               </p>
               <div style="text-align:right;">
-                <el-button icon="el-icon-bottom">导出</el-button>
+                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
             <el-tab-pane label="sql导出" name="third">
@@ -127,12 +122,7 @@
               <el-radio v-model="exportTyoe" :label="1">导出到同一个文件</el-radio>
               <el-radio v-model="exportTyoe" :label="2">导出到多个文件</el-radio>
               <div style="text-align:right;">
-                <handleExport
-                  :handleExportObj="handleExportObj"
-                  btnText="导出"
-                  exportUrl="/api/com/downloadByPath"
-                  baseUrl="DM"
-                />
+                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -160,7 +150,7 @@ export default {
   },
   data() {
     return {
-      exportUrl: "",
+      exportUrl: "/api/com/downloadByPath",
       handleExportObj: {},
       //格式化tree数据
       defaultProps: {
@@ -352,13 +342,13 @@ export default {
         exportTable(obj).then(response => {
           if (response.code == 200) {
             this.handleExportObj.filePath = response.data.filePath;
-            this.$refs.downloadDf.exportData(this.handleExportObj);
+            this.$refs.exportRef.exportData(this.handleExportObj);
           }
         });
       } else if (this.activeName == "second") {
         exportTableSimple(obj).then(response => {
           this.handleExportObj.filePath = response.data.filePath;
-          this.$refs.downloadDf.exportData(this.handleExportObj);
+          this.$refs.exportRef.exportData(this.handleExportObj);
         });
       } else if (this.activeName == "third") {
         let obj = {};
@@ -367,7 +357,7 @@ export default {
         obj.exportType = this.exportTyoe;
         exportSQL(obj).then(response => {
           this.handleExportObj.filePath = response.data.filePath;
-          this.$refs.downloadDf.exportData(this.handleExportObj);
+          this.$refs.exportRef.exportData(this.handleExportObj);
         });
       }
     }
