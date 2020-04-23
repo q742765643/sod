@@ -21,9 +21,9 @@
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==1">
         <!-- 表结构管理 -->
-        <span>资料名称：{{CLASS_NAME}}</span>
+        <span>资料名称：{{returnMaterialInfo.className}}</span>
         <el-divider></el-divider>
-        <span>四级编码：{{D_DATA_ID}}</span>
+        <span>四级编码：{{returnMaterialInfo.ddataId}}</span>
         <el-table
           :data="tableData"
           border
@@ -97,7 +97,11 @@ import handleMove from "@/views/schedule/move/handleMove";
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 
-import { getDotById } from "@/api/authorityAudit/DRegistration/review/index";
+import {
+  getDotById,
+  addApply
+} from "@/api/authorityAudit/DRegistration/review/index";
+import { getListBYIn } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   components: {
     StructureMaterialSingle,
@@ -140,7 +144,7 @@ export default {
       console.log(returnInfo);
       this.returnMaterialInfo = returnInfo;
       // 表格
-      getListBYIn({ dDataId: returnInfo.dataClassId }).then(response => {
+      getListBYIn({ stringList: returnInfo.dataClassId }).then(response => {
         this.stepNum = 1;
         this.tableData = response.data;
         if (this.tableData.length > 0) {
@@ -154,28 +158,25 @@ export default {
           });
           this.rowspan();
         }
+        // 传applyid 逗号隔开的id
+        let ids = [];
+        this.returnMaterialInfo.dataLogicList.forEach(element => {
+          ids.push(element.id);
+        });
+        let obj = {
+          applyId: this.handleObj.applyId,
+          classLogicIds: ids.join(",")
+        };
+        addApply(obj).then(res => {});
       });
     },
 
     //显示表结构管理
     showStructureManage(row) {
-      // 传applyid 逗号隔开的id
-      let ids = [];
-      this.returnMaterialInfo.dataLogicList.forEach(element => {
-        ids.push(element.id);
-      });
-      let obj = {
-        applyId: this.handleObj.applyId,
-        classLogicIds: ids.join(",")
-      };
-      addApply(obj).then(res => {
-        if (res.code == 200) {
-          this.rowData = row;
-          console.log(row);
-          this.structureManageTitle = row.CLASS_NAME;
-          this.structureManageVisible = true;
-        }
-      });
+      this.rowData = row;
+      console.log(row);
+      this.structureManageTitle = row.CLASS_NAME;
+      this.structureManageVisible = true;
     },
     // 选中行
     handleCurrentChange(currentRow) {
@@ -243,8 +244,12 @@ export default {
 
 <style  lang="scss">
 .stepDreg {
-  .is-never-shadow {
+  .is-never-shadow,
+  .el-divider--horizontal {
     margin: 20px auto;
+  }
+  .el-table {
+    margin-top: 20px;
   }
 }
 </style>

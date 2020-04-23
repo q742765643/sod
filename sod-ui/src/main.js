@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 
 import Element from 'element-ui'
+import AFTableColumn from 'af-table-column' //表格列宽自适应https://github.com/legendJaden/AFTableColumn
 import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
@@ -68,7 +69,7 @@ Vue.prototype.msgInfo = function (msg) {
 Vue.component('Pagination', Pagination)
 
 Vue.use(permission)
-
+Vue.use(AFTableColumn)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -81,7 +82,6 @@ Vue.use(permission)
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })
-
 Vue.config.productionTip = false
 
 new Vue({
