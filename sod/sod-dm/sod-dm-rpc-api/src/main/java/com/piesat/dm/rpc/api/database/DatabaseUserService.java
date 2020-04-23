@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.database;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -65,6 +66,8 @@ public interface DatabaseUserService {
      */
     DatabaseUserDto saveDto(DatabaseUserDto atabaseUserDto);
 
+    DatabaseUserDto addOrUpdate(Map<String, String[]> parameterMap,String filePath);
+
     /**
      * 数据库授权
      * @param databaseUserDto
@@ -80,7 +83,7 @@ public interface DatabaseUserService {
     PageBean selectPageList(PageForm<DatabaseUserDto> pageForm);
 
     void exportData(String examineStatus);
-	
+
 	/**
      * 修改
      * @param databaseUserDto
@@ -91,4 +94,6 @@ public interface DatabaseUserService {
     DatabaseUserDto applyDatabaseUser(HttpServletRequest request);
 
     Map<String, Object> dataAuthorityCancel(String user_id, String database_id, String data_class_id, Integer apply_authoritys, String mark);
+
+    ResultT changePassword(String id, String oldPwd, String newPwd);
 }

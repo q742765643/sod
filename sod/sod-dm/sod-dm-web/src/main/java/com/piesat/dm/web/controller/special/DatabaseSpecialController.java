@@ -248,7 +248,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据专题库ID获取对应树和资料信息")
-    @RequiresPermissions("dm:databaseSpecial:getDataTreeBySdbId")
+    //@RequiresPermissions("dm:databaseSpecial:getDataTreeBySdbId")
     @GetMapping(value = "/getDataTreeBySdbId")
     public ResultT getDataTreeBySdbId(String sdbId) {
         try {

@@ -180,6 +180,7 @@ public class SignUtil {
                     parameterMap.put(entry.getKey(),entry.getValue().toString().split("&&&"));
                 }
             }
+            parameterMap.put("userId", null);
             Collections.sort(paramList);
             String paramStr = StringUtils.join(paramList, "&");
             request.putHeader("appId", casVo.getUserId());
@@ -203,9 +204,6 @@ public class SignUtil {
                         parameterMap.put(entry.getKey(), parmFit.split("&&&"));
                     }
                 }
-            }
-            if (parameterMap.get("userId") == null) {
-                parameterMap.put("userId", null);
             }
             request.putParameterMap(parameterMap);
             checkPortalSign(casVo, paramStr);

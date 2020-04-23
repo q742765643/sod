@@ -145,7 +145,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "查询所有物理库/专题库")
-    @RequiresPermissions("dm:database:findByDatabaseClassify")
+    //@RequiresPermissions("dm:database:findByDatabaseClassify")
     @GetMapping(value = "/findByDatabaseClassify")
     public ResultT findByDatabaseClassify(String databaseClassify) {
         try {
@@ -158,7 +158,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "根据用户ID和数据库父ID查询可用专题库的信息")
-    @RequiresPermissions("dm:database:findByUserIdAndDatabaseDefineId")
+    //@RequiresPermissions("dm:database:findByUserIdAndDatabaseDefineId")
     @GetMapping(value = "/findByUserIdAndDatabaseDefineId")
     public ResultT findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId) {
         try {
