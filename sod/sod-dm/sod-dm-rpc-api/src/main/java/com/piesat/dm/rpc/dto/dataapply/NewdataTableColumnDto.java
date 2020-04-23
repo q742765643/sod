@@ -1,7 +1,9 @@
 package com.piesat.dm.rpc.dto.dataapply;
 
+import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.util.BaseDto;
 import lombok.Data;
+import org.apache.poi.ss.formula.functions.T;
 
 /**
  * @author yaya
@@ -62,4 +64,17 @@ public class NewdataTableColumnDto extends BaseDto {
      * serial_number
      */
     private Integer serialNumber;
+
+    public TableColumnDto toTableColumn(){
+        TableColumnDto tc = new TableColumnDto();
+        tc.setCElementCode(this.cElementCode);
+        tc.setEleName(this.eleName);
+        tc.setType(this.type);
+        tc.setAccuracy(this.accuracy);
+        tc.setUnit(this.unit);
+        tc.setIsNull(this.isNull);
+        tc.setIsPrimaryKey(this.isPrimaryKey);
+        tc.setSerialNumber(this.serialNumber);
+        return tc;
+    }
 }
