@@ -42,3 +42,11 @@ export function exportSQL(query) {
     params: query
   });
 }
+
+export function exportTableSimple(query) {
+  return request({
+    url: baseUrl + "/dm/tableExport/exportTableSimple",
+    method: "get",
+    params: query
+  });
+}
