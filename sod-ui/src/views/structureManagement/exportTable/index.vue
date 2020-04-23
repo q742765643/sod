@@ -352,8 +352,8 @@ export default {
         });
       } else if (this.activeName == "third") {
         let obj = {};
-        obj.dataClassIds = ids.join(",");
-        obj.databaseId = this.queryParams.database_id;
+        obj.data_class_ids = ids.join(",");
+        obj.database_id = this.queryParams.database_id;
         obj.exportType = this.exportTyoe;
         exportSQL(obj).then(response => {
           this.handleExportObj.filePath = response.data.filePath;
