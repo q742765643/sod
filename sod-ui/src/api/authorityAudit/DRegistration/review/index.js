@@ -13,6 +13,6 @@ export function addApply(data) {
   return request({
     url: baseUrl + "/dm/dataTable/addApply",
     method: "post",
-    data: data
+    params: data
   });
 }
