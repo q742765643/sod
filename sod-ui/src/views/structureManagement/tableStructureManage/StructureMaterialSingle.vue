@@ -435,7 +435,16 @@ export default {
             this.materialData.dataLogicList = newDataclasslogic;
           }
           console.log(this.materialData);
-          this.saveData(handleMessage, refreshWhich);
+          if (this.DRegistrationObj) {
+            if (this.materialData.dataLogicList.length != 1) {
+              this.$message({
+                type: "error",
+                message: "只能选择一条数据用途"
+              });
+            }
+          } else {
+            this.saveData(handleMessage, refreshWhich);
+          }
         }
       });
     },

@@ -29,7 +29,6 @@
           border
           highlight-current-row
           @current-change="handleCurrentChange"
-          :span-method="objectSpanMethod"
           ref="singleTable"
         >
           <el-table-column label="数据用途" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
@@ -74,6 +73,7 @@
       :before-close="closeStructureManage"
       top="0"
       class="scrollDialog"
+      :append-to-body="true"
     >
       <StructureManageTable
         ref="scrollDiv"
@@ -117,6 +117,7 @@ export default {
   },
   data() {
     return {
+      columnFlag: false,
       stepNum: 0,
       formPage: "数据注册审核",
       isSourceTree: false, //资料
@@ -138,6 +139,11 @@ export default {
       if (this.stepNum == 0) {
         this.$refs.materialRef.makeSureSave();
       }
+      if (this.stepNum == 1) {
+        if (this.columnFlag) {
+          this.stepNum = 2;
+        }
+      }
     },
 
     addOrEditSuccess(returnInfo) {
@@ -146,9 +152,9 @@ export default {
       // 表格
       getListBYIn({ stringList: returnInfo.dataClassId }).then(response => {
         this.stepNum = 1;
-        this.tableData = response.data;
-        if (this.tableData.length > 0) {
-          this.tableData.forEach((item, index) => {
+        let tableData = response.data;
+        if (tableData.length > 0) {
+          tableData.forEach((item, index) => {
             item.roundCount =
               item.STORAGE_TYPE == "K_E_table"
                 ? 1
@@ -156,8 +162,8 @@ export default {
                 ? 1
                 : 0;
           });
-          this.rowspan();
         }
+        this.tableData = tableData;
         // 传applyid 逗号隔开的id
         let ids = [];
         this.returnMaterialInfo.dataLogicList.forEach(element => {
@@ -186,7 +192,7 @@ export default {
       this.currentRow = [];
       this.tableData.forEach((item, index) => {
         let obj = {};
-        if (item.DATA_CLASS_ID != null && currentRow.DATA_CLASS_ID != null) {
+        if (item.DATA_CLASS_ID && currentRow.DATA_CLASS_ID) {
           if (item.DATA_CLASS_ID == currentRow.DATA_CLASS_ID) {
             this.currentRow.push(item);
           }
@@ -194,49 +200,30 @@ export default {
       });
     },
     handleClose() {},
+    // 关闭表结构管理，需要重新查询表格
     closeStructureManage() {
       this.structureManageVisible = false;
-    },
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      //表格合并行
-      if (columnIndex === 0) {
-        const _row = this.spanArr[rowIndex];
-        const _col = _row > 0 ? 1 : 0;
-        return {
-          rowspan: _row,
-          colspan: _col
-        };
-      }
-      if (columnIndex === 1) {
-        const _row = this.spanArr[rowIndex];
-        const _col = _row > 0 ? 1 : 0;
-        return {
-          rowspan: _row,
-          colspan: _col
-        };
-      }
-    },
-    // 判断哪些需要合并
-    rowspan() {
-      this.spanArr = [];
-      this.position = 0;
-      this.tableData.forEach((item, index) => {
-        if (index === 0) {
-          this.spanArr.push(1);
-          this.position = 0;
-        } else {
-          if (
-            this.tableData[index].DATA_CLASS_ID ===
-            this.tableData[index - 1].DATA_CLASS_ID
-          ) {
-            this.spanArr[this.position] += 1;
-            this.spanArr.push(0);
-          } else {
-            this.spanArr.push(1);
-            this.position = index;
+      getListBYIn({ stringList: this.returnMaterialInfo.dataClassId }).then(
+        response => {
+          let tableData = response.data;
+          if (tableData.length > 0) {
+            tableData.forEach((item, index) => {
+              item.roundCount =
+                item.STORAGE_TYPE == "K_E_table"
+                  ? 1
+                  : item.STORAGE_TYPE == "MK_table"
+                  ? 1
+                  : 0;
+              if (item.TABLECOUNT > item.roundCount) {
+                this.columnFlag = true;
+              } else {
+                this.columnFlag = false;
+              }
+            });
           }
+          this.tableData = tableData;
         }
-      });
+      );
     }
   }
 };
