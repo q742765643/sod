@@ -13,6 +13,7 @@ import com.piesat.common.utils.SignException;
 import com.piesat.common.vo.CasVo;
 import com.piesat.sso.client.enums.OperatorType;
 import com.piesat.ucenter.rpc.api.system.BizUserService;
+import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -163,9 +164,9 @@ public class SignUtil {
         }
         CasVo casVo = JSON.parseObject(JSON.toJSONString(map), CasVo.class);
         if (map.get("interfaceId") != null && map.get("userId") != null) {
-            BizUserService bizUserService = SpringUtil.getBean(BizUserService.class);
+            UserService userService = SpringUtil.getBean(UserService.class);
             String userId = map.get("userId").toString();
-            UserDto userDto = bizUserService.findByBizUserId(userId);
+            UserDto userDto = userService.selectUserByUserName(userId);
             if (userDto != null) {
                 String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
                 map.put("pwd", password);
@@ -253,9 +254,9 @@ public class SignUtil {
             wrapRequest.putHeader("appId", casVo.getUserId());
             Map<String, Object> signMap = JSON.parseObject(data, Map.class);
             if (object.containsKey("interfaceId")){
-                BizUserService bizUserService = SpringUtil.getBean(BizUserService.class);
+                UserService userService = SpringUtil.getBean(UserService.class);
                 String userId = object.getString("userId");
-                UserDto userDto = bizUserService.findByBizUserId(userId);
+                UserDto userDto = userService.selectUserByUserName(userId);
                 if (userDto != null) {
                     String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
                     object.put("pwd", password);

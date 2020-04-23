@@ -17,12 +17,14 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.*;
 
 /**
  * @program: sod
@@ -36,6 +38,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Value("${fileUpload.httpPath}")
+    private String outFilePath;
 
     @RequiresPermissions("system:user:list")
     @GetMapping("/list")
@@ -167,4 +172,32 @@ public class UserController {
         return new ResultT<>();
     }
 
+
+    @PostMapping(value = "/saveBiz")
+    @RequiresPermissions("system:user:saveBiz")
+    @ApiOperation(value = "注册用户申请", notes = "注册用户申请")
+    public ResultT saveBiz(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
+        try {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            File newFile = null;
+            if (applyPaper != null) {
+                String originalFileName1 = applyPaper.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                //新的文件名
+                String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                newFile = new File(outFilePath + File.separator + newFileName1);
+                // 判断目标文件所在目录是否存在
+                if (!newFile.getParentFile().exists()) {
+                    // 如果目标文件所在的目录不存在，则创建父目录
+                    newFile.getParentFile().mkdirs();
+                }
+                //存入
+                applyPaper.transferTo(newFile);
+            }
+            ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
+            return add;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }
