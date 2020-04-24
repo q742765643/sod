@@ -52,14 +52,14 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="审核状态">
-              <el-radio v-model="registerForm.examineStatus" :label="1">通过</el-radio>
-              <el-radio v-model="registerForm.examineStatus" :label="2">不通过</el-radio>
+              <el-radio v-model="registerForm.radio" :label="1">通过</el-radio>
+              <el-radio v-model="registerForm.radio" :label="2">不通过</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item :label="registerForm.examineStatus==2?'拒绝原因':'备注信息'">
+            <el-form-item :label="registerForm.radio==2?'拒绝原因':'备注信息'">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 4}"
@@ -72,8 +72,8 @@
       </el-form>
     </el-card>
     <div class="dialog-footer">
-      <el-button type="primary" v-if="registerForm.examineStatus==1" @click="checkFuc(2)">通过</el-button>
-      <el-button type="danger" v-if="registerForm.examineStatus==2" @click="checkFuc(3)">拒绝</el-button>
+      <el-button type="primary" v-if="registerForm.radio==1" @click="checkFuc(2)">通过</el-button>
+      <el-button type="danger" v-if="registerForm.radio==2" @click="checkFuc(3)">拒绝</el-button>
       <el-button @click="closeFuc">取消</el-button>
     </div>
   </div>
@@ -94,7 +94,7 @@ export default {
   data() {
     return {
       registerForm: {
-        examineStatus: 1 //examineStatus tofo
+        radio: 1
       },
       logicDBArr: []
     };
@@ -104,12 +104,10 @@ export default {
       this.logicDBArr = response.data;
     });
     this.registerForm = this.handleObj;
-    this.registerForm.examineStatus = 1;
   },
   methods: {
     checkFuc(type) {
       const checkobj = {
-        id: this.registerForm.ID,
         DDataId: this.registerForm.D_DATA_ID,
         examineStatus: type,
         remark: this.registerForm.DATA_PROP

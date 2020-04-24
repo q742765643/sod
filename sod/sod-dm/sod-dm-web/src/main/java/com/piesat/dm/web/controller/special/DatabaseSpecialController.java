@@ -379,11 +379,11 @@ public class DatabaseSpecialController {
         }
     }
     @ApiOperation(value = "根据专题库ID号获取对应专题库信息和对应数据信息")
-    @RequiresPermissions("dm:databaseSpecial:getOneRecordByTdbId")
+    //@RequiresPermissions("dm:databaseSpecial:getOneRecordByTdbId")
     @GetMapping(value = "/getOneRecordByTdbId")
-    public  ResultT getOneRecordByTdbId(String tdbId,String typeId, String cause){
+    public  ResultT getOneRecordByTdbId(String tdbId,String typeId, String status){
         try {
-            Map<String,Object> map =  this.databaseSpecialService.getOneRecordByTdbId(tdbId,typeId,cause);
+            Map<String,Object> map =  this.databaseSpecialService.getOneRecordByTdbId(tdbId,typeId,status);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();

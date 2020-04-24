@@ -5,7 +5,7 @@ export function updateStatus(data) {
   return request({
     url: baseUrl + "/dm/newdataApply/updateStatus",
     method: "post",
-    data: data
+    params: data
   });
 }
 // 查询所有用途

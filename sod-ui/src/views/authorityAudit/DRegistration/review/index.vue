@@ -21,14 +21,15 @@
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==1">
         <!-- 表结构管理 -->
-        <span>资料名称：{{returnMaterialInfo.className}}</span>
+        <span>资料名称：{{CLASS_NAME}}</span>
         <el-divider></el-divider>
-        <span>四级编码：{{returnMaterialInfo.ddataId}}</span>
+        <span>四级编码：{{D_DATA_ID}}</span>
         <el-table
           :data="tableData"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
+          :span-method="objectSpanMethod"
           ref="singleTable"
         >
           <el-table-column label="数据用途" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
@@ -73,7 +74,6 @@
       :before-close="closeStructureManage"
       top="0"
       class="scrollDialog"
-      :append-to-body="true"
     >
       <StructureManageTable
         ref="scrollDiv"
@@ -95,13 +95,8 @@ import handleSync from "@/views/schedule/dataSync/handleSync";
 import handleMove from "@/views/schedule/move/handleMove";
 // 结构化数据备份配置弹窗
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
-import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 
-import {
-  getDotById,
-  addApply
-} from "@/api/authorityAudit/DRegistration/review/index";
-import { getListBYIn } from "@/api/structureManagement/tableStructureManage/index";
+import { getDotById } from "@/api/authorityAudit/DRegistration/review/index";
 export default {
   components: {
     StructureMaterialSingle,
@@ -117,7 +112,6 @@ export default {
   },
   data() {
     return {
-      columnFlag: false,
       stepNum: 0,
       formPage: "数据注册审核",
       isSourceTree: false, //资料
@@ -126,8 +120,7 @@ export default {
       structureManageVisible: false, //表结构管理
       structureManageTitle: "",
       tableData: [],
-      currentRow: [],
-      returnMaterialInfo: {} //StructureMaterialSingle新增资料成功后返回的数据
+      currentRow: []
     };
   },
   created() {
@@ -139,22 +132,18 @@ export default {
       if (this.stepNum == 0) {
         this.$refs.materialRef.makeSureSave();
       }
-      if (this.stepNum == 1) {
-        if (this.columnFlag) {
-          this.stepNum = 2;
-        }
-      }
     },
 
-    addOrEditSuccess(returnInfo) {
-      console.log(returnInfo);
-      this.returnMaterialInfo = returnInfo;
-      // 表格
-      getListBYIn({ stringList: returnInfo.dataClassId }).then(response => {
-        this.stepNum = 1;
-        let tableData = response.data;
-        if (tableData.length > 0) {
-          tableData.forEach((item, index) => {
+    addOrEditSuccess() {
+      // 点击资料下一步 调用接口查询表名和字段，新增表名字段，然后查详情
+      getDotById({ id: this.handleObj.applyId }).then(response => {});
+    },
+    // 表格
+    getTable() {
+      getListBYIn(this.searchObj).then(response => {
+        this.tableData = response.data;
+        if (this.tableData.length > 0) {
+          this.tableData.forEach((item, index) => {
             item.roundCount =
               item.STORAGE_TYPE == "K_E_table"
                 ? 1
@@ -162,21 +151,10 @@ export default {
                 ? 1
                 : 0;
           });
+          this.rowspan();
         }
-        this.tableData = tableData;
-        // 传applyid 逗号隔开的id
-        let ids = [];
-        this.returnMaterialInfo.dataLogicList.forEach(element => {
-          ids.push(element.id);
-        });
-        let obj = {
-          applyId: this.handleObj.applyId,
-          classLogicIds: ids.join(",")
-        };
-        addApply(obj).then(res => {});
       });
     },
-
     //显示表结构管理
     showStructureManage(row) {
       this.rowData = row;
@@ -192,7 +170,7 @@ export default {
       this.currentRow = [];
       this.tableData.forEach((item, index) => {
         let obj = {};
-        if (item.DATA_CLASS_ID && currentRow.DATA_CLASS_ID) {
+        if (item.DATA_CLASS_ID != null && currentRow.DATA_CLASS_ID != null) {
           if (item.DATA_CLASS_ID == currentRow.DATA_CLASS_ID) {
             this.currentRow.push(item);
           }
@@ -200,30 +178,49 @@ export default {
       });
     },
     handleClose() {},
-    // 关闭表结构管理，需要重新查询表格
     closeStructureManage() {
       this.structureManageVisible = false;
-      getListBYIn({ stringList: this.returnMaterialInfo.dataClassId }).then(
-        response => {
-          let tableData = response.data;
-          if (tableData.length > 0) {
-            tableData.forEach((item, index) => {
-              item.roundCount =
-                item.STORAGE_TYPE == "K_E_table"
-                  ? 1
-                  : item.STORAGE_TYPE == "MK_table"
-                  ? 1
-                  : 0;
-              if (item.TABLECOUNT > item.roundCount) {
-                this.columnFlag = true;
-              } else {
-                this.columnFlag = false;
-              }
-            });
+    },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      //表格合并行
+      if (columnIndex === 0) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        };
+      }
+      if (columnIndex === 1) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col
+        };
+      }
+    },
+    // 判断哪些需要合并
+    rowspan() {
+      this.spanArr = [];
+      this.position = 0;
+      this.tableData.forEach((item, index) => {
+        if (index === 0) {
+          this.spanArr.push(1);
+          this.position = 0;
+        } else {
+          if (
+            this.tableData[index].DATA_CLASS_ID ===
+            this.tableData[index - 1].DATA_CLASS_ID
+          ) {
+            this.spanArr[this.position] += 1;
+            this.spanArr.push(0);
+          } else {
+            this.spanArr.push(1);
+            this.position = index;
           }
-          this.tableData = tableData;
         }
-      );
+      });
     }
   }
 };
@@ -231,12 +228,8 @@ export default {
 
 <style  lang="scss">
 .stepDreg {
-  .is-never-shadow,
-  .el-divider--horizontal {
+  .is-never-shadow {
     margin: 20px auto;
-  }
-  .el-table {
-    margin-top: 20px;
   }
 }
 </style>

@@ -109,17 +109,11 @@ public class DataLogicController {
         }
     }
     @ApiOperation(value = "根据逻辑库类型标志获取资料列表")
-    @RequiresPermissions("dm:dataLogic:getTableByDBLogics")
+    //@RequiresPermissions("dm:dataLogic:getTableByDBLogics")
     @GetMapping(value = "/getTableByDBLogics")
-    public ResultT getTableByDBLogics(HttpServletRequest request) {
+    public ResultT getTableByDBLogics(String tdbId,String logics) {
         try {
-            String tdbId = request.getParameter("tdbId");
-            String[] logics = request.getParameterValues("logics");
-            List<String> logicList = new ArrayList<String>();
-            for (String logic : logics) {
-                logicList.add(logic);
-            }
-            Map<String, Object> map = this.dataLogicService.getTableByDBLogics(tdbId, logicList);
+            Map<String, Object> map = this.dataLogicService.getTableByDBLogics(tdbId, logics);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();

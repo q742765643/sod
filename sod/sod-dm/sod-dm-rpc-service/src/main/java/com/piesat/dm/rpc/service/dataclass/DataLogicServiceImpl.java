@@ -159,19 +159,25 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
         this.delete(id);
     }
     @Override
-    public Map<String, Object> getTableByDBLogics(String tdbId, List<String> logics) {
-        Map<String, Object> map = new HashMap();
-        try {
-            List<Map<String,Object>> dataList=mybatisQueryMapper.queryTableBylogics(logics);
-            List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(logics);
+    public Map<String, Object> getTableByDBLogics(String tdbId, String logics) {
+            Map<String, Object> map = new HashMap();
+
+            //查物理库的基础库和专题库下的表信息
+            List<Map<String,Object>> dataList=mybatisQueryMapper.queryTableBylogics(Arrays.asList(logics.split(",")));
+            //查询物理库下专题库下的表信息
+            List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(Arrays.asList(logics.split(",")));
+
             //如果是向砖题库中追加资料，过滤掉之前选择过的资料
             if(!StringUtils.isBlank(tdbId)){
+                //专题库下的资料
                 List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findBySdbId(tdbId);
+
+                //dataList剔除掉该专题库下的资料
                 if(selectedList!=null&&selectedList.size()>0){
                     List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
                     for(Map<String,Object> notSelect :dataList){
                         for(DatabaseSpecialReadWriteEntity databaseSpecial :selectedList){
-                            if(notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDatabaseId().toString())){
+                            if(notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDataClassId().toString())){
                                 delectedList.add(notSelect);
                             }
                         }
@@ -190,7 +196,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                     if(!pp.contains(dataTable.get("PID"))){
                         pIdData.put("id",dataTable.get("PID"));
                         pIdData.put("pId","-1");
-                        pIdData.put("name",dataTable.get("className"));
+                        pIdData.put("name",dataTable.get("CLASSNAME"));
                         pIdData.put("d_data_id",dataTable.get("PD_DATA_ID"));
                         pIdData.put("open","false");
                         data.add(pIdData);
@@ -199,7 +205,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                     JSONObject oneData = new JSONObject();
                     oneData.put("id", dataTable.get("DATA_CLASS_ID"));
                     oneData.put("pId",dataTable.get("PID"));
-                    oneData.put("name", dataTable.get("dataName"));
+                    oneData.put("name", dataTable.get("DATANAME"));
                     oneData.put("d_data_id", dataTable.get("D_DATA_ID"));
                     oneData.put("table_name", dataTable.get("TABLE_NAME"));
                     oneData.put("open","false");
@@ -213,28 +219,23 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                     }
                     //前台临时存储使用
                     oneData.put("readOrWrite", "");
-                    for(int j=0;j<groupConcat.size();j++){
+                    oneData.put("database_id", dataTable.get("DATABASE_ID"));
+                    oneData.put("physicalDB", dataTable.get("DATABASE_DEFINE_ID"));
+                    /*for(int j=0;j<groupConcat.size();j++){
                         Map<String,Object> group = groupConcat.get(j);
                         oneData.put("database_id", group.get("DATABASE_ID"));
                         if(dataTable.get("DATA_CLASS_ID").toString().equals(group.get("DATA_CLASS_ID")) && dataTable.get("D_DATA_ID").toString().equals(group.get("D_DATA_ID"))){
                             oneData.put("physicalDB", group.get("LOGIC"));
                             break;
                         }
-                    }
+                    }*/
                     data.add(oneData);
                 }
             }
 
             map.put("data", data);
-            map.put("returnCode", 0);
-            map.put("returnMessage", "资料列表数据获取成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            map.put("returnCode", 1);
-            map.put("returnMessage", "资料列表数据获取失败");
-        }
 
-        //下面返回值。
-        return map;
+            //下面返回值。
+            return map;
     }
 }

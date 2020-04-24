@@ -314,7 +314,6 @@ export default {
             type: "success",
             message: "操作成功"
           });
-          this.$emit("reloadTableInfo");
         } else {
           this.$message({
             type: "error",

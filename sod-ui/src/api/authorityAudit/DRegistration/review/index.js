@@ -8,11 +8,3 @@ export function getDotById(data) {
     params: data
   });
 }
-// 新增申请表
-export function addApply(data) {
-  return request({
-    url: baseUrl + "/dm/dataTable/addApply",
-    method: "post",
-    params: data
-  });
-}

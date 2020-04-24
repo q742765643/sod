@@ -307,8 +307,7 @@ import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataR
 import revieStepRegister from "@/views/authorityAudit/DRegistration/review/index";
 import {
   getDataClassify,
-  getDataTable,
-  databaseGet
+  getDataTable
 } from "@/api/authorityAudit/DRegistration/index";
 export default {
   components: {
@@ -474,35 +473,20 @@ export default {
     // 删除
     deleteList(row) {},
     // 关闭数据注册弹窗
-    async handleDataReg(info) {
+    handleDataReg(info) {
       if (info) {
         // 传到资料弹窗的数据
         this.handleMsgObj = {};
         this.handleMsgObj = info;
         this.handleMsgObj.applyId = this.currentRow.ID;
-        // 根据专题库id查寻
-        await databaseGet({ id: this.currentRow.DATABASE_ID }).then(
-          response => {
-            this.handleMsgObj.dataLogicList = [
-              {
-                logicFlag: this.currentRow.LOGIC_ID, //数据用途
-                logicName: this.currentRow.LOGIC_NAME, //数据用途
-                databaseId: this.currentRow.DATABASE_ID, //专题库id
-                databaseName: response.data.databaseName, //专题库名称
-                databasePName: response.data.databaseDefine.databaseName //数据库名称
-              }
-            ];
-            this.reviewStep = true;
+        this.handleMsgObj.dataLogicList = [
+          {
+            logicName: this.currentRow.LOGIC_NAME,
+            databasePName: this.currentRow.LOGIC_NAME
           }
-        );
+        ];
 
-        /* databaseId: "d205145e5ce147febdaf96eb37f21118"
-databaseName: "基础库"
-databasePName: "结构化数据库"
-logicFlag: "Case"
-logicName: "科研个例数据"
-storageName: "要素表"
-storageType: "E_table" */
+        this.reviewStep = true;
       } else {
         // 取消/拒绝
         this.getList();

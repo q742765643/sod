@@ -43,5 +43,5 @@ public interface DataLogicService {
 
     List<DataLogicDto> getDataLogic(String dataclassId,String databaseId,String tableName);
 
-    Map<String, Object> getTableByDBLogics(String tdbId, List<String> logicList);
+    Map<String, Object> getTableByDBLogics(String tdbId, String logics);
 }

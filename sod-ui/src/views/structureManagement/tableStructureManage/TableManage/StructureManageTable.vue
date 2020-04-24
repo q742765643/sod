@@ -453,22 +453,16 @@ export default {
               this.keyObj.tableInfo = row;
             }
           }
-          let tableInfoObj = {
-            nameCn: this.rowData.CLASS_NAME,
-            dataServiceId: this.rowData.DATA_CLASS_ID,
-            classLogic: {
-              id: this.rowData.LOGIC_ID
-            }
-          };
           if (data.length == 0) {
-            this.elObj.tableInfo = tableInfoObj;
-            this.keyObj.tableInfo = tableInfoObj;
-          }
-          if (!this.elObj.tableInfo.id) {
-            this.elObj.tableInfo = tableInfoObj;
-          }
-          if (!this.keyObj.tableInfo.id) {
-            this.keyObj.tableInfo = tableInfoObj;
+            let obj = {
+              nameCn: this.rowData.CLASS_NAME,
+              dataServiceId: this.rowData.DATA_CLASS_ID,
+              classLogic: {
+                id: this.rowData.LOGIC_ID
+              }
+            };
+            this.elObj.tableInfo = obj;
+            this.keyObj.tableInfo = obj;
           }
         } else {
           this.$message({

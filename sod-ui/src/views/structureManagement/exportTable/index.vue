@@ -75,14 +75,11 @@
               <p>分库分表</p>
               <div style="text-align:right;">
                 <handleExport
-                  style="display:none;"
                   :handleExportObj="handleExportObj"
                   btnText="导出"
-                  :exportUrl="exportUrl"
+                  exportUrl="/api/com/downloadByPath"
                   baseUrl="DM"
-                  ref="exportRef"
                 />
-                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
             <el-tab-pane label="表结构导出--简版" name="second">
@@ -114,7 +111,7 @@
                 <el-checkbox v-model="simpleObj.fenku">分库分表</el-checkbox>
               </p>
               <div style="text-align:right;">
-                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
+                <el-button icon="el-icon-bottom">导出</el-button>
               </div>
             </el-tab-pane>
             <el-tab-pane label="sql导出" name="third">
@@ -122,7 +119,12 @@
               <el-radio v-model="exportTyoe" :label="1">导出到同一个文件</el-radio>
               <el-radio v-model="exportTyoe" :label="2">导出到多个文件</el-radio>
               <div style="text-align:right;">
-                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
+                <handleExport
+                  :handleExportObj="handleExportObj"
+                  btnText="导出"
+                  exportUrl="/api/com/downloadByPath"
+                  baseUrl="DM"
+                />
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -140,8 +142,7 @@ import {
   databaseList,
   dataTree,
   exportTable,
-  exportSQL,
-  exportTableSimple
+  exportSQL
 } from "@/api/structureManagement/exportTable";
 export default {
   components: {
@@ -150,7 +151,7 @@ export default {
   },
   data() {
     return {
-      exportUrl: "/api/com/downloadByPath",
+      exportUrl: "",
       handleExportObj: {},
       //格式化tree数据
       defaultProps: {
@@ -290,6 +291,7 @@ export default {
       obj.keys.forEach(element => {
         this.checkdTreesArry.push(element);
       });
+      this.handleExportClick();
     },
     // 监听穿梭框组件移除
     removeTreeInfo(fromData, toData, obj) {
@@ -300,6 +302,7 @@ export default {
         l2 => obj.keys.findIndex(l1 => l2 === l1) !== -1
       );
       this.checkdTreesArry = newData;
+      this.handleExportClick();
     },
     handleClick() {},
     // 全选
@@ -326,7 +329,7 @@ export default {
       }
     },
     // 导出
-    exportClick() {
+    handleExportClick() {
       this.handleExportObj = {};
       let ids = [];
       this.checkdTreesArry.forEach(element => {
@@ -335,29 +338,20 @@ export default {
         }
       });
       let obj = {};
-      obj.data_class_ids = ids.join(",");
-      obj.database_id = this.queryParams.database_id;
+      obj.dataClassIds = ids.join(",");
+      obj.databaseId = this.queryParams.database_id;
       if (this.activeName == "first") {
         obj.use_id = this.queryParams.use_id;
         exportTable(obj).then(response => {
           if (response.code == 200) {
             this.handleExportObj.filePath = response.data.filePath;
-            this.$refs.exportRef.exportData(this.handleExportObj);
+            console.log(this.handleExportObj);
           }
         });
       } else if (this.activeName == "second") {
-        exportTableSimple(obj).then(response => {
-          this.handleExportObj.filePath = response.data.filePath;
-          this.$refs.exportRef.exportData(this.handleExportObj);
-        });
-      } else if (this.activeName == "third") {
-        let obj = {};
-        obj.data_class_ids = ids.join(",");
-        obj.database_id = this.queryParams.database_id;
-        obj.exportType = this.exportTyoe;
+        obj.exportType = exportTyoe;
         exportSQL(obj).then(response => {
           this.handleExportObj.filePath = response.data.filePath;
-          this.$refs.exportRef.exportData(this.handleExportObj);
         });
       }
     }
