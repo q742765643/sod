@@ -54,6 +54,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -129,11 +130,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         return pageBean;
     }
 
+    @Transactional
     @Override
     public void deleteById(String id) {
-        this.delete(id);
-        this.databaseSpecialReadWriteDao.deleteBySdbId(id);
         this.databaseSpecialAuthorityDao.deleteBySdbId(id);
+        this.databaseSpecialReadWriteDao.deleteBySdbId(id);
+        this.delete(id);
     }
 
     @Override
@@ -170,7 +172,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public DatabaseSpecialDto saveDto(DatabaseSpecialDto databaseSpecialDto) {
         DatabaseSpecialEntity databaseSpecialEntity = this.databaseSpecialMapper.toEntity(databaseSpecialDto);
-        this.save(databaseSpecialEntity);
+        this.saveNotNull(databaseSpecialEntity);
         return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
     }
 
@@ -210,7 +212,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList = databaseDto.getDatabaseSpecialAuthorityList();
             for(int i=0; i<databaseSpecialAuthorityList.size();i++){
                 DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
-                databaseSpecialAuthorityDao.save(databaseSpecialAuthorityMapper.toEntity(databaseSpecialAuthorityDto));
+                databaseSpecialAuthorityDao.saveNotNull(databaseSpecialAuthorityMapper.toEntity(databaseSpecialAuthorityDto));
                 databaseDto.setId(databaseSpecialAuthorityDto.getDatabaseId());
                 //获取物理库历史配置信息
                 DatabaseEntity oldDatabaseEntity = databaseDao.findByDatabaseDefine(databaseSpecialAuthorityDto.getDatabaseId());
@@ -234,7 +236,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 List<DatabaseEntity> databaseEntityList = databaseDao.findByTdbId(databaseDto.getTdbId());
                 if(databaseEntityList==null&&databaseEntityList.size()==0){
                     databaseDto.setId(UUID.randomUUID().toString());
-                    databaseDao.save(databaseMapper.toEntity(databaseDto));
+                    databaseDao.saveNotNull(databaseMapper.toEntity(databaseDto));
                 }
                 //申请创建模式
                 Set<DatabaseAdministratorEntity> databaseAdministratorSet = oldDatabaseDefineEntity.getDatabaseAdministratorList();

@@ -176,7 +176,7 @@ public class StorageConfigurationController {
 
     @PostMapping(value = "/updateColumnValue")
     @ApiOperation(value = "修改配置参数值", notes = "修改配置参数值")
-    public ResultT<String> updateColumnValue(@RequestParam("id")String id, @RequestParam("column")String column, @RequestParam("value")String value) {
+    public ResultT<String> updateColumnValue(String id, String column, String value) {
         return storageConfigurationGrpcService.updateColumnValue(id, column, value);
     }
 

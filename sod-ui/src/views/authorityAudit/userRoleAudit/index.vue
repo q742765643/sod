@@ -1,34 +1,65 @@
 <template>
   <div class="app-container">
-    <!-- 用户角色审核 -->
+    <!-- 业务用户审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="申请用户">
-        <el-input size="small" v-model="queryParams.username" placeholder="申请用户"></el-input>
+      <el-form-item label="用户名称">
+        <el-input size="small" v-model="queryParams.username" placeholder="请输入用户名称"></el-input>
       </el-form-item>
-      <el-form-item label="状态">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="状态"
-          clearable
-          size="small"
-          style="width: 240px"
-        >
+      <el-form-item label="机构">
+        <el-select v-model="queryParams.status" clearable size="small" style="width: 240px">
           <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>
           <el-option label="已审核" value="1"></el-option>
         </el-select>
+      </el-form-item>
+      <el-form-item label="审核状态">
+        <el-select v-model="queryParams.status" clearable size="small" style="width: 140px">
+          <el-option label="全部" value></el-option>
+          <el-option label="未审核" value="0"></el-option>
+          <el-option label="已审核" value="1"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="创建时间">
+        <el-date-picker
+          size="small"
+          v-model="dateRange"
+          type="date"
+          range-separator="~"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd "
+        >></el-date-picker>
       </el-form-item>
 
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="account" label="账户名称"></el-table-column>
-      <el-table-column prop="username" label="用户名称"></el-table-column>
-      <el-table-column prop="post" label="部门"></el-table-column>
-      <el-table-column prop="updateTime" label="申请时间" sortable="custom">
+
+    <!--  <el-row :gutter="10" class="handleTableBox">
+      <el-col :span="1.5">
+        <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleEdit">修改</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete">删除</el-button>
+      </el-col>
+    </el-row>-->
+    <el-table
+      highlight-current-row
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+      @current-change="handleCurrentChange"
+    >
+      <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+      <el-table-column prop="account" label="用户名称"></el-table-column>
+      <el-table-column prop="username" label="机构"></el-table-column>
+      <el-table-column prop="post" label="联系方式"></el-table-column>
+      <el-table-column prop="updateTime" label="创建时间" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -49,23 +80,24 @@
           >已审核</el-link>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="260px">
+      <el-table-column label="角色授权" width="100">
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.status=='0'"
             type="text"
             size="mini"
-            icon="el-icon-circle-check"
-            @click="handleCell(scope.row,'通过',1)"
-          >通过</el-button>
+            icon="el-icon-s-custom"
+            @click="handleRole(scope.row)"
+          >角色授权</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="申请审核" width="100">
+        <template slot-scope="scope">
           <el-button
-            v-if="scope.row.status == 1"
             type="text"
             size="mini"
-            icon="el-icon-circle-close"
-            @click="handleCell(scope.row,'拒绝',0)"
-          >拒绝</el-button>
-          <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
+            icon="el-icon-s-check"
+            @click="handleApply(scope.row)"
+          >申请审核</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -77,33 +109,57 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+    <!-- 新增/编辑 -->
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px" v-dialogDrag>
+      <handleWork v-if="dialogVisible" :handleMsgObj="handleMsgObj" @cancleClose="cancleClose" />
+    </el-dialog>
+    <!-- 角色授权 -->
+    <el-dialog :title="dialogTitle" :visible.sync="dialogRole" width="500px" v-dialogDrag>
+      <div>
+        <el-select
+          v-model="queryParams.status"
+          clearable
+          size="small"
+          style="display:block;margin-bottom:20px;"
+        >
+          <el-option label="管理员" value></el-option>
+          <el-option label="业务用户" value="0"></el-option>
+          <el-option label="游客" value="1"></el-option>
+        </el-select>
+        <div class="dialog-footer" slot="footer">
+          <el-button type="primary" @click="trueRole">确 定</el-button>
+          <el-button @click="dialogRole = false">取 消</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 申请审核 -->
     <el-dialog
       :title="dialogTitle"
-      :visible.sync="handleDialog"
-      width="90%"
-      max-width="1100px"
-      top="5vh"
+      :visible.sync="dialogApply"
+      width="1100px"
       v-dialogDrag
+      top="5vh"
     >
-      <handleAccount
-        v-if="handleDialog"
-        :handleObj="handleObj"
-        @handleDialogClose="handleDialogClose"
-        ref="myHandleServer"
-      />
+      <handleApply v-if="dialogApply" :handleMsgObj="handleMsgObj" @cancleClose="cancleClose" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { page, delByIds, update } from "@/api/authorityAudit/userRoleAudit";
-import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
+import handleWork from "@/views/authorityAudit/userRoleAudit/handleWork";
+import handleApply from "@/views/authorityAudit/userRoleAudit/handleApply";
 export default {
   components: {
-    handleAccount
+    handleWork,
+    handleApply
   },
   data() {
     return {
+      dialogApply: false,
+      dialogRole: false,
+      dialogVisible: false,
+      dateRange: [],
       // 遮罩层
       loading: true,
       queryParams: {
@@ -122,7 +178,7 @@ export default {
       total: 0,
       tableData: [],
       dialogTitle: "",
-      handleDialog: false
+      currentRow: {}
     };
   },
   created() {
@@ -138,6 +194,9 @@ export default {
       }
       this.queryParams.params.orderBy = orderBy;
       this.handleQuery();
+    },
+    handleCurrentChange(val) {
+      this.currentRow = val;
     },
     // table自增定义方法
     table_index(index) {
@@ -169,51 +228,42 @@ export default {
       };
       this.handleQuery();
     },
+    // 新增
     handleAdd() {
-      this.dialogTitle = "新增数据库账户审核";
-      this.handleObj = {};
-      this.handleDialog = true;
+      this.dialogTitle = "新增";
+      this.handleMsgObj = {};
+      this.dialogVisible = true;
     },
-    downloadTable() {},
-    //查看原因
-    viewReason(row) {
-      this.$alert(row.failure_reason, "拒绝原因", {
-        confirmButtonText: "确定"
-      });
+    // 修改
+    handleEdit() {
+      if (this.currentRow) {
+        this.handleMsgObj = this.currentRow;
+        this.dialogVisible = true;
+      } else {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据"
+        });
+      }
     },
-    handleCell(row, type, status) {
-      this.$confirm("是否确认" + type + "", "温馨提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return update(row.id, status);
-        })
-        .then(() => {
-          this.getList();
-          this.msgSuccess("操作成功");
-        })
-        .catch(function() {});
+    // 删除
+    handleDelete() {},
+    // 角色授权
+    handleRole(row) {
+      this.dialogTitle = "角色授权";
+      this.dialogRole = true;
     },
-    deleteCell(row) {
-      this.$confirm("是否确认删除", "温馨提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return delByIds(row.id);
-        })
-        .then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        })
-        .catch(function() {});
+    // 确认授权
+    trueRole() {},
+    // 申请审核
+    handleApply(row) {
+      this.dialogTitle = "申请审核";
+      this.handleMsgObj = row;
+      this.dialogApply = true;
     },
-    handleDialogClose() {
-      this.handleDialog = false;
-      this.handleObj = {};
+    cancleClose() {
+      this.handleMsgObj = {};
+      this.dialogApply = false;
     }
   }
 };

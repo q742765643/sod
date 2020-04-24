@@ -68,7 +68,7 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     @Override
     public StorageConfigurationDto saveDto(StorageConfigurationDto storageConfigurationDto) {
         StorageConfigurationEntity storageConfigurationEntity = this.storageConfigurationMapper.toEntity(storageConfigurationDto);
-        storageConfigurationEntity = this.storageConfigurationDao.save(storageConfigurationEntity);
+        storageConfigurationEntity = this.storageConfigurationDao.saveNotNull(storageConfigurationEntity);
         return this.storageConfigurationMapper.toDto(storageConfigurationEntity);
     }
 

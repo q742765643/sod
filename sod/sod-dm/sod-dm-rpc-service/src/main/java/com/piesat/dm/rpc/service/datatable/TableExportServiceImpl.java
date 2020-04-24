@@ -306,7 +306,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
     }
 
     @Override
-    public Map<String, Object> getExportMapSimple(String database_id, String data_class_ids, HttpServletRequest request) {
+    public Map<String, Object> getExportMapSimple(String database_id, String data_class_ids, String columns, String index, String shard) {
         try{
             String[] data_class_id_Array = data_class_ids.split(",");
             // 工具类所用map读取
@@ -317,10 +317,6 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
             // 根据传过来的四级编码循环多表导出
             for (String data_class_id : data_class_id_Array) {
                 Map<String, Object> dataMaps = new HashMap<String, Object>();
-
-                String[] exportColumns = request.getParameterValues("exportColumn");
-                String[] exportColumnIndexs = request.getParameterValues("exportColumnIndex");
-                String[] exportColumnKus = request.getParameterValues("exportColumnKu");
 
                 List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id, database_id);
 
@@ -344,7 +340,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
 
                     // 表结构部分
                     List<Map<String, Object>> listInfo = new ArrayList<Map<String, Object>>();
-                    if (exportColumns == null) {
+                    if (StringUtils.isBlank(columns)) {
                         for (TableColumnEntity tableColumn : tableColumnList) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             map.put("id", " ");
@@ -365,8 +361,8 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             map.put("serial_number", " ");
                             listInfo.add(map);
                         }
-                    } else if (exportColumns.length >= 1) {
-                        List<String> exportColumn = Arrays.asList(exportColumns);
+                    } else if (columns.length() >= 1) {
+                        List<String> exportColumn = Arrays.asList(columns.split(","));
                         int num = 1;
                         for (TableColumnEntity tableColumn : tableColumnList) {
                             Map<String, Object> map = new HashMap<String, Object>();
@@ -530,7 +526,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                     List<TableIndexEntity> tableIndexList = tableIndexDao.findByTableId(table_id);
                     int indexNum = 1;
 
-                    if (exportColumnIndexs == null) {
+                    if (StringUtils.isBlank(index)) {
                         // List<String> exportColumnIndex =
                         // Arrays.asList(exportColumnIndexs);
 
@@ -543,16 +539,13 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             mapIndex.put("indexColumn", " ");
                             listIndex.add(mapIndex);
                         }
-                    } else if (exportColumnIndexs.length >= 1) {
-                        List<String> exportColumnIndex = Arrays.asList(exportColumnIndexs);
+                    } else if (index.equals("0")) {
                         for (TableIndexEntity tableIndex : tableIndexList) {
                             Map<String, Object> mapIndex = new HashMap<String, Object>();
-                            if (exportColumnIndex.contains("index")) {
-                                mapIndex.put("indexId", indexNum++);
-                                mapIndex.put("indexType", tableIndex.getIndexType());
-                                mapIndex.put("indexName", tableIndex.getIndexName());
-                                mapIndex.put("indexColumn", tableIndex.getIndexColumn());
-                            }
+                            mapIndex.put("indexId", indexNum++);
+                            mapIndex.put("indexType", tableIndex.getIndexType());
+                            mapIndex.put("indexName", tableIndex.getIndexName());
+                            mapIndex.put("indexColumn", tableIndex.getIndexColumn());
                             listIndex.add(mapIndex);
                         }
                     }
@@ -560,7 +553,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                     List<Map<String, Object>> listSharding = new ArrayList<Map<String, Object>>();
                     List<ShardingEntity> shardingList = shardingDao.findByTableId(table_id);
                     int shardNum = 1;
-                    if (exportColumnKus == null) {
+                    if (StringUtils.isBlank(shard)) {
                         for (ShardingEntity sharding : shardingList) {
                             Map<String, Object> mapSharding = new HashMap<String, Object>();
 
@@ -574,20 +567,17 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             mapSharding.put("field", " ");
                             listSharding.add(mapSharding);
                         }
-                    } else if (exportColumnKus.length >= 1) {
-                        List<String> exportColumnKu = Arrays.asList(exportColumnKus);
+                    } else if (columns.equals("0")) {
                         for (ShardingEntity sharding : shardingList) {
                             Map<String, Object> mapSharding = new HashMap<String, Object>();
-                            if (exportColumnKu.contains("fenku")) {
-                                mapSharding.put("shardId", shardNum++);
-                                Integer sharding_type = sharding.getShardingType();
-                                if (sharding_type==1) {
-                                    mapSharding.put("shardingType", "分表键");
-                                } else {
-                                    mapSharding.put("shardingType", "分库键");
-                                }
-                                mapSharding.put("field", sharding.getColumnName());
+                            mapSharding.put("shardId", shardNum++);
+                            Integer sharding_type = sharding.getShardingType();
+                            if (sharding_type==1) {
+                                mapSharding.put("shardingType", "分表键");
+                            } else {
+                                mapSharding.put("shardingType", "分库键");
                             }
+                            mapSharding.put("field", sharding.getColumnName());
                             listSharding.add(mapSharding);
                         }
                     }

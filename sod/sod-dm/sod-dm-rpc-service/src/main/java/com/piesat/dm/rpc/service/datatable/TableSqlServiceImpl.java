@@ -35,7 +35,7 @@ public class TableSqlServiceImpl extends BaseService<TableSqlEntity> implements 
     public TableSqlDto saveDto(TableSqlDto tableSqlDto) {
         this.tableSqlDao.deleteByDatabaseIdAndTableName(tableSqlDto.getDatabaseId(),tableSqlDto.getTableName());
         TableSqlEntity tableSqlEntity = this.tableSqlMapper.toEntity(tableSqlDto);
-        tableSqlEntity = this.save(tableSqlEntity);
+        tableSqlEntity = this.saveNotNull(tableSqlEntity);
         return this.tableSqlMapper.toDto(tableSqlEntity);
     }
 

@@ -582,7 +582,10 @@ export default {
       // 查详情
       await this.initDetail();
     }
-    if (this.handleObj.pageName == "存储结构概览") {
+    if (
+      this.handleObj.pageName == "存储结构概览" ||
+      this.handleObj.pageName == "数据注册审核"
+    ) {
       this.msgFormDialog.targetDatabaseId = this.handleObj.databaseId; //目标库
       this.msgFormDialog.targetTable = this.handleObj.dataClassId; //目标表
       // 目标表下拉框

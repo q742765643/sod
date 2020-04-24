@@ -33,7 +33,7 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
     @Override
     public TableForeignKeyDto saveDto(TableForeignKeyDto TableForeignKeyDto) {
         TableForeignKeyEntity TableForeignKeyEntity = this.tableForeignKeyMapper.toEntity(TableForeignKeyDto);
-        TableForeignKeyEntity = this.save(TableForeignKeyEntity);
+        TableForeignKeyEntity = this.saveNotNull(TableForeignKeyEntity);
         return this.tableForeignKeyMapper.toDto(TableForeignKeyEntity);
     }
 

@@ -59,7 +59,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
         }
         dataLogicDto.setCreateTime(new Date());
         DataLogicEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
-        dataLogicEntity = this.dataLogicDao.save(dataLogicEntity);
+        dataLogicEntity = this.dataLogicDao.saveNotNull(dataLogicEntity);
         if (isAdd) {
             StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
             storageConfigurationDto.setClassLogicId(dataLogicEntity.getId());
@@ -83,7 +83,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                 isAdd = true;
                 d.setCreateTime(new Date());
             }
-            d = this.dataLogicDao.save(d);
+            d = this.dataLogicDao.saveNotNull(d);
             if (isAdd) {
                 StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
                 storageConfigurationDto.setClassLogicId(d.getId());

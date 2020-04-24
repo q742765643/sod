@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -169,4 +170,10 @@ public interface MybatisQueryMapper {
     void updateDataAuthorityStatus(String apply_id, String database_id, String data_class_id, Integer authorize);
 
     List<Map<String, Object>> getRecentOnlineTime(String ctsCode);
+
+    List<LinkedHashMap<String, Object>> getDataClassInfo(String dataClassId);
+
+    List<LinkedHashMap<String, Object>> selectTabOmincmccTempele(String c_coremeta_id);
+
+    List<LinkedHashMap<String, Object>> selectGridAreaDefine(String dataClassId);
 }

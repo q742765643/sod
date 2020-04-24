@@ -21,13 +21,13 @@ import com.piesat.sod.system.rpc.mapstruct.SqlTemplateMapstruct;
  */
 @Service
 public class SqlTemplateServiceImpl extends BaseService<SqlTemplateEntity> implements SqlTemplateService{
-	
+
 	@Autowired
 	private SqlTemplateDao sqlTemplateDao;
-	
+
 	@Autowired
 	private SqlTemplateMapstruct sqlTemplateMapstruct;
-	
+
 	@Autowired
 	private SqlTemplateMapper sqlTemplateMapper;
 
@@ -72,7 +72,7 @@ public class SqlTemplateServiceImpl extends BaseService<SqlTemplateEntity> imple
 	@Transactional
 	public void edit(SqlTemplateDto sqlTemplateDto) throws Exception {
 		SqlTemplateEntity ste = sqlTemplateMapstruct.toEntity(sqlTemplateDto);
-		sqlTemplateDao.save(ste);
+		sqlTemplateDao.saveNotNull(ste);
 	}
 
 	/**

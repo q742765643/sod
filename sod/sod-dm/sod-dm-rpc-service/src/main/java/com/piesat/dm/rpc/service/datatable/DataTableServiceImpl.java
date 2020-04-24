@@ -87,7 +87,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
         UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
         dataTableEntity.setCreator(loginUser.getUserName());
-        dataTableEntity = this.save(dataTableEntity);
+        dataTableEntity = this.saveNotNull(dataTableEntity);
         List<StorageConfigurationDto> sc = this.storageConfigurationService.findByClassLogicId(dataTableEntity.getClassLogic().getId());
         if (sc!=null&&sc.size()>0) {
             StorageConfigurationDto storageConfigurationDto = sc.get(0);
@@ -309,7 +309,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
                 til.add(te);
             }
             dte.setTableIndexList(til);
-            DataTableEntity save = this.dataTableDao.save(dte);
+            DataTableEntity save = this.dataTableDao.saveNotNull(dte);
             for (ShardingEntity se : shardingEntities) {
                 ShardingEntity sde = new ShardingEntity();
                 BeanUtils.copyProperties(se, sde);
@@ -318,7 +318,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
                 sde.setId(null);
                 sde.setCreateTime(new Date());
                 sde.setVersion(0);
-                this.shardingDao.save(sde);
+                this.shardingDao.saveNotNull(sde);
             }
 
         }

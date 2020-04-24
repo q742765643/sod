@@ -61,7 +61,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
             databaseDefineDto.setCreateTime(new Date());
         }
         DatabaseDefineEntity databaseDefineEntity = this.databaseDefineMapper.toEntity(databaseDefineDto);
-        DatabaseDefineEntity save = this.save(databaseDefineEntity);
+        DatabaseDefineEntity save = this.saveNotNull(databaseDefineEntity);
         DatabaseEntity databaseEntity = this.databaseMapper.toEntity(databaseDto);
         databaseEntity.setDatabaseDefine(save);
         databaseEntity = this.databaseDao.saveNotNull(databaseEntity);

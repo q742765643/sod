@@ -40,7 +40,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     @Override
     public DatabaseDto saveDto(DatabaseDto databaseDto) {
         DatabaseEntity databaseEntity = this.databaseMapper.toEntity(databaseDto);
-        databaseEntity = this.save(databaseEntity);
+        databaseEntity = this.saveNotNull(databaseEntity);
         return this.databaseMapper.toDto(databaseEntity);
     }
 
