@@ -96,7 +96,10 @@ import handleMove from "@/views/schedule/move/handleMove";
 // 结构化数据备份配置弹窗
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 
-import { getDotById } from "@/api/authorityAudit/DRegistration/review/index";
+import {
+  getDotById,
+  addApply
+} from "@/api/authorityAudit/DRegistration/review/index";
 export default {
   components: {
     StructureMaterialSingle,
@@ -188,6 +191,16 @@ export default {
                 : 0;
           });
         }
+        // 传applyid 逗号隔开的id
+        let ids = [];
+        this.returnMaterialInfo.dataLogicList.forEach(element => {
+          ids.push(element.id);
+        });
+        let obj = {
+          applyId: this.handleObj.applyId,
+          classLogicIds: ids.join(",")
+        };
+        addApply(obj).then(res => {});
       });
     },
     //显示表结构管理
