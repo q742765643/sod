@@ -48,6 +48,8 @@ public interface DatabaseSpecialService {
      */
     DatabaseSpecialDto saveDto(DatabaseSpecialDto databaseSpecialDto);
 
+    DatabaseSpecialDto addOrUpdate(Map<String, String[]> parameterMap,String filePath);
+
     /**
      * 数据库授权
      * @param databaseDto
@@ -94,12 +96,7 @@ public interface DatabaseSpecialService {
      */
     Map<String,Object> saveCreateapply(HttpServletRequest request);
 
-    /**
-     * 同一专题库下插入多条记录
-     * @param request
-     * @return
-     */
-    Map<String, Object> saveMultilRecord(HttpServletRequest request);
+    DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto);
 
     DatabaseSpecialAccessEntity getdefeataudit(String tdbId, String userId);
 

@@ -811,23 +811,56 @@
     </select>
     <select id="getRecordByTdbId" parameterType="String" resultType="java.util.Map">
         select
-        d.DATA_CLASS_ID,d.DATA_SERVICE_NAME,d.D_DATA_ID,
-        b.APPLY_AUTHORITY,b.REAL_AUTHORITY,b.LOGIC_ID,
-        b.AUTHORIZE,b.CAUSE,c1.DATABASE_NAME,
+        b.DATA_CLASS_ID,d.DATA_SERVICE_NAME,ee.D_DATA_ID,
+        b.APPLY_AUTHORITY,b.EMPOWER_AUTHORITY,f.logic_flag,
+        b.examine_status,b.failure_reason,c1.DATABASE_NAME,
         d.TABLE_NAME,e.CLASS_NAME
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
-        inner join t_sod_data_table d on b.data_class_id = d.data_class_id
-        inner join t_sod_database_define c on b.LOGIC_ID = c.database_id
-        inner join t_sod_database_define c1 on c.parent_id = c1.database_id
-        inner join T_SOD_DATA_LOGIC f on d.class_logic_id = f.id and f.database_id = c.DATABASE_ID
-        inner join t_sod_data_class e on substr(d.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
-        where b.TDB_ID='${tdbId}'
+        inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and f.database_id = b.DATABASE_ID
+        inner join t_sod_data_table d on d.class_logic_id = f.id
+        inner join t_sod_database c on b.database_id = c.id
+        inner join t_sod_database_define c1 on c.database_define_id = c1.id
+        inner join t_sod_data_class e on substr(b.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
+        inner join t_sod_data_class ee on b.DATA_CLASS_ID =ee.DATA_CLASS_ID
+        where b.SDB_ID='${tdbId}'
         <if test="status!=null and status !=''">
-            AND b.AUTHORIZE=${status}
+            AND b.examine_status=${status}
         </if>
         <if test="typeId!=null and typeId !=''">
             AND b.TYPE_ID=${typeId}
         </if>
+    </select>
+    <!-- 根据专题库ID查询关联资料，及资料相关四级编码，表名称，权限，物理库名称等 -->
+    <select id="getAuthorizeRecordByTdbId" parameterType="String" resultType="java.util.Map">
+        SELECT
+        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.TABLE_NAME,WM_CONCAT(M.APPLY_AUTHORITY) APPLY_AUTHORITY,
+        WM_CONCAT(M.empower_authority) REAL_AUTHORITY,WM_CONCAT(M.logic_flag) PHYSICAL,WM_CONCAT(M.DATABASE_NAME) DATABASE_NAME,M.DATA_TYPE,M.SPECIAL_DATABASE_NAME
+        FROM(
+        SELECT DISTINCT f.DATA_CLASS_ID,d.DATA_SERVICE_NAME,ee.D_DATA_ID,
+        b.APPLY_AUTHORITY,b.empower_authority,f.logic_flag,c1.DATABASE_NAME,c.DATABASE_NAME SPECIAL_DATABASE_NAME,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE b
+        inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and b.database_id = f.database_id
+        inner join t_sod_data_table d on d.class_logic_id = f.id
+        inner join t_sod_database c on b.database_id = c.id
+        inner join t_sod_database_define c1 on c.database_define_id = c1.id
+        inner join t_sod_data_class e on substr(b.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
+        inner join t_sod_data_class ee on b.data_class_id = ee.DATA_CLASS_ID
+        where b.SDB_ID= #{tdbId}
+        <if test="status!=null and status !=''">
+            AND b.examine_status=#{status}
+        </if>
+        <if test="typeId!=null and typeId !='0'.toString() and typeId != '9999'.toString()">
+            AND b.TYPE_ID=#{typeId}
+        </if>
+        <if test=" typeId == '0'.toString()">
+            and b.type_id != '9999'
+        </if>
+        <if test=" typeId == '9999'.toString()">
+            and (b.type_id = '9999' or b.type_id is null)
+        </if>
+        )M
+        GROUP BY M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.SPECIAL_DATABASE_NAME,M.TABLE_NAME,M.DATA_TYPE
+        ORDER BY M.DATA_CLASS_ID
     </select>
     <!-- 获取资料申请 -->
     <select id="getDataAuthorityList" resultType = "java.util.Map" parameterType="java.util.Map">
@@ -914,37 +947,7 @@
             and sdc.user_id = #{userId}
         </if>
     </select>
-    <!-- 根据专题库ID查询关联资料，及资料相关四级编码，表名称，权限，物理库名称等 -->
-    <select id="getAuthorizeRecordByTdbId" parameterType="String" resultType="java.util.Map">
-        SELECT
-        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.TABLE_NAME,WM_CONCAT(M.APPLY_AUTHORITY) APPLY_AUTHORITY,
-        WM_CONCAT(M.empower_authority) REAL_AUTHORITY,WM_CONCAT(M.logic_flag) PHYSICAL,WM_CONCAT(M.DATABASE_NAME) DATABASE_NAME,M.DATA_TYPE
-        FROM(
-        SELECT DISTINCT f.DATA_CLASS_ID,d.DATA_SERVICE_NAME,e.D_DATA_ID,
-        b.APPLY_AUTHORITY,b.empower_authority,f.logic_flag,c1.DATABASE_NAME,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
-        from T_SOD_DATABASE_SPECIAL_READ_WRITE b
-        inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and b.database_id = f.database_id
-        inner join t_sod_data_table d on d.class_logic_id = f.id
-        inner join t_sod_database c on b.database_id = c.id
-        inner join t_sod_database_define c1 on c.database_define_id = c1.id
-        inner join t_sod_data_class e on substr(b.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
-        where b.SDB_ID= #{tdbId}
-        <if test="status!=null and status !=''">
-            AND b.examine_status=#{status}
-        </if>
-        <if test="typeId!=null and typeId !='0'.toString() and typeId != '9999'.toString()">
-            AND b.TYPE_ID=#{typeId}
-        </if>
-        <if test=" typeId == '0'.toString()">
-            and b.type_id != '9999'
-        </if>
-        <if test=" typeId == '9999'.toString()">
-            and (b.type_id = '9999' or b.type_id is null)
-        </if>
-        )M
-        GROUP BY M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.D_DATA_ID,M.TABLE_NAME,M.DATA_TYPE
-        ORDER BY M.DATA_CLASS_ID
-    </select>
+
     <!-- 下面根据专题库ID和存储编码来修改分类ID -->
     <update id="changeDataStatus" parameterType="java.util.Map">
    		update T_SOD_DATABASE_SPECIAL_READ_WRITE

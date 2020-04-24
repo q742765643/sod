@@ -174,6 +174,21 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
     }
 
+    @Override
+    public DatabaseSpecialDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            if (entry.getValue().length > 0) {
+                map.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+
+        String databaseup_id = map.get("databaseup_id");
+        DatabaseSpecialEntity databaseSpecialEntity = new DatabaseSpecialEntity();
+        databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
+        return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
+    }
+
     /**
      * 数据库授权
      * @param databaseDto
@@ -792,91 +807,31 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public Map<String, Object> saveMultilRecord(HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        try {
-            // 下面取得用户ID。
-            String userId = request.getParameter("userId");
-            String tdbId = request.getParameter("tdbId");
-            // 下面通过request取得传入的JSONObject对象对应字符串。
-            StringBuilder responseStrBuilder = new StringBuilder();
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null) {
-                responseStrBuilder.append(inputStr);
-            }
+    public DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto) {
+            List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList = databaseSpecialDto.getDatabaseSpecialReadWriteList();
+            if(databaseSpecialReadWriteList != null && databaseSpecialReadWriteList.size() > 0){
+                for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteList){
+                    // 如果是读权限，默认通过；写权限，默认拒绝
+                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
+                        databaseSpecialReadWriteDto.setExamineStatus(1);
+                    } else {
+                        databaseSpecialReadWriteDto.setExamineStatus(3);//待授权
+                    }
 
-            // 下面将用户申请的表信息保存到专题库资料读写授权表中。
-            JSONArray dataJsonArray = JSONArray.parseArray(responseStrBuilder.toString());
-            // 下面遍历dataJsonArray中的JSONObject对象。
-            boolean updateflag = false;
-            for (int i = 1; i <= dataJsonArray.size(); i = i + 1) {
-                // 下面定义DminSpecialDbReadwrite对象。
-                DatabaseSpecialReadWriteDto tableReadwrite = new DatabaseSpecialReadWriteDto();
+                    // 默认分类
+                    databaseSpecialReadWriteDto.setTypeId("9999");
+                    //申请资料（非自建）
+                    databaseSpecialReadWriteDto.setDataType(2);
+                    //保存
+                    databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
 
-                // 下面取得一张表的信息。
-                JSONObject oneTableInfo = dataJsonArray.getJSONObject(i - 1);
-                // 下面遍历JSONObject对象。
-                Iterator iterator = oneTableInfo.keySet().iterator();
-                while (iterator.hasNext()) {
-                    String key = (String) iterator.next();
-                    String value = oneTableInfo.getString(key);
-
-                    // 下面循环读取每个数据。
-                    if (key.equals("DATA_CLASS_ID") == true) {
-                        tableReadwrite.setDataClassId(value);
-                    } else if (key.equals("LOGIC_ID") == true) {
-                        tableReadwrite.setDatabaseId(value);
-                    } else if (key.equals("APPLY_AUTHORITY") == true) {
-                        tableReadwrite.setApplyAuthority(Integer.parseInt(value));
+                    //到实际物理库授权
+                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
+                        this.empowerDataOne(databaseSpecialReadWriteDto);
                     }
                 }
-                // 下面设置专题库ID号。
-                tableReadwrite.setSdbId(tdbId);
-                // 默认设为授权状态
-                // 如果是读权限，默认通过；写权限，默认拒绝
-                if (tableReadwrite.getApplyAuthority() == 1) {
-                    tableReadwrite.setExamineStatus(1);
-                } else {
-                    tableReadwrite.setExamineStatus(3);
-                    updateflag = true;
-                }
-                // 默认分类
-                tableReadwrite.setTypeId("9999");
-                tableReadwrite.setDataType(2);
-                // 下面设置申请时间。
-                Date now1 = new Date();
-                tableReadwrite.setCreateTime(now1);
-
-                // 下面将一条记录存入数据库中的资料读写授权表。
-                databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(tableReadwrite));
-                // 到实际物理库授权
-                Map<String, Object> parammap = new HashMap<String, Object>();
-                DataAuthorityApplyDto dataAuthorityApplyDto = new DataAuthorityApplyDto();
-                dataAuthorityApplyDto.setUserId(tableReadwrite.getUserId());
-                if (tableReadwrite.getApplyAuthority() == 1) {
-                    map =dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
-                }
             }
-            //下面更新专题库申请状态
-            if(updateflag){
-                String EXAMINE_STATUS ="1";
-                DatabaseSpecialDto dbApply = new DatabaseSpecialDto();
-                dbApply.setExamineStatus(EXAMINE_STATUS);
-                dbApply.setId(tdbId);
-                databaseSpecialDao.save(save(databaseSpecialMapper.toEntity(dbApply)));
-            }
-            // 下面生成返回信息。
-            map.put("returnCode", 0);
-            map.put("returnMessage", "保存数据成功");
-            streamReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 下面生成返回信息。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "保存数据失败：" + e.getMessage());
-        }
-        return map;
+        return databaseSpecialDto;
     }
 
     @Override
@@ -942,14 +897,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Override
     public Map<String, Object> getRecordByTdbId(String tdbId, String typeId, String cause) {
-        Map<String, Object> map = new HashMap<>();
-        try
-        {
+            Map<String, Object> map = new HashMap<>();
+
             //下面定义一个JSONObject对象，用来存储对应专题库信息。
             JSONObject createApplyData = new JSONObject();
             //下面定义JSONArray，来存储数据表信息。
-//			代码审查注释tableData
-//			JSONArray tableData=new JSONArray();
 
             //下面根据专题库ID号获取对应专题库信息。
             DatabaseSpecialDto oneRecord = this.databaseSpecialMapper.toDto(getById(tdbId));
@@ -996,18 +948,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
             //下面给result赋值。
             map.put("specialDb", createApplyData);
-            map.put("returnCode", 0);
-            map.put("returnMessage", "获取数据成功");
             return map;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            //下面给result赋值。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "获取数据失败："+e.getMessage());
-        }
-        return map;
     }
 
     @Override

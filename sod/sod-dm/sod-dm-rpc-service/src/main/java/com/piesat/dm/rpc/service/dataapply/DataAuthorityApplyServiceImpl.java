@@ -139,6 +139,19 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     public DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto) {
         DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
+        //新增申请设置成待审
+        dataAuthorityApplyEntity.setAuditStatus("01");
+
+        //读申请自动授权
+        Set<DataAuthorityRecordEntity> dataAuthorityRecordList = dataAuthorityApplyEntity.getDataAuthorityRecordList();
+        if(dataAuthorityRecordList != null && dataAuthorityRecordList.size()>0){
+            for(DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordList){
+                if(dataAuthorityRecordEntity.getApplyAuthority().intValue() == 1){
+                    dataAuthorityRecordEntity.setAuthorize(1);
+                }
+            }
+        }
+        //保存
         dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
         return dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntity);
     }
