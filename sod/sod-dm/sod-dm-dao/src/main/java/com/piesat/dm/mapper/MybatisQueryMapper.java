@@ -145,7 +145,7 @@ public interface MybatisQueryMapper {
 
     List<Map<String, String>> getSchemaByPhysic(Map<String, Object> param);
 
-    List<Map<String, Object>> getAuthorizeRecordByTdbId(String tdbId, String typeId, String cause);
+    List<Map<String, Object>> getAuthorizeRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId,@Param("status") String status);
 
     void changeDataStatus(Map<String, String> dataMap);
 

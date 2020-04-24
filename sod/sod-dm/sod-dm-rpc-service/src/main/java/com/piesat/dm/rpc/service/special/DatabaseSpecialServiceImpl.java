@@ -1011,10 +1011,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public Map<String, Object> getOneRecordByTdbId(String tdbId, String typeId, String cause) {
-        Map<String, Object> map = new HashMap<>();
-        try
-        {
+    public Map<String, Object> getOneRecordByTdbId(String tdbId, String typeId, String status) {
+            Map<String, Object> map = new HashMap<>();
+
             //下面定义一个JSONObject对象，用来存储对应专题库信息。
             JSONObject createApplyData = new JSONObject();
             //下面根据专题库ID号获取对应专题库信息。
@@ -1053,24 +1052,13 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 createApplyData.put("USE_STATUS", oneRecord.getUseStatus());
 
                 //下面根据专题库ID号获取对应授权允许的数据表信息。
-                List<Map<String,Object>> dataList=mybatisQueryMapper.getAuthorizeRecordByTdbId(tdbId,typeId,cause);
+                List<Map<String,Object>> dataList=mybatisQueryMapper.getAuthorizeRecordByTdbId(tdbId,typeId,status);
                 map.put("dataList", dataList);
             }
 
             //下面给result赋值。
             map.put("specialDb", createApplyData);
-            map.put("returnCode", 0);
-            map.put("returnMessage", "获取数据成功");
             return map;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            //下面给result赋值。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "获取数据失败："+e.getMessage());
-        }
-        return map;
     }
 
     @Override

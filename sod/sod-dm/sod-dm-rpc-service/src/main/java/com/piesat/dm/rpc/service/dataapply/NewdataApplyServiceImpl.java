@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.UUID;
 import com.piesat.dm.dao.dataapply.NewdataApplyDao;
 import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
@@ -120,7 +121,10 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public NewdataApplyDto saveDto(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
-        newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
+        if(!StringUtils.isNotNullString(newdataApplyEntity.getId())){
+            newdataApplyEntity.setId(UUID.randomUUID().toString());
+        }
+        newdataApplyEntity = this.save(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
 
@@ -137,8 +141,12 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
         //newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
-        newdataApplyEntity.setExamineTime(new Date());
-        newdataApplyEntity.setExaminer("");
+        if(newdataApplyDto.getExamineStatus() != null){
+            if(newdataApplyDto.getExamineStatus().intValue() == 2 || newdataApplyDto.getExamineStatus().intValue() == 3){
+                newdataApplyEntity.setExamineTime(new Date());
+                newdataApplyEntity.setExaminer("");
+            }
+        }
         mybatisQueryMapper.updateNewdataApplyStatus(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }

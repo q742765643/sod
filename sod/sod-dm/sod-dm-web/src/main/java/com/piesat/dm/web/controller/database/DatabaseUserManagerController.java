@@ -295,6 +295,7 @@ public class DatabaseUserManagerController {
     public void exportData(String examineStatus) {
         this.databaseUserService.exportData(examineStatus);
     }
+
     @ApiOperation(value = "数据库访问账户申请")
     @RequiresPermissions("dm:databaseUser:applyDatabaseUser")
     @PostMapping(value="applyDatabaseUser")
@@ -308,7 +309,7 @@ public class DatabaseUserManagerController {
         }
     }
     @ApiOperation(value = "数据库访问账户修改")
-    @RequiresPermissions("dm:databaseUser:updateDatabaseUser")
+    //@RequiresPermissions("dm:databaseUser:updateDatabaseUser")
     @PostMapping(value="updateDatabaseUser")
     public ResultT updateDatabaseUser(HttpServletRequest request){
         try {
