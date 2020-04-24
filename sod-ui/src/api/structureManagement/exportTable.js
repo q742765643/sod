@@ -27,18 +27,26 @@ export function dataTree(query) {
 }
 
 // 表结构导出-完整版
-export function exportTable(query) {
+export function exportTable(data) {
   return request({
     url: baseUrl + "/dm/tableExport/exportTable",
-    method: "get",
-    params: query
+    method: "post",
+    data: data
   });
 }
 // SQL导出
-export function exportSQL(query) {
+export function exportSQL(data) {
   return request({
     url: baseUrl + "/dm/tableExport/exportSQL",
-    method: "get",
-    params: query
+    method: "post",
+    data: data
+  });
+}
+// 简版
+export function exportTableSimple(data) {
+  return request({
+    url: baseUrl + "/dm/tableExport/exportTableSimple",
+    method: "post",
+    data: data
   });
 }

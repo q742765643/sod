@@ -277,8 +277,6 @@
               v-model="columnEditData.isNull"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -288,8 +286,6 @@
               v-model="columnEditData.isUpdate"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -299,8 +295,6 @@
               v-model="columnEditData.isShow"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -310,8 +304,6 @@
               v-model="columnEditData.isPrimaryKey"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -321,8 +313,6 @@
               v-model="columnEditData.isManager"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -463,7 +453,14 @@ export default {
       },
       exportInnerVisible: false,
       filepath: "",
-      columnEditData: { unitCn: "N" },
+      columnEditData: {
+        unitCn: "N",
+        isManager: false,
+        isPrimaryKey: false,
+        isShow: false,
+        isUpdate: false,
+        isNull: false
+      },
       columnData: [],
       selColumnData: [],
       pubData: { matedata: [], mmdata: [] }, //公共元数据字段，管理字段
@@ -579,7 +576,14 @@ export default {
         });
         return;
       }
-      this.columnEditData = {};
+      this.columnEditData = {
+        unitCn: "N",
+        isManager: false,
+        isPrimaryKey: false,
+        isShow: false,
+        isUpdate: false,
+        isNull: false
+      };
       this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
       this.dialogStatus.columnDialog = true;

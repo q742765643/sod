@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@riophae/vue-treeselect": "0.4.0",
+    "af-table-column": "^1.0.3",
     "axios": "0.18.1",
     "cron-parser": "^2.13.0",
     "debounce": "^1.2.0",

@@ -33,6 +33,10 @@ import {
 import Pagination from "@/components/Pagination";
 
 import './utils/directives.js'
+
+import AFTableColumn from 'af-table-column' //https://github.com/legendJaden/AFTableColumn 列宽自适应
+
+Vue.use(AFTableColumn)
 const uuid = require('uuid/v4')
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts

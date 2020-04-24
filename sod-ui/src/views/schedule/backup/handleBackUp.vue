@@ -250,7 +250,8 @@ export default {
     // 匹配数据库和资料名称
     if (
       this.handleObj.pageName == "资料存储策略" ||
-      this.handleObj.pageName == "存储结构概览"
+      this.handleObj.pageName == "存储结构概览" ||
+      this.handleObj.pageName == "数据注册审核"
     ) {
       this.msgFormDialog = this.handleObj;
       await this.selectByDatabaseIds(
