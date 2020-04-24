@@ -24,6 +24,6 @@ export function updateColumnValue(data) {
   return request({
     url: baseUrl + '/dm/storageConfiguration/updateColumnValue',
     method: 'post',
-    data: data
+    params: data
   })
 }
