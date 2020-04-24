@@ -124,7 +124,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         if(!StringUtils.isNotNullString(newdataApplyEntity.getId())){
             newdataApplyEntity.setId(UUID.randomUUID().toString());
         }
-        newdataApplyEntity = this.save(newdataApplyEntity);
+        newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
 
@@ -372,7 +372,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
             newdataApplyEntity.setDDataId(dDataId);
             newdataApplyEntity.setUserId(applyId);
             newdataApplyEntity.setExamineStatus(4);
-            newdataApplyDao.save(newdataApplyEntity);
+            newdataApplyDao.saveNotNull(newdataApplyEntity);
             result.put("returnCode", "0");
             result.put("returnMessage", "操作成功。");
 

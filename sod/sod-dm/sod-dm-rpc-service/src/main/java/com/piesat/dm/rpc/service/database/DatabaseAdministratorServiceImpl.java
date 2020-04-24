@@ -65,7 +65,7 @@ public class DatabaseAdministratorServiceImpl extends BaseService<DatabaseAdmini
     @Override
     public DatabaseAdministratorDto saveDto(DatabaseAdministratorDto databaseAdministratorDto) {
         DatabaseAdministratorEntity databaseAdministratorEntity = this.databaseAdministratorMapper.toEntity(databaseAdministratorDto);
-        databaseAdministratorEntity = this.save(databaseAdministratorEntity);
+        databaseAdministratorEntity = this.saveNotNull(databaseAdministratorEntity);
         return this.databaseAdministratorMapper.toDto(databaseAdministratorEntity);
     }
 

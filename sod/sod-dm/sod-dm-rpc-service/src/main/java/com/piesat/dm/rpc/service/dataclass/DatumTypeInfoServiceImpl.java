@@ -39,7 +39,7 @@ public class DatumTypeInfoServiceImpl extends BaseService<DatumTypeInfoEntity> i
     @Override
     public DatumTypeInfoDto saveDto(DatumTypeInfoDto datumTypeInfoDto) {
         DatumTypeInfoEntity datumTypeInfoEntity = this.datumTypeInfoMapper.toEntity(datumTypeInfoDto);
-        datumTypeInfoEntity = this.save(datumTypeInfoEntity);
+        datumTypeInfoEntity = this.saveNotNull(datumTypeInfoEntity);
         return this.datumTypeInfoMapper.toDto(datumTypeInfoEntity);
     }
 

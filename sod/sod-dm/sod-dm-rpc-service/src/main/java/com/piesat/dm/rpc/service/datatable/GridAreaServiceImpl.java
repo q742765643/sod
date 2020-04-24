@@ -41,7 +41,7 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     @Override
     public GridAreaDto saveDto(GridAreaDto gridAreaDto) {
         GridAreaEntity gridAreaEntity = this.gridAreaMapper.toEntity(gridAreaDto);
-        gridAreaEntity = this.save(gridAreaEntity);
+        gridAreaEntity = this.saveNotNull(gridAreaEntity);
         return this.gridAreaMapper.toDto(gridAreaEntity);
     }
 

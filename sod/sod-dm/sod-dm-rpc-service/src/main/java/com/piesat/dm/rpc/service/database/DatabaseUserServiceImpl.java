@@ -127,7 +127,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto) {
         this.delete(databaseUserDto.getId());
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
-        this.save(databaseUserEntity);
+        this.saveNotNull(databaseUserEntity);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
@@ -171,7 +171,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public DatabaseUserDto saveDto(DatabaseUserDto databaseUserDto) {
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
-        this.save(databaseUserEntity);
+        this.saveNotNull(databaseUserEntity);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
@@ -406,7 +406,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             String st = "0";
             databases.setExamineStatus(st);
             DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databases);
-            this.save(databaseUserEntity);
+            this.saveNotNull(databaseUserEntity);
             return this.databaseUserMapper.toDto(databaseUserEntity);
         } catch (Exception e) {
             e.printStackTrace();

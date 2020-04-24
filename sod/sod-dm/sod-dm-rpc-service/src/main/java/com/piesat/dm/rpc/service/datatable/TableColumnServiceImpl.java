@@ -61,7 +61,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         String id = tableColumnDto.getId();
 
         TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(tableColumnDto);
-        tableColumnEntity = this.save(tableColumnEntity);
+        tableColumnEntity = this.saveNotNull(tableColumnEntity);
         if (tableColumnDto.getUpdateDatabase() != null && tableColumnDto.getUpdateDatabase()) {
             Column oldColumn = null;
             if (StringUtils.isNotEmpty(id)) {
@@ -93,7 +93,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         List<TableColumnDto> l = new ArrayList<>();
         for (TableColumnDto t : tableColumnDtoList) {
             TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(t);
-            tableColumnEntity = this.save(tableColumnEntity);
+            tableColumnEntity = this.saveNotNull(tableColumnEntity);
             l.add(this.tableColumnMapper.toDto(tableColumnEntity));
         }
         return l;

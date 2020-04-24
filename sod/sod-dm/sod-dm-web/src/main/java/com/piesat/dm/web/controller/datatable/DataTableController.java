@@ -84,7 +84,7 @@ public class DataTableController {
                 DataClassDto dataClassDto = this.dataClassService.findByDataClassId(dataLogicDto.getDataClassId());
                 DataTableDto dataTableDto = new DataTableDto();
                 dataTableDto.setClassLogic(dataLogicDto);
-                dataTableDto.setColumns(newdataApplyDto.getTableColumn());
+                dataTableDto.setColumns(newdataApplyDto.toTableColumn());
                 dataTableDto.setCreateTime(new Date());
                 dataTableDto.setDataServiceId(dataClassDto.getDataClassId());
                 dataTableDto.setDbTableType("E");

@@ -315,12 +315,12 @@
 
     <!--新增注册资料-->
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.*, b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype type_pname,d.DEPT_NAME,d.PHONE
+        select a.*, b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype type_pname,d.DEPT_NAME,d.PHONENUMBER
         from t_sod_newdata_apply a
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
         left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
         left join t_sod_logic_define c on a.logic_id = c.logic_flag
-        left join t_sod_biz_user d on a.user_id = d.biz_userid
+        left join T_SOD_USER d on a.user_id = d.user_name
         <where>
             <if test="map.status != null and map.status  != ''">
                 a.examine_status = #{map.status}

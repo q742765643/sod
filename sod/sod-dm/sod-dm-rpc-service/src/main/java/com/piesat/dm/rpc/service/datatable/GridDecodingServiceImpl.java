@@ -43,14 +43,14 @@ public class GridDecodingServiceImpl extends BaseService<GridDecodingEntity> imp
     @Override
     public GridDecodingDto saveDto(GridDecodingDto gridDecodingDto) {
         GridDecodingEntity gridDecodingEntity = this.gridDecodingMapper.toEntity(gridDecodingDto);
-        gridDecodingEntity = this.save(gridDecodingEntity);
+        gridDecodingEntity = this.saveNotNull(gridDecodingEntity);
         return this.gridDecodingMapper.toDto(gridDecodingEntity);
     }
 
     @Override
     public List<GridDecodingDto> saveList(GridDecodingList gridDecodingList) {
         List<GridDecodingEntity> gridDecodingEntity = this.gridDecodingMapper.toEntity(gridDecodingList.getGridDecodingList());
-        gridDecodingEntity = this.save(gridDecodingEntity);
+        gridDecodingEntity = this.saveNotNull(gridDecodingEntity);
         return this.gridDecodingMapper.toDto(gridDecodingEntity);
     }
 

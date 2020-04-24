@@ -33,14 +33,14 @@ public class ShardingServiceImpl extends BaseService<ShardingEntity> implements 
     @Override
     public ShardingDto saveDto(ShardingDto shardingDto) {
         ShardingEntity shardingEntity = this.shardingMapper.toEntity(shardingDto);
-        shardingEntity = this.save(shardingEntity);
+        shardingEntity = this.saveNotNull(shardingEntity);
         return this.shardingMapper.toDto(shardingEntity);
     }
 
     @Override
     public List<ShardingDto> saveDto(List<ShardingDto> shardingDto) {
         List<ShardingEntity> shardingEntity = this.shardingMapper.toEntity(shardingDto);
-        shardingEntity = this.save(shardingEntity);
+        shardingEntity = this.saveNotNull(shardingEntity);
         return this.shardingMapper.toDto(shardingEntity);
     }
 

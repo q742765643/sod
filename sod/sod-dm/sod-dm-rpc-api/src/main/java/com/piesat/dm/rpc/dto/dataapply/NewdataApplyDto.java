@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.dto.dataapply;
 import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
+import com.piesat.util.BaseDto;
 import lombok.Data;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.*;
  * @date 2020/2/5 17:20
  */
 @Data
-public class NewdataApplyDto {
+public class NewdataApplyDto extends BaseDto {
 
     /**
      * id
@@ -137,9 +138,11 @@ public class NewdataApplyDto {
      */
     private String dataProp;
 
+    private Integer version;
+
     private List<NewdataTableColumnDto> columnList;
 
-    public LinkedHashSet<TableColumnDto> getTableColumn() {
+    public LinkedHashSet<TableColumnDto> toTableColumn() {
         LinkedHashSet<TableColumnDto> list = new LinkedHashSet<>();
         for (NewdataTableColumnDto nc : this.columnList) {
             list.add(nc.toTableColumn());

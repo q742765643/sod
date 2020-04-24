@@ -88,7 +88,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
-        dataClassEntity = this.save(dataClassEntity);
+        dataClassEntity = this.saveNotNull(dataClassEntity);
         if (newdataApplyDto!=null){
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);

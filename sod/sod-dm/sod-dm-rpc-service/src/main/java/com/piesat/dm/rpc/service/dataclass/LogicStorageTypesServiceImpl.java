@@ -33,7 +33,7 @@ public class LogicStorageTypesServiceImpl extends BaseService<LogicStorageTypesE
     @Override
     public LogicStorageTypesDto saveDto(LogicStorageTypesDto logicStorageTypesDto) {
         LogicStorageTypesEntity logicStorageTypesEntity = this.logicStorageTypesMapper.toEntity(logicStorageTypesDto);
-        logicStorageTypesEntity = this.save(logicStorageTypesEntity);
+        logicStorageTypesEntity = this.saveNotNull(logicStorageTypesEntity);
         return this.logicStorageTypesMapper.toDto(logicStorageTypesEntity);
     }
 

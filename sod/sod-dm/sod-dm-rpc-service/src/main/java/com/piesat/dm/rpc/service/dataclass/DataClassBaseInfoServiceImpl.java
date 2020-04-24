@@ -37,7 +37,7 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
     @Override
     public DataClassBaseInfoDto saveDto(DataClassBaseInfoDto dataClassBaseInfoDto) {
         DataClassBaseInfoEntity dataClassBaseInfoEntity = this.dataClassBaseInfoMapper.toEntity(dataClassBaseInfoDto);
-        dataClassBaseInfoEntity = this.save(dataClassBaseInfoEntity);
+        dataClassBaseInfoEntity = this.saveNotNull(dataClassBaseInfoEntity);
         return this.dataClassBaseInfoMapper.toDto(dataClassBaseInfoEntity);
     }
 

@@ -33,7 +33,7 @@ public class DatabaseNodesServiceImpl extends BaseService<DatabaseNodesEntity> i
     @Override
     public DatabaseNodesDto saveDto(DatabaseNodesDto databaseNodesDto) {
         DatabaseNodesEntity databaseNodesEntity = this.databaseNodesMapper.toEntity(databaseNodesDto);
-        databaseNodesEntity = this.save(databaseNodesEntity);
+        databaseNodesEntity = this.saveNotNull(databaseNodesEntity);
         return this.databaseNodesMapper.toDto(databaseNodesEntity);
     }
 

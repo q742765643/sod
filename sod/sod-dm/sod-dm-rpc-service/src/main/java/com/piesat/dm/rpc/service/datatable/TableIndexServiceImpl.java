@@ -33,7 +33,7 @@ public class TableIndexServiceImpl extends BaseService<TableIndexEntity> impleme
     @Override
     public TableIndexDto saveDto(TableIndexDto tableIndexDto) {
         TableIndexEntity tableIndexEntity = this.tableIndexMapper.toEntity(tableIndexDto);
-        tableIndexEntity = this.save(tableIndexEntity);
+        tableIndexEntity = this.saveNotNull(tableIndexEntity);
         return this.tableIndexMapper.toDto(tableIndexEntity);
     }
 
