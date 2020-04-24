@@ -46,8 +46,7 @@ public interface TableExportService {
      * 导出表结构-简版
      * @param database_id
      * @param data_class_ids
-     * @param request
      * @return
      */
-    Map<String, Object> getExportMapSimple(String database_id, String data_class_ids, HttpServletRequest request);
+    Map<String, Object> getExportMapSimple(String database_id, String data_class_ids, String columns, String index, String shard);
 }

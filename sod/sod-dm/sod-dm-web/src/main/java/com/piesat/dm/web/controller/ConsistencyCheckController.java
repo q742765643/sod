@@ -147,7 +147,8 @@ public class ConsistencyCheckController {
     public void downloadDfcheckFile(String databaseId, HttpServletResponse response){
         DatabaseDto databaseDto = databaseService.getDotById(databaseId);
 
-        String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"+"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH");
+        String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
+                +"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH")+".xlsx";
 
 
         Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseId);

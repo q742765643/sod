@@ -54,6 +54,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -129,11 +130,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         return pageBean;
     }
 
+    @Transactional
     @Override
     public void deleteById(String id) {
-        this.delete(id);
-        this.databaseSpecialReadWriteDao.deleteBySdbId(id);
         this.databaseSpecialAuthorityDao.deleteBySdbId(id);
+        this.databaseSpecialReadWriteDao.deleteBySdbId(id);
+        this.delete(id);
     }
 
     @Override

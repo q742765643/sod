@@ -44,6 +44,7 @@ public class OnlineServiceImpl implements OnlineService {
                 UserDto userDto = (UserDto) principalCollection.getPrimaryPrincipal();
                 userDto.setTokenId(key.getId().toString());
                 userDto.setLoginDate(key.getStartTimestamp());
+                userDto.setLoginIp(key.getHost());
                 //userDto.setLoginIp(key.getHost());
                 if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName)) {
                     if (StringUtils.equals(ipaddr, key.getHost()) && StringUtils.equals(userName, userDto.getUserName())) {
