@@ -59,7 +59,9 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
         DataClassBaseInfoDto dataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
         DataClassBaseInfoEntity SodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(id);
         DataClassBaseInfoDto sodDataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(SodDataClassBaseInfo);
-        dataClassBaseInfoDto = dataClassBaseInfoDto.combineSydwCore(sodDataClassBaseInfoDto,dataClassBaseInfoDto);
+        if (sodDataClassBaseInfoDto!=null){
+            dataClassBaseInfoDto = dataClassBaseInfoDto.combineSydwCore(sodDataClassBaseInfoDto,dataClassBaseInfoDto);
+        }
         return dataClassBaseInfoDto;
     }
 
