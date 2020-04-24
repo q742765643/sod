@@ -52,7 +52,6 @@ public class HtShiroRealm extends AuthorizingRealm {
         String username = (String) authenticationToken.getPrincipal();
         ByteSource salt = ByteSource.Util.bytes(username);
         UserService userService = SpringUtil.getBean(UserService.class);
-        BizUserService bizUserService = SpringUtil.getBean(BizUserService.class);
         UserDto userDto = null;
         if ("0".equals(token.getLoginType())) {
             userDto = userService.selectUserByUserName(username);
@@ -84,7 +83,7 @@ public class HtShiroRealm extends AuthorizingRealm {
 
 
         if ("1".equals(token.getLoginType())) {
-            userDto = bizUserService.findByBizUserId(username);
+            userDto = userService.selectUserByUserName(username);
             String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
             SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                     userDto, //用户名

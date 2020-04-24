@@ -5,10 +5,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.AESUtil;
+import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.dao.system.UserRoleDao;
+import com.piesat.ucenter.entity.system.BizUserEntity;
 import com.piesat.ucenter.entity.system.RoleEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.entity.system.UserRoleEntity;
@@ -17,6 +20,7 @@ import com.piesat.ucenter.mapper.system.UserMapper;
 import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.ucenter.rpc.mapstruct.system.UserMapstruct;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -24,10 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: sod
@@ -63,7 +64,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
      *@参数 [userName]
      *@返回值 com.piesat.ucenter.rpc.dto.system.UserDto
      *@author zzj
-     *@创建时间 2019/11/28 16:38 
+     *@创建时间 2019/11/28 16:38
      **/
     @Override
     public UserDto selectUserByUserName(String userName){
@@ -247,5 +248,71 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         List<UserEntity> entities=userMapper.selectUserList(userEntity);
         ExcelUtil<UserEntity> util=new ExcelUtil(UserEntity.class);
         util.exportExcel(entities,"用户");
+    }
+
+    @Override
+    public ResultT addBizUser(Map<String, String[]> parameterMap, String applyPaper) {
+
+        Map<String, String> map = new LinkedHashMap<>();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            if (entry.getValue().length > 0) {
+                map.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+
+        String appNames = map.get("appName");
+        String bizUserid = map.get("bizUserid");
+        UserEntity byBizUserId = this.userDao.findByUserName(bizUserid);
+        if (byBizUserId != null) {
+            return ResultT.failed("业务用户注册id已存在！");
+        }
+        String password = map.get("password");
+        try {
+            password = AESUtil.aesEncrypt(password).trim();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String bizType = map.get("bizType");
+        String bizIp = map.get("bizIp");
+        String validTime = map.get("validTime");
+        String remark = map.get("remark");
+        String webUsername = map.get("webUsername");
+        String legalUnits = map.get("legalUnits");
+        String deptName = map.get("deptName");
+        String phone = map.get("phone");
+        String tutorName = map.get("tutorName");
+        String tutorPhone = map.get("tutorPhone");
+        String webUserid = map.get("webUserid");
+//        String appCoin = map.get("appCoin");
+//        String applyAuthority = map.get("applyAuthority");
+//        String deptId = map.get("deptId");
+//        String loginName = map.get("loginName");
+//        String userId = map.get("userId");
+//        String interfaceId = map.get("interfaceId");
+//        String nonce = map.get("nonce");
+//        String timestamp = map.get("timestamp");
+        UserEntity UserEntity = new UserEntity();
+        UserEntity.setUserType("11");
+        UserEntity.setApplyPaper(applyPaper);
+        UserEntity.setApplyTime(new Date());
+        UserEntity.setAppName(appNames);
+        UserEntity.setBizIp(bizIp);
+        UserEntity.setBizType(bizType);
+        UserEntity.setUserName(bizUserid);
+        UserEntity.setChecked("0");
+        UserEntity.setDeptName(deptName);
+        UserEntity.setLastEditTime(new Date());
+        UserEntity.setLegalUnits(legalUnits);
+        UserEntity.setPassword(password);
+        UserEntity.setPhonenumber(phone);
+        UserEntity.setRemark(remark);
+        UserEntity.setTutorName(tutorName);
+        UserEntity.setTutorPhone(tutorPhone);
+        Date date = DateUtils.dateTime("yyyy-MM-dd", validTime);
+        UserEntity.setValidTime(date);
+        UserEntity.setWebUserId(webUserid);
+        UserEntity.setWebUsername(webUsername);
+        UserEntity userEntity = this.userDao.saveNotNull(UserEntity);
+        return ResultT.success(userEntity);
     }
 }

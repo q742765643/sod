@@ -98,6 +98,7 @@ public class NewdataApplyController {
             return ResultT.failed(e.getMessage());
         }
     }
+    
     @PostMapping(value = "/saveColumns")
     @ApiOperation(value = "批量添加字段信息", notes = "批量添加字段信息")
     public ResultT saveColumns(@RequestBody List<NewdataTableColumnDto> newdataTableColumnDtos) {
