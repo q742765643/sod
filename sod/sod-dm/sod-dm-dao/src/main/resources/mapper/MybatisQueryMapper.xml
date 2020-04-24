@@ -618,9 +618,7 @@
         g.C_RPINDNAME cRpindname,aa.use_base_info useBaseInfo from
         T_SOD_DATA_CLASS aa
         left join
-        dmin_data_class_baseinfo aaa on aa.data_class_id = aaa.data_class_id
-        left join
-        (select * from tab_omin_cm_cc_datumtypeinfo aa where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]>
+        (select * from T_SOD_DATA_DATUMTYPEINFO aa where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]>
         'delete')) a on aa.D_DATA_ID = a.c_datum_code
         left join
         (select * from tab_omin_cm_cc_coremeta bb where (bb.C_OPT_TYPE is null or bb.C_OPT_TYPE <![CDATA[ <> ]]>
@@ -1119,4 +1117,14 @@
 	    TDB_ID, TDB_NAME, TDB_IMG, UNIT_ID, USER_ID, APPLY_TIME, USES, APPLY_FILE_PATH, EXAMINER,
 	    EXAMINE_STATUS, EXAMINE_TIME, CAUSE, USE_STATUS ,SORT_NO
   	</sql>
+    <select id="getDataClassInfo" resultType = "java.util.LinkedHashMap">
+        SELECT * FROM  T_SOD_DATA_CLASS A WHERE A.DATA_CLASS_ID = #{dataClassId}
+    </select>
+    <select id="selectTabOmincmccTempele" resultType = "java.util.LinkedHashMap">
+        SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete') and  A.C_COREMETA_ID = #{C_COREMETA_ID}
+    </select>
+    <select id="selectGridAreaDefine" resultType = "java.util.LinkedHashMap">
+       SELECT * FROM T_SOD_GRID_AREA a where a.data_service_id = #{dataClassId};
+    </select>
 </mapper>

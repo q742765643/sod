@@ -15,21 +15,26 @@ import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.dao.datatable.TableIndexDao;
+import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.dataclass.DataClassBaseInfoService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassBaseInfoDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import com.xugu.cloudjdbc.Clob;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +42,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.Reader;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 资料分类
@@ -72,6 +77,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private TableIndexDao tableIndexDao;
     @Autowired
     private NewdataApplyService newdataApplyService;
+    @Autowired
+    private DataClassBaseInfoService dataClassBaseInfoService;
+    @Autowired
+    private DataClassBaseInfoMapper dataClassBaseInfoMapper;
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
         return dataClassDao;
@@ -416,5 +425,65 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public List<Map<String, Object>> getLogicByDdataId(String dDataId) {
         return this.mybatisQueryMapper.getLogicByDdataId(dDataId);
+    }
+    @Override
+    public Map<String, Object> getDataClassCoreInfo(String c_datum_code) {
+        String dataClassId = c_datum_code;
+        Map<String, Object> map = new HashMap<>();
+        List<LinkedHashMap<String, Object>> dataclasslist = mybatisQueryMapper.getDataClassInfo(dataClassId);
+        if (dataclasslist.size()==0){
+            map.put("returnCode", 1);
+            map.put("returnMessage", "存储编码不存在");
+            return map;
+        }
+        String use_base_info = dataclasslist.get(0).get("USE_BASE_INFO").toString();
+        DataClassBaseInfoDto dataClassCoreInfos = new DataClassBaseInfoDto();
+
+        if ("1".equals(use_base_info)){
+            dataClassCoreInfos=dataClassBaseInfoService.getDataClassBaseInfo(dataClassId);
+        }else{
+            DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(dataClassId);
+            dataClassCoreInfos = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
+        }
+        String C_COREMETA_ID=dataClassCoreInfos.getCCoremetaId();
+        List<LinkedHashMap<String, Object>> tempele = mybatisQueryMapper.selectTabOmincmccTempele(C_COREMETA_ID);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (int i = 0; i < tempele.size(); i++) {
+            Map<String, Object> m = new HashMap<>();
+            m.put("C_BEGIN",tempele.get(i).get("C_BEGIN"));
+            m.put("C_END",tempele.get(i).get("C_END"));
+            m.put("C_OBSFREQ",tempele.get(i).get("C_OBSFREQ"));
+            if (m.get("C_OBSFREQ")!=null&&!"".equals(m.get("C_OBSFREQ"))){
+                dataClassCoreInfos.setCBegin(m.get("C_BEGIN").toString());
+                dataClassCoreInfos.setCEnd(m.get("C_END").toString());
+                dataClassCoreInfos.setCObsfreq(m.get("C_OBSFREQ").toString());
+            }
+        }
+        DataClassBaseInfoDto dataClassCoreInfo = dataClassCoreInfos;
+        if (c_datum_code.startsWith("F")&&"1".equals(use_base_info)) {
+            List<LinkedHashMap<String, Object>> select = mybatisQueryMapper.selectGridAreaDefine(dataClassId);
+            if (select.size() > 0) {
+                LinkedHashMap<String, Object> gad = select.get(0);
+                String AREA_REGION_DESC = gad.get("AREA_REGION_DESC").toString();
+                String[] split = AREA_REGION_DESC.split(";");
+                int flagbegin = split[0].indexOf("[");
+                int flagend = split[0].indexOf("]");
+                int flagbegin1 = split[1].indexOf("[");
+                int flagend1 = split[1].indexOf("]");
+                String lat = split[0].substring(flagbegin + 1, flagend);
+                String lon = split[1].substring(flagbegin1 + 1, flagend1);
+                dataClassCoreInfo.setCWestbl(lon.split(",")[0]);
+                dataClassCoreInfo.setCEastbl(lon.split(",")[1]);
+                dataClassCoreInfo.setCSouthbl(lat.split(",")[1]);
+                dataClassCoreInfo.setCNorthbl(lat.split(",")[0]);
+            }
+        }
+        dataClassCoreInfo.setCDatascal(dataClassCoreInfo.getCDatascal());
+        dataClassCoreInfo.setCSource(dataClassCoreInfo.getCSource());
+        dataClassCoreInfo.setCIdabs(dataClassCoreInfo.getCIdabs());
+        map.put("data", dataClassCoreInfo);
+        map.put("returnCode", 0);
+        map.put("returnMessage", "获取数据成功");
+        return  map;
     }
 }

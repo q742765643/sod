@@ -277,7 +277,6 @@ public class DataClassController {
     }
 
     @ApiOperation(value = "根据四级编码获取数据用途")
-    @RequiresPermissions("dm:dataClass:getLogicByDdataId")
     @GetMapping(value = "/getLogicByDdataId")
     public ResultT getLogicByDdataId(String dDataId) {
         try {
@@ -285,6 +284,20 @@ public class DataClassController {
             ResultT r = new ResultT();
             r.isSuccess();
             r.setData(logicByDdataId);
+            return r;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "根据存储编码编码获取资料详情")
+    @GetMapping(value = "/getDataClassCoreInfo")
+    public ResultT getDataClassCoreInfo(String dDataId) {
+        try {
+            Map<String, Object> map = this.dataClassService.getDataClassCoreInfo(dDataId);
+            ResultT r = new ResultT();
+            r.isSuccess();
+            r.setData(map);
             return r;
         } catch (Exception e) {
             e.printStackTrace();
