@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DatabaseSpecialAccessDao extends BaseDao<DatabaseSpecialAccessEntity> {
     DatabaseSpecialAccessEntity findBySdbIdAndUserId(String sdbId, String userId);
+
+    void deleteBySdbIdAndUserId(String sdbId,String userId);
 }

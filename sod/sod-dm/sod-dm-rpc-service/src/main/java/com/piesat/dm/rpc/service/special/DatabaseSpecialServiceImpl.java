@@ -142,9 +142,10 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         this.delete(id);
     }
 
+    @Transactional
     @Override
-    public void deleteAuthorityBySdbId(String sdbId) {
-        this.databaseSpecialAuthorityDao.deleteBySdbId(sdbId);
+    public void deleteAccessBySdbIdAndUserId(String sdbId,String userId) {
+        this.databaseSpecialAccessDao.deleteBySdbIdAndUserId(sdbId,userId);
     }
 
     @Override

@@ -33,7 +33,7 @@ public interface DatabaseSpecialService {
      */
     void deleteById(String id);
 
-    void deleteAuthorityBySdbId(String sdbId);
+    void deleteAccessBySdbIdAndUserId(String sdbId,String userId);
 
     /**
      * 根据id查询

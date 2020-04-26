@@ -315,6 +315,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
                 //资料授权审核
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(),authorize,cause);
+
+                dataAuthorityRecordMapper.toDto(dataAuthorityRecordEntity);
+                //到物理库授权
+                //updateRecordCheck(dataAuthorityRecordEntity);
             }
         }
     }
@@ -429,8 +433,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     /**
-     * 
-     * @description 
+     *
+     * @description
      * @author wlg
      * @date 2020-04-22 17:06
      * @param userId

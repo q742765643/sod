@@ -116,7 +116,7 @@ public class DataAuthorityApplyController {
     }
 
     @GetMapping(value = "/getRecordListByUserId")
-    @ApiOperation(value = "根据用户id查询申请资料", notes = "根据用户id查询申请资料")
+    @ApiOperation(value = "根据用户id查询申请资料(别人申请该用户创建得资料)", notes = "根据用户id查询申请资料(别人申请该用户创建得资料)")
     public ResultT<List<Map<String,Object>>> getRecordListByUserId(String userId)
     {
         ResultT<List<Map<String,Object>>> resultT=new ResultT<>();
@@ -127,7 +127,7 @@ public class DataAuthorityApplyController {
 
 
     @PutMapping(value = "/updateRecordByApplyIdAndClassId")
-    @ApiOperation(value = "根据申请id和存储编码修改数据授权资料信息", notes = "根据申请id和存储编码修改数据授权资料信息")
+    @ApiOperation(value = "根据申请id和存储编码修改数据授权资料信息(授权/拒绝)", notes = "根据申请id和存储编码修改数据授权资料信息(授权/拒绝)")
     public ResultT<String> updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause){
         try {
             dataAuthorityApplyService.updateRecordByApplyIdAndClassId(apply_id,data_class_id,authorize,cause);
@@ -203,7 +203,7 @@ public class DataAuthorityApplyController {
     }
     /**
      *  获取可申请资料清单
-     * @description 
+     * @description
      * @author wlg
      * @date 2020年4月22日下午4:12:44
      * @return

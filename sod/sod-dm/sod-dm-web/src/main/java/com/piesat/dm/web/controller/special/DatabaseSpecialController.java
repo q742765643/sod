@@ -139,12 +139,11 @@ public class DatabaseSpecialController {
         }
     }
 
-    @ApiOperation(value = "根据专题库id删除专题库权限表中记录")
-    @RequiresPermissions("dm:databaseSpecial:deleteAuthorityBySdbId")
-    @DeleteMapping(value = "/deleteAuthorityBySdbId")
-    public ResultT deleteAuthorityBySdbId(String sdbId) {
+    @ApiOperation(value = "根据专题库id和用戶id删除专题库访问申请表中记录（撤销引用）")
+    @GetMapping(value = "/deleteAccessBySdbIdAndUserId")
+    public ResultT deleteAccessBySdbIdAndUserId(String sdbId,String userId) {
         try {
-            this.databaseSpecialService.deleteAuthorityBySdbId(sdbId);
+            this.databaseSpecialService.deleteAccessBySdbIdAndUserId(sdbId,userId);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
