@@ -100,7 +100,6 @@ public class TableDataStatisticsController {
     }
 
     @ApiOperation(value = "获取在线时间(根据存储编码和统计日期查询)")
-    @RequiresPermissions("dm:datastatistics:getOnlineTime")
     @GetMapping(value = "/getOnlineTime")
     public ResultT getOnlineTime(String classDataId,String statisticDate) {
         try {

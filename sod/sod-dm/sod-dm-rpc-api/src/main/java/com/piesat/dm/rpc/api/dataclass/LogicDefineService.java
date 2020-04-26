@@ -38,4 +38,6 @@ public interface LogicDefineService {
     LogicDefineDto updateDto(LogicDefineDto logicDefineDto);
 
     List<Map<String,Object>> getLogicByUserId(String databaseIds);
+
+    void exportExcel(LogicDefineDto logicDefineDto);
 }

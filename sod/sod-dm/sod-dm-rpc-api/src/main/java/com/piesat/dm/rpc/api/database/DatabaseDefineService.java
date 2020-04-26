@@ -35,4 +35,6 @@ public interface DatabaseDefineService {
     DatabaseDefineDto conStatus(String id);
 
     List<DatabaseDefineDto> findByIdIn(List<String> ids);
+
+    void exportExcel(String id,String databaseName);
 }

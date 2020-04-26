@@ -126,7 +126,7 @@ public class StorageConfigurationController {
         return ResultT.success(dataTypeList);
     }
 
-    @PostMapping(value = "/exportTable")
+    @GetMapping(value = "/exportTable")
     @ApiOperation(value = "导出", notes = "导出")
     public void exportTable(StorageConfigurationDto storageConfigurationDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();

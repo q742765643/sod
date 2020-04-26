@@ -4,15 +4,18 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -139,6 +143,14 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     }
 
     @Override
+    public void exportExcel(String id,String databaseName) {
+        List<DatabaseDefineDto> dtoList = this.export(id,databaseName);
+        List<DatabaseDefineEntity> entities=databaseDefineMapper.toEntity(dtoList);
+        ExcelUtil<DatabaseDefineEntity> util=new ExcelUtil(DatabaseDefineEntity.class);
+        util.exportExcel(entities,"数据库");
+    }
+
+    @Override
     public DatabaseDefineDto getDotById(String id) {
         DatabaseDefineEntity databaseDefineEntity = this.getById(id);
         DatabaseDefineDto databaseDefineDto = this.databaseDefineMapper.toDto(databaseDefineEntity);
@@ -150,12 +162,14 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         return databaseDefineDto;
     }
 
+    @Transactional
     @Override
     public void delByIds(String ids) {
         String[] split = ids.split(",");
-        this.deleteByIds(Arrays.asList(split));
         for (String id:split) {
+//            this.databaseDefineDao.deleteById(id);
             this.databaseDao.deleteByDatabaseDefine_Id(id);
         }
+        this.deleteByIds(Arrays.asList(split));
     }
 }

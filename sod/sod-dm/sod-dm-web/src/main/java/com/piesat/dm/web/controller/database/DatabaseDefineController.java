@@ -110,9 +110,9 @@ public class DatabaseDefineController {
         }
     }
 
-    @ApiOperation(value = "导出")
-    @RequiresPermissions("dm:databaseDefine:export")
-    @GetMapping(value = "/export")
+//    @ApiOperation(value = "导出")
+//    @RequiresPermissions("dm:databaseDefine:export")
+//    @GetMapping(value = "/export")
     public void export(String id, String databaseName, HttpServletRequest request, HttpServletResponse response) {
 
         List<DatabaseDefineDto> all = this.databaseDefineService.export(id, databaseName);
@@ -152,6 +152,13 @@ public class DatabaseDefineController {
         }
         ExportTableUtil.exportTable(request, response, headList, lists, "物理库定义导出");
 
+    }
+
+    @ApiOperation(value = "导出")
+    @RequiresPermissions("dm:databaseDefine:export")
+    @GetMapping(value = "/export")
+    public void exportExcel(String id, String databaseName){
+        databaseDefineService.exportExcel(id,databaseName);
     }
 
     @ApiOperation(value = "分页查询(支持id和databaseName查询)")

@@ -649,7 +649,7 @@ public class ExcelUtil<T>
      */
     public String encodingFilename(String filename)
     {
-        filename = UUID.randomUUID().toString() + "_" + filename + ".xlsx";
+        filename = UUID.randomUUID().toString() + "_" + filename + ".xls";
         return filename;
     }
 
@@ -751,6 +751,7 @@ public class ExcelUtil<T>
      */
     public void createWorkbook()
     {
+        System.setProperty("javax.xml.parsers.DocumentBuilderFactory","com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
         this.wb = new SXSSFWorkbook(500);
     }
 

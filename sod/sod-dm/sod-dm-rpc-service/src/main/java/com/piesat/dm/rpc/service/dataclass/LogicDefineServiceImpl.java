@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
@@ -15,6 +16,8 @@ import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
+import com.piesat.schedule.entity.backup.BackupLogEntity;
+import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,5 +138,13 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     @Override
     public List<Map<String, Object>> getLogicByUserId(String databaseIds) {
        return mybatisQueryMapper.getLogicByUserId(databaseIds.split(","));
+    }
+
+    @Override
+    public void exportExcel(LogicDefineDto logicDefineDto) {
+        List<LogicDefineDto> dtoList = this.findByParam(logicDefineDto);
+        List<LogicDefineEntity> entities=logicDefineMapper.toEntity(dtoList);
+        ExcelUtil<LogicDefineEntity> util=new ExcelUtil(LogicDefineEntity.class);
+        util.exportExcel(entities,"数据库用途");
     }
 }

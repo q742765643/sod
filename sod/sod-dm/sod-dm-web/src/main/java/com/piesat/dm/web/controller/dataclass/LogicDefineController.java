@@ -10,6 +10,7 @@ import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
 import com.piesat.dm.rpc.service.GrpcService;
+import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
@@ -137,7 +138,7 @@ public class LogicDefineController {
         return resultT;
     }
 
-    @GetMapping(value = "/exportTable")
+//    @GetMapping(value = "/exportTable")
     @ApiOperation(value = "导出", notes = "导出")
     public void exportTable(LogicDefineDto logicDefineDto, HttpServletRequest request, HttpServletResponse response){
         List<LogicDefineDto> logicDefineDtos = logicDefineService.findByParam(logicDefineDto);
@@ -208,6 +209,13 @@ public class LogicDefineController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @ApiOperation(value = "数据库用途导出")
+    @RequiresPermissions("dm:logicDefine:exportLogic")
+    @GetMapping("/exportTable")
+    public void exportExcel(LogicDefineDto logicDefineDto){
+        logicDefineService.exportExcel(logicDefineDto);
     }
 
 }

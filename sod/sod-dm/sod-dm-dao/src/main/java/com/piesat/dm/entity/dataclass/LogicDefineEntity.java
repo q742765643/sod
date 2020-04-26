@@ -1,5 +1,6 @@
 package com.piesat.dm.entity.dataclass;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
@@ -23,24 +24,28 @@ public class LogicDefineEntity extends BaseEntity {
     /**
      * logic_id
      */
+    @Excel(name = "数据库用途ID")
     @Column(name = "logic_flag", length = 255, nullable = false)
     private String logicFlag;
 
     /**
      * logic_name
      */
+    @Excel(name = "用途描述")
     @Column(name = "logic_name", length = 255, nullable = false)
     private String logicName;
 
     /**
      * serial_number
      */
+    @Excel(name = "排序")
     @Column(name = "serial_number")
     private Integer serialNumber;
 
     /**
      * logic_desc
      */
+    @Excel(name = "用途说明")
     @Column(name = "logic_desc", length = 255)
     private String logicDesc;
 

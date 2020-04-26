@@ -26,6 +26,7 @@ public class ExportTableUtil {
             fileName = URLEncoder.encode(fileName, "UTF-8");
             response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
             // 第一步：定义一个新的工作簿
+            System.setProperty("javax.xml.parsers.DocumentBuilderFactory","com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
             XSSFWorkbook wb = new XSSFWorkbook();
             // 第二步：创建一个Sheet页
             XSSFSheet sheet = wb.createSheet(fileName);
