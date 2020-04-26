@@ -171,6 +171,16 @@ public interface MybatisQueryMapper {
     void updateDataAuthorityStatus(String apply_id, String database_id, String data_class_id, Integer authorize);
 
     List<Map<String, Object>> getRecentOnlineTime(String ctsCode);
+    /**
+     *   获取用户可申请资料
+     * @description 
+     * @author wlg
+     * @date 2020年4月22日下午5:07:55
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
 
     List<LinkedHashMap<String, Object>> getDataClassInfo(String dataClassId);
 

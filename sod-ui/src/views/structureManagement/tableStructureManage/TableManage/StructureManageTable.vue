@@ -197,7 +197,7 @@
                   v-on:reloadTableInfo="getTableInfo"
                 ></table-info>
                 <el-collapse class="collapseCon el-col el-col-24">
-                  <el-collapse-item name="keycode">
+                  <el-collapse-item name="keycode" class="floor">
                     <template slot="title">
                       <i id="ka_key_field" class="el-icon-price-tag"></i>主键字段
                     </template>
@@ -210,7 +210,7 @@
                       ></v-column>
                     </div>
                   </el-collapse-item>
-                  <el-collapse-item name="elcode">
+                  <el-collapse-item name="elcode" class="floor">
                     <template slot="title">
                       <i id="ka_arr_field" class="el-icon-price-tag"></i>属性字段
                     </template>
@@ -222,7 +222,7 @@
                       ></v-column>
                     </div>
                   </el-collapse-item>
-                  <el-collapse-item name="index">
+                  <el-collapse-item name="index" class="floor">
                     <template slot="title">
                       <i id="ka_indexes" class="el-icon-price-tag"></i>索引
                     </template>
@@ -270,6 +270,16 @@
                 </li>
                 <li v-if="tabs.table.el">
                   <a href="#el_exampleSearch">样例数据查询</a>
+                </li>
+
+                <li v-if="tabs.table.ka" :class="GActive">
+                  <a href="#ka_key_field">主键字段</a>
+                </li>
+                <li v-if="tabs.table.ka">
+                  <a href="#ka_arr_field">属性字段</a>
+                </li>
+                <li v-if="tabs.table.ka">
+                  <a href="#ka_indexes">索引</a>
                 </li>
               </ul>
             </el-aside>
@@ -340,6 +350,7 @@ export default {
     return {
       elActive: "",
       keyActive: "",
+      GActive: "",
       storage: {
         //表类型展示配置
         E_table: {
@@ -410,9 +421,9 @@ export default {
           table: { el: true, key: false, ka: false, key_el: false },
           db: true,
           dc: false,
+          rg: false,
           ds: false,
-          pl: false,
-          rg: false
+          pl: false
         }
       },
       dialogStatus: { publicMatedataDialog: false, columnDialog: false },
@@ -441,6 +452,8 @@ export default {
         this.keyActive = "active";
       } else if (this.tabs.table.el) {
         this.elActive = "active";
+      } else if (this.tabs.table.ka) {
+        this.GActive = "active";
       }
       gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
         if (response.code == 200) {

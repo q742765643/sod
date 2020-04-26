@@ -213,7 +213,7 @@ public class UserEntity extends BaseEntity {
      * 存储系统管理接口权限
      */
     @Column(name="SOD_API", length = 1)
-    private Integer sodApi;
+    private String sodApi;
 
     /**
      * 存储系统数据库申请

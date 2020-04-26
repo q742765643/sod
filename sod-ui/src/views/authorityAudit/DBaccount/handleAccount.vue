@@ -527,9 +527,9 @@ export default {
     },
     auditMethods(value) {
       if (value) {
-        this.msgFormDialog.examineStatus = 1;
-      } else {
         this.msgFormDialog.examineStatus = 2;
+      } else {
+        this.msgFormDialog.examineStatus = 1;
       }
       this.msgFormDialog.failureReason = value;
       let obj = this.msgFormDialog;

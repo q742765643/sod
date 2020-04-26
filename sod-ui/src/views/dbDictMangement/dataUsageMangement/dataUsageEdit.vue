@@ -6,7 +6,7 @@
           size="small"
           :disabled="isDbIdDisable"
           v-model="msgFormDialog.logicFlag"
-          placeholder="请输入(1内容不能含有中文字符)"
+          placeholder="请输入数据用途ID"
         />
       </el-form-item>
       <el-form-item prop="logicName" label="用途描述:">
@@ -50,7 +50,13 @@
         <el-input size="small" v-model="msgFormDialog.serialNumber" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="logicDesc" label="用途说明:">
-        <el-input size="small" v-model="msgFormDialog.logicDesc" type="textarea" placeholder="请输入" />
+        <el-input
+          type="textarea"
+          size="small"
+          :disabled="isDbIdDisable"
+          v-model="msgFormDialog.logicDesc"
+          placeholder="请输入用途说明"
+        />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -80,7 +86,7 @@ export default {
       isDisabled: false,
       //编辑页面列
       msgFormDialog: {
-        logicId: "",
+        logicFlag: "",
         logicName: "",
         storageType: [],
         logicDesc: "",
@@ -96,15 +102,13 @@ export default {
       //数据库名称
       dbNamesList: [],
       baseFormRules: {
-        logicId: [
+        logicFlag: [
           { required: true, message: "请输入数据用途ID", trigger: "blur" }
         ],
         logicName: [
-          { required: true, message: "请输入用途说明", trigger: "blur" }
+          { required: true, message: "请输入用途描述", trigger: "blur" }
         ],
-        logicDesc: [
-          { required: true, msssage: "请输入用途描述 ", trigger: "blur" }
-        ],
+
         storageType: [
           { required: true, message: "请选择表类型", trigger: "change" }
         ],
@@ -113,6 +117,9 @@ export default {
         ],
         serialNumber: [
           { required: true, message: "请输入序号 ", trigger: "blur" }
+        ],
+        logicDesc: [
+          { required: true, message: "请输入用途描述 ", trigger: "blur" }
         ]
       }
     };

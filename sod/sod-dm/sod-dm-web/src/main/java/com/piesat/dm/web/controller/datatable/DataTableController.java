@@ -220,7 +220,7 @@ public class DataTableController {
     }
 
     @ApiOperation(value = "查询概览信息")
-    @RequiresPermissions("dm:dataTable:getOverview")
+//    @RequiresPermissions("dm:dataTable:getOverview")
     @GetMapping(value = "/getOverview")
     public ResultT getOverview(String databaseId, String dataClassId) {
         try {

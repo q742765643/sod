@@ -158,12 +158,12 @@ public class DataAuthorityApplyController {
     }
 
     @ApiOperation(value="获取用户资料申请列表")
-    @RequiresPermissions("api:dataAuthorityApply:getDataAuthorityList")
-    @PostMapping(value="/api/dataAuthorityApply/getDataAuthorityList")
+//    @RequiresPermissions("api:dataAuthorityApply:getDataAuthorityList")
+    @GetMapping(value="/api/dataAuthorityApply/getDataAuthorityList")
     public ResultT getDataAuthorityList(String userId, String applyAuthority, String logicId,String dataName,String category,String schemaId){
         try {
             Map<String, Object> map = dataAuthorityApplyService.getDataAuthorityList(userId, applyAuthority, logicId,dataName,category,schemaId);
-            return ResultT.success();
+            return ResultT.success(map);
         }catch (Exception e){
             return ResultT.failed(e.getMessage());
         }
@@ -180,8 +180,8 @@ public class DataAuthorityApplyController {
         }
     }
     @ApiOperation(value="根据id删除资料记录")
-    @RequiresPermissions("api:dataAuthorityApply:deleteDataAuthorityById")
-    @PostMapping(value="/api/dataAuthorityApply/deleteDataAuthorityById")
+//    @RequiresPermissions("api:dataAuthorityApply:deleteDataAuthorityById")
+    @GetMapping(value="/deleteDataAuthorityById")
     public ResultT deleteDataAuthorityById(String applyId,String dataBaseId,String dataClassId){
         try {
             Map<String, Object> map = dataAuthorityApplyService.deleteDataAuthorityById(applyId,dataBaseId,dataClassId);
@@ -200,5 +200,24 @@ public class DataAuthorityApplyController {
         }catch (Exception e){
             return ResultT.failed(e.getMessage());
         }
+    }
+    /**
+     *  获取可申请资料清单
+     * @description 
+     * @author wlg
+     * @date 2020年4月22日下午4:12:44
+     * @return
+     */
+    @ApiOperation(value="获取可申请资料清单")
+//    @RequiresPermissions("api:dataAuthorityApply:getApplyDataInfo")
+    @GetMapping(value = "/getApplyDataInfo")
+    public ResultT getApplyDataInfo(String userId) {
+    	try {
+    		List<Map<String,Object>> data = dataAuthorityApplyService.getApplyDataInfo(userId);
+    		return ResultT.success(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultT.failed(e.getMessage());
+		}
     }
 }

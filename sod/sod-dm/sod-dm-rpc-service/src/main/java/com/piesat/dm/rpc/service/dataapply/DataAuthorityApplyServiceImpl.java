@@ -37,6 +37,7 @@ import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -390,6 +391,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    @Transactional
     public Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId) {
         Map<String,Object> result = new HashMap<String,Object>();
         Map<String,Object> paraMap = new HashMap<String,Object>();
@@ -399,7 +401,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //删除前查询是否存在
         try {
             mybatisQueryMapper.delDataAuthorityByApplyId(paraMap);
-            mybatisQueryMapper.clearUselessApply();
+//            mybatisQueryMapper.clearUselessApply();
             result.put("returnCode", "0");
             result.put("returnMessage", "删除成功。");
         } catch (Exception e) {
@@ -425,5 +427,20 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         }
         return result;
     }
+
+    /**
+     * 
+     * @description 
+     * @author wlg
+     * @date 2020-04-22 17:06
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+	@Override
+	public List<Map<String, Object>> getApplyDataInfo(String userId) throws Exception {
+		List<Map<String,Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
+		return result;
+	}
 
 }
