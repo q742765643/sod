@@ -51,5 +51,26 @@
         </set>
         where  sdb_id = #{sdbId} and data_class_id = #{dataClassId}
     </update>
+    <update id="updateSpecialAccess" parameterType="DatabaseSpecialAccessEntity">
+        update T_SOD_DATABASE_SPECIAL_ACCESS
+        <set>
+            <if test="examineStatus != null">
+                examine_status = #{examineStatus},
+            </if>
+            <if test="failureReason != null">
+                failure_reason = #{failureReason},
+            </if>
+            <if test="examiner != null">
+                examiner = #{examiner},
+            </if>
+            <if test="examineTime != null">
+                examine_time = #{examineTime},
+            </if>
+            <if test="useStatus != null">
+                use_status = #{useStatus},
+            </if>
+        </set>
+        where  sdb_id = #{sdbId} and user_id = #{userId}
+    </update>
 
 </mapper>

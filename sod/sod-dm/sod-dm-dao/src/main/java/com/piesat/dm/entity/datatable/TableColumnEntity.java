@@ -50,7 +50,7 @@ public class TableColumnEntity extends BaseEntity {
      * 服务名称
      * user_ele_code
      */
-    @Column(name = "user_ele_code", length = 36, nullable = false)
+    @Column(name = "user_ele_code", length = 36)
     private String userEleCode;
 
     /**

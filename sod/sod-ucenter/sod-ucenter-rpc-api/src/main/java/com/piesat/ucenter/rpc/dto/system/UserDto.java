@@ -171,7 +171,7 @@ public class UserDto extends BaseDto {
      * 存储系统管理接口权限
      */
     @ApiModelProperty("存储系统管理接口权限")
-    private Integer sodApi;
+    private String sodApi;
 
     /**
      * 存储系统数据库申请

@@ -49,12 +49,13 @@
       <el-table-column prop="databaseIp" label="IP地址"></el-table-column>
       <el-table-column prop="mainBakType" label="主备类型" :formatter="getMainBak"></el-table-column>
       <el-table-column prop="databaseCapacity" label="存储容量" width="100"></el-table-column>
-      <el-table-column
-        prop="display_control"
-        label="显示控制"
-        width="100"
-        :formatter="getDisplyControl"
-      ></el-table-column>
+      <el-table-column prop="display_control" label="显示控制" width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.userDisplayControl == 1">显示</span>
+          <span v-if="scope.row.userDisplayControl == 2">不显示</span>
+          <span v-if="scope.row.userDisplayControl == 3">前端不显示</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="checkConn" label="运行状态" width="100">
         <template slot-scope="scope">
           <el-button
@@ -240,19 +241,7 @@ export default {
       let result = row.mainBakType == "1" ? "主库" : "备份库";
       return result;
     },
-    getDisplyControl(row) {
-      // if (row.display_control == "1" && row.user_display_control == "1") {
-      //   return "显示";
-      // } else if (row.display_control == "2") {
-      //   return "不显示";
-      // } else if (
-      //   row.display_control == "1" &&
-      //   row.user_display_control == "2"
-      // ) {
-      //   return "前端不显示";
-      // }没有display_control这个参数，暂时都显示
-      return "显示";
-    },
+
     // 表格选择
     handleSelectionChange(val) {
       this.choserow = val;

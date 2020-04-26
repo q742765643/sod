@@ -323,7 +323,7 @@ export default {
     },
     handleStop(row) {
       const id = row.id;
-      this.$confirm('是否确认停止任务编号为"' + id + '"的数据项?', "警告", {
+      this.$confirm('是否确认停止"' + row.profileName + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -339,7 +339,7 @@ export default {
     },
     handleStart(row) {
       const id = row.id;
-      this.$confirm('是否确认启动任务编号为"' + id + '"的数据项?', "警告", {
+      this.$confirm('是否确认启动"' + row.profileName + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -355,11 +355,15 @@ export default {
     },
     handleExecute(row) {
       const id = row.id;
-      this.$confirm('是否立即执行任务编号为"' + id + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$confirm(
+        '是否立即执行任务编号为"' + row.profileName + '"的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
         .then(function() {
           return executeMove(id);
         })

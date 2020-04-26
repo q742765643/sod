@@ -139,12 +139,11 @@ public class DatabaseSpecialController {
         }
     }
 
-    @ApiOperation(value = "根据专题库id删除专题库权限表中记录")
-    @RequiresPermissions("dm:databaseSpecial:deleteAuthorityBySdbId")
-    @DeleteMapping(value = "/deleteAuthorityBySdbId")
-    public ResultT deleteAuthorityBySdbId(String sdbId) {
+    @ApiOperation(value = "根据专题库id和用戶id删除专题库访问申请表中记录（撤销引用）")
+    @GetMapping(value = "/deleteAccessBySdbIdAndUserId")
+    public ResultT deleteAccessBySdbIdAndUserId(String sdbId,String userId) {
         try {
-            this.databaseSpecialService.deleteAuthorityBySdbId(sdbId);
+            this.databaseSpecialService.deleteAccessBySdbIdAndUserId(sdbId,userId);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
@@ -343,8 +342,8 @@ public class DatabaseSpecialController {
     @GetMapping(value = "/getByUserIdAndUseStatus")
     public ResultT getByUserIdAndUseStatus(String userId,String useStatus) {
         try {
-            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.getByUserIdAndUseStatus(userId,useStatus);
-            return ResultT.success(databaseSpecialDtos);
+            List<Map<String, Object>> databaseSpecialList = this.databaseSpecialService.getByUserIdAndUseStatus(userId,useStatus);
+            return ResultT.success(databaseSpecialList);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -375,13 +374,13 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value = "根据用户id和专题库id查询")
-    @RequiresPermissions("dm:databaseSpecial:getdefeataudit")
-    @GetMapping(value = "/getdefeataudit")
-    public  ResultT getdefeataudit(String tdbId, String userId){
+    @ApiOperation(value = "根据用户id和专题库id查询专题库访问申请记录（引用申请）")
+    //@RequiresPermissions("dm:databaseSpecial:getSpecialAccess")
+    @GetMapping(value = "/getSpecialAccess")
+    public  ResultT getSpecialAccess(String tdbId, String userId){
         try {
-            DatabaseSpecialAccessEntity databaseSpecialDto =  this.databaseSpecialService.getdefeataudit(tdbId,userId);
-            return ResultT.success(databaseSpecialDto);
+            DatabaseSpecialAccessDto databaseSpecialAccessDto =  this.databaseSpecialService.getSpecialAccess(tdbId,userId);
+            return ResultT.success(databaseSpecialAccessDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -393,6 +392,17 @@ public class DatabaseSpecialController {
     public  ResultT specialAccessApply(@RequestBody DatabaseSpecialAccessDto databaseSpecialAccessDto){
         try {
             databaseSpecialAccessDto = this.databaseSpecialService.specialAccessApply(databaseSpecialAccessDto);
+            return ResultT.success(databaseSpecialAccessDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "专题库引用授权")
+    @PostMapping(value = "/specialAccessAutho")
+    public  ResultT specialAccessAutho(@RequestBody DatabaseSpecialAccessDto databaseSpecialAccessDto){
+        try {
+            databaseSpecialAccessDto = this.databaseSpecialService.specialAccessAutho(databaseSpecialAccessDto);
             return ResultT.success(databaseSpecialAccessDto);
         } catch (Exception e) {
             e.printStackTrace();

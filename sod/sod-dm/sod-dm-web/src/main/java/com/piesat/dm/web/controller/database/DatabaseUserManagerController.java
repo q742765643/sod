@@ -228,7 +228,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "根据用户id和审核状态查询")
-    //@RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
+//    @RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
     @GetMapping(value = "/findByUserIdAndExamineStatus")
     public ResultT findByUserIdAndExamineStatus(String userId,String examineStatus) {
         try {

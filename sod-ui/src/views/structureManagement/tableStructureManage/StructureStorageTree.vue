@@ -78,7 +78,15 @@ export default {
       this.checkNode = { id, name };
     },
     makeSureSave() {
-      this.$emit("storageCheckedNode", this.checkNode);
+      if (this.checkNode && this.checkNode.id.split(".").length == 3) {
+        console.log(this.checkNode);
+        this.$emit("storageCheckedNode", this.checkNode);
+      } else {
+        this.$message({
+          type: "error",
+          message: "只能选择三级目录"
+        });
+      }
     },
     cancleSave() {
       this.$emit("closeStorageTreeDialog", this.checkNode);

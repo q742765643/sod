@@ -182,7 +182,7 @@ public class DataTableController {
     }
 
     @ApiOperation(value = "根据用户id查询资料及父级")
-    @RequiresPermissions("dm:dataTable:findByUserId")
+    //@RequiresPermissions("dm:dataTable:findByUserId")
     @GetMapping(value = "/findByUserId")
     public ResultT findByUserId(String userId) {
         try {
@@ -220,7 +220,7 @@ public class DataTableController {
     }
 
     @ApiOperation(value = "查询概览信息")
-    @RequiresPermissions("dm:dataTable:getOverview")
+//    @RequiresPermissions("dm:dataTable:getOverview")
     @GetMapping(value = "/getOverview")
     public ResultT getOverview(String databaseId, String dataClassId) {
         try {

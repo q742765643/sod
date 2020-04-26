@@ -41,4 +41,14 @@ public interface DataAuthorityApplyService {
     Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId);
 
     Map<String, Object> getDataCategory();
+    /**
+     *  获取可申请的资料清单
+     * @description 
+     * @author wlg
+     * @date 2020年4月22日下午4:18:02
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
 }

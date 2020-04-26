@@ -112,7 +112,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "根据level查询")
-    @RequiresPermissions("dm:database:findByLevel")
+//    @RequiresPermissions("dm:database:findByLevel")
     @GetMapping(value = "/findByLevel")
     public ResultT findByLevel(int level) {
         List<DatabaseDto> all = this.databaseService.findByLevel(level);
@@ -120,7 +120,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "根据父id查询")
-    @RequiresPermissions("dm:database:findByDatabaseDefineId")
+//    @RequiresPermissions("dm:database:findByDatabaseDefineId")
     @GetMapping(value = "/findByDatabaseDefineId")
     public ResultT findByDatabaseDefineId(String id) {
         List<DatabaseDto> all = this.databaseService.findByDatabaseDefineId(id);
@@ -128,7 +128,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "根据用户ID查询可用物理库的信息")
-    //@RequiresPermissions("dm:database:findByUserId")
+//    @RequiresPermissions("dm:database:findByUserId")
     @GetMapping(value = "/findByUserId")
     public ResultT findByUserId(String userId) {
         try {
@@ -145,7 +145,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "查询所有物理库/专题库")
-    //@RequiresPermissions("dm:database:findByDatabaseClassify")
+//    @RequiresPermissions("dm:database:findByDatabaseClassify")
     @GetMapping(value = "/findByDatabaseClassify")
     public ResultT findByDatabaseClassify(String databaseClassify) {
         try {
@@ -158,7 +158,7 @@ public class DatabaseController {
     }
 
     @ApiOperation(value = "根据用户ID和数据库父ID查询可用专题库的信息")
-    //@RequiresPermissions("dm:database:findByUserIdAndDatabaseDefineId")
+//    @RequiresPermissions("dm:database:findByUserIdAndDatabaseDefineId")
     @GetMapping(value = "/findByUserIdAndDatabaseDefineId")
     public ResultT findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId) {
         try {

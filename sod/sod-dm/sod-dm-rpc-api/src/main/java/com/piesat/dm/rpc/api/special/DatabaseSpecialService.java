@@ -33,7 +33,7 @@ public interface DatabaseSpecialService {
      */
     void deleteById(String id);
 
-    void deleteAuthorityBySdbId(String sdbId);
+    void deleteAccessBySdbIdAndUserId(String sdbId,String userId);
 
     /**
      * 根据id查询
@@ -79,7 +79,7 @@ public interface DatabaseSpecialService {
 
     List<Map<String,Object>> getAllOtherRecordByUserId(String userId,String useStatus);
 
-    List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId,String useStatus);
+    List<Map<String, Object>>getByUserIdAndUseStatus(String userId,String useStatus);
 
     List<DatabaseSpecialDto> getByUseStatus(String useStatus);
 
@@ -94,9 +94,11 @@ public interface DatabaseSpecialService {
 
     DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto);
 
-    DatabaseSpecialAccessEntity getdefeataudit(String tdbId, String userId);
+    DatabaseSpecialAccessDto getSpecialAccess(String tdbId, String userId);
 
     DatabaseSpecialAccessDto specialAccessApply(DatabaseSpecialAccessDto databaseSpecialAccessDto);
+
+    DatabaseSpecialAccessDto specialAccessAutho(DatabaseSpecialAccessDto databaseSpecialAccessDto);
 
     Map<String, Object> updateBySql(String tdbId, String userId, String cause, String examineStatus);
 

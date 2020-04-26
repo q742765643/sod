@@ -863,45 +863,49 @@
     <!-- 获取资料申请 -->
     <select id="getDataAuthorityList" resultType = "java.util.Map" parameterType="java.util.Map">
         select
-        da.apply_id as "applyId", da.DATABASE_ID as "logicId", da.DATA_CLASS_ID as "dataClassId",
-        dct.CLASS_NAME as "dataName",da.APPLY_AUTHORITY as "applyAuthority",da.AUTHORIZE as "authorize",
-        dct1.CLASS_NAME as "categoryName" , daa.APPLY_TIME as "applyTime",da.CAUSE as "remark",
-        dpd1.database_name||'【'||dpd1.database_id||'】' as "physicName",dpd.database_id as "schemaId",
-        dpd.special_database_name || '【' ||dpd.database_schema_name||'】' as "schemaName"
-        from
-        T_SOD_DATA_AUTHORITY_RECORD da
-        inner join T_SOD_DATA_AUTHORITY_APPLY daa on da.apply_id = daa.user_id
-        inner join t_sod_data_class dct on da.data_class_id = dct.data_class_id
-        inner join t_sod_data_class dct1 on substr(da.DATA_CLASS_ID,0,1) = dct1.DATA_CLASS_ID
-        inner join t_sod_database_define dpd on da.database_id = dpd.database_id
-        inner join t_sod_database_define dpd1 on dpd.parent_id = dpd1.database_id
-        where 1=1
-        <if test="userId !=null and userId != ''">
-            and daa.USER_ID = #{userId}
-        </if>
-        <if test="applyAuthority != null and applyAuthority != ''">
-            and da.APPLY_AUTHORITY = #{applyAuthority}
-        </if>
-        <if test="logicId != null and logicId != ''">
-            and dpd1.DATABASE_ID = #{logicId}
-        </if>
-        <if test="dataName != null and dataName != ''">
-            and dct.CLASS_NAME like CONCAT('%',#{dataName},'%')
-        </if>
-        <if test="category != null and category != ''">
-            and dct1.DATA_CLASS_ID = #{category}
-        </if>
-        <if test="schemaId != null and schemaId != ''">
-            and da.database_id = #{schemaId}
-        </if>
-        group by
-        da.userId, da.DATABASE_ID, da.DATA_CLASS_ID,
-        dct.CLASS_NAME,da.APPLY_AUTHORITY,da.AUTHORIZE,
-        dct1.CLASS_NAME, daa.APPLY_TIME,da.CAUSE,
-        dpd1.database_name||'【'||dpd1.database_id||'】',dpd.database_id,
-        dpd.special_database_name || '【' ||dpd.database_schema_name||'】'
-        order by daa.APPLY_TIME desc
+			t1.database_id,t6.class_name as "categoryName",t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
+			t3.class_name as "dataName",t4.database_name as "databaseSchemaName",
+			t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
+		from
+			t_sod_data_authority_record t1
+		left join t_sod_data_authority_apply t2 on t1.apply_id = t2.id
+		left join t_sod_data_class t3 on t1.data_class_id = t3.data_class_id
+		left join t_sod_database t4 on t1.database_id = t4.id
+		left join t_sod_database_define t5 on t4.database_define_id = t5.id
+		left join t_sod_data_class t6 on substr(t1.data_class_id,0,1) = t6.data_class_id
+		where
+			1=1
+			<if test="userId != null and userId != ''">
+				and t2.user_id = #{userId}
+			</if>
+			<if test="applyAuthority != null and applyAuthority != ''">
+				and t1.apply_authority = #{applyAuthority}
+			</if>
+			<if test="logicId != null and logicId != ''">
+				and t1.database_id = #{logicId}
+			</if>
+			<if test="dataName != null and dataName != ''">
+				and t3.class_name like CONCAT('%',#{dataName},'%')
+			</if>
+			<if test="category != null and category != ''">
+				and substr(t1.data_class_id,0,1) = #{category}
+			</if>
+			<if test="schemaId != null and schemaId != ''">
+				and t4.schema_name = #{schemaId}
+			</if>
+		group by
+			t1.database_id,t6.class_name,t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
+			t3.class_name,t4.database_name,t4.schema_name,t4.database_define_id,t5.database_name
+		order by
+			t1.create_time desc
     </select>
+    <select id="querySpecialByUserIdAndUseStatus" resultType = "java.util.Map">
+        select * from T_SOD_DATABASE_SPECIAL
+          where USER_ID = #{userId} and USE_STATUS =#{useStatus}
+            or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
+            or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
+    </select>
+
     <!-- 根据id删除资料申请记录 -->
     <delete id="delDataAuthorityByApplyId" parameterType="java.util.Map">
         delete from T_SOD_DATA_AUTHORITY_RECORD
@@ -1112,6 +1116,29 @@
 	    TDB_ID, TDB_NAME, TDB_IMG, UNIT_ID, USER_ID, APPLY_TIME, USES, APPLY_FILE_PATH, EXAMINER,
 	    EXAMINE_STATUS, EXAMINE_TIME, CAUSE, USE_STATUS ,SORT_NO
   	</sql>
+
+  	<!-- 查询用户可申请资料 -->
+  	<select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
+  		select
+	  		t1.data_class_id as "dataClassId",
+			t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】' as "dataName" ,
+			t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl"
+		from
+			t_sod_data_class t1
+			inner join t_sod_data_logic t2 on t1. data_class_id = t2.data_class_id
+			inner join t_sod_database t3 on t2.database_id = t3.id
+			inner join t_sod_database_define t4 on t3.database_define_id = t4.id
+		<if test="userId != null and userId != ''">
+			where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
+		</if>
+		group by
+			t1.data_class_id,
+			t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
+			t3.schema_name,t3.id,t1.is_access
+		order by
+			dataName asc
+  	</select>
+
     <select id="getDataClassInfo" resultType = "java.util.LinkedHashMap">
         SELECT * FROM  T_SOD_DATA_CLASS A WHERE A.DATA_CLASS_ID = #{dataClassId}
     </select>

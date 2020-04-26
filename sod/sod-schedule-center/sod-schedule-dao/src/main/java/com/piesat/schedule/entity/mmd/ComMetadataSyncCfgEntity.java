@@ -68,6 +68,14 @@ public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 	private String primaryKey;
 
 	/**
+	 * 来源
+	 */
+	@Column(name="SOURCE",length=200)
+	private String source;
+
+
+
+	/**
 	 * 描述
 	 */
 	@Transient
