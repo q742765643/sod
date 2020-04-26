@@ -3,12 +3,14 @@ package com.piesat.dm.web.controller.special;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.dao.special.DatabaseSpecialAccessDao;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -153,7 +155,7 @@ public class DatabaseSpecialController {
     @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
     //@RequiresPermissions("dm:databaseSpecial:update")
     @PostMapping(value = "/addOrUpdate")
-    public ResultT addOrUpdate(HttpServletRequest request, @RequestParam(value = "apply_material", required = false) MultipartFile applyMaterial) {
+    public ResultT addOrUpdate(HttpServletRequest request, @RequestParam(value = "APPLY_FILE_PATH", required = false) MultipartFile applyMaterial) {
         try {
             Map<String, String[]> parameterMap = request.getParameterMap();
             File newFile = null;
@@ -347,6 +349,18 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+    @ApiOperation(value = "根据使用状态查询专题库")
+    @GetMapping(value = "/getByUseStatus")
+    public ResultT getByUseStatus(String useStatus) {
+        try {
+            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.getByUseStatus(useStatus);
+            return ResultT.success(databaseSpecialDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "插入同一专题库下的多条记录")
     //@RequiresPermissions("dm:databaseSpecial:saveMultilRecord")
     @PostMapping(value = "/saveMultilRecord")
@@ -372,6 +386,19 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "专题库引用申请")
+    @PostMapping(value = "/specialAccessApply")
+    public  ResultT specialAccessApply(@RequestBody DatabaseSpecialAccessDto databaseSpecialAccessDto){
+        try {
+            databaseSpecialAccessDto = this.databaseSpecialService.specialAccessApply(databaseSpecialAccessDto);
+            return ResultT.success(databaseSpecialAccessDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据用户id和专题库状态修改")
     @RequiresPermissions("dm:databaseSpecial:updateBySql")
     @GetMapping(value = "/updateBySql")
@@ -400,7 +427,7 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value = "根据专题库ID号获取对应专题库信息和对应数据信息")
+    @ApiOperation(value = "根据专题库ID题号获取对应专库信息和对应数据信息")
     //@RequiresPermissions("dm:databaseSpecial:getOneRecordByTdbId")
     @GetMapping(value = "/getOneRecordByTdbId")
     public  ResultT getOneRecordByTdbId(String tdbId,String typeId, String status){
@@ -514,18 +541,6 @@ public class DatabaseSpecialController {
     public  ResultT saveOneRecord(String userId){
         try {
             Map<String,Object> map =  this.databaseSpecialService.getDiscardSpecial(userId);
-            return ResultT.success(map);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-    @ApiOperation(value = "专题库创建申请")
-    @RequiresPermissions("dm:databaseSpecial:saveCreateapply")
-    @GetMapping(value = "/saveCreateapply")
-    public  ResultT saveCreateapply(HttpServletRequest request){
-        try {
-            Map<String,Object> map =  this.databaseSpecialService.saveCreateapply(request);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
