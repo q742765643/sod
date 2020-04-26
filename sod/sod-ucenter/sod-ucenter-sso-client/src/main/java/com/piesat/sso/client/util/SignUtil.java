@@ -169,8 +169,18 @@ public class SignUtil {
             UserDto userDto = userService.selectUserByUserName(userId);
             if (userDto != null) {
                 String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+                if (StringUtils.isNotBlank(casVo.getPwd()) && "nanda".equals(map.get("interfaceId"))) {
+                    String pwd = casVo.getPwd();
+                    byte[] decode = Base64.getDecoder().decode(pwd);
+                    pwd = new String(decode);
+                    if (!pwd.equals(password)){
+                        throw new SignException("密码不正确");
+                    }
+                }
                 map.put("pwd", password);
                 casVo.setPwd(password);
+            } else {
+                throw new SignException("用户不存在");
             }
             List<String> paramList = new ArrayList<>();
             Map<String, String[]> parameterMap = new HashMap<>();
@@ -178,7 +188,7 @@ public class SignUtil {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (!entry.getKey().equals("sign")) {
                     paramList.add(entry.getKey() + "=" + entry.getValue());
-                    parameterMap.put(entry.getKey(),entry.getValue().toString().split("&&&"));
+                    parameterMap.put(entry.getKey(), entry.getValue().toString().split("&&&"));
                 }
             }
             parameterMap.put("userId", null);
@@ -187,7 +197,7 @@ public class SignUtil {
             request.putHeader("appId", casVo.getUserId());
             request.putHeader("pwd", casVo.getPwd());
             Map<String, Object> data = JSON.parseObject(casVo.getData(), Map.class);
-            if (data!=null){
+            if (data != null) {
                 for (Map.Entry<String, Object> entry : data.entrySet()) {
                     Object oo = entry.getValue();
 
@@ -209,8 +219,8 @@ public class SignUtil {
             request.putParameterMap(parameterMap);
             checkPortalSign(casVo, paramStr);
         } else if (null != casVo.getData() && !"".equals(casVo.getData())) {
-            request.putHeader("appId", casVo.getUserId());
-            request.putHeader("pwd", casVo.getPwd());
+//            request.putHeader("appId", casVo.getUserId());
+//            request.putHeader("pwd", casVo.getPwd());
             Map<String, Object> data = JSON.parseObject(casVo.getData(), Map.class);
             Map<String, String[]> parameterMap = new HashMap<>();
 
@@ -251,9 +261,9 @@ public class SignUtil {
 
     public static void signJson(CasVo casVo, String data, WrapperedRequest wrapRequest, JSONObject object) throws Exception {
         if (null != casVo.getData() && !"".equals(casVo.getData())) {
-            wrapRequest.putHeader("appId", casVo.getUserId());
             Map<String, Object> signMap = JSON.parseObject(data, Map.class);
-            if (object.containsKey("interfaceId")){
+            if (object.containsKey("interfaceId")) {
+                wrapRequest.putHeader("appId", casVo.getUserId());
                 UserService userService = SpringUtil.getBean(UserService.class);
                 String userId = object.getString("userId");
                 UserDto userDto = userService.selectUserByUserName(userId);
@@ -271,9 +281,10 @@ public class SignUtil {
                 }
                 Collections.sort(paramList);
                 String paramStr = StringUtils.join(paramList, "&");
-                checkPortalSign(casVo,paramStr);
-            }else {
-                wrapRequest.putHeader("pwd", casVo.getPwd());
+                checkPortalSign(casVo, paramStr);
+            } else {
+//                wrapRequest.putHeader("appId", casVo.getUserId());
+//                wrapRequest.putHeader("pwd", casVo.getPwd());
                 checkSign(casVo, signMap);
             }
         }

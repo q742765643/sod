@@ -192,7 +192,7 @@ public class NewdataApplyController {
 
     @PostMapping(value = "/updateStatus")
     @ApiOperation(value = "新增资料审核接口", notes = "存储资料审核接口")
-    public ResultT updateStatus(NewdataApplyDto newdataApplyDto){
+    public ResultT updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
         try {
             NewdataApplyDto save = newdataApplyService.updateStatus(newdataApplyDto);
             return ResultT.success(save);
