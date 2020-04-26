@@ -113,6 +113,7 @@
                 <configuration>
                     <fork>true</fork>
                     <mainClass>com.piesat.AllApplication</mainClass>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
                 <executions>
                     <execution>

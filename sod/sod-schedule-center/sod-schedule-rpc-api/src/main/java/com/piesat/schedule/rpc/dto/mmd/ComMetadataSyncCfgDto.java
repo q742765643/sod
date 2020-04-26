@@ -1,6 +1,6 @@
 package com.piesat.schedule.rpc.dto.mmd;
  /** 公共元数据同步配置dto
-  * 
+  *
 *@description
 *@author wlg
 *@date 2020年2月6日下午4:51:44
@@ -17,10 +17,10 @@ import lombok.EqualsAndHashCode;
 public class ComMetadataSyncCfgDto extends JobInfoDto{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3281009586986033266L;
-	
+
 	/**
 	 * 任务名
 	 */
@@ -34,7 +34,7 @@ public class ComMetadataSyncCfgDto extends JobInfoDto{
 	 */
 	private String apiUrl;
 	/**
-	 * 接口类型 
+	 * 接口类型
 	 * 1:全量同步
 	 * 2:增量同步
 	 */
@@ -59,5 +59,9 @@ public class ComMetadataSyncCfgDto extends JobInfoDto{
 	 *  描述
 	 */
 	private String description;
+	/**
+	 * 来源
+	 */
+	private String source;
 
 }

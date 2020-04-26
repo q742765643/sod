@@ -334,15 +334,15 @@ public class GrpcService {
                 return ResultT.failed("模板不存在！");
             } else {
                 String createSql = "", insertSql = "", querySql = "";
-                if (this.databaseInfo.getXugu().equals(databaseType)) {
+                if (this.databaseInfo.getXugu().equals(databaseType.toLowerCase())) {
                     createSql = this.databaseSqlService.getXuGuCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
                     insertSql = this.databaseSqlService.getXuGuInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
                     querySql = this.databaseSqlService.getXuGuQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                } else if (this.databaseInfo.getGbase8a().equals(databaseType)) {
+                } else if (this.databaseInfo.getGbase8a().equals(databaseType.toLowerCase())) {
                     createSql = this.databaseSqlService.getGbaseCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
                     insertSql = this.databaseSqlService.getGbaseInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
                     querySql = this.databaseSqlService.getGbaseQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                } else if (this.databaseInfo.getCassandra().equals(databaseType)) {
+                } else if (this.databaseInfo.getCassandra().equals(databaseType.toLowerCase())) {
                     createSql = this.databaseSqlService.getCassandraCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
                     insertSql = this.databaseSqlService.getCassandraInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
                     querySql = this.databaseSqlService.getCassandraQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
