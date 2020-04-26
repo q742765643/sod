@@ -132,7 +132,7 @@
           <el-input v-model="form.dictLabel" placeholder="请输入数据标签" />
         </el-form-item>
         <el-form-item label="数据键值" prop="dictValue">
-          <el-input v-model="form.dictValue" placeholder="请输入数据键值" />
+          <el-input v-model="form.dictValue" placeholder="请输入数据键值" :disabled="title == '修改字典数据'" />
         </el-form-item>
         <el-form-item label="显示排序" prop="dictSort">
           <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />

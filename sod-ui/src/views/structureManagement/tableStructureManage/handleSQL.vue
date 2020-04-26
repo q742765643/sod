@@ -4,7 +4,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="数据库类型">
-            <el-input v-model="msgFormDialog.DATABASE_NAME" disabled size="small"></el-input>
+            <el-input v-model="msgFormDialog.DATABASE_NAME_F" disabled size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12" class="btnColBox">
@@ -26,7 +26,7 @@
         </el-col>
       </el-row>
 
-      <el-collapse v-model="msgFormDialog.aaa" @change="handleChange">
+      <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item title="CREATE" name="1">
           <el-input type="textarea" size="small" v-model="msgFormDialog.createSql"></el-input>
         </el-collapse-item>
@@ -67,7 +67,7 @@ export default {
         createSql: "",
         insertSql: "",
         selectSql: "",
-        DATABASE_NAME: this.handleSQLObj.DATABASE_NAME
+        DATABASE_NAME_F: this.handleSQLObj.DATABASE_NAME_F
       },
       tableObj: ""
     };
@@ -92,6 +92,7 @@ export default {
         this.msgFormDialog.createSql = res.data.createSql;
         this.msgFormDialog.insertSql = res.data.insertSql;
         this.msgFormDialog.selectSql = res.data.selectSql;
+        this.activeNames = ["1"];
       });
     },
     handleSaveSql() {
@@ -140,12 +141,12 @@ export default {
               type: "error"
             });
             return;
-          }else if(res.data == null){
+          } else if (res.data == null) {
             this.$message({
               message: res.msg,
               type: "error"
             });
-          }else {
+          } else {
             createTable({
               databaseId: this.handleSQLObj.DATABASE_ID,
               tableName: this.tableObj.tableName,

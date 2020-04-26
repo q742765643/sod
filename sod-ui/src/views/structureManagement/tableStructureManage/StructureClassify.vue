@@ -146,6 +146,7 @@ export default {
     // 初始化树 同步
     async initMethodsTree(whichTree) {
       this.loading = true;
+      this.treeData = [];
       let classBox = document.getElementsByClassName("classifyTree");
       classBox[0].classList.remove("disActive");
       if (whichTree == "资料分类树") {
@@ -394,7 +395,9 @@ export default {
         color: #606266;
       }
     }
-
+    /* .el-tree-node__children{
+      
+    } */
     .el-tree-node[aria-disabled="true"] {
       display: none;
     }

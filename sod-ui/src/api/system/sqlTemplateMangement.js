@@ -7,13 +7,7 @@ export function getAllSqlList() {
     method: "get"
   });
 }
-//获取数据库类型
-export function getDBtype() {
-  return request({
-    url: baseUrl + "/restApi/dicmgn/queryAllByTypeAndFlag",
-    method: "get"
-  });
-}
+
 //新增sql模板
 export function saveSqlTemplate(query) {
   return request({
