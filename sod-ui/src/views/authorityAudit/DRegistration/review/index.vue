@@ -162,6 +162,7 @@ export default {
         this.handleMsgObj.databaseId = this.tableData[0].DATABASE_ID; //目标库
         this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         this.$refs.syncRef.trueDialog("ruleForm");
+        this.stepNum = 3;
       }
       // 数据迁移
       if (this.stepNum == 3) {
@@ -170,10 +171,12 @@ export default {
         this.handleMsgObj.databaseId = this.tableData[0].DATABASE_ID; //目标库
         this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         this.$refs.moveRef.trueDialog("ruleForm");
+        this.stepNum = 4;
       }
       // 数据备份
       if (this.stepNum == 4) {
         this.$refs.backupRef.trueDialog("ruleForm");
+        this.stepNum = 5;
       }
     },
 
