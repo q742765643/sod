@@ -207,4 +207,23 @@ public class UserEntity extends BaseEntity {
      */
     @Column(name="CHECKED", length = 1)
     private String checked;
+
+
+    /**
+     * 存储系统管理接口权限
+     */
+    @Column(name="SOD_API", length = 1)
+    private Integer sodApi;
+
+    /**
+     * 存储系统数据库申请
+     */
+    @Column(name="DB_IDS", length = 200)
+    private String dbIds;
+    /**
+     *是否创建专题库 “1” 是 “0” 否
+     */
+    @Column(name="DB_CREATE", length = 1)
+    private String dbCreate;
+
 }

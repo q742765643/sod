@@ -11,8 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.StringUtils;
+import com.piesat.schedule.entity.clear.ClearEntity;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,25 +54,25 @@ import com.piesat.util.page.PageForm;
 */
 @Service
 public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEntity> implements ComMetadataSyncService{
-	
+
 	@Autowired
 	private ComMetadataSyncCfgDao comMetadataSyncCfgDao;
-	
+
 	@Autowired
 	private ComMetadataSyncRecordDao comMetadataSyncRecordDao;
-	
+
 	@Autowired
 	private ComMetadataSyncCfgMapstruct comMetadataSyncCfgMapstruct;
-	
+
 	@Autowired
 	private ComMetaDataSyncRecordMapstruct comMetaDataSyncRecordMapstruct;
-	
+
 	@Autowired
 	private ComMetadataSyncMapper comMetadataSyncMapper;
-	
+
 	@Autowired
 	private SqlSessionFactory sqlSessionFactory;
-	
+
 	@Autowired
     private JobInfoService jobInfoService;
 
@@ -77,7 +83,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 	/**
 	 *  分页查询
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 15:48
 	 * @param pageForm
@@ -86,23 +92,28 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	 */
 	@Override
 	public PageBean findPageData(PageForm<ComMetadataSyncCfgDto> pageForm) throws Exception {
-		ComMetadataSyncCfgEntity ce = comMetadataSyncCfgMapstruct.toEntity(pageForm.getT());
-		if(!StringUtil.isEmpty(ce.getTableName())) ce.setTableName("%"+ce.getTableName()+"%");
-		if(!StringUtil.isEmpty(ce.getTaskName())) ce.setTaskName("%"+ce.getTaskName()+"%");
-		
-		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
-		//获取结果集
-		List<ComMetadataSyncCfgEntity> data = comMetadataSyncMapper.selectList(ce);
-		PageInfo<ComMetadataSyncCfgEntity> pageInfo = new PageInfo<>(data);
-		
-		List<ComMetadataSyncCfgDto> dtoData = comMetadataSyncCfgMapstruct.toDto(pageInfo.getList());
-		PageBean pageBean = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
+
+		ComMetadataSyncCfgEntity ce=comMetadataSyncCfgMapstruct.toEntity(pageForm.getT());
+		SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+		if(StringUtils.isNotNullString(ce.getTableName())){
+			specificationBuilder.add("tableName",  SpecificationOperator.Operator.likeAll.name(),ce.getTableName());
+		}
+
+		if(StringUtils.isNotNullString(ce.getTaskName())){
+			specificationBuilder.add("taskName", SpecificationOperator.Operator.likeAll.name(),ce.getTaskName());
+		}
+
+		Specification specification=specificationBuilder.generateSpecification();
+		Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+		PageBean pageBean=this.getPage(specification,pageForm,sort);
+		List<ComMetadataSyncCfgEntity> ces= (List<ComMetadataSyncCfgEntity>) pageBean.getPageData();
+		pageBean.setPageData(comMetadataSyncCfgMapstruct.toDto(ces));
 		return pageBean;
 	}
 
 	/**
 	 *  添加同步配置
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 16:16
 	 * @param cd
@@ -112,19 +123,19 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	@Transactional
 	public void addConfig(ComMetadataSyncCfgDto cd) throws Exception {
 		ComMetadataSyncCfgEntity ce = comMetadataSyncCfgMapstruct.toEntity(cd);
-		comMetadataSyncCfgDao.save(ce);
+		this.saveNotNull(ce);
 		try {
-			
+
 			jobInfoService.start(cd);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
 	 *  主键查询
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 16:35
 	 * @param id
@@ -133,13 +144,14 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	 */
 	@Override
 	public ComMetadataSyncCfgDto findByPk(String id) throws Exception {
-		ComMetadataSyncCfgEntity ce = comMetadataSyncCfgDao.findById(id).orElse(null);
+		ComMetadataSyncCfgEntity ce = this.getById(id);
+//		ComMetadataSyncCfgEntity ce = comMetadataSyncCfgDao.findById(id).orElse(null);
 		return comMetadataSyncCfgMapstruct.toDto(ce);
 	}
 
 	/**
 	 *  编辑同步任务
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 17:04
 	 * @param cd
@@ -159,7 +171,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 	/**
 	 *  删除公共元数据同步任务
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 17:13
 	 * @param ids
@@ -177,12 +189,12 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
 	 *  获取公共元数据同步记录分页数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 17:51
 	 * @param pageForm
@@ -192,12 +204,12 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	@Override
 	public PageBean findRecordPage(PageForm<ComMetadataSyncRecordDto> pageForm) throws Exception {
 		ComMetadataSyncRecordEntity ce = comMetaDataSyncRecordMapstruct.toEntity(pageForm.getT());
-		
+
 		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
 		//获取结果集
 		List<ComMetadataSyncRecordEntity> data = comMetadataSyncMapper.selectRecordList(ce);
 		PageInfo<ComMetadataSyncRecordEntity> pageInfo = new PageInfo<>(data);
-		
+
 		List<ComMetadataSyncRecordDto> dtoData = comMetaDataSyncRecordMapstruct.toDto(pageInfo.getList());
 		PageBean pageBean = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
 		return pageBean;
@@ -205,7 +217,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 	/**
 	 *  删除公共元数据同步记录
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-17 17:52
 	 * @param ids
@@ -225,14 +237,14 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	 * @description
 	 * 先判断是根据同步类型 还是id 进行同步的
 	 * 如果是根据同步类型 根据同步类型 查找id
-	 * 
+	 *
 	 * 逻辑 : 1.获取同步url
 	 * 2.发送请求,查看是否能获取到数据
 	 * 3.获取到数据,查看同步配置是全量同步还是增量同步
 	 * 4.如果是全量同步,删表,查数据
 	 * 5.如果是增量同步 更新数据 或者是删除指定数据
 	 * 6.如果没有同步类型,先删除数据再同步数据
-	 * 
+	 *
 	 * @author wlg
 	 * @date 2020-02-18 11:38
 	 * @param ids
@@ -258,60 +270,60 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 			}
 			for(String id:idList) {
 				if(StringUtil.isEmpty(id)) continue;
-				
+
 				//获取同步配置
 				ComMetadataSyncCfgEntity ce = comMetadataSyncCfgDao.findById(id).orElse(null);
 				if(null == ce) return ResultT.failed("公共元数据同步任务配置不存在");
-				
+
 				String tableName = ce.getTableName();
-				
+
 				//添加同步任务记录
 				ComMetadataSyncRecordEntity cre = new ComMetadataSyncRecordEntity();
 				cre.setSyncTableName(tableName);
 				cre.setStartTime(new Date());
 				cre.setSyncType("1".equals(ce.getApiType())?"全量同步":"增量同步");
 				cre.setSyncModel(oprType == 2 ?"手动同步":"自动同步");
-				
+
 				//获取同步接口
 				String url = ce.getApiUrl();
 				if(StringUtil.isEmpty(url)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url为空");
-				
+
 				//获取同步数据
 				String result = HttpUtils.sendGet(url,"");
 				if(StringUtil.isEmpty(result)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值为空");
-				
+
 				JSONObject obj = JSON.parseObject(result);
-				
+
 				if(StringUtil.isEmpty(ce.getApiDataKey())) return ResultT.failed("请配置同步任务【"+ce.getTaskName()+"】的接口关键字");
 				JSONArray arr = obj.getJSONArray(ce.getApiDataKey());
 				if(null == arr) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值异常,返回值为:"+result);
-				
+
 				Map<String,String> fieldInfoMap = getFieldInfo(tableName);
-				
+
 				if(null == fieldInfoMap) {
 					cre.setSyncRecordNum(0);
 					cre.setStopTime(new Date());
 					cre.setRunState("同步失败");
 					cre.setFailReason("未获取到表结构信息");
 					comMetadataSyncRecordDao.save(cre);
-					
+
 					return ResultT.failed("同步任务【"+ce.getTaskName()+"】没有从数据库中获取到表结构信息");
 				}
-				
+
 				Boolean succeed = true;
 				//查看同步类型 1:全量同步,2:增量同步
 				if("1".equals(ce.getApiType())) comMetadataSyncMapper.clearTable(tableName);
-				
+
 				for(int i=0;i<arr.size();i++) {
 					JSONObject objEntity = arr.getJSONObject(i);
 					Map<String,String> row = get1RowData(objEntity,fieldInfoMap);
 					Map<String,Object> param  = new HashMap<>();
 					param.put("tableName", tableName);
 					param.put("row", row);
-					
+
 					if("1".equals(ce.getApiType())) {
 						comMetadataSyncMapper.insert1Row(param);
-						
+
 					}else if("2".equals(ce.getApiType())&&
 							("update".equals(getFiledValue(row, "C_FLOW_TYPE"))||"update".equals(getFiledValue(row, "C_OPT_TYPE")))) {
 						String pk = ce.getPrimaryKey();
@@ -323,7 +335,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 							param.put("pkValue", row.get(pk));
 							comMetadataSyncMapper.update1Row(param);
 						}
-						
+
 					}else if("2".equals(ce.getApiType())
 							&&("delete".equals(getFiledValue(row, "C_FLOW_TYPE"))||"delete".equals(getFiledValue(row, "C_OPT_TYPE")))) {
 						String pk = ce.getPrimaryKey();
@@ -335,7 +347,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 							param.put("pkValue", row.get(pk));
 							comMetadataSyncMapper.del1Row(param);
 						}
-						
+
 					}else {
 						String pk = ce.getPrimaryKey();
 						if(StringUtil.isEmpty(pk)) {
@@ -348,25 +360,25 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 							comMetadataSyncMapper.insert1Row(param);
 						}
 					}
-					
+
 				}
-				
+
 				cre.setRunState(succeed?"同步成功":"同步失败");
 				cre.setStopTime(new Date());
 				cre.setSyncRecordNum(succeed?arr.size():0);
 				comMetadataSyncRecordDao.save(cre);
-				
+
 			}
 			return ResultT.success();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResultT.failed(e.getMessage());
 		}
-		
+
 	}
 	/**
 	 *  获取map值
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月18日下午3:37:47
 	 * @param row
@@ -383,7 +395,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	}
 	/**
 	 *  获取一行数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月18日下午3:10:13
 	 * @param obj
@@ -395,7 +407,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		for(Map.Entry<String, Object> entry:obj.entrySet()) {
 			String key = entry.getKey().toLowerCase();
 			String value = entry.getValue() == null ? "" :entry.getValue().toString();
-			
+
 			//转换时间类型
 			for(Map.Entry<String,String> fieldInfo:filedInfoMap.entrySet()) {
 				String fieldName = fieldInfo.getKey();
@@ -419,10 +431,10 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		}
 		return row;
 	}
-	
+
 	/**
 	 *  获取表的元数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月18日下午2:21:15
 	 * @param sql
@@ -435,10 +447,10 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		try {
 			conn = sqlSessionFactory.openSession().getConnection();
 			String sql = "select * from "+tableName;
-			
+
 			ps = conn.prepareStatement(sql);
 			ResultSetMetaData rsmd = ps.getMetaData();
-			
+
 			return rsmd;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -447,12 +459,12 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 			if(null != ps) ps.close();
 		}
 		return null;
-		
+
 	}
-	
+
 	/**
 	 *  获取表字段名 , 字段类型
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月18日下午2:27:14
 	 * @param tableName
@@ -460,7 +472,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	 * @throws Exception
 	 */
 	private Map<String,String> getFieldInfo(String tableName) throws Exception{
-		
+
 		ResultSetMetaData rsmd = getRsmd(tableName);
 		if(null != rsmd) {
 			Map<String,String> map = new HashMap<>();
@@ -471,8 +483,8 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		}
 		return null;
 	}
-	
-	
-	
+
+
+
 
 }

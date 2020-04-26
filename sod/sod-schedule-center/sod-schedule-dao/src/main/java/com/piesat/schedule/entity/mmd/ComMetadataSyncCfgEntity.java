@@ -1,9 +1,6 @@
 package com.piesat.schedule.entity.mmd;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.piesat.schedule.entity.JobInfoEntity;
 
@@ -20,6 +17,7 @@ import lombok.EqualsAndHashCode;
 @Table(name="t_sod_sync_commetadata_cfg")
 @Entity
 @EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue("MMD")
 public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 
 	/**
