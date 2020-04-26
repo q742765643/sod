@@ -20,7 +20,7 @@ public class NewdataTableColumnEntity extends BaseEntity {
     /**
      * 申请记录id
      */
-    @Column(name = "apply_id", length = 32)
+    @Column(name = "apply_id", length = 36)
     private String applyId;
 
     /**

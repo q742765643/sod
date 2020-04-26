@@ -34,41 +34,14 @@
       >同步服务名称</el-button>
     </el-button-group>
     <!-- <el-scrollbar wrap-class="scrollbar-wrapper"> -->
-    <el-table :data="columnData" border @selection-change="res=>selColumnData=res" height="550">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" class="demo-table-expand">
-            <el-form-item label="是否可空">
-              <span>{{ props.row.isNull }}</span>
-            </el-form-item>
-            <el-form-item label="是否可改">
-              <span>{{ props.row.isUpdate }}</span>
-            </el-form-item>
-            <el-form-item label="是否显示">
-              <span>{{ props.row.isShow }}</span>
-            </el-form-item>
-            <el-form-item label="是否主键">
-              <span>{{ props.row.isPrimaryKey }}</span>
-            </el-form-item>
-            <el-form-item label="中文描述">
-              <span>{{ props.row.nameCn }}</span>
-            </el-form-item>
-            <el-form-item label="是否管理字段">
-              <span>{{ props.row.isManager }}</span>
-            </el-form-item>
-            <el-form-item label="是否修改数据库">
-              <span>{{ props.row.updateDatabase }}</span>
-            </el-form-item>
-
-            <el-form-item label="默认值">
-              <span>{{ props.row.defaultValue }}</span>
-            </el-form-item>
-            <el-form-item label="序号">
-              <span>{{ props.row.serialNumber }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
+    <el-table
+      :data="columnData"
+      border
+      @selection-change="res=>selColumnData=res"
+      height="550"
+      ref="selectionTable"
+      @row-click="handleClickTableRow"
+    >
       <el-table-column type="index" width="70"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
@@ -90,6 +63,15 @@
       <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
       <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
+      <el-table-column label="是否可空" prop="isNull" width="100px"></el-table-column>
+      <el-table-column label="是否可改" prop="isUpdate" width="100px"></el-table-column>
+      <el-table-column label="是否显示" prop="isShow" width="100px"></el-table-column>
+      <el-table-column label="是否主键" prop="isPrimaryKey" width="100px"></el-table-column>
+      <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
+      <el-table-column label="是否管理字段" prop="isManager" width="100px"></el-table-column>
+      <el-table-column label="是否修改数据库" prop="updateDatabase" width="140px"></el-table-column>
+      <el-table-column label="默认值" prop="defaultValue" width="100px"></el-table-column>
+      <el-table-column label="序号" prop="serialNumber" width="100px"></el-table-column>
     </el-table>
     <!-- </el-table-column> -->
     <el-dialog
@@ -295,8 +277,6 @@
               v-model="columnEditData.isNull"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -306,8 +286,6 @@
               v-model="columnEditData.isUpdate"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -317,8 +295,6 @@
               v-model="columnEditData.isShow"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -328,8 +304,6 @@
               v-model="columnEditData.isPrimaryKey"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -339,8 +313,6 @@
               v-model="columnEditData.isManager"
               active-color="#13ce66"
               inactive-color="#909399"
-              :active-value="true"
-              :inactive-value="false"
             ></el-switch>
           </el-form-item>
         </el-col>
@@ -460,6 +432,7 @@ import {
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { enable } from "@/api/structureManagement/tableStructureManage/index";
 import { findAllManageGroup } from "@/api/dbDictMangement/manageField";
+import { codeVer } from "@/components/commonVaildate.js";
 export default {
   props: { tableInfo: Object, tableType: String, rowData: Object },
   components: {
@@ -468,6 +441,23 @@ export default {
     handleExport
   },
   data() {
+    var nameValidate = (rule, value, callback) => {
+      let msg = "";
+      if (rule.field == "dbEleCode") {
+        msg = "公共元数据字段";
+      } else if (rule.field == "celementCode") {
+        msg = "字段名称";
+      }
+      if (value === "") {
+        callback(new Error("请输入" + msg));
+      } else if (!codeVer(value)) {
+        callback(
+          new Error(msg + "不允许输入小写字母和中文，且需以大写字母开头")
+        );
+      } else {
+        callback();
+      }
+    };
     return {
       handleExportObj: {
         name: "add-column"
@@ -481,7 +471,14 @@ export default {
       },
       exportInnerVisible: false,
       filepath: "",
-      columnEditData: { unitCn: "N" },
+      columnEditData: {
+        unitCn: "N",
+        isManager: false,
+        isPrimaryKey: false,
+        isShow: false,
+        isUpdate: false,
+        isNull: false
+      },
       columnData: [],
       selColumnData: [],
       pubData: { matedata: [], mmdata: [] }, //公共元数据字段，管理字段
@@ -504,10 +501,10 @@ export default {
       repeatIndex: 0,
       rules: {
         dbEleCode: [
-          { required: true, message: "请输入公共元数据字段", trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" }
         ],
         celementCode: [
-          { required: true, message: "请输入字段名称", trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" }
         ],
         userEleCode: [
           { required: true, message: "请输入服务名称", trigger: "blur" }
@@ -532,6 +529,10 @@ export default {
     };
   },
   methods: {
+    // 选中就勾选
+    handleClickTableRow(row, event, column) {
+      this.$refs.selectionTable.toggleRowSelection(row);
+    },
     /* 复用字段 */
     getColumnTables() {
       this.getmatedata();
@@ -593,7 +594,14 @@ export default {
         });
         return;
       }
-      this.columnEditData = {};
+      this.columnEditData = {
+        unitCn: "N",
+        isManager: false,
+        isPrimaryKey: false,
+        isShow: false,
+        isUpdate: false,
+        isNull: false
+      };
       this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
       this.dialogStatus.columnDialog = true;
@@ -910,28 +918,26 @@ export default {
         if (this.tableType == "E-show") {
           publicRows.forEach(element => {
             element.isKvK = "true";
+            element.id = "";
+            element.tableId = this.tableInfo.id;
           });
         }
-        this.axios
-          .post(interfaceObj.TableStructure_addManageColumn, {
-            manageColumnList: publicRows
-          })
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.$message({
-                message: msg + "添加成功！",
-                type: "success"
-              });
-
-              this.getCodeTable();
-            } else {
-              this.$message({
-                message: res.data.returnMessage,
-                type: "error"
-              });
-            }
-          })
-          .catch(error => {});
+        publicRows.forEach(element => {
+          element.id = "";
+          element.tableId = this.tableInfo.id;
+        });
+        tableColumnSaveList({ tableColumnList: publicRows }).then(response => {
+          if (response.code == 200) {
+            this.$message({ message: "操作成功", type: "success" });
+            this.dialogStatus.columnDialog = false;
+            this.getCodeTable();
+          } else {
+            this.$message({
+              type: "error",
+              message: "操作失败"
+            });
+          }
+        });
       } else {
         this.$message({
           message: msg + "无剩余可添加数据!",
@@ -1019,8 +1025,9 @@ export default {
       console.log(data);
       data.forEach(element => {
         element.id = "";
+        element.tableId = this.tableInfo.id;
       });
-      tableColumnSaveList(data).then(response => {
+      tableColumnSaveList({ tableColumnList: data }).then(response => {
         if (response.code == 200) {
           this.$message({ message: "操作成功", type: "success" });
           this.$refs[formName].resetFields();

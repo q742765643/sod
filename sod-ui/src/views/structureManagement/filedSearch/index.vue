@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container filedSearch">
     <!-- 存储字段检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="表名称:">
@@ -20,23 +20,37 @@
     </el-form>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column
-        prop="C_ELEMENT_CODE"
-        label="公共元数据字段"
-        width="140px"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
-      <el-table-column :show-overflow-tooltip="true" prop="DB_ELE_CODE" label="字段名称" width="120px"></el-table-column>
-      <el-table-column
-        :show-overflow-tooltip="true"
-        prop="USER_ELE_CODE"
-        label="服务名称"
-        width="120px"
-      ></el-table-column>
-      <el-table-column prop="ELE_NAME" label="中文简称" width="170px"></el-table-column>
-      <el-table-column prop="TYPE" label="数据类型" width="80px"></el-table-column>
-      <el-table-column prop="ACCURACY" label="数据精度" width="80px"></el-table-column>
-      <el-table-column prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true">
+      <af-table-column prop="C_ELEMENT_CODE" label="公共元数据字段">
+        <template slot-scope="scope">
+          <span>{{scope.row.C_ELEMENT_CODE}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="DB_ELE_CODE" label="字段名称">
+        <template slot-scope="scope">
+          <span>{{scope.row.DB_ELE_CODE}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="USER_ELE_CODE" label="服务名称">
+        <template slot-scope="scope">
+          <span>{{scope.row.USER_ELE_CODE}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="ELE_NAME" label="中文简称">
+        <template slot-scope="scope">
+          <span>{{scope.row.ELE_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="TYPE" label="数据类型">
+        <template slot-scope="scope">
+          <span>{{scope.row.TYPE}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="ACCURACY" label="数据精度">
+        <template slot-scope="scope">
+          <span>{{scope.row.ACCURACY}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="CLASS_NAME" label="资料名称">
         <template slot-scope="scope">
           <el-link
             :underline="false"
@@ -44,9 +58,17 @@
             @click="viewCell(scope.row)"
           >{{scope.row.CLASS_NAME}}</el-link>
         </template>
-      </el-table-column>
-      <el-table-column prop="TABLE_NAME" :show-overflow-tooltip="true" label="表名称" width="160px"></el-table-column>
-      <el-table-column prop="LOGIC_NAME" :show-overflow-tooltip="true" label="数据用途" width="100px"></el-table-column>
+      </af-table-column>
+      <af-table-column prop="TABLE_NAME" label="表名称">
+        <template slot-scope="scope">
+          <span>{{scope.row.TABLE_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="LOGIC_NAME" label="数据用途">
+        <template slot-scope="scope">
+          <span>{{scope.row.LOGIC_NAME}}</span>
+        </template>
+      </af-table-column>
     </el-table>
 
     <pagination
@@ -177,8 +199,19 @@ export default {
   }
 };
 </script>
-<style lang="css" scoped>
-.searchBox {
-  margin-bottom: 20px;
+<style lang="scss">
+.filedSearch {
+  .searchBox {
+    margin-bottom: 20px;
+  }
+  .el-table {
+    .cell {
+      white-space: nowrap !important;
+      width: fit-content !important;
+    }
+    td {
+      text-align: left !important;
+    }
+  }
 }
 </style>

@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.database;
 
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -22,14 +23,18 @@ import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
+import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.fileupload.FileItem;
@@ -59,7 +64,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Autowired
     private DatabaseDao databaseDao;
     @Autowired
-    private DatabaseDefineDao databaseDefineDao;
+    private DatabaseDefineService databaseDefineService;
     @Autowired
     private DatabaseInfo databaseInfo;
     @Autowired
@@ -87,6 +92,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
         if(StringUtils.isNotBlank(databaseUserEntity.getExamineStatus())){
             specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseUserEntity.getExamineStatus());
+        }
+        if(StringUtils.isNotBlank(databaseUserEntity.getUserId())){
+            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(),databaseUserEntity.getUserId());
         }
         Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
@@ -119,7 +127,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto) {
         this.delete(databaseUserDto.getId());
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
-        this.save(databaseUserEntity);
+        this.saveNotNull(databaseUserEntity);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
@@ -163,7 +171,49 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public DatabaseUserDto saveDto(DatabaseUserDto databaseUserDto) {
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
-        this.save(databaseUserEntity);
+        this.saveNotNull(databaseUserEntity);
+        return this.databaseUserMapper.toDto(databaseUserEntity);
+    }
+
+    @Override
+    public DatabaseUserDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            if (entry.getValue().length > 0) {
+                map.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+
+        String databaseup_id = map.get("databaseup_id");
+        String databaseUP_IP = map.get("databaseUP_IP");
+        String id = map.get("id");
+        String databaseup_desc = map.get("databaseup_desc");
+        String database_ids = map.get("database_ids");
+        String databaseup_password = map.get("databaseup_password");
+        String data = map.get("data");
+        String picurl2 = map.get("picurl2");//修改前的申请材料，是否删除
+
+        DatabaseUserEntity databaseUserEntity = new DatabaseUserEntity();
+        if(StringUtils.isNotEmpty(id)){
+            databaseUserEntity.setId(id);
+        }
+        databaseUserEntity.setApplyDatabaseId(database_ids);
+        if(StringUtils.isNotEmpty(filePath)){
+            databaseUserEntity.setApplyMaterial(filePath);
+        }
+        if(StringUtils.isNotEmpty(data)){
+            JSONObject object = JSONObject.parseObject(data);
+            String userId = (String) object.get("userId");
+            databaseUserEntity.setUserId(userId);
+        }
+        if(StringUtils.isNotEmpty(databaseup_password)){
+            databaseUserEntity.setDatabaseUpPassword(databaseup_password);
+        }
+        databaseUserEntity.setDatabaseUpDesc(databaseup_desc);
+        databaseUserEntity.setDatabaseUpId(databaseup_id);
+        databaseUserEntity.setDatabaseUpIp(databaseUP_IP);
+        databaseUserEntity.setExamineStatus("0");
+        databaseUserEntity = this.saveNotNull(databaseUserEntity);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
@@ -356,7 +406,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             String st = "0";
             databases.setExamineStatus(st);
             DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databases);
-            this.save(databaseUserEntity);
+            this.saveNotNull(databaseUserEntity);
             return this.databaseUserMapper.toDto(databaseUserEntity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -614,5 +664,57 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
         //下面返回。
         return map;
+    }
+
+    @Override
+    public ResultT changePassword(String id, String oldPwd, String newPwd) {
+        DatabaseUserDto databaseUserDto = this.getDotById(id);
+        if(!databaseUserDto.getDatabaseUpPassword().equals(oldPwd)){
+            return  ResultT.failed("输入的旧密码不正确");
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        boolean flag = true;
+        String[] databaseIds = databaseUserDto.getExamineDatabaseId().split(",");
+        for(String databaseId : databaseIds){
+            DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(databaseId);
+            //获取数据库管理账户
+            DatabaseAdministratorDto databaseAdministratorDto = null;
+            Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDefineDto.getDatabaseAdministratorList();
+            for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
+                if(databaseAdministratorDto1.getIsManager()){
+                    databaseAdministratorDto = databaseAdministratorDto1;
+                    break;
+                }
+            }
+            if(databaseAdministratorDto == null){
+                buffer.append("物理库：" + databaseDefineDto.getDatabaseName()+",没有管理员账户" + "<br/>");
+                continue;
+            }
+
+            if(databaseDefineDto.getDatabaseType().equalsIgnoreCase("xugu")){
+                try {
+                    Xugu xugu = new Xugu(databaseDefineDto.getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
+                    xugu.updateAccount(databaseUserDto.getDatabaseUpId(),newPwd);
+                } catch (Exception e) {
+
+                }
+
+            }else if(databaseDefineDto.getDatabaseType().equalsIgnoreCase("Gbase8a")){
+                try {
+                    Gbase8a gbase8a = new Gbase8a(databaseDefineDto.getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
+                    gbase8a.updateAccount(databaseUserDto.getDatabaseUpId(),newPwd);
+                } catch (Exception e) {
+
+                }
+
+            }
+
+        }
+        //数据库全部更新成功，修改记录密码
+        if(flag){
+
+        }
+        return null;
     }
 }

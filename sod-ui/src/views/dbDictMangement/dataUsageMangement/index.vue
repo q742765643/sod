@@ -186,20 +186,32 @@ export default {
         });
         return;
       } else {
-        delLogic({ id: this.choserow[0].id }).then(response => {
-          if (response.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-            this.handleQuery();
-          } else {
-            this.$message({
-              type: "error",
-              message: "删除失败"
-            });
+        this.$confirm(
+          "确认要删除" + this.choserow[0].logicFlag + "吗?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
           }
-        });
+        )
+          .then(() => {
+            delLogic({ id: this.choserow[0].id }).then(response => {
+              if (response.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功"
+                });
+                this.handleQuery();
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "删除失败"
+                });
+              }
+            });
+          })
+          .catch(() => {});
       }
     },
     cancelDialog() {

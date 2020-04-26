@@ -18,11 +18,11 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="用途描述">
-              <el-select disabled class="size-full" v-model="registerForm.LOGIC_NAME">
+              <el-select disabled class="size-full" v-model="registerForm.LOGIC_ID">
                 <el-option
                   :key="index"
-                  :label="item.name"
-                  :value="item.id"
+                  :label="item.logicName"
+                  :value="item.logicFlag"
                   v-for="(item,index) in logicDBArr"
                 ></el-option>
               </el-select>
@@ -45,33 +45,21 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="申请人">
-              <el-input v-model="registerForm.USER_NAME" :disabled="true"></el-input>
+              <el-input v-model="registerForm.WEB_USERNAME" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <el-form-item label="审核状态">
-              <el-radio v-model="registerForm.radio" :label="1">通过</el-radio>
-              <el-radio v-model="registerForm.radio" :label="2">不通过</el-radio>
+              <el-radio v-model="registerForm.examineStatus" :label="1">通过</el-radio>
+              <el-radio v-model="registerForm.examineStatus" :label="2">不通过</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row v-if="radio==1">
+        <el-row>
           <el-col :span="24">
-            <el-form-item label="备注信息">
-              <el-input
-                type="textarea"
-                :autosize="{ minRows: 3, maxRows: 4}"
-                placeholder="请输入内容"
-                v-model="registerForm.DATA_PROP"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row v-if="radio==2">
-          <el-col :span="24">
-            <el-form-item label="拒绝原因">
+            <el-form-item :label="registerForm.examineStatus==2?'拒绝原因':'备注信息'">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 4}"
@@ -84,15 +72,18 @@
       </el-form>
     </el-card>
     <div class="dialog-footer">
-      <el-button type="primary" v-if="registerForm.radio==1" @click="checkFuc(2)">通过</el-button>
-      <el-button type="warning" v-if="registerForm.radio==2" @click="checkFuc(3)">拒绝</el-button>
+      <el-button type="primary" v-if="registerForm.examineStatus==1" @click="checkFuc(2)">通过</el-button>
+      <el-button type="danger" v-if="registerForm.examineStatus==2" @click="checkFuc(3)">拒绝</el-button>
       <el-button @click="closeFuc">取消</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { updateStatus } from "@/api/authorityAudit/DRegistration/reviewdataRegister";
+import {
+  logicDefineAll,
+  updateStatus
+} from "@/api/authorityAudit/DRegistration/reviewdataRegister";
 export default {
   name: "reviewDataRegister",
   props: {
@@ -103,16 +94,23 @@ export default {
   data() {
     return {
       registerForm: {
-        radio: 1
+        examineStatus: 1 //examineStatus tofo
       },
       logicDBArr: []
     };
   },
-  created() {},
+  created() {
+    logicDefineAll().then(response => {
+      this.logicDBArr = response.data;
+    });
+    this.registerForm = this.handleObj;
+    this.registerForm.examineStatus = 1;
+  },
   methods: {
     checkFuc(type) {
       const checkobj = {
         id: this.registerForm.ID,
+        ddataId: this.registerForm.D_DATA_ID,
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
@@ -125,8 +123,9 @@ export default {
           });
           if (type == 2) {
             this.$emit("cancelHandle", this.registerForm);
-          } else if (type == 3) {
-            this.$emit("cancelHandle", 3);
+          } else {
+            // 拒绝
+            this.$emit("cancelHandle");
           }
         }
       });

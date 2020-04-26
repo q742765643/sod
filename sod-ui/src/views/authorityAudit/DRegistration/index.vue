@@ -15,7 +15,7 @@
       </el-form-item>
 
       <el-form-item label="审核状态：">
-        <el-select v-model="queryParams.examineStatus">
+        <el-select v-model="queryParams.examineStatus" @change="handleQuery">
           <el-option label="待审核" :value="1"></el-option>
           <el-option label="通过" :value="2"></el-option>
           <el-option label="不通过" :value="3"></el-option>
@@ -42,12 +42,12 @@
     <!-- 表格 -->
     <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" :index="table_index" width="45" label=" "></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据分类" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据名称" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="username" label="申请人"></el-table-column>
-      <el-table-column prop="deptName" label="机构"></el-table-column>
-      <el-table-column prop="phone" label="联系方式"></el-table-column>
+      <el-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
+      <el-table-column prop="TYPE_NAME" label="数据名称" width="240" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="WEB_USERNAME" label="申请人"></el-table-column>
+      <el-table-column prop="DEPT_NAME" label="机构"></el-table-column>
+      <el-table-column prop="PHONE" label="联系方式"></el-table-column>
       <el-table-column prop="CREATE_TIME" label="申请时间" width="160" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.CREATE_TIME) }}</span>
@@ -57,10 +57,11 @@
         prop="EXAMINE_STATUS"
         label="审核状态"
         width="100"
-        v-if="queryParams.examineStatus !==2 "
+        v-if="queryParams.examineStatus !=2 "
       >
         <template slot-scope="scope">
           <span v-if="scope.row.EXAMINE_STATUS==1">待审核</span>
+          <span v-if="scope.row.EXAMINE_STATUS==2">审核通过</span>
           <span v-if="scope.row.EXAMINE_STATUS==3">审核不通过</span>
           <span v-if="scope.row.EXAMINE_STATUS==4">删除申请中</span>
           <span v-if="scope.row.EXAMINE_STATUS==5">已失效</span>
@@ -71,7 +72,7 @@
       <el-table-column
         prop="STORAGE_DEFINE_IDENTIFIER"
         label="存储构建"
-        width="100"
+        width="120"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -89,7 +90,7 @@
       <el-table-column
         prop="SYNC_IDENTIFIER"
         label="数据同步"
-        width="100"
+        width="120"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -104,7 +105,7 @@
       </el-table-column>
 
       <!-- 迁移 -->
-      <el-table-column prop="MOVE_ST" label="迁移" width="80" v-if="queryParams.examineStatus===2">
+      <el-table-column prop="MOVE_ST" label="迁移" width="100" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <!-- 迁移 -->
 
@@ -120,7 +121,7 @@
       <el-table-column
         prop="CLEAR_ST"
         label="清除"
-        min-width="70"
+        min-width="100"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -138,12 +139,7 @@
       </el-table-column>
 
       <!-- 备份 -->
-      <el-table-column
-        prop="BACKUP_ST"
-        label="备份"
-        min-width="55"
-        v-if="queryParams.examineStatus===2"
-      >
+      <el-table-column prop="BACKUP_ST" label="备份" width="100" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.BACKUP_ST==1"
@@ -161,7 +157,7 @@
       <el-table-column
         prop="ARCHIVING_IDENTIFIER"
         label="恢复"
-        min-width="55"
+        width="100"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -173,37 +169,36 @@
       <el-table-column
         prop="EXAMINE_STATUS"
         label="操作"
-        min-width="50"
+        width="80"
         v-if="queryParams.examineStatus!==5"
       >
-        <template slot-scope="scope1">
+        <template slot-scope="scope">
           <el-button
             type="text"
-            plain
             size="mini"
-            v-if="scope1.row.EXAMINE_STATUS===1"
-            @click="examineData(scope1.row)"
+            v-if="scope.row.EXAMINE_STATUS===1"
+            @click="examineData(scope.row)"
           >
             <i class="el-icon-s-management"></i>审核
           </el-button>
           <el-button
-            plain
             size="mini"
             type="text"
-            v-if="scope1.row.EXAMINE_STATUS==2||scope1.row.EXAMINE_STATUS==4"
-            @click="deleteList(scope1.row)"
+            v-if="scope.row.EXAMINE_STATUS==2||scope.row.EXAMINE_STATUS==4"
+            @click="deleteList(scope.row)"
           >
             <i class="el-icon-delete"></i>删除
           </el-button>
-          <el-button
-            plain
-            size="mini"
-            type="text"
-            v-if="scope1.row.EXAMINE_STATUS===3"
-            @click="showReason(scope1.row)"
+          <el-popover
+            v-if="scope.row.EXAMINE_STATUS===3"
+            placement="top-start"
+            trigger="hover"
+            :content="scope.row.REMARK"
           >
-            <i class="el-icon-tickets"></i>原因
-          </el-button>
+            <el-button slot="reference" size="mini" type="text">
+              <i class="el-icon-tickets"></i>原因
+            </el-button>
+          </el-popover>
         </template>
       </el-table-column>
     </el-table>
@@ -283,7 +278,12 @@
 
     <!-- 存储资料审核步骤 -->
     <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
-      <revieStepRegister v-if="reviewStep" :handleObj="handleMsgObj" @closeStep="closeStep" />
+      <revieStepRegister
+        v-if="reviewStep"
+        :handleObj="handleMsgObj"
+        @closeStep="closeStep"
+        :before-close="closeStep"
+      />
     </el-dialog>
   </div>
 </template>
@@ -307,7 +307,8 @@ import reviewDataRegister from "@/views/authorityAudit/DRegistration/reviewdataR
 import revieStepRegister from "@/views/authorityAudit/DRegistration/review/index";
 import {
   getDataClassify,
-  getDataTable
+  getDataTable,
+  databaseGet
 } from "@/api/authorityAudit/DRegistration/index";
 export default {
   components: {
@@ -322,6 +323,8 @@ export default {
   },
   data() {
     return {
+      reviewStep: false,
+      loading: true,
       queryParams: { pageNum: 1, pageSize: 10, DDataId: "", examineStatus: "" }, //查询
       dbtypeselect: [], //数据分类下拉框
       tableData: [], //表格
@@ -341,7 +344,8 @@ export default {
       handleSyncDialog: false, //同步
       handleCLeadupDialog: false, //清除
       /* 数据注册审核 */
-      handleReDialog: false
+      handleReDialog: false,
+      currentRow: {} //当前行
     };
   },
   created() {
@@ -349,6 +353,7 @@ export default {
     getDataClassify().then(response => {
       this.dbtypeselect = response.data;
     });
+    this.getList();
   },
   methods: {
     // table自增定义方法
@@ -383,10 +388,7 @@ export default {
       this.getList();
     },
     /* 增量同步元数据 */
-    handleAddSync() {
-      // todo
-      this.handleReDialog = true;
-    },
+    handleAddSync() {},
     /* 表格操作 */
     // 存储结构
     handledDBMethods(row) {
@@ -462,26 +464,56 @@ export default {
       this.handleDataRecoveryDialog = true;
     },
     // 审核
-    examineData(row) {},
+    examineData(row) {
+      // todo
+      this.currentRow = row;
+      this.handleMsgObj = {};
+      this.handleMsgObj = row;
+      this.handleReDialog = true;
+    },
     // 删除
     deleteList(row) {},
-    // 查看原因
-    showReason(row) {},
     // 关闭数据注册弹窗
-    handleDataReg(info) {
+    async handleDataReg(info) {
       if (info) {
-        if (info == 3) {
-          // 拒绝
-        } else {
-          // 同意
-        }
+        // 传到资料弹窗的数据
+        this.handleMsgObj = {};
+        this.handleMsgObj = info;
+        this.handleMsgObj.applyId = this.currentRow.ID;
+        // 根据专题库id查寻
+        await databaseGet({ id: this.currentRow.DATABASE_ID }).then(
+          response => {
+            this.handleMsgObj.dataLogicList = [
+              {
+                logicFlag: this.currentRow.LOGIC_ID, //数据用途
+                logicName: this.currentRow.LOGIC_NAME, //数据用途
+                databaseId: this.currentRow.DATABASE_ID, //专题库id
+                databaseName: response.data.databaseName, //专题库名称
+                databasePName: response.data.databaseDefine.databaseName //数据库名称
+              }
+            ];
+            this.reviewStep = true;
+          }
+        );
+
+        /* databaseId: "d205145e5ce147febdaf96eb37f21118"
+databaseName: "基础库"
+databasePName: "结构化数据库"
+logicFlag: "Case"
+logicName: "科研个例数据"
+storageName: "要素表"
+storageType: "E_table" */
       } else {
+        // 取消/拒绝
         this.getList();
       }
       this.handleReDialog = false;
     },
     // 关闭步骤
-    closeStep() {},
+    closeStep() {
+      this.reviewStep = false;
+      this.handleQuery();
+    },
     // 关闭弹窗
     handleClose() {
       this.handleMsgObj = {};

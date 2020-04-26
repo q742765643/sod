@@ -129,9 +129,8 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 		if(!StringUtil.isEmpty(mfe.getDbEleCode())) mfe.setDbEleCode("%"+mfe.getDbEleCode()+"%");
 
 		List<ManageFieldEntity> data = manageFieldMapper.findByConditions(mfe);
-		PageInfo<ManageFieldEntity> pageInfo = new PageInfo<>(data);
-
-		List<ManageFieldDto> dtoData = manageFieldMapstruct.toDto(pageInfo.getList());
+		List<ManageFieldDto> dtoData = manageFieldMapstruct.toDto(data);
+		PageInfo<ManageFieldDto> pageInfo = new PageInfo<>(dtoData);
 		PageBean pageBean = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
 
 		return pageBean;

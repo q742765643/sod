@@ -345,7 +345,7 @@ export default {
     //点击编辑时处理
     if (this.handleMsgObj.id) {
       this.isDbIdDisable = true;
-      await this.formDetail(this.handleMsgObj.id, "detail");
+      this.formDetail(this.handleMsgObj.id, "detail");
       /*  //存储信息
       this.getPhysicsStorage(this.msgFormDialog.id);
       //账户列表
@@ -372,59 +372,58 @@ export default {
         if (!valid) {
           this.$message.error("请正确填写基本信息列表");
           return;
-        }
-      });
-      //验证存储信息列表的必填项是否输入
-      this.msgFormDialog.databaseNodesList.forEach(element => {
-        if (!element.databaseNode) {
-          this.$message.error("请正确填写存储信息列表");
-          return;
-        }
-        this.$set(element, "databaseId", this.msgFormDialog.id);
-      });
-      //验证账户信息列表的必填项是否输入
-      this.msgFormDialog.databaseAdministratorList.forEach(element => {
-        if (!element.userName || !element.passWord) {
-          this.$message.error("请正确填写账户信息列表");
-          return;
-        }
-      });
-
-      //验证账户名称是否重复
-      let names = [];
-      this.msgFormDialog.databaseAdministratorList.some((item, i) => {
-        names.push(item.userName);
-      });
-      names.sort();
-      for (var i = 1; i < names.length; i++) {
-        if (names[i - 1] === names[i]) {
-          this.$message.error("用户名重复！");
-          return;
-        }
-      }
-      console.log(this.msgFormDialog);
-      if (!this.handleMsgObj) {
-        // 如果新增
-        //验证数据库是否已存在
-        await this.formDetail(this.msgFormDialog.id, "repeat");
-        //保存操作
-        if (this.flag) {
-          this.$message({ message: "数据库ID重复", type: "error" });
-          return;
-        }
-      }
-      databaseDefineSave(this.msgFormDialog).then(response => {
-        if (response.code == 200) {
-          this.$message({ message: "操作成功", type: "success" });
-          this.cancelDialog();
         } else {
-          this.$message({ message: response.msg, type: "error" });
-          this.cancelDialog();
+          //验证存储信息列表的必填项是否输入
+          this.msgFormDialog.databaseNodesList.forEach(element => {
+            if (!element.databaseNode) {
+              this.$message.error("请正确填写存储信息列表");
+              return;
+            }
+            this.$set(element, "databaseId", this.msgFormDialog.id);
+          });
+          //验证账户信息列表的必填项是否输入
+          this.msgFormDialog.databaseAdministratorList.forEach(element => {
+            if (!element.userName || !element.passWord) {
+              this.$message.error("请正确填写账户信息列表");
+              return;
+            }
+          });
+          //验证账户名称是否重复
+          let names = [];
+          this.msgFormDialog.databaseAdministratorList.some((item, i) => {
+            names.push(item.userName);
+          });
+          names.sort();
+          for (var i = 1; i < names.length; i++) {
+            if (names[i - 1] === names[i]) {
+              this.$message.error("用户名重复！");
+              return;
+            }
+          }
+          console.log(this.msgFormDialog);
+          if (!this.handleMsgObj) {
+            // 如果新增
+            //验证数据库是否已存在
+            this.formDetail(this.msgFormDialog.id, "repeat");
+          }
+          if (this.flag) {
+            this.$message({ message: "数据库ID重复", type: "error" });
+            return;
+          }
+          databaseDefineSave(this.msgFormDialog).then(response => {
+            if (response.code == 200) {
+              this.$message({ message: "操作成功", type: "success" });
+              this.cancelDialog();
+            } else {
+              this.$message({ message: response.msg, type: "error" });
+              this.cancelDialog();
+            }
+          });
         }
       });
     },
-    async formDetail(id, type) {
-      await databaseDefineGet({ id: id }).then(response => {
+    formDetail(id, type) {
+      databaseDefineGet({ id: id }).then(response => {
         if (type == "repeat") {
           if (response.data) {
             this.flag = true;

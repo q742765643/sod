@@ -10,11 +10,13 @@ import com.piesat.util.BaseDto;
 
 import lombok.Data;
 
+import javax.persistence.Version;
+
 @Data
 public class ManageFieldDto extends BaseDto{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3016029307502490989L;
 	/**
@@ -61,6 +63,7 @@ public class ManageFieldDto extends BaseDto{
 	 *  分组id
 	 */
 	private String groupId;
-	
+
+	private Integer version;
 
 }

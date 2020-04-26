@@ -119,7 +119,7 @@
               :handleExportObj="handleExportObj"
               baseUrl="DM"
               btnText="模板下载"
-              exportUrl="/dm/databaseDefine/export"
+              exportUrl="/dm/fileUpDown/download"
             />
             <handlePreviewDocx
               v-show="isHideAdd"
@@ -252,7 +252,7 @@ export default {
       },
       innerVisible: false,
       downUrl: "",
-      upLoadUrl: baseUrl + "/dm/fileUpDown/uploadOne",
+      upLoadUrl: baseUrl + "/dm/databaseUser/api/databaseUser/upload",
       isDisabled: false,
       userDiasbled: false,
       isHideAdd: true,
@@ -527,9 +527,9 @@ export default {
     },
     auditMethods(value) {
       if (value) {
-        this.msgFormDialog.examineStatus = 1;
-      } else {
         this.msgFormDialog.examineStatus = 2;
+      } else {
+        this.msgFormDialog.examineStatus = 1;
       }
       this.msgFormDialog.failureReason = value;
       let obj = this.msgFormDialog;

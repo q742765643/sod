@@ -61,7 +61,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
             databaseDefineDto.setCreateTime(new Date());
         }
         DatabaseDefineEntity databaseDefineEntity = this.databaseDefineMapper.toEntity(databaseDefineDto);
-        DatabaseDefineEntity save = this.save(databaseDefineEntity);
+        DatabaseDefineEntity save = this.saveNotNull(databaseDefineEntity);
         DatabaseEntity databaseEntity = this.databaseMapper.toEntity(databaseDto);
         databaseEntity.setDatabaseDefine(save);
         databaseEntity = this.databaseDao.saveNotNull(databaseEntity);
@@ -104,7 +104,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         if (StringUtils.isNotBlank(databaseDefineDto.getDatabaseName())) {
             ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getDatabaseName());
         }
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.ASC, "serialNumber");
         PageBean page = this.getPage(ssb.generateSpecification(), new PageForm(pageNum, pageSize), sort);
         List<DatabaseDefineEntity> pageData = (List<DatabaseDefineEntity>)page.getPageData();
         page.setPageData(this.databaseDefineMapper.toDto(pageData));

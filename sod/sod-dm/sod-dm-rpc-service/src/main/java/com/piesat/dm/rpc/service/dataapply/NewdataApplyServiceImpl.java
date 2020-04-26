@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.UUID;
 import com.piesat.dm.dao.dataapply.NewdataApplyDao;
 import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
@@ -22,6 +23,7 @@ import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.dataapply.NewdataTableColumnDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
@@ -29,6 +31,7 @@ import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.dataapply.NewdataApplyMapper;
+import com.piesat.dm.rpc.mapper.dataapply.NewdataTableColumnMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -77,6 +80,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Autowired
     private NewdataTableColumnDao newdataTableColumnDao;
     @Autowired
+    private NewdataTableColumnMapper newdataTableColumnMapper;
+    @Autowired
     private NewdataTableColumnService newdataTableColumnService;
 
 
@@ -106,12 +111,19 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public NewdataApplyDto getDotById(String id) {
         NewdataApplyEntity newdataApplyEntity = this.getById(id);
-        return newdataApplyMapper.toDto(newdataApplyEntity);
+        List<NewdataTableColumnEntity> byApplyId = newdataTableColumnDao.findByApplyId(id);
+        List<NewdataTableColumnDto> newdataTableColumnDtos = this.newdataTableColumnMapper.toDto(byApplyId);
+        NewdataApplyDto newdataApplyDto = newdataApplyMapper.toDto(newdataApplyEntity);
+        newdataApplyDto.setColumnList(newdataTableColumnDtos);
+        return newdataApplyDto;
     }
 
     @Override
     public NewdataApplyDto saveDto(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        if(!StringUtils.isNotNullString(newdataApplyEntity.getId())){
+            newdataApplyEntity.setId(UUID.randomUUID().toString());
+        }
         newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
@@ -129,8 +141,12 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
         //newdataApplyEntity = this.saveNotNull(newdataApplyEntity);
-        newdataApplyEntity.setExamineTime(new Date());
-        newdataApplyEntity.setExaminer("");
+        if(newdataApplyDto.getExamineStatus() != null){
+            if(newdataApplyDto.getExamineStatus().intValue() == 2 || newdataApplyDto.getExamineStatus().intValue() == 3){
+                newdataApplyEntity.setExamineTime(new Date());
+                newdataApplyEntity.setExaminer("");
+            }
+        }
         mybatisQueryMapper.updateNewdataApplyStatus(newdataApplyEntity);
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
@@ -356,7 +372,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
             newdataApplyEntity.setDDataId(dDataId);
             newdataApplyEntity.setUserId(applyId);
             newdataApplyEntity.setExamineStatus(4);
-            newdataApplyDao.save(newdataApplyEntity);
+            newdataApplyDao.saveNotNull(newdataApplyEntity);
             result.put("returnCode", "0");
             result.put("returnMessage", "操作成功。");
 

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 专题库管理
@@ -105,4 +106,6 @@ public class DatabaseSpecialDto extends BaseDto {
      * 联系方式
      */
     private String userPhone;
+
+    private List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList;
 }

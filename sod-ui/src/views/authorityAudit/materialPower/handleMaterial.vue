@@ -163,13 +163,15 @@ export default {
   },
   async created() {
     this.queryParams.id = this.handleObj.id;
-    await getApplyInfoById({ id: this.handleObj.id }).then(res => {
-      if (res.code == 200) {
-        this.formBaseInfo = res.data;
-      } else {
-        this.msgError(res.msg);
-      }
-    });
+    if (this.handleObj.id) {
+      await getApplyInfoById({ id: this.handleObj.id }).then(res => {
+        if (res.code == 200) {
+          this.formBaseInfo = res.data;
+        } else {
+          this.msgError(res.msg);
+        }
+      });
+    }
   },
   methods: {
     // 眼睛开关

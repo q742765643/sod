@@ -12,12 +12,19 @@
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <handleExport
-          @click="downloadDfcheckFile"
-          :handleExportObj="handleDfExportObj"
+          style="display:none;"
+          ref="downloadDf"
           baseUrl="DM"
           btnText="生成差异报告"
           exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
         />
+
+        <el-button
+          size="small"
+          type="success"
+          icon="el-icon-download"
+          @click="handleDfFile()"
+        >生成差异报告</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -34,7 +41,7 @@
           v-hasPermi="['consistencyCheck:role:delete']"
           type="danger"
           icon="el-icon-delete"
-          @click="deleteData()"
+          @click="deleteData"
         >删除</el-button>
       </el-col>
     </el-row>
@@ -43,7 +50,7 @@
       v-loading="loading"
       :data="tableData"
       row-key="id"
-      @current-change="handleCurrentChange"
+      @selection-change="handleCurrentChange"
     >
       <el-table-column type="index" label=" " :index="table_index"></el-table-column>
       <el-table-column type="selection" width="50"></el-table-column>
@@ -103,13 +110,12 @@
         <el-table-column prop="create_time" label="生成时间"></el-table-column>
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope1">
-            <handleExport
+            <el-button
+              icon="el-icon-tickets"
+              size="small"
+              type="text"
               @click="downloadHischeckFile(scope1.row)"
-              :handleExportObj="handleHisExportObj"
-              baseUrl="DM"
-              btnText="下载"
-              exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
-            />
+            >下载</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -134,15 +140,15 @@ import {
   downloadDfcheckFile,
   consistencyCheckSave,
   getDatabaseName,
-  historyList
+  historyList,
+  deleteByIds
 } from "@/api/structureManagement/consistencyCheck";
 import handleExport from "@/components/export";
 export default {
   components: { handleExport },
   data() {
     return {
-      handleDfExportObj: {},
-      handleHisExportObj: {},
+      currentRow: [],
       // 遮罩层
       loading: true,
       queryParams: {
@@ -208,7 +214,7 @@ export default {
     handleCurrentChange(val) {
       this.currentRow = val;
     },
-    downloadDfcheckFile() {
+    handleDfFile() {
       if (this.currentRow.length != 1) {
         this.$message({
           type: "error",
@@ -216,7 +222,9 @@ export default {
         });
         return;
       }
-      this.handleDfExportObj.databaseId = this.currentRow[0].databaseId;
+      let obj = {};
+      obj.databaseId = this.currentRow[0].databaseId;
+      this.$refs.downloadDf.exportData(obj);
     },
     getOptions() {
       getDatabaseName().then(response => {
@@ -234,8 +242,10 @@ export default {
       });
     },
     downloadHischeckFile(row) {
-      this.handleHisExportObj.file_directory = row.file_directory;
-      this.handleHisExportObj.filename = row.filename;
+      let obj = {};
+      obj.file_directory = row.file_directory;
+      obj.filename = row.filename;
+      this.$refs.downloadDf.exportData(obj);
     },
     addReportData() {
       this.addDataDialog = true;
@@ -249,11 +259,11 @@ export default {
         return;
       }
       let ids = [];
-      array.forEach(element => {
+      this.currentRow.forEach(element => {
         ids.push(element.id);
       });
-      deleteById({ ids: ids.join(",") }).then(response => {
-        if (res.code == 200) {
+      deleteByIds(ids.join(",")).then(response => {
+        if (response.code == 200) {
           this.$message({
             type: "success",
             message: "删除成功"

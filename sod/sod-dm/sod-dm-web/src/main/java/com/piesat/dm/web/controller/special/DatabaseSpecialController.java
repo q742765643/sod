@@ -1,12 +1,16 @@
 package com.piesat.dm.web.controller.special;
 
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.dao.special.DatabaseSpecialAccessDao;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -21,9 +25,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +56,8 @@ public class DatabaseSpecialController {
     @Autowired
     private DatabaseSpecialTreeServiceImpl databaseSpecialTreeService;
 
+    @Value("${serverfile.special}")
+    private String fileAddress;
 
     @ApiOperation(value = "分页查询")
     @RequiresPermissions("dm:databaseSpecial:page")
@@ -91,7 +101,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据id查询")
-    @RequiresPermissions("dm:databaseSpecial:getById")
+    //@RequiresPermissions("dm:databaseSpecial:getById")
     @GetMapping(value = "/getById")
     public ResultT get(String id) {
         try {
@@ -142,14 +152,28 @@ public class DatabaseSpecialController {
         }
     }
 
-    @ApiOperation(value = "修改专题库基本信息")
-    @RequiresPermissions("dm:databaseSpecial:update")
-    @PostMapping(value = "/update")
-    public ResultT update(@RequestBody DatabaseSpecialDto databaseSpecialDto) {
+    @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    //@RequiresPermissions("dm:databaseSpecial:update")
+    @PostMapping(value = "/addOrUpdate")
+    public ResultT addOrUpdate(HttpServletRequest request, @RequestParam(value = "APPLY_FILE_PATH", required = false) MultipartFile applyMaterial) {
         try {
-            //DatabaseSpecialDto save = this.databaseSpecialService.saveDto(databaseSpecialDto);
-            DatabaseSpecialDto save = new DatabaseSpecialDto();
-            return ResultT.success(save);
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            File newFile = null;
+            if (applyMaterial != null) {
+                String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                if(StringUtils.isNotNullString(originalFileName1)){
+                    //新的文件名
+                    String newFileName1 = originalFileName1.substring(0,originalFileName1.lastIndexOf(".")) +"_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS",new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                    newFile = new File(fileAddress + File.separator + newFileName1);
+                    if (!newFile.getParentFile().exists()) {
+                        newFile.getParentFile().mkdirs();
+                    }
+                    //存入
+                    applyMaterial.transferTo(newFile);
+                }
+            }
+            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.addOrUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+            return ResultT.success(databaseSpecialDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -157,8 +181,9 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据专题库id修改专题库使用状态")
-    @RequiresPermissions("dm:databaseSpecial:updateUseStatusById")
-    @PostMapping(value = "/updateUseStatusById")
+    //@RequiresPermissions("dm:databaseSpecial:updateUseStatusById")
+    @Log(title = "专题库管理", businessType = BusinessType.UPDATE)
+    @GetMapping(value = "/updateUseStatusById")
     public ResultT updateUseStatusById(String sdbId,String useStatus) {
         try {
             DatabaseSpecialDto save = this.databaseSpecialService.updateUseStatusById(sdbId, useStatus);
@@ -248,7 +273,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据专题库ID获取对应树和资料信息")
-    @RequiresPermissions("dm:databaseSpecial:getDataTreeBySdbId")
+    //@RequiresPermissions("dm:databaseSpecial:getDataTreeBySdbId")
     @GetMapping(value = "/getDataTreeBySdbId")
     public ResultT getDataTreeBySdbId(String sdbId) {
         try {
@@ -261,7 +286,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据专题库ID获取对应树信息")
-    @RequiresPermissions("dm:databaseSpecial:getTreeBySdbId")
+    //@RequiresPermissions("dm:databaseSpecial:getTreeBySdbId")
     @GetMapping(value = "/getTreeBySdbId")
     public ResultT getTreeBySdbId(String sdbId) {
         try {
@@ -314,7 +339,7 @@ public class DatabaseSpecialController {
 
 
     @ApiOperation(value = "根据用户id和使用状态查询")
-    @RequiresPermissions("dm:databaseSpecial:getByUserIdAndUseStatus")
+    //@RequiresPermissions("dm:databaseSpecial:getByUserIdAndUseStatus")
     @GetMapping(value = "/getByUserIdAndUseStatus")
     public ResultT getByUserIdAndUseStatus(String userId,String useStatus) {
         try {
@@ -325,14 +350,26 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value = "插入同一专题库下的多条记录")
-    @RequiresPermissions("dm:databaseSpecial:saveMultilRecord")
-    @GetMapping(value = "/saveMultilRecord")
-    @Log(title = "插入同一专题库下的多条记录", businessType = BusinessType.INSERT)
-    public  ResultT saveMultilRecord(HttpServletRequest request){
+    @ApiOperation(value = "根据使用状态查询专题库")
+    @GetMapping(value = "/getByUseStatus")
+    public ResultT getByUseStatus(String useStatus) {
         try {
-            Map<String, Object> map = this.databaseSpecialService.saveMultilRecord(request);
-            return ResultT.success(map);
+            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.getByUseStatus(useStatus);
+            return ResultT.success(databaseSpecialDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "插入同一专题库下的多条记录")
+    //@RequiresPermissions("dm:databaseSpecial:saveMultilRecord")
+    @PostMapping(value = "/saveMultilRecord")
+    @Log(title = "插入同一专题库下的多条记录", businessType = BusinessType.INSERT)
+    public  ResultT saveMultilRecord(@RequestBody DatabaseSpecialDto databaseSpecialDto){
+        try {
+            databaseSpecialDto = this.databaseSpecialService.saveMultilRecord(databaseSpecialDto);
+            return ResultT.success(databaseSpecialDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -350,6 +387,19 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "专题库引用申请")
+    @PostMapping(value = "/specialAccessApply")
+    public  ResultT specialAccessApply(@RequestBody DatabaseSpecialAccessDto databaseSpecialAccessDto){
+        try {
+            databaseSpecialAccessDto = this.databaseSpecialService.specialAccessApply(databaseSpecialAccessDto);
+            return ResultT.success(databaseSpecialAccessDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据用户id和专题库状态修改")
     @RequiresPermissions("dm:databaseSpecial:updateBySql")
     @GetMapping(value = "/updateBySql")
@@ -367,23 +417,23 @@ public class DatabaseSpecialController {
         }
     }
     @ApiOperation(value = "下根据专题库ID号获取对应专题库信息和该专题库中对应数据信息")
-    @RequiresPermissions("dm:databaseSpecial:getRecordByTdbId")
+    //@RequiresPermissions("dm:databaseSpecial:getRecordByTdbId")
     @GetMapping(value = "/getRecordByTdbId")
-    public  ResultT getRecordByTdbId(String tdbId,String typeId, String cause){
+    public  ResultT getRecordByTdbId(String tdbId,String typeId, String status){
         try {
-            Map<String,Object> map =  this.databaseSpecialService.getRecordByTdbId(tdbId,typeId,cause);
+            Map<String,Object> map =  this.databaseSpecialService.getRecordByTdbId(tdbId,typeId,status);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value = "根据专题库ID号获取对应专题库信息和对应数据信息")
-    @RequiresPermissions("dm:databaseSpecial:getOneRecordByTdbId")
+    @ApiOperation(value = "根据专题库ID题号获取对应专库信息和对应数据信息")
+    //@RequiresPermissions("dm:databaseSpecial:getOneRecordByTdbId")
     @GetMapping(value = "/getOneRecordByTdbId")
-    public  ResultT getOneRecordByTdbId(String tdbId,String typeId, String cause){
+    public  ResultT getOneRecordByTdbId(String tdbId,String typeId, String status){
         try {
-            Map<String,Object> map =  this.databaseSpecialService.getOneRecordByTdbId(tdbId,typeId,cause);
+            Map<String,Object> map =  this.databaseSpecialService.getOneRecordByTdbId(tdbId,typeId,status);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
@@ -451,7 +501,7 @@ public class DatabaseSpecialController {
         }
     }
     @ApiOperation(value = "根据专题库ID和存储编码来修改分类ID")
-    @RequiresPermissions("dm:databaseSpecial:updateTypeIdByTdbId")
+    //@RequiresPermissions("dm:databaseSpecial:updateTypeIdByTdbId")
     @GetMapping(value = "/updateTypeIdByTdbId")
     public  ResultT updateTypeIdByTdbId(String tdbId, String dataClassId, String typeId){
         try {
@@ -486,30 +536,5 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value = "获取平台中废弃的专题库")
-    @RequiresPermissions("dm:databaseSpecial:getDiscardSpecial")
-    @GetMapping(value = "/getDiscardSpecial")
-    public  ResultT saveOneRecord(String userId){
-        try {
-            Map<String,Object> map =  this.databaseSpecialService.getDiscardSpecial(userId);
-            return ResultT.success(map);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-    @ApiOperation(value = "专题库创建申请")
-    @RequiresPermissions("dm:databaseSpecial:saveCreateapply")
-    @GetMapping(value = "/saveCreateapply")
-    public  ResultT saveCreateapply(HttpServletRequest request){
-        try {
-            Map<String,Object> map =  this.databaseSpecialService.saveCreateapply(request);
-            return ResultT.success(map);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
 
 }

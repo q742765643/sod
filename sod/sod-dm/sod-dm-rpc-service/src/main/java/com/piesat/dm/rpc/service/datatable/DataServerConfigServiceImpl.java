@@ -43,7 +43,7 @@ public class DataServerConfigServiceImpl extends BaseService<DataServerConfigEnt
     @Override
     public DataServerConfigDto saveDto(DataServerConfigDto dataServerConfigDto) {
         DataServerConfigEntity dataServerConfigEntity = this.dataServerConfigMapper.toEntity(dataServerConfigDto);
-        dataServerConfigEntity = this.save(dataServerConfigEntity);
+        dataServerConfigEntity = this.saveNotNull(dataServerConfigEntity);
         return this.dataServerConfigMapper.toDto(dataServerConfigEntity);
     }
 

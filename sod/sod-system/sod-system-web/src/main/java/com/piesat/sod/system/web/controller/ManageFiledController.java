@@ -4,12 +4,7 @@ import java.util.List;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.github.pagehelper.util.StringUtil;
 import com.piesat.sod.system.rpc.api.ManageFieldService;
@@ -244,9 +239,9 @@ public class ManageFiledController {
 	 */
 	@RequiresPermissions("restApi:manageField:editManageField")
 	@Log(title = "管理字段管理", businessType = BusinessType.UPDATE)
-	@PutMapping(value="/editManageField")
+	@PostMapping(value="/editManageField")
 	@ApiOperation(value="编辑管理字段",notes="编辑管理字段")
-	public ResultT editManageField(ManageFieldDto manageFieldDto) {
+	public ResultT editManageField(@RequestBody ManageFieldDto manageFieldDto) {
 		log.info(">>>>>>>>编辑管理字段");
 		try {
 			manageFieldService.editManageField(manageFieldDto);

@@ -34,7 +34,7 @@ public class DataServerBaseInfoServiceImpl extends BaseService<DataServerBaseInf
     @Override
     public DataServerBaseInfoDto saveDto(DataServerBaseInfoDto dataServerBaseInfoDto) {
         DataServerBaseInfoEntity dataServerBaseInfoEntity = this.dataServerBaseInfoMapper.toEntity(dataServerBaseInfoDto);
-        dataServerBaseInfoEntity = this.save(dataServerBaseInfoEntity);
+        dataServerBaseInfoEntity = this.saveNotNull(dataServerBaseInfoEntity);
         return this.dataServerBaseInfoMapper.toDto(dataServerBaseInfoEntity);
     }
 

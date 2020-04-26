@@ -8,9 +8,11 @@ import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
+import com.piesat.dm.rpc.dto.datatable.ExportTableVO;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,19 +95,19 @@ public class TableExportController {
 
     @ApiOperation(value = "表结构导出-完整版")
     @RequiresPermissions("dm:tableExport:exportTable")
-    @GetMapping(value = "/exportTable")
-    public ResultT exportTableInfo(String use_id, String database_id, String data_class_ids,
+    @PostMapping(value = "/exportTable")
+    public ResultT exportTableInfo(@RequestBody ExportTableVO exportTableVO,
                                 HttpServletRequest request, HttpServletResponse response){
         InputStream is = null;
         FileOutputStream fos = null;
         try {
             //构建数据结构
-            Map<String,Object> dataMap = tableExportService.getExportMap(database_id,data_class_ids);
+            Map<String,Object> dataMap = tableExportService.getExportMap(exportTableVO.getDatabase_id(),exportTableVO.getData_class_ids());
             //制作模板
 			//boolean createModel = exportTableService.createModel(request);
             //用逻辑库名称和物理库名称拼接文件名称
 //            String logicName = tableExportService.getLogicName(use_id);
-            String databaseName = tableExportService.getDatabaseName(database_id);
+            String databaseName = tableExportService.getDatabaseName(exportTableVO.getDatabase_id());
             String nowtime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             String outFileName = databaseName+"_"+nowtime+".doc";
             //导出文件
@@ -140,19 +142,21 @@ public class TableExportController {
 
     @ApiOperation(value = "表结构导出-简版")
     @RequiresPermissions("dm:tableExport:exportTableSimple")
-    @GetMapping(value = "/exportTableSimple")
-    public ResultT exportTableSimple(String use_id, String database_id, String data_class_ids,
+    @PostMapping(value = "/exportTableSimple")
+    public ResultT exportTableSimple(@RequestBody ExportTableVO exportTableVO,
                                    HttpServletRequest request, HttpServletResponse response){
         InputStream is = null;
         FileOutputStream fos = null;
         try {
             //构建数据结构
-            Map<String,Object> dataMap = tableExportService.getExportMapSimple(database_id,data_class_ids,request);
+            Map<String,Object> dataMap = tableExportService.getExportMapSimple(exportTableVO.getDatabase_id(),
+                    exportTableVO.getData_class_ids(),exportTableVO.getColumns(),
+                    exportTableVO.getIndex(),exportTableVO.getShard());
             //制作模板
             //boolean createModel = exportTableService.createModel(request);
             //用逻辑库名称和物理库名称拼接文件名称
 //            String logicName = tableExportService.getLogicName(use_id);
-            String databaseName = tableExportService.getDatabaseName(database_id);
+            String databaseName = tableExportService.getDatabaseName(exportTableVO.getDatabase_id());
             String nowtime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             String outFileName = databaseName+"_"+nowtime+".doc";
             //导出文件
@@ -187,10 +191,11 @@ public class TableExportController {
 
     @ApiOperation(value = "SQL导出")
     @RequiresPermissions("dm:tableExport:exportSQL")
-    @GetMapping(value = "/exportSQL")
-    public ResultT exportSQL(String databaseId, String dataClassIds, Integer exportType) {
+    @PostMapping(value = "/exportSQL")
+    public ResultT exportSQL(@RequestBody ExportTableVO exportTableVO) {
         try {
-            Map<String,Object> map = tableExportService.exportSqlFile(databaseId,dataClassIds,exportType,outFilePath);
+            Map<String,Object> map = tableExportService.exportSqlFile(exportTableVO.getDatabase_id(),
+                    exportTableVO.getData_class_ids(),Integer.parseInt(exportTableVO.getExportType()),outFilePath);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();

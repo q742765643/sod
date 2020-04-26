@@ -1,7 +1,11 @@
 package com.piesat.dm.web.controller.datatable;
 
+import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
+import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
@@ -18,6 +22,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +40,11 @@ public class DataTableController {
     @Autowired
     private DataTableService dataTableService;
     @Autowired
+    private DataClassService dataClassService;
+    @Autowired
     private DataLogicService dataLogicService;
+    @Autowired
+    private NewdataApplyService newdataApplyService;
     @Autowired
     private GrpcService grpcService;
 
@@ -45,7 +55,7 @@ public class DataTableController {
     public ResultT save(@RequestBody DataTableDto dataTableDto) {
         try {
             String id = dataTableDto.getId();
-            if (StringUtils.isNotBlank(id)){
+            if (StringUtils.isNotBlank(id)) {
                 DataTableDto dot = this.dataTableService.getDotById(id);
                 dataTableDto.setColumns(dot.getColumns());
                 dataTableDto.setTableIndexList(dot.getTableIndexList());
@@ -59,6 +69,38 @@ public class DataTableController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "新增申请表")
+    @RequiresPermissions("dm:dataTable:addApply")
+    @Log(title = "表信息管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/addApply")
+    public ResultT addApply(String classLogicIds, String applyId) {
+        try {
+            NewdataApplyDto newdataApplyDto = this.newdataApplyService.getDotById(applyId);
+            String[] ids = classLogicIds.split(",");
+            List<DataTableDto> list = new ArrayList<>();
+            for (String id : ids) {
+                DataLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
+                DataClassDto dataClassDto = this.dataClassService.findByDataClassId(dataLogicDto.getDataClassId());
+                DataTableDto dataTableDto = new DataTableDto();
+                dataTableDto.setClassLogic(dataLogicDto);
+                dataTableDto.setColumns(newdataApplyDto.toTableColumn());
+                dataTableDto.setCreateTime(new Date());
+                dataTableDto.setDataServiceId(dataClassDto.getDataClassId());
+                dataTableDto.setDbTableType("E");
+                dataTableDto.setNameCn(dataClassDto.getClassName());
+                dataTableDto.setDataServiceName(dataClassDto.getMetaDataName());
+                dataTableDto.setTableName(newdataApplyDto.getTableName());
+                DataTableDto save = this.dataTableService.saveDto(dataTableDto);
+                list.add(save);
+            }
+            return ResultT.success(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 
     @ApiOperation(value = "根据id查询")
     @RequiresPermissions("dm:dataTable:get")
@@ -103,9 +145,9 @@ public class DataTableController {
     @ApiOperation(value = "根据物理库id和存储编码查询")
     @RequiresPermissions("dm:dataTable:dc")
     @GetMapping(value = "/dc")
-    public ResultT getByDatabaseIdAndClassId(String databaseId,String dataClassId){
+    public ResultT getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         try {
-            List<DataTableDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId,dataClassId);
+            List<DataTableDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
             return ResultT.success(r);
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,7 +158,7 @@ public class DataTableController {
     @ApiOperation(value = "根据数据用途id查询")
     @RequiresPermissions("dm:dataTable:gcl")
     @GetMapping(value = "/gcl")
-    public ResultT getByClassLogicId(String classLogic){
+    public ResultT getByClassLogicId(String classLogic) {
         try {
             List<DataTableDto> r = this.dataTableService.getByClassLogicId(classLogic);
             return ResultT.success(r);
@@ -129,7 +171,7 @@ public class DataTableController {
     @ApiOperation(value = "根据物理库id查询")
     @RequiresPermissions("dm:dataTable:db")
     @GetMapping(value = "/db")
-    public ResultT getByDatabaseId(String databaseId){
+    public ResultT getByDatabaseId(String databaseId) {
         try {
             List<Map<String, Object>> r = this.dataTableService.getByDatabaseId(databaseId);
             return ResultT.success(r);
@@ -142,7 +184,7 @@ public class DataTableController {
     @ApiOperation(value = "根据用户id查询资料及父级")
     @RequiresPermissions("dm:dataTable:findByUserId")
     @GetMapping(value = "/findByUserId")
-    public ResultT findByUserId(String userId){
+    public ResultT findByUserId(String userId) {
         try {
             List<Map<String, Object>> r = this.dataTableService.findByUserId(userId);
             return ResultT.success(r);
@@ -155,7 +197,7 @@ public class DataTableController {
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
     @PostMapping(value = "/sample")
-    public ResultT getSampleData(@RequestBody SampleData sampleData){
+    public ResultT getSampleData(@RequestBody SampleData sampleData) {
         try {
             return this.dataTableService.getSampleData(sampleData);
         } catch (Exception e) {
@@ -168,9 +210,9 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:paste")
     @Log(title = "表信息管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/paste")
-    public ResultT paste(String copyId,String pasteId) {
+    public ResultT paste(String copyId, String pasteId) {
         try {
-            return this.dataTableService.paste(copyId,pasteId);
+            return this.dataTableService.paste(copyId, pasteId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -180,9 +222,9 @@ public class DataTableController {
     @ApiOperation(value = "查询概览信息")
 //    @RequiresPermissions("dm:dataTable:getOverview")
     @GetMapping(value = "/getOverview")
-    public ResultT getOverview(String databaseId,String dataClassId){
+    public ResultT getOverview(String databaseId, String dataClassId) {
         try {
-            return this.dataTableService.getOverview(databaseId,dataClassId);
+            return this.dataTableService.getOverview(databaseId, dataClassId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -192,9 +234,9 @@ public class DataTableController {
     @ApiOperation(value = "查询sql信息")
     @RequiresPermissions("dm:dataTable:getSql")
     @GetMapping(value = "/getSql")
-    public ResultT getSql(String tableId,String databaseId){
+    public ResultT getSql(String tableId, String databaseId) {
         try {
-            return this.grpcService.getSql(tableId,databaseId);
+            return this.grpcService.getSql(tableId, databaseId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -204,7 +246,7 @@ public class DataTableController {
     @ApiOperation(value = "根据类型查询字典信息")
     @RequiresPermissions("dm:dataTable:getDictByType")
     @GetMapping(value = "/getDictByType")
-    public ResultT  getDictByType(String dictType){
+    public ResultT getDictByType(String dictType) {
         List<DictDataDto> dictByType = this.grpcService.getDictByType(dictType);
         return ResultT.success(dictByType);
     }
@@ -212,7 +254,7 @@ public class DataTableController {
     @ApiOperation(value = "根据资料编码查询")
     @RequiresPermissions("dm:dataTable:getByClassId")
     @GetMapping(value = "/getByClassId")
-    public ResultT getByClassId(String dataClassId){
+    public ResultT getByClassId(String dataClassId) {
         try {
             List<Map<String, Object>> r = this.dataTableService.getByClassId(dataClassId);
             return ResultT.success(r);
@@ -223,11 +265,10 @@ public class DataTableController {
     }
 
 
-
     @ApiOperation(value = "根据资料存储编码取得对应表的相关存储结构详细信息")
-    @RequiresPermissions("dm:dataTable:getMultiDataInfoByClassId")
+    //@RequiresPermissions("dm:dataTable:getMultiDataInfoByClassId")
     @GetMapping(value = "/getMultiDataInfoByClassId")
-    public ResultT getMultiDataInfoByClassId(String dataClassId){
+    public ResultT getMultiDataInfoByClassId(String dataClassId) {
         try {
             List<Map<String, Object>> r = this.dataTableService.getMultiDataInfoByClassId(dataClassId);
             return ResultT.success(r);

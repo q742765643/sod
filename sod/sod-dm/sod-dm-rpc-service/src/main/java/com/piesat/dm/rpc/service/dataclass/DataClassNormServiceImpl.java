@@ -35,7 +35,7 @@ public class DataClassNormServiceImpl extends BaseService<DataClassNormEntity> i
     @Override
     public DataClassNormDto saveDto(DataClassNormDto dataClassNormDto) {
         DataClassNormEntity dataClassNormEntity = this.dataClassNormMapper.toEntity(dataClassNormDto);
-        dataClassNormEntity = this.save(dataClassNormEntity);
+        dataClassNormEntity = this.saveNotNull(dataClassNormEntity);
         return this.dataClassNormMapper.toDto(dataClassNormEntity);
     }
 

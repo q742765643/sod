@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,8 +134,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getGroupConcat(List<String> logics);
 
-    List<Map<String, Object>> getRecordByTdbId(String tdbId, String typeId, String cause);
-
     List<Map<String, Object>> getDataAuthorityList(Map<String, Object> paraMap);
 
     void delDataAuthorityByApplyId(Map<String, Object> paraMap);
@@ -145,7 +144,9 @@ public interface MybatisQueryMapper {
 
     List<Map<String, String>> getSchemaByPhysic(Map<String, Object> param);
 
-    List<Map<String, Object>> getAuthorizeRecordByTdbId(String tdbId, String typeId, String cause);
+    List<Map<String, Object>> getRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId, @Param("status")String status);
+
+    List<Map<String, Object>> getAuthorizeRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId,@Param("status") String status);
 
     void changeDataStatus(Map<String, String> dataMap);
 
@@ -159,7 +160,6 @@ public interface MybatisQueryMapper {
 
     void updateTypeIdByTdbId(Map<String, String> dataMap);
 
-    List<DatabaseSpecialEntity> getAllSpecial(int i);
     List<DatabaseSpecialAccessEntity> getAllRecordByUserId(String userId);
 
     void saveOneRecord(DatabaseSpecialAccessEntity oneRecord);
@@ -179,4 +179,10 @@ public interface MybatisQueryMapper {
      * @throws Exception
      */
     List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
+
+    List<LinkedHashMap<String, Object>> getDataClassInfo(String dataClassId);
+
+    List<LinkedHashMap<String, Object>> selectTabOmincmccTempele(String c_coremeta_id);
+
+    List<LinkedHashMap<String, Object>> selectGridAreaDefine(String dataClassId);
 }

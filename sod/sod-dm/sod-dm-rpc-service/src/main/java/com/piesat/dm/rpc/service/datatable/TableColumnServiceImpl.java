@@ -61,29 +61,29 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         String id = tableColumnDto.getId();
 
         TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(tableColumnDto);
-        tableColumnEntity = this.save(tableColumnEntity);
-        if (tableColumnDto.getUpdateDatabase()){
+        tableColumnEntity = this.saveNotNull(tableColumnEntity);
+        if (tableColumnDto.getUpdateDatabase() != null && tableColumnDto.getUpdateDatabase()) {
             Column oldColumn = null;
-            if (StringUtils.isNotEmpty(id)){
+            if (StringUtils.isNotEmpty(id)) {
                 TableColumnEntity byId = this.getById(id);
                 oldColumn.setDef(byId.getDefaultValue());
                 oldColumn.setIsNull(byId.getIsNull());
                 oldColumn.setName(byId.getEleName());
-                oldColumn.setPrecision(byId.getLength()+","+byId.getAccuracy());
+                oldColumn.setPrecision(byId.getLength() + "," + byId.getAccuracy());
                 oldColumn.setType(byId.getType());
             }
             Column newColumn = null;
             newColumn.setDef(tableColumnEntity.getDefaultValue());
             newColumn.setIsNull(tableColumnEntity.getIsNull());
             newColumn.setName(tableColumnEntity.getEleName());
-            newColumn.setPrecision(tableColumnEntity.getLength()+","+tableColumnEntity.getAccuracy());
+            newColumn.setPrecision(tableColumnEntity.getLength() + "," + tableColumnEntity.getAccuracy());
             newColumn.setType(tableColumnEntity.getType());
             DataTableDto datatable = dataTableService.getDotById(tableColumnDto.getTableId());
             String databaseId = datatable.getClassLogic().getDatabaseId();
             DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).get();
             DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
             DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            database.updateColumn(databaseDto.getSchemaName(),datatable.getTableName(),oldColumn,newColumn);
+            database.updateColumn(databaseDto.getSchemaName(), datatable.getTableName(), oldColumn, newColumn);
         }
         return this.tableColumnMapper.toDto(tableColumnEntity);
     }
@@ -91,9 +91,9 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     @Override
     public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
         List<TableColumnDto> l = new ArrayList<>();
-        for (TableColumnDto t:tableColumnDtoList  ) {
+        for (TableColumnDto t : tableColumnDtoList) {
             TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(t);
-            tableColumnEntity = this.save(tableColumnEntity);
+            tableColumnEntity = this.saveNotNull(tableColumnEntity);
             l.add(this.tableColumnMapper.toDto(tableColumnEntity));
         }
         return l;

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container overviewStorage">
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途:">
@@ -34,14 +34,42 @@
     </el-row>
 
     <el-table v-loading="loading" :data="tableData" row-key="id">
-      <el-table-column prop="CLASS_NAME" label="资料名称" width="200"></el-table-column>
-      <el-table-column prop="TABLE_NAME" label="表名称" width="180"></el-table-column>
-      <el-table-column prop="DATA_CLASS_ID" label="存储编码"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
-      <el-table-column prop="LOGIC_NAME" label="数据用途"></el-table-column>
-      <el-table-column prop="DATABASE_NAME" label="数据库"></el-table-column>
-      <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" width="100"></el-table-column>
-      <el-table-column label="参数配置" width="380">
+      <af-table-column prop="CLASS_NAME" label="资料名称">
+        <template slot-scope="scope">
+          <span>{{scope.row.CLASS_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="TABLE_NAME" label="表名称">
+        <template slot-scope="scope">
+          <span>{{scope.row.TABLE_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="DATA_CLASS_ID" label="存储编码">
+        <template slot-scope="scope">
+          <span>{{scope.row.DATA_CLASS_ID}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="D_DATA_ID" label="四级编码">
+        <template slot-scope="scope">
+          <span>{{scope.row.C_ELEMENT_CODE}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="LOGIC_NAME" label="数据用途">
+        <template slot-scope="scope">
+          <span>{{scope.row.LOGIC_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="DATABASE_NAME" label="数据库">
+        <template slot-scope="scope">
+          <span>{{scope.row.DATABASE_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="SPECIAL_DATABASE_NAME" label="专题名">
+        <template slot-scope="scope">
+          <span>{{scope.row.SPECIAL_DATABASE_NAME}}</span>
+        </template>
+      </af-table-column>
+      <af-table-column label="参数配置">
         <template slot-scope="scope">
           <!-- 存储结构 -->
           <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
@@ -89,8 +117,8 @@
           <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
           <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
         </template>
-      </el-table-column>
-      <el-table-column label="操作" width="140px">
+      </af-table-column>
+      <af-table-column label="操作" width="140px">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -100,7 +128,7 @@
           >配置</el-button>
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
     </el-table>
 
     <pagination
@@ -189,6 +217,7 @@
       :fullscreen="true"
       :before-close="handleClose"
       top="0"
+      class="scrollDialog"
     >
       <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
     </el-dialog>
@@ -350,7 +379,7 @@ export default {
     // 存储结构
     handledDBMethods(row) {
       this.rowData = row;
-      this.structureManageTitle = row.class_name;
+      this.structureManageTitle = row.CLASS_NAME;
       this.structureManageVisible = true;
     },
     // 数据同步
@@ -486,18 +515,40 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.searchBox {
-  margin-bottom: 20px;
-}
-.el-table {
-  font-size: 12px;
-  .el-button--mini {
-    padding: 6px;
-    margin-left: 0;
+<style lang="scss">
+.overviewStorage {
+  .searchBox {
+    margin-bottom: 20px;
   }
-  .el-button--text {
-    padding: 6px 2px;
+  .el-table {
+    font-size: 12px;
+    .el-button--mini {
+      padding: 6px;
+      margin-left: 0;
+    }
+    .el-button--text {
+      padding: 6px 2px;
+    }
+    .cell {
+      white-space: nowrap !important;
+      width: fit-content !important;
+    }
+    th {
+      text-align: left;
+    }
+  }
+}
+.scrollDialog {
+  .el-dialog__header {
+    padding: 10px 20px;
+    padding-left: 44px;
+    margin-bottom: 0;
+  }
+  .el-dialog__header:before {
+    top: 12px;
+  }
+  .el-dialog__headerbtn {
+    top: 12px;
   }
 }
 </style>

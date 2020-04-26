@@ -90,7 +90,6 @@ public class NewdataApplyController {
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(@RequestBody NewdataApplyDto newdataApplyDto) {
         try {
-            newdataApplyDto.setDDataId("Z.9999.9999");
             newdataApplyDto.setExamineStatus(1);
             NewdataApplyDto save = this.newdataApplyService.saveDto(newdataApplyDto);
             return ResultT.success(save);
@@ -99,6 +98,7 @@ public class NewdataApplyController {
             return ResultT.failed(e.getMessage());
         }
     }
+
     @PostMapping(value = "/saveColumns")
     @ApiOperation(value = "批量添加字段信息", notes = "批量添加字段信息")
     public ResultT saveColumns(@RequestBody List<NewdataTableColumnDto> newdataTableColumnDtos) {
@@ -161,11 +161,19 @@ public class NewdataApplyController {
        return ResultT.success(dataTypeList);
    }
 
-    @PostMapping(value = "/queryCheckByApplyId")
+    @GetMapping(value = "/queryCheckByApplyId")
     @ApiOperation(value = "根据申请id查询", notes = "根据申请id查询")
     public ResultT<Map<String,Object>> queryCheckByApplyId(String id){
         Map<String, Object> list = newdataApplyService.queryCheckByApplyId(id);
         return ResultT.success(list);
+    }
+
+
+    @GetMapping(value = "/getDotById")
+    @ApiOperation(value = "根据申请id查询所有信息", notes = "根据申请id查询所有信息")
+    public ResultT getDotById(String id){
+        NewdataApplyDto dotById = newdataApplyService.getDotById(id);
+        return ResultT.success(dotById);
     }
 
     /**
@@ -183,8 +191,8 @@ public class NewdataApplyController {
     }
 
     @PostMapping(value = "/updateStatus")
-    @ApiOperation(value = "存储资料审核接口", notes = "存储资料审核接口")
-    public ResultT updateStatus(NewdataApplyDto newdataApplyDto){
+    @ApiOperation(value = "新增资料审核接口", notes = "存储资料审核接口")
+    public ResultT updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
         try {
             NewdataApplyDto save = newdataApplyService.updateStatus(newdataApplyDto);
             return ResultT.success(save);
@@ -193,6 +201,19 @@ public class NewdataApplyController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @PostMapping(value = "/updateStatusPortal")
+    @ApiOperation(value = "申请修改状态接口(portal)", notes = "申请修改状态接口(portal)")
+    public ResultT updateStatusPortal(@RequestBody NewdataApplyDto newdataApplyDto){
+        try {
+            NewdataApplyDto save = newdataApplyService.updateStatus(newdataApplyDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 
     @GetMapping("/getDataClassLogic/{classLogicIds}")
     @ApiOperation(value = "根据存储编码获取资料信息", notes = "根据存储编码获取资料信息")

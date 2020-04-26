@@ -2,16 +2,6 @@
   <div class="app-container export-container">
     <!-- 表结构导出 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="数据库用途：">
-        <el-select v-model="queryParams.use_id" size="small" filterable>
-          <el-option
-            v-for="(item,index) in logicList"
-            :key="index"
-            :label="item.logicName"
-            :value="item.id"
-          ></el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="数据库：">
         <el-select v-model="queryParams.database_id" size="small" filterable>
           <el-option
@@ -75,14 +65,17 @@
               <p>分库分表</p>
               <div style="text-align:right;">
                 <handleExport
+                  style="display:none;"
                   :handleExportObj="handleExportObj"
                   btnText="导出"
-                  exportUrl="/api/com/downloadByPath"
+                  :exportUrl="exportUrl"
                   baseUrl="DM"
+                  ref="exportRef"
                 />
+                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="表结构导出--简版" name="second">
+            <!--  <el-tab-pane label="表结构导出--简版" name="second" style="display:none;">
               <p>
                 <el-checkbox
                   :indeterminate="isIndeterminate"
@@ -111,20 +104,15 @@
                 <el-checkbox v-model="simpleObj.fenku">分库分表</el-checkbox>
               </p>
               <div style="text-align:right;">
-                <el-button icon="el-icon-bottom">导出</el-button>
+                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
-            </el-tab-pane>
+            </el-tab-pane>-->
             <el-tab-pane label="sql导出" name="third">
               <p>导出方式</p>
               <el-radio v-model="exportTyoe" :label="1">导出到同一个文件</el-radio>
               <el-radio v-model="exportTyoe" :label="2">导出到多个文件</el-radio>
               <div style="text-align:right;">
-                <handleExport
-                  :handleExportObj="handleExportObj"
-                  btnText="导出"
-                  exportUrl="/api/com/downloadByPath"
-                  baseUrl="DM"
-                />
+                <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -142,7 +130,8 @@ import {
   databaseList,
   dataTree,
   exportTable,
-  exportSQL
+  exportSQL,
+  exportTableSimple
 } from "@/api/structureManagement/exportTable";
 export default {
   components: {
@@ -151,7 +140,7 @@ export default {
   },
   data() {
     return {
-      exportUrl: "",
+      exportUrl: "/api/com/downloadByPath",
       handleExportObj: {},
       //格式化tree数据
       defaultProps: {
@@ -161,10 +150,8 @@ export default {
       // 遮罩层
       loading: true,
       queryParams: {
-        database_id: "",
-        use_id: ""
+        database_id: ""
       },
-      logicList: [],
       databaseList: [],
       // 穿梭框
       fromTreeData: [
@@ -262,15 +249,9 @@ export default {
     };
   },
   created() {
-    this.getLogicList(); //获取数据用途列表
     this.getDatabaseList(); //获取数据库列表
   },
   methods: {
-    getLogicList() {
-      logicDefineList().then(response => {
-        this.logicList = response.data;
-      });
-    },
     getDatabaseList() {
       databaseList().then(response => {
         this.databaseList = response.data;
@@ -291,7 +272,6 @@ export default {
       obj.keys.forEach(element => {
         this.checkdTreesArry.push(element);
       });
-      this.handleExportClick();
     },
     // 监听穿梭框组件移除
     removeTreeInfo(fromData, toData, obj) {
@@ -302,7 +282,6 @@ export default {
         l2 => obj.keys.findIndex(l1 => l2 === l1) !== -1
       );
       this.checkdTreesArry = newData;
-      this.handleExportClick();
     },
     handleClick() {},
     // 全选
@@ -329,7 +308,7 @@ export default {
       }
     },
     // 导出
-    handleExportClick() {
+    exportClick() {
       this.handleExportObj = {};
       let ids = [];
       this.checkdTreesArry.forEach(element => {
@@ -338,20 +317,29 @@ export default {
         }
       });
       let obj = {};
-      obj.dataClassIds = ids.join(",");
-      obj.databaseId = this.queryParams.database_id;
+      obj.data_class_ids = ids.join(",");
+      obj.database_id = this.queryParams.database_id;
       if (this.activeName == "first") {
         obj.use_id = this.queryParams.use_id;
         exportTable(obj).then(response => {
           if (response.code == 200) {
             this.handleExportObj.filePath = response.data.filePath;
-            console.log(this.handleExportObj);
+            this.$refs.exportRef.exportData(this.handleExportObj);
           }
         });
       } else if (this.activeName == "second") {
-        obj.exportType = exportTyoe;
+        exportTableSimple(obj).then(response => {
+          this.handleExportObj.filePath = response.data.filePath;
+          this.$refs.exportRef.exportData(this.handleExportObj);
+        });
+      } else if (this.activeName == "third") {
+        let obj = {};
+        obj.data_class_ids = ids.join(",");
+        obj.database_id = this.queryParams.database_id;
+        obj.exportType = this.exportTyoe;
         exportSQL(obj).then(response => {
           this.handleExportObj.filePath = response.data.filePath;
+          this.$refs.exportRef.exportData(this.handleExportObj);
         });
       }
     }

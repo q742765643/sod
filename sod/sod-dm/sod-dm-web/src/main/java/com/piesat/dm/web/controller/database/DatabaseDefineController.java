@@ -182,7 +182,7 @@ public class DatabaseDefineController {
     }
 
     @ApiOperation(value = "根据用户ID和逻辑库ID查询物理库的信息")
-    @RequiresPermissions("dm:databaseDefine:findByUserIdAndLogicId")
+    //@RequiresPermissions("dm:databaseDefine:findByUserIdAndLogicId")
     @GetMapping(value = "/findByUserIdAndLogicId")
     public ResultT findByUserIdAndLogicId(String userId,String logicId) {
         try {

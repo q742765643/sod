@@ -51,7 +51,7 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
     @Override
     public TableDataStatisticsDto saveDto(TableDataStatisticsDto tableDataStatisticsDto) {
         TableDataStatisticsEntity tableDataStatisticsEntity = this.tableDataStatisticsMapper.toEntity(tableDataStatisticsDto);
-        tableDataStatisticsEntity = this.save(tableDataStatisticsEntity);
+        tableDataStatisticsEntity = this.saveNotNull(tableDataStatisticsEntity);
         return this.tableDataStatisticsMapper.toDto(tableDataStatisticsEntity);
     }
 

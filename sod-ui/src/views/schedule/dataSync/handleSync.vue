@@ -389,7 +389,7 @@
       </el-tabs>
     </el-form>
     <!-- 确定取消 -->
-    <div slot="footer" class="dialog-footer">
+    <div slot="footer" class="dialog-footer" v-if="handleObj.pageName != '数据注册审核'">
       <el-button
         type="primary"
         @click="trueDialog('ruleForm')"

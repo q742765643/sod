@@ -1,5 +1,7 @@
 package com.piesat.dm.web.controller.database;
 
+import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -26,10 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 数据库访问账户管理
@@ -50,8 +49,11 @@ public class DatabaseUserManagerController {
     @Value("${serverfile.filePath}")
     private String fileAddress;
 
+    @Value("${businessParameters.databaseUserDefaultPassword}")
+    private String defaultPassword;
+
     @ApiOperation(value = "分页获取数据列表")
-    @RequiresPermissions("dm:databaseUser:all")
+    //@RequiresPermissions("dm:databaseUser:all")
     @GetMapping("/all")
     public ResultT<PageBean> list(DatabaseUserDto databaseUserDto, int pageNum, int pageSize) {
         try{
@@ -67,11 +69,24 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "根据id查询")
-    @RequiresPermissions("dm:databaseUser:getById")
+    //@RequiresPermissions("dm:databaseUser:getById")
     @GetMapping(value = "/getById")
     public ResultT get(String id) {
         try {
             DatabaseUserDto databaseUserDto = this.databaseUserService.getDotById(id);
+            return ResultT.success(databaseUserDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据用户id查询")
+    //@RequiresPermissions("dm:databaseUser:getByUserId")
+    @GetMapping(value = "/getByUserId")
+    public ResultT getByUserId(String userId) {
+        try {
+            DatabaseUserDto databaseUserDto = this.databaseUserService.getDotByUserId(userId);
             return ResultT.success(databaseUserDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,7 +244,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "新增")
-    @RequiresPermissions("dm:databaseUser:add")
+    //@RequiresPermissions("dm:databaseUser:add")
     @PostMapping(value = "/add")
     public ResultT save(@RequestBody DatabaseUserDto databaseUserDto) {
         try {
@@ -242,6 +257,10 @@ public class DatabaseUserManagerController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+
+
+
 
     @ApiOperation(value = "审核")
     @RequiresPermissions("dm:databaseUser:update")
@@ -276,6 +295,7 @@ public class DatabaseUserManagerController {
     public void exportData(String examineStatus) {
         this.databaseUserService.exportData(examineStatus);
     }
+
     @ApiOperation(value = "数据库访问账户申请")
     @RequiresPermissions("dm:databaseUser:applyDatabaseUser")
     @PostMapping(value="applyDatabaseUser")
@@ -289,7 +309,7 @@ public class DatabaseUserManagerController {
         }
     }
     @ApiOperation(value = "数据库访问账户修改")
-    @RequiresPermissions("dm:databaseUser:updateDatabaseUser")
+    //@RequiresPermissions("dm:databaseUser:updateDatabaseUser")
     @PostMapping(value="updateDatabaseUser")
     public ResultT updateDatabaseUser(HttpServletRequest request){
         try {
@@ -300,6 +320,35 @@ public class DatabaseUserManagerController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    @PostMapping(value = "/addOrUpdateDatabaseUser")
+    public ResultT addOrUpdateDatabaseUser(HttpServletRequest request, @RequestParam(value = "apply_material", required = false) MultipartFile applyMaterial) {
+        try {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            File newFile = null;
+            if (applyMaterial != null) {
+                String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                if(StringUtils.isNotNullString(originalFileName1)){
+                    //新的文件名
+                    String newFileName1 = originalFileName1.substring(0,originalFileName1.lastIndexOf(".")) +"_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS",new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                    newFile = new File(fileAddress + File.separator + newFileName1);
+                    if (!newFile.getParentFile().exists()) {
+                        newFile.getParentFile().mkdirs();
+                    }
+                    //存入
+                    applyMaterial.transferTo(newFile);
+                }
+            }
+            DatabaseUserDto databaseUserDto = databaseUserService.addOrUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+            return ResultT.success(databaseUserDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
     @ApiOperation(value = "数据库访问账户申请材料是否存在")
     @RequiresPermissions("dm:databaseUser:fileIsExist")
     @PostMapping(value="fileIsExist")
@@ -354,4 +403,29 @@ public class DatabaseUserManagerController {
         Map<String, Object> map = databaseUserService.dataAuthorityCancel(user_id, database_id, data_class_id,apply_authoritys,mark);
         return ResultT.success(map);
     }
+
+    @ApiOperation(value = "获取数据库访问账户默认密码（Portal调用）")
+    @GetMapping(value = "/getDefaultPassword")
+    public ResultT<String> getDefaultPassword() {
+        try {
+            ResultT<String> resultT = new ResultT<>();
+            resultT.setData(defaultPassword);
+            return resultT;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "修改密码（Portal调用）")
+    @GetMapping(value = "/changePassword")
+    public ResultT changePassword(String id,String oldPwd,String newPwd) {
+        try {
+            return databaseUserService.changePassword(id,oldPwd,newPwd);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

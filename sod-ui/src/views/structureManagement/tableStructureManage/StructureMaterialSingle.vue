@@ -93,7 +93,7 @@
         </el-table>
       </div>
     </div>
-    <div class="dialog-footer" slot="footer">
+    <div class="dialog-footer" slot="footer" v-if="!DRegistrationObj">
       <el-button type="primary" @click="makeSureSave('materialForm')">确认</el-button>
       <el-button @click="cancleSave">取消</el-button>
     </div>
@@ -178,6 +178,9 @@ export default {
     },
     editMaterial: {
       type: String
+    },
+    DRegistrationObj: {
+      type: Object
     }
   },
   data() {
@@ -270,14 +273,24 @@ export default {
         this.materialData.typeText = "资料";
       }
       //资料树  初始化
-      if (this.isSourceTree && this.editNodeId !== "") {
+      if (this.isSourceTree && this.editNodeId) {
         this.isDisabledEdit = true;
         this.getMaterialForm(this.editNodeId);
       }
       //资料  初始化
-      if (!this.isSourceTree && this.editMaterial !== "") {
+      if (!this.isSourceTree && this.editMaterial) {
         this.isDisabledEdit = true;
         this.getMaterialForm(this.editMaterial);
+      }
+
+      // 从数据注册审核来的资料
+      if (this.DRegistrationObj) {
+        this.materialData.applyId = this.DRegistrationObj.applyId;
+        this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
+        this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
+        this.materialData.dataLogicList = this.DRegistrationObj.dataLogicList;
+        this.editUseShow = true;
+        console.log(this.materialData);
       }
     },
     //获取资料树，资料的数据
@@ -422,7 +435,19 @@ export default {
             this.materialData.dataLogicList = newDataclasslogic;
           }
           console.log(this.materialData);
-          this.saveData(handleMessage, refreshWhich);
+          //数据注册审核的数据用途只能选一条
+          if (!resForm) {
+            if (this.materialData.dataLogicList.length != 1) {
+              this.$message({
+                type: "error",
+                message: "只能选择一条数据用途"
+              });
+            } else {
+              this.saveData(handleMessage, refreshWhich);
+            }
+          } else {
+            this.saveData(handleMessage, refreshWhich);
+          }
         }
       });
     },
@@ -437,7 +462,11 @@ export default {
             //资料树节点 新增  编辑  isSourceTree:true   isSourceTree:false
             this.$emit("addOrEditSuccess", "handleTree");
           } else {
-            this.$emit("addOrEditSuccess", "handleTable");
+            if (this.DRegistrationObj) {
+              this.$emit("addOrEditSuccess", response.data);
+            } else {
+              this.$emit("addOrEditSuccess", "handleTable");
+            }
           }
         } else {
           this.$message({
@@ -527,10 +556,8 @@ export default {
       margin-bottom: 10px;
     }
   }
-  .materialCon {
-    max-height: calc(100vh - 170px);
-    overflow-y: auto;
-    margin-bottom: 10px;
+  .editDataUse {
+    margin-bottom: 20px;
   }
 }
 </style>

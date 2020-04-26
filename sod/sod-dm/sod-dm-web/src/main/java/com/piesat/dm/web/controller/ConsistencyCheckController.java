@@ -51,10 +51,12 @@ public class ConsistencyCheckController {
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
-    public ResultT<PageBean> list(ConsistencyCheckDto consistencyCheckDto,
+    public ResultT<PageBean> list(@RequestParam(value = "database_name", defaultValue = "") String databaseName,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
+        ConsistencyCheckDto consistencyCheckDto = new ConsistencyCheckDto();
+        consistencyCheckDto.setDatabaseName(databaseName);
         PageForm<ConsistencyCheckDto> pageForm = new PageForm<>(pageNum, pageSize, consistencyCheckDto);
         PageBean pageBean = consistencyCheckService.selectPageList(pageForm);
         resultT.setData(pageBean);
@@ -145,7 +147,8 @@ public class ConsistencyCheckController {
     public void downloadDfcheckFile(String databaseId, HttpServletResponse response){
         DatabaseDto databaseDto = databaseService.getDotById(databaseId);
 
-        String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"+"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH");
+        String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
+                +"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH")+".xlsx";
 
 
         Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseId);

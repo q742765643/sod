@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -16,7 +17,11 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "T_SOD_NEWDATA_APPLY")
-public class NewdataApplyEntity extends BaseEntity {
+public class NewdataApplyEntity{
+
+    @Id
+    @Column(name = "id", length = 36)
+    private String id;
 
     /**
      * 四级编码
