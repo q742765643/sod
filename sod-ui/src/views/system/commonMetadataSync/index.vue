@@ -46,7 +46,7 @@
           <el-table-column prop="apiUrl" label="接口url" width="350px" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="apiType" label="同步类型" :formatter="statusFormat" width="100"></el-table-column>
           <el-table-column prop="apiDataKey" label="接口关键字"></el-table-column>
-          <el-table-column prop="startTime" label="执行策略"></el-table-column>
+          <el-table-column prop="jobCron" label="执行策略"></el-table-column>
           <el-table-column prop="description" label="来源" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="操作" width="160px">
             <template slot-scope="scope">

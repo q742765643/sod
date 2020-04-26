@@ -511,8 +511,8 @@ storageType: "E_table" */
     },
     // 关闭步骤
     closeStep() {
-      debugger;
       this.reviewStep = false;
+      this.handleQuery();
     },
     // 关闭弹窗
     handleClose() {

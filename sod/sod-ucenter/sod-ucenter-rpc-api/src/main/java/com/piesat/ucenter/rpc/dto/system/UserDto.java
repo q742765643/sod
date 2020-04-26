@@ -88,4 +88,100 @@ public class UserDto extends BaseDto {
      * 角色对象
      */
     private List<RoleDto> roles;
+
+
+    /*注册用户属性*/
+
+    private String webUserId;
+    /**
+     * 业务类型
+     */
+    @ApiModelProperty("业务类型")
+    private String bizType;
+    /**
+     * 绑定ip
+     */
+    @ApiModelProperty("绑定ip")
+    private String bizIp;
+    /**
+     * 有效时间
+     */
+    @ApiModelProperty("有效时间")
+    private Date validTime;
+    /**
+     * 责任人姓名
+     */
+    @ApiModelProperty("责任人姓名")
+    private String webUsername;
+    /**
+     * 系统名称
+     */
+    @ApiModelProperty("系统名称")
+    private String appName;
+    /**
+     * 单位名称
+     */
+    @ApiModelProperty("单位名称")
+    private String legalUnits;
+    /**
+     * 部门名称
+     */
+    @ApiModelProperty("部门名称")
+    private String deptName;
+    /**
+     * 指导老师姓名
+     */
+    @ApiModelProperty("指导老师姓名")
+    private String tutorName;
+    /**
+     * 指导老师电话
+     */
+    @ApiModelProperty("指导老师电话")
+    private String tutorPhone;
+    /**
+     * 申请材料
+     */
+    @ApiModelProperty("申请材料")
+    private String applyPaper;
+    /**
+     * 申请时间
+     */
+    @ApiModelProperty("申请时间")
+    private Date applyTime;
+
+    /**
+     * 最后编辑时间
+     */
+    @ApiModelProperty("最后编辑时间")
+    private Date lastEditTime;
+
+    /**
+     * 审核状态
+     * 0：待审核
+     * 1：审核通过
+     * 2：驳回
+     * 3：激活
+     * 4：注销
+     */
+    @ApiModelProperty("审核状态")
+    private String checked;
+
+
+    /**
+     * 存储系统管理接口权限
+     */
+    @ApiModelProperty("存储系统管理接口权限")
+    private Integer sodApi;
+
+    /**
+     * 存储系统数据库申请
+     */
+    @ApiModelProperty("存储系统数据库申请")
+    private String dbIds;
+    /**
+     * 是否创建专题库 “1” 是 “0” 否
+     */
+    @ApiModelProperty("是否创建专题库")
+    private String dbCreate;
+
 }
