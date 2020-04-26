@@ -153,7 +153,7 @@ public class DataClassController {
     }
 
     @ApiOperation(value = "查询资料分类(parentId=0)")
-    @RequiresPermissions("dm:dataClass:findAllCategory")
+//    @RequiresPermissions("dm:dataClass:findAllCategory")
     @GetMapping(value = "/findAllCategory")
     public ResultT findAllCategory() {
         try {
