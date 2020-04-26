@@ -902,26 +902,20 @@ export default {
             element.isKvK = "true";
           });
         }
-        this.axios
-          .post(interfaceObj.TableStructure_addManageColumn, {
-            manageColumnList: publicRows
-          })
-          .then(res => {
-            if (res.data.returnCode == 0) {
-              this.$message({
-                message: msg + "添加成功！",
-                type: "success"
-              });
-
-              this.getCodeTable();
-            } else {
-              this.$message({
-                message: res.data.returnMessage,
-                type: "error"
-              });
-            }
-          })
-          .catch(error => {});
+        tableColumnSaveList({ tableColumnList: publicRows }).then(response => {
+          if (response.code == 200) {
+            this.$message({ message: "操作成功", type: "success" });
+            this.$refs[formName].resetFields();
+            this.dialogStatus.columnDialog = false;
+            this.getCodeTable();
+            this.columnEditData = [];
+          } else {
+            this.$message({
+              type: "error",
+              message: "操作失败"
+            });
+          }
+        });
       } else {
         this.$message({
           message: msg + "无剩余可添加数据!",
@@ -1010,7 +1004,7 @@ export default {
       data.forEach(element => {
         element.id = "";
       });
-      tableColumnSaveList(data).then(response => {
+      tableColumnSaveList({ tableColumnList: data }).then(response => {
         if (response.code == 200) {
           this.$message({ message: "操作成功", type: "success" });
           this.$refs[formName].resetFields();

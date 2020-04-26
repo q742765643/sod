@@ -12,7 +12,7 @@ export function getDotById(data) {
 export function addApply(data) {
   return request({
     url: baseUrl + "/dm/dataTable/addApply",
-    method: "get",
+    method: "post",
     params: data
   });
 }

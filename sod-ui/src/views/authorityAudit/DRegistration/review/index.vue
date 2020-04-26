@@ -21,15 +21,14 @@
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==1">
         <!-- 表结构管理 -->
-        <span>资料名称：{{CLASS_NAME}}</span>
+        <span>资料名称：{{returnMaterialInfo.className}}</span>
         <el-divider></el-divider>
-        <span>四级编码：{{D_DATA_ID}}</span>
+        <span>四级编码：{{returnMaterialInfo.ddataId}}</span>
         <el-table
           :data="tableData"
           border
           highlight-current-row
           @current-change="handleCurrentChange"
-          :span-method="objectSpanMethod"
           ref="singleTable"
         >
           <el-table-column label="数据用途" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
@@ -74,6 +73,7 @@
       :before-close="closeStructureManage"
       top="0"
       class="scrollDialog"
+      :append-to-body="true"
     >
       <StructureManageTable
         ref="scrollDiv"
@@ -95,11 +95,12 @@ import handleSync from "@/views/schedule/dataSync/handleSync";
 import handleMove from "@/views/schedule/move/handleMove";
 // 结构化数据备份配置弹窗
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
-
+import { getListBYIn } from "@/api/structureManagement/tableStructureManage/index";
 import {
   getDotById,
   addApply
 } from "@/api/authorityAudit/DRegistration/review/index";
+import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   components: {
     StructureMaterialSingle,
@@ -141,12 +142,15 @@ export default {
       // 表结构管理
       if (this.stepNum == 1) {
         // 如果有字段，可以继续网下走
-        if (this.tableDetail.columns && this.tableDetail.columns.length > 0) {
+        if (
+          this.tableDetail[0].columns &&
+          this.tableDetail[0].columns.length > 0
+        ) {
           this.stepNum = 2;
         } else {
           this.$message({
             message: "请新增字段！",
-            type: "warning"
+            type: "danger"
           });
           return;
         }
@@ -191,6 +195,7 @@ export default {
                 : 0;
           });
         }
+        this.tableData = tableData;
         // 传applyid 逗号隔开的id
         let ids = [];
         this.returnMaterialInfo.dataLogicList.forEach(element => {
@@ -260,6 +265,9 @@ export default {
 .stepDreg {
   .is-never-shadow {
     margin: 20px auto;
+  }
+  .el-table {
+    margin-top: 20px;
   }
 }
 </style>

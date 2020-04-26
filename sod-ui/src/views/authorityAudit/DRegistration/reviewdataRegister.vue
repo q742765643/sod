@@ -110,7 +110,7 @@ export default {
     checkFuc(type) {
       const checkobj = {
         id: this.registerForm.ID,
-        DDataId: this.registerForm.D_DATA_ID,
+        ddataId: this.registerForm.D_DATA_ID,
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
