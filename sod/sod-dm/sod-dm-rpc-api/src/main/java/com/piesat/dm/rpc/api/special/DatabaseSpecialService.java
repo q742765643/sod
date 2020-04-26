@@ -4,6 +4,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.util.constant.GrpcConstant;
@@ -48,6 +49,8 @@ public interface DatabaseSpecialService {
      */
     DatabaseSpecialDto saveDto(DatabaseSpecialDto databaseSpecialDto);
 
+    DatabaseSpecialDto addOrUpdate(Map<String, String[]> parameterMap,String filePath);
+
     /**
      * 数据库授权
      * @param databaseDto
@@ -78,6 +81,8 @@ public interface DatabaseSpecialService {
 
     List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId,String useStatus);
 
+    List<DatabaseSpecialDto> getByUseStatus(String useStatus);
+
     public PageBean getPage(PageForm<DatabaseSpecialDto> pageForm);
 
 	/**
@@ -87,21 +92,11 @@ public interface DatabaseSpecialService {
      */
     PageBean selectPageList(PageForm<DatabaseSpecialDto> pageForm);
 
-    /**
-     * 专题库申请
-     * @param request
-     * @return
-     */
-    Map<String,Object> saveCreateapply(HttpServletRequest request);
-
-    /**
-     * 同一专题库下插入多条记录
-     * @param request
-     * @return
-     */
-    Map<String, Object> saveMultilRecord(HttpServletRequest request);
+    DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto);
 
     DatabaseSpecialAccessEntity getdefeataudit(String tdbId, String userId);
+
+    DatabaseSpecialAccessDto specialAccessApply(DatabaseSpecialAccessDto databaseSpecialAccessDto);
 
     Map<String, Object> updateBySql(String tdbId, String userId, String cause, String examineStatus);
 

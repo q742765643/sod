@@ -134,8 +134,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getGroupConcat(List<String> logics);
 
-    List<Map<String, Object>> getRecordByTdbId(String tdbId, String typeId, String cause);
-
     List<Map<String, Object>> getDataAuthorityList(Map<String, Object> paraMap);
 
     void delDataAuthorityByApplyId(Map<String, Object> paraMap);
@@ -145,6 +143,8 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getDataCategory();
 
     List<Map<String, String>> getSchemaByPhysic(Map<String, Object> param);
+
+    List<Map<String, Object>> getRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId, @Param("status")String status);
 
     List<Map<String, Object>> getAuthorizeRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId,@Param("status") String status);
 

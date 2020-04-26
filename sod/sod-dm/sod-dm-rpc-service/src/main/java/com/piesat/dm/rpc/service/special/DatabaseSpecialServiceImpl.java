@@ -35,10 +35,12 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
+import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAccessMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAuthorityMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
@@ -102,6 +104,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Autowired
     private MybatisModifyMapper mybatisModifyMapper;
 
+    @Autowired
+    private DatabaseSpecialAccessMapper databaseSpecialAccessMapper;
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
         return databaseSpecialDao;
@@ -173,6 +177,82 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     public DatabaseSpecialDto saveDto(DatabaseSpecialDto databaseSpecialDto) {
         DatabaseSpecialEntity databaseSpecialEntity = this.databaseSpecialMapper.toEntity(databaseSpecialDto);
         this.saveNotNull(databaseSpecialEntity);
+        return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
+    }
+
+    @Override
+    public DatabaseSpecialDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            if (entry.getValue().length > 0) {
+                map.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+
+        String tdb_name = map.get("TDB_NAME");
+        String tdb_id = map.get("TDB_ID");
+        String user_id = map.get("USER_ID");
+        String uses = map.get("USES");
+        String tdb_img = map.get("TDB_IMG");
+        String database_id = map.get("DATABASE_ID");
+        String database_schema_id = map.get("DATABASE_SCHEMA_ID");
+        String data = map.get("data");
+        String databaseSpecialReadWriteList = map.get("databaseSpecialReadWriteList");
+
+        DatabaseSpecialEntity databaseSpecialEntity = new DatabaseSpecialEntity();
+        if(StringUtils.isNotNullString(tdb_name)){
+            databaseSpecialEntity.setSdbName(tdb_name);
+        }
+        if(StringUtils.isNotNullString(tdb_id)){
+            databaseSpecialEntity.setId(tdb_id);
+        }
+        if(StringUtils.isNotNullString(uses)){
+            databaseSpecialEntity.setUses(uses);
+        }
+        if(StringUtils.isNotNullString(tdb_img)){
+            databaseSpecialEntity.setSdbImg(tdb_img);
+        }
+        if(StringUtils.isNotNullString(database_id)){
+            databaseSpecialEntity.setDatabaseId(database_id);
+        }
+        if(StringUtils.isNotNullString(database_schema_id)){
+            databaseSpecialEntity.setDatabaseSchema(database_schema_id);
+        }
+        if(StringUtils.isNotNullString(filePath)){
+            databaseSpecialEntity.setApplyMaterial(filePath);
+        }
+        if(StringUtils.isNotEmpty(data)){
+            JSONObject object = JSONObject.parseObject(data);
+            String userId = (String) object.get("userId");
+            databaseSpecialEntity.setUserId(userId);
+        }
+
+        //待审核
+        databaseSpecialEntity.setExamineStatus("1");
+        databaseSpecialEntity.setUseStatus("2");
+        databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
+
+        if(StringUtils.isNotEmpty(databaseSpecialReadWriteList)){
+            JSONArray objects = JSONArray.parseArray(databaseSpecialReadWriteList);
+            if(objects != null && objects.size()>0){
+                for(int i = 0;i<objects.size();i++){
+                    Map<String,String> mapReadWrite = (Map<String,String>)objects.get(i);
+                    DatabaseSpecialReadWriteEntity readWriteEntity = new DatabaseSpecialReadWriteEntity();
+                    readWriteEntity.setSdbId(databaseSpecialEntity.getId());
+                    readWriteEntity.setDataClassId(mapReadWrite.get("dataClassId"));
+                    readWriteEntity.setDatabaseId(mapReadWrite.get("databaseId"));
+                    readWriteEntity.setApplyAuthority(Integer.valueOf(mapReadWrite.get("applyAuthority")));
+                    //3 待审核
+                    readWriteEntity.setExamineStatus(3);
+                    //默认分类
+                    readWriteEntity.setTypeId("9999");
+                    //专题库创建 申请资料默认为引用
+                    readWriteEntity.setDataType(2);
+                    this.databaseSpecialReadWriteDao.saveNotNull(readWriteEntity);
+                }
+            }
+        }
+
         return this.databaseSpecialMapper.toDto(databaseSpecialEntity);
     }
 
@@ -465,6 +545,13 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         return databaseSpecialMapper.toDto(databaseSpecialEntities);
     }
 
+    @Override
+    public List<DatabaseSpecialDto> getByUseStatus(String useStatus) {
+        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByUseStatus(useStatus);
+        //根据用户id查用户名
+        return databaseSpecialMapper.toDto(databaseSpecialEntities);
+    }
+
 
     /**
      * 授权
@@ -595,290 +682,33 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             }
         }
     }
-    @Override
-    public Map<String,Object> saveCreateapply(HttpServletRequest request) {
-        DatabaseSpecialDto dbApply = new DatabaseSpecialDto();
-        Map<String,Object> map= new HashMap<String,Object>();
-        try
-        {
-            //下面定义存储存储上传信息的Map。
-            Map<String,Object> upLoadData= new HashMap<String,Object>();
-            //下面取得upload目录的路径。
-            String upload_file_path=System.getProperty("catalina.home")+"/upload/";
-            //设置工厂
-            DiskFileItemFactory factory = new DiskFileItemFactory();
-            //设置文件存储位置
-            if(!Paths.get(upload_file_path).toFile().exists())
-            {
-                Paths.get(upload_file_path).toFile().mkdirs();
-            }
-            factory.setRepository(Paths.get(upload_file_path).toFile());
-            //设置大小，如果文件小于设置大小的话，放入内存中，如果大于的话则放入磁盘中,单位是byte
-            factory.setSizeThreshold(0);
-            ServletFileUpload upload = new ServletFileUpload(factory);
-            //这里就是中文文件名处理的代码，其实只有一行
-            upload.setHeaderEncoding("utf-8");
-            String fileName = null;
-            List<FileItem> list = upload.parseRequest((RequestContext) request);
-            for (FileItem item : list)
-            {
-                if (item.isFormField())
-                {
-                    //程序执行到这里说明获取的是一般字段信息。
-                    String name = item.getFieldName();
-                    String value = item.getString("utf-8");
-                    //下面将数据存入upLoadData中。
-                    if(!StringUtils.isEmpty(value)&& !StringUtils.isEmpty(name)){//代码审查修改的
-                        upLoadData.put(name, value);
-                    }
-                }
-                else
-                {
-                    //程序执行到这里说明获取的是文件信息。
-                    String name = item.getFieldName();
-                    String value = item.getName();
-                    if(!StringUtils.isEmpty(Paths.get(value).getFileName().toString())&& !StringUtils.isEmpty(name)){//代码审查修改的
-                        fileName = Paths.get(value).getFileName().toString();
-						/*if(!Paths.get(upload_file_path).toFile().exists())
-						{
-							Paths.get(upload_file_path).toFile().mkdirs();
-						}*/
-                        // 写文件到path目录，文件名问filename
-                        item.write(new File(upload_file_path, fileName));
-                        //下面将数据存入upLoadData中。
-                        upLoadData.put(name, upload_file_path+fileName);
-                    }
-                }
-            }
-            //下面定义存储表数据的变量,该数据中存储用户申请的表信息。
-            String tableData=null;
-
-            //下面将upLoadData中的数据写入一个DatabaseSpecialDto对象中。
-            //下面对upLoadData中的数据进行循环处理。
-            for (Map.Entry<String,Object> item : upLoadData.entrySet())
-            {
-                //下面取得upLoadData中的每个值。
-                String key = item.getKey();
-                Object val = item.getValue();
-
-                //下面进行判断，并给dbApply赋值。
-                if("TDB_NAME".equals(key))
-                {
-                    //下面设置专题库名称。
-                    dbApply.setSdbName((String)val);
-                }
-                else if("USES".equals(key))
-                {
-                    //下面设置用途。
-                    dbApply.setUses((String)val);
-                }
-                else if("APPLY_FILE_PATH".equals(key))
-                {
-                    //下面设置申请材料路径
-                    dbApply.setApplyMaterial((String)val);
-                }
-                else if("TDB_IMG".equals(key))
-                {
-                    //下面将图标文件存入blob字段。
-					/*File file = new File((String)val);
-				  	InputStream inputStream = new FileInputStream(file);
-			        byte[] buf=new byte[inputStream.available()];
-			        inputStream.read(buf);
-			        dbApply.setTdb_img(buf);
-			        inputStream.close();*/
-
-                    dbApply.setSdbImg((String)val);
-                }else if("SCHEMA_ID".equals(key)){
-                    dbApply.setDatabaseSchema((String)val);
-                }else if("DATABASE_ID".equals(key)){
-                    dbApply.setDatabaseId((String)val);
-                }else if("TABLE_DATA".equals(key))
-                {
-                    //下面取得用户申请的表信息。
-                    tableData=(String)val;
-                }
-            }
-
-            //下面设置专题库ID号。
-            String tdbId = UUID.randomUUID().toString();
-            dbApply.setId(tdbId);
-            //下面设置申请时间。
-            Date now=new Date();
-            dbApply.setCreateTime(now);
-            //下面设置审核状态。
-            dbApply.setExamineStatus("1");//2表示审核通过。
-            //设置审核时间
-            dbApply.setExamineTime(now);
-            //下面设置专题库使用状态。
-            dbApply.setUseStatus("2");//2表示使用中。
-            //下面取得用户ID。
-            String userId=request.getParameter("userId");
-            dbApply.setUserId(userId);
-            //下面设置机构ID。
-            //这里主要通过接口调用，通过用户ID来获取用户相关信息。
-			/*String unitId=getUnitIdByUserId(userId);
-			if(unitId!=null)
-			{
-				dbApply.setUnitId(unitId);
-			}*/
-
-            //下面将一条记录存入数据库中的创建申请表。
-            databaseSpecialDao.save(databaseSpecialMapper.toEntity(dbApply));
-            //下面将用户申请的表信息保存到专题库资料读写授权表中。
-            JSONArray dataJsonArray= JSONArray.parseArray(tableData);
-            //下面遍历dataJsonArray中的JSONObject对象。
-            for(int i=1;i<=dataJsonArray.size();i=i+1)
-            {
-                //DatabaseSpecialReadWriteDto。
-                DatabaseSpecialReadWriteDto tableReadwrite = new DatabaseSpecialReadWriteDto();
-                //下面取得一张表的信息。
-                JSONObject oneTableInfo = dataJsonArray.getJSONObject(i-1);
-                //下面遍历JSONObject对象。
-                Iterator iterator = oneTableInfo.keySet().iterator();
-                while(iterator.hasNext())
-                {
-                    String key = (String) iterator.next();
-                    String value = oneTableInfo.getString(key);
-
-                    //下面循环读取每个数据。
-                    if(key.equals("DATA_CLASS_ID")==true)
-                    {
-                        tableReadwrite.setDataClassId(value);
-                    }
-                    else if(key.equals("LOGIC_ID")==true)
-                    {
-                        tableReadwrite.setDatabaseId(value);
-                    }
-                    else if(key.equals("APPLY_AUTHORITY")==true)
-                    {
-                        tableReadwrite.setApplyAuthority(Integer.parseInt("1"));
-                    }
-                }
-                //如果是读权限，默认通过；写权限，默认拒绝
-                tableReadwrite.setExamineStatus(3);//创建专题库时引用资料默认是待审核 2019-5-22 14:27:21 weiliguo
-                //默认分类
-                tableReadwrite.setTypeId("9999");
-                //下面设置专题库ID号，该ID号要与创建申请表的ID号相同。
-                tableReadwrite.setSdbId(dbApply.getId());
-                //下面设置申请时间。
-                Date now1=new Date();
-                tableReadwrite.setCreateTime(now1);
-
-                //专题库创建 申请资料默认为引用
-                tableReadwrite.setDataType(2);
-
-                //下面将一条记录存入数据库中的资料读写授权表。
-                databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(tableReadwrite));
-                //到实际物理库授权
-                Map<String,Object> parammap = new HashMap<String, Object>();
-
-                //专题库创建需要审核 , 资料也不会自动授权 , 因此注释此功能 wlg 2019-6-3 17:58:21
-				/*if(tableReadwrite.getApplyAuthority()==1){
-					DatabaseUpOperatesServiceImpl.DataAuthority(userId, tableReadwrite.getLogicId(), tableReadwrite.getDataClassId(), parammap, tableReadwrite.getApplyAuthority());
-				}*/
-            }
-            //下面生成返回信息。
-            map.put("returnCode", 0);
-            map.put("returnMessage", "保存数据成功");
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            //下面生成返回信息。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "保存数据失败："+e.getMessage());
-        }
-
-        //下面返回值。
-        return map;
-    }
 
     @Override
-    public Map<String, Object> saveMultilRecord(HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        try {
-            // 下面取得用户ID。
-            String userId = request.getParameter("userId");
-            String tdbId = request.getParameter("tdbId");
-            // 下面通过request取得传入的JSONObject对象对应字符串。
-            StringBuilder responseStrBuilder = new StringBuilder();
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null) {
-                responseStrBuilder.append(inputStr);
-            }
+    public DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto) {
+            List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList = databaseSpecialDto.getDatabaseSpecialReadWriteList();
+            if(databaseSpecialReadWriteList != null && databaseSpecialReadWriteList.size() > 0){
+                for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteList){
+                    // 如果是读权限，默认通过；写权限，默认拒绝
+                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
+                        databaseSpecialReadWriteDto.setExamineStatus(1);
+                    } else {
+                        databaseSpecialReadWriteDto.setExamineStatus(3);//待授权
+                    }
 
-            // 下面将用户申请的表信息保存到专题库资料读写授权表中。
-            JSONArray dataJsonArray = JSONArray.parseArray(responseStrBuilder.toString());
-            // 下面遍历dataJsonArray中的JSONObject对象。
-            boolean updateflag = false;
-            for (int i = 1; i <= dataJsonArray.size(); i = i + 1) {
-                // 下面定义DminSpecialDbReadwrite对象。
-                DatabaseSpecialReadWriteDto tableReadwrite = new DatabaseSpecialReadWriteDto();
+                    // 默认分类
+                    databaseSpecialReadWriteDto.setTypeId("9999");
+                    //申请资料（非自建）
+                    databaseSpecialReadWriteDto.setDataType(2);
+                    //保存
+                    databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
 
-                // 下面取得一张表的信息。
-                JSONObject oneTableInfo = dataJsonArray.getJSONObject(i - 1);
-                // 下面遍历JSONObject对象。
-                Iterator iterator = oneTableInfo.keySet().iterator();
-                while (iterator.hasNext()) {
-                    String key = (String) iterator.next();
-                    String value = oneTableInfo.getString(key);
-
-                    // 下面循环读取每个数据。
-                    if (key.equals("DATA_CLASS_ID") == true) {
-                        tableReadwrite.setDataClassId(value);
-                    } else if (key.equals("LOGIC_ID") == true) {
-                        tableReadwrite.setDatabaseId(value);
-                    } else if (key.equals("APPLY_AUTHORITY") == true) {
-                        tableReadwrite.setApplyAuthority(Integer.parseInt(value));
+                    //到实际物理库授权
+                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
+                        this.empowerDataOne(databaseSpecialReadWriteDto);
                     }
                 }
-                // 下面设置专题库ID号。
-                tableReadwrite.setSdbId(tdbId);
-                // 默认设为授权状态
-                // 如果是读权限，默认通过；写权限，默认拒绝
-                if (tableReadwrite.getApplyAuthority() == 1) {
-                    tableReadwrite.setExamineStatus(1);
-                } else {
-                    tableReadwrite.setExamineStatus(3);
-                    updateflag = true;
-                }
-                // 默认分类
-                tableReadwrite.setTypeId("9999");
-                tableReadwrite.setDataType(2);
-                // 下面设置申请时间。
-                Date now1 = new Date();
-                tableReadwrite.setCreateTime(now1);
-
-                // 下面将一条记录存入数据库中的资料读写授权表。
-                databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(tableReadwrite));
-                // 到实际物理库授权
-                Map<String, Object> parammap = new HashMap<String, Object>();
-                DataAuthorityApplyDto dataAuthorityApplyDto = new DataAuthorityApplyDto();
-                dataAuthorityApplyDto.setUserId(tableReadwrite.getUserId());
-                if (tableReadwrite.getApplyAuthority() == 1) {
-                    map =dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
-                }
             }
-            //下面更新专题库申请状态
-            if(updateflag){
-                String EXAMINE_STATUS ="1";
-                DatabaseSpecialDto dbApply = new DatabaseSpecialDto();
-                dbApply.setExamineStatus(EXAMINE_STATUS);
-                dbApply.setId(tdbId);
-                databaseSpecialDao.save(save(databaseSpecialMapper.toEntity(dbApply)));
-            }
-            // 下面生成返回信息。
-            map.put("returnCode", 0);
-            map.put("returnMessage", "保存数据成功");
-            streamReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 下面生成返回信息。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "保存数据失败：" + e.getMessage());
-        }
-        return map;
+        return databaseSpecialDto;
     }
 
     @Override
@@ -888,6 +718,18 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         specialdb.setUserId(userId);
         DatabaseSpecialAccessEntity special = databaseSpecialAccessDao.findBySdbIdAndUserId(tdbId,userId);
         return special;
+    }
+
+    @Override
+    public DatabaseSpecialAccessDto specialAccessApply(DatabaseSpecialAccessDto databaseSpecialAccessDto) {
+        //设置访问权限为完整访问权限
+        databaseSpecialAccessDto.setAccessAuthority(2);
+        //待审核
+        databaseSpecialAccessDto.setExamineStatus("1");
+        databaseSpecialAccessDto.setUseStatus("1");
+        DatabaseSpecialAccessEntity databaseSpecialAccessEntity = databaseSpecialAccessMapper.toEntity(databaseSpecialAccessDto);
+        databaseSpecialAccessEntity = databaseSpecialAccessDao.saveNotNull(databaseSpecialAccessEntity);
+        return databaseSpecialAccessMapper.toDto(databaseSpecialAccessEntity);
     }
 
     @Override
@@ -944,14 +786,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Override
     public Map<String, Object> getRecordByTdbId(String tdbId, String typeId, String cause) {
-        Map<String, Object> map = new HashMap<>();
-        try
-        {
+            Map<String, Object> map = new HashMap<>();
+
             //下面定义一个JSONObject对象，用来存储对应专题库信息。
             JSONObject createApplyData = new JSONObject();
             //下面定义JSONArray，来存储数据表信息。
-//			代码审查注释tableData
-//			JSONArray tableData=new JSONArray();
 
             //下面根据专题库ID号获取对应专题库信息。
             DatabaseSpecialDto oneRecord = this.databaseSpecialMapper.toDto(getById(tdbId));
@@ -998,18 +837,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
             //下面给result赋值。
             map.put("specialDb", createApplyData);
-            map.put("returnCode", 0);
-            map.put("returnMessage", "获取数据成功");
             return map;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            //下面给result赋值。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "获取数据失败："+e.getMessage());
-        }
-        return map;
     }
 
     @Override
