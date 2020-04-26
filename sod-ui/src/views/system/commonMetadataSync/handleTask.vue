@@ -29,10 +29,10 @@
       <el-form-item prop="primaryKey" label="同步主键:">
         <el-input size="small" v-model="msgFormDialog.primaryKey" placeholder="请输入" />
       </el-form-item>
-      <el-form-item prop="startTime" label="执行策略:">
+      <el-form-item prop="jobCron" label="执行策略:">
         <el-row>
           <el-col :span="18">
-            <el-input size="small" v-model="msgFormDialog.startTime" placeholder="请输入" />
+            <el-input size="small" v-model="msgFormDialog.jobCron" placeholder="请输入" />
           </el-col>
           <el-col :span="4">
             <el-button type="primary" size="small" @click="showStrategyDialog()">配置策略</el-button>
@@ -86,7 +86,7 @@ export default {
         apiType: "",
         apiDataKey: "",
         primaryKey: "",
-        startTime: ""
+        jobCron: ""
       },
       tableNames: [],
       rules: {
@@ -101,7 +101,7 @@ export default {
         apiDataKey: [
           { required: true, message: "请输入接口关键字", trigger: "blur" }
         ],
-        startTime: [
+        jobCron: [
           { required: true, message: "请输入执行策略", trigger: "blur" }
         ]
       }
@@ -182,7 +182,7 @@ export default {
     },
     //设置cron表达式
     setCron(cronExpression) {
-      this.msgFormDialog.startTime = cronExpression;
+      this.msgFormDialog.jobCron = cronExpression;
       this.cronDialogVisible = false;
     },
     // 关闭cron表达式
