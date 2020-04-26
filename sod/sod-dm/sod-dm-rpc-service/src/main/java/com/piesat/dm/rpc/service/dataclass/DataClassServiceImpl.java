@@ -149,7 +149,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getDatabaseClass() {
-        List<DatabaseEntity> databaseList = this.databaseDao.findAll();
+        List<DatabaseEntity> databaseList = this.databaseDao.findByDatabaseDefine_UserDisplayControl(1);
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
         for (DatabaseEntity db : databaseList) {
             if (!db.getStopUse()) {

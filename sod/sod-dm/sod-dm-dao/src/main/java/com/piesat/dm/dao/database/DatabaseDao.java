@@ -40,4 +40,6 @@ public interface DatabaseDao extends BaseDao<DatabaseEntity> {
     void deleteByDatabaseDefine_Id(String id);
 
     List<DatabaseEntity> findByDatabaseDefine_IdAndDatabaseName(String id,String databaseName);
+
+    List<DatabaseEntity> findByDatabaseDefine_UserDisplayControl(int use);
 }

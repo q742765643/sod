@@ -1,5 +1,13 @@
 /**
  *
+ * 必须是英文
+ */
+export function english(str) {
+  const reg = /^[a-zA-Z]+$/
+  return reg.test(str)
+}
+/**
+ *
  * 10以内的中文
  */
 export function chineseLengthTenValidation(str) {

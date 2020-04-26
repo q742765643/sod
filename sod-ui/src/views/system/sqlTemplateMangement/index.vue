@@ -43,9 +43,9 @@
               >
                 <el-option
                   v-for="item in databaseList"
-                  :key="item.keyCol"
-                  :label="item.nameCn"
-                  :value="`${item.keyCol}`"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="`${item.dictValue}`"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -181,7 +181,7 @@ export default {
     },
     //获取数据库厂商
     getDBList() {
-      getDBtype().then(response => {
+      this.getDicts("sys_database_type").then(response => {
         this.databaseList = response.data;
       });
     },

@@ -73,6 +73,7 @@ import {
   saveLogic,
   editLogic
 } from "@/api/dbDictMangement/dataUsageMangement";
+import { english } from "@/components/commonVaildate.js";
 export default {
   name: "codeUseDialog",
   components: {},
@@ -82,6 +83,15 @@ export default {
     }
   },
   data() {
+    var nameValidate = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入数据用途ID"));
+      } else if (!english(value)) {
+        callback(new Error("请输入数据用途ID格式不正确"));
+      } else {
+        callback();
+      }
+    };
     return {
       isDisabled: false,
       //编辑页面列
@@ -103,7 +113,7 @@ export default {
       dbNamesList: [],
       baseFormRules: {
         logicFlag: [
-          { required: true, message: "请输入数据用途ID", trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" }
         ],
         logicName: [
           { required: true, message: "请输入用途描述", trigger: "blur" }
