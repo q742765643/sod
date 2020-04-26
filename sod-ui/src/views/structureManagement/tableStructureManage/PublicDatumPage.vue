@@ -107,6 +107,7 @@ export default {
             console.log(this.tabPosition);
             this.changeRadioBtn(res.data[0].ID);
             this.tableShow = true;
+            this.childShow = false;
           } else {
             this.tableShow = false;
           }

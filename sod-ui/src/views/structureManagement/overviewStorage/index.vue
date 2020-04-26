@@ -217,6 +217,7 @@
       :fullscreen="true"
       :before-close="handleClose"
       top="0"
+      class="scrollDialog"
     >
       <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
     </el-dialog>
@@ -378,7 +379,7 @@ export default {
     // 存储结构
     handledDBMethods(row) {
       this.rowData = row;
-      this.structureManageTitle = row.class_name;
+      this.structureManageTitle = row.CLASS_NAME;
       this.structureManageVisible = true;
     },
     // 数据同步
@@ -535,6 +536,19 @@ export default {
     th {
       text-align: left;
     }
+  }
+}
+.scrollDialog {
+  .el-dialog__header {
+    padding: 10px 20px;
+    padding-left: 44px;
+    margin-bottom: 0;
+  }
+  .el-dialog__header:before {
+    top: 12px;
+  }
+  .el-dialog__headerbtn {
+    top: 12px;
   }
 }
 </style>

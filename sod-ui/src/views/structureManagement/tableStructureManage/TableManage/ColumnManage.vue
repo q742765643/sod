@@ -432,6 +432,7 @@ import {
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { enable } from "@/api/structureManagement/tableStructureManage/index";
 import { findAllManageGroup } from "@/api/dbDictMangement/manageField";
+import { codeVer } from "@/components/commonVaildate.js";
 export default {
   props: { tableInfo: Object, tableType: String, rowData: Object },
   components: {
@@ -440,6 +441,23 @@ export default {
     handleExport
   },
   data() {
+    var nameValidate = (rule, value, callback) => {
+      let msg = "";
+      if (rule.field == "dbEleCode") {
+        msg = "公共元数据字段";
+      } else if (rule.field == "celementCode") {
+        msg = "字段名称";
+      }
+      if (value === "") {
+        callback(new Error("请输入" + msg));
+      } else if (!codeVer(value)) {
+        callback(
+          new Error(msg + "不允许输入小写字母和中文，且需以大写字母开头")
+        );
+      } else {
+        callback();
+      }
+    };
     return {
       handleExportObj: {
         name: "add-column"
@@ -483,10 +501,10 @@ export default {
       repeatIndex: 0,
       rules: {
         dbEleCode: [
-          { required: true, message: "请输入公共元数据字段", trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" }
         ],
         celementCode: [
-          { required: true, message: "请输入字段名称", trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" }
         ],
         userEleCode: [
           { required: true, message: "请输入服务名称", trigger: "blur" }
@@ -900,15 +918,19 @@ export default {
         if (this.tableType == "E-show") {
           publicRows.forEach(element => {
             element.isKvK = "true";
+            element.id = "";
+            element.tableId = this.tableInfo.id;
           });
         }
+        publicRows.forEach(element => {
+          element.id = "";
+          element.tableId = this.tableInfo.id;
+        });
         tableColumnSaveList({ tableColumnList: publicRows }).then(response => {
           if (response.code == 200) {
             this.$message({ message: "操作成功", type: "success" });
-            this.$refs[formName].resetFields();
             this.dialogStatus.columnDialog = false;
             this.getCodeTable();
-            this.columnEditData = [];
           } else {
             this.$message({
               type: "error",
@@ -1003,6 +1025,7 @@ export default {
       console.log(data);
       data.forEach(element => {
         element.id = "";
+        element.tableId = this.tableInfo.id;
       });
       tableColumnSaveList({ tableColumnList: data }).then(response => {
         if (response.code == 200) {

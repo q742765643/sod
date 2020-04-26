@@ -12,8 +12,8 @@
           @change="handleQuery"
         >
           <el-option label="待审核" value="0"></el-option>
-          <el-option label="审核未通过" value="1"></el-option>
-          <el-option label="审核通过" value="2"></el-option>
+          <el-option label="审核未通过" value="2"></el-option>
+          <el-option label="审核通过" value="1"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -48,8 +48,8 @@
       <el-table-column prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='0'">待审核</span>
-          <el-link v-if="scope.row.examineStatus=='1'" @click="viewReason(scope.row)">审核未通过</el-link>
-          <span v-if="scope.row.examineStatus=='2'">审核通过</span>
+          <el-link v-if="scope.row.examineStatus=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
+          <span v-if="scope.row.examineStatus=='1'">审核通过</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" class-name="small-padding fixed-width">

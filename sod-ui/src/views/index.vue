@@ -167,7 +167,6 @@
 
 <script>
 // import { interfaceObj } from "@/urlConfig.js";
-import { testExport } from "@/components/commonVaildate.js";
 import {
   findDataCount,
   findDataMonthCount,
@@ -709,16 +708,7 @@ export default {
       });
     },
     // 下载
-    downloadWord(name) {
-      this.axios
-        .get(interfaceObj.download + "?filepath=" + name)
-        .then(data => {
-          testExport(interfaceObj.download + "?filepath=" + name);
-        })
-        .catch(function(error) {
-          testExport(interfaceObj.download + "?filepath=" + name);
-        });
-    },
+    downloadWord(name) {},
 
     //获取接口详细信息
     getInterfaceInfo(name) {
