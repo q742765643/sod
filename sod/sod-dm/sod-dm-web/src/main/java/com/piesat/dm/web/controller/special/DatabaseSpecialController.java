@@ -182,6 +182,7 @@ public class DatabaseSpecialController {
 
     @ApiOperation(value = "根据专题库id修改专题库使用状态")
     //@RequiresPermissions("dm:databaseSpecial:updateUseStatusById")
+    @Log(title = "专题库管理", businessType = BusinessType.UPDATE)
     @GetMapping(value = "/updateUseStatusById")
     public ResultT updateUseStatusById(String sdbId,String useStatus) {
         try {
@@ -535,18 +536,5 @@ public class DatabaseSpecialController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value = "获取平台中废弃的专题库")
-    @RequiresPermissions("dm:databaseSpecial:getDiscardSpecial")
-    @GetMapping(value = "/getDiscardSpecial")
-    public  ResultT saveOneRecord(String userId){
-        try {
-            Map<String,Object> map =  this.databaseSpecialService.getDiscardSpecial(userId);
-            return ResultT.success(map);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
 
 }

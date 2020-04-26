@@ -15,6 +15,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @description:
@@ -63,6 +65,13 @@ public class OperLogController {
     @GetMapping("/export")
     public void exportExcel(OperLogDto operLogDto){
         operLogService.exportExcel(operLogDto);
+    }
+
+    @ApiOperation(value = "根据用户名模块名称查询日志信息", notes = "根据用户名模块名称查询日志信息")
+    @GetMapping("/getLogInfoByOperNameAndTitle")
+    public ResultT getLogInfoByOperNameAndTitle(String operName,String title){
+        List<OperLogDto> operLogDtos = operLogService.findByOperNameAndTitle(operName, title);
+        return ResultT.success(operLogDtos);
     }
 }
 

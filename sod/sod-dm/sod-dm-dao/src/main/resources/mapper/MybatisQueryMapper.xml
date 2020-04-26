@@ -1002,14 +1002,6 @@
         </trim>
         where sdb_id=#{tdbId} and DATA_CLASS_ID=#{dataClassId}
     </update>
-    <!-- 下面根据用户ID取得用户创建的专题库（要求：审核状态为审核通过） -->
-    <select id="getAllSpecial" resultType="DatabaseSpecialEntity" parameterType="String">
-        select
-        <include refid="Base_Column_List" />
-        from T_SOD_DATABASE_SPECIAL
-        where  use_status=#{_parameter}
-        order by APPLY_TIME desc
-    </select>
     <!-- 下面根据用户ID和专题库ID取得用户专题库申请信息 -->
     <select id="getAllRecordByUserId" parameterType="String" resultType="DatabaseSpecialEntity">
         select

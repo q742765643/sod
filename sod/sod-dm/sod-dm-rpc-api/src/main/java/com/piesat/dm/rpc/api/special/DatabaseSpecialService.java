@@ -108,5 +108,4 @@ public interface DatabaseSpecialService {
 
     Map<String, Object> saveOneRecord(HttpServletRequest request);
 
-    Map<String, Object> getDiscardSpecial(String userId);
 }

@@ -59,5 +59,7 @@ public interface OperLogService {
 
     public void exportExcel(OperLogDto operLogDto);
 
+    List<OperLogDto> findByOperNameAndTitle(String operName, String title);
+
 }
 

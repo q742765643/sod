@@ -160,7 +160,6 @@ public interface MybatisQueryMapper {
 
     void updateTypeIdByTdbId(Map<String, String> dataMap);
 
-    List<DatabaseSpecialEntity> getAllSpecial(int i);
     List<DatabaseSpecialAccessEntity> getAllRecordByUserId(String userId);
 
     void saveOneRecord(DatabaseSpecialAccessEntity oneRecord);

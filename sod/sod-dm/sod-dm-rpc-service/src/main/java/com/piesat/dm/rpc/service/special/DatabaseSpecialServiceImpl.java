@@ -894,9 +894,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public Map<String, Object> getAllSpecial(String userId) {
         Map<String, Object> map = new HashMap<>();
-        try {
+        /*try {
             //下面根据传入的机构ID取得对应机构下的所有专题库信息。
-            List<DatabaseSpecialEntity> dataList=mybatisQueryMapper.getAllSpecial(2);
+            List<DatabaseSpecialEntity> dataList=this.findBy;
             //获取当前用户申请过的专题库
             List<DatabaseSpecialAccessEntity> applyList = mybatisQueryMapper.getAllRecordByUserId(userId);
 
@@ -915,11 +915,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     //根据用户id获取用户信息
                     String userInfo =  new GetAllUserInfo().getUserInfo((String) obj1.getUserId());
                     JSONObject jsonobject = JSON.parseObject(userInfo);
-//                    if (jsonobject != null) {
-//                        obj1.setus(jsonobject.getString("username"));
-//                        obj1.setUserPhone(jsonobject.getString("phone"));
-//                        obj1.setDepartment(jsonobject.getString("deptName"));
-//                    }
                     if(applyList!=null&&applyList.size()>0){
                         for(DatabaseSpecialAccessEntity obj2 : applyList){
                             if(obj1.getId().equals(obj2.getSdbId())){
@@ -950,7 +945,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             e.printStackTrace();
             map.put("returnCode", 1);
             map.put("returnMessage", "专题库数据获取失败");
-        }
+        }*/
         return map;
     }
 
@@ -1022,31 +1017,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         return map;
     }
 
-    @Override
-    public Map<String, Object> getDiscardSpecial(String userId) {
-        Map<String, Object> map = new HashMap<>();
-        try {
-            //获取平台中所有废弃的专题库
-            List<DatabaseSpecialEntity> dataList=mybatisQueryMapper.getAllSpecial(3);
-            //过滤出自己废弃的专题库
-            List<DatabaseSpecialEntity> resultList = new ArrayList<DatabaseSpecialEntity>();
-            if(dataList!=null&&dataList.size()>0){
-                for(DatabaseSpecialEntity obj1 : dataList){
-                    if(obj1.getUserId().equals(userId)){
-                        resultList.add(obj1);
-                    }
-                }
-            }
-            map.put("data", resultList);
-            map.put("returnCode", 0);
-            map.put("returnMessage", "获取废弃专题库数据成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            map.put("returnCode", 1);
-            map.put("returnMessage", "获取废弃专题库数据失败");
-        }
-        return  map;
-    }
     /**
      * 根据专题库id获取所有对应资料
      * @param tdbId

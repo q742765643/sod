@@ -120,5 +120,11 @@ public class OperLogServiceImpl extends BaseService<OperLogEntity> implements Op
         ExcelUtil<OperLogEntity> util=new ExcelUtil(OperLogEntity.class);
         util.exportExcel(entities,"操作日志");
     }
+
+    @Override
+    public List<OperLogDto> findByOperNameAndTitle(String operName, String title) {
+        List<OperLogEntity> operLogEntities = this.operLogDao.findByOperNameAndTitle(operName, title);
+        return operLogMapstruct.toDto(operLogEntities);
+    }
 }
 
