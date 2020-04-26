@@ -50,6 +50,8 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> queryNewdataApplyByApplyId(@Param("id") String id);
 
+    List<Map<String, Object>> querySpecialByUserIdAndUseStatus(@Param("userId")String userId, @Param("useStatus")String useStatus);
+
     /**
      * 在线时间检索条件分页查询
      *

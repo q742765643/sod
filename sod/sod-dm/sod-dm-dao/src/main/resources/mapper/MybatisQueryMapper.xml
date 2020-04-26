@@ -902,6 +902,13 @@
         dpd.special_database_name || '【' ||dpd.database_schema_name||'】'
         order by daa.APPLY_TIME desc
     </select>
+    <select id="querySpecialByUserIdAndUseStatus" parameterType="java.util.Map">
+        select * from T_SOD_DATABASE_SPECIAL
+          where USER_ID = #{userId} and USE_STATUS =#{status}
+            or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{status})
+            or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
+    </select>
+
     <!-- 根据id删除资料申请记录 -->
     <delete id="delDataAuthorityByApplyId" parameterType="java.util.Map">
         delete from T_SOD_DATA_AUTHORITY_RECORD

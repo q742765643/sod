@@ -540,9 +540,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public List<DatabaseSpecialDto> getByUserIdAndUseStatus(String userId, String useStatus) {
-        List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByUserIdAndUseStatus(userId, useStatus);
-        return databaseSpecialMapper.toDto(databaseSpecialEntities);
+    public List<Map<String, Object>> getByUserIdAndUseStatus(String userId, String useStatus) {
+        List<Map<String, Object>> mapList = mybatisQueryMapper.querySpecialByUserIdAndUseStatus(userId, useStatus);
+        return mapList;
     }
 
     @Override
@@ -712,12 +712,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public DatabaseSpecialAccessEntity getdefeataudit(String tdbId, String userId) {
-        DatabaseSpecialAccessEntity specialdb = new DatabaseSpecialAccessEntity();
-        specialdb.setSdbId(tdbId);
-        specialdb.setUserId(userId);
+    public DatabaseSpecialAccessDto getSpecialAccess(String tdbId, String userId) {
         DatabaseSpecialAccessEntity special = databaseSpecialAccessDao.findBySdbIdAndUserId(tdbId,userId);
-        return special;
+        return databaseSpecialAccessMapper.toDto(special);
     }
 
     @Override
@@ -730,6 +727,31 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         DatabaseSpecialAccessEntity databaseSpecialAccessEntity = databaseSpecialAccessMapper.toEntity(databaseSpecialAccessDto);
         databaseSpecialAccessEntity = databaseSpecialAccessDao.saveNotNull(databaseSpecialAccessEntity);
         return databaseSpecialAccessMapper.toDto(databaseSpecialAccessEntity);
+    }
+
+    @Override
+    public DatabaseSpecialAccessDto specialAccessAutho(DatabaseSpecialAccessDto databaseSpecialAccessDto) {
+        DatabaseSpecialAccessEntity databaseSpecialAccessEntity = databaseSpecialAccessMapper.toEntity(databaseSpecialAccessDto);
+        //审核通过，设置使用状态为2使用中
+        if(databaseSpecialAccessEntity.getExamineStatus().equals("2")){
+            databaseSpecialAccessEntity.setUseStatus("2");
+        }
+        databaseSpecialAccessEntity.setExamineTime(new Date());
+        //更新申请记录
+        mybatisModifyMapper.updateSpecialAccess(databaseSpecialAccessEntity);
+
+        //给专题库下的资料授权
+        if(databaseSpecialAccessEntity.getExamineStatus().equals("2")){
+            List<DatabaseSpecialReadWriteEntity> databaseSpecialReadWriteEntities = this.databaseSpecialReadWriteDao.findBySdbId(databaseSpecialAccessDto.getSdbId());
+            if(databaseSpecialReadWriteEntities != null && databaseSpecialReadWriteEntities.size() > 0){
+                for(int i=0;i<databaseSpecialReadWriteEntities.size();i++){
+                    DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity = databaseSpecialReadWriteEntities.get(i);
+                    empowerAuthority(databaseSpecialAccessEntity.getUserId(),databaseSpecialReadWriteEntity.getDatabaseId(),
+                            databaseSpecialReadWriteEntity.getDataClassId(),databaseSpecialReadWriteEntity.getApplyAuthority());
+                }
+            }
+        }
+       return databaseSpecialAccessDto;
     }
 
     @Override
