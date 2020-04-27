@@ -68,7 +68,6 @@
       </el-col>
       <el-col :span="1.5">
         <handleExport
-          class="reloaddemo"
           :handleExportObj="queryParams"
           baseUrl="UCENTER"
           btnText="导出"
@@ -231,6 +230,22 @@ export default {
     });
   },
   methods: {
+    /** 导出按钮操作 */
+    handleExporta() {
+      const queryParams = this.queryParams;
+      this.$confirm("是否确认导出所有类型数据项?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          return exportBackup(queryParams);
+        })
+        .then(response => {
+          this.download(response.msg);
+        })
+        .catch(function() {});
+    },
     /** 查询字典类型详细 */
     getType(dictId) {
       getType(dictId).then(response => {

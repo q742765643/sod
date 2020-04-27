@@ -48,3 +48,26 @@ export function getById(query) {
     params: query
   })
 }
+
+// 下载
+
+export function exprotFile(query) {
+  return request({
+    url: baseUrl + '/dm/cloudDatabaseApply/download',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}
+
+// 模板下载
+export function exportDemo() {
+  return request({
+    url: baseUrl + '/dm/databaseDefine/export',
+    method: 'get',
+    params: {
+      name: "clouddatabase-application"
+    },
+    responseType: "arraybuffer"
+  })
+}

@@ -123,19 +123,22 @@
                 <em>点击上传</em>（只能上传docx文件）
               </div>
             </el-upload>
-            <handleExport
+            <el-button
               class="reloaddemo"
               v-show="isHideAdd"
-              :handleExportObj="handleExportObj"
-              baseUrl="DM"
-              btnText="模板下载"
-              exportUrl="/dm/fileUpDown/download"
-            />
-            <handlePreviewDocx
-              v-show="isHideAdd"
-              :handleDocxObj="handleDocxObj"
+              size="small"
+              type="success"
+              @click="demoExport"
+              icon="el-icon-document"
+            >模板下载</el-button>
+            <el-button
               class="preViewBox"
-            />
+              v-show="isHideAdd"
+              size="small"
+              type="success"
+              @click="previewDocx"
+              icon="el-icon-document"
+            >预览</el-button>
             <el-input
               size="small"
               type="text"
@@ -144,15 +147,22 @@
               v-show="isHide"
               style="width:82%;"
             ></el-input>
-            <handlePreviewDocx v-show="isHide" :handleDocxObj="handleDocxObj" />
-            <handleExport
+            <el-button
+              class="preViewBox"
               v-show="isHide"
-              class="methodReload"
-              :handleExportObj="handleExportObj"
-              baseUrl="DMWL"
-              btnText="下载"
-              exportUrl="/dm/fileUpDown/download"
-            />
+              size="small"
+              type="success"
+              @click="previewDocx"
+              icon="el-icon-document"
+            >预览</el-button>
+            <el-button
+              class="reloaddemo"
+              v-show="isHide"
+              size="small"
+              type="success"
+              @click="detailExport"
+              icon="el-icon-document"
+            >下载</el-button>
           </el-form-item>
         </el-col>
         <el-col :span="3"></el-col>
@@ -194,15 +204,16 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DMWLEI;
-import handleExport from "@/components/export";
-import handlePreviewDocx from "@/components/preview/previewDocx";
+
 import {
   databaseList,
   addTable,
   ifUPExist,
   getById,
   download,
-  update
+  update,
+  demoDownload,
+  exportData
 } from "@/api/authorityAudit/DBaccount";
 import {
   unstartnumValidation,
@@ -212,10 +223,7 @@ import {
 } from "@/components/commonVaildate.js";
 export default {
   name: "handleAccountDialog",
-  components: {
-    handleExport,
-    handlePreviewDocx
-  },
+
   props: {
     handleObj: {
       type: Object
@@ -276,13 +284,11 @@ export default {
         applyDatabaseId: [], //物理库ID
         userId: "10", //用户ID
         databaseUpDesc: "", //UP账户描述
-        applyMaterial: ""
+        applyMaterial: "",
+        pdfPath: ""
       },
       palceholderIp: "指定IP样例:192.168.1.1",
       dataBaseBox: [],
-      handleExportObj: {
-        name: "databaseuser-application"
-      }, //模板下载
       handleDocxObj: {}, //预览
       rules: {
         databaseUpId: [
@@ -314,6 +320,24 @@ export default {
     console.log(this.handleObj);
   },
   methods: {
+    // 模板下载
+    demoExport() {
+      demoDownload().then(res => {
+        this.downloadfileCommon(res, "word");
+      });
+    },
+    // 下载
+    detailExport() {
+      exportData().then(res => {
+        this.downloadfileCommon(res, "word");
+      });
+    },
+    // 预览
+    previewDocx() {
+      window.open(
+        "http://localhost:8080/wldm/upload/%E6%96%B0%E5%BB%BA%20DOCX%20%E6%96%87%E6%A1%A3.pdf"
+      );
+    },
     // 申请绑定IP
     removeDomain(item) {
       var index = this.ipArryForm.domains.indexOf(item);
@@ -381,9 +405,8 @@ export default {
         });
     },
     successUpload: function(response, file, fileList) {
-      this.handleDocxObj = {};
-      this.handleDocxObj.file = file.raw;
-      this.msgFormDialog.applyMaterial = response.msg;
+      this.msgFormDialog.pdfPath = response.data.pdfPath;
+      this.msgFormDialog.applyMaterial = response.data.filePath;
     },
 
     // 关联用户
@@ -403,8 +426,8 @@ export default {
         var dataList = [];
         for (var i = 0; i < resdata.length; i++) {
           var obj = {};
-          obj.key = resdata[i].id;
-          obj.label = resdata[i].databaseDefine.databaseName;
+          obj.key = resdata[i].ID;
+          obj.label = resdata[i].DATABASE_NAME;
           dataList.push(obj);
         }
 
@@ -625,7 +648,7 @@ export default {
   .preViewBox {
     position: absolute;
     right: 100px;
-    top: -2px;
+    top: 0px;
   }
 }
 .ipDialog {

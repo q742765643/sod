@@ -161,12 +161,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <handleExport
-                :handleExportObj="handleExportObj"
-                baseUrl="DM"
-                btnText="模板下载"
-                exportUrl="/dm/databaseDefine/export"
-              />
+              <el-button @click="demoDownload" size="small" type="success">模板下载</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -199,12 +194,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="单位审核材料" prop="examineMaterial">
-              <handleExport
-                :handleExportObj="handleExportObj"
-                baseUrl="DM"
-                btnText="下载查看审核文件"
-                exportUrl="/dm/cloudDatabaseApply/download"
-              />
+              <el-button @click="handleExport" size="small" type="success">下载查看审核文件</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -376,11 +366,12 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DM;
-import handleExport from "@/components/export";
 import {
   getDictDataByType,
   editCldb,
-  saveCldb
+  saveCldb,
+  exportDemo,
+  exprotFile
 } from "@/api/authorityAudit/cloudDBaudit";
 import {
   chineseLengthTenValidation,
@@ -391,9 +382,6 @@ import {
 
 export default {
   name: "handleCloudDialog",
-  components: {
-    handleExport
-  },
   props: {
     handleObj: {
       type: Object
@@ -439,9 +427,6 @@ export default {
     };
 
     return {
-      handleExportObj: {
-        name: "clouddatabase-application"
-      },
       passwordType: "",
       isReason: false,
       isDetail: false,
@@ -603,14 +588,28 @@ export default {
         }
       );
     },
+    // 文件下载
+    handleExport() {
+      exprotFile({
+        examineMaterial: this.msgFormDialog.examineMaterial
+      }).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
+    // 模板下载
+    demoDownload() {
+      exportDemo({
+        examineMaterial: this.msgFormDialog.examineMaterial
+      }).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // 获取服务器详情
     initServerDetail() {
       if (this.searchObj.id) {
         // 修改
         this.msgFormDialog = this.searchObj;
         this.msgFormDialog.userId = this.searchObj.application_user;
-        this.handleExportObj = {};
-        this.handleExportObj.examineMaterial = this.msgFormDialog.examineMaterial;
         this.isDetail = true;
         if (this.msgFormDialog.examineStatus == "02") {
           this.examineStatus = true;

@@ -24,12 +24,7 @@
           icon="el-icon-plus"
           v-hasPermi="['DBaccount:role:add']"
         >新增</el-button>
-        <handleExport
-          :handleExportObj="queryParams"
-          baseUrl="DM"
-          btnText="导出"
-          exportUrl="/dm/databaseUser/exportData"
-        />
+        <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
       </el-form-item>
     </el-form>
 
@@ -99,13 +94,15 @@
 </template>
 
 <script>
-import { databaseUserAll, deleteList } from "@/api/authorityAudit/DBaccount";
+import {
+  databaseUserAll,
+  deleteList,
+  exportData
+} from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
-import handleExport from "@/components/export";
 export default {
   components: {
-    handleAccount,
-    handleExport
+    handleAccount
   },
   data() {
     return {
@@ -197,6 +194,12 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    //导出
+    handleExport() {
+      exportData(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
     },
     handleDialogClose() {
       this.handleDialog = false;

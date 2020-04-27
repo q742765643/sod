@@ -86,10 +86,14 @@ export function selectDictLabel(datas, value) {
 export function download(fileName) {
   window.location.href = baseURL + "/common/download?fileName=" + encodeURI(fileName) + "&delete=" + true;
 }
-export function downloadfileCommon(res) {
+export function downloadfileCommon(res, Type) {
   console.log(222)
+  let fileType = 'type: "application/octet-stream";charset=utf-8'
+  if (Type == 'word') {
+    fileType = 'type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  }
   var blob = new Blob([res.data], {
-    type: 'type: "application/octet-stream";charset=utf-8'
+    type: fileType
   }); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
   var contentDisposition = res.headers['content-disposition']; //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
   var patt = new RegExp("filename=([^;]+\\.[^\\.;]+);*");

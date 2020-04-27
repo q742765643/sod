@@ -54,3 +54,12 @@ export function deleteByIds(query) {
     method: "delete",
   });
 }
+
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/dm/consistencyCheck/downloadDfcheckFile',
+    method: 'post',
+    data: query,
+    responseType: "arraybuffer"
+  })
+}

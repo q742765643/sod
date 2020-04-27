@@ -43,12 +43,7 @@
             <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
           </el-col>
           <el-col :span="1.5">
-            <handleExport
-              :handleExportObj="queryParams"
-              baseUrl="DM"
-              btnText="导出"
-              exportUrl="/managefield/export"
-            />
+            <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
           </el-col>
         </el-row>
         <el-table :data="tableData" highlight-current-row @selection-change="handleSelectionChange">
@@ -90,21 +85,20 @@
 <script>
 import handleTree from "@/views/dbDictMangement/manageField/handleTree";
 import handleDict from "@/views/dbDictMangement/manageField/handleDict";
-import handleExport from "@/components/export";
 import {
   findAllManageGroup,
   findManageFieldByPk,
   delManageGroup,
   pageField,
-  delManageField
+  delManageField,
+  exportTable
 } from "@/api/dbDictMangement/manageField";
 
 //分类树
 export default {
   components: {
     handleTree,
-    handleDict,
-    handleExport
+    handleDict
   },
   data() {
     return {
@@ -140,6 +134,12 @@ export default {
     await this.getTreeData();
   },
   methods: {
+    // 导出
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // 查询字段分组
     async getTreeData() {
       await findAllManageGroup().then(res => {

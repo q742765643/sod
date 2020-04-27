@@ -1,10 +1,10 @@
 import request from '@/utils/request'
-const baseUrl =process.env.VUE_APP_SCHEDULE_CENTER_API
+const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
 
 export function listBackup(query) {
 
   return request({
-    url: baseUrl+'/schedule/backup/list',
+    url: baseUrl + '/schedule/backup/list',
     method: 'get',
     params: query
   })
@@ -12,14 +12,14 @@ export function listBackup(query) {
 
 export function getBackup(backupId) {
   return request({
-    url: baseUrl+'/schedule/backup/' + backupId,
+    url: baseUrl + '/schedule/backup/' + backupId,
     method: 'get'
   })
 }
 
 export function addBackup(data) {
   return request({
-    url: baseUrl+'/schedule/backup',
+    url: baseUrl + '/schedule/backup',
     method: 'post',
     data: data
   })
@@ -27,7 +27,7 @@ export function addBackup(data) {
 
 export function updateBackup(data) {
   return request({
-    url: baseUrl+'/schedule/backup',
+    url: baseUrl + '/schedule/backup',
     method: 'put',
     data: data
   })
@@ -35,72 +35,70 @@ export function updateBackup(data) {
 
 export function delBackup(backupIds) {
   return request({
-    url: baseUrl+'/schedule/backup/' + backupIds,
+    url: baseUrl + '/schedule/backup/' + backupIds,
     method: 'delete'
   })
 }
 export function findAllDataBase() {
   return request({
-    url: baseUrl+'/schedule/backup/findDatabase',
+    url: baseUrl + '/schedule/backup/findDatabase',
     method: 'get'
   })
 }
-export function getByDatabaseId(databaseId,dataClassId) {
+export function getByDatabaseId(databaseId, dataClassId) {
   return request({
-    url: baseUrl+'/schedule/backup/findDataClassId',
+    url: baseUrl + '/schedule/backup/findDataClassId',
     method: 'get',
     params: {
-      "databaseId":databaseId,
-      "dataClassId":dataClassId
+      "databaseId": databaseId,
+      "dataClassId": dataClassId
     }
   })
 }
-export function getByDatabaseIdAndClassId(databaseId,dataClassId) {
+export function getByDatabaseIdAndClassId(databaseId, dataClassId) {
   return request({
-    url: baseUrl+'/schedule/job/getByDatabaseIdAndClassId',
+    url: baseUrl + '/schedule/job/getByDatabaseIdAndClassId',
     method: 'get',
     async: true,
     params: {
-      "databaseId":databaseId,
-      "dataClassId":dataClassId
+      "databaseId": databaseId,
+      "dataClassId": dataClassId
     }
   })
 }
 export function startBackup(id) {
   return request({
-    url: baseUrl+'/schedule/job/startById',
+    url: baseUrl + '/schedule/job/startById',
     method: 'get',
     params: {
-      "id":id
+      "id": id
     }
   })
 }
 export function stopBackup(id) {
   return request({
-    url: baseUrl+'/schedule/job/stop',
+    url: baseUrl + '/schedule/job/stop',
     method: 'get',
     params: {
-      "id":id
+      "id": id
     }
   })
 }
 export function executeBackup(id) {
   return request({
-    url: baseUrl+'/schedule/job/execute',
+    url: baseUrl + '/schedule/job/execute',
     method: 'get',
     params: {
-      "id":id
+      "id": id
     }
   })
 }
 
-export function exportBackup() {
+export function exportBackup(query) {
   return request({
-    url: baseUrl+'/schedule/backup/export',
+    url: baseUrl + '/schedule/backup/export',
     method: 'get',
-    params: {
-      "vTableName":"1"
-    },
+    params: query,
     responseType: "arraybuffer"
   })
 }

@@ -93,13 +93,7 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:dict:export']"
-          :handleExportObj="queryParams"
-          baseUrl="SCHEDULE"
-          btnText="导出"
-          exportUrl="/schedule/moveLog/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -235,18 +229,15 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   listMoveLog,
   getMoveLog,
-  delMoveLog
+  delMoveLog,
+  exportTable
 } from "@/api/schedule/move/moveLog";
 import { formatDate } from "@/utils/index";
 
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       // 遮罩层
@@ -292,6 +283,12 @@ export default {
     });
   },
   methods: {
+    // 导出
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     /** 查询字典类型列表 */
     getList() {
       this.loading = true;

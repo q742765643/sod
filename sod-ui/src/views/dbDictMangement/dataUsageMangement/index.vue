@@ -23,13 +23,7 @@
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:dict:export']"
-          :handleExportObj="queryParams"
-          baseUrl="DM"
-          btnText="导出"
-          exportUrl="/dm/logicDefine/exportTable"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -87,14 +81,13 @@
 import {
   queryDataBaseLogicAll,
   delLogic,
-  getById
+  getById,
+  exportTable
 } from "@/api/dbDictMangement/dataUsageMangement";
 import dataUsageEdit from "@/views/dbDictMangement/dataUsageMangement/dataUsageEdit";
-import handleExport from "@/components/export";
 export default {
   components: {
-    dataUsageEdit,
-    handleExport
+    dataUsageEdit
   },
   data() {
     return {
@@ -125,6 +118,12 @@ export default {
     this.getList();
   },
   methods: {
+    // 导出
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (

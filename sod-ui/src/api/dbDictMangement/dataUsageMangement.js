@@ -54,3 +54,13 @@ export function editLogic(data) {
     data: data
   })
 }
+// 下载
+
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/dm/logicDefine/exportTable',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

@@ -82,13 +82,7 @@
         >清空</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:logininfor:export']"
-          :handleExportObj="queryParams"
-          baseUrl="UCENTER"
-          btnText="导出"
-          exportUrl="/monitor/logininfor/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -125,7 +119,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   list,
   delLogininfor,
@@ -133,9 +126,6 @@ import {
   exportLogininfor
 } from "@/api/monitor/logininfor";
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       // 遮罩层
@@ -174,6 +164,12 @@ export default {
     });
   },
   methods: {
+    // 导出
+    handleExport() {
+      exportLogininfor(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {

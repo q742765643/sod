@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_DMWLEI;
 // 新增表格
 export function addTable(data) {
   return request({
@@ -83,5 +83,26 @@ export function update(data) {
     url: baseUrl + '/dm/databaseUser/update',
     method: 'post',
     data: data
+  })
+}
+
+// 导出
+export function exportData(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/exportData',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}
+// 模板下载
+export function demoDownload() {
+  return request({
+    url: baseUrl + '/dm/fileUpDown/download',
+    method: 'get',
+    params: {
+      name: "databaseuser-application"
+    },
+    responseType: "arraybuffer"
   })
 }

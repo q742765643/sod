@@ -93,13 +93,7 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:dict:export']"
-          :handleExportObj="queryParams"
-          baseUrl="SCHEDULE"
-          btnText="导出"
-          exportUrl="/schedule/backupLog/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -128,13 +122,8 @@
             v-hasPermi="['schedule:backupLog:query']"
           >查看</el-button>
 
-          <handleExport
-            @click="handleDownload(scope.row)"
-            :handleExportObj="handleExportObj"
-            baseUrl="SCHEDULE"
-            btnText="下载"
-            exportUrl="/api/schedule/uploadDown/downFile"
-          />
+          <el-button size="small" type="success" icon="el-icon-download" @click="handleDownload">导出</el-button>
+
           <el-button
             size="mini"
             type="text"
@@ -223,18 +212,16 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   listBackupLog,
   getBackupLog,
-  delBackupLog
+  delBackupLog,
+  exportTable,
+  downFile
 } from "@/api/schedule/backup/backupLog";
 import { formatDate } from "@/utils/index";
 
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       handleExportObj: {},
@@ -358,9 +345,19 @@ export default {
         })
         .catch(function() {});
     },
+    // 单个下载
     handleDownload(row) {
-      this.handleExportObj = {};
-      this.handleExportObj.path = row.storageDirectory + "/" + row.fileName;
+      let obj = {};
+      obj.path = row.storageDirectory + "/" + row.fileName;
+      downFile(obj).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
+    //导出
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
     }
   }
 };

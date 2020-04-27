@@ -98,13 +98,7 @@
         >清空</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:config:export']"
-          :handleExportObj="queryParams"
-          baseUrl="UCENTER"
-          btnText="导出"
-          exportUrl="/monitor/operlog/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -194,7 +188,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   list,
   delOperlog,
@@ -202,9 +195,6 @@ import {
   exportOperlog
 } from "@/api/monitor/operlog";
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       // 遮罩层
@@ -253,6 +243,12 @@ export default {
     });
   },
   methods: {
+    // 导出
+    handleExport() {
+      exportOperlog(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {

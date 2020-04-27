@@ -11,20 +11,7 @@
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <handleExport
-          style="display:none;"
-          ref="downloadDf"
-          baseUrl="DM"
-          btnText="生成差异报告"
-          exportUrl="/dm/consistencyCheck/downloadDfcheckFile"
-        />
-
-        <el-button
-          size="small"
-          type="success"
-          icon="el-icon-download"
-          @click="handleDfFile()"
-        >生成差异报告</el-button>
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">生成差异报告</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -141,11 +128,10 @@ import {
   consistencyCheckSave,
   getDatabaseName,
   historyList,
-  deleteByIds
+  deleteByIds,
+  exportTable
 } from "@/api/structureManagement/consistencyCheck";
-import handleExport from "@/components/export";
 export default {
-  components: { handleExport },
   data() {
     return {
       currentRow: [],
@@ -214,7 +200,7 @@ export default {
     handleCurrentChange(val) {
       this.currentRow = val;
     },
-    handleDfFile() {
+    handleExport() {
       if (this.currentRow.length != 1) {
         this.$message({
           type: "error",
@@ -224,7 +210,9 @@ export default {
       }
       let obj = {};
       obj.databaseId = this.currentRow[0].databaseId;
-      this.$refs.downloadDf.exportData(obj);
+      exportTable(obj).then(res => {
+        this.downloadfileCommon(res);
+      });
     },
     getOptions() {
       getDatabaseName().then(response => {

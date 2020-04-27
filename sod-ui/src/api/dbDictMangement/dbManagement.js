@@ -87,3 +87,12 @@ export function conStatus(query) {
     params: query
   });
 }
+
+// 导出
+export function exportTable(query) {
+  return request({
+    url: baseUrl + "/dm/databaseDefine/export",
+    method: "get",
+    params: query
+  });
+}
