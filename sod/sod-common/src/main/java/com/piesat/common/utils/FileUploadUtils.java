@@ -84,8 +84,8 @@ public class FileUploadUtils {
     public static void uploadFileExl (HSSFWorkbook wb, String filePath) {
         try {
             File dirPath = new File(filePath);
-            if (!dirPath.exists()) {
-                dirPath.mkdirs();
+            if (!dirPath.getParentFile().exists()) {
+                dirPath.getParentFile().mkdirs();
             }
 
             // 新建一输出流

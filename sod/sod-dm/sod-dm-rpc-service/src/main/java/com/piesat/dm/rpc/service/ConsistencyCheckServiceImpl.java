@@ -21,6 +21,7 @@ import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.mapper.ConsistencyCheckMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -113,27 +114,27 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
             if("Gbase8a".equals(databaseDto.getDatabaseDefine().getDatabaseType())){
                 Gbase8a gbase8a = new Gbase8a(url, username, password);
                 //获取数据库中所有的表名
-                tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName());
+                tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName()).getData();
 
                 for(String tableName:tableList){
                     //物理库表字段信息
-                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)gbase8a.queryAllColumnInfo(databaseDto.getSchemaName(), tableName);
+                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)gbase8a.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
                     //物理库表索引和分库分表信息
-                    Map<String,Map<String,String>> indexAndShardings = (Map<String,Map<String,String>>)gbase8a.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName);
+                    Map<String,Map<String,String>> indexAndShardings = (Map<String,Map<String,String>>)gbase8a.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
                     compareDifferences(databaseId,tableName,columnInfos,indexAndShardings,compileResult);
 
                 }
             }else{
                 Xugu xugu = new Xugu(url, username, password);
                 //获取数据库中所有的表名
-                tableList = (List<String>)xugu.queryAllTableName(databaseDto.getSchemaName());
+                tableList = (List<String>)xugu.queryAllTableName(databaseDto.getSchemaName()).getData();
 
                 for(String tableName:tableList){
 
                     //表字段信息
-                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)xugu.queryAllColumnInfo(databaseDto.getSchemaName(),tableName.toUpperCase());
+                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)xugu.queryAllColumnInfo(databaseDto.getSchemaName(),tableName.toUpperCase()).getData();
                     //表索引和分开分表信息
-                    Map<String,Map<String,String>> indexAndShardings = (( Map<String,Map<String,String>>)xugu.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName));
+                    Map<String,Map<String,String>> indexAndShardings = ( Map<String,Map<String,String>>)xugu.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
                     compareDifferences(databaseId,tableName,columnInfos,indexAndShardings,compileResult);
                 }
             }
@@ -160,31 +161,32 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseIdAndTableName(databaseId, tableName);
         if(dataTableList == null || dataTableList.size() == 0){
             //元数据表缺失
-            columnResult = new ArrayList<String>();
-            columnResult.add(tableName);
-            columnResult.add(3,"不存在");
+            columnResult = Arrays.asList("", "", "","","","","","","","");
+            columnResult.set(0,tableName);
+            columnResult.set(3,"不存在");
             columnResults.add(columnResult);
-            indexResult = new ArrayList<String>();
-            indexResult.add(tableName);
-            indexResult.add(3,"不存在");
+            indexResult = Arrays.asList("", "", "","","","","");
+            indexResult.set(0,tableName);
+            indexResult.set(3,"不存在");
             indexResults.add(indexResult);
-            shardingResult = new ArrayList<String>();
-            shardingResult.add(tableName);
-            shardingResult.add(3,"不存在");
+            shardingResult =Arrays.asList("", "", "","","","","","","","");
+            shardingResult.set(0,tableName);
+            shardingResult.set(3,"不存在");
             shardingResults.add(shardingResult);
            return;
         }
         for(Map<String, Object> dataTable : dataTableList) {
-            DataTableDto dataTableDto = dataTableService.getDotById((String) dataTable.get("id"));
-            columnResult = new ArrayList<String>();
-            columnResult.add(tableName);
-            columnResult.add(dataTableDto.getDataServiceId());
-            columnResult.add(dataTableDto.getNameCn());
-            columnResult.add("存在");
+            DataTableDto dataTableDto = dataTableService.getDotById((String) dataTable.get("ID"));
+            columnResult = Arrays.asList("", "", "","","","","","","","");
+            columnResult.set(0,tableName);
+            columnResult.set(1,dataTableDto.getDataServiceId());
+            columnResult.set(2,dataTableDto.getNameCn());
+            columnResult.set(3,"存在");
             //以元数据库字段为准，遍历元数据字段
             Iterator<TableColumnDto> columnIterator = dataTableDto.getColumns().iterator();
-            while(columnIterator.hasNext()) {
-                TableColumnDto columnDto = columnIterator.next();
+            List<TableColumnDto> columnList= IteratorUtils.toList(columnIterator);
+            for(TableColumnDto columnDto:columnList) {
+                //TableColumnDto columnDto = columnIterator.next();
                 Map<String, Object> columnOneInfo = columnInfos.get(columnDto.getDbEleCode().toUpperCase());
                 //存储元数据多余字段
                 if(columnOneInfo == null){
@@ -231,38 +233,40 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                         columnResult.set(8,columnDto.getDbEleCode());
                     }
                 }
-                //以物理库为基础，查找元数据库缺失的字段
-                for(String codeName : columnInfos.keySet()){
-                    boolean flag = false;
-                    while(columnIterator.hasNext()) {
-                        TableColumnDto columnDto1 = columnIterator.next();
-                        if(codeName.equalsIgnoreCase(columnDto1.getDbEleCode())){
-                            flag = true;
-                            break;
-                        }
+            }
+
+            //以物理库为基础，查找元数据库缺失的字段
+            for(String codeName : columnInfos.keySet()){
+                boolean flag = false;
+                for(TableColumnDto columnDto1: columnList) {
+                    //TableColumnDto columnDto1 = columnIterator.next();
+                    if(codeName.equalsIgnoreCase(columnDto1.getDbEleCode())){
+                        flag = true;
+                        break;
                     }
-                    if(!flag){
-                        if(StringUtils.isNotNullString(columnResult.get(5))) {
-                            columnResult.set(5,columnResult.get(5) + ";" + codeName);
-                        }else{
-                            columnResult.set(5,codeName);
-                        }
+                }
+                if(!flag){
+                    if(StringUtils.isNotNullString(columnResult.get(5))) {
+                        columnResult.set(5,columnResult.get(5) + ";" + codeName);
+                    }else{
+                        columnResult.set(5,codeName);
                     }
                 }
             }
             columnResults.add(columnResult);
 
 
-            indexResult = new ArrayList<String>();
-            indexResult.add(tableName);
-            indexResult.add(dataTableDto.getDataServiceId());
-            indexResult.add(dataTableDto.getNameCn());
-            indexResult.add("存在");
+            indexResult = Arrays.asList("", "", "","","","","");
+            indexResult.set(0,tableName);
+            indexResult.set(1,dataTableDto.getDataServiceId());
+            indexResult.set(2,dataTableDto.getNameCn());
+            indexResult.set(3,"存在");
             //以元数据库索引为准，遍历元数据索引
             Iterator<TableIndexDto> indexIterator = dataTableDto.getTableIndexList().iterator();
+            List<TableIndexDto> indexList=IteratorUtils.toList(indexIterator);
             Map<String, String> dbIndexs = indexAndShardings.get("indexs");
-            while(indexIterator.hasNext()) {
-                TableIndexDto indexDto = indexIterator.next();
+            for(TableIndexDto indexDto : indexList) {
+                //TableIndexDto indexDto = indexIterator.next();
                 String indexColumn = dbIndexs.get(indexDto.getIndexName());
                 //元数据多余的索引
                 if(!StringUtils.isNotNullString(indexColumn)){
@@ -284,8 +288,8 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                 //以物理库为基础，查找元数据库缺失的索引
                 for(String indexName : dbIndexs.keySet()){
                     boolean flag = false;
-                    while(indexIterator.hasNext()) {
-                        TableIndexDto indexDto1 = indexIterator.next();
+                    for(TableIndexDto indexDto1:indexList) {
+                        //TableIndexDto indexDto1 = indexIterator.next();
                         if(indexName.equalsIgnoreCase(indexDto1.getIndexName())){
                             flag = true;
                             break;

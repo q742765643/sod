@@ -142,13 +142,14 @@ public class ConsistencyCheckController {
     }
 
 
-    @PostMapping(value = "/downloadDfcheckFile")
+    @GetMapping(value = "/downloadDfcheckFile")
     @ApiOperation(value = "生成差异报告", notes = "生成差异报告")
     public void downloadDfcheckFile(String databaseId, HttpServletResponse response){
+        databaseId = "89c7eb2a577d4a84b9cc25f2062e8363";
         DatabaseDto databaseDto = databaseService.getDotById(databaseId);
 
         String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
-                +"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH")+".xlsx";
+                +"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH")+".xls";
 
 
         Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseId);
