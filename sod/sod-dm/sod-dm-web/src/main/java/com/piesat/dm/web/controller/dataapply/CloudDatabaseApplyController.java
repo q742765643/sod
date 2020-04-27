@@ -130,7 +130,7 @@ public class CloudDatabaseApplyController {
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
         try {
-            cloudDatabaseApplyDto.setExamineStatus("01");
+            cloudDatabaseApplyDto.setExamineStatus("02");
             CloudDatabaseApplyDto save = this.cloudDatabaseApplyService.saveDto(cloudDatabaseApplyDto);
             return ResultT.success(save);
         } catch (Exception e) {
