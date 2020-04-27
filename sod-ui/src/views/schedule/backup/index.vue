@@ -102,13 +102,7 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:dict:export']"
-          :handleExportObj="queryParams"
-          baseUrl="SCHEDULE"
-          btnText="导出"
-          exportUrl="/schedule/backup/export"
-        />
+        <el-button type="success" icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -186,7 +180,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   listBackup,
   getBackup,
@@ -205,8 +198,7 @@ import handleBackUp from "@/views/schedule/backup/handleBackUp";
 
 export default {
   components: {
-    handleBackUp,
-    handleExport
+    handleBackUp
   },
   data() {
     return {
@@ -250,6 +242,11 @@ export default {
     });
   },
   methods: {
+    handleExport() {
+      exportBackup(this.queryParams).then(response => {
+        this.downloadfileCommon(response);
+      });
+    },
     /** 查询字典类型列表 */
     getList() {
       this.loading = true;

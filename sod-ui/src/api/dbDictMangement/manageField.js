@@ -70,3 +70,11 @@ export function editManageField(data) {
     data: data
   });
 }
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/managefield/export',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

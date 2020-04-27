@@ -23,12 +23,7 @@
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          :handleExportObj="queryParams"
-          baseUrl="DM"
-          btnText="导出"
-          exportUrl="/dm/databaseDefine/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -99,16 +94,15 @@ import {
   defineList,
   delList,
   delByIds,
-  conStatus
+  conStatus,
+  exportTable
 } from "@/api/dbDictMangement/dbManagement";
 import handleDataBase from "@/views/dbDictMangement/dbManagement/databaseEdit";
 import "font-awesome/css/font-awesome.css";
-import handleExport from "@/components/export";
 
 export default {
   components: {
-    handleDataBase,
-    handleExport
+    handleDataBase
   },
   data() {
     return {
@@ -140,6 +134,12 @@ export default {
     this.getList();
   },
   methods: {
+    // 导出
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     cancelDialog() {
       this.msgFormDialog = false;
       this.handleQuery();
