@@ -87,7 +87,7 @@ export default {
       if (value === "") {
         callback(new Error("请输入数据用途ID"));
       } else if (!english(value)) {
-        callback(new Error("请输入数据用途ID格式不正确"));
+        callback(new Error("数据用途ID只能由英文字母组成"));
       } else {
         callback();
       }
