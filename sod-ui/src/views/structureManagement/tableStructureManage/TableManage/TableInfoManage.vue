@@ -50,7 +50,7 @@
                   <li>
                     <p>
                       <span>{{'表类型:'}}</span>
-                      <span>{{this.rowData.STORAGE_TYPE}}</span>
+                      <span>{{this.rowData.DICT_LABEL}}</span>
                     </p>
                   </li>
                 </ul>

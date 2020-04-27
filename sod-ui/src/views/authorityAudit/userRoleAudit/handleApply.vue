@@ -33,7 +33,7 @@ export default {
     return {
       activeName: "first",
       msgFormDialog: {},
-      handleObj: {}
+      handleObj: { pageName: "业务用户审核" }
     };
   },
   created() {},

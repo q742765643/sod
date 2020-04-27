@@ -255,7 +255,7 @@ import {
   findBaseByPId
 } from "@/api/dbDictMangement/dbManagement";
 import { getDicts } from "@/api/system/dict/data";
-
+import { english } from "@/components/commonVaildate.js";
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -265,6 +265,15 @@ export default {
     }
   },
   data() {
+    var nameValidate = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入数据库ID"));
+      } else if (!english(value)) {
+        callback(new Error("数据库ID只能由英文字母组成"));
+      } else {
+        callback();
+      }
+    };
     return {
       dictsList: [],
       //专题列表
@@ -304,7 +313,7 @@ export default {
       isDbIdDisable: false,
 
       baseFormRules: {
-        id: [{ required: true, message: "请输入数据库ID", trigger: "blur" }],
+        id: { required: true, validator: nameValidate, trigger: "blur" },
         databaseName: [
           { required: true, message: "请输入数据库名称", trigger: "blur" }
         ],
