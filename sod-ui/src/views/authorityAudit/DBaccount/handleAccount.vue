@@ -328,15 +328,13 @@ export default {
     },
     // 下载
     detailExport() {
-      exportData().then(res => {
+      exportData({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
         this.downloadfileCommon(res, "word");
       });
     },
     // 预览
     previewDocx() {
-      window.open(
-        "http://localhost:8080/wldm/upload/%E6%96%B0%E5%BB%BA%20DOCX%20%E6%96%87%E6%A1%A3.pdf"
-      );
+      window.open(baseUrl + this.msgFormDialog.filePath);
     },
     // 申请绑定IP
     removeDomain(item) {

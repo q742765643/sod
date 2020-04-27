@@ -80,3 +80,12 @@ export function update(data) {
     data: data
   })
 }
+
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/dm/fileUpDown/download',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}
