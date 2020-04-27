@@ -102,6 +102,8 @@ service.interceptors.response.use(res => {
           location.reload() // 为了重新实例化vue-router对象 避免bug
         }) */
       })
+    } else if (code == undefined) {
+      return res.data
     } else if (code !== 200) {
       Notification.error({
         title: res.data.msg

@@ -67,13 +67,13 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:dict:export']"
-        >导出</el-button>
+        <handleExport
+          class="reloaddemo"
+          :handleExportObj="queryParams"
+          baseUrl="UCENTER"
+          btnText="导出"
+          exportUrl="/system/dict/data/export"
+        />
       </el-col>
     </el-row>
 
@@ -168,15 +168,18 @@ import {
   exportData
 } from "@/api/system/dict/data";
 import { listType, getType } from "@/api/system/dict/type";
-
+import handleExport from "@/components/export";
 export default {
+  components: {
+    handleExport
+  },
   data() {
     return {
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
-      dictLabels:[],
+      dictLabels: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -294,7 +297,7 @@ export default {
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id);
       this.dictLabels = selection.map(item => item.dictLabel);
-      
+
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -339,34 +342,22 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      const dictLabels = row.dictLabel || this.dictLabels
-      this.$confirm('是否确认删除字典标签为"' + dictLabels + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      const dictLabels = row.dictLabel || this.dictLabels;
+      this.$confirm(
+        '是否确认删除字典标签为"' + dictLabels + '"的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
         .then(function() {
           return delData(ids);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
-        })
-        .catch(function() {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm("是否确认导出所有数据项?", "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(function() {
-          return exportData(queryParams);
-        })
-        .then(response => {
-          this.download(response.msg);
         })
         .catch(function() {});
     }
