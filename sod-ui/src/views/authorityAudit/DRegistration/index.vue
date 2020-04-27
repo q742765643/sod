@@ -114,6 +114,9 @@
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
           </el-button>
+          <el-button v-else size="mini" disabled>
+            <i class="btnRound orangRound"></i>迁移
+          </el-button>
         </template>
       </el-table-column>
 
@@ -135,6 +138,9 @@
             <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
             <i class="btnRound orangRound" v-else></i>清除
           </el-button>
+          <el-button v-else size="mini" disabled>
+            <i class="btnRound orangRound"></i>清除
+          </el-button>
         </template>
       </el-table-column>
 
@@ -149,6 +155,9 @@
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.BACKUP_ID"></i>
             <i class="btnRound orangRound" v-else></i>备份
+          </el-button>
+          <el-button v-else size="mini" disabled>
+            <i class="btnRound orangRound"></i>备份
           </el-button>
         </template>
       </el-table-column>
@@ -308,7 +317,8 @@ import revieStepRegister from "@/views/authorityAudit/DRegistration/review/index
 import {
   getDataClassify,
   getDataTable,
-  databaseGet
+  databaseGet,
+  deleteById
 } from "@/api/authorityAudit/DRegistration/index";
 export default {
   components: {
@@ -325,7 +335,7 @@ export default {
     return {
       reviewStep: false,
       loading: true,
-      queryParams: { pageNum: 1, pageSize: 10, DDataId: "", examineStatus: "" }, //查询
+      queryParams: { pageNum: 1, pageSize: 10, DDataId: "", examineStatus: 1 }, //查询
       dbtypeselect: [], //数据分类下拉框
       tableData: [], //表格
       total: 0, //表格数
@@ -383,7 +393,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         DDataId: "",
-        examineStatus: ""
+        examineStatus: 1
       };
       this.getList();
     },
@@ -472,7 +482,17 @@ export default {
       this.handleReDialog = true;
     },
     // 删除
-    deleteList(row) {},
+    deleteList(row) {
+      deleteById({ id: row.ID }).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            message: "删除成功",
+            type: "success"
+          });
+          this.handleQuery();
+        }
+      });
+    },
     // 关闭数据注册弹窗
     async handleDataReg(info) {
       if (info) {

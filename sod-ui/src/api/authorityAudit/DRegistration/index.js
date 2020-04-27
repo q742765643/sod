@@ -26,3 +26,11 @@ export function databaseGet(query) {
     params: query
   });
 }
+// 删除
+export function deleteById(query) {
+  return request({
+    url: baseUrl + "/dm/newdataApply/deleteById",
+    method: "delete",
+    params: query
+  });
+}
