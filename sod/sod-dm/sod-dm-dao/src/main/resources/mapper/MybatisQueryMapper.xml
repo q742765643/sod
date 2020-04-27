@@ -29,7 +29,7 @@
             AND class_name like CONCAT('%',#{className},'%')
         </if>
         <if test="dDataId != null and dDataId != ''">
-            AND A.d_data_id like CONCAT('%',#{dDataId},'%')
+            AND upper(A.d_data_id) like CONCAT('%',upper(#{dDataId}),'%')
         </if>
         ORDER BY A.DATA_CLASS_ID
     </select>
@@ -88,7 +88,7 @@
             </if>
             <!-- 四级编码 -->
             <if test="map.d_data_id != null and map.d_data_id  != ''">
-                AND f.d_data_id like '%${map.d_data_id}%'
+                AND upper(f.d_data_id) like upper('%${map.d_data_id}%')
             </if>
             <!-- 逻辑库 -->
             <if test="map.logic_name != null and map.logic_name  != ''">
