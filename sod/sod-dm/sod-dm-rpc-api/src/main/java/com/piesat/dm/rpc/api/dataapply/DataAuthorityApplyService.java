@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.api.dataapply;
 
+import com.piesat.dm.rpc.dto.ReadAuthorityDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -43,7 +44,7 @@ public interface DataAuthorityApplyService {
     Map<String, Object> getDataCategory();
     /**
      *  获取可申请的资料清单
-     * @description 
+     * @description
      * @author wlg
      * @date 2020年4月22日下午4:18:02
      * @param userId
@@ -51,4 +52,8 @@ public interface DataAuthorityApplyService {
      * @throws Exception
      */
     List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
+
+    ReadAuthorityDto updateReadAuthority(ReadAuthorityDto readAuthorityDto);
+
+    List<ReadAuthorityDto> getReadAuthority();
 }

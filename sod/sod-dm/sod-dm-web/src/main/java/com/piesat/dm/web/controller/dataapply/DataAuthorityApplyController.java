@@ -3,6 +3,7 @@ package com.piesat.dm.web.controller.dataapply;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
+import com.piesat.dm.rpc.dto.ReadAuthorityDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
@@ -220,4 +221,28 @@ public class DataAuthorityApplyController {
 			return ResultT.failed(e.getMessage());
 		}
     }
+    @PostMapping(value = "/updateReadAuthority")
+    @ApiOperation(value = "读权限默认通过修改", notes = "读权限默认通过修改")
+    public ResultT updateReadAuthority(@RequestBody ReadAuthorityDto readAuthorityDto) {
+        try {
+            readAuthorityDto = this.dataAuthorityApplyService.updateReadAuthority(readAuthorityDto);
+            return ResultT.success(readAuthorityDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/getReadAuthority")
+    @ApiOperation(value = "读权限默认通过，查询", notes = "读权限默认通过，查询")
+    public ResultT getReadAuthority() {
+        try {
+            List<ReadAuthorityDto> readAuthorityDtoList = this.dataAuthorityApplyService.getReadAuthority();
+            return ResultT.success(readAuthorityDtoList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }
