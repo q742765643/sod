@@ -97,7 +97,7 @@ service.interceptors.response.use(res => {
         }
       ).then(() => {
         localStorage.clear();
-        window.location.href = "http://localhost:8080/login";
+        window.location.href = "http://10.40.79.18:8080/dist/index.html";
         /* store.dispatch('LogOut').then(() => {
           location.reload() // 为了重新实例化vue-router对象 避免bug
         }) */
