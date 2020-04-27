@@ -24,12 +24,7 @@
 
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <handleExport
-          :handleExportObj="queryParams"
-          btnText="导出"
-          exportUrl="/dm/storageConfiguration/exportTable"
-          baseUrl="DM"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -276,7 +271,8 @@
 import {
   storageConfigurationList,
   updateColumnValue,
-  deleteColumnValue
+  deleteColumnValue,
+  exportTable
 } from "@/api/structureManagement/overviewStorage";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
@@ -292,7 +288,6 @@ import handleClear from "@/views/schedule/clear/handleClear";
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 // 数据同步
 import handleSync from "@/views/schedule/dataSync/handleSync";
-import handleExport from "@/components/export";
 export default {
   components: {
     SuperSearch,
@@ -301,8 +296,7 @@ export default {
     handleMove,
     handleClear,
     handleBackUp,
-    handleSync,
-    handleExport
+    handleSync
   },
   data() {
     return {
@@ -350,6 +344,11 @@ export default {
     this.getList();
   },
   methods: {
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (

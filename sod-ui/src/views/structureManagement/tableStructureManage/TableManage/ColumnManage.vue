@@ -399,12 +399,7 @@
           <input-excel @getResult="getMyExcelData"></input-excel>
         </el-col>
         <el-col :span="12">
-          <handleExport
-            :handleExportObj="handleExportObj"
-            baseUrl="DM"
-            btnText="下载模板"
-            exportUrl="/api/dbfile/downloadFile"
-          />
+          <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -418,7 +413,6 @@ import inputExcel from "@/components/excelXlsx/upload";
 import { exportExcel } from "@/components/excelXlsx/js/download";
 // 拖拽组件
 import draggable from "vuedraggable";
-import handleExport from "@/components/export";
 import {
   findByTableId,
   tableColumnDel,
@@ -430,15 +424,17 @@ import {
   queryCmccElements,
   managefieldPage
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
-import { enable } from "@/api/structureManagement/tableStructureManage/index";
+import {
+  enable,
+  exportTable
+} from "@/api/structureManagement/tableStructureManage/index";
 import { findAllManageGroup } from "@/api/dbDictMangement/manageField";
 import { codeVer } from "@/components/commonVaildate.js";
 export default {
   props: { tableInfo: Object, tableType: String, rowData: Object },
   components: {
     draggable,
-    inputExcel,
-    handleExport
+    inputExcel
   },
   data() {
     var nameValidate = (rule, value, callback) => {
@@ -459,9 +455,6 @@ export default {
       }
     };
     return {
-      handleExportObj: {
-        name: "add-column"
-      },
       tableStructureManageContral: false,
       codeTitle: "新增字段",
       dialogStatus: {
@@ -529,6 +522,11 @@ export default {
     };
   },
   methods: {
+    handleExport() {
+      exportTable().then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // 选中就勾选
     handleClickTableRow(row, event, column) {
       this.$refs.selectionTable.toggleRowSelection(row);

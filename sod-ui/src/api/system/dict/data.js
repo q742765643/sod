@@ -1,10 +1,10 @@
 import request from '@/utils/request'
-const baseUrl =process.env.VUE_APP_UCENTER_API
+const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询字典数据列表
 export function listData(query) {
   return request({
-    url: baseUrl+'/system/dict/data/list',
+    url: baseUrl + '/system/dict/data/list',
     method: 'get',
     params: query
   })
@@ -13,7 +13,7 @@ export function listData(query) {
 // 查询字典数据详细
 export function getData(dictCode) {
   return request({
-    url: baseUrl+'/system/dict/data/' + dictCode,
+    url: baseUrl + '/system/dict/data/' + dictCode,
     method: 'get'
   })
 }
@@ -21,7 +21,7 @@ export function getData(dictCode) {
 // 根据字典类型查询字典数据信息
 export function getDicts(dictType) {
   return request({
-    url: baseUrl+'/system/dict/data/dictType/' + dictType,
+    url: baseUrl + '/system/dict/data/dictType/' + dictType,
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function getDicts(dictType) {
 // 新增字典数据
 export function addData(data) {
   return request({
-    url: baseUrl+'/system/dict/data',
+    url: baseUrl + '/system/dict/data',
     method: 'post',
     data: data
   })
@@ -38,7 +38,7 @@ export function addData(data) {
 // 修改字典数据
 export function updateData(data) {
   return request({
-    url: baseUrl+'/system/dict/data',
+    url: baseUrl + '/system/dict/data',
     method: 'put',
     data: data
   })
@@ -47,7 +47,7 @@ export function updateData(data) {
 // 删除字典数据
 export function delData(dictCode) {
   return request({
-    url: baseUrl+'/system/dict/data/' + dictCode,
+    url: baseUrl + '/system/dict/data/' + dictCode,
     method: 'delete'
   })
 }
@@ -55,8 +55,9 @@ export function delData(dictCode) {
 // 导出字典数据
 export function exportData(query) {
   return request({
-    url: baseUrl+'/system/dict/data/export',
+    url: baseUrl + '/system/dict/data/export',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   })
 }

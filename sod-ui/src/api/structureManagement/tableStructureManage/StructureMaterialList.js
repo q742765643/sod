@@ -8,3 +8,11 @@ export function getBaseData(query) {
     params: query
   })
 }
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/dm/databaseDefine/export',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

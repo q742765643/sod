@@ -50,3 +50,12 @@ export function exportTableSimple(data) {
     data: data
   });
 }
+
+export function downloadTable(query) {
+  return request({
+    url: baseUrl + '/api/com/downloadByPath',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

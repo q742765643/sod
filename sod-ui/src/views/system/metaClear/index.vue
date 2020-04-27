@@ -42,12 +42,7 @@
             <el-button size="small" type="danger" @click="deleteShow" icon="el-icon-delete">删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <handleExport
-              :handleExportObj="queryParams"
-              baseUrl="SCHEDULE"
-              btnText="导出"
-              exportUrl="/schedule/metaClear/export"
-            />
+            <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -147,12 +142,12 @@
         </el-form>
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
-            <handleExport
-              :handleExportObj="rowlogForm"
-              baseUrl="SCHEDULE"
-              btnText="导出"
-              exportUrl="/schedule/metaClearLog/export"
-            />
+            <el-button
+              size="small"
+              type="success"
+              icon="el-icon-download"
+              @click="handleLogExport"
+            >导出</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -245,7 +240,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import { startTask, stopTask, execute } from "@/api/system/metadataBackup";
@@ -263,8 +257,7 @@ import {
 import handleClear from "@/views/system/metaClear/handleClear";
 export default {
   components: {
-    handleClear,
-    handleExport
+    handleClear
   },
   data() {
     return {
@@ -315,6 +308,16 @@ export default {
     this.getMetaBackupList();
   },
   methods: {
+    handleLogExport() {
+      metaClearLogExport(this.rowlogForm).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
+    metaClearExport() {
+      exportData(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (
