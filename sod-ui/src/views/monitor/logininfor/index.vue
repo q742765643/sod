@@ -166,7 +166,7 @@ export default {
   methods: {
     // 导出
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportLogininfor(this.queryParams).then(res => {
         this.downloadfileCommon(res);
       });
     },
