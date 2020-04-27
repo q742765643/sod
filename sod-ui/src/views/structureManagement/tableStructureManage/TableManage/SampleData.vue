@@ -55,8 +55,7 @@ export default {
   watch: {
     tableInfo(val) {
       this.columnData = this.tableInfo.columns;
-      // todo
-      // this.getSampleData();
+      this.getSampleData();
     }
   }
 };

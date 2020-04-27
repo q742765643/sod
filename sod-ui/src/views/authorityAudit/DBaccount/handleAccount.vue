@@ -12,6 +12,16 @@
             ></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="7" v-if="handleObj.pageName == '业务用户审核'">
+          <el-form-item label="用户名" prop="databaseUpId">
+            <el-input
+              size="small"
+              v-model="msgFormDialog.databaseUpId"
+              :disabled="userDiasbled"
+              placeholder="账户ID"
+            ></el-input>
+          </el-form-item>
+        </el-col>
         <el-col :span="7">
           <el-form-item label="申请绑定IP" prop="databaseUpIp">
             <el-input
@@ -35,7 +45,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row v-if="!handleObj.pageName">
         <el-col :span="7">
           <el-form-item label="关联用户" prop="userId">
             <el-select
@@ -301,6 +311,7 @@ export default {
     this.getDBlist();
     // this.getUserAll();
     this.initServerDetail();
+    console.log(this.handleObj);
   },
   methods: {
     // 申请绑定IP
@@ -454,7 +465,9 @@ export default {
                 interfaceObj.download + res.data.data.applyMaterial; */
           }
         });
-      } else {
+      }
+      if (this.handleObj.pageName == "业务用户审核") {
+        this.userDiasbled = true;
       }
     },
 

@@ -134,7 +134,7 @@ export function datastatisticsList(query) {
 export function sampleList(data) {
   return request({
     url: baseUrl + '/dm/dataTable/sample',
-    method: 'get',
+    method: 'post',
     data: data
   })
 }
