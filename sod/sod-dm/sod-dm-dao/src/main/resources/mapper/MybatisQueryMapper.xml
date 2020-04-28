@@ -321,7 +321,7 @@
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
         left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
         left join t_sod_logic_define c on a.logic_id = c.logic_flag
-        left join T_SOD_USER d on a.user_id = d.id and user_type='11'
+        left join T_SOD_USER d on a.user_id = d.user_name and user_type='11'
         left join T_SOD_DATA_LOGIC e on a.data_class_id = e.data_class_id
         left join T_SOD_STORAGE_CONFIGURATION f on e.id=f.class_logic_id
         <where>

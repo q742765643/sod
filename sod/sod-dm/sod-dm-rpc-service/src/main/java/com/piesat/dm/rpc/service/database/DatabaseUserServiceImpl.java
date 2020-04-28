@@ -1,6 +1,7 @@
 package com.piesat.dm.rpc.service.database;
 
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -33,7 +34,9 @@ import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
+import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -79,6 +82,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
+    @GrpcHthtClient
+    private UserDao userDao;
 
 
     @Override
@@ -104,21 +109,34 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         List<DatabaseEntity> databaseEntityList = databaseDao.findAll();
         if(databaseUserDtoList!=null&&databaseUserDtoList.size()>0&&databaseEntityList!=null&&databaseEntityList.size()>0){
             for(DatabaseUserDto dto : databaseUserDtoList){
-                String[] applyDatabaseIdArray = dto.getApplyDatabaseId().split(",");
-                String applyDatabaseName = "";
-                for(String applyDatabaseId : applyDatabaseIdArray){
-                    for(DatabaseEntity databaseEntity : databaseEntityList){
-                        if(applyDatabaseId.equals(databaseEntity.getId())){
-                            applyDatabaseName += databaseEntity.getDatabaseDefine().getDatabaseName()+",";
+
+                //获取数据库中文名称
+                if(StringUtils.isNotEmpty(dto.getApplyDatabaseId())){
+                    String[] applyDatabaseIdArray = dto.getApplyDatabaseId().split(",");
+                    String applyDatabaseName = "";
+                    for(String applyDatabaseId : applyDatabaseIdArray){
+                        for(DatabaseEntity databaseEntity : databaseEntityList){
+                            if(applyDatabaseId.equals(databaseEntity.getId())){
+                                applyDatabaseName += databaseEntity.getDatabaseDefine().getDatabaseName()+",";
+                            }
                         }
                     }
+                    if(applyDatabaseName.length()>0){
+                        applyDatabaseName = applyDatabaseName.substring(0,applyDatabaseName.length()-1);
+                    }
+                    dto.setApplyDatabaseName(applyDatabaseName);
                 }
-                if(applyDatabaseName.length()>0){
-                    applyDatabaseName = applyDatabaseName.substring(0,applyDatabaseName.length()-1);
+
+                //获取申请用户信息
+                UserEntity userEntity = userDao.findByUserNameAndUserType(dto.getUserId(), "11");
+                if(userEntity != null){
+                    dto.setUserName(userEntity.getWebUsername());
+                    dto.setDeptName(userEntity.getDeptName());
+                    dto.setTutorPhone(userEntity.getTutorPhone());
                 }
-                dto.setApplyDatabaseName(applyDatabaseName);
             }
         }
+
         pageBean.setPageData(databaseUserDtoList);
         return pageBean;
     }

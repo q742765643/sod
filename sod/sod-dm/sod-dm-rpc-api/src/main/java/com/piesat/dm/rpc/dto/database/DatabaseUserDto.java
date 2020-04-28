@@ -103,4 +103,10 @@ public class DatabaseUserDto {
      * 创建时间
      */
     private Date createTime;
+
+    private String userName;
+
+    private String deptName;
+
+    private String tutorPhone;
 }

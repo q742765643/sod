@@ -18,5 +18,5 @@ public interface UserDao extends BaseDao<UserEntity> {
 
     UserEntity findByAppId(String appId);
 
-    List<UserEntity> findByUserNameAndUserType(String userName,String type);
+    UserEntity findByUserNameAndUserType(String userName,String type);
 }
