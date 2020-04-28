@@ -309,6 +309,7 @@ export default {
             type: "error",
             message: "同步失败"
           });
+          loading.close(); //关闭延迟加载
         }
       });
     },

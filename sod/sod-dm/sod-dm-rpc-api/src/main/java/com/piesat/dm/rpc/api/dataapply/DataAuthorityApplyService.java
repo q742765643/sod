@@ -56,4 +56,6 @@ public interface DataAuthorityApplyService {
     ReadAuthorityDto updateReadAuthority(ReadAuthorityDto readAuthorityDto);
 
     List<ReadAuthorityDto> getReadAuthority();
+
+    DataAuthorityApplyDto findByUserId(String userId);
 }

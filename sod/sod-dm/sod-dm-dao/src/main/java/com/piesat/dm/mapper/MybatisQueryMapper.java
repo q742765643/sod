@@ -173,7 +173,7 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getRecentOnlineTime(String ctsCode);
     /**
      *   获取用户可申请资料
-     * @description 
+     * @description
      * @author wlg
      * @date 2020年4月22日下午5:07:55
      * @param userId
@@ -187,4 +187,10 @@ public interface MybatisQueryMapper {
     List<LinkedHashMap<String, Object>> selectTabOmincmccTempele(String c_coremeta_id);
 
     List<LinkedHashMap<String, Object>> selectGridAreaDefine(String dataClassId);
+
+    List<LinkedHashMap<String, Object>> getDataclassTreeByClassIds(List<String> classIds);
+
+    List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(String userId,String database_id);
+
+
 }

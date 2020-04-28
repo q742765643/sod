@@ -43,7 +43,8 @@
     <!--查询存储结构概览-->
     <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select
-        f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,a.id LOGIC_ID,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,
+        f.META_DATA_NAME,f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,a.id
+        LOGIC_ID,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,
         f.D_DATA_ID,e.DATABASE_NAME SPECIAL_DATABASE_NAME,ee.DATABASE_NAME,ee.DATABASE_TYPE,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = ee.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
@@ -315,7 +316,8 @@
 
     <!--新增注册资料-->
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.*, b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype type_pname,d.DEPT_NAME,d.PHONENUMBER
+        select a.*, b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype
+        type_pname,d.DEPT_NAME,d.PHONENUMBER
         from t_sod_newdata_apply a
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
         left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
@@ -684,7 +686,7 @@
                 and a.data_class_id = #{dataclassId}
             </if>
             <if test="databaseId != null and databaseId != ''">
-                and  a.database_id = #{databaseId}
+                and a.database_id = #{databaseId}
             </if>
             <if test="tableName != null and tableName != ''">
                 and b.table_name = #{tableName}
@@ -743,12 +745,13 @@
         ON M.database_id = N.database_id
         AND M.table_name = N.table_name
     </select>
-	<select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
+    <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
         b.d_data_id,b.class_name,c.class_name type_name,d.table_name,e.database_name
         FROM t_sod_database_special_read_write a
         LEFT JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
-        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON left(b.d_data_id,1) = c.d_data_id
+        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON left(b.d_data_id,1)
+        = c.d_data_id
         LEFT JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
         LEFT JOIN t_sod_database_define e ON a.database_id = e.id
         WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType}
@@ -773,14 +776,15 @@
         d.table_name,c.data_class_id,t2.class_name as "dataName",
         t2.d_data_id,d.db_table_type,wm_concat(c.storage_type) storage_type,
         t.data_class_id pid,t.class_name as "className",t.d_data_id pd_data_id,
-        db.database_name as special_database_name,db.id database_id,db.database_define_id,db.schema_name database_schema_name
+        db.database_name as special_database_name,db.id database_id,db.database_define_id,db.schema_name
+        database_schema_name
         FROM
         t_sod_data_table d
         inner join T_SOD_DATA_LOGIC c on d.class_logic_id = c.id
         inner join t_sod_data_class t on substr(c.data_class_id,0,1)=t.data_class_id
         inner join t_sod_data_class t2 on c.data_class_id = t2.data_class_id
         inner join t_sod_database db on db.id = c.database_id
-        where  db.database_define_id in
+        where db.database_define_id in
         <foreach collection="list" item="e" separator="," open="(" close=")">
             #{e}
         </foreach>
@@ -793,7 +797,8 @@
     </select>
     <select id="getGroupConcat" resultType="java.util.Map" parameterType="java.util.List">
         select A.DATA_CLASS_ID,A.D_DATA_ID,A.DATA_SERVICE_NAME,WM_CONCAT(A.parent_id) logic,A.DATABASE_ID FROM(
-        select DISTINCT n.DATA_CLASS_ID,t.D_DATA_ID,m.DATA_SERVICE_NAME,dpd.database_define_id as parent_id,dpd.id as DATABASE_ID
+        select DISTINCT n.DATA_CLASS_ID,t.D_DATA_ID,m.DATA_SERVICE_NAME,dpd.database_define_id as parent_id,dpd.id as
+        DATABASE_ID
         FROM t_sod_data_table m
         inner join T_SOD_DATA_LOGIC n on m.class_logic_id = n.id
         inner join t_sod_database dpd on n.database_id = dpd.id and dpd.database_classify='专题库'
@@ -831,11 +836,14 @@
     <!-- 根据专题库ID查询关联资料，及资料相关四级编码，表名称，权限，物理库名称等 -->
     <select id="getAuthorizeRecordByTdbId" parameterType="String" resultType="java.util.Map">
         SELECT
-        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.TABLE_NAME,WM_CONCAT(M.APPLY_AUTHORITY) APPLY_AUTHORITY,
-        WM_CONCAT(M.empower_authority) REAL_AUTHORITY,WM_CONCAT(M.logic_flag) PHYSICAL,WM_CONCAT(M.DATABASE_NAME) DATABASE_NAME,M.DATA_TYPE,M.SPECIAL_DATABASE_NAME
+        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.TABLE_NAME,WM_CONCAT(M.APPLY_AUTHORITY)
+        APPLY_AUTHORITY,
+        WM_CONCAT(M.empower_authority) REAL_AUTHORITY,WM_CONCAT(M.logic_flag) PHYSICAL,WM_CONCAT(M.DATABASE_NAME)
+        DATABASE_NAME,M.DATA_TYPE,M.SPECIAL_DATABASE_NAME
         FROM(
         SELECT DISTINCT f.DATA_CLASS_ID,d.DATA_SERVICE_NAME,ee.D_DATA_ID,
-        b.APPLY_AUTHORITY,b.empower_authority,f.logic_flag,c1.DATABASE_NAME,c.DATABASE_NAME SPECIAL_DATABASE_NAME,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
+        b.APPLY_AUTHORITY,b.empower_authority,f.logic_flag,c1.DATABASE_NAME,c.DATABASE_NAME
+        SPECIAL_DATABASE_NAME,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and b.database_id = f.database_id
         inner join t_sod_data_table d on d.class_logic_id = f.id
@@ -857,49 +865,51 @@
             and (b.type_id = '9999' or b.type_id is null)
         </if>
         )M
-        GROUP BY M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.SPECIAL_DATABASE_NAME,M.TABLE_NAME,M.DATA_TYPE
+        GROUP BY
+        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.SPECIAL_DATABASE_NAME,M.TABLE_NAME,M.DATA_TYPE
         ORDER BY M.DATA_CLASS_ID
     </select>
     <!-- 获取资料申请 -->
-    <select id="getDataAuthorityList" resultType = "java.util.Map" parameterType="java.util.Map">
+    <select id="getDataAuthorityList" resultType="java.util.Map" parameterType="java.util.Map">
         select
-			t1.database_id,t6.class_name as "categoryName",t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
-			t3.class_name as "dataName",t4.database_name as "databaseSchemaName",
-			t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
-		from
-			t_sod_data_authority_record t1
-		left join t_sod_data_authority_apply t2 on t1.apply_id = t2.id
-		left join t_sod_data_class t3 on t1.data_class_id = t3.data_class_id
-		left join t_sod_database t4 on t1.database_id = t4.id
-		left join t_sod_database_define t5 on t4.database_define_id = t5.id
-		left join t_sod_data_class t6 on substr(t1.data_class_id,0,1) = t6.data_class_id
-		where
-			1=1
-			<if test="userId != null and userId != ''">
-				and t2.user_id = #{userId}
-			</if>
-			<if test="applyAuthority != null and applyAuthority != ''">
-				and t1.apply_authority = #{applyAuthority}
-			</if>
-			<if test="logicId != null and logicId != ''">
-				and t1.database_id = #{logicId}
-			</if>
-			<if test="dataName != null and dataName != ''">
-				and t3.class_name like CONCAT('%',#{dataName},'%')
-			</if>
-			<if test="category != null and category != ''">
-				and substr(t1.data_class_id,0,1) = #{category}
-			</if>
-			<if test="schemaId != null and schemaId != ''">
-				and t4.schema_name = #{schemaId}
-			</if>
-		group by
-			t1.database_id,t6.class_name,t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
-			t3.class_name,t4.database_name,t4.schema_name,t4.database_define_id,t5.database_name
-		order by
-			t1.create_time desc
+        t1.database_id,t6.class_name as "categoryName",t1.apply_id
+        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
+        t3.class_name as "dataName",t4.database_name as "databaseSchemaName",
+        t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
+        from
+        t_sod_data_authority_record t1
+        left join t_sod_data_authority_apply t2 on t1.apply_id = t2.id
+        left join t_sod_data_class t3 on t1.data_class_id = t3.data_class_id
+        left join t_sod_database t4 on t1.database_id = t4.id
+        left join t_sod_database_define t5 on t4.database_define_id = t5.id
+        left join t_sod_data_class t6 on substr(t1.data_class_id,0,1) = t6.data_class_id
+        where
+        1=1
+        <if test="userId != null and userId != ''">
+            and t2.user_id = #{userId}
+        </if>
+        <if test="applyAuthority != null and applyAuthority != ''">
+            and t1.apply_authority = #{applyAuthority}
+        </if>
+        <if test="logicId != null and logicId != ''">
+            and t1.database_id = #{logicId}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            and t3.class_name like CONCAT('%',#{dataName},'%')
+        </if>
+        <if test="category != null and category != ''">
+            and substr(t1.data_class_id,0,1) = #{category}
+        </if>
+        <if test="schemaId != null and schemaId != ''">
+            and t4.schema_name = #{schemaId}
+        </if>
+        group by
+        t1.database_id,t6.class_name,t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
+        t3.class_name,t4.database_name,t4.schema_name,t4.database_define_id,t5.database_name
+        order by
+        t1.create_time desc
     </select>
-    <select id="querySpecialByUserIdAndUseStatus" resultType = "java.util.Map">
+    <select id="querySpecialByUserIdAndUseStatus" resultType="java.util.Map">
         select * from T_SOD_DATABASE_SPECIAL
           where USER_ID = #{userId} and USE_STATUS =#{useStatus}
             or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
@@ -930,14 +940,16 @@
     		order by DATA_CLASS_ID asc
     </select>
     <!-- 根据物理库获取schema -->
-    <select id="getSchemaByPhysic" parameterType = "java.lang.String" resultType = "java.util.Map">
-        select database_id as "id", special_database_name ||'【'||database_schema_name||'】' as "name",database_id as "physicId" from t_sod_database_define
+    <select id="getSchemaByPhysic" parameterType="java.lang.String" resultType="java.util.Map">
+        select database_id as "id", special_database_name ||'【'||database_schema_name||'】' as "name",database_id as
+        "physicId" from t_sod_database_define
         where database_classify = '物理库'
         <if test="physicId != null and physicId != ''">
             and database_id = #{physicId}
         </if>
         union
-        select dpd.database_id as "id",dpd.special_database_name ||'【'||dpd.database_schema_name||'】' as "name" ,dpd.parent_id as "physicId"
+        select dpd.database_id as "id",dpd.special_database_name ||'【'||dpd.database_schema_name||'】' as "name"
+        ,dpd.parent_id as "physicId"
         from t_sod_database_define dpd left join T_SOD_DATABASE_SPECIAL sdc
         on dpd.tdb_id = sdc.tdb_id
         where dpd.database_classify = '专题库'
@@ -1009,7 +1021,7 @@
     <!-- 下面根据用户ID和专题库ID取得用户专题库申请信息 -->
     <select id="getAllRecordByUserId" parameterType="String" resultType="DatabaseSpecialEntity">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from T_SOD_DATABASE_SPECIAL_ACCESS
         where USER_ID = #{_parameter}
     </select>
@@ -1082,7 +1094,7 @@
         </trim>
     </insert>
     <!-- 根据用户id，查询该用户所有自建专题库下申请访问的资料(既包含申请访问资料，又包含私有资料) -->
-    <select id="getSpecialAuthorizeList" parameterType = "java.lang.String" resultType = "java.util.Map">
+    <select id="getSpecialAuthorizeList" parameterType="java.lang.String" resultType="java.util.Map">
        select a.*,b.*,c.table_name
        from T_SOD_DATABASE_SPECIAL_READ_WRITE a left join T_SOD_DATABASE_SPECIAL b on b.TDB_ID = a.TDB_ID left join (
 	   select * from t_sod_data_table aa left join T_SOD_DATA_LOGIC bb on aa.TABLE_ID=bb.TABLE_ID) c on (c.DATA_CLASS_ID = a.DATA_CLASS_ID
@@ -1104,7 +1116,7 @@
             </if>
         </where>
     </update>
-    <select id="getRecentOnlineTime" resultType = "java.util.Map">
+    <select id="getRecentOnlineTime" resultType="java.util.Map">
 			select
 				databegintime as "BEGIN_TIME", dataendtime as "END_TIME"
 			from
@@ -1112,41 +1124,65 @@
 			where
 				PRODUCTIONCODE = #{ctsCode}
     </select>
-    <sql id="Base_Column_List" >
+    <sql id="Base_Column_List">
 	    TDB_ID, TDB_NAME, TDB_IMG, UNIT_ID, USER_ID, APPLY_TIME, USES, APPLY_FILE_PATH, EXAMINER,
 	    EXAMINE_STATUS, EXAMINE_TIME, CAUSE, USE_STATUS ,SORT_NO
   	</sql>
 
-  	<!-- 查询用户可申请资料 -->
-  	<select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
-  		select
-	  		t1.data_class_id as "dataClassId",
-			t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】' as "dataName" ,
-			t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl"
-		from
-			t_sod_data_class t1
-			inner join t_sod_data_logic t2 on t1. data_class_id = t2.data_class_id
-			inner join t_sod_database t3 on t2.database_id = t3.id
-			inner join t_sod_database_define t4 on t3.database_define_id = t4.id
-		<if test="userId != null and userId != ''">
-			where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
-		</if>
-		group by
-			t1.data_class_id,
-			t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
-			t3.schema_name,t3.id,t1.is_access
-		order by
-			dataName asc
-  	</select>
+    <!-- 查询用户可申请资料 -->
+    <select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
+        select
+        t1.data_class_id as "dataClassId",
+        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】' as "dataName" ,
+        t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl"
+        from
+        t_sod_data_class t1
+        inner join t_sod_data_logic t2 on t1. data_class_id = t2.data_class_id
+        inner join t_sod_database t3 on t2.database_id = t3.id
+        inner join t_sod_database_define t4 on t3.database_define_id = t4.id
+        <if test="userId != null and userId != ''">
+            where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
+        </if>
+        group by
+        t1.data_class_id,
+        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
+        t3.schema_name,t3.id,t1.is_access
+        order by
+        dataName asc
+    </select>
 
-    <select id="getDataClassInfo" resultType = "java.util.LinkedHashMap">
+    <select id="getDataClassInfo" resultType="java.util.LinkedHashMap">
         SELECT * FROM  T_SOD_DATA_CLASS A WHERE A.DATA_CLASS_ID = #{dataClassId}
     </select>
-    <select id="selectTabOmincmccTempele" resultType = "java.util.LinkedHashMap">
+    <select id="selectTabOmincmccTempele" resultType="java.util.LinkedHashMap">
         SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]>
         'delete') and  A.C_COREMETA_ID = #{C_COREMETA_ID}
     </select>
-    <select id="selectGridAreaDefine" resultType = "java.util.LinkedHashMap">
+    <select id="selectGridAreaDefine" resultType="java.util.LinkedHashMap">
        SELECT * FROM T_SOD_GRID_AREA a where a.data_service_id = #{dataClassId};
     </select>
+
+    <select id="getDataclassTreeByClassIds" resultType="java.util.LinkedHashMap" parameterType="java.util.List">
+        SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,level
+        FROM
+        START WITH DATA_CLASS_ID IN
+        <foreach collection="list" item="e" separator="," open="(" close=")">
+            #{e}
+        </foreach>
+        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id
+    </select>
+
+
+    <select id="getDataClassByBizUserOrDatabase">
+        select b.data_class_id from t_sod_data_authority_apply a left join t_sod_data_authority_record b  on a.id=b.apply_id
+        <where>
+            <if test="userId != null and userId != ''">
+                and a.user_id = #{userId},
+            </if>
+            <if test="database_id != null and database_id != ''">
+                and b.database_id = #{database_id},
+            </if>
+        </where>
+    </select>
+
 </mapper>

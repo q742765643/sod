@@ -110,6 +110,13 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
+    public List<Map<String, Object>> getDatabaseList(int ifDisplay) {
+        String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME  from T_SOD_DATABASE t, T_SOD_DATABASE_DEFINE d WHERE t.DATABASE_DEFINE_ID = d.id AND d.user_display_control="+ifDisplay;
+        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
+        return list;
+    }
+
+    @Override
     public DatabaseDto getDotById(String id) {
         DatabaseEntity databaseEntity = this.getById(id);
         return this.databaseMapper.toDto(databaseEntity);

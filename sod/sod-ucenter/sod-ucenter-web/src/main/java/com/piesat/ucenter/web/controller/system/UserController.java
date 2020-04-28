@@ -1,13 +1,16 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.common.annotation.HtParam;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.AESUtil;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.rpc.api.system.UserService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -174,7 +177,7 @@ public class UserController {
 
 
     @PostMapping(value = "/saveBiz")
-    @RequiresPermissions("system:user:saveBiz")
+//    @RequiresPermissions("system:user:saveBiz")
     @ApiOperation(value = "注册用户申请", notes = "注册用户申请")
     public ResultT saveBiz(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
         try {
@@ -200,4 +203,79 @@ public class UserController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "获取注册用户", notes = "获取注册用户")
+    @RequiresPermissions("system:dict:gatAllBiz")
+    @GetMapping("/gatAllBiz")
+    public ResultT<PageBean> gatAllBiz(UserDto userDto,
+                                  @HtParam(value="pageNum",defaultValue="1") int pageNum,
+                                  @HtParam(value="pageSize",defaultValue="10") int pageSize)
+    {
+        ResultT<PageBean> resultT=new ResultT();
+        PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,userDto);
+        PageBean pageBean=this.userService.findAllBizUser(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+
+    /**
+     * 修改用户（外部接口）
+     */
+//    @RequiresPermissions("system:user:editBase")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public ResultT<String> editBase(String bizUserid,String checked)
+    {
+        UserDto user = new UserDto();
+        user.setUserName(bizUserid);
+        user.setChecked(checked);
+        ResultT<String> resultT=new ResultT<>();
+        userService.editBase(user);
+        return resultT;
+    }
+
+    /**
+     * 修改密码（外部接口）
+     */
+//    @RequiresPermissions("system:user:updatePwd")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public ResultT<String> updatePwd(String bizUserid,String newPwd,String oldPwd)
+    {
+        UserDto userDto = this.userService.selectUserByUserName(bizUserid);
+
+        String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+        if (pwd.equals(oldPwd)){
+            UserDto user = new UserDto();
+            user.setUserName(bizUserid);
+
+            try {
+                String s = AESUtil.aesEncrypt(newPwd).trim();
+                user.setPassword(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ResultT<String> resultT=new ResultT<>();
+            userService.editBase(user);
+            return resultT;
+        }else {
+           return ResultT.failed("旧密码不正确！");
+        }
+
+
+    }
+
+    /**
+     * 根据用户名获取详细信息（外部接口）
+     */
+//    @RequiresPermissions("system:user:getUserInfo")
+    @GetMapping(value = "/getUserInfo")
+    public ResultT<UserDto> getUserInfo(String bizUserid)
+    {
+        ResultT<UserDto> resultT=new ResultT<>();
+        UserDto userDto= userService.selectUserByUserName(bizUserid);
+        resultT.setData(userDto);
+        return resultT;
+    }
+
 }

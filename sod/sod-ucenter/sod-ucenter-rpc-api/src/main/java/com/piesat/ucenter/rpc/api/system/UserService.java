@@ -2,6 +2,7 @@ package com.piesat.ucenter.rpc.api.system;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
@@ -95,4 +96,8 @@ public interface UserService {
     public void exportExcel(UserDto userDto);
 
     ResultT addBizUser(Map<String, String[]> parameterMap, String applyPaper);
+
+    PageBean findAllBizUser(PageForm<UserDto> pageForm);
+
+    void editBase(UserDto user);
 }

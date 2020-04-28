@@ -46,7 +46,7 @@ public class TableExportController {
     private TableExportService tableExportService;
     @Autowired
     private DataClassService dataClassService;
-    @Value("${fileUpload.httpPath}")
+    @Value("${fileUpload.savaPath}")
     private String outFilePath;
 
     @ApiOperation(value = "数据用途列表")

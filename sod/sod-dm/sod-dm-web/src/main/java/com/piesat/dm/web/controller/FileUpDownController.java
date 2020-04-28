@@ -33,7 +33,7 @@ import java.util.*;
 @RestController
 public class FileUpDownController {
 
-    @Value("${fileUpload.httpPath}")
+    @Value("${fileUpload.savaPath}")
     private String uploadPath;
 
     @ApiOperation(value = "单文件上传")

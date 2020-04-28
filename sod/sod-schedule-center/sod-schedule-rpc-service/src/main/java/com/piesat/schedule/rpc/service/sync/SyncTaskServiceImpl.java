@@ -9,6 +9,8 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.UUID;
+import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
@@ -26,6 +28,7 @@ import com.piesat.schedule.dao.sync.SyncTaskDao;
 import com.piesat.schedule.entity.sync.*;
 import com.piesat.schedule.mapper.sync.SyncTaskMapper;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskLogDto;
 import com.piesat.schedule.rpc.mapstruct.sync.SyncTaskLogMapstruct;
@@ -562,5 +565,13 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         String syncTaskJson = JSONObject.toJSONString(syncTaskDto);
         JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
         return jsonObject;
+    }
+
+    @Override
+    public void exportExcel(SyncTaskDto syncTaskDto) {
+        SyncTaskEntity syncTaskEntity = syncTaskMapstruct.toEntity(syncTaskDto);
+        List<SyncTaskEntity> syncTaskEntitiesList = syncTaskMapper.selectPageList(syncTaskEntity);
+        ExcelUtil<SyncTaskEntity> util=new ExcelUtil(SyncTaskEntity.class);
+        util.exportExcel(syncTaskEntitiesList,"数据同步");
     }
 }
