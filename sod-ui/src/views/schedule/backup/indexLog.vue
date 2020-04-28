@@ -74,16 +74,6 @@
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['schedule:backupLog:query']"
-        >查看</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           icon="el-icon-delete"
           size="mini"
@@ -122,7 +112,12 @@
             v-hasPermi="['schedule:backupLog:query']"
           >查看</el-button>
 
-          <el-button size="small" type="success" icon="el-icon-download" @click="handleDownload">导出</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-download"
+            @click="handleDownload(scope.row)"
+          >导出</el-button>
 
           <el-button
             size="mini"
