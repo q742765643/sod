@@ -203,7 +203,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_DMWLEI;
+var baseUrl = process.env.VUE_APP_DM;
 
 import {
   databaseList,
