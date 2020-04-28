@@ -228,10 +228,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
-    public JSONArray getSimpleTree(){
-        List<DataClassEntity> all = this.getAll();
+    public JSONArray getSimpleTree(String databaseId){
+        List<DataClassEntity> dataClassList = mybatisQueryMapper.getDataClassTree(databaseId);
         List l = new ArrayList();
-        for (DataClassEntity d : all) {
+        for (DataClassEntity d : dataClassList) {
             TreeLevel tl = new TreeLevel();
             tl.setId(d.getDataClassId());
             tl.setParentId(d.getParentId());

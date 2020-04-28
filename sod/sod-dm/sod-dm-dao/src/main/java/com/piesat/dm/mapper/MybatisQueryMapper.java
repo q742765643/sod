@@ -3,6 +3,7 @@ package com.piesat.dm.mapper;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
+import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
@@ -173,7 +174,7 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getRecentOnlineTime(String ctsCode);
     /**
      *   获取用户可申请资料
-     * @description 
+     * @description
      * @author wlg
      * @date 2020年4月22日下午5:07:55
      * @param userId
@@ -187,4 +188,6 @@ public interface MybatisQueryMapper {
     List<LinkedHashMap<String, Object>> selectTabOmincmccTempele(String c_coremeta_id);
 
     List<LinkedHashMap<String, Object>> selectGridAreaDefine(String dataClassId);
+
+    List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
 }

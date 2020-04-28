@@ -84,8 +84,7 @@ public class TableExportController {
     @GetMapping(value = "/dataTree")
     public ResultT dataTree(String use_id,String database_id) {
         try {
-			System.out.println(use_id);
-            JSONArray all = this.dataClassService.getSimpleTree();
+            JSONArray all = this.dataClassService.getSimpleTree(database_id);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

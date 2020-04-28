@@ -695,7 +695,7 @@
 
     <select id="getDataTypeList" parameterType="String" resultType="java.util.Map">
         select * from t_sod_data_class where data_class_id in
-        (select distinct left(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
+        (select distinct leftb(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
     </select>
 
     <select id="findByDataServiceId" resultType="java.util.Map" parameterType="String">
@@ -1148,5 +1148,11 @@
     </select>
     <select id="selectGridAreaDefine" resultType = "java.util.LinkedHashMap">
        SELECT * FROM T_SOD_GRID_AREA a where a.data_service_id = #{dataClassId};
+    </select>
+    <select id="getDataClassTree" parameterType="String" resultType="DataClassEntity">
+        select distinct t.data_class_id dataClassId,parent_id parentId,class_name className
+        from t_sod_data_class t start with t.data_class_id in(
+        select data_class_id from t_sod_data_logic where database_id=#{databaseId})
+        connect by t.data_class_id= prior t.parent_id
     </select>
 </mapper>
