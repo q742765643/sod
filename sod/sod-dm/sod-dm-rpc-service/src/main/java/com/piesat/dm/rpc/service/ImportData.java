@@ -211,6 +211,8 @@ public class ImportData {
         //importGridLayerLevel();
 
         //executeBackUpMove();
+
+        //importStorageConfig();
     }
 
 
@@ -2253,6 +2255,68 @@ public class ImportData {
         List<ClearDto> clearDtoList = clearMapstruct.toDto(clearEntityList);
         for(ClearDto clearDto : clearDtoList){
             clearService.updateClear(clearDto);
+        }
+
+    }
+
+    public void importStorageConfig(){
+        List<DataLogicEntity> dataLogicEntities = dataLogicDao.findAll();
+        for(DataLogicEntity dataLogicEntity : dataLogicEntities){
+            String storageType = dataLogicEntity.getStorageType();
+
+
+            StorageConfigurationEntity storageConfigurationEntity = new StorageConfigurationEntity();
+            storageConfigurationEntity.setClassLogicId(dataLogicEntity.getId());
+
+            List<DataTableEntity> dataTableEntities = dataTableDao.findByClassLogic_Id(dataLogicEntity.getId());
+            if(dataTableEntities != null && dataTableEntities.size()>0){
+                //存储策略
+                storageConfigurationEntity.setStorageDefineIdentifier(1);
+
+                for(DataTableEntity dataTableEntity :dataTableEntities){
+                    String table_id = dataTableEntity.getId();
+                    String dbTableType = dataTableEntity.getDbTableType();
+                    if(storageType.contains("K")){
+                        if(dbTableType.equals("E")){
+                            continue;
+                        }
+                    }
+
+                    //同步
+                    List<SyncConfigEntity> syncConfigEntities = syncConfigDao.findByTargetTableId(table_id);
+                    if(syncConfigEntities != null && syncConfigEntities.size()>0){
+                        List<SyncMappingEntity> syncMappingEntities = syncMappingDao.findAllByTargetTableIdIn(Arrays.asList(String.valueOf(syncConfigEntities.get(0).getId()).split(",")));
+                        SyncTaskEntity syncTaskEntity = syncTaskDao.findBySourceTable(String.valueOf(syncMappingEntities.get(0).getId()));
+                        if(syncTaskEntity != null){
+                            storageConfigurationEntity.setSyncIdentifier(1);
+                            storageConfigurationEntity.setSyncId(syncTaskEntity.getId());
+                        }
+                    }
+
+
+
+                }
+            }
+            //清除
+            List<ClearEntity> clearEntities = clearDao.findByDatabaseIdAndDataClassId(dataLogicEntity.getDatabaseId(), dataLogicEntity.getDataClassId());
+            if(clearEntities != null && clearEntities.size()>0){
+                storageConfigurationEntity.setCleanIdentifier(1);
+                storageConfigurationEntity.setClearId(clearEntities.get(0).getId());
+            }
+            //迁移
+            List<MoveEntity> moveEntities = moveDao.findByDatabaseIdAndDataClassId(dataLogicEntity.getDatabaseId(), dataLogicEntity.getDataClassId());
+            if(moveEntities != null && moveEntities.size()>0){
+                storageConfigurationEntity.setMoveIdentifier(1);
+                storageConfigurationEntity.setMoveId(moveEntities.get(0).getId());
+            }
+            //备份
+            List<BackupEntity> backupEntities = backupDao.findByDatabaseIdAndDataClassId(dataLogicEntity.getDatabaseId(), dataLogicEntity.getDataClassId());
+            if(backupEntities != null && backupEntities.size()>0){
+                storageConfigurationEntity.setBackupIdentifier(1);
+                storageConfigurationEntity.setBackupId(backupEntities.get(0).getId());
+            }
+
+            storageConfigurationDao.saveNotNull(storageConfigurationEntity);
         }
 
     }

@@ -18,5 +18,7 @@ public interface MoveDao extends BaseDao<MoveEntity> {
 
     List<MoveEntity> findByDataClassId(String dataClassId);
 
+    List<MoveEntity> findByDatabaseIdAndDataClassId(String databaseId,String dataClassId);
+
 }
 

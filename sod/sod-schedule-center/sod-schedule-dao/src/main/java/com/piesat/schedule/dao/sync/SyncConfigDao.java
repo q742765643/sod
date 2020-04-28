@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.schedule.entity.sync.SyncConfigEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -14,4 +16,6 @@ public interface SyncConfigDao extends BaseDao<SyncConfigEntity> {
     public void deleteById(Integer id);
 
     public SyncConfigEntity findById(Integer id);
+
+    List<SyncConfigEntity> findByTargetTableId(String targetTableId);
 }

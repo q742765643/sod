@@ -54,8 +54,7 @@
         INNER join t_sod_data_logic a on a.DATA_CLASS_ID = f.DATA_CLASS_ID
         left join t_sod_database e on a.DATABASE_ID = e.id
         left join t_sod_database_define ee on e.database_define_id = ee.id
-        left join t_sod_storage_configuration h on (a.DATA_CLASS_ID = h.DATA_CLASS_ID AND a.LOGIC_flag=h.LOGIC_ID AND
-        e.id=h.DATABASE_ID)
+        left join t_sod_storage_configuration h on h.class_logic_id=a.id
         left join t_sod_logic_define c on a.logic_flag = c.logic_flag
         left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID AND b.DB_TABLE_TYPE = 'E')
         <where>
