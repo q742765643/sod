@@ -55,6 +55,11 @@ public class DatabaseUserDto {
     private String applyDatabaseId;
 
     /**
+     * 申请材料pdf
+     */
+    private String pdfPath;
+
+    /**
      * 申请材料
      */
     private String applyMaterial;

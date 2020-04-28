@@ -3,6 +3,7 @@ package com.piesat.schedule.rpc.api.sync;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskLogDto;
 import com.piesat.util.constant.GrpcConstant;
@@ -34,5 +35,5 @@ public interface SyncTaskService {
 
     public JSONObject getSyncJsonById(String taskId);
 
-
+    void exportExcel(SyncTaskDto syncTaskDto);
 }

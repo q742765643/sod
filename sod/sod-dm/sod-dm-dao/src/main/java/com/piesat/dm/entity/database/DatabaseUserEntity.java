@@ -77,6 +77,11 @@ public class DatabaseUserEntity extends BaseEntity {
     private String applyMaterial;
 
     /**
+     * pdf路径
+     */
+    @Column(name = "pdf_path")
+    private String pdfPath;
+    /**
      * 审核人
      */
     @Column(name = "examiner")

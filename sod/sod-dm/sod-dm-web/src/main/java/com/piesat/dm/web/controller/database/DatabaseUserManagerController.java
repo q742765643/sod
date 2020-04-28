@@ -1,6 +1,7 @@
 package com.piesat.dm.web.controller.database;
 
 import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.Doc2PDF;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
@@ -46,8 +47,10 @@ public class DatabaseUserManagerController {
     private DatabaseService databaseService;
     @Autowired
     private DatabaseUserService databaseUserService;
-    @Value("${serverfile.filePath}")
+    @Value("${fileUpload.savaPath}")
     private String fileAddress;
+    @Value("${fileUpload.httpPath}")
+    private String httpPath;
 
     @Value("${businessParameters.databaseUserDefaultPassword}")
     private String defaultPassword;
@@ -99,7 +102,7 @@ public class DatabaseUserManagerController {
     @GetMapping(value = "/databaseList")
     public ResultT databaseList() {
         try {
-            List<DatabaseDto> allDatabaseDto = this.databaseService.all();
+            List<Map<String, Object>> allDatabaseDto = this.databaseService.getDatabaseList(1);
             return ResultT.success(allDatabaseDto);
         }catch (Exception e){
             e.printStackTrace();
@@ -134,11 +137,18 @@ public class DatabaseUserManagerController {
             Date now = new Date();
             MultipartFile mf = fileList.get(0);
             //文件路径
-            String filePath = fileAddress + mf.getOriginalFilename();
+            String filePath = fileAddress  + "/" + mf.getOriginalFilename();
             String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
             //上传文件到服务器指定路径
             FileCopyUtils.copy(mf.getBytes(), new File(filePath));
-            return ResultT.success(filePath);
+            //转换PDF
+            String pdfName = mf.getOriginalFilename().substring(0,mf.getOriginalFilename().lastIndexOf("."))+".pdf";
+            String pdfPath = fileAddress + "/" + pdfName;
+            Doc2PDF.doc2pdf(filePath,pdfPath);
+            Map<String,Object> resultMap = new HashMap<>();
+            resultMap.put("filePath",filePath);
+            resultMap.put("pdfPath",httpPath+"/"+pdfName);
+            return ResultT.success(resultMap);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

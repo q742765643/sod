@@ -12,6 +12,7 @@ import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskLogDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
@@ -211,6 +212,13 @@ public class SyncTaskController {
     public ResultT getDictDataByType(@PathVariable String type){
         List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType(type);
         return  ResultT.success(dictDataDtos);
+    }
+
+    @ApiOperation(value = "数据同步导出", notes = "数据同步导出")
+    @RequiresPermissions("schedule:sync:export")
+    @GetMapping("/export")
+    public void exportExcel(SyncTaskDto syncTaskDto){
+        syncTaskService.exportExcel(syncTaskDto);
     }
 
 }
