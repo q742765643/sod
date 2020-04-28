@@ -16,13 +16,7 @@ export function deleteById(query) {
     params: query
   });
 }
-export function downloadDfcheckFile(data) {
-  return request({
-    url: baseUrl + "/dm/consistencyCheck/downloadDfcheckFile",
-    method: "post",
-    data: data
-  });
-}
+
 export function consistencyCheckSave(data) {
   return request({
     url: baseUrl + "/dm/consistencyCheck/save",
@@ -58,6 +52,15 @@ export function deleteByIds(query) {
 export function exportTable(query) {
   return request({
     url: baseUrl + '/dm/consistencyCheck/downloadDfcheckFile',
+    method: 'post',
+    data: query,
+    responseType: "arraybuffer"
+  })
+}
+
+export function downHistoryDfcheckFile(query) {
+  return request({
+    url: baseUrl + '/dm/consistencyCheck/downHistoryDfcheckFile',
     method: 'post',
     data: query,
     responseType: "arraybuffer"
