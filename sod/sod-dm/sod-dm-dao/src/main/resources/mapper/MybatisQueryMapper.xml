@@ -1187,4 +1187,11 @@
         </where>
     </select>
 
+    <select id="getDataClassTree" parameterType="String" resultType="DataClassEntity">
+        select distinct t.data_class_id dataClassId,parent_id parentId,class_name className
+        from t_sod_data_class t start with t.data_class_id in(
+        select data_class_id from t_sod_data_logic where database_id=#{databaseId})
+        connect by t.data_class_id= prior t.parent_id
+    </select>
+
 </mapper>
