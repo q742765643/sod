@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @描述
@@ -16,4 +18,5 @@ public interface UserDao extends BaseDao<UserEntity> {
 
     UserEntity findByAppId(String appId);
 
+    List<UserEntity> findByUserNameAndUserType(String userName,String type);
 }

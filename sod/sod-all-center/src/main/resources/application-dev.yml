@@ -14,7 +14,9 @@ server:
    #key-store-password: qwe123
    #keyStoreType: PKCS12
    #keyAlias: htht
-
+jasypt:
+  encryptor:
+    password: HT9527
 grpc:
   server:
     port: 8006
@@ -24,6 +26,9 @@ grpc:
       keepAliveWithoutCalls: true
       negotiationType: plaintext
 spring:
+  mvc:
+    favicon:
+      enabled: false
   #aop:
   #auto: true
   #proxy-target-class: true
@@ -48,8 +53,8 @@ spring:
       #password: 123456
       driver-class-name: com.mysql.jdbc.Driver
       url: jdbc:mysql://10.1.6.117:8000/sod
-      username: root
-      password: root
+      username: ENC(VuleeBWaRVMxyx8ZM3vVTg==)
+      password: ENC(7Lj+YULi4+TUYB/Xe8hhFQ==)
       type: com.alibaba.druid.pool.DruidDataSource
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
@@ -118,9 +123,12 @@ log:
   path: D:/log
   level: INFO
 
+
 serverfile:
   dbfile: D:/upload/
   filePath: D:/upload/
+  dfcheck: /home/sod/file/upload/dfcheck
+  special: /home/sod/file/upload/special
   static:
     template:
       add-column: E:/sod/sod_all/static/字段模板.xlsx
@@ -136,7 +144,9 @@ serverfile:
 
 fileUpload:
   savaPath: /zzj/upload
-  httpPath: /upload
+  httpPath: D:/upload
 product:
   enable: true
 debug: true
+businessParameters:
+  databaseUserDefaultPassword: 111

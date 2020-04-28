@@ -1,6 +1,8 @@
 package com.piesat.dm.web.controller.dataapply;
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.dataapply.CloudDatabaseApplyService;
 import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
@@ -40,7 +42,7 @@ public class CloudDatabaseApplyController {
     @GrpcHthtClient
     private DictDataService dictDataService;
 
-    @Value("${serverfile.filePath}")
+    @Value("${serverfile.cloud}")
     private String fileAddress;
 
     @GetMapping("/list")
@@ -147,6 +149,33 @@ public class CloudDatabaseApplyController {
         cloudDatabaseApplyDto= this.cloudDatabaseApplyService.updateDto(cloudDatabaseApplyDto);
         resultT.setData(cloudDatabaseApplyDto);
         return resultT;
+    }
+
+    @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    @PostMapping(value = "/addOrUpdate")
+    public ResultT addOrUpdate(HttpServletRequest request, @RequestParam(value = "examineMaterial", required = false) MultipartFile applyMaterial) {
+        try {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            File newFile = null;
+            if (applyMaterial != null) {
+                String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                if(StringUtils.isNotNullString(originalFileName1)){
+                    //新的文件名
+                    String newFileName1 = originalFileName1.substring(0,originalFileName1.lastIndexOf(".")) +"_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS",new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                    newFile = new File(fileAddress + File.separator + newFileName1);
+                    if (!newFile.getParentFile().exists()) {
+                        newFile.getParentFile().mkdirs();
+                    }
+                    //存入
+                    applyMaterial.transferTo(newFile);
+                }
+            }
+            CloudDatabaseApplyDto cloudDatabaseApplyDto = cloudDatabaseApplyService.addOrUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+            return ResultT.success(cloudDatabaseApplyDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 
     @GetMapping("/updateExamineStatus")

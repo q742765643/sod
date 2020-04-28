@@ -1,13 +1,16 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.piesat.common.annotation.HtParam;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.AESUtil;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.rpc.api.system.UserService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -34,7 +37,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/system/user")
-@Api(value="用户操作接口",tags={"用户操作接口"})
+@Api(value = "用户操作接口", tags = {"用户操作接口"})
 public class UserController {
     @Autowired
     private UserService userService;
@@ -44,11 +47,10 @@ public class UserController {
 
     @RequiresPermissions("system:user:list")
     @GetMapping("/list")
-    public ResultT<PageBean> list(UserDto user,int pageNum,int pageSize)
-    {
-        ResultT<PageBean> resultT=new ResultT<>();
-        PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,user);
-        PageBean pageBean=userService.selectUserList(pageForm);
+    public ResultT<PageBean> list(UserDto user, int pageNum, int pageSize) {
+        ResultT<PageBean> resultT = new ResultT<>();
+        PageForm<UserDto> pageForm = new PageForm<>(pageNum, pageSize, user);
+        PageBean pageBean = userService.selectUserList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -58,10 +60,9 @@ public class UserController {
      */
     @RequiresPermissions("system:user:query")
     @GetMapping(value = "/{userId}")
-    public ResultT<UserDto> getInfo(@PathVariable String userId)
-    {
-        ResultT<UserDto> resultT=new ResultT<>();
-        UserDto userDto= userService.selectUserById(userId);
+    public ResultT<UserDto> getInfo(@PathVariable String userId) {
+        ResultT<UserDto> resultT = new ResultT<>();
+        UserDto userDto = userService.selectUserById(userId);
         resultT.setData(userDto);
         return resultT;
     }
@@ -72,12 +73,11 @@ public class UserController {
     @RequiresPermissions("system:user:add")
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public ResultT<String> add(@RequestBody UserDto user)
-    {
-        UserDto userDto=userService.selectUserByUserName(user.getUserName());
-        ResultT<String> resultT=new ResultT<>();
+    public ResultT<String> add(@RequestBody UserDto user) {
+        UserDto userDto = userService.selectUserByUserName(user.getUserName());
+        ResultT<String> resultT = new ResultT<>();
 
-        if(null!=userDto){
+        if (null != userDto) {
             resultT.setErrorMessage("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
             return resultT;
         }
@@ -98,14 +98,14 @@ public class UserController {
         userService.insertUser(user);
         return resultT;
     }
+
     /**
      * 修改用户
      */
     @RequiresPermissions("system:user:edit")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public ResultT<String> edit(@RequestBody UserDto user)
-    {
+    public ResultT<String> edit(@RequestBody UserDto user) {
         /*userService.checkUserAllowed(user);
         if (UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
         {
@@ -117,7 +117,7 @@ public class UserController {
         }
         user.setUpdateBy(SecurityUtils.getUsername());*/
 
-        ResultT<String> resultT=new ResultT<>();
+        ResultT<String> resultT = new ResultT<>();
         userService.updateUser(user);
         return resultT;
     }
@@ -130,32 +130,32 @@ public class UserController {
     @RequiresPermissions("system:user:remove")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
-    public  ResultT<String> remove(@PathVariable String[] userIds)
-    {
-        ResultT<String> resultT=new ResultT<>();
-        List<String> list=new ArrayList();
-        if(userIds.length>0){
-            list= Arrays.asList(userIds);
+    public ResultT<String> remove(@PathVariable String[] userIds) {
+        ResultT<String> resultT = new ResultT<>();
+        List<String> list = new ArrayList();
+        if (userIds.length > 0) {
+            list = Arrays.asList(userIds);
             userService.deleteUserByIds(list);
         }
         return resultT;
     }
+
     /**
      * 状态修改
      */
     @PutMapping("/changeStatus")
-    public ResultT<String> changeStatus(@RequestBody UserDto user)
-    {
+    public ResultT<String> changeStatus(@RequestBody UserDto user) {
        /* userService.checkUserAllowed(user);
         user.setUpdateBy(SecurityUtils.getUsername());*/
-        ResultT<String> resultT=new ResultT<>();
+        ResultT<String> resultT = new ResultT<>();
         userService.updateUserStatus(user);
         return resultT;
     }
+
     @ApiOperation(value = "用户信息导出", notes = "用户信息导出")
     @RequiresPermissions("system:user:export")
     @GetMapping("/export")
-    public void exportExcel(UserDto userDto){
+    public void exportExcel(UserDto userDto) {
         userService.exportExcel(userDto);
     }
 
@@ -163,10 +163,9 @@ public class UserController {
     @Log(title = "重置密码", businessType = BusinessType.UPDATE)
     @PutMapping("/resetPwd")
     @ResponseBody
-    public ResultT resetPwdSave(@RequestBody UserDto user)
-    {
-        UserDto userDto= userService.selectUserById(user.getId());
-        String password = new Md5Hash(user.getPassword(),userDto.getUserName(),2).toString();
+    public ResultT resetPwdSave(@RequestBody UserDto user) {
+        UserDto userDto = userService.selectUserById(user.getId());
+        String password = new Md5Hash(user.getPassword(), userDto.getUserName(), 2).toString();
         userDto.setPassword(password);
         userService.updateUser(userDto);
         return new ResultT<>();
@@ -174,7 +173,7 @@ public class UserController {
 
 
     @PostMapping(value = "/saveBiz")
-    @RequiresPermissions("system:user:saveBiz")
+//    @RequiresPermissions("system:user:saveBiz")
     @ApiOperation(value = "注册用户申请", notes = "注册用户申请")
     public ResultT saveBiz(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
         try {
@@ -200,4 +199,85 @@ public class UserController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "获取注册用户", notes = "获取注册用户")
+    @RequiresPermissions("system:dict:gatAllBiz")
+    @GetMapping("/gatAllBiz")
+    public ResultT<PageBean> gatAllBiz(UserDto userDto,
+                                       @HtParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                       @HtParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        ResultT<PageBean> resultT = new ResultT();
+        PageForm<UserDto> pageForm = new PageForm<>(pageNum, pageSize, userDto);
+        PageBean pageBean = this.userService.findAllBizUser(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+
+    /**
+     * 修改用户（外部接口）
+     */
+//    @RequiresPermissions("system:user:editBase")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/editBase")
+    public ResultT<String> editBase(String bizUserid, String checked) {
+        UserDto user = new UserDto();
+        user.setUserName(bizUserid);
+        user.setChecked(checked);
+        ResultT<String> resultT = new ResultT<>();
+        userService.editBase(user);
+        return resultT;
+    }
+
+    /**
+     * 修改密码（外部接口）
+     */
+//    @RequiresPermissions("system:user:updatePwd")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/updatePwd")
+    public ResultT<String> updatePwd(String bizUserid, String newPwd, String oldPwd) {
+        UserDto userDto = this.userService.selectUserByUserName(bizUserid);
+        String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+        if (pwd.equals(oldPwd)) {
+            UserDto user = new UserDto();
+            user.setUserName(bizUserid);
+            try {
+                String s = AESUtil.aesEncrypt(newPwd).trim();
+                user.setPassword(s);
+                ResultT<String> resultT = new ResultT<>();
+                userService.editBase(user);
+                return resultT;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResultT.failed(e.getMessage());
+            }
+        } else {
+            return ResultT.failed("旧密码不正确！");
+        }
+    }
+
+    /**
+     * 根据用户名获取详细信息（外部接口）
+     */
+//    @RequiresPermissions("system:user:getUserInfo")
+    @GetMapping(value = "/getUserInfo")
+    public ResultT<UserDto> getUserInfo(String bizUserid) {
+        ResultT<UserDto> resultT = new ResultT<>();
+        UserDto userDto = userService.selectUserByUserName(bizUserid);
+        resultT.setData(userDto);
+        return resultT;
+    }
+
+    @RequiresPermissions("system:dict:findAllBizUser")
+    @GetMapping("/findAllBizUser")
+    public ResultT<PageBean> findAllBizUser(UserDto userDto,
+                                  @HtParam(value="pageNum",defaultValue="1") int pageNum,
+                                  @HtParam(value="pageSize",defaultValue="10") int pageSize)
+    {
+        ResultT<PageBean> resultT=new ResultT();
+        PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,userDto);
+        PageBean pageBean=userService.findAllBizUser(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+
 }

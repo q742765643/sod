@@ -8,13 +8,17 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
+import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.dao.system.UserRoleDao;
 import com.piesat.ucenter.entity.system.BizUserEntity;
@@ -31,6 +35,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -347,5 +352,36 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         UserEntity.setStatus("1".equals(sodApp) ? "0" : "1");
         UserEntity userEntity = this.userDao.saveNotNull(UserEntity);
         return ResultT.success(userEntity);
+    }
+
+    @Override
+    public PageBean findAllBizUser(PageForm<UserDto> pageForm) {
+        UserEntity userEntity=this.userMapstruct.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(userEntity.getUserName())){
+            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(),userEntity.getUserName());
+        }
+        if(StringUtils.isNotNullString(userEntity.getNickName())){
+            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(),userEntity.getNickName());
+        }
+        if(StringUtils.isNotNullString(userEntity.getChecked())){
+            specificationBuilder.add("checked", SpecificationOperator.Operator.eq.name(),userEntity.getChecked());
+        }
+        if(StringUtils.isNotNullString(userEntity.getDeptName())){
+            specificationBuilder.add("deptName", SpecificationOperator.Operator.likeAll.name(),userEntity.getDeptName());
+        }
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
+        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        List<UserEntity> userEntitys= (List<UserEntity>) pageBean.getPageData();
+        List<UserDto> userDtos = this.userMapstruct.toDto(userEntitys);
+        pageBean.setPageData(userDtos);
+        return pageBean;
+    }
+
+    @Override
+    public void editBase(UserDto user) {
+        UserDto userDto = this.selectUserByUserName(user.getUserName());
+        user.setId(userDto.getId());
+        this.saveNotNull(this.userMapstruct.toEntity(user));
     }
 }

@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DataAuthorityApplyDao extends BaseDao<DataAuthorityApplyEntity> {
+    DataAuthorityApplyEntity findByUserId(String userId);
 
 }

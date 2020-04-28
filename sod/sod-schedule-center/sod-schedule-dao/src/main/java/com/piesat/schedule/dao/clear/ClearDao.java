@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @program: sod
  * @description:
@@ -12,6 +14,6 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface ClearDao extends BaseDao<ClearEntity>{
-
+    List<ClearEntity> findByDatabaseIdAndDataClassId(String databaseId,String dataClassId);
 }
 

@@ -14,6 +14,6 @@ import java.util.List;
  **/
 @Repository
 public interface BackupDao extends BaseDao<BackupEntity>{
-
+    List<BackupEntity> findByDatabaseIdAndDataClassId(String databaseId,String dataClassId);
 }
 

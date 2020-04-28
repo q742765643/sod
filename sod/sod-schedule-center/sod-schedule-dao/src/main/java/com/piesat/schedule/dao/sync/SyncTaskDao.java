@@ -15,4 +15,6 @@ import java.util.List;
 public interface SyncTaskDao extends BaseDao<SyncTaskEntity> {
 
     public List<SyncTaskEntity> findAllByTargetDatabaseIdAndSlaveTablesIsLike(String targetDatabaseId,String slaveTables);
+
+    public SyncTaskEntity findBySourceTable(String sourceTable);
 }

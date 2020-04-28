@@ -143,7 +143,7 @@ public class GrpcService {
                 }
             } else if (column.equals("move_identifier")) {
                 //删除迁移清楚
-                String taskId = storage.getClearId();
+                String taskId = storage.getMoveId();
                 if (StringUtils.isNotNullString(taskId)) {
                     moveService.deleteMoveByIds(new String[]{taskId});
                 }
@@ -161,10 +161,10 @@ public class GrpcService {
                 }
             }else if (column.equals("archiving_identifier")) {
                 //恢复
-                String taskId = storage.getClearId();
-                if (StringUtils.isNotNullString(taskId)) {
-                    metaRecoverLogService.deleteMetaRecoverLogByIds(new String[]{taskId});
-                }
+//                String taskId = storage.getClearId();
+//                if (StringUtils.isNotNullString(taskId)) {
+//                    metaRecoverLogService.deleteMetaRecoverLogByIds(new String[]{taskId});
+//                }
             }
         }
         //更新状态

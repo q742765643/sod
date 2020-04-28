@@ -12,10 +12,10 @@ public class Test {
     public static void main(String[] args) {
         BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
         //加密所需的salt(盐)
-        textEncryptor.setPassword("HT9527");
+        textEncryptor.setPassword("HT95279527");
         //要加密的数据（数据库的用户名或密码）
-        String username = textEncryptor.encrypt("root");
-        String password = textEncryptor.encrypt("root");
+        String username = textEncryptor.encrypt("USR_SOD");
+        String password = textEncryptor.encrypt("Pnmic_qwe123");
         System.out.println("username:"+username);
         System.out.println("password:"+password);
     }

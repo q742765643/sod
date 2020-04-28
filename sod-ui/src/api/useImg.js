@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_DMWLEI
+const baseUrl = process.env.VUE_APP_DM
 
 export function showImg(query) {
   return request({

@@ -1,9 +1,11 @@
 package com.piesat.dm.rpc.service.dataapply;
 
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.MyBeanUtils;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataapply.CloudDatabaseApplyDao;
 import com.piesat.dm.entity.dataapply.CloudDatabaseApplyEntity;
@@ -16,6 +18,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.mapper.dataapply.CloudDatabaseApplyMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -100,6 +103,25 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     @Override
     public CloudDatabaseApplyDto updateDto(CloudDatabaseApplyDto cloudDatabaseApplyDto) {
         CloudDatabaseApplyEntity cloudDatabaseApplyEntity = cloudDatabaseApplyMapper.toEntity(cloudDatabaseApplyDto);
+        cloudDatabaseApplyEntity = this.saveNotNull(cloudDatabaseApplyEntity);
+        return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
+    }
+
+    @Override
+    public CloudDatabaseApplyDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
+        CloudDatabaseApplyEntity cloudDatabaseApplyEntity = new CloudDatabaseApplyEntity();
+        MyBeanUtils.getObject(cloudDatabaseApplyEntity,parameterMap);
+        String[] data = parameterMap.get("data");
+        if(data != null && data.length>0){
+            if(StringUtils.isNotEmpty(data[0])){
+                JSONObject object = JSONObject.parseObject(data[0]);
+                String userId = (String) object.get("userId");
+                cloudDatabaseApplyEntity.setUserId(userId);
+            }
+        }
+        if(StringUtils.isNotNullString(filePath)){
+            cloudDatabaseApplyEntity.setExamineMaterial(filePath);
+        }
         cloudDatabaseApplyEntity = this.saveNotNull(cloudDatabaseApplyEntity);
         return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
     }

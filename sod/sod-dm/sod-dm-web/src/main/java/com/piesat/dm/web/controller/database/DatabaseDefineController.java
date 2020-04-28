@@ -155,7 +155,7 @@ public class DatabaseDefineController {
     }
 
     @ApiOperation(value = "导出")
-    @RequiresPermissions("dm:databaseDefine:export")
+//    @RequiresPermissions("dm:databaseDefine:export")
     @GetMapping(value = "/export")
     public void exportExcel(String id, String databaseName){
         databaseDefineService.exportExcel(id,databaseName);

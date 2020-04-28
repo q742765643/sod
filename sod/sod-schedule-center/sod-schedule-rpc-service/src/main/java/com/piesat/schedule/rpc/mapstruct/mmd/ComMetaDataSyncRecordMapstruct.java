@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.piesat.common.jpa.BaseMapper;
 import com.piesat.schedule.entity.mmd.ComMetadataSyncRecordEntity;
 import com.piesat.schedule.rpc.dto.mmd.ComMetadataSyncRecordDto;
+import org.springframework.stereotype.Service;
 
 /** 公共元数据同步记录
 *@description
@@ -14,7 +15,7 @@ import com.piesat.schedule.rpc.dto.mmd.ComMetadataSyncRecordDto;
 *@date 2020年2月6日下午5:14:18
 *
 */
-@Component("comMetadataSyncRecordMapstruct")
+@Service
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ComMetaDataSyncRecordMapstruct extends BaseMapper<ComMetadataSyncRecordDto,ComMetadataSyncRecordEntity>{
 

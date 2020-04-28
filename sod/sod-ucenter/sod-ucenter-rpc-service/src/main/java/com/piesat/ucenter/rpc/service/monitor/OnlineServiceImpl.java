@@ -37,7 +37,7 @@ public class OnlineServiceImpl implements OnlineService {
         List<OnlineDto> userOnlineList = new ArrayList<OnlineDto>();
         for (Session key : keys) {
             SimplePrincipalCollection principalCollection = new SimplePrincipalCollection();
-            if (key.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY) == null) {
+            if (key == null || key.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY) == null) {
                continue;
             } else {
                 principalCollection = (SimplePrincipalCollection) key.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);

@@ -3,7 +3,6 @@ package com.piesat.dm.mapper;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
-import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
@@ -189,5 +188,9 @@ public interface MybatisQueryMapper {
 
     List<LinkedHashMap<String, Object>> selectGridAreaDefine(String dataClassId);
 
-    List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
+    List<LinkedHashMap<String, Object>> getDataclassTreeByClassIds(List<String> classIds);
+
+    List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(String userId,String database_id);
+
+
 }
