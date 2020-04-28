@@ -297,7 +297,7 @@ public class DataTableController {
     @GetMapping(value = "/existTable")
     public ResultT existTable(TableSqlDto tableSqlDto) {
         try {
-            return this.dataTableService.createTable(tableSqlDto);
+            return this.dataTableService.existTable(tableSqlDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
