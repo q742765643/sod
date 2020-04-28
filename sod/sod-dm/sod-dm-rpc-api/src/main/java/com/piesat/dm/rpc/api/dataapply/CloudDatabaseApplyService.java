@@ -20,6 +20,8 @@ public interface CloudDatabaseApplyService {
 
     CloudDatabaseApplyDto updateDto(CloudDatabaseApplyDto cloudDatabaseApplyDto);
 
+    CloudDatabaseApplyDto addOrUpdate(Map<String, String[]> parameterMap,String filePath);
+
     CloudDatabaseApplyDto getDotById(String id);
 
     public void deleteById(String id);

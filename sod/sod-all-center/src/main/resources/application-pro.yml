@@ -107,11 +107,16 @@ log:
   level: INFO
 
 serverfile:
-  dbfile: /home/sod/file/upload/dbfile
-  #filePath: /home/sod/file/upload/filePath
+#  dbfile: /home/sod/file/upload/dbfile
+#  filePath: /home/sod/file/upload/filePath
+#  dfcheck: /home/sod/file/upload/dfcheck
+#  special: /home/sod/file/upload/special
+#  cloud: /home/sod/file/upload/special
+  dbfile: D:/file
   filePath: D:/file
-  dfcheck: /home/sod/file/upload/dfcheck
-  special: /home/sod/file/upload/special
+  dfcheck: D:/file
+  special: D:/file
+  cloud: D:/file
 
   static:
     template:

@@ -1421,6 +1421,9 @@ public class ImportData {
                         Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time1);
                         readWriteEntity.setCreateTime(date);
                     }
+                    if(StringUtils.isNotEmpty(type_id)){
+                        readWriteEntity.setTypeId(type_id);
+                    }
                     if(StringUtils.isNotEmpty(apply_authority)){
                         readWriteEntity.setApplyAuthority(Integer.valueOf(apply_authority));
                     }
