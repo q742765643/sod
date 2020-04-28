@@ -1,12 +1,15 @@
 import request from '@/utils/request'
-const baseUrl =process.env.VUE_APP_UCENTER_API
+const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询用户列表
 export function listUser(query) {
-  var orderBy={"userName":"asc","createTime ":"asc"};
-  query.params.orderBy=orderBy;
+  var orderBy = {
+    "userName": "asc",
+    "createTime ": "asc"
+  };
+  query.params.orderBy = orderBy;
   return request({
-    url: baseUrl+'/system/user/list',
+    url: baseUrl + '/system/user/list',
     method: 'get',
     params: query
   })
@@ -15,7 +18,7 @@ export function listUser(query) {
 // 查询用户详细
 export function getUser(id) {
   return request({
-    url: baseUrl+'/system/user/' + id,
+    url: baseUrl + '/system/user/' + id,
     method: 'get'
   })
 }
@@ -23,7 +26,7 @@ export function getUser(id) {
 // 新增用户
 export function addUser(data) {
   return request({
-    url: baseUrl+'/system/user',
+    url: baseUrl + '/system/user',
     method: 'post',
     data: data
   })
@@ -32,7 +35,7 @@ export function addUser(data) {
 // 修改用户
 export function updateUser(data) {
   return request({
-    url: baseUrl+'/system/user',
+    url: baseUrl + '/system/user',
     method: 'put',
     data: data
   })
@@ -41,7 +44,7 @@ export function updateUser(data) {
 // 删除用户
 export function delUser(id) {
   return request({
-    url: baseUrl+'/system/user/' + id,
+    url: baseUrl + '/system/user/' + id,
     method: 'delete'
   })
 }
@@ -49,9 +52,10 @@ export function delUser(id) {
 // 导出用户
 export function exportUser(query) {
   return request({
-    url: baseUrl+'/system/user/export',
+    url: baseUrl + '/system/user/export',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   })
 }
 
@@ -62,7 +66,7 @@ export function resetUserPwd(id, password) {
     password
   }
   return request({
-    url: baseUrl+'/system/user/resetPwd',
+    url: baseUrl + '/system/user/resetPwd',
     method: 'put',
     data: data
   })
@@ -75,7 +79,7 @@ export function changeUserStatus(id, status) {
     status
   }
   return request({
-    url: baseUrl+'/system/user/changeStatus',
+    url: baseUrl + '/system/user/changeStatus',
     method: 'put',
     data: data
   })
@@ -84,7 +88,7 @@ export function changeUserStatus(id, status) {
 // 查询用户个人信息
 export function getUserProfile() {
   return request({
-    url: baseUrl+'/system/user/profile',
+    url: baseUrl + '/system/user/profile',
     method: 'get'
   })
 }
@@ -92,7 +96,7 @@ export function getUserProfile() {
 // 修改用户个人信息
 export function updateUserProfile(data) {
   return request({
-    url: baseUrl+'/system/user/profile',
+    url: baseUrl + '/system/user/profile',
     method: 'put',
     data: data
   })
@@ -105,7 +109,7 @@ export function updateUserPwd(oldPassword, newPassword) {
     newPassword
   }
   return request({
-    url: baseUrl+'/system/user/profile/updatePwd',
+    url: baseUrl + '/system/user/profile/updatePwd',
     method: 'put',
     params: data
   })
@@ -114,7 +118,7 @@ export function updateUserPwd(oldPassword, newPassword) {
 // 用户头像上传
 export function uploadAvatar(data) {
   return request({
-    url: baseUrl+'/system/user/profile/avatar',
+    url: baseUrl + '/system/user/profile/avatar',
     method: 'post',
     headers: {
       'Content-Type': 'multipart/form-data'

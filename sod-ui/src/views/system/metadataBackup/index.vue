@@ -42,12 +42,7 @@
             <el-button size="small" type="danger" @click="deleteShow()" icon="el-icon-delete">删除同步任务</el-button>
           </el-col>
           <el-col :span="1.5">
-            <handleExport
-              :handleExportObj="queryParams"
-              baseUrl="SCHEDULE"
-              btnText="导出"
-              exportUrl="/schedule/metaBackup/export"
-            />
+            <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -163,12 +158,12 @@
         </el-form>
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
-            <handleExport
-              :handleExportObj="rowlogForm"
-              baseUrl="SCHEDULE"
-              btnText="导出"
-              exportUrl="/schedule/metaBackupLog/export"
-            />
+            <el-button
+              size="small"
+              type="success"
+              icon="el-icon-download"
+              @click="handleLogExport"
+            >导出</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -204,14 +199,12 @@
                 icon="el-icon-reading"
                 @click="showDetailDialog(scope.row)"
               >查看详情</el-button>
-
-              <handleExport
-                @click="download(scope.row)"
-                :handleExportObj="handleExportObj"
-                baseUrl="SCHEDULE"
-                btnText="下载"
-                exportUrl="/api/schedule/uploadDown/downFile"
-              />
+              <el-button
+                size="small"
+                type="success"
+                icon="el-icon-download"
+                @click="handleFileExport(scope.row)"
+              >导出</el-button>
               <el-button
                 type="text"
                 size="mini"
@@ -308,15 +301,15 @@ import {
   listLog,
   deleteLogById,
   listLogDatail,
-  downFile
+  downFile,
+  exportTable,
+  exportTableLog
 } from "@/api/system/metadataBackup";
 //增加查看弹框
 import handleExportD from "@/views/system/metadataBackup/handleExport";
-import handleExport from "@/components/export";
 export default {
   components: {
-    handleExportD,
-    handleExport
+    handleExportD
   },
   data() {
     return {
@@ -372,6 +365,22 @@ export default {
     this.getMetaBackupList();
   },
   methods: {
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
+    handleFileExport(row) {
+      downFile(row).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
+    handleLogExport(row) {
+      exportTableLog(this.rowlogForm).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
+
     // table自增定义方法
     table_index(index) {
       return (

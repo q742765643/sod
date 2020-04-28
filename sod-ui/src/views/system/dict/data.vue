@@ -67,12 +67,7 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          :handleExportObj="queryParams"
-          baseUrl="UCENTER"
-          btnText="导出"
-          exportUrl="/system/dict/data/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -167,11 +162,8 @@ import {
   exportData
 } from "@/api/system/dict/data";
 import { listType, getType } from "@/api/system/dict/type";
-import handleExport from "@/components/export";
+
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       // 遮罩层
@@ -230,6 +222,11 @@ export default {
     });
   },
   methods: {
+    handleExport() {
+      exportData(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     /** 导出按钮操作 */
     handleExporta() {
       const queryParams = this.queryParams;

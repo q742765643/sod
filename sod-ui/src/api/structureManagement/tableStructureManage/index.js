@@ -101,3 +101,13 @@ export function findByDatabaseDefineId(query) {
     params: query
   })
 }
+export function exportTable() {
+  return request({
+    url: baseUrl + '/api/dbfile/downloadFile',
+    method: 'get',
+    params: {
+      name: "add-column"
+    },
+    responseType: "arraybuffer"
+  })
+}

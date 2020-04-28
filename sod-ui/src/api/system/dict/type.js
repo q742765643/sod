@@ -1,10 +1,10 @@
 import request from '@/utils/request'
-const baseUrl =process.env.VUE_APP_UCENTER_API
+const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询字典类型列表
 export function listType(query) {
   return request({
-    url: baseUrl+'/system/dict/type/list',
+    url: baseUrl + '/system/dict/type/list',
     method: 'get',
     params: query
   })
@@ -13,7 +13,7 @@ export function listType(query) {
 // 查询字典类型详细
 export function getType(dictId) {
   return request({
-    url: baseUrl+'/system/dict/type/' + dictId,
+    url: baseUrl + '/system/dict/type/' + dictId,
     method: 'get'
   })
 }
@@ -21,7 +21,7 @@ export function getType(dictId) {
 // 新增字典类型
 export function addType(data) {
   return request({
-    url: baseUrl+'/system/dict/type',
+    url: baseUrl + '/system/dict/type',
     method: 'post',
     data: data
   })
@@ -30,7 +30,7 @@ export function addType(data) {
 // 修改字典类型
 export function updateType(data) {
   return request({
-    url: baseUrl+'/system/dict/type',
+    url: baseUrl + '/system/dict/type',
     method: 'put',
     data: data
   })
@@ -39,7 +39,7 @@ export function updateType(data) {
 // 删除字典类型
 export function delType(dictId) {
   return request({
-    url: baseUrl+'/system/dict/type/' + dictId,
+    url: baseUrl + '/system/dict/type/' + dictId,
     method: 'delete'
   })
 }
@@ -47,8 +47,9 @@ export function delType(dictId) {
 // 导出字典类型
 export function exportType(query) {
   return request({
-    url: baseUrl+'/system/dict/type/export',
+    url: baseUrl + '/system/dict/type/export',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   })
 }

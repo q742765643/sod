@@ -121,6 +121,25 @@ export function downFile(query) {
   return request({
     url: baseUrl + '/api/schedule/uploadDown/downFile',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
+  })
+}
+
+export function exportTableLog(query) {
+  return request({
+    url: baseUrl + '/schedule/metaBackupLog/export',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}
+
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/schedule/metaBackup/export',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
   })
 }

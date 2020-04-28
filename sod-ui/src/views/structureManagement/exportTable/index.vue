@@ -64,14 +64,6 @@
               <el-divider></el-divider>
               <p>分库分表</p>
               <div style="text-align:right;">
-                <handleExport
-                  style="display:none;"
-                  :handleExportObj="handleExportObj"
-                  btnText="导出"
-                  :exportUrl="exportUrl"
-                  baseUrl="DM"
-                  ref="exportRef"
-                />
                 <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>
@@ -123,7 +115,6 @@
 </template>
 <script>
 import treeTransfer from "el-tree-transfer"; // 引入
-import handleExport from "@/components/export";
 import { dataClassAll } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   logicDefineList,
@@ -131,17 +122,15 @@ import {
   dataTree,
   exportTable,
   exportSQL,
-  exportTableSimple
+  exportTableSimple,
+  downloadTable
 } from "@/api/structureManagement/exportTable";
 export default {
   components: {
-    treeTransfer,
-    handleExport
+    treeTransfer
   },
   data() {
     return {
-      exportUrl: "/api/com/downloadByPath",
-      handleExportObj: {},
       //格式化tree数据
       defaultProps: {
         children: "children",
@@ -323,14 +312,18 @@ export default {
         obj.use_id = this.queryParams.use_id;
         exportTable(obj).then(response => {
           if (response.code == 200) {
-            this.handleExportObj.filePath = response.data.filePath;
-            this.$refs.exportRef.exportData(this.handleExportObj);
+            downloadTable({ filePath: response.data.filePath }).then(res => {
+              this.downloadfileCommon(res);
+            });
           }
         });
       } else if (this.activeName == "second") {
         exportTableSimple(obj).then(response => {
-          this.handleExportObj.filePath = response.data.filePath;
-          this.$refs.exportRef.exportData(this.handleExportObj);
+          if (response.code == 200) {
+            downloadTable({ filePath: response.data.filePath }).then(res => {
+              this.downloadfileCommon(res);
+            });
+          }
         });
       } else if (this.activeName == "third") {
         let obj = {};
@@ -338,8 +331,11 @@ export default {
         obj.database_id = this.queryParams.database_id;
         obj.exportType = this.exportTyoe;
         exportSQL(obj).then(response => {
-          this.handleExportObj.filePath = response.data.filePath;
-          this.$refs.exportRef.exportData(this.handleExportObj);
+          if (response.code == 200) {
+            downloadTable({ filePath: response.data.filePath }).then(res => {
+              this.downloadfileCommon(res);
+            });
+          }
         });
       }
     }

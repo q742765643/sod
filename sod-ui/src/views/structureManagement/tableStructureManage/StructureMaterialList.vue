@@ -14,12 +14,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" size="small" icon="el-icon-search" @click="handleQuery">查询</el-button>
-        <handleExport
-          :handleExportObj="queryParams"
-          baseUrl="DM"
-          btnText="导出"
-          exportUrl="/dm/databaseDefine/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-form-item>
     </el-form>
 
@@ -43,13 +38,14 @@
   </section>
 </template>
 <script>
-import { getBaseData } from "@/api/structureManagement/tableStructureManage/StructureMaterialList";
+import {
+  getBaseData,
+  exportTable
+} from "@/api/structureManagement/tableStructureManage/StructureMaterialList";
 
-import handleExport from "@/components/export";
 //分页组件
 export default {
   name: "structureMaterialList",
-  components: { handleExport },
   data() {
     return {
       queryParams: {
@@ -66,6 +62,11 @@ export default {
     this.searchFun();
   },
   methods: {
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     handleQuery() {
       this.queryParams.pageNum = 1;
 

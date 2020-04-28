@@ -42,7 +42,7 @@
         <el-button type="primary" icon="el-icon-edit" size="small">批量启停</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success" icon="el-icon-download" size="small">导出</el-button>
+        <el-button type="success" icon="el-icon-download" size="small" @click="handleExport">导出</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="primary" icon="el-icon-refresh" size="small">刷新</el-button>
@@ -155,7 +155,12 @@
 </template>
 
 <script>
-import { syncList, delSync, getSyncInfo } from "@/api/schedule/dataSync";
+import {
+  syncList,
+  delSync,
+  getSyncInfo,
+  exportTable
+} from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
 // 增加查看
@@ -229,6 +234,11 @@ export default {
     this.getList();
   },
   methods: {
+    handleExport() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (

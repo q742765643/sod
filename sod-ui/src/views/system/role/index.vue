@@ -86,13 +86,7 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          v-hasPermi="['system:post:export']"
-          :handleExportObj="queryParams"
-          baseUrl="UCENTER"
-          btnText="导出"
-          exportUrl="/system/role/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -237,7 +231,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   listRole,
   getRole,
@@ -258,9 +251,6 @@ import {
 } from "@/api/system/dept";
 
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       // 遮罩层
@@ -347,6 +337,11 @@ export default {
     });
   },
   methods: {
+    handleExport() {
+      exportRole(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     /** 查询角色列表 */
     getList() {
       this.loading = true;

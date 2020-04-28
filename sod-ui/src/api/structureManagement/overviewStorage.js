@@ -27,3 +27,12 @@ export function updateColumnValue(data) {
     params: data
   })
 }
+
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/dm/storageConfiguration/exportTable',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

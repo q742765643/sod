@@ -119,13 +119,7 @@
             >删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <handleExport
-              v-hasPermi="['system:user:export']"
-              :handleExportObj="queryParams"
-              baseUrl="UCENTER"
-              btnText="导出"
-              exportUrl="/system/user/export"
-            />
+            <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
           </el-col>
         </el-row>
 
@@ -293,7 +287,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   listUser,
   getUser,
@@ -311,7 +304,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  components: { Treeselect, handleExport },
+  components: { Treeselect },
   data() {
     return {
       // 遮罩层
@@ -413,6 +406,11 @@ export default {
     });
   },
   methods: {
+    handleExport() {
+      exportUser(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     /** 查询用户列表 */
     getList() {
       this.loading = true;

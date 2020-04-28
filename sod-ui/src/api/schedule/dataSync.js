@@ -1,5 +1,6 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
+const baseUrl = process.env.VUE_APP_DMWLEI
+// const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
 
 export function syncList(query) {
   return request({
@@ -58,14 +59,23 @@ export function syncSaveUpdate(data) {
 }
 export function delSync(id) {
   return request({
-    url: baseUrl+'/schedule/sync/deleteSync/'+id,
+    url: baseUrl + '/schedule/sync/deleteSync/' + id,
     method: 'delete'
   })
 }
 
 export function getSyncInfo(id) {
   return request({
-    url: baseUrl+'/schedule/sync/getSyncById/' + id,
+    url: baseUrl + '/schedule/sync/getSyncById/' + id,
     method: 'get'
+  })
+}
+
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/schedule/sync/export',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
   })
 }

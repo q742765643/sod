@@ -92,12 +92,7 @@
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <handleExport
-          :handleExportObj="queryParams"
-          baseUrl="UCENTER"
-          btnText="导出"
-          exportUrl="/system/dict/type/export"
-        />
+        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
 
@@ -190,11 +185,7 @@ import {
   updateType,
   exportType
 } from "@/api/system/dict/type";
-import handleExport from "@/components/export";
 export default {
-  components: {
-    handleExport
-  },
   data() {
     return {
       // 遮罩层
@@ -245,6 +236,11 @@ export default {
     });
   },
   methods: {
+    handleExport() {
+      exportType(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
     /** 查询字典类型列表 */
     getList() {
       this.loading = true;

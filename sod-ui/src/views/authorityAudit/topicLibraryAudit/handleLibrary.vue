@@ -22,13 +22,13 @@
             <el-input size="small" :disabled="true" v-model="msgFormDialog.phoneNum"></el-input>
           </el-form-item>
           <el-form-item label="申请材料">
-            <handleExport
-              :handleExportObj="handleExportObj"
+            <el-button
               :disabled="!msgFormDialog.applyMaterial"
-              baseUrl="DM"
-              btnText="点击下载"
-              exportUrl="/dm/fileUpDown/download"
-            />
+              size="small"
+              type="success"
+              @click="handleExport"
+              icon="el-icon-document"
+            >下载</el-button>
           </el-form-item>
           <el-form-item label="排序">
             <el-input size="small" v-model="msgFormDialog.sortNO"></el-input>
@@ -231,7 +231,6 @@
 </template>
 
 <script>
-import handleExport from "@/components/export";
 import {
   getById,
   getAuthorityBySdbId,
@@ -239,13 +238,12 @@ import {
   empowerDataBatch,
   empowerDataOne,
   empowerDatabaseSpecial,
-  update
+  update,
+  exportTable
 } from "@/api/authorityAudit/topicLibraryAudit";
 export default {
   name: "handleLiberyDialog",
-  components: {
-    handleExport
-  },
+
   props: {
     handleObj: {
       type: Object
@@ -253,7 +251,6 @@ export default {
   },
   data() {
     return {
-      handleExportObj: {},
       msgFormDialog: {},
       searchLibraryObj: {
         key: "typeName",
@@ -306,7 +303,12 @@ export default {
         return "读写";
       }
     },
-
+    // 下载
+    handleExport() {
+      exportTable({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
+        this.downloadfileCommon(res, "word");
+      });
+    },
     // 获取专题库基本信息|专题库授权
     initDetail() {
       // 基本信息
@@ -316,8 +318,6 @@ export default {
           if (!this.msgFormDialog.applyMaterial) {
             this.$message({ type: "warning", message: "文件不存在" });
           }
-          this.handleExportObj = {};
-          this.handleExportObj.filePath = this.msgFormDialog.applyMaterial;
         }
       });
       // 数据库授权

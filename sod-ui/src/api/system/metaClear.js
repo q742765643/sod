@@ -57,7 +57,8 @@ export function metaClearExport(query) {
   return request({
     url: baseUrl + '/schedule/metaClear/export',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   })
 }
 // 根据ID查询元数据清除任务
@@ -99,6 +100,7 @@ export function metaClearLogExport(query) {
   return request({
     url: baseUrl + '/schedule/metaClearLog/export',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   })
 }
