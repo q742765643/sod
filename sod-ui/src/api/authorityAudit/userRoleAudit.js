@@ -2,9 +2,9 @@ import request from '@/utils/request'
 const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询列表
-export function page(query) {
+export function gatAllBiz(query) {
   return request({
-    url: baseUrl + '/system/portalAuz/page',
+    url: baseUrl + '/system/user/gatAllBiz',
     method: 'get',
     params: query
   })

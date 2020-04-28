@@ -121,7 +121,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="300" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="360" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -141,7 +141,7 @@
             size="mini"
             type="text"
             v-if="scope.row.triggerStatus==1"
-            icon="el-icon-delete"
+            icon="el-icon-video-pause"
             @click="handleStop(scope.row)"
             v-hasPermi="['schedule:job:stop']"
           >停止</el-button>
@@ -149,17 +149,23 @@
             size="mini"
             type="text"
             v-if="scope.row.triggerStatus==0"
-            icon="el-icon-delete"
+            icon="el-icon-video-play"
             @click="handleStart(scope.row)"
             v-hasPermi="['schedule:job:start']"
           >启动</el-button>
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
+            icon="el-icon-video-play"
             @click="handleExecute(scope.row)"
             v-hasPermi="['schedule:job:execute']"
           >立即执行</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-tickets"
+            @click="queryDaily(scope.row)"
+          >查询日志</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -368,6 +374,13 @@ export default {
           this.msgSuccess("执行成功");
         })
         .catch(function() {});
+    },
+    // 查询日志
+    queryDaily(row) {
+      this.$router.push({
+        name: "数据备份日志",
+        params: { profileName: row.profileName }
+      });
     }
   }
 };

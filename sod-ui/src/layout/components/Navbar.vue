@@ -40,10 +40,11 @@
           </el-button>
         </el-popover>
       </template>
-
-      <el-badge :value="uncheckNum" class="right-menu-item hover-effect" style="padding-top:2px;">
-        <i class="el-icon-bell weightIcon"></i>
-      </el-badge>
+      <div class="right-menu-item hover-effect" style="padding-top:2px;" @click="goUncheck">
+        <el-badge :value="uncheckNum">
+          <i class="el-icon-bell weightIcon"></i>
+        </el-badge>
+      </div>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
@@ -110,6 +111,19 @@ export default {
     }
   },
   methods: {
+    goUncheck() {
+      if (this.$route.path == "/index") {
+        this.$router.push({
+          path: "/redirect",
+          query: "/unCheckBox"
+        });
+      } else {
+        this.$router.push({
+          name: "首页",
+          params: { pageFlag: "unCheckBox" }
+        });
+      }
+    },
     toggleSideBar() {
       this.$store.dispatch("app/toggleSideBar");
     },

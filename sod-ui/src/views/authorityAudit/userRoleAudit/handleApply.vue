@@ -1,16 +1,27 @@
 <template>
   <section class="handleApply">
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="数据库访问账户" name="first">
-        <handleAccount :handleObj="handleObj" ref="AccountRef" />
-      </el-tab-pane>
-      <el-tab-pane label="专题库" name="second">
-        <handleLibrary :handleObj="handleObj" ref="LibraryRef" />
-      </el-tab-pane>
-      <el-tab-pane label="资料访问权限审核" name="third">
-        <handleMaterial :handleObj="handleObj" ref="MaterialRef" />
-      </el-tab-pane>
-    </el-tabs>
+    <el-steps :active="stepNum" finish-status="success">
+      <el-step title="数据库访问账户"></el-step>
+      <el-step title="专题库" v-if="handleMsgObj.dbCreate=='1'"></el-step>
+      <el-step title="资料访问权限审核"></el-step>
+      <el-step title="完成"></el-step>
+    </el-steps>
+    <el-card class="box-card" shadow="never" v-if="stepNum==0">
+      <handleAccount :handleObj="handleObj" ref="AccountRef" @handleDialogClose="handleClose" />
+    </el-card>
+    <el-card class="box-card" shadow="never" v-if="stepNum==1">
+      <handleLibrary :handleObj="handleObj" ref="LibraryRef" />
+    </el-card>
+    <el-card class="box-card" shadow="never" v-if="stepNum==2">
+      <handleMaterial :handleObj="handleObj" ref="MaterialRef" />
+    </el-card>
+    <el-card class="box-card" shadow="never" v-if="stepNum==3">
+      <span style="font-size: 26px;">完成</span>
+    </el-card>
+    <div class="dialog-footer" style="margin-top:20px;">
+      <el-button type="primary" v-if="stepNum!=5" @click="nextStep">下一步</el-button>
+      <el-button type="primary" v-if="stepNum==3" @click="$emit('closeStep')">完成</el-button>
+    </div>
   </section>
 </template>
 
@@ -31,15 +42,30 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
-      activeName: "first",
+      stepNum: 1,
       msgFormDialog: {},
       handleObj: { pageName: "业务用户审核" }
     };
   },
-  created() {},
+  created() {
+    this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
+    console.log(this.handleObj);
+  },
   methods: {
     handleClose() {},
-    handleClick() {}
+    nextStep() {
+      // 数据库访问账户 新增
+      if (this.stepNum == 0) {
+        this.$refs.AccountRef.trueAdd();
+        this.stepNum = 1;
+        return;
+      }
+      if (this.stepNum == 1) {
+        this.$refs.AccountRef.trueAdd();
+        this.stepNum = 1;
+        return;
+      }
+    }
   }
 };
 </script>

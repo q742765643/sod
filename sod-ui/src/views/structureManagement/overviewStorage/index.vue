@@ -157,7 +157,7 @@
     >
       <el-checkbox
         @change="changeSetting"
-        v-model="checked3"
+        v-model="checked2"
         false-label="move_identifier*"
         true-label="move_identifier"
         label="迁移"
@@ -332,6 +332,7 @@ export default {
 
       // 设置
       dialogSetting: false,
+      checked2: "",
       checked3: "",
       checked4: "",
       checked5: "",
@@ -453,7 +454,7 @@ export default {
       this.dialogSetting = true;
     },
     deleteCell(row) {
-      deleteColumnValue({ id: row.id }).then(response => {
+      deleteColumnValue({ id: row.ID }).then(response => {
         if (response.code == 200) {
           this.$message({
             type: "success",

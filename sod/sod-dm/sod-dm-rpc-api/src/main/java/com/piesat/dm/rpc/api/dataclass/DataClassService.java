@@ -69,7 +69,7 @@ public interface DataClassService {
 
     List<Map<String, Object>> getLogicByDdataId(String dDataId);
 
-    JSONArray getSimpleTree();
+    JSONArray getSimpleTree(String databaseId);
 
     Map<String, Object> getDataClassCoreInfo(String c_datum_code);
 }

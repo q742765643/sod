@@ -2,7 +2,7 @@
   <section class="handleAccountDialog">
     <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog" label-width="100px">
       <el-row>
-        <el-col :span="7">
+        <el-col :span="7" v-if="!handleObj.pageName">
           <el-form-item label="账户ID" prop="databaseUpId">
             <el-input
               size="small"
@@ -13,12 +13,12 @@
           </el-form-item>
         </el-col>
         <el-col :span="7" v-if="handleObj.pageName == '业务用户审核'">
-          <el-form-item label="用户名" prop="databaseUpId">
+          <el-form-item label="用户名">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseUpId"
+              v-model="msgFormDialog.userName"
               :disabled="userDiasbled"
-              placeholder="账户ID"
+              placeholder="用户名"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -145,10 +145,10 @@
               disabled
               v-model="msgFormDialog.applyMaterial"
               v-show="isHide"
-              style="width:82%;"
+              style="width:80%;"
             ></el-input>
             <el-button
-              class="preViewBox"
+              class="preViewBox2"
               v-show="isHide"
               size="small"
               type="success"
@@ -175,7 +175,7 @@
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
     <!-- 审核 -->
-    <div slot="footer" class="dialog-footer" v-show="isHide">
+    <div slot="footer" class="dialog-footer" v-show="isHide" v-if="!handleObj.pageName">
       <el-button type="primary" @click="trueDialog('ruleForm')">通 过</el-button>
       <el-button @click="cancelDialog('ruleForm')">不 通 过</el-button>
     </div>
@@ -315,8 +315,19 @@ export default {
   },
   created() {
     this.getDBlist();
+    if (this.handleObj.pageName == "业务用户审核") {
+      this.userDiasbled = true;
+      this.msgFormDialog.userName = this.handleObj.userName;
+      this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
+      this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
+      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
+      this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds.split(",");
+      this.isHideAdd = false;
+      this.isHide = true;
+    } else {
+      this.initServerDetail();
+    }
     // this.getUserAll();
-    this.initServerDetail();
     console.log(this.handleObj);
   },
   methods: {
@@ -334,7 +345,7 @@ export default {
     },
     // 预览
     previewDocx() {
-      window.open(baseUrl + this.msgFormDialog.filePath);
+      window.open(baseUrl + this.msgFormDialog.pdfPath);
     },
     // 申请绑定IP
     removeDomain(item) {
@@ -403,6 +414,7 @@ export default {
         });
     },
     successUpload: function(response, file, fileList) {
+      debugger;
       this.msgFormDialog.pdfPath = response.data.pdfPath;
       this.msgFormDialog.applyMaterial = response.data.filePath;
     },
@@ -487,9 +499,6 @@ export default {
           }
         });
       }
-      if (this.handleObj.pageName == "业务用户审核") {
-        this.userDiasbled = true;
-      }
     },
 
     trueDialog(formName) {
@@ -504,24 +513,7 @@ export default {
         this.$refs[formName].validate(valid => {
           if (valid) {
             if (this.isHideAdd) {
-              let obj = this.msgFormDialog;
-              obj.applyDatabaseId = obj.applyDatabaseId.join(",");
-              console.log(obj);
-              // 新增
-              addTable(obj).then(res => {
-                if (res.code == 200) {
-                  this.$message({
-                    type: "success",
-                    message: "增加成功"
-                  });
-                  this.$emit("handleDialogClose");
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: res.msg
-                  });
-                }
-              });
+              this.trueAdd();
             } else {
               // 数据库账户审核 通过
               this.auditMethods("");
@@ -535,6 +527,26 @@ export default {
           }
         });
       }
+    },
+    trueAdd() {
+      let obj = this.msgFormDialog;
+      obj.applyDatabaseId = obj.applyDatabaseId.join(",");
+      console.log(obj);
+      // 新增
+      addTable(obj).then(res => {
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: "增加成功"
+          });
+          this.$emit("handleDialogClose");
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          });
+        }
+      });
     },
     cancelDialog(formName) {
       if (!this.handleObj.id) {
@@ -646,6 +658,11 @@ export default {
   .preViewBox {
     position: absolute;
     right: 100px;
+    top: 0px;
+  }
+  .preViewBox2 {
+    position: absolute;
+    right: 80px;
     top: 0px;
   }
 }
