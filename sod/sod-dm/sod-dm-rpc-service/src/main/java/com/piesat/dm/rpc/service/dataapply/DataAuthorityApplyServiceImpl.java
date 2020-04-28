@@ -468,4 +468,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         return readAuthorityMapper.toDto(readAuthorityEntities);
     }
 
+    @Override
+    public DataAuthorityApplyDto findByUserId(String userId) {
+        DataAuthorityApplyEntity byUserId = this.dataAuthorityApplyDao.findByUserId(userId);
+       return this.dataAuthorityApplyMapper.toDto(byUserId);
+    }
+
 }
