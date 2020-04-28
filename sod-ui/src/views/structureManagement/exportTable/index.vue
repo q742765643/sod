@@ -3,11 +3,11 @@
     <!-- 表结构导出 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据库：">
-        <el-select v-model="queryParams.database_id" size="small" filterable>
+        <el-select v-model="queryParams.database_id" size="small" style="width:400px" filterable>
           <el-option
             v-for="(item,index) in databaseList"
             :key="index"
-            :label="item.databaseDefine.databaseName"
+            :label="'['+item.databaseClassify+']'+item.databaseDefine.databaseName+'--'+item.databaseName"
             :value="item.id"
           ></el-option>
         </el-select>
@@ -37,7 +37,7 @@
             <span>表信息导出</span>
           </div>
           <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="表结构导出--完整版" name="first">
+            <el-tab-pane label="表结构导出" name="first">
               <p>表结构</p>
               <el-row>
                 <el-col :span="12">
@@ -99,7 +99,7 @@
                 <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>
             </el-tab-pane>-->
-            <el-tab-pane label="sql导出" name="third">
+            <el-tab-pane label="SQL导出" name="third">
               <p>导出方式</p>
               <el-radio v-model="exportTyoe" :label="1">导出到同一个文件</el-radio>
               <el-radio v-model="exportTyoe" :label="2">导出到多个文件</el-radio>
