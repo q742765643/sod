@@ -259,15 +259,15 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 			List<String> idList = new ArrayList<>();
 			String [] idArr = null;
 			//
-			if(!StringUtil.isEmpty(apiType)) {
-				List<ComMetadataSyncCfgEntity> ceList = comMetadataSyncCfgDao.findByApiType(apiType);
-				for(ComMetadataSyncCfgEntity ce:ceList) {
-					idList.add(ce.getId());
-				}
-			}else {
+//			if(!StringUtil.isEmpty(apiType)) {
+//				List<ComMetadataSyncCfgEntity> ceList = comMetadataSyncCfgDao.findByApiType(apiType);
+//				for(ComMetadataSyncCfgEntity ce:ceList) {
+//					idList.add(ce.getId());
+//				}
+//			}else {
 				idArr = ids.split(",");
 				idList = Arrays.asList(idArr);
-			}
+//			}
 			for(String id:idList) {
 				if(StringUtil.isEmpty(id)) continue;
 
@@ -437,11 +437,11 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	 * @description
 	 * @author wlg
 	 * @date 2020年2月18日下午2:21:15
-	 * @param sql
+	 * @param tableName
 	 * @return
 	 * @throws Exception
 	 */
-	private ResultSetMetaData getRsmd(String tableName) throws Exception{
+	private Map<String,String> getFieldInfo(String tableName) throws Exception{
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -450,41 +450,22 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 			ps = conn.prepareStatement(sql);
 			ResultSetMetaData rsmd = ps.getMetaData();
-
-			return rsmd;
+			if(null != rsmd) {
+				Map<String,String> map = new HashMap<>();
+				for(int i=1;i<=rsmd.getColumnCount();i++) {
+					map.put(rsmd.getColumnName(i), rsmd.getColumnTypeName(i));
+				}
+				return map;
+			}
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
-			if(null != conn) conn.close();
+//			if(null != conn) conn.close();
 			if(null != ps) ps.close();
 		}
 		return null;
 
 	}
-
-	/**
-	 *  获取表字段名 , 字段类型
-	 * @description
-	 * @author wlg
-	 * @date 2020年2月18日下午2:27:14
-	 * @param tableName
-	 * @return
-	 * @throws Exception
-	 */
-	private Map<String,String> getFieldInfo(String tableName) throws Exception{
-
-		ResultSetMetaData rsmd = getRsmd(tableName);
-		if(null != rsmd) {
-			Map<String,String> map = new HashMap<>();
-			for(int i=1;i<=rsmd.getColumnCount();i++) {
-				map.put(rsmd.getColumnName(i), rsmd.getColumnTypeName(i));
-			}
-			return map;
-		}
-		return null;
-	}
-
-
-
 
 }

@@ -1,5 +1,6 @@
 package com.piesat.common.utils.http;
 
+import com.piesat.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import java.security.cert.X509Certificate;
 
 /**
  * 通用http发送方法
- * 
+ *
  * @author ruoyi
  */
 public class HttpUtils
@@ -33,7 +34,10 @@ public class HttpUtils
         BufferedReader in = null;
         try
         {
-            String urlNameString = url + "?" + param;
+            String urlNameString = url;
+            if (StringUtils.isNotEmpty(param)){
+                urlNameString +=  "?" + param;
+            }
             log.info("sendGet - {}", urlNameString);
             URL realUrl = new URL(urlNameString);
             URLConnection connection = realUrl.openConnection();

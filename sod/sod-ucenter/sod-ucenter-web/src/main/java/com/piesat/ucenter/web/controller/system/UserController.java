@@ -267,4 +267,17 @@ public class UserController {
         return resultT;
     }
 
+    @RequiresPermissions("system:dict:findAllBizUser")
+    @GetMapping("/findAllBizUser")
+    public ResultT<PageBean> findAllBizUser(UserDto userDto,
+                                  @HtParam(value="pageNum",defaultValue="1") int pageNum,
+                                  @HtParam(value="pageSize",defaultValue="10") int pageSize)
+    {
+        ResultT<PageBean> resultT=new ResultT();
+        PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,userDto);
+        PageBean pageBean=userService.findAllBizUser(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
+    }
+
 }
