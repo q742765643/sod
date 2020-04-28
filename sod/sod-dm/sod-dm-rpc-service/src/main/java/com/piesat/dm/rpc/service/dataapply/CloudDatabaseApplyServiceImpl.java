@@ -79,13 +79,13 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         //调用接口获取所有的用户信息
 
         //循环遍历
-        for(CloudDatabaseApplyDto cloudDatabaseApplyDto : cloudDatabaseApplyDtos){
+       /* for(CloudDatabaseApplyDto cloudDatabaseApplyDto : cloudDatabaseApplyDtos){
 
             //遍历所有用户信息找到每条记录对应的用户信息
             cloudDatabaseApplyDto.setUserName("申请人");
             cloudDatabaseApplyDto.setTelephone("12388888888");
             cloudDatabaseApplyDto.setDepartment("部门");
-        }
+        }*/
         pageBean.setPageData(cloudDatabaseApplyDtos);
         return pageBean;
     }

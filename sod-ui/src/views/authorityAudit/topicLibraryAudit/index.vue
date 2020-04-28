@@ -28,7 +28,7 @@
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="simpleName" label="专题库简称"></el-table-column>
-      <el-table-column prop="userId" label="用户名"></el-table-column>
+      <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="部门"></el-table-column>
       <el-table-column prop="phoneNum" label="联系方式"></el-table-column>
       <el-table-column prop="createTime" label="申请时间" width="160px">

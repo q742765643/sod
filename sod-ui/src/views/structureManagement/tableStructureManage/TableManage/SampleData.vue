@@ -1,12 +1,14 @@
 <template>
   <el-main style="padding-top:10px;">
     <el-table class="tb-edit" highlight-current-row :data="tableData" border style="width: 100%">
-      <el-table-column
+      <af-table-column
         v-for="(item, index) in cols"
         :key="index"
         :prop="item.prop"
         :label="item.label"
-      ></el-table-column>
+      >
+        <span>{{item.label}}</span>
+      </af-table-column>
     </el-table>
   </el-main>
 </template>
