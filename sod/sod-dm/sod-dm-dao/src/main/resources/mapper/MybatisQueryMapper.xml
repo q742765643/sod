@@ -316,12 +316,14 @@
     <!--新增注册资料-->
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select a.*, b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype
-        type_pname,d.DEPT_NAME,d.PHONENUMBER
+        type_pname,d.DEPT_NAME,d.PHONENUMBER,f.*
         from t_sod_newdata_apply a
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
         left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
         left join t_sod_logic_define c on a.logic_id = c.logic_flag
-        left join T_SOD_USER d on a.user_id = d.user_name
+        left join T_SOD_USER d on a.user_id = d.id and user_type='11'
+        left join T_SOD_DATA_LOGIC e on a.data_class_id = e.data_class_id
+        left join T_SOD_STORAGE_CONFIGURATION f on e.id=f.class_logic_id
         <where>
             <if test="map.status != null and map.status  != ''">
                 a.examine_status = #{map.status}
@@ -330,6 +332,7 @@
                 AND SUBSTR(b.C_DATUM_CODE,1,1) = #{map.dataType}
             </if>
         </where>
+        order by a.create_time desc
     </select>
 
     <update id="updateNewdataApplyStatus">
