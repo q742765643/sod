@@ -86,7 +86,8 @@ service.interceptors.response.use(res => {
     if (res.data instanceof ArrayBuffer) {
       return res;
     }
-    const code = res.data.code
+    const code = res.data.code;
+    // const responseURL = res.request.responseURL;
     if (code === 401) {
       MessageBox.confirm(
         '登录状态已过期，您可以继续留在该页面，或者重新登录',

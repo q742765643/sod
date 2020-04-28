@@ -124,12 +124,12 @@
 import {
   consistencyCheckList,
   deleteById,
-  downloadDfcheckFile,
   consistencyCheckSave,
   getDatabaseName,
   historyList,
   deleteByIds,
-  exportTable
+  exportTable,
+  downHistoryDfcheckFile
 } from "@/api/structureManagement/consistencyCheck";
 export default {
   data() {
@@ -233,7 +233,9 @@ export default {
       let obj = {};
       obj.file_directory = row.file_directory;
       obj.filename = row.filename;
-      this.$refs.downloadDf.exportData(obj);
+      downHistoryDfcheckFile(obj).then(res => {
+        this.downloadfileCommon(res);
+      });
     },
     addReportData() {
       this.addDataDialog = true;
