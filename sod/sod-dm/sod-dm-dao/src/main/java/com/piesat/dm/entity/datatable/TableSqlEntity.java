@@ -24,6 +24,6 @@ public class TableSqlEntity extends BaseEntity {
     @Column(name = "table_name", length = 255)
     private String tableName ;
 
-    @Column(name = "table_sql", length = 255)
+    @Column(name = "table_sql", length = 5255)
     private String tableSql ;
 }

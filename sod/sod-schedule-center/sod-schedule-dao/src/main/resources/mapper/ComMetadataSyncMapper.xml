@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.piesat.schedule.mapper.mmd.ComMetadataSyncMapper">
     <resultMap id="baseResultMap" type="com.piesat.schedule.entity.mmd.ComMetadataSyncCfgEntity">
-      
+
         <id column="ID" property="id" jdbcType="VARCHAR" />
         <result column="TASK_NAME" property="taskName" jdbcType="VARCHAR" />
         <result column="TABLE_NAME" property="tableName" jdbcType="VARCHAR" />
@@ -31,13 +31,13 @@
 		select
 			ID,START_TIME,STOP_TIME,SYNC_TABLE_NAME,SYNC_RECORD_NUM,
 			SYNC_TYPE,SYNC_MODEL,FAIL_REASON,RUN_STATE
-		from 
+		from
 			t_sod_sync_commetadata_record
 		where
 			1=1
 		<if test="startTime != null">
 			and start_time &gt; #{startTime}
-		</if> 
+		</if>
 		<if test="stopTime != null">
 			and stop_time &lt; #{stopTime}
 		</if>
@@ -54,7 +54,7 @@
     <select id="selectList"  resultMap="baseResultMap" parameterType="com.piesat.schedule.entity.mmd.ComMetadataSyncCfgEntity">
 		select
 			t1.*,t2.remark
-		from 
+		from
 			t_sod_sync_commetadata_cfg t1 left join t_sod_dict_data t2
 		on
 			t1.table_name = t2.dict_value
@@ -69,15 +69,18 @@
 		<if test="apiType != null and apiType != ''">
 			and t1.api_type = #{apiType}
 		</if>
-		order by 
+		order by
 			t1.table_name asc
     </select>
-    
+
     <!-- 全量同步,清空表 -->
-    <update id="clearTable" parameterType="java.lang.String">
-    	truncate table ${tableName}
-    </update>
-    
+<!--    <update id="clearTable" parameterType="java.lang.String">
+    	delete from ${tableName}
+    </update>-->
+    <delete id="clearTable" parameterType="java.lang.String">
+    	delete from ${tableName}
+    </delete>
+
     <!-- 插入一行数据 -->
     <insert id="insert1Row" parameterType="java.util.Map">
     	insert into ${tableName}
@@ -89,7 +92,7 @@
             #{value}
         </foreach>
     </insert>
-    
+
     <!-- 更新一条数据 -->
     <update id="update1Row" parameterType="java.util.Map">
     	update ${tableName}
@@ -107,6 +110,6 @@
         where
             ${pk} = #{pkValue}
     </delete>
-    
+
 
 </mapper>
