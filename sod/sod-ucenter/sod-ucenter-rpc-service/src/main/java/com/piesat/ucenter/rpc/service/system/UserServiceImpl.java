@@ -364,7 +364,13 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         if(StringUtils.isNotNullString(userEntity.getNickName())){
             specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(),userEntity.getNickName());
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"serialNumber");
+        if(StringUtils.isNotNullString(userEntity.getChecked())){
+            specificationBuilder.add("checked", SpecificationOperator.Operator.eq.name(),userEntity.getChecked());
+        }
+        if(StringUtils.isNotNullString(userEntity.getDeptName())){
+            specificationBuilder.add("deptName", SpecificationOperator.Operator.likeAll.name(),userEntity.getDeptName());
+        }
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<UserEntity> userEntitys= (List<UserEntity>) pageBean.getPageData();
         List<UserDto> userDtos = this.userMapstruct.toDto(userEntitys);
