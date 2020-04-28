@@ -124,7 +124,7 @@ public class ConsistencyCheckController {
         try {
             filename = URLDecoder.decode(filename,"UTF-8");
             file_directory = URLDecoder.decode(file_directory,"UTF-8");
-            FileInputStream fis = new FileInputStream(file_directory);
+            FileInputStream fis = new FileInputStream(file_directory+"/"+filename);
             response.reset();
             response.setContentType("bin");
             response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename,"UTF-8"));
@@ -142,17 +142,16 @@ public class ConsistencyCheckController {
     }
 
 
-    @GetMapping(value = "/downloadDfcheckFile")
+    @PostMapping(value = "/downloadDfcheckFile")
     @ApiOperation(value = "生成差异报告", notes = "生成差异报告")
-    public void downloadDfcheckFile(String databaseId, HttpServletResponse response){
-        databaseId = "89c7eb2a577d4a84b9cc25f2062e8363";
-        DatabaseDto databaseDto = databaseService.getDotById(databaseId);
+    public void downloadDfcheckFile(@RequestBody DatabaseDto databaseDto, HttpServletResponse response){
+         databaseDto = databaseService.getDotById(databaseDto.getId());
 
         String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
                 +"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH")+".xls";
 
 
-        Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseId);
+        Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseDto.getId());
 
         // 创建一个webbook，对应一个Excel文件
         HSSFWorkbook wb = new HSSFWorkbook();
@@ -174,16 +173,16 @@ public class ConsistencyCheckController {
 
         //保存差异检查历史表
         //判断同一时刻的文件是否存在
-        List<ConsistencyCheckHistoryDto> historys = consistencyCheckHistoryService.findHistoryByDatabaseIdAndFileName(databaseId, fileName);
+        List<ConsistencyCheckHistoryDto> historys = consistencyCheckHistoryService.findHistoryByDatabaseIdAndFileName(databaseDto.getId(), fileName);
         if(historys != null && historys.size()>0){
             ConsistencyCheckHistoryDto consistencyCheckHistoryDto = historys.get(0);
             //更新时间
             consistencyCheckHistoryService.saveDto(consistencyCheckHistoryDto);
         }else{
             ConsistencyCheckHistoryDto consistencyCheckHistoryDto = new ConsistencyCheckHistoryDto();
-            consistencyCheckHistoryDto.setDatabaseId(databaseId);
+            consistencyCheckHistoryDto.setDatabaseId(databaseDto.getId());
             consistencyCheckHistoryDto.setFileName(fileName);
-            consistencyCheckHistoryDto.setFileDirectory(filePath);
+            consistencyCheckHistoryDto.setFileDirectory(fileAddress);
             consistencyCheckHistoryService.saveDto(consistencyCheckHistoryDto);
         }
 

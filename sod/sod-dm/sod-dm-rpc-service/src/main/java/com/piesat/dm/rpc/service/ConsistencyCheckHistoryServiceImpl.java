@@ -15,6 +15,7 @@ import com.piesat.dm.rpc.mapper.ConsistencyCheckHistoryMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class ConsistencyCheckHistoryServiceImpl extends BaseService<ConsistencyC
 
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
         specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),consistencyCheckHistoryEntity.getDatabaseId());
-
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
 
         List<ConsistencyCheckHistoryEntity> consistencyCheckHistoryEntities= (List<ConsistencyCheckHistoryEntity>) pageBean.getPageData();
