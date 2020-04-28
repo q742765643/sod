@@ -136,9 +136,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }
 
             //遍历所有用户信息找到每条记录对应的用户信息
-            authorityApply.setUserName("申请人");
+           /* authorityApply.setUserName("申请人");
             authorityApply.setTelephone("12388888888");
-            authorityApply.setDepartment("部门");
+            authorityApply.setDepartment("部门");*/
         }
 
         pageBean.setPageData(dataAuthorityApplyDtos);

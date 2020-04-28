@@ -55,9 +55,9 @@
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="机构"></el-table-column>
       <el-table-column prop="telephone" label="联系方式"></el-table-column>
-      <el-table-column prop="applyTime" label="申请时间">
+      <el-table-column prop="createTime" label="申请时间">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.applyTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column

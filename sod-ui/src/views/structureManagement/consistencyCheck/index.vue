@@ -92,9 +92,9 @@
     <el-dialog title="历史报告表" :visible.sync="historyDialog" width="80%" height="50%" v-dialogDrag>
       <el-table ref="singleTable" :data="historyData" highlight-current-row border stripe>
         <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
-        <el-table-column prop="database_id" label="检查ID"></el-table-column>
-        <el-table-column prop="file_name" label="报告名称" min-width="300"></el-table-column>
-        <el-table-column prop="create_time" label="生成时间"></el-table-column>
+        <!--<el-table-column prop="database_id" label="检查ID"></el-table-column>-->
+        <el-table-column prop="fileName" label="报告名称" min-width="300"></el-table-column>
+        <el-table-column prop="createTime" label="生成时间"></el-table-column>
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope1">
             <el-button
@@ -209,7 +209,7 @@ export default {
         return;
       }
       let obj = {};
-      obj.databaseId = this.currentRow[0].databaseId;
+      obj.id = this.currentRow[0].databaseId;
       exportTable(obj).then(res => {
         this.downloadfileCommon(res);
       });
@@ -223,6 +223,7 @@ export default {
     getHistoricalReport(row) {
       this.historyDialog = true;
       this.historyObj.id = row.id;
+      this.historyObj.databaseId = row.databaseId;
       historyList(this.historyObj).then(response => {
         this.historyData = response.data.pageData;
         this.historyTotal = response.data.totalCount;
