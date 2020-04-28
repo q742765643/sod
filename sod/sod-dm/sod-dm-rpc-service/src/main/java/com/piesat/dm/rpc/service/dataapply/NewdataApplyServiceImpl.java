@@ -94,14 +94,6 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     public PageBean selectPageList(PageForm<Map<String,Object>> pageForm) {
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
         List<Map<String,Object>> lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
-        if(lists != null && lists.size()>0){
-            for(int i=0;i<lists.size();i++){
-                if(StringUtils.isNotNull(lists.get(i).get("DATA_CLASS_ID"))){
-                    List<Map<String, Object>> storageConfigurationList = storageConfigurationService.findByDataClassId((String) lists.get(i).get("DATA_CLASS_ID"));
-                    lists.get(i).put("storageConfigurations",storageConfigurationList);
-                }
-            }
-        }
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
         //获取当前页数据
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);

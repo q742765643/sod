@@ -122,6 +122,7 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         if(StringUtils.isNotNullString(filePath)){
             cloudDatabaseApplyEntity.setExamineMaterial(filePath);
         }
+        cloudDatabaseApplyEntity.setExamineStatus("01");
         cloudDatabaseApplyEntity = this.saveNotNull(cloudDatabaseApplyEntity);
         return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
     }
