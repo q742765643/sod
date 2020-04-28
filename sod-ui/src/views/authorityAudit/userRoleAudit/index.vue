@@ -3,32 +3,20 @@
     <!-- 业务用户审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="用户名称">
-        <el-input size="small" v-model="queryParams.username" placeholder="请输入用户名称"></el-input>
+        <el-input size="small" v-model="queryParams.userName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
       <el-form-item label="机构">
-        <el-select v-model="queryParams.status" clearable size="small" style="width: 240px">
-          <el-option label="全部" value></el-option>
-          <el-option label="未审核" value="0"></el-option>
-          <el-option label="已审核" value="1"></el-option>
-        </el-select>
+        <el-input size="small" v-model="queryParams.deptName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
-      <el-form-item label="审核状态">
-        <el-select v-model="queryParams.status" clearable size="small" style="width: 140px">
+      <el-form-item label="用户状态">
+        <el-select v-model="queryParams.checked" clearable size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
-          <el-option label="未审核" value="0"></el-option>
-          <el-option label="已审核" value="1"></el-option>
+          <el-option label="待审核" value="0"></el-option>
+          <el-option label="审核通过" value="1"></el-option>
+          <el-option label="驳回" value="2"></el-option>
+          <el-option label="激活" value="3"></el-option>
+          <el-option label="注销" value="4"></el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-          size="small"
-          v-model="dateRange"
-          type="date"
-          range-separator="~"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="yyyy-MM-dd "
-        >></el-date-picker>
       </el-form-item>
 
       <el-form-item>
@@ -36,17 +24,6 @@
       </el-form-item>
     </el-form>
 
-    <!--  <el-row :gutter="10" class="handleTableBox">
-      <el-col :span="1.5">
-        <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleEdit">修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete">删除</el-button>
-      </el-col>
-    </el-row>-->
     <el-table
       highlight-current-row
       v-loading="loading"
@@ -56,28 +33,22 @@
       @current-change="handleCurrentChange"
     >
       <el-table-column type="index" width="40" :index="table_index"></el-table-column>
-      <el-table-column prop="account" label="用户名称"></el-table-column>
-      <el-table-column prop="username" label="机构"></el-table-column>
-      <el-table-column prop="post" label="联系方式"></el-table-column>
+      <el-table-column prop="userName" label="用户名称"></el-table-column>
+      <el-table-column prop="deptName" label="机构"></el-table-column>
+      <el-table-column prop="phonenumber" label="联系方式"></el-table-column>
       <el-table-column prop="updateTime" label="创建时间" sortable="custom">
-        <template slot-scope="scope">
+        <template slot-scope="scope" v-if="scope.row.updateTime">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="status" label="审核状态">
         <template slot-scope="scope">
-          <el-link
-            icon="el-icon-circle-close"
-            type="danger"
-            :underline="false"
-            v-if="scope.row.status==0"
-          >未审核</el-link>
-          <el-link
-            icon="el-icon-circle-check"
-            type="success"
-            :underline="false"
-            v-if="scope.row.status==1"
-          >已审核</el-link>
+          <el-link v-if="scope.row.checked == '0'" :underline="false" type="primary">待审核</el-link>
+          <el-link v-else-if="scope.row.checked == '1'" :underline="false" type="success">审核通过</el-link>
+          <el-link v-else-if="scope.row.checked == '2'" :underline="false" type="danger">驳回</el-link>
+          <el-link v-else-if="scope.row.checked == '3'" :underline="false" type="warning">激活</el-link>
+          <el-link v-else-if="scope.row.checked == '4'" :underline="false" type="info">注销</el-link>
+          <el-link v-else :underline="false" type="info">未知</el-link>
         </template>
       </el-table-column>
       <el-table-column label="角色授权" width="100">
@@ -111,20 +82,24 @@
     />
     <!-- 新增/编辑 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px" v-dialogDrag>
-      <handleWork v-if="dialogVisible" :handleMsgObj="handleMsgObj" @cancleClose="cancleClose" />
+      <handleWork v-if="dialogVisible" :handleMsgObj="handleMsgObj" @closeStep="closeStep" />
     </el-dialog>
     <!-- 角色授权 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogRole" width="500px" v-dialogDrag>
       <div>
         <el-select
-          v-model="queryParams.status"
-          clearable
+          v-model="roleIds"
+          multiple
           size="small"
           style="display:block;margin-bottom:20px;"
         >
-          <el-option label="管理员" value></el-option>
-          <el-option label="业务用户" value="0"></el-option>
-          <el-option label="游客" value="1"></el-option>
+          <el-option
+            v-for="item in roleOptions"
+            :key="item.roleId"
+            :label="item.roleName"
+            :value="item.id"
+            :disabled="item.status == 1"
+          ></el-option>
         </el-select>
         <div class="dialog-footer" slot="footer">
           <el-button type="primary" @click="trueRole">确 定</el-button>
@@ -138,15 +113,21 @@
       :visible.sync="dialogApply"
       width="1100px"
       v-dialogDrag
-      top="5vh"
+      top="4vh"
     >
-      <handleApply v-if="dialogApply" :handleMsgObj="handleMsgObj" @cancleClose="cancleClose" />
+      <handleApply v-if="dialogApply" :handleMsgObj="handleMsgObj" @closeStep="closeStep" />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { page, delByIds, update } from "@/api/authorityAudit/userRoleAudit";
+import {
+  gatAllBiz,
+  delByIds,
+  update
+} from "@/api/authorityAudit/userRoleAudit";
+import { optionselect } from "@/api/system/role";
+import { getUser, updateUser } from "@/api/system/user";
 import handleWork from "@/views/authorityAudit/userRoleAudit/handleWork";
 import handleApply from "@/views/authorityAudit/userRoleAudit/handleApply";
 export default {
@@ -156,10 +137,11 @@ export default {
   },
   data() {
     return {
+      roleIds: [],
+      roleOptions: [],
       dialogApply: false,
       dialogRole: false,
       dialogVisible: false,
-      dateRange: [],
       // 遮罩层
       loading: true,
       queryParams: {
@@ -183,6 +165,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getRoles();
   },
   methods: {
     sortChange(column, prop, order) {
@@ -212,21 +195,18 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      page(this.queryParams).then(response => {
+      gatAllBiz(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
       });
     },
-    resetQuery() {
-      this.queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-        status: "",
-        username: "",
-        nameSourceDB: ""
-      };
-      this.handleQuery();
+
+    /** 查询角色列表 */
+    getRoles() {
+      optionselect().then(response => {
+        this.roleOptions = response.data;
+      });
     },
     // 新增
     handleAdd() {
@@ -251,17 +231,33 @@ export default {
     // 角色授权
     handleRole(row) {
       this.dialogTitle = "角色授权";
-      this.dialogRole = true;
+      getUser(row.id).then(response => {
+        this.roleIds = response.data.roleIds;
+        this.dialogRole = true;
+      });
     },
     // 确认授权
-    trueRole() {},
+    trueRole() {
+      let obj = {};
+      obj.id = this.currentRow.id;
+      obj.roleIds = this.roleIds;
+      updateUser(obj).then(response => {
+        if (response.code === 200) {
+          this.msgSuccess("修改成功");
+          this.dialogRole = false;
+          this.handleQuery();
+        } else {
+          this.msgError(response.msg);
+        }
+      });
+    },
     // 申请审核
     handleApply(row) {
       this.dialogTitle = "申请审核";
       this.handleMsgObj = row;
       this.dialogApply = true;
     },
-    cancleClose() {
+    closeStep() {
       this.handleMsgObj = {};
       this.dialogApply = false;
     }

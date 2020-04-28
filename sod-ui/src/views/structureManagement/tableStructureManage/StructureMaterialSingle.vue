@@ -122,6 +122,7 @@
     >
       <StructureStorageTree
         v-if="storageTreeVisible"
+        :typeText="materialData.typeText"
         @storageCheckedNode="getStorageCheckNode"
         @closeStorageTreeDialog="closeStorageTreeDialog"
       />

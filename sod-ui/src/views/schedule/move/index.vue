@@ -121,7 +121,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="300" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="360" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -160,6 +160,12 @@
             @click="handleExecute(scope.row)"
             v-hasPermi="['schedule:job:execute']"
           >立即执行</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-tickets"
+            @click="queryDaily(scope.row)"
+          >查询日志</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -371,6 +377,13 @@ export default {
           this.msgSuccess("执行成功");
         })
         .catch(function() {});
+    },
+    // 查询日志
+    queryDaily(row) {
+      this.$router.push({
+        name: "数据迁移日志",
+        params: { profileName: row.profileName }
+      });
     }
   }
 };

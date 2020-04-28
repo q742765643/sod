@@ -245,7 +245,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        profileName: undefined,
+        profileName: this.$route.params.profileName,
         dataClassId: undefined,
         handleCode: undefined,
         tableName: undefined

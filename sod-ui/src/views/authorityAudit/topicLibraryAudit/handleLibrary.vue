@@ -3,7 +3,7 @@
     <el-tabs type="border-card">
       <el-tab-pane label="基本信息">
         <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px">
-          <el-form-item label="图标">
+          <el-form-item label="图标" v-if="!handleObj.pageName">
             <img v-if="sdbImg" :src="sdbImg" style="width:40px;" alt />
           </el-form-item>
           <el-form-item label="专题库名称">
@@ -12,13 +12,13 @@
           <el-form-item label="用途">
             <el-input size="small" v-model="msgFormDialog.uses"></el-input>
           </el-form-item>
-          <el-form-item label="创建人">
+          <el-form-item label="创建人" v-if="!handleObj.pageName">
             <el-input size="small" :disabled="true" v-model="msgFormDialog.userId"></el-input>
           </el-form-item>
-          <el-form-item label="机构">
+          <el-form-item label="机构" v-if="!handleObj.pageName">
             <el-input size="small" :disabled="true" v-model="msgFormDialog.department"></el-input>
           </el-form-item>
-          <el-form-item label="联系方式">
+          <el-form-item label="联系方式" v-if="!handleObj.pageName">
             <el-input size="small" :disabled="true" v-model="msgFormDialog.phoneNum"></el-input>
           </el-form-item>
           <el-form-item label="申请材料">
@@ -122,7 +122,7 @@
           </el-table>
         </section>
       </el-tab-pane>
-      <el-tab-pane label="基础库资料">
+      <el-tab-pane label="基础库资料" v-if="!handleObj.pageName">
         <!-- 查询条件 -->
         <section class="searchCon">
           <el-form
@@ -289,11 +289,19 @@ export default {
     };
   },
   created() {
-    if (this.handleObj.id) {
-      this.initDetail();
+    if (this.handleObj.pageName == "业务用户审核") {
+      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper; //申请材料
+      this.msgFormDialog.uses = this.handleObj.remark; //用途
+      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper; //申请材料
+    } else {
+      if (this.handleObj.id) {
+        this.initDetail();
+      }
     }
+
     this.searchLibraryFun();
     this.loadReadList();
+    console.log(this.handleObj);
   },
   methods: {
     applyAuthFormatter(row, column) {

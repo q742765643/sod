@@ -33,6 +33,11 @@ import { dataClassAll } from "@/api/structureManagement/tableStructureManage/Str
 //接口地址
 export default {
   name: "structureStorageTree",
+  props: {
+    typeText: {
+      type: String
+    }
+  },
   data() {
     return {
       //格式化tree数据
@@ -78,14 +83,18 @@ export default {
       this.checkNode = { id, name };
     },
     makeSureSave() {
-      if (this.checkNode && this.checkNode.id.split(".").length == 3) {
-        console.log(this.checkNode);
-        this.$emit("storageCheckedNode", this.checkNode);
+      if (this.typeText == "资料") {
+        if (this.checkNode && this.checkNode.id.split(".").length == 3) {
+          console.log(this.checkNode);
+          this.$emit("storageCheckedNode", this.checkNode);
+        } else {
+          this.$message({
+            type: "error",
+            message: "只能选择三级目录"
+          });
+        }
       } else {
-        this.$message({
-          type: "error",
-          message: "只能选择三级目录"
-        });
+        this.$emit("storageCheckedNode", this.checkNode);
       }
     },
     cancleSave() {

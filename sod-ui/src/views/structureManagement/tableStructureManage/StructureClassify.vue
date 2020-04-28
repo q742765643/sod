@@ -407,7 +407,7 @@ export default {
   }
   .disActive {
     .el-tree-node[aria-disabled="true"] {
-      display: inline-block;
+      display: block;
     }
   }
 }

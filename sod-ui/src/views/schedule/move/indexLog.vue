@@ -74,16 +74,6 @@
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['schedule:moveLog:query']"
-        >查看</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           icon="el-icon-delete"
           size="mini"
@@ -265,7 +255,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        profileName: undefined,
+        profileName: this.$route.params.profileName,
         dataClassId: undefined,
         handleCode: undefined,
         tableName: undefined

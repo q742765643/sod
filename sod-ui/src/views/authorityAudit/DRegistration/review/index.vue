@@ -58,7 +58,9 @@
         <handleBackUp :handleObj="handleMsgObj" ref="backupRef" :formPage="formPage" />
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==5">
-        <span style="font-size: 26px;">完成</span>
+        <span style="font-size: 26px;display:block;text-align:center;">
+          <i class="el-icon-circle-check"></i> 完成
+        </span>
       </el-card>
     </div>
     <div class="dialog-footer">

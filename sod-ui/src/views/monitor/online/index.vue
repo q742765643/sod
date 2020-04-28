@@ -25,16 +25,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table
-      v-loading="loading"
-      :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"
-      style="width: 100%;"
-    >
-      <el-table-column label="序号" type="index">
-        <template slot-scope="scope">
-          <span>{{(pageNum - 1) * pageSize + scope.$index + 1}}</span>
-        </template>
-      </el-table-column>
+    <el-table v-loading="loading" :data="tableData" style="width: 100%;">
       <el-table-column label="登录名称" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column label="部门名称" prop="deptName" />
       <el-table-column label="主机" prop="ipaddr" :show-overflow-tooltip="true" />
@@ -58,8 +49,13 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
   </div>
 </template>
 
@@ -74,11 +70,12 @@ export default {
       // 总条数
       total: 0,
       // 表格数据
-      list: [],
-      pageNum: 1,
-      pageSize: 10,
+      tableData: [],
+
       // 查询参数
       queryParams: {
+        pageNum: 1,
+        pageSize: 10,
         ipaddr: undefined,
         userName: undefined
       }
@@ -92,7 +89,7 @@ export default {
     getList() {
       this.loading = true;
       list(this.queryParams).then(response => {
-        this.list = response.data.pageData;
+        this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
       });

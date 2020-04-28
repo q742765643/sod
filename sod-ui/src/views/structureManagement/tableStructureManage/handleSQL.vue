@@ -50,7 +50,8 @@ import { gcl } from "@/api/structureManagement/tableStructureManage/StructureMan
 import {
   getSql,
   saveSql,
-  createTable
+  createTable,
+  existTable
 } from "@/api/structureManagement/tableStructureManage/handleSQL";
 
 export default {

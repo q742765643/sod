@@ -89,7 +89,7 @@ export function update(data) {
 // 导出
 export function exportData(query) {
   return request({
-    url: baseUrl + '/dm/fileUpDown/download',
+    url: baseUrl + '/dm/databaseUser/exportData',
     method: 'get',
     params: query,
     responseType: "arraybuffer"

@@ -20,7 +20,7 @@
             <div class="chartsBox" id="dataCLassfication"></div>
           </div>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="8" id="unCheckBox">
           <div class="colBox">
             <span class="homeTitle">待办提醒</span>
             <div class="eventBox">
@@ -182,6 +182,7 @@ export default {
   components: {},
   data() {
     return {
+      pageFlag: this.$route.params.pageFlag,
       classType: "primary",
       DBType: "",
       bannerList: [
@@ -225,6 +226,9 @@ export default {
     this.drawBarChartClass();
     // 资料种类统计
     this.drawLineChart();
+    if (this.pageFlag) {
+      document.querySelector("#" + this.pageFlag).scrollIntoView(true);
+    }
   },
   created() {
     this.getEventList();
