@@ -3,33 +3,15 @@
     <fieldset>
       <legend>{{rowData.DATABASE_NAME}}</legend>
       <el-form ref="ruleForm" :model="queryParams" label-width="100px">
-        <el-form-item label="数据库类型:">
-          <el-select
-            v-model="queryParams.databaseId"
-            filterable
-            placeholder="请选择"
-            style="width:100%"
-          >
-            <el-option
-              v-for="database in DBtypeOptions"
-              :key="database.KEY"
-              :label="database.VALUE"
-              :value="database.KEY"
-            ></el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item>
-          <el-radio-group v-model="queryParams.radio">
-            <el-radio :label="3">全部在线</el-radio>
-            <el-radio :label="6">近线服务</el-radio>
+          <el-radio-group v-model="queryParams.radio" @change="handleQuery">
+            <el-radio :label="1">全部在线</el-radio>
+            <el-radio :label="2">近线服务</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item>
-          <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        </el-form-item>
       </el-form>
-      <el-table :data="tableData" stripe style="width: 100%;">
-        <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table :data="tableData" stripe style="width: 100%;" row-key="id">
+        <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="statisticDate" label="统计日期">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.statisticDate) }}</span>
@@ -60,15 +42,23 @@
 </template>
 
 <script>
-import { datastatisticsList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  datastatisticsList,
+  updateIsAllLine
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "DataStatistics",
   props: { rowData: Object, tableInfo: Object },
   components: {},
   data() {
     return {
-      DBtypeOptions: [],
-      queryParams: { pageNum: 1, pageSize: 10 },
+      loading: false,
+      queryParams: {
+        databaseId: this.rowData.DATABASE_ID,
+        tableId: this.tableInfo.id,
+        pageNum: 1,
+        pageSize: 10
+      },
       queryParams: {},
       tableData: [],
       total: 0
@@ -78,11 +68,16 @@ export default {
     this.searchFun();
   }, */
   methods: {
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.searchFun();
+    handleQuery(value) {
+      let obj = {};
+      obj.databaseId = this.rowData.DATABASE_ID;
+      obj.isAllLine = value;
+      updateIsAllLine(obj).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
     },
-    // table自增定义方法
     // table自增定义方法
     table_index(index) {
       return (

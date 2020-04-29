@@ -57,10 +57,10 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="item in userBox"
-                :key="item.value"
-                :label="item.username"
-                :value="item.userId"
+                v-for="(item,index) in userBox"
+                :key="index"
+                :label="item.webUsername"
+                :value="item.username"
                 :disabled="item.disabled"
               ></el-option>
             </el-select>
@@ -215,6 +215,7 @@ import {
   demoDownload,
   exportData
 } from "@/api/authorityAudit/DBaccount";
+import { getUserByType } from "@/api/authorityAudit/cloudDBaudit";
 import {
   unstartnumValidation,
   englishAndNumValidation,
@@ -313,7 +314,8 @@ export default {
       }
     };
   },
-  created() {
+  async created() {
+    await this.getUserAll();
     this.getDBlist();
     if (this.handleObj.pageName == "业务用户审核") {
       this.userDiasbled = true;
@@ -327,7 +329,7 @@ export default {
     } else {
       this.initServerDetail();
     }
-    // this.getUserAll();
+
     console.log(this.handleObj);
   },
   methods: {
@@ -446,19 +448,10 @@ export default {
     },
     // 获取所有用户信息
     async getUserAll() {
-      await this.axios.get(interfaceObj.databaseUser_allUserList).then(res => {
-        var allData = res.data.data;
-        this.axios.get(interfaceObj.databaseUser_UserList).then(res => {
-          var disdata = res.data.data;
-          for (var i = 0; i < allData.length; i++) {
-            for (var d = 0; d < disdata.length; d++) {
-              if (allData[i].userId == disdata[d].userId) {
-                allData[i].disabled = true;
-              }
-            }
-          }
-          this.userBox = allData;
-        });
+      await getUserByType({
+        userType: 11
+      }).then(res => {
+        this.userBox = res.data;
       });
     },
     // 获取服务器详情
