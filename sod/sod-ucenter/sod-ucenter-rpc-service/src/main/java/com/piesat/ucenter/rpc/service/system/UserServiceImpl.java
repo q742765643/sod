@@ -384,4 +384,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         user.setId(userDto.getId());
         this.saveNotNull(this.userMapstruct.toEntity(user));
     }
+
+    @Override
+    public List<UserDto> findByUserType(String userType) {
+        List<UserEntity> userEntities = this.userDao.findByUserType(userType);
+        return userMapstruct.toDto(userEntities);
+    }
 }

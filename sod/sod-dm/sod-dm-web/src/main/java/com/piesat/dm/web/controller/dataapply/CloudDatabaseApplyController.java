@@ -6,7 +6,9 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.dataapply.CloudDatabaseApplyService;
 import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -38,6 +40,8 @@ import java.util.Map;
 public class CloudDatabaseApplyController {
     @Autowired
     private CloudDatabaseApplyService cloudDatabaseApplyService;
+    @GrpcHthtClient
+    private UserService userService;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -238,5 +242,13 @@ public class CloudDatabaseApplyController {
     {
         Map<String, Object> map = this.cloudDatabaseApplyService.getRecentTime(classDataId,ctsCode);
         return ResultT.success(map);
+    }
+
+    @GetMapping(value = "/getAllPortalUser")
+    @ApiOperation(value = "获取所有业务用户", notes = "获取所有业务用户")
+    public ResultT getAllPortalUser()
+    {
+        List<UserDto> userDtos = this.userService.findByUserType("11");
+        return ResultT.success(userDtos);
     }
 }

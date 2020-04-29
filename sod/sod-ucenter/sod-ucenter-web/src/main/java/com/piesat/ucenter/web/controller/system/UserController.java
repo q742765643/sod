@@ -291,6 +291,13 @@ public class UserController {
         return resultT;
     }
 
+    @GetMapping(value = "/getUserByType")
+    @ApiOperation(value = "根据类型获取用户", notes = "根据类型获取用户")
+    public ResultT getAllPortalUser(String userType)
+    {
+        List<UserDto> userDtos = this.userService.findByUserType(userType);
+        return ResultT.success(userDtos);
+    }
 
 
 }
