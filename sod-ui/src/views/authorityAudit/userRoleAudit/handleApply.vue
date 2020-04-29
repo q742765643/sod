@@ -106,6 +106,7 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
+      loading: false,
       tableData: [],
       multipleSelection: [],
       stepNum: 0,
@@ -137,10 +138,20 @@ export default {
         return;
       }
       if (this.stepNum == 1) {
-        this.$refs.AccountRef.trueAdd();
-        this.stepNum = this.stepNum++;
+        this.stepNum = 2;
         return;
       }
+    },
+    getList() {
+      let obj = {};
+      // obj.applyId = this.queryParams.id;
+      getRecordByApplyId(obj).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+        } else {
+          this.msgError(res.msg);
+        }
+      });
     },
     handlePower() {
       if (this.multipleSelection.lenght == 0) {
