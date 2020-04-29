@@ -106,6 +106,7 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
+      loading: false,
       tableData: [],
       multipleSelection: [],
       stepNum: 0,
@@ -137,8 +138,7 @@ export default {
         return;
       }
       if (this.stepNum == 1) {
-        this.$refs.AccountRef.trueAdd();
-        this.stepNum = this.stepNum++;
+        this.stepNum = 2;
         return;
       }
     },

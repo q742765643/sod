@@ -51,7 +51,9 @@ export default {
   },
   created() {
     getReadAuthority().then(res => {
-      this.msgFormDialog = res.data[0];
+      if (res.data && res.data.length > 0) {
+        this.msgFormDialog = res.data[0];
+      }
       this.msgFormDialog.roleKey = "读权限";
     });
   },
