@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.api.dataapply;
 
 import com.piesat.dm.rpc.dto.ReadAuthorityDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
+import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
@@ -24,6 +25,8 @@ public interface DataAuthorityApplyService {
     List<Map<String,Object>> getRecordByApplyId(Map<String,String> map);
 
     Map<String,Object> updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto);
+
+    Map<String, Object> updateOneRecordCheck(String userId, DataAuthorityRecordDto dataAuthorityRecordDto);
 
     Map<String,Object>  updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto);
 
