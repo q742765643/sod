@@ -70,7 +70,7 @@ export default {
   methods: {
     handleQuery(value) {
       let obj = {};
-      obj.databaseId = this.rowData.DATABASE_ID;
+      obj.dataClassId = this.rowData.DATA_CLASS_ID;
       obj.isAllLine = value;
       updateIsAllLine(obj).then(response => {
         this.tableData = response.data.pageData;
