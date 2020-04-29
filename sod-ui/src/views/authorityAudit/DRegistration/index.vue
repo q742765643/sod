@@ -40,7 +40,13 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
-    <el-table class="tableList" v-loading="loading" :data="tableData" row-key="id">
+    <el-table
+      class="tableList"
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+    >
       <el-table-column type="index" :index="table_index" width="45" label=" "></el-table-column>
       <el-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
@@ -48,7 +54,13 @@
       <el-table-column prop="WEB_USERNAME" label="申请人"></el-table-column>
       <el-table-column prop="DEPT_NAME" label="机构"></el-table-column>
       <el-table-column prop="PHONE" label="联系方式"></el-table-column>
-      <el-table-column prop="CREATE_TIME" label="申请时间" width="160" :show-overflow-tooltip="true">
+      <el-table-column
+        prop="CREATE_TIME"
+        label="申请时间"
+        width="160"
+        :show-overflow-tooltip="true"
+        sortable="custom"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.CREATE_TIME) }}</span>
         </template>
@@ -335,7 +347,17 @@ export default {
     return {
       reviewStep: false,
       loading: true,
-      queryParams: { pageNum: 1, pageSize: 10, DDataId: "", examineStatus: 1 }, //查询
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        DDataId: "",
+        examineStatus: 1,
+        params: {
+          orderBy: {
+            CREATE_TIME: "desc"
+          }
+        }
+      }, //查询
       dbtypeselect: [], //数据分类下拉框
       tableData: [], //表格
       total: 0, //表格数
@@ -366,6 +388,16 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.CREATE_TIME = "asc";
+      } else {
+        orderBy.CREATE_TIME = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (

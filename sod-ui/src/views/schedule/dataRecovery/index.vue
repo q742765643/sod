@@ -96,11 +96,12 @@
           :data="logTableData"
           highlight-current-row
           ref="multipleTable"
+          @sort-change="sortChange"
         >
           <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
 
           <el-table-column prop="profileName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column prop="handleTime" label="运行开始时间" width="160">
+          <el-table-column prop="handleTime" label="运行开始时间" width="160" sortable="custom">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.handleTime) }}</span>
             </template>
@@ -266,7 +267,12 @@ export default {
       loadingHis: false,
       rowlogForm: {
         profileName: "",
-        handleCode: ""
+        handleCode: "",
+        params: {
+          orderBy: {
+            handleTime: "desc"
+          }
+        }
       },
       logTableData: [],
       logDataTotal: 0,
@@ -296,6 +302,16 @@ export default {
     });
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.handleTime = "asc";
+      } else {
+        orderBy.handleTime = "desc";
+      }
+      this.rowlogForm.params.orderBy = orderBy;
+      this.getListLog();
+    },
     //数据库名称change事件
     selectByDatabaseIds(val) {
       getByDatabaseId(val).then(response => {
@@ -371,7 +387,12 @@ export default {
           pageNum: 1,
           pageSize: 10,
           taskName: "",
-          databaseId: ""
+          databaseId: "",
+          params: {
+            orderBy: {
+              handleTime: "desc"
+            }
+          }
         };
         this.queryListLog();
       }

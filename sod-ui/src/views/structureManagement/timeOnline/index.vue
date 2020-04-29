@@ -12,12 +12,12 @@
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="CLASS_NAME" label="资料名称"></el-table-column>
       <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
       <el-table-column prop="BEGIN_TIME" label="开始时间" width="120"></el-table-column>
-      <el-table-column prop="END_TIME" label="结束时间" width="120"></el-table-column>
+      <el-table-column prop="END_TIME" label="结束时间" width="120" sortable="custom"></el-table-column>
       <el-table-column prop="RECORD_COUNT" label="数据总量"></el-table-column>
       <el-table-column prop="IF_STOP_USE" label="是否发布" width="80">
         <template slot-scope="scope">
@@ -66,7 +66,12 @@ export default {
         pageNum: 1,
         pageSize: 10,
         d_data_id: "",
-        class_name: ""
+        class_name: "",
+        params: {
+          orderBy: {
+            END_TIME: "desc"
+          }
+        }
       },
       total: 0,
       tableData: [],
@@ -79,6 +84,16 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.END_TIME = "asc";
+      } else {
+        orderBy.END_TIME = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (

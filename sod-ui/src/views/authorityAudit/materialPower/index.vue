@@ -50,12 +50,12 @@
         >权限配置</el-button>
       </el-col>
     </el-row>
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="机构"></el-table-column>
       <el-table-column prop="telephone" label="联系方式"></el-table-column>
-      <el-table-column prop="createTime" label="申请时间">
+      <el-table-column prop="createTime" label="申请时间" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -113,7 +113,12 @@ export default {
         pageNum: 1,
         pageSize: 10,
         auditStatus: "",
-        userName: ""
+        userName: "",
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
       dateRange: [],
       examineStatus: [
@@ -137,6 +142,16 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     // table自增定义方法
     table_index(index) {
       return (
