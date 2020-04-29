@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.database;
 
+import com.piesat.util.BaseDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.Date;
  * @date 2019年 11月21日 19:12:47
  */
 @Data
-public class DatabaseUserDto {
+public class DatabaseUserDto extends BaseDto {
     private static final long serialVersionUID = 1L;
 
     /**

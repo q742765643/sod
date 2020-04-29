@@ -13,6 +13,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -126,7 +127,56 @@ public class StorageConfigurationController {
         return ResultT.success(dataTypeList);
     }
 
-    @GetMapping(value = "/exportTable")
+    @GetMapping(value = "/exportTable",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ApiOperation(value = "导出", notes = "导出")
+    @ResponseBody
+    public byte[] exportTable_1(StorageConfigurationDto storageConfigurationDto, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> map = new HashMap<String, String>();
+        if (storageConfigurationDto.getDatabaseDto() != null) {
+            if (storageConfigurationDto.getDatabaseDto().getDatabaseDefine() != null) {
+                if (StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
+                    map.put("database_name", storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+                }
+            }
+            if (StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseName())) {
+                map.put("special_database_name", storageConfigurationDto.getDatabaseDto().getDatabaseName());
+            }
+        }
+        if (storageConfigurationDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())) {
+                map.put("class_name", storageConfigurationDto.getDataClassDto().getClassName());
+            }
+        }
+        if (storageConfigurationDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())) {
+                map.put("parent_id", storageConfigurationDto.getDataClassDto().getDataClassId());
+            }
+        }
+        if (storageConfigurationDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDDataId())) {
+                map.put("d_data_id", storageConfigurationDto.getDataClassDto().getDDataId());
+            }
+        }
+        if (storageConfigurationDto.getLogicDefineDto() != null) {
+            if (StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())) {
+                map.put("logic_name", storageConfigurationDto.getLogicDefineDto().getLogicName());
+            }
+        }
+        if (storageConfigurationDto.getDataTableDto() != null) {
+            if (StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())) {
+                map.put("table_name", storageConfigurationDto.getDataTableDto().getTableName());
+            }
+        }
+        if (storageConfigurationDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())) {
+                map.put("data_class_id", storageConfigurationDto.getDataClassDto().getDataClassId());
+            }
+        }
+        Map<String, Object> headAndData = storageConfigurationService.exportTable(map);
+        return ExportTableUtil.exportTableNew(request, response, (List<String>) headAndData.get("headList"), (List<List<String>>) headAndData.get("lists"), "存储数据概览导出");
+    }
+
+    @GetMapping(value = "/exportTable_1")
     @ApiOperation(value = "导出", notes = "导出")
     public void exportTable(StorageConfigurationDto storageConfigurationDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();

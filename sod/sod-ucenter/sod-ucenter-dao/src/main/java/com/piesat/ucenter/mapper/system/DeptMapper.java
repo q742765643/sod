@@ -2,6 +2,7 @@ package com.piesat.ucenter.mapper.system;
 
 import com.piesat.ucenter.entity.system.DeptEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,4 +30,11 @@ public interface DeptMapper {
      * @return 选中部门列表
      */
     public List<String> selectDeptListByRoleId(String roleId);
+
+    /**
+     * 根据ID查询
+     * @param deptId
+     * @return
+     */
+    DeptEntity getById(@Param("deptId") String deptId);
 }
