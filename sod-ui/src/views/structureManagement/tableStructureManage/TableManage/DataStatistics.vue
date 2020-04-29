@@ -2,25 +2,32 @@
   <el-main class="DataStatistics">
     <fieldset>
       <legend>{{rowData.DATABASE_NAME}}</legend>
-      <el-form-item label="数据库类型:">
-        <el-select v-model="queryParams.databaseId" filterable placeholder="请选择" style="width:100%">
-          <el-option
-            v-for="database in DBtypeOptions"
-            :key="database.KEY"
-            :label="database.VALUE"
-            :value="database.KEY"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-radio-group v-model="radio">
-          <el-radio :label="3">全部在线</el-radio>
-          <el-radio :label="6">近线服务</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-      </el-form-item>
+      <el-form ref="ruleForm" :model="queryParams" label-width="100px">
+        <el-form-item label="数据库类型:">
+          <el-select
+            v-model="queryParams.databaseId"
+            filterable
+            placeholder="请选择"
+            style="width:100%"
+          >
+            <el-option
+              v-for="database in DBtypeOptions"
+              :key="database.KEY"
+              :label="database.VALUE"
+              :value="database.KEY"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-radio-group v-model="queryParams.radio">
+            <el-radio :label="3">全部在线</el-radio>
+            <el-radio :label="6">近线服务</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        </el-form-item>
+      </el-form>
       <el-table :data="tableData" stripe style="width: 100%;">
         <el-table-column type="index" width="50" :index="table_index"></el-table-column>
         <el-table-column prop="statisticDate" label="统计日期">
@@ -62,6 +69,7 @@ export default {
     return {
       DBtypeOptions: [],
       queryParams: { pageNum: 1, pageSize: 10 },
+      queryParams: {},
       tableData: [],
       total: 0
     };
