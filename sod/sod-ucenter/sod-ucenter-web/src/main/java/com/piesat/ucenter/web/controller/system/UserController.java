@@ -214,7 +214,7 @@ public class UserController {
     }
 
     /**
-     * 修改用户（外部接口）
+     * 修改用户（外部状态）
      */
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
@@ -226,6 +226,17 @@ public class UserController {
         ResultT<String> resultT = new ResultT<>();
         userService.editBase(user);
         return resultT;
+    }
+
+    /**
+     * 修改用户信息
+     */
+//    @RequiresPermissions("system:user:editBase")
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/editInfo")
+    public ResultT<String> editInfo(@RequestBody UserDto user) {
+        userService.editBase(user);
+        return ResultT.success();
     }
 
     /**
@@ -279,5 +290,7 @@ public class UserController {
         resultT.setData(pageBean);
         return resultT;
     }
+
+
 
 }

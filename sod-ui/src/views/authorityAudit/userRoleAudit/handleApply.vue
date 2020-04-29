@@ -13,14 +13,77 @@
       <handleLibrary :handleObj="handleObj" ref="LibraryRef" />
     </el-card>
     <el-card class="box-card" shadow="never" v-if="stepNum==2">
-      <handleMaterial :handleObj="handleObj" ref="MaterialRef" />
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
+          <el-button type="primary" icon="el-icon-thumb" size="mini" @click="handlePower">授权</el-button>
+          <el-button type="danger" icon="el-icon-close" size="mini" @click="handleRefused">拒接</el-button>
+        </el-col>
+      </el-row>
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        row-key="id"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="TABLE_NAME" label="表名称" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="DATABASE_NAME" label="数据库" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="IS_ACCESS" label="权限" width="80px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.IS_ACCESS=='0'">受限</span>
+            <span v-else>公开</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="APPLY_AUTHORITY" label="申请状态" width="120px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.APPLY_AUTHORITY=='1'">读申请</span>
+            <span v-else>读写申请</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="AUTHORIZE" label="审核状态" width="120px">
+          <template slot-scope="scope">
+            <span v-if="scope.row.AUTHORIZE=='2'">
+              <i class="el-icon-circle-close" style="color:#F56C6C"></i>拒绝
+            </span>
+            <span v-else-if="scope.row.AUTHORIZE=='1'">
+              <i class="el-icon-circle-check" style="color:#67C23A"></i>通过
+            </span>
+            <span v-else>
+              <i class="el-icon-s-finance" style="color:#E6A23C"></i>待审核
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="CAUSE" label="拒绝原因" width="120px">
+          <template slot-scope="scope">
+            <el-popover
+              placement="top"
+              effect="dark"
+              trigger="hover"
+              width="200"
+              popper-class="darkPopover"
+              v-if="scope.row.CAUSE"
+            >
+              <p>{{ scope.row.CAUSE}}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-button type="primary" size="mini" plain class="tagpointer">查看</el-button>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
-    <el-card class="box-card" shadow="never" v-if="stepNum==3">
-      <span style="font-size: 26px;">完成</span>
+    <el-card class="box-card" shadow="never" v-if="stepNum==4">
+      <span style="font-size: 26px;display:block;text-align:center;">
+        <i class="el-icon-circle-check"></i> 完成
+      </span>
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
-      <el-button type="primary" v-if="stepNum!=5" @click="nextStep">下一步</el-button>
-      <el-button type="primary" v-if="stepNum==3" @click="$emit('closeStep')">完成</el-button>
+      <el-button type="primary" v-if="stepNum!=4" @click="nextStep">下一步</el-button>
+      <el-button type="primary" v-if="stepNum==4" @click="$emit('closeStep')">完成</el-button>
     </div>
   </section>
 </template>
@@ -42,6 +105,8 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
+      tableData: [],
+      multipleSelection: [],
       stepNum: 1,
       msgFormDialog: {},
       handleObj: { pageName: "业务用户审核" }
@@ -57,14 +122,76 @@ export default {
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
         this.$refs.AccountRef.trueAdd();
-        this.stepNum = 1;
+        this.stepNum = this.stepNum++;
         return;
       }
       if (this.stepNum == 1) {
         this.$refs.AccountRef.trueAdd();
-        this.stepNum = 1;
+        this.stepNum = this.stepNum++;
         return;
       }
+    },
+    handlePower() {
+      if (this.multipleSelection.lenght == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      console.log(this.multipleSelection);
+      this.powerMethods();
+    },
+    handleRefused() {
+      if (this.multipleSelection.lenght == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      this.$prompt("请输入拒绝原因", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /\S/,
+        inputErrorMessage: "拒绝原因不能为空"
+      })
+        .then(({ value }) => {
+          this.powerMethods(value);
+        })
+        .catch(() => {});
+    },
+    powerMethods(value) {
+      let obj = {};
+      // obj.userId = localStorage.getItem("loginUserId");
+      obj.userId = "admin";
+      obj.dataAuthorityRecordList = [];
+      this.multipleSelection.forEach(element => {
+        let cobj = {};
+        cobj.id = element.ID;
+        cobj.applyId = element.APPLY_ID;
+        cobj.databaseId = element.DATABASE_ID;
+        cobj.applyAuthority = element.APPLY_AUTHORITY;
+        if (value) {
+          cobj.authorize = 2;
+        } else {
+          cobj.authorize = 1;
+        }
+
+        cobj.dataClassId = element.DATA_CLASS_ID;
+        cobj.cause = value;
+        obj.dataAuthorityRecordList.push(cobj);
+      });
+      console.log(obj);
+      updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
+        if (res.code == 200) {
+          if (value) {
+            this.msgSuccess("拒绝成功");
+          } else {
+            this.msgSuccess("授权成功");
+          }
+          this.handleQuery();
+        } else {
+          this.msgError(res.msg);
+        }
+      });
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     }
   }
 };

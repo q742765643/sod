@@ -63,13 +63,43 @@
       <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
       <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
-      <el-table-column label="是否可空" prop="isNull" width="100px"></el-table-column>
-      <el-table-column label="是否可改" prop="isUpdate" width="100px"></el-table-column>
-      <el-table-column label="是否显示" prop="isShow" width="100px"></el-table-column>
-      <el-table-column label="是否主键" prop="isPrimaryKey" width="100px"></el-table-column>
+      <el-table-column label="是否可空" prop="isNull" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isNull">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否可改" prop="isUpdate" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isUpdate">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否显示" prop="isShow" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isShow">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否主键" prop="isPrimaryKey" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isNull">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
       <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
-      <el-table-column label="是否管理字段" prop="isManager" width="100px"></el-table-column>
-      <el-table-column label="是否修改数据库" prop="updateDatabase" width="140px"></el-table-column>
+      <el-table-column label="是否管理字段" prop="isManager" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isManager">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否修改数据库" prop="updateDatabase" width="140px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.updateDatabase">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
       <el-table-column label="默认值" prop="defaultValue" width="100px"></el-table-column>
       <el-table-column label="序号" prop="serialNumber" width="100px"></el-table-column>
     </el-table>

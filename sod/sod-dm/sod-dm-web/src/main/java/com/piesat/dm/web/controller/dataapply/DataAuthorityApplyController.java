@@ -67,6 +67,25 @@ public class DataAuthorityApplyController {
         return resultT;
     }
 
+    @GetMapping(value = "/getRecordByByUserId")
+    @ApiOperation(value = "根据用户id查询申请资料信息", notes = "根据用户id查询申请资料信息")
+    public ResultT getRecordByByUserId(String bizUserId)
+    {
+        ResultT<List<Map<String,Object>>> resultT=new ResultT<>();
+        List<DataAuthorityApplyDto> dataAuthorityApplyList = this.dataAuthorityApplyService.findByUserId(bizUserId);
+        if (dataAuthorityApplyList!=null&&dataAuthorityApplyList.size()>0){
+            String id = dataAuthorityApplyList.get(0).getId();
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("applyId",id);
+            List<Map<String,Object>> lists = this.dataAuthorityApplyService.getRecordByApplyId(map);
+            resultT.setData(lists);
+            return resultT;
+        }else {
+            return resultT;
+        }
+    }
+
+
     @GetMapping(value = "/getRecordByApplyId")
     @ApiOperation(value = "根据申请id查询申请资料信息", notes = "根据申请id查询申请资料信息")
     public ResultT<List<Map<String,Object>>> getRecordByApplyId(DataAuthorityRecordDto dataAuthorityRecordDto)

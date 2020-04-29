@@ -21,7 +21,7 @@
           <el-form-item label="联系方式" v-if="!handleObj.pageName">
             <el-input size="small" :disabled="true" v-model="msgFormDialog.phoneNum"></el-input>
           </el-form-item>
-          <el-form-item label="申请材料">
+          <el-form-item label="申请材料" v-if="!handleObj.pageName">
             <el-button
               :disabled="!msgFormDialog.applyMaterial"
               size="small"
@@ -290,9 +290,9 @@ export default {
   },
   created() {
     if (this.handleObj.pageName == "业务用户审核") {
-      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper; //申请材料
+      this.msgFormDialog.simpleName = this.handleObj.userName; //申请材料
       this.msgFormDialog.uses = this.handleObj.remark; //用途
-      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper; //申请材料
+      this.msgFormDialog.sdbName = this.handleObj.remark; //用途
     } else {
       if (this.handleObj.id) {
         this.initDetail();
@@ -314,7 +314,11 @@ export default {
     // 下载
     handleExport() {
       exportTable({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
-        this.downloadfileCommon(res, "word");
+        if (res.code) {
+          this.$message({ type: "warning", message: res.msg });
+        } else {
+          this.downloadfileCommon(res, "word");
+        }
       });
     },
     // 获取专题库基本信息|专题库授权
