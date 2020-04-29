@@ -25,10 +25,7 @@ import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
-import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
-import com.piesat.dm.entity.special.DatabaseSpecialEntity;
-import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
-import com.piesat.dm.entity.special.DatabaseSpecialTreeEntity;
+import com.piesat.dm.entity.special.*;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
@@ -266,6 +263,21 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         databaseSpecialEntity.setExamineStatus("1");
         databaseSpecialEntity.setUseStatus("2");
         databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
+
+        if(StringUtils.isNotEmpty(database_id)){
+            String[] split = database_id.split(",");
+            for (String databaseId :split ) {
+                DatabaseSpecialAuthorityEntity dsa = new DatabaseSpecialAuthorityEntity();
+                dsa.setDatabaseId(databaseId);
+                dsa.setCreateTable(1);
+                dsa.setDeleteTable(1);
+                dsa.setSdbId(databaseSpecialEntity.getId());
+                dsa.setTableDataAccess(1);
+                dsa.setCreateTime(new Date());
+                this.databaseSpecialAuthorityDao.saveNotNull(dsa);
+            }
+        }
+
 
         if(StringUtils.isNotEmpty(databaseSpecialReadWriteList)){
             JSONArray objects = JSONArray.parseArray(databaseSpecialReadWriteList);
