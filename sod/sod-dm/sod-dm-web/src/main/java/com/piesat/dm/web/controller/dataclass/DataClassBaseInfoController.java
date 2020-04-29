@@ -85,9 +85,9 @@ public class DataClassBaseInfoController {
     @ApiOperation(value = "根据存储编码查询基础信息")
     @RequiresPermissions("dm:classbaseinfo:getDataClassBaseInfo")
     @GetMapping(value = "/getDataClassBaseInfo")
-    public ResultT getDataClassBaseInfo(String dataClassId) {
+    public ResultT getDataClassBaseInfo(String id) {
         try {
-            DataClassBaseInfoDto all = this.cataClassBaseInfoService.getDataClassBaseInfo(dataClassId);
+            DataClassBaseInfoDto all = this.cataClassBaseInfoService.getDataClassBaseInfo(id);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
