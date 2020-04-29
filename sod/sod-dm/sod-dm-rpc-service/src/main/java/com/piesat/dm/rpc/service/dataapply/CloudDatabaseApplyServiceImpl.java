@@ -1,6 +1,7 @@
 package com.piesat.dm.rpc.service.dataapply;
 
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -16,6 +17,8 @@ import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.mapper.dataapply.CloudDatabaseApplyMapper;
+import com.piesat.ucenter.dao.system.UserDao;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.beanutils.BeanUtils;
@@ -23,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +49,10 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private DataClassService dataClassService;
+
+    @GrpcHthtClient
+    private UserDao userDao;
+
     @Override
     public BaseDao<CloudDatabaseApplyEntity> getBaseDao() {
         return this.cloudDatabaseApplyDao;
@@ -60,8 +68,14 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         }
         if(StringUtils.isNotNullString(pageForm.getT().getUserName())){
             //调用接口 根据用户名查询用户id
-            String userId="";
-            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(),userId);
+            List<String> userId= new ArrayList<String>();
+            List<UserEntity> userEntities = userDao.findByWebUsername(pageForm.getT().getUserName());
+            if(userEntities != null && userEntities.size()>0){
+                for(UserEntity userEntity : userEntities){
+                    userId.add(userEntity.getUserName());
+                }
+            }
+            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(),userId);
         }
         if(StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getDatabaseName())){
             specificationBuilder.add("databaseName",SpecificationOperator.Operator.likeAll.name(),cloudDatabaseApplyEntity.getDatabaseName());
@@ -80,15 +94,18 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
 
 
         //调用接口获取所有的用户信息
-
+        List<UserEntity> userEntities = userDao.findByUserType("11");
         //循环遍历
-       /* for(CloudDatabaseApplyDto cloudDatabaseApplyDto : cloudDatabaseApplyDtos){
-
+        for(CloudDatabaseApplyDto cloudDatabaseApplyDto : cloudDatabaseApplyDtos){
             //遍历所有用户信息找到每条记录对应的用户信息
-            cloudDatabaseApplyDto.setUserName("申请人");
-            cloudDatabaseApplyDto.setTelephone("12388888888");
-            cloudDatabaseApplyDto.setDepartment("部门");
-        }*/
+            for(UserEntity userEntity:userEntities){
+                if(userEntity.getUserName().equals(cloudDatabaseApplyDto.getUserId())){
+                    cloudDatabaseApplyDto.setUserName(userEntity.getWebUsername());
+                    cloudDatabaseApplyDto.setTelephone(userEntity.getTutorPhone());
+                    cloudDatabaseApplyDto.setDepartment(userEntity.getDeptName());
+                }
+            }
+        }
         pageBean.setPageData(cloudDatabaseApplyDtos);
         return pageBean;
     }

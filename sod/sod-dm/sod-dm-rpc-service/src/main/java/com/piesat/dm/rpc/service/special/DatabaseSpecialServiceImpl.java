@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.service.special;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -32,6 +33,7 @@ import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
+import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -44,6 +46,8 @@ import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAccessMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAuthorityMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
+import com.piesat.ucenter.dao.system.UserDao;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.GetAllUserInfo;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -106,6 +110,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Autowired
     private DatabaseSpecialAccessMapper databaseSpecialAccessMapper;
+    @GrpcHthtClient
+    private UserDao userDao;
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
         return databaseSpecialDao;
@@ -127,10 +133,38 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         if(StringUtils.isNotNullString(databaseSpecialEntity.getSdbName())){
             specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getSdbName());
         }
+        if(StringUtils.isNotNullString(pageForm.getT().getUserName())){
+            //调用接口 根据用户名查询用户id
+            List<String> userId= new ArrayList<String>();
+            List<UserEntity> userEntities = userDao.findByWebUsername(pageForm.getT().getUserName());
+            if(userEntities != null && userEntities.size()>0){
+                for(UserEntity userEntity : userEntities){
+                    userId.add(userEntity.getUserName());
+                }
+            }
+            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(),userId);
+        }
         Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<DatabaseSpecialEntity> databaseSpecialEntities = (List<DatabaseSpecialEntity>) pageBean.getPageData();
-        pageBean.setPageData(databaseSpecialMapper.toDto(databaseSpecialEntities));
+
+        List<DatabaseSpecialDto> databaseSpecialDtos = databaseSpecialMapper.toDto(databaseSpecialEntities);
+
+        //调用接口获取所有的用户信息
+        List<UserEntity> userEntities = userDao.findByUserType("11");
+        //循环遍历
+        for(DatabaseSpecialDto databaseSpecialDto : databaseSpecialDtos){
+            //遍历所有用户信息找到每条记录对应的用户信息
+            for(UserEntity userEntity:userEntities){
+                if(userEntity.getUserName().equals(databaseSpecialDto.getUserId())){
+                    databaseSpecialDto.setUserName(userEntity.getWebUsername());
+                    databaseSpecialDto.setUserPhone(userEntity.getTutorPhone());
+                    databaseSpecialDto.setDepartment(userEntity.getDeptName());
+                }
+            }
+        }
+
+        pageBean.setPageData(databaseSpecialDtos);
         return pageBean;
     }
 

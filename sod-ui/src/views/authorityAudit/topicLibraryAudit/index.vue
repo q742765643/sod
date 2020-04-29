@@ -17,7 +17,7 @@
         <el-input v-model="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input v-model="queryParams.userId" type="text" placeholder="申请用户"></el-input>
+        <el-input v-model="queryParams.userName" type="text" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -27,10 +27,10 @@
     <el-table v-loading="loading" :data="tableData" row-key="id">
       <el-table-column type="index" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="simpleName" label="专题库简称"></el-table-column>
+      <el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="部门"></el-table-column>
-      <el-table-column prop="phoneNum" label="联系方式"></el-table-column>
+      <el-table-column prop="userPhone" label="联系方式"></el-table-column>
       <el-table-column prop="createTime" label="申请时间" width="160px">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -109,7 +109,7 @@ export default {
         pageSize: 10,
         examineStatus: "",
         sdbName: "",
-        userId: ""
+        userName: ""
       },
       auditStatus: [
         {
@@ -167,7 +167,7 @@ export default {
         pageSize: 10,
         examineStatus: "",
         sdbName: "",
-        userId: ""
+        userName: ""
       };
       this.handleQuery();
     },

@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.dataapply;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -35,6 +36,8 @@ import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.ReadAuthorityMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityApplyMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityRecordMapper;
+import com.piesat.ucenter.dao.system.UserDao;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.CmadaasApiUtil;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -83,6 +86,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private ReadAuthorityDao readAuthorityDao;
     @Autowired
     private ReadAuthorityMapper readAuthorityMapper;
+    @GrpcHthtClient
+    private UserDao userDao;
     @Override
     public BaseDao<DataAuthorityApplyEntity> getBaseDao() {
         return this.dataAuthorityApplyDao;
@@ -99,8 +104,14 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         }
         if(StringUtils.isNotNullString(dataAuthorityApplyDto.getUserName())){
             //调用接口 根据用户名查询用户id
-            String userId="";
-            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(),userId);
+            List<String> userId= new ArrayList<String>();
+            List<UserEntity> userEntities = userDao.findByWebUsername(pageForm.getT().getUserName());
+            if(userEntities != null && userEntities.size()>0){
+                for(UserEntity userEntity : userEntities){
+                    userId.add(userEntity.getUserName());
+                }
+            }
+            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(),userId);
         }
         if(StringUtils.isNotNullString((String) dataAuthorityApplyEntity.getParamt().get("beginTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) dataAuthorityApplyEntity.getParamt().get("beginTime"));
@@ -116,6 +127,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
         List<DataAuthorityApplyDto> dataAuthorityApplyDtos = dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntities);
 
+        //调用接口获取所有的用户信息
+        List<UserEntity> userEntities = userDao.findByUserType("11");
         //循环遍历
         for(DataAuthorityApplyDto authorityApply : dataAuthorityApplyDtos){
 
@@ -136,9 +149,13 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }
 
             //遍历所有用户信息找到每条记录对应的用户信息
-           /* authorityApply.setUserName("申请人");
-            authorityApply.setTelephone("12388888888");
-            authorityApply.setDepartment("部门");*/
+            for(UserEntity userEntity:userEntities){
+                if(userEntity.getUserName().equals(authorityApply.getUserId())){
+                    authorityApply.setUserName(userEntity.getWebUsername());
+                    authorityApply.setTelephone(userEntity.getTutorPhone());
+                    authorityApply.setDepartment(userEntity.getDeptName());
+                }
+            }
         }
 
         pageBean.setPageData(dataAuthorityApplyDtos);

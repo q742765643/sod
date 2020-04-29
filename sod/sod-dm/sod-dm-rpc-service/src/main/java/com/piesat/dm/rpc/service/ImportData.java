@@ -61,9 +61,11 @@ import com.piesat.sod.system.rpc.api.ManageFieldService;
 import com.piesat.ucenter.dao.dictionary.DefineDao;
 import com.piesat.ucenter.dao.dictionary.LevelDao;
 import com.piesat.ucenter.dao.system.PortalAuzDao;
+import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.dictionary.DefineEntity;
 import com.piesat.ucenter.entity.dictionary.LevelEntity;
 import com.piesat.ucenter.entity.system.PortalAuzEntity;
+import com.piesat.ucenter.entity.system.UserEntity;
 import com.xugu.cloudjdbc.Clob;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,6 +183,8 @@ public class ImportData {
     private ClearMapstruct clearMapstruct;
     @Autowired
     private ClearService clearService;
+    @GrpcHthtClient
+    private UserDao userDao;
 
 
     public void implAll(){
@@ -213,6 +217,8 @@ public class ImportData {
         //executeBackUpMove();
 
         //importStorageConfig();
+
+        //importPortalUser();
     }
 
 
@@ -2322,5 +2328,33 @@ public class ImportData {
             storageConfigurationDao.saveNotNull(storageConfigurationEntity);
         }
 
+    }
+
+    public void importPortalUser(){
+        String sql = "select * from ts_user";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String  user_id = toString(m.get("USER_ID"));
+            String  user_name = toString(m.get("USER_NAME"));
+            String  login_name = toString(m.get("LOGIN_NAME"));
+            String  password = toString(m.get("PASSWORD"));
+            String  phone = toString(m.get("PHONE"));
+            String  deptunicode = toString(m.get("DEPTUNICODE"));
+            String deptName = "";
+            sql = "select deptname from TS_DEPARTMENT where deptunicode='"+deptunicode+"'";
+            List<Map> deptnameList = CodeDOM.getList(sql);
+            if(deptnameList != null && deptnameList.size()>0){
+                deptName = toString(deptnameList.get(0).get("DEPTNAME"));
+            }
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUserName(user_id);
+            userEntity.setWebUserId(user_id);
+            userEntity.setUserType("11");
+            userEntity.setDeptName(deptName);
+            userEntity.setWebUsername(user_name);
+            userEntity.setNickName(login_name);
+            userEntity.setTutorPhone(phone);
+            userDao.saveNotNull(userEntity);
+        }
     }
 }

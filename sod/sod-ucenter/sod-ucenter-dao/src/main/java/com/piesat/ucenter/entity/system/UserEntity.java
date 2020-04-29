@@ -35,7 +35,7 @@ public class UserEntity extends BaseEntity {
      * 用户账号
      */
     @Excel(name = "用户帐号")
-    @Column(name="user_name", length=30,nullable=false)
+    @Column(name="user_name", length=36,nullable=false)
     private String userName;
 
     /**
