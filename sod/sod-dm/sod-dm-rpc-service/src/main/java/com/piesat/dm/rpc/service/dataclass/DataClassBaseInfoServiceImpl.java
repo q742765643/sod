@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.service.dataclass;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataclass.DataClassBaseInfoDao;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -59,8 +60,8 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
         DataClassBaseInfoDto dataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
         DataClassBaseInfoEntity SodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(id);
         DataClassBaseInfoDto sodDataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(SodDataClassBaseInfo);
-        if (sodDataClassBaseInfoDto!=null){
-            dataClassBaseInfoDto = dataClassBaseInfoDto.combineSydwCore(sodDataClassBaseInfoDto,dataClassBaseInfoDto);
+        if (sodDataClassBaseInfoDto != null) {
+            dataClassBaseInfoDto = dataClassBaseInfoDto.combineSydwCore(sodDataClassBaseInfoDto, dataClassBaseInfoDto);
         }
         return dataClassBaseInfoDto;
     }
@@ -71,8 +72,11 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
         DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(dataClassBaseInfoDto.getDataClassId());
         DataClassBaseInfoDto BaseInfo = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
         DataClassBaseInfoDto diffInfo = dataClassBaseInfoDto.getDiffInfo(dataClassBaseInfoDto, BaseInfo);
+        diffInfo.setDataClassId(dataClassBaseInfoDto.getDataClassId());
         DataClassBaseInfoDto dto = this.saveDto(diffInfo);
-        this.delete(sodDataClassBaseInfo.getId());
+        if (sodDataClassBaseInfo != null && StringUtils.isNotEmpty(sodDataClassBaseInfo.getId())) {
+            this.delete(sodDataClassBaseInfo.getId());
+        }
         return dto;
     }
 }

@@ -20,6 +20,7 @@ public interface DataTableDao extends BaseDao<DataTableEntity> {
 
     List<DataTableEntity> findByClassLogicId(String classLogic);
 
+    @Transactional
     void deleteByClassLogic_Id(String clId);
 
     List<DataTableEntity> findByClassLogic_Id(String clId);

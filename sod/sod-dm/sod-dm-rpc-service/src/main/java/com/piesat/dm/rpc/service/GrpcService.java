@@ -174,7 +174,7 @@ public class GrpcService {
     }
 
     public ResultT deleteById(String id) {
-        StorageConfigurationEntity storage = this.storageConfigurationDao.getOne(id);
+        StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).orElse(null);
         if (storage==null){
             return ResultT.failed("概览信息未配置");
         }

@@ -62,6 +62,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     private RoleMapper roleMapper;
     @GrpcHthtClient
     private DatabaseSpecialService databaseSpecialService;
+    @GrpcHthtClient
+    private DataAuthorityApplyService dataAuthorityApplyService;
 
     @Override
     public BaseDao<UserEntity> getBaseDao() {
@@ -73,7 +75,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         UserEntity userEntity = userMapstruct.toEntity(userDto);
         userEntity = this.saveNotNull(userEntity);
         return userMapstruct.toDto(userEntity);
-
     }
 
     /**
@@ -358,19 +359,28 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             spMap.put("data", jj.toJSONString());
             spMap.put("TDB_NAME", remark);
             JSONArray jjj = new JSONArray();
+            spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
+            this.databaseSpecialService.addOrUpdate(spMap,null);
+            DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
+            daa.setUserId(bizUserid);
+            daa.setCreateTime(new Date());
+            List<DataAuthorityRecordDto> list = new ArrayList<>();
             for (int i = 0; i < applyData.size(); i++) {
-                Map<String, String> mapReadWrite = new HashMap<>();
+                DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
                 JSONObject jsonObject1 = applyData.getJSONObject(i);
                 String databaseId = jsonObject1.getString("databaseId");
                 String dataClassId = jsonObject1.getString("dataClassId");
-                mapReadWrite.put("dataClassId", dataClassId);
-                mapReadWrite.put("databaseId", databaseId);
-                mapReadWrite.put("applyAuthority", "1");
-                jjj.add(mapReadWrite);
+                dar.setDatabaseId(databaseId);
+                dar.setDataClassId(dataClassId);
+                dar.setApplyAuthority(1);
+                dar.setCreateTime(new Date());
+                list.add(dar);
             }
-            spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
-            this.databaseSpecialService.addOrUpdate(spMap,null);
+            daa.setDataAuthorityRecordList(list);
+            this.dataAuthorityApplyService.saveDto(daa);
         }
+
+
 
 
         return ResultT.success(userEntity);

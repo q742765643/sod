@@ -114,7 +114,7 @@ public class DataClassBaseInfoDto extends BaseDto {
             targetField.setAccessible(true);
             declaredField.setAccessible(true);
             try {
-                if(sourceField.get(sourceBean) != null && sourceField.get(sourceBean) != targetField.get(targetBean) &&  !"serialVersionUID".equals(sourceField.getName().toString())){
+                if(sourceField.get(sourceBean) != null && !sourceField.get(sourceBean).equals(targetField.get(targetBean)) &&  !"serialVersionUID".equals(sourceField.getName().toString())){
                     declaredField.set(dto,sourceField.get(sourceBean));
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {

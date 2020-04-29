@@ -101,7 +101,7 @@ public class DataClassBaseInfoController {
     @PostMapping(value = "/saveDataClassBaseInfo")
     public ResultT saveDataClassBaseInfo(@RequestBody DataClassBaseInfoDto dataClassBaseInfoDto) {
         try {
-            DataClassBaseInfoDto save = this.cataClassBaseInfoService.saveDto(dataClassBaseInfoDto);
+            DataClassBaseInfoDto save = this.cataClassBaseInfoService.saveDataClassBaseInfo(dataClassBaseInfoDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
