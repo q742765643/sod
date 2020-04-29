@@ -96,6 +96,7 @@ import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrar
 // 资料访问权限审核
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
 import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
+import { getRecordByApplyId } from "@/api/authorityAudit/materialPower/index";
 export default {
   name: "handleApply",
   props: {
@@ -134,10 +135,12 @@ export default {
         if (this.handleMsgObj.dbCreate == "1") {
           // 到专题库
           this.initDatail();
+          return;
         }
-        if (this.handleMsgObj.dbCreate == "1") {
+        if (this.handleMsgObj.sodData == "1") {
           // 到资料访问权限审核
           this.getList();
+          return;
         }
         return;
       }

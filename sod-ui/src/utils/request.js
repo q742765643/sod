@@ -15,7 +15,8 @@ import {
 import {
   rsaencrypt
 } from '@/utils/rsaencrypt'
-
+import Cookies from 'js-cookie'
+const TokenKey = 'Admin-Token'
 const uuid = require('uuid/v4')
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
@@ -29,7 +30,12 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     if (getToken()) {
+      console.log('有token')
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    } else {
+      console.log('无token')
+      console.log(Cookies.get(TokenKey))
+      config.headers['Authorization'] = Cookies.get(TokenKey)
     }
 
     let data = ""

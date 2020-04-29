@@ -348,7 +348,7 @@ export default {
   },
   methods: {
     handleExport() {
-      const param = {
+      /* const param = {
         timestamp: new Date().getTime(),
         nonce: uuid(),
         data: JSON.stringify(this.queryParams)
@@ -365,12 +365,12 @@ export default {
         "&nonce=" +
         param.nonce +
         "&sign=" +
-        param.sign;
-      /*  window.location.href =
-        process.env.VUE_APP_DM + "/dm/storageConfiguration/exportTable"; */
-      /*  exportTable(this.queryParams).then(res => {
+        param.sign; */
+      window.location.href =
+        process.env.VUE_APP_DM + "/dm/storageConfiguration/exportTable";
+      exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
-      }); */
+      });
     },
     // table自增定义方法
     table_index(index) {
