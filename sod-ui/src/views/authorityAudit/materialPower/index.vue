@@ -212,6 +212,7 @@ export default {
     },
     cancelHandle() {
       this.handleQuery();
+      this.handlepowerDialog = false;
       this.handleDialog = false;
     }
   }

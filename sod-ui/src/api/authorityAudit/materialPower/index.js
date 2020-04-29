@@ -37,3 +37,21 @@ export function updateRecordCheck(data1) {
     data: data1
   })
 }
+
+// 查询
+export function getReadAuthority(query) {
+  return request({
+    url: baseUrl + '/dm/dataAuthorityApply/getReadAuthority',
+    method: 'get',
+    params: query
+  })
+}
+
+// 修改
+export function updateReadAuthority(data) {
+  return request({
+    url: baseUrl + '/dm/dataAuthorityApply/updateReadAuthority',
+    method: 'post',
+    data: data
+  })
+}
