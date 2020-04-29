@@ -233,6 +233,9 @@ public class StorageConfigurationController {
     @DeleteMapping(value = "/deleteColumnValue")
     @ApiOperation(value = "根据ID删除资料以及配置", notes = "根据ID删除资料以及配置")
     public ResultT<String> deleteById(String id) {
+        if (StringUtils.isEmpty(id)){
+            return ResultT.failed("配置不存在！");
+        }
         return storageConfigurationGrpcService.deleteById(id);
     }
 }
