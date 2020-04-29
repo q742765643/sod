@@ -35,6 +35,7 @@ public interface DatabaseSpecialService {
 
     void deleteAccessBySdbIdAndUserId(String sdbId,String userId);
 
+    List<DatabaseSpecialDto> findByUserId(String userId);
     /**
      * 根据id查询
      * @param id
@@ -49,7 +50,7 @@ public interface DatabaseSpecialService {
      */
     DatabaseSpecialDto saveDto(DatabaseSpecialDto databaseSpecialDto);
 
-    DatabaseSpecialDto addOrUpdate(Map<String, String[]> parameterMap,String filePath);
+    DatabaseSpecialDto addOrUpdate(Map<String, String> map,String filePath);
 
     /**
      * 数据库授权

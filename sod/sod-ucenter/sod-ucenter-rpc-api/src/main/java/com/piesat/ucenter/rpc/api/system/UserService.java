@@ -99,7 +99,7 @@ public interface UserService {
 
     PageBean findAllBizUser(PageForm<UserDto> pageForm);
 
-    void editBase(UserDto user);
+    ResultT editBase(UserDto user);
 
     List<UserDto> findByUserType(String userType);
 }
