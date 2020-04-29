@@ -183,6 +183,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    public List<DatabaseSpecialDto> findByUserId(String userId) {
+        List<DatabaseSpecialEntity> byUserId = this.databaseSpecialDao.findByUserId(userId);
+        return this.databaseSpecialMapper.toDto(byUserId);
+    }
+
+    @Override
     public DatabaseSpecialDto getDotById(String id) {
         DatabaseSpecialEntity databaseSpecialEntity = this.getById(id);
         DatabaseSpecialDto databaseSpecialDto = this.databaseSpecialMapper.toDto(databaseSpecialEntity);
@@ -224,13 +230,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public DatabaseSpecialDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
-        Map<String, String> map = new LinkedHashMap<>();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            if (entry.getValue().length > 0) {
-                map.put(entry.getKey(), entry.getValue()[0]);
-            }
-        }
+    public DatabaseSpecialDto addOrUpdate(Map<String, String> map, String filePath) {
 
         String tdb_name = map.get("TDB_NAME");
         String tdb_id = map.get("TDB_ID");

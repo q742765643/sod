@@ -95,6 +95,7 @@ import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 资料访问权限审核
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
+import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 export default {
   name: "handleApply",
   props: {
@@ -115,8 +116,14 @@ export default {
   created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
     console.log(this.handleObj);
+    this.initDatail();
   },
   methods: {
+    initDatail() {
+      findByUserId({ userId: this.handleObj.userName }).then(res => {
+        console.log(res.data);
+      });
+    },
     handleClose() {},
     nextStep() {
       // 数据库访问账户 新增

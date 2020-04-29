@@ -18,5 +18,6 @@ public interface DatabaseSpecialDao extends BaseDao<DatabaseSpecialEntity> {
 
     List<DatabaseSpecialEntity> findByUseStatus(String useStatus);
 
+    List<DatabaseSpecialEntity> findByUserId(String userId);
 
 }

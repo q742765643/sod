@@ -224,8 +224,7 @@ public class UserController {
         user.setUserName(bizUserid);
         user.setChecked(checked);
         ResultT<String> resultT = new ResultT<>();
-        userService.editBase(user);
-        return resultT;
+        return userService.editBase(user);
     }
 
     /**
@@ -235,8 +234,7 @@ public class UserController {
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/editInfo")
     public ResultT<String> editInfo(@RequestBody UserDto user) {
-        userService.editBase(user);
-        return ResultT.success();
+        return userService.editBase(user);
     }
 
     /**

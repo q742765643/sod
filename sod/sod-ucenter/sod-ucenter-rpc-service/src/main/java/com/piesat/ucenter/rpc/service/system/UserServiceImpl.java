@@ -16,6 +16,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
@@ -60,7 +61,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Autowired
     private RoleMapper roleMapper;
     @GrpcHthtClient
-    private DataAuthorityApplyService dataAuthorityApplyService;
+    private DatabaseSpecialService databaseSpecialService;
 
     @Override
     public BaseDao<UserEntity> getBaseDao() {
@@ -277,23 +278,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String dbIds = sodData.get("dbIds").toString();
         String dbCreate = sodData.get("dbCreate").toString();
         JSONArray applyData = sodData.getJSONArray("applyData");
-        DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
-        daa.setUserId(bizUserid);
-        daa.setCreateTime(new Date());
-        List<DataAuthorityRecordDto> list = new ArrayList<>();
-        for (int i = 0; i < applyData.size(); i++) {
-            DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
-            JSONObject jsonObject1 = applyData.getJSONObject(i);
-            String databaseId = jsonObject1.getString("databaseId");
-            String dataClassId = jsonObject1.getString("dataClassId");
-            dar.setDatabaseId(databaseId);
-            dar.setDataClassId(dataClassId);
-            dar.setApplyAuthority(1);
-            dar.setCreateTime(new Date());
-            list.add(dar);
-        }
-        daa.setDataAuthorityRecordList(list);
-        this.dataAuthorityApplyService.saveDto(daa);
 
         UserEntity byBizUserId = this.userDao.findByUserName(bizUserid);
         if (byBizUserId != null) {
@@ -351,38 +335,70 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         UserEntity.setDbCreate(dbCreate);
         UserEntity.setStatus("1".equals(sodApp) ? "0" : "1");
         UserEntity userEntity = this.userDao.saveNotNull(UserEntity);
+
+        if ("1".equals(dbCreate)) {
+            Map<String, String> spMap = new HashMap<>();
+            spMap.put("TDB_NAME", remark);
+            spMap.put("USER_ID", bizUserid);
+            spMap.put("USES", remark);
+            spMap.put("DATABASE_ID", dbIds);
+            spMap.put("DATABASE_SCHEMA_ID", bizUserid);
+            JSONObject jj = new JSONObject();
+            jj.put("userId", bizUserid);
+            spMap.put("data", jj.toJSONString());
+            spMap.put("TDB_NAME", remark);
+            JSONArray jjj = new JSONArray();
+            for (int i = 0; i < applyData.size(); i++) {
+                Map<String, String> mapReadWrite = new HashMap<>();
+                JSONObject jsonObject1 = applyData.getJSONObject(i);
+                String databaseId = jsonObject1.getString("databaseId");
+                String dataClassId = jsonObject1.getString("dataClassId");
+                mapReadWrite.put("dataClassId", dataClassId);
+                mapReadWrite.put("databaseId", databaseId);
+                mapReadWrite.put("applyAuthority", "1");
+                jjj.add(mapReadWrite);
+            }
+            spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
+            this.databaseSpecialService.addOrUpdate(spMap,null);
+        }
+
+
         return ResultT.success(userEntity);
     }
 
     @Override
     public PageBean findAllBizUser(PageForm<UserDto> pageForm) {
-        UserEntity userEntity=this.userMapstruct.toEntity(pageForm.getT());
-        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotNullString(userEntity.getUserName())){
-            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(),userEntity.getUserName());
+        UserEntity userEntity = this.userMapstruct.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        specificationBuilder.add("userType", SpecificationOperator.Operator.likeAll.name(), "11");
+        if (StringUtils.isNotNullString(userEntity.getUserName())) {
+            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(), userEntity.getUserName());
         }
-        if(StringUtils.isNotNullString(userEntity.getNickName())){
-            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(),userEntity.getNickName());
+        if (StringUtils.isNotNullString(userEntity.getNickName())) {
+            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userEntity.getNickName());
         }
-        if(StringUtils.isNotNullString(userEntity.getChecked())){
-            specificationBuilder.add("checked", SpecificationOperator.Operator.eq.name(),userEntity.getChecked());
+        if (StringUtils.isNotNullString(userEntity.getChecked())) {
+            specificationBuilder.add("checked", SpecificationOperator.Operator.eq.name(), userEntity.getChecked());
         }
-        if(StringUtils.isNotNullString(userEntity.getDeptName())){
-            specificationBuilder.add("deptName", SpecificationOperator.Operator.likeAll.name(),userEntity.getDeptName());
+        if (StringUtils.isNotNullString(userEntity.getDeptName())) {
+            specificationBuilder.add("deptName", SpecificationOperator.Operator.likeAll.name(), userEntity.getDeptName());
         }
-        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
-        List<UserEntity> userEntitys= (List<UserEntity>) pageBean.getPageData();
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
+        List<UserEntity> userEntitys = (List<UserEntity>) pageBean.getPageData();
         List<UserDto> userDtos = this.userMapstruct.toDto(userEntitys);
         pageBean.setPageData(userDtos);
         return pageBean;
     }
 
     @Override
-    public void editBase(UserDto user) {
+    public ResultT editBase(UserDto user) {
         UserDto userDto = this.selectUserByUserName(user.getUserName());
+        if (userDto==null)return ResultT.failed("用户不存在!");
         user.setId(userDto.getId());
+        user.setPassword(null);
         this.saveNotNull(this.userMapstruct.toEntity(user));
+        return ResultT.success();
     }
 
     @Override

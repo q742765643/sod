@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,20 @@ public class DatabaseSpecialController {
         }
     }
 
+
+    @ApiOperation(value = "根据用户id查询")
+    //@RequiresPermissions("dm:databaseSpecial:findByUserId")
+    @GetMapping(value = "/findByUserId")
+    public ResultT findByUserId(String userId) {
+        try {
+            List<DatabaseSpecialDto> byUserId = this.databaseSpecialService.findByUserId(userId);
+            return ResultT.success(byUserId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "获取专题库资料列表")
     @RequiresPermissions("dm:databaseSpecial:getSpecialDataList")
     @GetMapping(value = "/getSpecialDataList")
@@ -171,7 +186,13 @@ public class DatabaseSpecialController {
                     applyMaterial.transferTo(newFile);
                 }
             }
-            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.addOrUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+            Map<String, String> map = new LinkedHashMap<>();
+            for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+                if (entry.getValue().length > 0) {
+                    map.put(entry.getKey(), entry.getValue()[0]);
+                }
+            }
+            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.addOrUpdate(map, newFile == null ? "" : newFile.getPath());
             return ResultT.success(databaseSpecialDto);
         } catch (Exception e) {
             e.printStackTrace();
