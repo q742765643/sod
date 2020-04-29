@@ -9,24 +9,12 @@ export function gatAllBiz(query) {
     params: query
   })
 }
-// 删除业务角色
-export function delByIds(id) {
+
+// 根据用户id查询
+export function findByUserId(query) {
   return request({
-    url: baseUrl + '/system/portalAuz/delByIds',
-    method: 'delete',
-    params: {
-      ids: id,
-    }
-  })
-}
-// 更改用户角色状态通过/不通过
-export function update(id, status) {
-  return request({
-    url: baseUrl + '/system/portalAuz/update',
-    method: 'put',
-    params: {
-      id: id,
-      status: status
-    }
+    url: baseUrl + '/dm/databaseSpecial/findByUserId',
+    method: 'get',
+    params: query
   })
 }

@@ -346,9 +346,11 @@ export default {
   },
   methods: {
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      window.location.href =
+        process.env.VUE_APP_DM + "/dm/storageConfiguration/exportTable";
+      /*  exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
-      });
+      }); */
     },
     // table自增定义方法
     table_index(index) {

@@ -121,11 +121,7 @@
 </template>
 
 <script>
-import {
-  gatAllBiz,
-  delByIds,
-  update
-} from "@/api/authorityAudit/userRoleAudit";
+import { gatAllBiz } from "@/api/authorityAudit/userRoleAudit";
 import { optionselect } from "@/api/system/role";
 import { getUser, updateUser } from "@/api/system/user";
 import handleWork from "@/views/authorityAudit/userRoleAudit/handleWork";
