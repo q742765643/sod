@@ -30,9 +30,11 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     if (getToken()) {
-      console.log(Cookies.get(TokenKey))
+      console.log('有token')
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     } else {
+      console.log('无token')
+      console.log(Cookies.get(TokenKey))
       config.headers['Authorization'] = Cookies.get(TokenKey)
     }
 

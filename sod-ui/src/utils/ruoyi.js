@@ -87,7 +87,7 @@ export function download(fileName) {
   window.location.href = baseURL + "/common/download?fileName=" + encodeURI(fileName) + "&delete=" + true;
 }
 export function downloadfileCommon(res) {
-  debugger
+  // debugger
   console.log(res.headers);
   console.log(res.headers['content-disposition']);
   let filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]);
