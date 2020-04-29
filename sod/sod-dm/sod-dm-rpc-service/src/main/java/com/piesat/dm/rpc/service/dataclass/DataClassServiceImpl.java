@@ -495,4 +495,13 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         map.put("returnMessage", "获取数据成功");
         return  map;
     }
+
+    @Override
+    public DataClassDto updateIsAllLine(DataClassDto dataClassDto) {
+        DataClassDto dataClassDto1 = this.findByDataClassId(dataClassDto.getDataClassId());
+        dataClassDto1.setIsAllLine(dataClassDto.getIsAllLine());
+        DataClassEntity dataClassEntity = dataClassMapper.toEntity(dataClassDto1);
+        dataClassEntity = this.saveNotNull(dataClassEntity);
+        return dataClassMapper.toDto(dataClassEntity);
+    }
 }

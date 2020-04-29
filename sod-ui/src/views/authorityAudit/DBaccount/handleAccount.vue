@@ -70,7 +70,7 @@
           <el-form-item label="机构">
             <el-input
               size="small"
-              v-model="msgFormDialog.department"
+              v-model="msgFormDialog.deptName"
               :disabled="isDisabled"
               placeholder="机构"
             ></el-input>
@@ -80,7 +80,7 @@
           <el-form-item label="联系方式">
             <el-input
               size="small"
-              v-model="msgFormDialog.userPhone"
+              v-model="msgFormDialog.tutorPhone"
               :disabled="isDisabled"
               placeholder="联系方式"
             ></el-input>
@@ -426,8 +426,8 @@ export default {
         //这里的userBox就是上面遍历的数据源
         return item.userId === selectUserId; //筛选出匹配数据
       });
-      this.msgFormDialog.userPhone = obj.phone;
-      this.msgFormDialog.department = obj.deptName;
+      this.msgFormDialog.tutorPhone = obj.phone;
+      this.msgFormDialog.deptName = obj.deptName;
     },
     // 获取数据库
     async getDBlist() {
@@ -436,8 +436,8 @@ export default {
         var dataList = [];
         for (var i = 0; i < resdata.length; i++) {
           var obj = {};
-          obj.key = resdata[i].ID;
-          obj.label = resdata[i].DATABASE_NAME;
+          obj.key = resdata[i].id;
+          obj.label = resdata[i].database_name;
           dataList.push(obj);
         }
 

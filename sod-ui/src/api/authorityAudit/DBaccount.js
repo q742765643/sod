@@ -12,7 +12,7 @@ export function addTable(data) {
 // 数据库列表
 export function databaseList(query) {
   return request({
-    url: baseUrl + '/dm/databaseUser/databaseList',
+    url: baseUrl + '/dm/databaseDefine/all',
     method: 'get',
     params: query
   })
