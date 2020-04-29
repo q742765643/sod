@@ -9,8 +9,8 @@
       </el-form-item>
       <el-form-item label="默认通过">
         <el-radio-group v-model="msgFormDialog.value">
-          <el-radio label="0">通过</el-radio>
-          <el-radio label="1">不通过</el-radio>
+          <el-radio label="1">通过</el-radio>
+          <el-radio label="0">不通过</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="描述" prop="description">
@@ -37,7 +37,7 @@ export default {
         // 这里定义弹框内的参数
         name: "是否默认通过所有申请资料的读权限",
         roleKey: "读权限",
-        value: "1",
+        value: "0",
         description: ""
       },
       rules: {
