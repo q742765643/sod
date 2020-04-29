@@ -259,17 +259,17 @@ export default {
         this.eventList[0].checked = data.xzzl.checked;
         this.eventList[0].uncheck = data.xzzl.uncheck;
 
-        // this.eventList[1].checked = data.sjsq.checked;
-        // this.eventList[1].uncheck = data.sjsq.notAgency;
+        this.eventList[1].checked = data.sjsq.checked;
+        this.eventList[1].uncheck = data.sjsq.uncheck;
 
-        this.eventList[1].checked = data.sjkzh.checked;
-        this.eventList[1].uncheck = data.sjkzh.uncheck;
+        this.eventList[2].checked = data.sjkzh.checked;
+        this.eventList[2].uncheck = data.sjkzh.uncheck;
 
-        this.eventList[2].checked = data.ywztk.checked;
-        this.eventList[2].uncheck = data.ywztk.uncheck;
+        this.eventList[3].checked = data.ywztk.checked;
+        this.eventList[3].uncheck = data.ywztk.uncheck;
 
-        this.eventList[3].checked = data.ysjk.checked;
-        this.eventList[3].uncheck = data.ysjk.uncheck;
+        this.eventList[4].checked = data.ysjk.checked;
+        this.eventList[4].uncheck = data.ysjk.uncheck;
       });
     },
     // 代办跳页
