@@ -657,6 +657,9 @@ export default {
     right: 80px;
     top: 0px;
   }
+  .el-checkbox + .el-checkbox {
+    margin-left: 0;
+  }
 }
 .ipDialog {
   .el-input {

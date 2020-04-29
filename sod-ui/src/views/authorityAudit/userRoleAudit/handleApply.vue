@@ -76,14 +76,14 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-card class="box-card" shadow="never" v-if="stepNum==4">
+    <el-card class="box-card" shadow="never" v-if="stepNum==3">
       <span style="font-size: 26px;display:block;text-align:center;">
         <i class="el-icon-circle-check"></i> 完成
       </span>
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
-      <el-button type="primary" v-if="stepNum!=4" @click="nextStep">下一步</el-button>
-      <el-button type="primary" v-if="stepNum==4" @click="$emit('closeStep')">完成</el-button>
+      <el-button type="primary" v-if="stepNum!=3" @click="nextStep">下一步</el-button>
+      <el-button type="primary" v-if="stepNum==3" @click="$emit('closeStep')">完成</el-button>
     </div>
   </section>
 </template>
@@ -97,6 +97,7 @@ import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrar
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
 import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 import { getRecordByApplyId } from "@/api/authorityAudit/materialPower/index";
+import { getSpecialDataList } from "@/api/authorityAudit/topicLibraryAudit";
 export default {
   name: "handleApply",
   props: {
@@ -107,6 +108,7 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
+      forId: "",
       loading: false,
       tableData: [],
       multipleSelection: [],
@@ -117,6 +119,9 @@ export default {
   },
   async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
+    findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
+      this.forId = res.data[0].id;
+    });
   },
   methods: {
     async initDatail() {
@@ -149,11 +154,18 @@ export default {
         this.getList();
         return;
       }
+      if (this.stepNum == 2) {
+        // 到资料访问权限审核
+        this.stepNum = 3;
+        return;
+      }
     },
     getList() {
-      let obj = {};
-      // obj.applyId = this.queryParams.id;
-      getRecordByApplyId(obj).then(res => {
+      let obj = {
+        dataType: 2,
+        sdbId: this.forId
+      };
+      getSpecialDataList(obj).then(res => {
         if (res.code == 200) {
           this.tableData = res.data;
           this.stepNum = 2;
