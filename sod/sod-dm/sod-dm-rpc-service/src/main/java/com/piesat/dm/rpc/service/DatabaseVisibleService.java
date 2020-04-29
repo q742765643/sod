@@ -141,8 +141,11 @@ public class DatabaseVisibleService {
 
 
     public ResultT getTable(String bizUserId, String dataclassId) {
-        DataAuthorityApplyDto dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
-        List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
+        List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
+        List<DataAuthorityRecordDto> dataAuthorityRecordList = new ArrayList<>();
+        for (DataAuthorityApplyDto d:dataAuthorityApplyDto ) {
+            dataAuthorityRecordList.addAll(d.getDataAuthorityRecordList());
+        }
         DataClassDto byDataClassId = dataClassService.findByDataClassId(dataclassId);
         JSONArray arr = new JSONArray();
         for (DataAuthorityRecordDto d : dataAuthorityRecordList) {

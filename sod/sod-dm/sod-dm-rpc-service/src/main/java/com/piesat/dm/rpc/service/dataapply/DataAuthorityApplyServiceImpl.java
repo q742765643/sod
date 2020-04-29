@@ -469,9 +469,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    public DataAuthorityApplyDto findByUserId(String userId) {
-        DataAuthorityApplyEntity byUserId = this.dataAuthorityApplyDao.findByUserId(userId);
-       return this.dataAuthorityApplyMapper.toDto(byUserId);
+    public List<DataAuthorityApplyDto> findByUserId(String userId) {
+        List<DataAuthorityApplyEntity> dalList = this.dataAuthorityApplyDao.findByUserId(userId);
+       return this.dataAuthorityApplyMapper.toDto(dalList);
     }
 
 }

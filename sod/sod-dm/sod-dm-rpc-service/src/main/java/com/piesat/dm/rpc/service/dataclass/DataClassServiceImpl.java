@@ -103,9 +103,18 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             this.newdataApplyService.saveDto(newdataApplyDto);
         }
         List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
+        List<String> all = new ArrayList<>();
+        for (DataLogicDto aa:byDataClassId ) {
+            all.add(aa.getId());
+        }
+        List<String> nnn = new ArrayList<>();
+        for (DataLogicDto aa:dataClassDto.getDataLogicList() ) {
+            nnn.add(aa.getId());
+        }
+        all.removeAll(nnn);
         byDataClassId.removeAll(dataClassDto.getDataLogicList());
-        for (DataLogicDto d:byDataClassId ) {
-            dataLogicService.deleteById(d.getId());
+        for (String d:all ) {
+            dataLogicService.deleteById(d);
         }
         List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
         DataClassDto dataClassDto1 = this.dataClassMapper.toDto(dataClassEntity);

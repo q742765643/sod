@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author yaya
  * @description TODO
@@ -11,6 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DataAuthorityApplyDao extends BaseDao<DataAuthorityApplyEntity> {
-    DataAuthorityApplyEntity findByUserId(String userId);
+    List<DataAuthorityApplyEntity> findByUserId(String userId);
 
 }
