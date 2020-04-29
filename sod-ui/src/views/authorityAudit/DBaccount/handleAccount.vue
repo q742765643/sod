@@ -334,13 +334,13 @@ export default {
     // 模板下载
     demoExport() {
       demoDownload().then(res => {
-        this.downloadfileCommon(res, "word");
+        this.downloadfileCommon(res);
       });
     },
     // 下载
     detailExport() {
       exportData({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
-        this.downloadfileCommon(res, "word");
+        this.downloadfileCommon(res);
       });
     },
     // 预览

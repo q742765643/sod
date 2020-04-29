@@ -4,7 +4,7 @@
  */
 
 const baseURL = process.env.VUE_APP_BASE_API
-
+import fileDownload from 'js-file-download'
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0) {
@@ -86,8 +86,11 @@ export function selectDictLabel(datas, value) {
 export function download(fileName) {
   window.location.href = baseURL + "/common/download?fileName=" + encodeURI(fileName) + "&delete=" + true;
 }
-export function downloadfileCommon(res, Type) {
-  console.log(222)
+export function downloadfileCommon(res) {
+  let filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]);
+  console.log(filename);
+  fileDownload(res.data, filename);
+  /* console.log(222)
   let fileType = 'type: "application/octet-stream";charset=utf-8'
   if (Type == 'word') {
     fileType = 'type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -98,6 +101,7 @@ export function downloadfileCommon(res, Type) {
   var contentDisposition = res.headers['content-disposition']; //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
   var patt = new RegExp("filename=([^;]+\\.[^\\.;]+);*");
   var result = patt.exec(contentDisposition);
+  console.log(result)
   var filename = result[1];
   var downloadElement = document.createElement('a');
   var href = window.URL.createObjectURL(blob); //创建下载的链接
@@ -108,7 +112,8 @@ export function downloadfileCommon(res, Type) {
   document.body.appendChild(downloadElement);
   downloadElement.click(); //点击下载
   document.body.removeChild(downloadElement); //下载完成移除元素
-  window.URL.revokeObjectURL(href); //释放掉blob对象
+  window.URL.revokeObjectURL(href); //释放掉blob对象 */
+
 }
 // 字符串格式化(%s )
 export function sprintf(str) {

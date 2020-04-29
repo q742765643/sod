@@ -111,12 +111,13 @@
       :data="moveList"
       row-key="id"
       @selection-change="handleSelectionChange"
+      @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
       <el-table-column label="执行策略" prop="jobCron" :show-overflow-tooltip="true" />
       <el-table-column label="状态" prop="triggerStatus" :formatter="statusFormat" />
-      <el-table-column label="创建时间" prop="createTime" width="180">
+      <el-table-column label="创建时间" prop="createTime" width="180" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -235,7 +236,12 @@ export default {
         profileName: undefined,
         dataClassId: undefined,
         triggerStatus: undefined,
-        tableName: undefined
+        tableName: undefined,
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
       handleObj: {}
     };
@@ -247,6 +253,17 @@ export default {
     });
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
+
     // 导出
     handleExport() {
       exportTable(this.queryParams).then(res => {

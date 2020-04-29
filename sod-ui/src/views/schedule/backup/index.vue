@@ -110,13 +110,14 @@
       v-loading="loading"
       :data="backupList"
       row-key="id"
+      @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
       <el-table-column label="执行策略" prop="jobCron" :show-overflow-tooltip="true" width="180" />
       <el-table-column label="状态" prop="triggerStatus" :formatter="statusFormat" width="80" />
-      <el-table-column label="创建时间" prop="createTime" width="160">
+      <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -236,7 +237,12 @@ export default {
         profileName: undefined,
         dataClassId: undefined,
         triggerStatus: undefined,
-        tableName: undefined
+        tableName: undefined,
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
       handleObj: {}
     };
@@ -248,6 +254,16 @@ export default {
     });
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     handleExport() {
       exportBackup(this.queryParams).then(response => {
         this.downloadfileCommon(response);

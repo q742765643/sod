@@ -317,7 +317,7 @@ export default {
         if (res.code) {
           this.$message({ type: "warning", message: res.msg });
         } else {
-          this.downloadfileCommon(res, "word");
+          this.downloadfileCommon(res);
         }
       });
     },

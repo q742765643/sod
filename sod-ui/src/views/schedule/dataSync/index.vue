@@ -48,7 +48,7 @@
         <el-button type="primary" icon="el-icon-refresh" size="small">刷新</el-button>
       </el-col>
     </el-row>
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" min-width="15" label=" "></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
       <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
@@ -72,7 +72,7 @@
       ></el-table-column>
       <el-table-column prop="execIp" width="120px" label="执行主机"></el-table-column>
       <el-table-column prop="execPort" width="120px" label="执行端口"></el-table-column>
-      <el-table-column prop="updateTime" label="更新时间" width="160px">
+      <el-table-column prop="updateTime" label="更新时间" width="160px" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
@@ -184,7 +184,12 @@ export default {
         pageSize: 10,
         selectInfo: "taskName",
         searchValue: "",
-        runState: ""
+        runState: "",
+        params: {
+          orderBy: {
+            updateTime: "desc"
+          }
+        }
       },
       selectInfoSelect: [
         {
@@ -234,6 +239,17 @@ export default {
     this.getList();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.updateTime = "asc";
+      } else {
+        orderBy.updateTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
+
     handleExport() {
       exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);

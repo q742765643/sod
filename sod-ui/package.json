@@ -52,6 +52,7 @@
     "font-awesome": "^4.7.0",
     "fuse.js": "3.4.4",
     "js-cookie": "2.2.0",
+    "js-file-download": "^0.4.11",
     "js-md5": "^0.7.3",
     "jsencrypt": "3.0.0-rc.1",
     "mammoth": "^1.4.9",
