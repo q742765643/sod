@@ -504,7 +504,7 @@ export default {
     deleteCell() {
       let ids = [];
       this.multipleSelection.forEach(element => {
-        ids.push(element.mode_data_def_id);
+        ids.push(element.id);
       });
       delByIds({ ids: ids.join(",") }).then(res => {
         if (res.code == 200) {

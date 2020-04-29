@@ -95,7 +95,6 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public PageBean selectPageList(PageForm<DatabaseUserDto> pageForm) {
-        DatabaseUserDto databaseUserDto = pageForm.getT();
         DatabaseUserEntity databaseUserEntity=databaseUserMapper.toEntity(pageForm.getT());
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
         if(StringUtils.isNotBlank(databaseUserEntity.getExamineStatus())){

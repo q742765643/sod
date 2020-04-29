@@ -288,7 +288,7 @@ export function addList(data) {
 export function delByIds(query) {
   return request({
     url: baseUrl + '/dm/dataserverconfig/delByIds',
-    method: 'get',
+    method: 'delete',
     params: query
   })
 }
