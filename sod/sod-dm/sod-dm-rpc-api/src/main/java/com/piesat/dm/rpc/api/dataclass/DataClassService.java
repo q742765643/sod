@@ -72,4 +72,6 @@ public interface DataClassService {
     JSONArray getSimpleTree(String databaseId);
 
     Map<String, Object> getDataClassCoreInfo(String c_datum_code);
+
+    DataClassDto updateIsAllLine(DataClassDto dataClassDto);
 }

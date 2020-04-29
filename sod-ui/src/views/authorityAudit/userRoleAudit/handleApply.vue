@@ -1,10 +1,10 @@
 <template>
   <section class="handleApply">
-    <el-steps :active="stepNum" finish-status="success">
-      <el-step title="数据库访问账户"></el-step>
-      <el-step title="专题库" v-show="handleMsgObj.dbCreate=='1'"></el-step>
-      <el-step title="资料访问权限审核"></el-step>
-      <el-step title="完成"></el-step>
+    <el-steps :active="stepNum">
+      <el-step title="数据库访问账户" icon="el-icon-menu"></el-step>
+      <el-step title="专题库" icon="el-icon-s-ticket" v-show="handleMsgObj.dbCreate=='1'"></el-step>
+      <el-step title="资料访问权限审核" icon="el-icon-s-finance"></el-step>
+      <el-step title="完成" icon="el-icon-circle-check"></el-step>
     </el-steps>
     <el-card class="box-card" shadow="never" v-if="stepNum==0">
       <handleAccount :handleObj="handleObj" ref="AccountRef" @handleDialogClose="handleClose" />

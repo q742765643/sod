@@ -238,7 +238,7 @@ import {
   empowerDataBatch,
   empowerDataOne,
   empowerDatabaseSpecial,
-  update,
+  saveBase,
   exportTable
 } from "@/api/authorityAudit/topicLibraryAudit";
 import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
@@ -362,13 +362,13 @@ export default {
         }
       });
     },
-    trueDialog(formName) {
-      update(this.msgFormDialog).then(response => {
+    trueDialog() {
+      saveBase(this.msgFormDialog).then(res => {
         if (res.code == 200) {
           this.$emit("closedialog");
           this.$message({
             type: "success",
-            message: "修改成功"
+            message: "保存成功"
           });
         } else {
           this.$message({
