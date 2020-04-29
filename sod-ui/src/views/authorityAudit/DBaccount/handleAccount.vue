@@ -60,7 +60,7 @@
                 v-for="(item,index) in userBox"
                 :key="index"
                 :label="item.webUsername"
-                :value="item.username"
+                :value="item.userName"
                 :disabled="item.disabled"
               ></el-option>
             </el-select>
@@ -283,7 +283,7 @@ export default {
         databaseUpIp: "", //UP账户IP
         databaseUpIpSegment: "1", //UP账户IP可选区间
         applyDatabaseId: [], //物理库ID
-        userId: "10", //用户ID
+        userId: "", //用户ID
         databaseUpDesc: "", //UP账户描述
         applyMaterial: "",
         pdfPath: ""
@@ -416,7 +416,6 @@ export default {
         });
     },
     successUpload: function(response, file, fileList) {
-      debugger;
       this.msgFormDialog.pdfPath = response.data.pdfPath;
       this.msgFormDialog.applyMaterial = response.data.filePath;
     },
@@ -426,7 +425,7 @@ export default {
       let obj = {};
       obj = this.userBox.find(item => {
         //这里的userBox就是上面遍历的数据源
-        return item.userId === selectUserId; //筛选出匹配数据
+        return item.userName === selectUserId; //筛选出匹配数据
       });
       this.msgFormDialog.tutorPhone = obj.phone;
       this.msgFormDialog.deptName = obj.deptName;

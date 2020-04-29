@@ -25,7 +25,7 @@
                   v-for="(item,index) in userBox"
                   :key="index"
                   :label="item.webUsername"
-                  :value="item.username"
+                  :value="item.userName"
                 ></el-option>
               </el-select>
               <el-input v-else :disabled="true" size="small" v-model="msgFormDialog.userId"></el-input>
@@ -568,7 +568,7 @@ export default {
       let obj = {};
       obj = this.userBox.find(item => {
         //这里的userBox就是上面遍历的数据源
-        return item.userId === selectUserId; //筛选出匹配数据
+        return item.userName === selectUserId; //筛选出匹配数据
       });
       this.msgFormDialog.telephone = obj.tutorPhone;
       this.msgFormDialog.department = obj.deptName;

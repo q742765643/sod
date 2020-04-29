@@ -181,7 +181,7 @@ export default {
       //校验表单
       this.$refs[formClass].validate(valid => {
         if (valid) {
-          getDataClassBaseInfo(this.tableFormObject).then(res => {
+          saveDataClassBaseInfo(this.tableFormObject).then(res => {
             if (res.data.returnCode == 0) {
               this.$message({ message: "编辑成功", type: "success" });
               this.$emit("handleClose");

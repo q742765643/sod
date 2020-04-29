@@ -135,10 +135,15 @@ export default {
           // 到专题库
           this.initDatail();
         }
+        if (this.handleMsgObj.dbCreate == "1") {
+          // 到资料访问权限审核
+          this.getList();
+        }
         return;
       }
       if (this.stepNum == 1) {
-        this.stepNum = 2;
+        // 到资料访问权限审核
+        this.getList();
         return;
       }
     },
@@ -148,6 +153,7 @@ export default {
       getRecordByApplyId(obj).then(res => {
         if (res.code == 200) {
           this.tableData = res.data;
+          this.stepNum = 2;
         } else {
           this.msgError(res.msg);
         }
