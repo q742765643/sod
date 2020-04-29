@@ -142,6 +142,17 @@ export default {
         return;
       }
     },
+    getList() {
+      let obj = {};
+      // obj.applyId = this.queryParams.id;
+      getRecordByApplyId(obj).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+        } else {
+          this.msgError(res.msg);
+        }
+      });
+    },
     handlePower() {
       if (this.multipleSelection.lenght == 0) {
         this.msgError("请选择一条数据");
