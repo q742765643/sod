@@ -11,7 +11,7 @@
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">生成差异报告</el-button>
+        <el-button size="small" type="success" :icon="exportIcon" @click="handleExport">生成差异报告</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -134,6 +134,7 @@ import {
 export default {
   data() {
     return {
+      exportIcon: "el-icon-download",
       currentRow: [],
       // 遮罩层
       loading: true,
@@ -208,10 +209,12 @@ export default {
         });
         return;
       }
+      this.exportIcon = "el-icon-loading";
       let obj = {};
       obj.id = this.currentRow[0].databaseId;
       exportTable(obj).then(res => {
         this.downloadfileCommon(res);
+        this.exportIcon = "el-icon-download";
       });
     },
     getOptions() {
