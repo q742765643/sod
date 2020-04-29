@@ -149,9 +149,12 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         CloudDatabaseApplyEntity cloudDatabaseApplyEntity = this.getById(id);
         CloudDatabaseApplyDto cloudDatabaseApplyDto = cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
         //调接口查申请人详情
-        cloudDatabaseApplyDto.setUserName("申请人");
-        cloudDatabaseApplyDto.setTelephone("12388888888");
-        cloudDatabaseApplyDto.setDepartment("部门");
+        UserEntity userEntity = userDao.findByUserName(cloudDatabaseApplyDto.getUserId());
+        if(userEntity != null){
+            cloudDatabaseApplyDto.setUserName(userEntity.getWebUsername());
+            cloudDatabaseApplyDto.setTelephone(userEntity.getTutorPhone());
+            cloudDatabaseApplyDto.setDepartment(userEntity.getDeptName());
+        }
         return cloudDatabaseApplyDto;
     }
 

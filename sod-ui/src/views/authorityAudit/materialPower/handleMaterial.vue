@@ -12,7 +12,7 @@
           <el-input v-model="formBaseInfo.USERPHONE" readonly></el-input>
         </el-form-item>
         <el-form-item label="申请时间">
-          <el-input v-model="formBaseInfo.APPLY_TIME" readonly></el-input>
+          <el-input v-model="formBaseInfo.CREATE_TIME" readonly></el-input>
         </el-form-item>
         <el-form-item label="数据库账户名">
           <el-input v-model="formBaseInfo.DATABASE_UP_ID" readonly></el-input>

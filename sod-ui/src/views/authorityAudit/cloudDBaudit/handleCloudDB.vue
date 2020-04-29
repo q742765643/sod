@@ -24,7 +24,7 @@
                 <el-option
                   v-for="(item,index) in userBox"
                   :key="index"
-                  :label="item.webuserName"
+                  :label="item.webUsername"
                   :value="item.username"
                 ></el-option>
               </el-select>
@@ -443,7 +443,7 @@ export default {
       searchObj: {},
       contantTaskChose: [],
       msgFormDialog: {
-        userId: "admin",
+        userId: "",
         department: "",
         telephone: "",
         storageLogic: "",
@@ -533,7 +533,7 @@ export default {
     this.getUserAll();
     this.searchObj = this.handleObj;
     this.msgFormDialog = this.handleObj;
-    this.msgFormDialog.userId = "admin";
+    //this.msgFormDialog.userId = "admin";
     this.getDicts("cloud_database_type").then(response => {
       this.storageLogicList = response.data;
     });
@@ -568,7 +568,7 @@ export default {
       let obj = {};
       obj = this.userBox.find(item => {
         //这里的userBox就是上面遍历的数据源
-        return item.userName === selectUserId; //筛选出匹配数据
+        return item.userId === selectUserId; //筛选出匹配数据
       });
       this.msgFormDialog.telephone = obj.tutorPhone;
       this.msgFormDialog.department = obj.deptName;

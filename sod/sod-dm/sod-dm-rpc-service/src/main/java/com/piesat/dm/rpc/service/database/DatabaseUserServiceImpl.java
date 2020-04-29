@@ -84,6 +84,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private DataAuthorityApplyService dataAuthorityApplyService;
     @GrpcHthtClient
     private UserDao userDao;
+    @Autowired
+    private DatabaseDefineDao databaseDefineDao;
 
 
     @Override
@@ -107,8 +109,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         List<DatabaseUserEntity> databaseUserEntityList= (List<DatabaseUserEntity>) pageBean.getPageData();
         List<DatabaseUserDto> databaseUserDtoList = databaseUserMapper.toDto(databaseUserEntityList);
         //获取数据库列表，查询展示数据库中文名称
-        List<DatabaseEntity> databaseEntityList = databaseDao.findAll();
-        if(databaseUserDtoList!=null&&databaseUserDtoList.size()>0&&databaseEntityList!=null&&databaseEntityList.size()>0){
+        List<DatabaseDefineEntity> databaseDefineEntities = databaseDefineDao.findAll();
+        if(databaseUserDtoList!=null&&databaseUserDtoList.size()>0&&databaseDefineEntities!=null&&databaseDefineEntities.size()>0){
             for(DatabaseUserDto dto : databaseUserDtoList){
 
                 //获取数据库中文名称
@@ -116,9 +118,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     String[] applyDatabaseIdArray = dto.getApplyDatabaseId().split(",");
                     String applyDatabaseName = "";
                     for(String applyDatabaseId : applyDatabaseIdArray){
-                        for(DatabaseEntity databaseEntity : databaseEntityList){
-                            if(applyDatabaseId.equals(databaseEntity.getId())){
-                                applyDatabaseName += databaseEntity.getDatabaseDefine().getDatabaseName()+",";
+                        for(DatabaseDefineEntity databaseDefineEntity : databaseDefineEntities){
+                            if(applyDatabaseId.equals(databaseDefineEntity.getId())){
+                                applyDatabaseName += databaseDefineEntity.getDatabaseName()+",";
+                                break;
                             }
                         }
                     }
@@ -166,7 +169,15 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public DatabaseUserDto getDotById(String id) {
         DatabaseUserEntity databaseUserEntity = this.getById(id);
-        return this.databaseUserMapper.toDto(databaseUserEntity);
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(databaseUserEntity);
+        //调接口查申请人详情
+        UserEntity userEntity = userDao.findByUserName(databaseUserDto.getUserId());
+        if(userEntity != null){
+            databaseUserDto.setUserName(userEntity.getWebUsername());
+            databaseUserDto.setTutorPhone(userEntity.getTutorPhone());
+            databaseUserDto.setDeptName(userEntity.getDeptName());
+        }
+        return databaseUserDto;
     }
 
     @Override

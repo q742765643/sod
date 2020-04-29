@@ -1,9 +1,17 @@
 <template>
   <el-main class="DataStatistics">
     <fieldset>
-      <legend>{{rowData.database_name}}</legend>
-      <el-table :data="tableData" stripe style="width: 100%;">
-        <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <legend>{{rowData.DATABASE_NAME}}</legend>
+      <el-form ref="ruleForm" :model="queryParams" label-width="100px">
+        <el-form-item>
+          <el-radio-group v-model="queryParams.radio" @change="handleQuery">
+            <el-radio :label="1">全部在线</el-radio>
+            <el-radio :label="2">近线服务</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <el-table :data="tableData" stripe style="width: 100%;" row-key="id">
+        <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="statisticDate" label="统计日期">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.statisticDate) }}</span>
@@ -25,8 +33,8 @@
       <pagination
         v-show="total>0"
         :total="total"
-        :page.sync="searchObj.pageNum"
-        :limit.sync="searchObj.pageSize"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
         @pagination="searchFun"
       />
     </fieldset>
@@ -34,14 +42,24 @@
 </template>
 
 <script>
-import { datastatisticsList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  datastatisticsList,
+  updateIsAllLine
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "DataStatistics",
   props: { rowData: Object, tableInfo: Object },
   components: {},
   data() {
     return {
-      searchObj: { pageNum: 1, pageSize: 10 },
+      loading: false,
+      queryParams: {
+        databaseId: this.rowData.DATABASE_ID,
+        tableId: this.tableInfo.id,
+        pageNum: 1,
+        pageSize: 10
+      },
+      queryParams: {},
       tableData: [],
       total: 0
     };
@@ -50,13 +68,24 @@ export default {
     this.searchFun();
   }, */
   methods: {
-    // table自增定义方法
+    handleQuery(value) {
+      let obj = {};
+      obj.databaseId = this.rowData.DATABASE_ID;
+      obj.isAllLine = value;
+      updateIsAllLine(obj).then(response => {
+        this.tableData = response.data.pageData;
+        this.total = response.data.totalCount;
+        this.loading = false;
+      });
+    },
     // table自增定义方法
     table_index(index) {
-      return (this.searchObj.pageNum - 1) * this.searchObj.pageSize + index + 1;
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
     searchFun() {
-      datastatisticsList(this.searchObj).then(response => {
+      datastatisticsList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;

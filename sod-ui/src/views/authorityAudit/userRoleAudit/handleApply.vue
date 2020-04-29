@@ -1,10 +1,10 @@
 <template>
   <section class="handleApply">
-    <el-steps :active="stepNum" finish-status="success">
-      <el-step title="数据库访问账户"></el-step>
-      <el-step title="专题库" v-if="handleMsgObj.dbCreate=='1'"></el-step>
-      <el-step title="资料访问权限审核"></el-step>
-      <el-step title="完成"></el-step>
+    <el-steps :active="stepNum">
+      <el-step title="数据库访问账户" icon="el-icon-menu"></el-step>
+      <el-step title="专题库" icon="el-icon-s-ticket" v-show="handleMsgObj.dbCreate=='1'"></el-step>
+      <el-step title="资料访问权限审核" icon="el-icon-s-finance"></el-step>
+      <el-step title="完成" icon="el-icon-circle-check"></el-step>
     </el-steps>
     <el-card class="box-card" shadow="never" v-if="stepNum==0">
       <handleAccount :handleObj="handleObj" ref="AccountRef" @handleDialogClose="handleClose" />
@@ -106,37 +106,52 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
+      loading: false,
       tableData: [],
       multipleSelection: [],
-      stepNum: 1,
+      stepNum: 0,
       msgFormDialog: {},
       handleObj: { pageName: "业务用户审核" }
     };
   },
-  created() {
+  async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
-    console.log(this.handleObj);
-    this.initDatail();
   },
   methods: {
-    initDatail() {
-      findByUserId({ userId: this.handleObj.userName }).then(res => {
-        console.log(res.data);
+    async initDatail() {
+      await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
+        this.handleObj = res.data[0];
+        this.handleObj.pageName = "业务用户审核";
+        this.stepNum = 1;
       });
     },
     handleClose() {},
     nextStep() {
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
-        this.$refs.AccountRef.trueAdd();
-        this.stepNum = this.stepNum++;
+        // this.$refs.AccountRef.trueAdd();
+
+        if (this.handleMsgObj.dbCreate == "1") {
+          // 到专题库
+          this.initDatail();
+        }
         return;
       }
       if (this.stepNum == 1) {
-        this.$refs.AccountRef.trueAdd();
-        this.stepNum = this.stepNum++;
+        this.stepNum = 2;
         return;
       }
+    },
+    getList() {
+      let obj = {};
+      // obj.applyId = this.queryParams.id;
+      getRecordByApplyId(obj).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+        } else {
+          this.msgError(res.msg);
+        }
+      });
     },
     handlePower() {
       if (this.multipleSelection.lenght == 0) {

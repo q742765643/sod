@@ -43,13 +43,14 @@
     <!--查询存储结构概览-->
     <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select
-        f.META_DATA_NAME,f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,a.id
-        LOGIC_ID,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,
-        f.D_DATA_ID,e.DATABASE_NAME SPECIAL_DATABASE_NAME,ee.DATABASE_NAME,ee.DATABASE_TYPE,
+        f.META_DATA_NAME,f.CLASS_NAME,b.TABLE_NAME,c.LOGIC_NAME,
+        ee.DATABASE_NAME,a.DATA_CLASS_ID,a.LOGIC_FLAG,a.STORAGE_TYPE,a.DATABASE_ID,a.IS_COMPLETE,
+        f.D_DATA_ID,e.DATABASE_NAME as SPECIAL_DATABASE_NAME,ee.DATABASE_TYPE,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = ee.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = ee.id) BACKUP_ST,
-        h.*
+        h.CLASS_LOGIC_ID,h.STORAGE_DEFINE_IDENTIFIER,h.SYNC_IDENTIFIER,h.CLEAN_IDENTIFIER,h.MOVE_IDENTIFIER,
+        h.BACKUP_IDENTIFIER,h.ARCHIVING_IDENTIFIER,h.SYNC_ID,h.CLEAR_ID,h.MOVE_ID,h.BACKUP_ID,h.ID,a.ID LOGIC_ID
         from t_sod_data_class f
         INNER join t_sod_data_logic a on a.DATA_CLASS_ID = f.DATA_CLASS_ID
         left join t_sod_database e on a.DATABASE_ID = e.id
@@ -752,7 +753,7 @@
         b.d_data_id,b.class_name,c.class_name type_name,d.table_name,e.database_name
         FROM t_sod_database_special_read_write a
         LEFT JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
-        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON left(b.d_data_id,1)
+        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON SUBSTR(b.d_data_id,1)
         = c.d_data_id
         LEFT JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
         LEFT JOIN t_sod_database_define e ON a.database_id = e.id

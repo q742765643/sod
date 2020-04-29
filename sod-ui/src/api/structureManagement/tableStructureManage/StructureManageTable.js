@@ -334,3 +334,13 @@ export function saveDataClassBaseInfo(query) {
     params: query
   })
 }
+
+// 资料类型统计 单选
+
+export function updateIsAllLine(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/updateIsAllLine',
+    method: 'get',
+    params: query
+  })
+}

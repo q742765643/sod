@@ -73,9 +73,9 @@ export function empowerDatabaseSpecial(data) {
 }
 
 // 修改专题库基本信息
-export function update(data) {
+export function saveBase(data) {
   return request({
-    url: baseUrl + '/dm/databaseSpecial/update',
+    url: baseUrl + '/dm/databaseSpecial/save',
     method: 'post',
     data: data
   })

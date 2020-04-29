@@ -304,4 +304,14 @@ public class DataClassController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @PutMapping("/updateIsAllLine")
+    @ApiOperation(value = "修改近线服务", notes = "修改近线服务")
+    public ResultT<DataClassDto> updateIsAllLine(@RequestBody DataClassDto dataClassDto)
+    {
+        ResultT<DataClassDto> resultT=new ResultT<>();
+        dataClassDto= this.dataClassService.updateIsAllLine(dataClassDto);
+        resultT.setData(dataClassDto);
+        return resultT;
+    }
 }
