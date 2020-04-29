@@ -2,7 +2,7 @@
   <section class="handleApply">
     <el-steps :active="stepNum" finish-status="success">
       <el-step title="数据库访问账户"></el-step>
-      <el-step title="专题库" v-if="handleMsgObj.dbCreate=='1'"></el-step>
+      <el-step title="专题库" v-show="handleMsgObj.dbCreate=='1'"></el-step>
       <el-step title="资料访问权限审核"></el-step>
       <el-step title="完成"></el-step>
     </el-steps>
@@ -95,6 +95,7 @@ import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 资料访问权限审核
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
+import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 export default {
   name: "handleApply",
   props: {
@@ -107,22 +108,32 @@ export default {
     return {
       tableData: [],
       multipleSelection: [],
-      stepNum: 1,
+      stepNum: 0,
       msgFormDialog: {},
       handleObj: { pageName: "业务用户审核" }
     };
   },
-  created() {
+  async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
-    console.log(this.handleObj);
   },
   methods: {
+    async initDatail() {
+      await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
+        this.handleObj = res.data[0];
+        this.handleObj.pageName = "业务用户审核";
+        this.stepNum = 1;
+      });
+    },
     handleClose() {},
     nextStep() {
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
-        this.$refs.AccountRef.trueAdd();
-        this.stepNum = this.stepNum++;
+        // this.$refs.AccountRef.trueAdd();
+
+        if (this.handleMsgObj.dbCreate == "1") {
+          // 到专题库
+          this.initDatail();
+        }
         return;
       }
       if (this.stepNum == 1) {

@@ -71,3 +71,12 @@ export function exportDemo() {
     responseType: "arraybuffer"
   })
 }
+
+// 获取所有用户
+export function getUserByType(query) {
+  return request({
+    url: baseUrl + '/system/user/getUserByType',
+    method: 'get',
+    params: query
+  })
+}

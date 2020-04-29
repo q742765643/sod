@@ -268,6 +268,8 @@
 </template>
 
 <script>
+const uuid = require("uuid/v4");
+import { createSign } from "@/utils/auth";
 import {
   storageConfigurationList,
   updateColumnValue,
@@ -346,9 +348,29 @@ export default {
   },
   methods: {
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      const param = {
+        timestamp: new Date().getTime(),
+        nonce: uuid(),
+        data: JSON.stringify(this.queryParams)
+      };
+      let sign = createSign(param);
+      param.sign = sign;
+      window.location.href =
+        process.env.VUE_APP_DM +
+        "/dm/storageConfiguration/exportTable" +
+        "?data=" +
+        param.data +
+        "&timestamp=" +
+        param.timestamp +
+        "&nonce=" +
+        param.nonce +
+        "&sign=" +
+        param.sign;
+      /*  window.location.href =
+        process.env.VUE_APP_DM + "/dm/storageConfiguration/exportTable"; */
+      /*  exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
-      });
+      }); */
     },
     // table自增定义方法
     table_index(index) {

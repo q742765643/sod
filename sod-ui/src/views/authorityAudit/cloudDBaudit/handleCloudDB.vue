@@ -24,8 +24,8 @@
                 <el-option
                   v-for="(item,index) in userBox"
                   :key="index"
-                  :label="item.username"
-                  :value="item.userId"
+                  :label="item.webUsername"
+                  :value="item.username"
                 ></el-option>
               </el-select>
               <el-input v-else :disabled="true" size="small" v-model="msgFormDialog.userId"></el-input>
@@ -371,7 +371,8 @@ import {
   editCldb,
   saveCldb,
   exportDemo,
-  exprotFile
+  exprotFile,
+  getUserByType
 } from "@/api/authorityAudit/cloudDBaudit";
 import {
   chineseLengthTenValidation,
@@ -442,7 +443,7 @@ export default {
       searchObj: {},
       contantTaskChose: [],
       msgFormDialog: {
-        userId: "admin",
+        userId: "",
         department: "",
         telephone: "",
         storageLogic: "",
@@ -529,9 +530,10 @@ export default {
     };
   },
   created() {
+    this.getUserAll();
     this.searchObj = this.handleObj;
     this.msgFormDialog = this.handleObj;
-    this.msgFormDialog.userId = "admin";
+    //this.msgFormDialog.userId = "admin";
     this.getDicts("cloud_database_type").then(response => {
       this.storageLogicList = response.data;
     });
@@ -563,18 +565,20 @@ export default {
     },
     // 申请用户
     userChange(selectUserId) {
-      /*  let obj = {};
+      let obj = {};
       obj = this.userBox.find(item => {
         //这里的userBox就是上面遍历的数据源
-        return item.userId === selectUserId; //筛选出匹配数据
+        return item.userName === selectUserId; //筛选出匹配数据
       });
-      this.msgFormDialog.telephone = obj.phone;
-      this.msgFormDialog.department = obj.deptName; */
+      this.msgFormDialog.telephone = obj.tutorPhone;
+      this.msgFormDialog.department = obj.deptName;
     },
     // 获取所有用户信息
     getUserAll() {
-      this.axios.get(interfaceObj.databaseUser_allUserList).then(res => {
-        this.userBox = res.data.data;
+      getUserByType({
+        userType: 11
+      }).then(res => {
+        this.userBox = res.data;
       });
     },
 

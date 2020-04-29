@@ -241,6 +241,7 @@ import {
   update,
   exportTable
 } from "@/api/authorityAudit/topicLibraryAudit";
+import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 export default {
   name: "handleLiberyDialog",
 
@@ -289,19 +290,27 @@ export default {
     };
   },
   created() {
-    if (this.handleObj.pageName == "业务用户审核") {
-      this.msgFormDialog.simpleName = this.handleObj.userName; //申请材料
+    /* if (this.handleObj.pageName == "业务用户审核") {
+       findByUserId({ userId: this.handleObj.userName }).then(res => {
+         let data = res.data[0];
+         this.msgFormDialog.id=data.id;
+         this.msgFormDialog.simpleName = this.handleObj.userName; //申请材料
       this.msgFormDialog.uses = this.handleObj.remark; //用途
       this.msgFormDialog.sdbName = this.handleObj.remark; //用途
+      });
+     
     } else {
       if (this.handleObj.id) {
         this.initDetail();
       }
+    } */
+    if (this.handleObj.id) {
+      console.log(this.handleObj);
+      this.initDetail();
     }
 
     this.searchLibraryFun();
     this.loadReadList();
-    console.log(this.handleObj);
   },
   methods: {
     applyAuthFormatter(row, column) {
@@ -327,8 +336,8 @@ export default {
       getById({ id: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
-          if (!this.msgFormDialog.applyMaterial) {
-            this.$message({ type: "warning", message: "文件不存在" });
+          if (!this.msgFormDialog.applyMaterial && !this.handleObj.pageName) {
+            this.$message({ type: "danger", message: "文件不存在" });
           }
         }
       });
