@@ -38,6 +38,8 @@ public class DatabaseSpecialAuthorityDto extends BaseDto {
      */
     private Integer deleteTable;
 
+    private String databaseName;
+
     /**
      * 表数据访问权限
      */

@@ -1,6 +1,7 @@
 package com.piesat.dm.rpc.service.datatable;
 
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.common.MapUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
@@ -135,7 +136,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         //List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
         String sql = "select A.* ,B.data_class_id,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        return list;
+        List<Map<String, Object>> maps = MapUtil.transformMapList(list);
+        return maps;
     }
 
     @Override

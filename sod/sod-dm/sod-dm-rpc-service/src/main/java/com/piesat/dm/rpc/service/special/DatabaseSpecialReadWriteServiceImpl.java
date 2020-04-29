@@ -10,6 +10,7 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
+import jnr.ffi.annotations.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,38 +39,51 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     @Override
     public List<DatabaseSpecialReadWriteDto> getDotList(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
         List<DatabaseSpecialReadWriteDto> resultList = new ArrayList();
-        try{
-            Map<String,Object> paramMap = new HashMap<>();
-            paramMap.put("sdbId",databaseSpecialReadWriteDto.getSdbId());
-            paramMap.put("dataType",databaseSpecialReadWriteDto.getDataType().toString());
-            paramMap.put("typeName",databaseSpecialReadWriteDto.getTypeName());
-            paramMap.put("dataName",databaseSpecialReadWriteDto.getDataName());
-            paramMap.put("tableName",databaseSpecialReadWriteDto.getTableName());
-            paramMap.put("applyAuthority",databaseSpecialReadWriteDto.getApplyAuthority());
-            paramMap.put("examineStatus",databaseSpecialReadWriteDto.getExamineStatus());
+        try {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("sdbId", databaseSpecialReadWriteDto.getSdbId());
+            paramMap.put("dataType", databaseSpecialReadWriteDto.getDataType().toString());
+            paramMap.put("typeName", databaseSpecialReadWriteDto.getTypeName());
+            paramMap.put("dataName", databaseSpecialReadWriteDto.getDataName());
+            paramMap.put("tableName", databaseSpecialReadWriteDto.getTableName());
+            paramMap.put("applyAuthority", databaseSpecialReadWriteDto.getApplyAuthority());
+            paramMap.put("examineStatus", databaseSpecialReadWriteDto.getExamineStatus());
 
-            List<Map<String,Object>> dataList = mybatisQueryMapper.getDatabaseSpecialReadWriteList(paramMap);
-            if(dataList!=null&&dataList.size()>0){
-                for(Map<String,Object> map : dataList){
+            List<Map<String, Object>> dataList = mybatisQueryMapper.getDatabaseSpecialReadWriteList(paramMap);
+            if (dataList != null && dataList.size() > 0) {
+                for (Map<String, Object> map : dataList) {
                     DatabaseSpecialReadWriteDto dto = new DatabaseSpecialReadWriteDto();
-                    dto.setSdbId(map.get("SDB_ID")+"");
-                    dto.setDatabaseId(map.get("DATABASE_ID")+"");
-                    dto.setTypeName(map.get("TYPE_NAME")+"");
-                    dto.setDataName(map.get("CLASS_NAME")+"");
-                    dto.setDataClassId(map.get("DATA_CLASS_ID")+"");
-                    dto.setDDataId(map.get("D_DATA_ID")+"");
-                    dto.setTableName(map.get("TABLE_NAME")+"");
-                    dto.setDatabaseName(map.get("DATABASE_NAME")+"");
-                    dto.setApplyAuthority(Integer.parseInt(map.getOrDefault("APPLY_AUTHORITY",1).toString()));
-                    dto.setEmpowerAuthority(Integer.parseInt(map.getOrDefault("EMPOWER_AUTHORITY",1).toString()));
-                    dto.setExamineStatus(Integer.parseInt(map.getOrDefault("EXAMINE_STATUS",2).toString()));
+                    dto.setSdbId(map.get("SDB_ID") + "");
+                    dto.setDatabaseId(map.get("DATABASE_ID") + "");
+                    dto.setTypeName(map.get("TYPE_NAME") + "");
+                    dto.setDataName(map.get("CLASS_NAME") + "");
+                    dto.setDataClassId(map.get("DATA_CLASS_ID") + "");
+                    dto.setDDataId(map.get("D_DATA_ID") + "");
+                    dto.setTableName(map.get("TABLE_NAME") + "");
+                    dto.setDatabaseName(map.get("DATABASE_NAME") + "");
+                    dto.setApplyAuthority( getInteger(map,"APPLY_AUTHORITY", 1));
+                    dto.setEmpowerAuthority(getInteger(map,"EMPOWER_AUTHORITY", 1));
+                    dto.setExamineStatus(getInteger(map,"EXAMINE_STATUS", 1));
                     resultList.add(dto);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return resultList;
+    }
+
+    public Integer getInteger(Map<String, Object> map, String key, Integer def) {
+        Object o = map.get(key);
+        if (o != null) {
+            try {
+                return Integer.parseInt(o.toString());
+            } catch (Exception e) {
+                return def;
+            }
+        }else {
+            return def;
+        }
     }
 
     @Override
@@ -80,15 +94,16 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
 
     @Override
     public DatabaseSpecialReadWriteDto saveDto(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
-        DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity=databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto);
+        DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity = databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto);
         databaseSpecialReadWriteEntity = this.saveNotNull(databaseSpecialReadWriteEntity);
         return databaseSpecialReadWriteMapper.toDto(databaseSpecialReadWriteEntity);
     }
 
     @Override
     public List<Map<String, Object>> getRecordSpecialByTdbId(String sdbId, String userId) {
-        return mybatisQueryMapper.getRecordSpecialByTdbId(sdbId,userId);
+        return mybatisQueryMapper.getRecordSpecialByTdbId(sdbId, userId);
     }
+
     @Override
     public Map<String, Object> changeDataStatus(String tdbId, String physical, String data_class_id) {
         Map<String, Object> map = new HashMap<>();

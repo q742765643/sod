@@ -68,6 +68,7 @@ public class NewdataTableColumnDto extends BaseDto {
     public TableColumnDto toTableColumn(){
         TableColumnDto tc = new TableColumnDto();
         tc.setCElementCode(this.cElementCode);
+        tc.setDbEleCode(this.cElementCode);
         tc.setEleName(this.eleName);
         tc.setType(this.type);
         tc.setAccuracy(this.accuracy);

@@ -275,9 +275,14 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String sodApi = sod.getString("sodApi");
         String sodApp = sod.getString("sodApp");
         JSONObject sodData = sod.getJSONObject("sodData");
-        String dbIds = sodData.get("dbIds").toString();
-        String dbCreate = sodData.get("dbCreate").toString();
-        JSONArray applyData = sodData.getJSONArray("applyData");
+        String dbCreate = "0";
+        JSONArray applyData = null;
+        String dbIds = "";
+        if (sodData!=null){
+            dbIds = sodData.get("dbIds").toString();
+            dbCreate = sodData.get("dbCreate").toString();
+            applyData = sodData.getJSONArray("applyData");
+        }
 
         UserEntity byBizUserId = this.userDao.findByUserName(bizUserid);
         if (byBizUserId != null) {
@@ -308,33 +313,38 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
 //        String interfaceId = map.get("interfaceId");
 //        String nonce = map.get("nonce");
 //        String timestamp = map.get("timestamp");
-        UserEntity UserEntity = new UserEntity();
-        UserEntity.setUserType("11");
-        UserEntity.setNickName(webUsername);
-        UserEntity.setApplyPaper(applyPaper);
-        UserEntity.setApplyTime(new Date());
-        UserEntity.setAppName(appNames);
-        UserEntity.setBizIp(bizIp);
-        UserEntity.setBizType(bizType);
-        UserEntity.setUserName(bizUserid);
-        UserEntity.setChecked("0");
-        UserEntity.setDeptName(deptName);
-        UserEntity.setLastEditTime(new Date());
-        UserEntity.setLegalUnits(legalUnits);
-        UserEntity.setPassword(password);
-        UserEntity.setPhonenumber(phone);
-        UserEntity.setRemark(remark);
-        UserEntity.setTutorName(tutorName);
-        UserEntity.setTutorPhone(tutorPhone);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserType("11");
+        userEntity.setNickName(webUsername);
+        userEntity.setApplyPaper(applyPaper);
+        userEntity.setApplyTime(new Date());
+        userEntity.setAppName(appNames);
+        if (applyData!=null){
+            userEntity.setSodData("1");
+        }else {
+            userEntity.setSodData("0");
+        }
+        userEntity.setBizIp(bizIp);
+        userEntity.setBizType(bizType);
+        userEntity.setUserName(bizUserid);
+        userEntity.setChecked("0");
+        userEntity.setDeptName(deptName);
+        userEntity.setLastEditTime(new Date());
+        userEntity.setLegalUnits(legalUnits);
+        userEntity.setPassword(password);
+        userEntity.setPhonenumber(phone);
+        userEntity.setRemark(remark);
+        userEntity.setTutorName(tutorName);
+        userEntity.setTutorPhone(tutorPhone);
         Date date = DateUtils.dateTime("yyyy-MM-dd", validTime);
-        UserEntity.setValidTime(date);
-        UserEntity.setWebUserId(webUserid);
-        UserEntity.setWebUsername(webUsername);
-        UserEntity.setDbIds(dbIds);
-        UserEntity.setSodApi(sodApi);
-        UserEntity.setDbCreate(dbCreate);
-        UserEntity.setStatus("1".equals(sodApp) ? "0" : "1");
-        UserEntity userEntity = this.userDao.saveNotNull(UserEntity);
+        userEntity.setValidTime(date);
+        userEntity.setWebUserId(webUserid);
+        userEntity.setWebUsername(webUsername);
+        userEntity.setDbIds(dbIds);
+        userEntity.setSodApi(sodApi);
+        userEntity.setDbCreate(dbCreate);
+        userEntity.setStatus("1".equals(sodApp) ? "0" : "1");
+        userEntity = this.userDao.saveNotNull(userEntity);
 
         if ("1".equals(dbCreate)) {
             Map<String, String> spMap = new HashMap<>();

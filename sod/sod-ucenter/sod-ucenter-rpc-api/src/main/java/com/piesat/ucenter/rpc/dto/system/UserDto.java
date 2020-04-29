@@ -174,6 +174,10 @@ public class UserDto extends BaseDto {
     private String sodApi;
 
     /**
+     * 是否申请资料
+     */
+    private String sodData;
+    /**
      * 存储系统数据库申请
      */
     @ApiModelProperty("存储系统数据库申请")
