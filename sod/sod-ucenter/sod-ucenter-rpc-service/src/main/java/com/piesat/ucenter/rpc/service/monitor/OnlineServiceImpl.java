@@ -1,6 +1,8 @@
 package com.piesat.ucenter.rpc.service.monitor;
 
 import com.piesat.common.utils.StringUtils;
+import com.piesat.ucenter.entity.system.DeptEntity;
+import com.piesat.ucenter.mapper.system.DeptMapper;
 import com.piesat.ucenter.rpc.api.monitor.OnlineService;
 import com.piesat.ucenter.rpc.dto.monitor.OnlineDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -31,6 +33,9 @@ import java.util.List;
 public class OnlineServiceImpl implements OnlineService {
     @Autowired
     private SessionDAO sessionDAO;
+    @Autowired
+    private DeptMapper deptMapper;
+
     @Override
     public PageBean list(String ipaddr, String userName, int pageNum, int pageSize) {
         Collection<Session> keys = sessionDAO.getActiveSessions();
@@ -62,11 +67,10 @@ public class OnlineServiceImpl implements OnlineService {
                     userOnlineList.add(this.loginUserDtoToUserOnline(userDto));
                 }
             }
-
-
         }
-        Collections.reverse(userOnlineList);
         userOnlineList.removeAll(Collections.singleton(null));
+        Collections.sort(userOnlineList);
+        Collections.reverse(userOnlineList);
         int startIndex = (pageNum -1)* pageSize;
         int endIndex = ((pageNum -1) * pageSize) + pageSize;
         int size = userOnlineList.size();
@@ -138,6 +142,7 @@ public class OnlineServiceImpl implements OnlineService {
         if (StringUtils.isNull(user)) {
             return null;
         }
+        DeptEntity deptEntity=deptMapper.getById(user.getDeptId());
         OnlineDto OnlineDto = new OnlineDto();
         OnlineDto.setTokenId(user.getTokenId());
         OnlineDto.setUserName(user.getUserName());
@@ -146,6 +151,9 @@ public class OnlineServiceImpl implements OnlineService {
         OnlineDto.setBrowser(user.getBrowser());
         OnlineDto.setOs(user.getOs());
         OnlineDto.setLoginTime(user.getLoginDate());
+        if(deptEntity!=null){
+            OnlineDto.setDeptName(deptEntity.getDeptName());
+        }
         if (StringUtils.isNotNull(user.getDept())) {
             OnlineDto.setDeptName(user.getDept().getDeptName());
         }

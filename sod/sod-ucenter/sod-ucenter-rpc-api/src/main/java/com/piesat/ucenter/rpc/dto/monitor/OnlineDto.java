@@ -11,7 +11,7 @@ import java.util.Date;
  * @创建时间 2019/12/9 10:41
  */
 @Data
-public class OnlineDto {
+public class OnlineDto implements Comparable<OnlineDto>{
 
     /** 会话编号 */
     private String tokenId;
@@ -36,4 +36,9 @@ public class OnlineDto {
 
     /** 登录时间 */
     private Date loginTime;
+
+    @Override
+    public int compareTo(OnlineDto o) {
+        return this.getLoginTime().compareTo(o.getLoginTime());
+    }
 }
