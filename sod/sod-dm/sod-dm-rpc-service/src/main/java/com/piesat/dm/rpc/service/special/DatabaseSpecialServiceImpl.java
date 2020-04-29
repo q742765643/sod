@@ -204,6 +204,14 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 databaseName = databaseName.substring(0,databaseName.length()-1);
             }
             databaseSpecialDto.setDatabaseName(databaseName);
+
+            //调接口查申请人详情
+            UserEntity userEntity = userDao.findByUserName(databaseSpecialDto.getUserId());
+            if(userEntity != null){
+                databaseSpecialDto.setUserName(userEntity.getWebUsername());
+                databaseSpecialDto.setUserPhone(userEntity.getTutorPhone());
+                databaseSpecialDto.setDepartment(userEntity.getDeptName());
+            }
         }
         return databaseSpecialDto;
     }
