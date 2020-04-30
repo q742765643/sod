@@ -97,12 +97,33 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
                 returnList.add(t);
             }
         }
-        if (returnList.isEmpty())
+        removeMenuTree(menus,returnList);
+        if (!menus.isEmpty())
         {
-            returnList = menus;
+            returnList.addAll(menus);
         }
         return returnList;
     }
+
+    /**
+     * 菜单列表移除树结构列表中的节点
+     * @param menus  菜单列表
+     * @param menuTree 树结构列表
+     */
+    public void removeMenuTree(List<MenuDto> menus,List<MenuDto> menuTree){
+        for (int i=0;i<menuTree.size();i++){
+            MenuDto t = menuTree.get(i);
+            for(int j=0;j<menus.size();j++){
+                if(t.getId().equals(menus.get(j).getId())){
+                    menus.remove(menus.get(j));
+                    break;
+                }
+            }
+            List<MenuDto> children = t.getChildren();
+            removeMenuTree(menus,children);
+        }
+    }
+
     /**
      * 根据用户ID查询权限
      *
