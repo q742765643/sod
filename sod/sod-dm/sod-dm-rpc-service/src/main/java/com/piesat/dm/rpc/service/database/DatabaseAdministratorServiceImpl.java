@@ -52,7 +52,7 @@ public class DatabaseAdministratorServiceImpl extends BaseService<DatabaseAdmini
 
     @Override
     public DatabaseAdministratorDto getDotById(String id) {
-        DatabaseAdministratorEntity databaseAdministratorEntity = this.databaseAdministratorDao.getOne(id);
+        DatabaseAdministratorEntity databaseAdministratorEntity = this.databaseAdministratorDao.findById(id).orElse(null);
         return this.databaseAdministratorMapper.toDto(databaseAdministratorEntity);
     }
 

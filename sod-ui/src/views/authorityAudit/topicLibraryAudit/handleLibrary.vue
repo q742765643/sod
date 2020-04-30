@@ -75,7 +75,7 @@
           </el-row>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="专题库资料">
+      <el-tab-pane label="专题库资料" v-if="!handleObj.pageName">
         <!-- 查询条件 -->
         <section class="searchCon">
           <el-form
@@ -290,20 +290,6 @@ export default {
     };
   },
   created() {
-    /* if (this.handleObj.pageName == "业务用户审核") {
-       findByUserId({ userId: this.handleObj.userName }).then(res => {
-         let data = res.data[0];
-         this.msgFormDialog.id=data.id;
-         this.msgFormDialog.simpleName = this.handleObj.userName; //申请材料
-      this.msgFormDialog.uses = this.handleObj.remark; //用途
-      this.msgFormDialog.sdbName = this.handleObj.remark; //用途
-      });
-     
-    } else {
-      if (this.handleObj.id) {
-        this.initDetail();
-      }
-    } */
     if (this.handleObj.id) {
       console.log(this.handleObj);
       this.initDetail();
