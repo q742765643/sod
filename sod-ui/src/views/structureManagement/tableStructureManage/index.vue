@@ -337,18 +337,25 @@ export default {
           message: "请选择一条数据"
         });
       } else {
-        console.log(this.currentRow);
-        delByClass({ dataClassId: this.currentRow[0].DATA_CLASS_ID }).then(
-          response => {
-            if (response.code == 200) {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-              this.searchFun("search");
-            }
-          }
-        );
+        this.$confirm("是否删除资料" + this.currentRow[0].CLASS_NAME, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            delByClass({ dataClassId: this.currentRow[0].DATA_CLASS_ID }).then(
+              response => {
+                if (response.code == 200) {
+                  this.$message({
+                    type: "success",
+                    message: "删除成功"
+                  });
+                  this.searchFun("search");
+                }
+              }
+            );
+          })
+          .catch(() => {});
       }
     },
     composeValue(item, row) {

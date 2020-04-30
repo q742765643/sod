@@ -61,7 +61,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        id: ""
+        dataServiceId: this.rowData.DATA_CLASS_ID
       },
       total: 0,
       tableData: [],

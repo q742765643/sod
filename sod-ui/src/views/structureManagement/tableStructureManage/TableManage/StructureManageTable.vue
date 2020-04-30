@@ -571,24 +571,26 @@ export default {
         var scrollHeight = e.srcElement.scrollHeight; //滚动条高度
         var clientHeight = e.srcElement.clientHeight; //可视高度
         var box = document.getElementById("box");
-        var lous = box.getElementsByClassName("floor"); //楼层
-        var sideNav = document.getElementById("rightNav");
-        var btns = sideNav.getElementsByTagName("li"); //按钮
-        for (var i = 0; i < lous.length; i++) {
-          if (scrollTop >= lous[i].offsetTop) {
-            // console.log(i);
-            //排他 设置高亮
-            for (var j = 0; j < btns.length; j++) {
-              btns[j].className = "";
+        if (box) {
+          var lous = box.getElementsByClassName("floor"); //楼层
+          var sideNav = document.getElementById("rightNav");
+          var btns = sideNav.getElementsByTagName("li"); //按钮
+          for (var i = 0; i < lous.length; i++) {
+            if (scrollTop >= lous[i].offsetTop) {
+              // console.log(i);
+              //排他 设置高亮
+              for (var j = 0; j < btns.length; j++) {
+                btns[j].className = "";
+              }
+              btns[i].className = "active";
             }
-            btns[i].className = "active";
-          }
-          if (scrollTop + clientHeight >= scrollHeight) {
-            for (var j = 0; j < btns.length; j++) {
-              btns[j].className = "";
+            if (scrollTop + clientHeight >= scrollHeight) {
+              for (var j = 0; j < btns.length; j++) {
+                btns[j].className = "";
+              }
+              // 把距离顶部的距离加上可视区域的高度 等于或者大于滚动条的总高度就是到达底部
+              btns[lous.length - 1].className = "active";
             }
-            // 把距离顶部的距离加上可视区域的高度 等于或者大于滚动条的总高度就是到达底部
-            btns[lous.length - 1].className = "active";
           }
         }
       }

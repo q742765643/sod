@@ -1,6 +1,13 @@
 <template>
   <el-main class="dataServeManage">
-    <fieldset>
+    <el-button
+      type="primary"
+      :icon="conIcon"
+      @click="handHideOr"
+      size="small"
+      style="position: absolute;right: 0;"
+    ></el-button>
+    <fieldset v-show="conIcon =='el-icon-arrow-up'">
       <legend>{{'服务基本信息'}}</legend>
       <el-form ref="form" :model="baseServe" label-width="140px">
         <el-row>
@@ -31,19 +38,13 @@
         </el-row>
       </el-form>
     </fieldset>
-    <fieldset style="margin-top:20px;margin-bottom:20px;">
+    <fieldset style="margin-top:20px;margin-bottom:20px;" v-show="conIcon =='el-icon-arrow-up'">
       <legend>{{'默认配置设置'}}</legend>
       <el-form ref="form" :model="baseSet" label-width="120px" :rules="baseRules">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="区域选择">
-              <el-select
-                filterable
-                v-model="baseSet.region"
-                placeholder="请选择"
-                size="small"
-                prop="region"
-              >
+            <el-form-item label="区域选择" prop="region">
+              <el-select filterable v-model="baseSet.region" placeholder="请选择" size="small">
                 <el-option
                   v-for="item in baseAreaOptions"
                   :key="item.value"
@@ -244,34 +245,40 @@
               <el-input placeholder="要素单位" v-model="msgFormDialog.eleUnit"></el-input>
             </el-form-item>
           </el-col>
-
+          <el-col :span="12">
+            <el-form-item label="GRIB版本">
+              <el-input placeholder="GRIB版本" v-model="msgFormDialog.gribVersion"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="资料时次">
               <el-input placeholder="资料时次" v-model="msgFormDialog.eleHours"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="空间分辨率">
               <el-input placeholder="空间分辨率" v-model="msgFormDialog.gridPixel"></el-input>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="预报时效单位">
               <el-input placeholder="预报时效单位" v-model="msgFormDialog.timeUnit"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="层次单位">
               <el-input placeholder="层次单位" v-model="msgFormDialog.levelUnit"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             <el-form-item label="预报时效列表">
-              <el-input placeholder="预报时效列表" v-model="msgFormDialog.timeList"></el-input>
+              <el-input type="textarea" placeholder="预报时效列表" v-model="msgFormDialog.timeList"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -304,6 +311,7 @@ export default {
   props: { rowData: Object },
   data() {
     return {
+      conIcon: "el-icon-arrow-up",
       repeatIndex: 0,
       total: 0,
       tableData: [],
@@ -378,6 +386,13 @@ export default {
     table_index(index) {
       return (this.searchObj.pageNum - 1) * this.searchObj.pageSize + index + 1;
     },
+    handHideOr() {
+      if (this.conIcon == "el-icon-arrow-up") {
+        this.conIcon = "el-icon-arrow-down";
+      } else {
+        this.conIcon = "el-icon-arrow-up";
+      }
+    },
     searchFun() {
       dataserverconfiglist(this.searchObj).then(response => {
         this.tableData = response.data.pageData;
@@ -408,8 +423,8 @@ export default {
         this.optionsLevels = response.data;
       });
     },
-    modeEleQueryAll() {
-      serviceCodeQueryAll().then(response => {
+    async modeEleQueryAll() {
+      await serviceCodeQueryAll().then(response => {
         if (response.code == 200) {
           this.eleQueryAll = response.data;
         } else {
@@ -460,15 +475,24 @@ export default {
         }
       });
     },
-    add() {
+    async add() {
       if (this.baseSet.region) {
-        this.msgFormDialog = {};
-        this.msgFormDialog = this.baseSet;
-        this.msgFormDialog.dataServiceId = this.rowData.DATA_CLASS_ID;
         this.dialogTitle = "新增数据服务信息";
-        this.getAllLevelMethods();
-        this.modeEleQueryAll();
+        await this.getAllLevelMethods();
+        await this.modeEleQueryAll();
         this.dataServeDialog = true;
+        this.msgFormDialog = {
+          num: 85,
+          scaleDivisor: 1,
+          eleHours: "0,12",
+          gridPixel: "0.25*0.25",
+          dbEleName: this.eleQueryAll[0].eleCodeShort,
+          levelType: this.optionsLevels[0].levelType,
+          gribVersion: this.baseSet.gribVersion,
+          timeUnit: this.baseSet.timeUnit,
+          areaId: this.baseSet.areaId,
+          dataServiceId: this.rowData.DATA_CLASS_ID
+        };
       } else {
         this.$message({
           type: "error",
@@ -669,6 +693,9 @@ export default {
   .areaSelect,
   .areaTop {
     margin-bottom: 10px;
+  }
+  .areaTop {
+    width: 80%;
   }
   .el-select {
     width: 100%;
