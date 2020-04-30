@@ -2,131 +2,121 @@
   <section class="filedSearchDeploy">
     <el-tabs class="pageTas" v-model="activeName" @click="pageTasChange">
       <el-tab-pane label="基本信息" name="first">
-        <el-scrollbar wrap-class="scrollbar-wrapper">
-          <el-form
-            :model="msgFormDialog"
-            ref="msgFormDialog"
-            :rules="baseFormRules"
-            class="baseForm"
-            label-width="140px"
-          >
-            <el-form-item prop="schemaName" label="模式名称:">
-              <el-input
-                size="small"
-                v-model="msgFormDialog.databaseDto.schemaName"
-                placeholder="请输入数据库实例"
-              />
-            </el-form-item>
+        <el-form
+          :model="msgFormDialog"
+          ref="msgFormDialog"
+          :rules="baseFormRules"
+          class="baseForm"
+          label-width="140px"
+        >
+          <el-form-item prop="schemaName" label="模式名称:">
+            <el-input
+              size="small"
+              v-model="msgFormDialog.databaseDto.schemaName"
+              placeholder="请输入数据库实例"
+            />
+          </el-form-item>
 
-            <el-form-item label="数据库分类:">
-              <el-input
-                size="small"
-                disabled="disabled"
-                v-model="msgFormDialog.databaseDto.databaseClassify"
-              />
-            </el-form-item>
-            <el-form-item label="数据库名称:">
-              <el-input
-                size="small"
-                disabled="disabled"
-                v-model="msgFormDialog.databaseDto.databaseName"
-                placeholder="请输入数据库实例"
-              />
-            </el-form-item>
-            <el-form-item prop="id" label="数据库ID:">
-              <el-input
-                size="small"
-                :disabled="isDbIdDisable"
-                v-model="msgFormDialog.id"
-                placeholder="请输入数据库ID"
-              />
-            </el-form-item>
-            <el-form-item prop="databaseName" label="数据库名称:">
-              <el-input size="small" v-model="msgFormDialog.databaseName" placeholder="请输入数据库名称" />
-            </el-form-item>
-            <el-form-item prop="serialNumber" label="显示序号:">
-              <el-input-number
-                class="number"
-                size="small"
-                v-model="msgFormDialog.serialNumber"
-                placeholder="请输入显示序号"
-              />
-            </el-form-item>
-            <el-form-item prop="databaseInstance" label="数据库实例:">
-              <el-input
-                size="small"
-                v-model="msgFormDialog.databaseInstance"
-                placeholder="请输入数据库实例"
-              />
-            </el-form-item>
-            <el-form-item prop="databaseType" label="数据库类型:">
-              <el-select v-model="msgFormDialog.databaseType">
-                <el-option
-                  v-for="item in dictsList"
-                  :key="item.dictValue"
-                  :label="item.dictLabel"
-                  :value="item.dictValue"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item prop="driverClassName" label="数据库驱动:">
-              <el-input
-                size="small"
-                v-model="msgFormDialog.driverClassName"
-                placeholder="请输入数据库驱动"
-              />
-            </el-form-item>
-            <el-form-item prop="databaseIp" label="数据库IP:">
-              <el-input size="small" v-model="msgFormDialog.databaseIp" placeholder="请输入数据库IP" />
-            </el-form-item>
-            <el-form-item prop="databasePort" label="数据库端口:">
-              <el-input-number
-                class="number"
-                size="small"
-                v-model="msgFormDialog.databasePort"
-                placeholder="请输入数据库端口"
-              />
-            </el-form-item>
-            <el-form-item prop="databaseUrl" label="数据库访问地址:">
-              <el-row>
-                <el-col :span="20">
-                  <el-input
-                    size="small"
-                    v-model="msgFormDialog.databaseUrl"
-                    placeholder="请输入数据库访问地址"
-                  />
-                </el-col>
-                <el-col :span="4" class="unitFormItem">
-                  <el-button size="small" @click="checkParam()" type="primary" class="childBtn">测试连接</el-button>
-                </el-col>
-              </el-row>
-            </el-form-item>
-            <el-form-item prop="upUrl" label="UP层访问地址:">
-              <el-input size="small" v-model="msgFormDialog.upUrl" placeholder="请输入UP层访问地址" />
-            </el-form-item>
-            <el-form-item prop="userDisplayControl" label="显示控制:">
-              <el-select v-model="msgFormDialog.userDisplayControl" size="small">
-                <el-option label="显示" :value="1"></el-option>
-                <el-option label="不显示" :value="2"></el-option>
-                <el-option label="前端不显示" :value="3"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="主备类型:">
-              <el-select v-model="msgFormDialog.mainBakType" size="small">
-                <el-option label="主库" :value="1"></el-option>
-                <el-option label="备份库" :value="2"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="应用场景:">
-              <el-input size="small" v-model="msgFormDialog.databaseDesc" placeholder="请输入应用场景" />
-            </el-form-item>
-            <el-form-item label="总容量:" prop="databaseCapacity">
-              <el-input size="small" v-model="msgFormDialog.databaseCapacity" placeholder="请输入总容量">
-                <template slot="append">TB</template>
-              </el-input>
-            </el-form-item>
-          </el-form>
-        </el-scrollbar>
+          <el-form-item label="数据库分类:">
+            <el-input
+              size="small"
+              disabled="disabled"
+              v-model="msgFormDialog.databaseDto.databaseClassify"
+            />
+          </el-form-item>
+          <el-form-item label="数据库名称:">
+            <el-input
+              size="small"
+              disabled="disabled"
+              v-model="msgFormDialog.databaseDto.databaseName"
+              placeholder="请输入数据库实例"
+            />
+          </el-form-item>
+          <el-form-item prop="id" label="数据库ID:">
+            <el-input
+              size="small"
+              :disabled="isDbIdDisable"
+              v-model="msgFormDialog.id"
+              placeholder="请输入数据库ID"
+            />
+          </el-form-item>
+          <el-form-item prop="databaseName" label="数据库名称:">
+            <el-input size="small" v-model="msgFormDialog.databaseName" placeholder="请输入数据库名称" />
+          </el-form-item>
+          <el-form-item prop="serialNumber" label="显示序号:">
+            <el-input-number
+              class="number"
+              size="small"
+              v-model="msgFormDialog.serialNumber"
+              placeholder="请输入显示序号"
+            />
+          </el-form-item>
+          <el-form-item prop="databaseInstance" label="数据库实例:">
+            <el-input size="small" v-model="msgFormDialog.databaseInstance" placeholder="请输入数据库实例" />
+          </el-form-item>
+          <el-form-item prop="databaseType" label="数据库类型:">
+            <el-select v-model="msgFormDialog.databaseType">
+              <el-option
+                v-for="item in dictsList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="driverClassName" label="数据库驱动:">
+            <el-input size="small" v-model="msgFormDialog.driverClassName" placeholder="请输入数据库驱动" />
+          </el-form-item>
+          <el-form-item prop="databaseIp" label="数据库IP:">
+            <el-input size="small" v-model="msgFormDialog.databaseIp" placeholder="请输入数据库IP" />
+          </el-form-item>
+          <el-form-item prop="databasePort" label="数据库端口:">
+            <el-input-number
+              class="number"
+              size="small"
+              v-model="msgFormDialog.databasePort"
+              placeholder="请输入数据库端口"
+            />
+          </el-form-item>
+          <el-form-item prop="databaseUrl" label="数据库访问地址:">
+            <el-row>
+              <el-col :span="20">
+                <el-input
+                  size="small"
+                  v-model="msgFormDialog.databaseUrl"
+                  placeholder="请输入数据库访问地址"
+                />
+              </el-col>
+              <el-col :span="4" class="unitFormItem">
+                <el-button size="small" @click="checkParam()" type="primary" class="childBtn">测试连接</el-button>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item prop="upUrl" label="UP层访问地址:">
+            <el-input size="small" v-model="msgFormDialog.upUrl" placeholder="请输入UP层访问地址" />
+          </el-form-item>
+          <el-form-item prop="userDisplayControl" label="显示控制:">
+            <el-select v-model="msgFormDialog.userDisplayControl" size="small">
+              <el-option label="显示" :value="1"></el-option>
+              <el-option label="不显示" :value="2"></el-option>
+              <el-option label="前端不显示" :value="3"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="主备类型:">
+            <el-select v-model="msgFormDialog.mainBakType" size="small">
+              <el-option label="主库" :value="1"></el-option>
+              <el-option label="备份库" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="应用场景:">
+            <el-input size="small" v-model="msgFormDialog.databaseDesc" placeholder="请输入应用场景" />
+          </el-form-item>
+          <el-form-item label="总容量:" prop="databaseCapacity">
+            <el-input size="small" v-model="msgFormDialog.databaseCapacity" placeholder="请输入总容量">
+              <template slot="append">TB</template>
+            </el-input>
+          </el-form-item>
+        </el-form>
       </el-tab-pane>
       <el-tab-pane label="存储信息" name="second">
         <el-row :gutter="10" class="handleTableBox">
@@ -568,15 +558,9 @@ export default {
   .childBtn {
     margin-left: 2px;
   }
-  .el-tab-pane {
-    height: 400px;
-    overflow: hidden;
-    .el-scrollbar {
-      height: 100%;
-      .el-scrollbar__wrap {
-        overflow-x: hidden;
-      }
-    }
+
+  .el-table {
+    margin-bottom: 20px;
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <section class="stepDreg">
     <div class="loadTable">
       <el-steps :active="stepNum" finish-status="success">
-        <el-step title="储存元数据注册"></el-step>
+        <el-step title="存储元数据注册"></el-step>
         <el-step title="表结构管理"></el-step>
         <el-step title="数据同步"></el-step>
         <el-step title="数据迁移"></el-step>
@@ -142,6 +142,7 @@ export default {
       // 储存元数据注册
       if (this.stepNum == 0) {
         this.$refs.materialRef.makeSureSave();
+        return;
       }
       // 表结构管理
       if (this.stepNum == 1) {
@@ -158,6 +159,7 @@ export default {
           });
           return;
         }
+        return;
       }
       // 数据同步
       if (this.stepNum == 2) {
@@ -167,6 +169,7 @@ export default {
         this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         this.$refs.syncRef.trueDialog("ruleForm");
         this.stepNum = 3;
+        return;
       }
       // 数据迁移
       if (this.stepNum == 3) {
@@ -176,11 +179,13 @@ export default {
         this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         this.$refs.moveRef.trueDialog("ruleForm");
         this.stepNum = 4;
+        return;
       }
       // 数据备份
       if (this.stepNum == 4) {
         this.$refs.backupRef.trueDialog("ruleForm");
         this.stepNum = 5;
+        return;
       }
     },
 
