@@ -313,7 +313,9 @@ public class ExcelUtil<T>
             String filename = encodingFilename(sheetName);
             response.setContentType("application/octet-stream;charset=UTF-8" );
             response.setCharacterEncoding("UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+//            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+            response.addHeader("Access-Control-Expose-Headers","content-disposition");
+            response.addHeader("content-disposition","attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
             out=response.getOutputStream();
             //out =new FileOutputStream("/zzj/data/ssssss.xlsx");
             wb.write(out);
