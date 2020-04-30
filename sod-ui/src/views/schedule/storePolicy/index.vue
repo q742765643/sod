@@ -134,12 +134,23 @@
     <el-dialog :title="dialogTitle" :visible.sync="moveDialog" width="800px" v-dialogDrag>
       <handleMove @cancelHandle="cancelHandle" v-if="moveDialog" :handleObj="handleObj"></handleMove>
     </el-dialog>
+    <!-- 数据同步 -->
+    <el-dialog :title="dialogTitle" :visible.sync="SyncDialog" width="80%" v-dialogDrag>
+      <handleSync
+        v-if="SyncDialog"
+        :handleObj="handleObj"
+        @resetQuery="cancelHandle"
+        ref="myHandleServer"
+      />
+    </el-dialog>
   </div>
 </template>
 <script>
 import handleClear from "@/views/schedule/clear/handleClear";
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 import handleMove from "@/views/schedule/move/handleMove";
+// 数据同步
+import handleSync from "@/views/schedule/dataSync/handleSync";
 import { strategyTree, findData } from "@/api/schedule/storePolicy";
 import { delBackup } from "@/api/schedule/backup/backup";
 import { delClear } from "@/api/schedule/clear/clear";
@@ -148,7 +159,8 @@ export default {
   components: {
     handleBackUp,
     handleClear,
-    handleMove
+    handleMove,
+    handleSync
   },
   data() {
     return {
@@ -179,7 +191,8 @@ export default {
       clearDialog: false,
       backUpDialog: false,
       moveDialog: false,
-      handleObj: {}
+      handleObj: {},
+      SyncDialog: false //数据同步
     };
   },
   async created() {
@@ -256,14 +269,14 @@ export default {
         this.dialogTitle = "添加数据备份配置信息";
         this.backUpDialog = true;
       } else if (name == "清除") {
-        this.dialogTitle = "添加迁移清除配置信息";
+        this.dialogTitle = "添加数据清除配置信息";
         this.clearDialog = true;
       } else if (name == "迁移") {
-        this.dialogTitle = "添加迁移清除配置信息";
+        this.dialogTitle = "添加数据迁移配置信息";
         this.moveDialog = true;
       } else if (name == "同步") {
-        this.dialogTitle = "添加迁移清除配置信息";
-        this.clearDialog = true;
+        this.dialogTitle = "添加同步配置信息";
+        this.SyncDialog = true;
       }
     },
     editRow(item, name) {
@@ -271,17 +284,17 @@ export default {
       this.handleObj = {};
       this.handleObj.id = item.taskId;
       if (name == "备份") {
-        this.dialogTitle = "添加数据备份配置信息";
+        this.dialogTitle = "编辑数据备份配置信息";
         this.backUpDialog = true;
       } else if (name == "清除") {
-        this.dialogTitle = "添加迁移清除配置信息";
+        this.dialogTitle = "编辑数据移清除配置信息";
         this.clearDialog = true;
       } else if (name == "迁移") {
-        this.dialogTitle = "添加迁移清除配置信息";
+        this.dialogTitle = "编辑数据迁移配置信息";
         this.moveDialog = true;
       } else if (name == "同步") {
-        this.dialogTitle = "添加迁移清除配置信息";
-        this.clearDialog = true;
+        this.dialogTitle = "编辑数据同步配置信息";
+        this.SyncDialog = true;
       }
     },
     startJob() {},
@@ -340,6 +353,10 @@ export default {
     .el-scrollbar__bar.is-horizontal {
       display: none;
     }
+    .el-card {
+      height: 308px;
+      margin-top: 20px;
+    }
   }
   .headName {
     width: 100%;
@@ -349,10 +366,7 @@ export default {
     background-color: #f4f4f5;
     color: #909399;
   }
-  .el-card {
-    height: 308px;
-    margin-top: 20px;
-  }
+
   .cardBox {
     padding: 0 20px;
   }

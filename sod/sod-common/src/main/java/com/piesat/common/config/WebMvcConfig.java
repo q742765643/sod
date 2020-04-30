@@ -141,10 +141,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .allowedOrigins("*")
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                //设置是否允许跨域传cookie
-                .allowCredentials(true)
                 //设置缓存时间，减少重复响应
-                .maxAge(3600);
+                .maxAge(3600)
+                .exposedHeaders("Content-Disposition")
+                //设置是否允许跨域传cookie
+                .allowCredentials(true);
     }
 
     public String getSavePath() {

@@ -139,6 +139,7 @@ export default {
         let data = res.data;
         this.uncheckNum =
           data.xzzl.uncheck +
+          data.sjsq.uncheck +
           data.sjkzh.uncheck +
           data.ywztk.uncheck +
           data.ysjk.uncheck;

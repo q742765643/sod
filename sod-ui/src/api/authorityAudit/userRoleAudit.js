@@ -18,3 +18,24 @@ export function findByUserId(query) {
     params: query
   })
 }
+
+
+// 根据用户id查询申请资料信息
+export function getRecordByByUserId(query) {
+  return request({
+    url: baseUrl + '/dm/dataAuthorityApply/getRecordByByUserId',
+    method: 'get',
+    params: query
+  })
+}
+
+// 点完成
+
+
+export function editBase(query) {
+  return request({
+    url: baseUrl + '/system/user/editBase',
+    method: 'put',
+    params: query
+  })
+}
