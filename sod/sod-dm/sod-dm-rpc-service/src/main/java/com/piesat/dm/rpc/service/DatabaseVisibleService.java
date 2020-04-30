@@ -131,21 +131,42 @@ public class DatabaseVisibleService {
     }
 
     public ResultT getDataclassTree(String bizUserId, String dataBaseId) {
-        dataBaseId = dataBaseId == null ? "":dataBaseId;
+        dataBaseId = dataBaseId == null ? "" : dataBaseId;
         List<LinkedHashMap<String, Object>> dataClassByBizUserOrDatabase = this.mybatisQueryMapper.getDataClassByBizUserOrDatabase(bizUserId, dataBaseId);
         List<String> list = new ArrayList<>();
         for (LinkedHashMap<String, Object> obj : dataClassByBizUserOrDatabase) {
             list.add(obj.get("DATA_CLASS_ID").toString());
         }
+        if (list == null || list.size() == 0) {
+            return ResultT.failed("无资料");
+        }
         List<LinkedHashMap<String, Object>> dataclassTreeByClassIds = this.mybatisQueryMapper.getDataclassTreeByClassIds(list);
-        return ResultT.success(dataclassTreeByClassIds);
+        List<Map<String, Object>> ll = new ArrayList<>();
+        for (LinkedHashMap<String, Object> map : dataclassTreeByClassIds) {
+            Map<String, Object> mm = new HashMap<>();
+            if (map.get("EXPR1").equals(4)) {
+                mm.put("DATA_LEVEL", 1);
+            } else if (map.get("EXPR1").equals(3)) {
+                mm.put("DATA_LEVEL", 2);
+            } else if (map.get("EXPR1").equals(2)) {
+                mm.put("DATA_LEVEL", 3);
+            } else if (map.get("EXPR1").equals(1)) {
+                mm.put("DATA_LEVEL", 4);
+            }
+            mm.put("META_DATA_STOR_TYPE", map.get("TYPE").equals(2) ? "资料" : "目录");
+            mm.put("PARENT_CLASS_ID", map.get("PARENT_ID"));
+            mm.put("CLASS_NAME", map.get("CLASS_NAME"));
+            mm.put("DATA_CLASS_ID", map.get("DATA_CLASS_ID"));
+            ll.add(mm);
+        }
+        return ResultT.success(ll);
     }
 
 
     public ResultT getTable(String bizUserId, String dataclassId) {
         List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
         List<DataAuthorityRecordDto> dataAuthorityRecordList = new ArrayList<>();
-        for (DataAuthorityApplyDto d:dataAuthorityApplyDto ) {
+        for (DataAuthorityApplyDto d : dataAuthorityApplyDto) {
             dataAuthorityRecordList.addAll(d.getDataAuthorityRecordList());
         }
         DataClassDto byDataClassId = dataClassService.findByDataClassId(dataclassId);
@@ -252,7 +273,10 @@ public class DatabaseVisibleService {
 
     public ResultT getSpecialInfo(String specialId) {
         JSONObject jo = new JSONObject();
-        DatabaseSpecialEntity ds = this.databaseSpecialDao.getOne(specialId);
+        DatabaseSpecialEntity ds = this.databaseSpecialDao.findById(specialId).orElse(null);
+        if (ds == null) {
+            return ResultT.failed("不存在");
+        }
         JSONObject dd = new JSONObject();
         dd.put("TDB_ID", ds.getId());
         dd.put("TDB_NAME", ds.getSdbName());
@@ -293,7 +317,7 @@ public class DatabaseVisibleService {
         JSONObject tt = new JSONObject();
         tt.put("databaseUP_ID", userDto.getUserName());
         tt.put("databaseUP_PASSWORD", AESUtil.aesDecrypt(userDto.getPassword()).trim());
-        tt.put("returnCode",0);
+        tt.put("returnCode", 0);
         return ResultT.success(tt);
     }
 
