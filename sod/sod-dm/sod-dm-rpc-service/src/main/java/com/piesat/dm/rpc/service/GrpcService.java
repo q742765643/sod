@@ -22,10 +22,12 @@ import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
@@ -105,6 +107,8 @@ public class GrpcService {
     private TableColumnDao tableColumnDao;
     @Autowired
     private TableColumnMapper tableColumnMapper;
+    @Autowired
+    private DatabaseService databaseService;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -295,6 +299,7 @@ public class GrpcService {
         List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
         List<DatabaseDefineDto> all = this.databaseDefineService.all();
+        List<DatabaseDto> databaseList = this.databaseService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -306,9 +311,9 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDefineDto DatabaseDefineDto : all) {
-                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
+                for (DatabaseDto databaseDto : databaseList) {
+                    if (databaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName());
                     }
                 }
             }
