@@ -1109,7 +1109,7 @@
         set AUTHORIZE=#{AUTHORIZE}
         <where>
             <if test="DATA_CLASS_ID != null">
-                and DATA_CLASS_ID = #{DATA_CLASS_ID},
+                and DATA_CLASS_ID = #{DATA_CLASS_ID}
             </if>
             <if test="DATABASE_ID != null  and DATABASE_ID  != ''">
                 and DATABASE_ID = #{DATABASE_ID}
@@ -1167,7 +1167,7 @@
 
     <select id="getDataclassTreeByClassIds" resultType="java.util.LinkedHashMap" parameterType="java.util.List">
         SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,level
-        FROM
+        FROM  T_SOD_DATA_CLASS
         START WITH DATA_CLASS_ID IN
         <foreach collection="list" item="e" separator="," open="(" close=")">
             #{e}
@@ -1176,14 +1176,14 @@
     </select>
 
 
-    <select id="getDataClassByBizUserOrDatabase">
+    <select id="getDataClassByBizUserOrDatabase" parameterType="String"  resultType="java.util.LinkedHashMap">
         select b.data_class_id from t_sod_data_authority_apply a left join t_sod_data_authority_record b  on a.id=b.apply_id
         <where>
-            <if test="userId != null and userId != ''">
-                and a.user_id = #{userId},
+            <if test="bizUserId != null and bizUserId != ''">
+                and a.user_id = #{bizUserId}
             </if>
             <if test="database_id != null and database_id != ''">
-                and b.database_id = #{database_id},
+                and b.database_id = #{database_id}
             </if>
         </where>
     </select>
