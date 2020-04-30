@@ -24,16 +24,11 @@
           <div class="colBox">
             <span class="homeTitle">待办提醒</span>
             <div class="eventBox">
-              <div
-                :key="index"
-                @click="goPageUrl(item.name)"
-                class="eventList"
-                v-for="(item, index) in eventList"
-              >
+              <div :key="index" class="eventList" v-for="(item, index) in eventList">
                 <i class="el-icon-price-tag"></i>
                 <span class="name">{{ item.name }}</span>，待办
-                <span class="todoNum">{{ item.uncheck }}</span>条，已办理
-                <span class="haveTodoNum">{{ item.checked }}</span>条
+                <span class="todoNum" @click="goPageUrl(item.name,1)">{{ item.uncheck }}</span>条，已办理
+                <span class="haveTodoNum" @click="goPageUrl(item.name,2)">{{ item.checked }}</span>条
               </div>
             </div>
           </div>
@@ -273,27 +268,32 @@ export default {
       });
     },
     // 代办跳页
-    goPageUrl(name) {
+    goPageUrl(name, value) {
       if (name == "新增资料审核") {
-        this.$router.push("/authorityAudit/DRegistration");
+        this.$router.push({
+          name: "数据注册审核",
+          params: { status: value }
+        });
       } else if (name == "数据授权审核") {
-        /*  this.$router.push({
+        this.$router.push({
           name: "资料访问权限审核",
-          params: { status: "01" }
-        }); */
-        this.$router.push("/authorityAudit/materialPower");
+          params: { status: "0" + value }
+        });
       } else if (name == "数据库账户审核") {
-        // this.$router.push({ name: "数据库访问账户", params: { status: "0" } });
-        this.$router.push("/authorityAudit/DBaccount");
+        this.$router.push({
+          name: "数据库访问账户",
+          params: { status: String(value - 1) }
+        });
       } else if (name == "业务专题库审核") {
-        /* this.$router.push({
+        this.$router.push({
           name: "专题库审核",
-          params: { status: "1" }
-        }); */
-        this.$router.push("/authorityAudit/topicLibraryAudit");
+          params: { status: String(value) }
+        });
       } else if (name == "云数据库审核") {
-        this.$router.push("/authorityAudit/cloudDBaudit");
-        // this.$router.push({ name: "云数据库审核", params: { status: "01" } });
+        this.$router.push({
+          name: "云数据库审核",
+          params: { status: "0" + value }
+        });
       }
     },
     // 按资料分类的chart

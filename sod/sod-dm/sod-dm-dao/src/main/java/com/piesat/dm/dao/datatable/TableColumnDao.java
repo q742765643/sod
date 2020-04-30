@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface TableColumnDao extends BaseDao<TableColumnEntity> {
     List<TableColumnEntity> findByTableId(String tableId);
-
+    @Transactional
     int deleteByIdIn(List<String> ids);
-
+    @Transactional
     int deleteByTableId(String tableId);
 
     List<TableColumnEntity> findByTableIdAndIsPrimaryKeyTrue(String tableId);

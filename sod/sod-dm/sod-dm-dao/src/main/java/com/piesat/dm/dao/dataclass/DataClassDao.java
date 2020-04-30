@@ -4,11 +4,12 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
 public interface DataClassDao extends BaseDao<DataClassEntity> {
-
+    @Transactional
     void deleteByDataClassId(String dataClassId);
 
     DataClassEntity findByDataClassId(String dataClassId);

@@ -358,7 +358,12 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="序号" prop="serialNumber">
-            <el-input placeholder="序号" v-model="columnEditData.serialNumber" size="small"></el-input>
+            <el-input
+              type="number"
+              placeholder="序号"
+              v-model="columnEditData.serialNumber"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <div class="clear"></div>

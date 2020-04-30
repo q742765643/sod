@@ -26,7 +26,7 @@ public interface TableDataStatisticsService {
 
     List<TableDataStatisticsDto> all();
 
-    PageBean list(PageForm pageForm,String tableId);
+    PageBean list(PageForm<TableDataStatisticsDto> pageForm);
 
     Map<String,Object> getOnlineTime(String classDataId, String statisticDate);
 

@@ -750,14 +750,15 @@
     </select>
     <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
-        b.d_data_id,b.class_name,c.class_name type_name,d.table_name,e.database_name
+        b.d_data_id,b.class_name,c.class_name type_name,d.table_name,f.database_name
         FROM t_sod_database_special_read_write a
-        LEFT JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
-        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON SUBSTR(b.d_data_id,1)
+        INNER JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
+        INNER JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON  SUBSTR(b.d_data_id,0,1)
         = c.d_data_id
-        LEFT JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
-        LEFT JOIN t_sod_database_define e ON a.database_id = e.id
-        WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType}
+        INNER JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
+        LEFT JOIN t_sod_database e ON a.database_id = e.id
+        LEFT JOIN t_sod_database_define f ON e.DATABASE_DEFINE_ID = f.id
+        WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType} and
         <if test="map.typeName != null and map.typeName != ''">
             and c.class_name like '%${map.typeName}%'
         </if>
@@ -1109,7 +1110,7 @@
         set AUTHORIZE=#{AUTHORIZE}
         <where>
             <if test="DATA_CLASS_ID != null">
-                and DATA_CLASS_ID = #{DATA_CLASS_ID},
+                and DATA_CLASS_ID = #{DATA_CLASS_ID}
             </if>
             <if test="DATABASE_ID != null  and DATABASE_ID  != ''">
                 and DATABASE_ID = #{DATABASE_ID}
@@ -1167,7 +1168,7 @@
 
     <select id="getDataclassTreeByClassIds" resultType="java.util.LinkedHashMap" parameterType="java.util.List">
         SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,level
-        FROM
+        FROM  T_SOD_DATA_CLASS
         START WITH DATA_CLASS_ID IN
         <foreach collection="list" item="e" separator="," open="(" close=")">
             #{e}
@@ -1176,14 +1177,14 @@
     </select>
 
 
-    <select id="getDataClassByBizUserOrDatabase">
+    <select id="getDataClassByBizUserOrDatabase" parameterType="String"  resultType="java.util.LinkedHashMap">
         select b.data_class_id from t_sod_data_authority_apply a left join t_sod_data_authority_record b  on a.id=b.apply_id
         <where>
-            <if test="userId != null and userId != ''">
-                and a.user_id = #{userId},
+            <if test="bizUserId != null and bizUserId != ''">
+                and a.user_id = #{bizUserId}
             </if>
             <if test="database_id != null and database_id != ''">
-                and b.database_id = #{database_id},
+                and b.database_id = #{database_id}
             </if>
         </where>
     </select>

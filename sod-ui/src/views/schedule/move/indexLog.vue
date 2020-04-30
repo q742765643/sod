@@ -96,14 +96,16 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
-      <el-table-column label="运行地址" prop="executorAddress" />
-      <el-table-column label="状态" prop="handleCode" :formatter="statusFormat" />
-      <el-table-column label="创建时间" prop="createTime" width="180" sortable="custom">
+      <el-table-column label="运行地址" prop="executorAddress" width="140" />
+      <el-table-column label="状态" prop="handleCode" :formatter="statusFormat" width="60" />
+      <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" class-name="small-padding fixed-width">
+      <el-table-column label="耗时" prop="elapsedTime" width="60" />
+      <el-table-column label="已完成数据迁移量" prop="moveCount" width="140" />
+      <el-table-column label="操作" class-name="small-padding fixed-width" width="140">
         <template slot-scope="scope">
           <el-button
             size="mini"

@@ -5,6 +5,8 @@ import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+
 /**
  * @author yaya
  * @description TODO
@@ -13,6 +15,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DatabaseSpecialAccessDao extends BaseDao<DatabaseSpecialAccessEntity> {
     DatabaseSpecialAccessEntity findBySdbIdAndUserId(String sdbId, String userId);
-
+    @Transactional
     void deleteBySdbIdAndUserId(String sdbId,String userId);
 }

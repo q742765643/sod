@@ -3,7 +3,7 @@
  * Copyright (c) 2019 ruoyi
  */
 
-const baseURL = process.env.VUE_APP_BASE_API
+const baseURL = process.env.VUE_APP_DM
 import fileDownload from 'js-file-download'
 // 日期格式化
 export function parseTime(time, pattern) {
@@ -83,8 +83,8 @@ export function selectDictLabel(datas, value) {
 }
 
 // 通用下载方法
-export function download(fileName) {
-  window.location.href = baseURL + "/common/download?fileName=" + encodeURI(fileName) + "&delete=" + true;
+export function download(filePath) {
+  window.location.href = baseURL + "/api/com/downloadByPath?filePath=" + filePath;
 }
 export function downloadfileCommon(res) {
   // debugger

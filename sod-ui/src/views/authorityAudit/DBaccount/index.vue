@@ -111,7 +111,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        examineStatus: "",
+        examineStatus:
+          this.$route.params.status == undefined
+            ? ""
+            : this.$route.params.status,
         params: {
           orderBy: {
             createTime: "desc"

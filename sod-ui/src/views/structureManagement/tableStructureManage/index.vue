@@ -20,8 +20,8 @@
           <div class="tableTop">
             <div class="tableSearch">
               <el-form :inline="true">
-                <el-form-item label="数据名称">
-                  <el-input size="small" v-model="searchObj.className" placeholder="数据名称"></el-input>
+                <el-form-item label="资料名称">
+                  <el-input size="small" v-model="searchObj.className" placeholder="资料名称"></el-input>
                 </el-form-item>
                 <el-form-item label="四级编码">
                   <el-input size="small" v-model="searchObj.dDataId" placeholder="四级编码"></el-input>
@@ -415,29 +415,32 @@ export default {
         pasteObj.copyId = copyObj.LOGIC_ID;
         pasteObj.pasteId = command.row.LOGIC_ID;
         console.log(pasteObj);
-        this.$alert(
+        this.$confirm(
           "确认" + msg + "粘贴表结构(" + copyObj.CLASS_NAME + ")?",
-          "温馨提示",
+          "提示",
           {
             confirmButtonText: "确定",
-            callback: async action => {
-              pasteTable(pasteObj).then(res => {
-                if (res.code == 200) {
-                  this.$message({
-                    message: "粘贴成功",
-                    type: "success"
-                  });
-                  this.searchFun("search");
-                } else {
-                  this.$message({
-                    message: res.msg,
-                    type: "error"
-                  });
-                }
-              });
-            }
+            cancelButtonText: "取消",
+            type: "warning"
           }
-        );
+        )
+          .then(() => {
+            pasteTable(pasteObj).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  message: "粘贴成功",
+                  type: "success"
+                });
+                this.searchFun("search");
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
+            });
+          })
+          .catch(() => {});
       }
     },
     //显示表结构管理

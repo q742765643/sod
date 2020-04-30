@@ -8,8 +8,8 @@
       <el-form-item label="是否发布">
         <el-select v-model="queryParams.ifStopUse" size="small">
           <el-option value label="全部"></el-option>
-          <el-option :value="1" label="是"></el-option>
-          <el-option :value="0" label="否"></el-option>
+          <el-option :value="true" label="是"></el-option>
+          <el-option :value="false" label="否"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -24,7 +24,7 @@
       <el-table-column label="存储编码" prop="dataClassId" width="200"></el-table-column>
       <el-table-column label="四级编码" prop="DDataId" width="200"></el-table-column>
       <el-table-column label="是否发布" prop="ifStopUse" width="80">
-        <template slot-scope="scope">{{scope.row.ifStopUse===1?'是':'否'}}</template>
+        <template slot-scope="scope">{{scope.row.ifStopUse==true?'是':'否'}}</template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->

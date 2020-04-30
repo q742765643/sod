@@ -307,7 +307,7 @@ public class DataClassController {
 
     @PutMapping("/updateIsAllLine")
     @ApiOperation(value = "修改近线服务", notes = "修改近线服务")
-    public ResultT<DataClassDto> updateIsAllLine(@RequestBody DataClassDto dataClassDto)
+    public ResultT<DataClassDto> updateIsAllLine(DataClassDto dataClassDto)
     {
         ResultT<DataClassDto> resultT=new ResultT<>();
         dataClassDto= this.dataClassService.updateIsAllLine(dataClassDto);

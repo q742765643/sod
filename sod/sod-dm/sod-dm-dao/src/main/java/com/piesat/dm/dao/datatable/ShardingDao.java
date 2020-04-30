@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -15,5 +16,6 @@ import java.util.List;
 @Repository
 public interface ShardingDao extends BaseDao<ShardingEntity> {
     List<ShardingEntity> findByTableId(String tableId);
+    @Transactional
     void deleteByTableId(String tableId);
 }
