@@ -3,7 +3,7 @@
     <el-steps :active="stepNum">
       <el-step title="数据库访问账户" icon="el-icon-menu"></el-step>
       <el-step title="专题库" icon="el-icon-s-ticket" v-show="handleMsgObj.dbCreate=='1'"></el-step>
-      <el-step title="资料访问权限审核" icon="el-icon-s-finance"></el-step>
+      <el-step title="资料访问权限审核" icon="el-icon-s-finance" v-show="handleMsgObj.sodData=='1'">></el-step>
       <el-step title="完成" icon="el-icon-circle-check"></el-step>
     </el-steps>
     <el-card class="box-card" shadow="never" v-if="stepNum==0">
@@ -83,7 +83,7 @@
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
       <el-button type="primary" v-if="stepNum!=3" @click="nextStep">下一步</el-button>
-      <el-button type="primary" v-if="stepNum==3" @click="$emit('closeStep')">完成</el-button>
+      <el-button type="primary" v-if="stepNum==3" @click="finishStep">完成</el-button>
     </div>
   </section>
 </template>
@@ -97,7 +97,11 @@ import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrar
 import handleMaterial from "@/views/authorityAudit/materialPower/handleMaterial";
 import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 import { getRecordByApplyId } from "@/api/authorityAudit/materialPower/index";
-import { getSpecialDataList } from "@/api/authorityAudit/topicLibraryAudit";
+import {
+  getRecordByByUserId,
+  editBase
+} from "@/api/authorityAudit/userRoleAudit";
+import { updateRecordCheck } from "@/api/authorityAudit/materialPower/index";
 export default {
   name: "handleApply",
   props: {
@@ -108,7 +112,7 @@ export default {
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
     return {
-      forId: "",
+      forId: this.handleMsgObj.userName,
       loading: false,
       tableData: [],
       multipleSelection: [],
@@ -119,10 +123,8 @@ export default {
   },
   async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
-    findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
-      this.forId = res.data[0].id;
-    });
   },
+
   methods: {
     async initDatail() {
       await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
@@ -135,18 +137,20 @@ export default {
     nextStep() {
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
-        // this.$refs.AccountRef.trueAdd();
+        this.$refs.AccountRef.trueAdd();
 
         if (this.handleMsgObj.dbCreate == "1") {
           // 到专题库
           this.initDatail();
           return;
-        }
-        if (this.handleMsgObj.sodData == "1") {
-          // 到资料访问权限审核
+        } else if (this.handleMsgObj.sodData == "1") {
           this.getList();
           return;
+        } else {
+          this.stepNum = 3;
+          return;
         }
+
         return;
       }
       if (this.stepNum == 1) {
@@ -155,7 +159,7 @@ export default {
         return;
       }
       if (this.stepNum == 2) {
-        // 到资料访问权限审核
+        // 到完成
         this.stepNum = 3;
         return;
       }
@@ -165,7 +169,7 @@ export default {
         dataType: 2,
         sdbId: this.forId
       };
-      getSpecialDataList(obj).then(res => {
+      getRecordByByUserId({ bizUserId: this.forId }).then(res => {
         if (res.code == 200) {
           this.tableData = res.data;
           this.stepNum = 2;
@@ -175,33 +179,33 @@ export default {
       });
     },
     handlePower() {
-      if (this.multipleSelection.lenght == 0) {
+      if (this.multipleSelection.length == 0) {
         this.msgError("请选择一条数据");
         return;
+      } else {
+        this.powerMethods();
       }
-      console.log(this.multipleSelection);
-      this.powerMethods();
     },
     handleRefused() {
-      if (this.multipleSelection.lenght == 0) {
+      if (this.multipleSelection.length == 0) {
         this.msgError("请选择一条数据");
         return;
-      }
-      this.$prompt("请输入拒绝原因", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputPattern: /\S/,
-        inputErrorMessage: "拒绝原因不能为空"
-      })
-        .then(({ value }) => {
-          this.powerMethods(value);
+      } else {
+        this.$prompt("请输入拒绝原因", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          inputPattern: /\S/,
+          inputErrorMessage: "拒绝原因不能为空"
         })
-        .catch(() => {});
+          .then(({ value }) => {
+            this.powerMethods(value);
+          })
+          .catch(() => {});
+      }
     },
     powerMethods(value) {
       let obj = {};
-      // obj.userId = localStorage.getItem("loginUserId");
-      obj.userId = "admin";
+      obj.userId = this.$store.getters.name;
       obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};
@@ -225,9 +229,9 @@ export default {
           if (value) {
             this.msgSuccess("拒绝成功");
           } else {
-            this.msgSuccess("授权成功");
+            this.msgSuccess(res.msg);
           }
-          this.handleQuery();
+          this.getList();
         } else {
           this.msgError(res.msg);
         }
@@ -235,6 +239,16 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+    finishStep() {
+      editBase({ bizUserid: this.forId, checked: 1 }).then(res => {
+        if (res.code == 200) {
+          this.msgSuccess("操作成功");
+          this.$emit("closeStep");
+        } else {
+          this.msgError(res.msg);
+        }
+      });
     }
   }
 };

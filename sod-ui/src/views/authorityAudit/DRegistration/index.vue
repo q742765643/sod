@@ -8,8 +8,8 @@
           <el-option
             v-for="(item,index) in dbtypeselect"
             :key="index"
-            :label="item.class_name"
-            :value="item.data_class_id"
+            :label="item.CLASS_NAME"
+            :value="item.DATA_CLASS_ID"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -47,14 +47,14 @@
       row-key="id"
       @sort-change="sortChange"
     >
-      <el-table-column type="index" :index="table_index" width="45" label=" "></el-table-column>
-      <el-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
-      <el-table-column prop="TYPE_NAME" label="数据名称" width="240" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="WEB_USERNAME" label="申请人"></el-table-column>
-      <el-table-column prop="DEPT_NAME" label="机构"></el-table-column>
-      <el-table-column prop="PHONE" label="联系方式"></el-table-column>
-      <el-table-column
+      <af-table-column type="index" :index="table_index" width="45" label=" "></af-table-column>
+      <af-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></af-table-column>
+      <af-table-column prop="D_DATA_ID" label="四级编码" width="160"></af-table-column>
+      <af-table-column prop="TYPE_NAME" label="数据名称" width="240" :show-overflow-tooltip="true"></af-table-column>
+      <af-table-column prop="WEB_USERNAME" label="申请人"></af-table-column>
+      <af-table-column prop="DEPT_NAME" label="机构"></af-table-column>
+      <af-table-column prop="PHONE" label="联系方式"></af-table-column>
+      <af-table-column
         prop="CREATE_TIME"
         label="申请时间"
         width="160"
@@ -64,8 +64,8 @@
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.CREATE_TIME) }}</span>
         </template>
-      </el-table-column>
-      <el-table-column
+      </af-table-column>
+      <af-table-column
         prop="EXAMINE_STATUS"
         label="审核状态"
         width="100"
@@ -78,10 +78,10 @@
           <span v-if="scope.row.EXAMINE_STATUS==4">删除申请中</span>
           <span v-if="scope.row.EXAMINE_STATUS==5">已失效</span>
         </template>
-      </el-table-column>
+      </af-table-column>
 
       <!-- 存储结构 -->
-      <el-table-column
+      <af-table-column
         prop="STORAGE_DEFINE_IDENTIFIER"
         label="存储构建"
         width="120"
@@ -96,10 +96,10 @@
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
 
       <!-- 数据同步 -->
-      <el-table-column
+      <af-table-column
         prop="SYNC_IDENTIFIER"
         label="数据同步"
         width="120"
@@ -114,10 +114,10 @@
             <i class="btnRound orangRound" v-else></i>数据同步
           </el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
 
       <!-- 迁移 -->
-      <el-table-column prop="MOVE_ST" label="迁移" width="100" v-if="queryParams.examineStatus===2">
+      <af-table-column prop="MOVE_ST" label="迁移" width="100" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <!-- 迁移 -->
 
@@ -130,10 +130,10 @@
             <i class="btnRound orangRound"></i>迁移
           </el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
 
       <!-- 清除 -->
-      <el-table-column
+      <af-table-column
         prop="CLEAR_ST"
         label="清除"
         min-width="100"
@@ -154,10 +154,10 @@
             <i class="btnRound orangRound"></i>清除
           </el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
 
       <!-- 备份 -->
-      <el-table-column prop="BACKUP_ST" label="备份" width="100" v-if="queryParams.examineStatus===2">
+      <af-table-column prop="BACKUP_ST" label="备份" width="100" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.BACKUP_ST==1"
@@ -172,10 +172,10 @@
             <i class="btnRound orangRound"></i>备份
           </el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
 
       <!-- 恢复 -->
-      <el-table-column
+      <af-table-column
         prop="ARCHIVING_IDENTIFIER"
         label="恢复"
         width="100"
@@ -185,9 +185,9 @@
           <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
           <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
         </template>
-      </el-table-column>
+      </af-table-column>
 
-      <el-table-column
+      <af-table-column
         prop="EXAMINE_STATUS"
         label="操作"
         width="80"
@@ -221,7 +221,7 @@
             </el-button>
           </el-popover>
         </template>
-      </el-table-column>
+      </af-table-column>
     </el-table>
 
     <pagination
@@ -435,7 +435,7 @@ export default {
     // 存储结构
     handledDBMethods(row) {
       this.rowData = row;
-      this.structureManageTitle = row.class_name;
+      this.structureManageTitle = row.CLASS_NAME;
       this.structureManageVisible = true;
     },
     // 数据同步

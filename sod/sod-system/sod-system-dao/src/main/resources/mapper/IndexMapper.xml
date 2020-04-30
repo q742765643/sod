@@ -62,7 +62,7 @@
 		from
 			T_SOD_DATA_AUTHORITY_APPLY
 		where
-			audit_status in ('2','3')
+			audit_status = '02'
 	</select>
 	<!-- 获取资料授权待审数量 -->
 	<select id="findDataAuthorUncheck" resultType="java.lang.Integer">
@@ -71,7 +71,7 @@
 		from
 			T_SOD_DATA_AUTHORITY_APPLY
 		where
-			audit_status = '1'
+			audit_status != '02'
 	</select>
 	<!-- 获取专题库已审核数量 -->
 	<select id="findSpecialDbChecked" resultType="java.lang.Integer">
@@ -133,11 +133,11 @@
 		select
 			count(t1.data_class_id) as "num",t2.logic_flag as "databaseLogic", t2.logic_name as "logicName"
 		from
-			t_sod_data_logic t1 
-		left join 
+			t_sod_data_logic t1
+		left join
 			t_sod_logic_define t2 on t1.logic_flag = t2.logic_flag
-	 	where 
-	 		t2.logic_flag is not null 
+	 	where
+	 		t2.logic_flag is not null
 		group by
 			t2.logic_flag,t2.logic_name
 	</select>

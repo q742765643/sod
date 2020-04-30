@@ -118,7 +118,7 @@ public class AESUtil {
      */
     public static void main(String args[]) throws Exception {
 
-        String test1 = "123qweasdzxc";
+        String test1 = "Pnmic_qwe123";
         String test =new String(test1.getBytes(),"UTF-8");
         String data = null;
         String key =  KEY;

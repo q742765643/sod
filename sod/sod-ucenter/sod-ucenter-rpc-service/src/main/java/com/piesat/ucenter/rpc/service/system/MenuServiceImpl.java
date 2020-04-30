@@ -59,7 +59,7 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
      *@参数 [menu]
      *@返回值 java.util.List<com.piesat.ucenter.rpc.util.TreeSelect>
      *@author zzj
-     *@创建时间 2019/11/29 15:51 
+     *@创建时间 2019/11/29 15:51
      **/
     @Override
     public List<TreeSelect> treeSelect(MenuDto menu){
@@ -97,12 +97,33 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
                 returnList.add(t);
             }
         }
-        if (returnList.isEmpty())
+        removeMenuTree(menus,returnList);
+        if (!menus.isEmpty())
         {
-            returnList = menus;
+            returnList.addAll(menus);
         }
         return returnList;
     }
+
+    /**
+     * 菜单列表移除树结构列表中的节点
+     * @param menus  菜单列表
+     * @param menuTree 树结构列表
+     */
+    public void removeMenuTree(List<MenuDto> menus,List<MenuDto> menuTree){
+        for (int i=0;i<menuTree.size();i++){
+            MenuDto t = menuTree.get(i);
+            for(int j=0;j<menus.size();j++){
+                if(t.getId().equals(menus.get(j).getId())){
+                    menus.remove(menus.get(j));
+                    break;
+                }
+            }
+            List<MenuDto> children = t.getChildren();
+            removeMenuTree(menus,children);
+        }
+    }
+
     /**
      * 根据用户ID查询权限
      *
@@ -297,9 +318,17 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
      */
     @Override
     public MenuDto insertMenu(MenuDto menu)
-    {   MenuEntity menuEntity=menuMapstruct.toEntity(menu);
+    {
+        MenuEntity menuEntity=menuMapstruct.toEntity(menu);
         return menuMapstruct.toDto(this.saveNotNull(menuEntity));
     }
+
+    @Override
+    public void updateMenu(MenuDto menu) {
+        MenuEntity menuEntity=menuMapstruct.toEntity(menu);
+        this.menuMapper.updateMenu(menuEntity);
+    }
+
     /**
      * 根据菜单ID查询信息
      *
@@ -322,7 +351,7 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
     @Override
     public void deleteMenuById(String menuId)
     {
-       this.delete(menuId);
+        this.delete(menuId);
     }
 
     /**

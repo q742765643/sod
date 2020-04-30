@@ -239,6 +239,7 @@ export function serviceCodeQueryAll(query) {
   return request({
     url: baseUrl + '/system/gribParameterDefine/queryAll',
     method: 'get',
+    async: false,
     params: query
   })
 }

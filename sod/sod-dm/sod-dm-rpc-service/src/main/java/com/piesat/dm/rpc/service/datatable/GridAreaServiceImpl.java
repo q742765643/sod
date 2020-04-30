@@ -68,6 +68,8 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
         if (StringUtils.isNotBlank(dataServiceId)) {
             ssb.add("dataServiceId", SpecificationOperator.Operator.eq.name(), dataServiceId);
+        }else {
+            ssb.add("dataServiceId", SpecificationOperator.Operator.eq.name(), "dataServiceId&&$$$%%%");
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);

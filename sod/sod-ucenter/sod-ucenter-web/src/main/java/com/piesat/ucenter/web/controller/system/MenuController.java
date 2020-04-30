@@ -65,11 +65,10 @@ public class MenuController {
     @RequiresPermissions("system:menu:edit")
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public ResultT<MenuDto> edit(@RequestBody MenuDto menu)
+    public ResultT edit(@RequestBody MenuDto menu)
     {
         ResultT<MenuDto> resultT=new ResultT<>();
-        MenuDto menuDto=menuService.insertMenu(menu);
-        resultT.setData(menuDto);
+        menuService.updateMenu(menu);
         return resultT;
     }
     /**

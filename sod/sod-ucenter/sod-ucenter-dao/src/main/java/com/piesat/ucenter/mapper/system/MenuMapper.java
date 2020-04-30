@@ -50,4 +50,6 @@ public interface MenuMapper {
      * @return 选中菜单列表
      */
     public List<String> selectMenuListByRoleId(String roleId);
+
+    public void updateMenu(MenuEntity menu);
 }

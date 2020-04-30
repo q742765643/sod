@@ -36,10 +36,9 @@ public class ShiroLoginFilter  implements Filter {
         response.setHeader( "Access-Control-Max-Age", "3600" );
         // 表明它允许跨域请求包含xxx头
         response.setHeader( "Access-Control-Allow-Headers", "*" );
-        //response.setHeader( "Access-Control-Allow-Headers", "x-auth-token,Origin,Access-Token,X-Requested-With,Content-Type, Accept,Authorization" );
         //是否允许浏览器携带用户身份信息（cookie）
         response.setHeader( "Access-Control-Allow-Credentials", "true" );
-        // response.setHeader( "Access-Control-Expose-Headers", "*" );
+         response.setHeader( "Access-Control-Expose-Headers", "Content-disposition" );
         if (request.getMethod().equals( "OPTIONS" )) {
             response.setStatus( 200 );
             return;

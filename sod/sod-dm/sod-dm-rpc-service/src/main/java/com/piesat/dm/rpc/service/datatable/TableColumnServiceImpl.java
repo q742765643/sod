@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -93,6 +94,11 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         List<TableColumnDto> l = new ArrayList<>();
         for (TableColumnDto t : tableColumnDtoList) {
             TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(t);
+            if (StringUtils.isEmpty(tableColumnEntity.getId())){
+                tableColumnEntity.setVersion(0);
+                tableColumnEntity.setCreateTime(new Date());
+                tableColumnEntity.setId(null);
+            }
             tableColumnEntity = this.saveNotNull(tableColumnEntity);
             l.add(this.tableColumnMapper.toDto(tableColumnEntity));
         }
