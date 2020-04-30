@@ -34,7 +34,7 @@ export function getAllStorageType() {
 // 数据库名称
 export function getDatabaseName() {
   return request({
-    url: baseUrl + '/dm/database/getDatabaseName',
+    url: baseUrl + '/dm/databaseDefine/all',
     method: 'get',
   })
 }

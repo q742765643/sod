@@ -68,10 +68,15 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
     }
 
     @Override
-    public PageBean list(PageForm pageForm,String tableId) {
+    public PageBean list(PageForm<TableDataStatisticsDto> pageForm) {
+        TableDataStatisticsEntity tableDataStatisticsEntity = tableDataStatisticsMapper.toEntity(pageForm.getT());
+
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
-        if (StringUtils.isNotBlank(tableId)) {
-            ssb.add("tableId", SpecificationOperator.Operator.eq.name(), tableId);
+        if (StringUtils.isNotBlank(tableDataStatisticsEntity.getTableId())) {
+            ssb.add("tableId", SpecificationOperator.Operator.eq.name(), tableDataStatisticsEntity.getTableId());
+        }
+        if (StringUtils.isNotBlank(tableDataStatisticsEntity.getDatabaseId())) {
+            ssb.add("databaseId", SpecificationOperator.Operator.eq.name(), tableDataStatisticsEntity.getDatabaseId());
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);

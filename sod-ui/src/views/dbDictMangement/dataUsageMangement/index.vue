@@ -38,14 +38,12 @@
       <el-table-column prop="logicName" label="用途描述" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="storageType" label="表类型" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <span>{{scope.row.logicStorageTypesEntityList[0].storageType}}</span>
+          <span>{{storageTypeShow(scope.row.logicStorageTypesEntityList)}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="databaseName" label="数据库名称" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <span
-            v-if="scope.row.logicDatabaseEntityList.length>0"
-          >{{scope.row.logicDatabaseEntityList[0].databaseName}}</span>
+          <span>{{dbNameShow(scope.row.logicDatabaseEntityList)}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="logicDesc" label="用途说明" width="360" :show-overflow-tooltip="true"></el-table-column>
@@ -118,6 +116,20 @@ export default {
     this.getList();
   },
   methods: {
+    storageTypeShow(list) {
+      let names = [];
+      list.forEach(element => {
+        names.push(element.storageName);
+      });
+      return names.join(",");
+    },
+    dbNameShow(list) {
+      let names = [];
+      list.forEach(element => {
+        names.push(element.databaseName);
+      });
+      return names.join(",");
+    },
     // 导出
     handleExport() {
       exportTable(this.queryParams).then(res => {

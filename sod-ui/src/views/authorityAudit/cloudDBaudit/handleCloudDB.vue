@@ -12,10 +12,9 @@
           <span>申请信息</span>
         </div>
         <el-row type="flex" class="row-bg" justify="center">
-          <el-col :span="8">
+          <el-col :span="8" v-if="this.searchObj.id == undefined">
             <el-form-item label="申请用户" prop="userId">
               <el-select
-                v-if="this.searchObj.id == undefined"
                 size="small"
                 filterable
                 v-model="msgFormDialog.userId"
@@ -28,11 +27,15 @@
                   :value="item.userName"
                 ></el-option>
               </el-select>
-              <el-input v-else :disabled="true" size="small" v-model="msgFormDialog.userId"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" v-else>
+            <el-form-item label="申请用户" prop="userName">
+              <el-input :disabled="true" size="small" v-model="msgFormDialog.userName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="申请单位" prop="department">
+            <el-form-item label="申请单位">
               <el-input
                 :disabled="isDetail"
                 size="small"
@@ -42,7 +45,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="联系电话" prop="telephone">
+            <el-form-item label="联系电话">
               <el-input
                 :disabled="isDetail"
                 size="small"

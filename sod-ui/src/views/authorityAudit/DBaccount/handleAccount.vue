@@ -210,7 +210,6 @@ import {
   addTable,
   ifUPExist,
   getById,
-  download,
   update,
   demoDownload,
   exportData
@@ -341,9 +340,7 @@ export default {
     },
     // 下载
     detailExport() {
-      exportData({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
-        this.downloadfileCommon(res);
-      });
+      this.download(this.msgFormDialog.applyMaterial);
     },
     // 预览
     previewDocx() {

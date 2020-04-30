@@ -41,8 +41,8 @@
           <el-option
             v-for="item in dbNamesList"
             :key="item.ID"
-            :label="item.DATABASE_NAME"
-            :value="item.ID"
+            :label="item.databaseName"
+            :value="item.id"
           ></el-option>
         </el-select>
       </el-form-item>

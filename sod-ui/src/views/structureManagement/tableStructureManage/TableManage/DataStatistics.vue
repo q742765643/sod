@@ -2,9 +2,9 @@
   <el-main class="DataStatistics">
     <fieldset>
       <legend>{{rowData.DATABASE_NAME}}</legend>
-      <el-form ref="ruleForm" :model="queryParams" label-width="100px">
+      <el-form ref="ruleForm" :model="searchParams" label-width="100px">
         <el-form-item>
-          <el-radio-group v-model="queryParams.radio" @change="handleQuery">
+          <el-radio-group v-model="searchParams.isAllLine" @change="handleQuery">
             <el-radio :label="1">全部在线</el-radio>
             <el-radio :label="2">近线服务</el-radio>
           </el-radio-group>
@@ -55,11 +55,13 @@ export default {
       loading: false,
       queryParams: {
         databaseId: this.rowData.DATABASE_ID,
-        tableId: this.tableInfo.id,
+        tableId: this.tableInfo.id == undefined ? "NULL" : this.tableInfo.id,
         pageNum: 1,
         pageSize: 10
       },
-      queryParams: {},
+      searchParams: {
+        isAllLine: 1
+      },
       tableData: [],
       total: 0
     };

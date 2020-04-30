@@ -112,7 +112,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        auditStatus: "",
+        auditStatus:
+          this.$route.params.status == undefined
+            ? ""
+            : this.$route.params.status,
         userName: "",
         params: {
           orderBy: {

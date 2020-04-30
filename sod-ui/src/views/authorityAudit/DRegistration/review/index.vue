@@ -61,13 +61,13 @@
         <span
           style="font-size: 26px;display:block;text-align:center;padding: 20px 0;color: #13ce66;"
         >
-          <i class="el-icon-circle-check"></i> 完成
+          <i class="el-icon-circle-check"></i> 审核通过
         </span>
       </el-card>
     </div>
     <div class="dialog-footer">
       <el-button type="primary" v-if="stepNum!=5" @click="nextStep">下一步</el-button>
-      <el-button type="primary" v-if="stepNum==5" @click="$emit('closeStep')">完成</el-button>
+      <el-button type="primary" v-if="stepNum==5" @click="$emit('closeStep')">审核通过</el-button>
     </div>
     <el-dialog
       :title="`表结构管理(${structureManageTitle})`"
