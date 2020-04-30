@@ -35,13 +35,16 @@ public class HtSessionManager extends DefaultWebSessionManager {
     @Override
     protected Serializable getSessionId(ServletRequest request, ServletResponse response) {
         String id = WebUtils.toHttp(request).getHeader(AUTHORIZATION);
+        System.out.println("id1:"+id);
         //前端不能传AUTHORIZATION的情况
         if(StringUtils.isBlank(id)){
             id = WebUtils.toHttp(request).getHeader("Cookie");
+            System.out.println("Cookie："+id);
             if(StringUtils.isNotBlank(id)){
                 id = id.split("[=]")[1];
             }
         }
+        System.out.println("id2:"+id);
         if (!StringUtils.isEmpty(id)) {
             if(id.equals("88888888")){
                 return super.getSessionId(request, response);
