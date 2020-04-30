@@ -63,7 +63,8 @@ public class DatabaseVisibleService {
     private DataTableDao dataTableDao;
     @Autowired
     private DatabaseSpecialDao databaseSpecialDao;
-
+    @Autowired
+    private DatabaseDefineService databaseDefineService;
 
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
@@ -75,23 +76,23 @@ public class DatabaseVisibleService {
         List<DatabaseDto> list = new ArrayList<>();
         JSONArray arr = new JSONArray();
         for (String id : split) {
-            DatabaseDto dotById = this.databaseService.getDotById(id);
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
             if (dotById != null) {
                 JSONObject jo = new JSONObject();
-                jo.put("DATABASE_IP", dotById.getDatabaseDefine().getDatabaseIp());
-                jo.put("MAINBAK_TYPE", dotById.getDatabaseDefine().getMainBakType());
-                jo.put("DATABASE_URL", dotById.getDatabaseDefine().getDatabaseUrl());
+                jo.put("DATABASE_IP", dotById.getDatabaseIp());
+                jo.put("MAINBAK_TYPE", dotById.getMainBakType());
+                jo.put("DATABASE_URL", dotById.getDatabaseUrl());
                 JSONArray aaa = new JSONArray();
                 JSONObject dd = new JSONObject();
                 dd.put("DATABASE_USER", userDto.getUserName());
                 dd.put("DATABASE_PASS", AESUtil.aesDecrypt(userDto.getPassword()).trim());
                 jo.put("DATABASE_ACCOUNT", dd);
-                jo.put("DATABASE_PORT", dotById.getDatabaseDefine().getDatabasePort());
-                jo.put("DATABASE_DESC", dotById.getDatabaseDefine().getDatabaseDesc());
+                jo.put("DATABASE_PORT", dotById.getDatabasePort());
+                jo.put("DATABASE_DESC", dotById.getDatabaseDesc());
                 jo.put("DATABASE_ID", dotById.getId());
-                jo.put("DATABASE_TYPE", dotById.getDatabaseDefine().getDatabaseType());
-                jo.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
-                jo.put("DATABASE_INSTANCE", dotById.getDatabaseDefine().getDatabaseInstance());
+                jo.put("DATABASE_TYPE", dotById.getDatabaseType());
+                jo.put("DATABASE_NAME", dotById.getDatabaseName());
+                jo.put("DATABASE_INSTANCE", dotById.getDatabaseInstance());
                 arr.add(jo);
             }
         }
@@ -106,24 +107,24 @@ public class DatabaseVisibleService {
         JSONObject jo = new JSONObject();
         for (String id : split) {
             if (!databaseId.equals(id)) continue;
-            DatabaseDto dotById = this.databaseService.getDotById(id);
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
             if (dotById != null) {
-                jo.put("DATABASE_IP", dotById.getDatabaseDefine().getDatabaseIp());
-                jo.put("MAINBAK_TYPE", dotById.getDatabaseDefine().getMainBakType());
-                jo.put("DATABASE_URL", dotById.getDatabaseDefine().getDatabaseUrl());
-                jo.put("UP_URL", dotById.getDatabaseDefine().getUpUrl());
+                jo.put("DATABASE_IP", dotById.getDatabaseIp());
+                jo.put("MAINBAK_TYPE", dotById.getMainBakType());
+                jo.put("DATABASE_URL", dotById.getDatabaseUrl());
+                jo.put("UP_URL", dotById.getUpUrl());
                 JSONArray aaa = new JSONArray();
                 JSONObject dd = new JSONObject();
                 dd.put("DATABASE_USER", userDto.getUserName());
                 dd.put("DATABASE_PASS", AESUtil.aesDecrypt(userDto.getPassword()).trim());
                 aaa.add(dd);
                 jo.put("DATABASE_ACCOUNT", aaa);
-                jo.put("DATABASE_PORT", dotById.getDatabaseDefine().getDatabasePort());
-                jo.put("DATABASE_DESC", dotById.getDatabaseDefine().getDatabaseDesc());
+                jo.put("DATABASE_PORT", dotById.getDatabasePort());
+                jo.put("DATABASE_DESC", dotById.getDatabaseDesc());
                 jo.put("DATABASE_ID", dotById.getId());
-                jo.put("DATABASE_TYPE", dotById.getDatabaseDefine().getDatabaseType());
-                jo.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
-                jo.put("DATABASE_INSTANCE", dotById.getDatabaseDefine().getDatabaseInstance());
+                jo.put("DATABASE_TYPE", dotById.getDatabaseType());
+                jo.put("DATABASE_NAME", dotById.getDatabaseName());
+                jo.put("DATABASE_INSTANCE", dotById.getDatabaseInstance());
             }
         }
         return ResultT.success(jo);
