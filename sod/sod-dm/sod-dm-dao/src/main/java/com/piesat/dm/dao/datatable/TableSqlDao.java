@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.TableSqlEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+
 /**
  * 表sql
  *
@@ -12,5 +14,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TableSqlDao extends BaseDao<TableSqlEntity> {
+
+    @Transactional
     void deleteByDatabaseIdAndTableName(String databaseId,String tableName);
 }

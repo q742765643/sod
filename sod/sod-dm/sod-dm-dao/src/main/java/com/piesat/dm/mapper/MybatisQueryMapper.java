@@ -191,7 +191,7 @@ public interface MybatisQueryMapper {
 
     List<LinkedHashMap<String, Object>> getDataclassTreeByClassIds(List<String> classIds);
 
-    List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(String userId,String database_id);
+    List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(@Param("bizUserId")String bizUserId,@Param("database_id")String database_id);
 
     List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
 }

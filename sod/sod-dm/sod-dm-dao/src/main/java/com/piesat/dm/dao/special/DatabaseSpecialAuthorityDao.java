@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.special.DatabaseSpecialAuthorityEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -23,5 +24,6 @@ public interface DatabaseSpecialAuthorityDao extends BaseDao<DatabaseSpecialAuth
      * 根据专题库ID删除
      * @param sdbId
      */
+    @Transactional
     void deleteBySdbId(String sdbId);
 }

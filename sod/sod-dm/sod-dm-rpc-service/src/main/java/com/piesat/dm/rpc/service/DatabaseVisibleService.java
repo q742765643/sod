@@ -131,10 +131,11 @@ public class DatabaseVisibleService {
     }
 
     public ResultT getDataclassTree(String bizUserId, String dataBaseId) {
+        dataBaseId = dataBaseId == null ? "":dataBaseId;
         List<LinkedHashMap<String, Object>> dataClassByBizUserOrDatabase = this.mybatisQueryMapper.getDataClassByBizUserOrDatabase(bizUserId, dataBaseId);
         List<String> list = new ArrayList<>();
         for (LinkedHashMap<String, Object> obj : dataClassByBizUserOrDatabase) {
-            list.add(obj.get("data_class_id").toString());
+            list.add(obj.get("DATA_CLASS_ID").toString());
         }
         List<LinkedHashMap<String, Object>> dataclassTreeByClassIds = this.mybatisQueryMapper.getDataclassTreeByClassIds(list);
         return ResultT.success(dataclassTreeByClassIds);
