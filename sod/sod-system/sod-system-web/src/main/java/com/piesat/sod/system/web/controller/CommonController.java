@@ -28,10 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 @Api(value="通用接口Controller",tags = {"通用接口"})
 @Slf4j
 public class CommonController {
-	
+
 	/**
 	 * 根据文件路径下载文件
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2019年12月20日下午4:45:44
 	 * @param request
@@ -40,10 +40,10 @@ public class CommonController {
 	@ApiOperation(value="根据文件路径下载文件",notes="根据文件路径下载文件")
 	@GetMapping(value="/api/com/downloadByPath")
 	public void downloadByPath(HttpServletRequest request, HttpServletResponse response) {
-		String fullPath = request.getParameter("filePath"); 
+		String fullPath = request.getParameter("filePath");
 		File file = new File(fullPath);
 		String fileName = file.getName();
-		
+
 		if(file.exists()){
             try {
 
@@ -52,8 +52,9 @@ public class CommonController {
                     //IE浏览器处理
                     fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
                 } else {
+                    fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
                     // 非IE浏览器的处理：
-                    fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+//                    fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
                 }
                 // 以流的形式下载文件。
                 InputStream inputStream = new BufferedInputStream(new FileInputStream(file));

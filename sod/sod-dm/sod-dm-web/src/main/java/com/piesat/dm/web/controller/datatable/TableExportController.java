@@ -110,6 +110,10 @@ public class TableExportController {
             String nowtime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             String outFileName = databaseName+"_"+nowtime+".doc";
             //导出文件
+            File basepath = new File(outFilePath);
+            if(!basepath.exists()){
+                basepath.mkdirs();
+            }
             File file = new FreeMarkerUtil().createDoc(dataMap, outFilePath+"/"+outFileName,"template_standard.ftl",request);
             System.out.println(file.getAbsolutePath());
             Map<String,Object> map = new HashMap<>();
