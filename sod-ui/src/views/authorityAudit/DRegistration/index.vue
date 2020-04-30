@@ -351,7 +351,10 @@ export default {
         pageNum: 1,
         pageSize: 10,
         DDataId: "",
-        examineStatus: 1,
+        examineStatus:
+          this.$route.params.status == undefined
+            ? 1
+            : this.$route.params.status,
         params: {
           orderBy: {
             CREATE_TIME: "desc"

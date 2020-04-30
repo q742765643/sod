@@ -71,7 +71,8 @@
 import {
   findByTableId,
   foreignKeyList,
-  foreignKeySave
+  foreignKeySave,
+  delByIdsKey
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "ForeignKeyManage",
@@ -136,7 +137,11 @@ export default {
         });
         return;
       }
-      foreignKeySave().then(response => {
+      let ids = [];
+      this.multipleSelection.forEach(element => {
+        ids.push(element.id);
+      });
+      delByIdsKey({ ids: ids.join(",") }).then(response => {
         if (response.code == 200) {
           this.$message({
             message: "外键关联删除成功！",

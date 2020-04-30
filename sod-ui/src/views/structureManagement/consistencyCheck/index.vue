@@ -210,6 +210,10 @@ export default {
         return;
       }
       this.exportIcon = "el-icon-loading";
+      this.$alert("生成差异报告中,请稍后", "提示", {
+        confirmButtonText: "确定",
+        callback: action => {}
+      });
       let obj = {};
       obj.id = this.currentRow[0].databaseId;
       exportTable(obj).then(res => {
@@ -262,6 +266,7 @@ export default {
             type: "success",
             message: "删除成功"
           });
+          this.handleQuery();
         } else {
           this.$message({
             type: "error",

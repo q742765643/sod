@@ -313,8 +313,8 @@ export default {
         this.downloadfileCommon(res);
       });
     },
-    metaClearExport() {
-      exportData(this.queryParams).then(res => {
+    handleExport() {
+      metaClearExport(this.queryParams).then(res => {
         this.downloadfileCommon(res);
       });
     },
@@ -453,7 +453,7 @@ export default {
         this.logFormDialog = res.data;
         this.logDetailDialog = true;
         this.logFormDialog.checked = [];
-        let checkedArry = this.logFormDialog.isStructure.split(",");
+        /* let checkedArry = this.logFormDialog.isStructure.split(",");
         checkedArry.forEach(element => {
           if (element == "0") {
             this.logFormDialog.checked.push("结构");
@@ -461,15 +461,16 @@ export default {
           if (element == "1") {
             this.logFormDialog.checked.push("数据");
           }
-        });
+        }); 
+        isStructure 没有此字段
+        */
+        this.logFormDialog.elapsedTime = this.logFormDialog.elapsedTime + "s";
         this.logFormDialog.triggerTime = formatDate(
           this.logFormDialog.triggerTime
         );
         this.logFormDialog.handleTime = formatDate(
           this.logFormDialog.handleTime
         );
-        let checkedTree = JSON.parse(res.data.backContent);
-        this.treedata = newTeam(checkedTree, "");
       });
     },
 

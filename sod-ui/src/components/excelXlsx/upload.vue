@@ -34,6 +34,25 @@ export default {
       if (!event.currentTarget.files.length) {
         return;
       }
+      let fileValue = event.currentTarget.value;
+      let fileArry = fileValue.split(".");
+      if (fileArry.length > 0) {
+        let flieType = fileArry[fileArry.length - 1];
+        if (flieType != "xlsx" && flieType != "xls" && flieType != "csv") {
+          this.$message({
+            type: "error",
+            message: "请选择Excel表格文件！"
+          });
+          return;
+        }
+      } else {
+        this.$message({
+          type: "error",
+          message: "请选择Excel表格文件！"
+        });
+        return;
+      }
+
       const that = this;
       // 拿取文件对象
       var f = event.currentTarget.files[0];

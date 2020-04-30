@@ -58,6 +58,14 @@ export function foreignKeySave(data) {
     data: data
   })
 }
+// 删除
+export function delByIdsKey(data) {
+  return request({
+    url: baseUrl + '/dm/foreignKey/delByIds',
+    method: 'delete',
+    data: data
+  })
+}
 
 // 查询规范
 export function getNorm(query) {
