@@ -124,8 +124,7 @@ public class DataAuthorityApplyController {
     @PutMapping(value = "/updateRecordCheck")
     @ApiOperation(value = "授权资料", notes = "授权资料")
     public ResultT updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
-       Map<String,Object> result = dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
-       return ResultT.success(result.get("msg"));
+       return  dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
     }
 
     @PutMapping(value = "/updateRecordCheckCancel")

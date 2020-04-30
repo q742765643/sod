@@ -72,12 +72,23 @@ public class HtShiroRealm extends AuthorizingRealm {
             userDto.setParams(token.getParam());
             userDto.setOperatorType(token.getOperatorType());
             userDto.setLoginDate(new Date());
-            SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                    userDto, //用户名
-                    userDto.getPassword(), //密码
-                    salt,
-                    getName()  //realm name
-            );
+            SimpleAuthenticationInfo authenticationInfo = null;
+            if ("11".equals(userDto.getUserType())){
+                String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+                authenticationInfo = new SimpleAuthenticationInfo(
+                        userDto, //用户名
+                        new Md5Hash(pwd, username, 2).toString(), //密码
+                        salt,
+                        getName() );
+            }else {
+                authenticationInfo = new SimpleAuthenticationInfo(
+                        userDto, //用户名
+                        userDto.getPassword(), //密码
+                        salt,
+                        getName()  //realm name
+                );
+            }
+
             return authenticationInfo;
         }
 

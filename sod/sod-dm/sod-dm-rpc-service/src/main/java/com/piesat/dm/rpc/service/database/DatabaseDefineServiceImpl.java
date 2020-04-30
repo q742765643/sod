@@ -130,7 +130,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
             }
         } catch (Exception e) {
             dotById.setCheckConn(2);
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         this.saveDto(dotById);
         return dotById;

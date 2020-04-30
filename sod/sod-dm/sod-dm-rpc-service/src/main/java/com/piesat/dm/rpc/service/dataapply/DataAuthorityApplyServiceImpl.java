@@ -39,6 +39,7 @@ import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityRecordMapper;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.CmadaasApiUtil;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,15 +219,14 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    public Map<String, Object> updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto) {
+    public ResultT updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
 
         //获取用户up账户
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(dataAuthorityApplyDto.getUserId(), "1");
         if(databaseUserDto == null){
-            map.put("msg","授权失败,未找到用户对应数据库账户信息");
-            return map;
+            return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
         }
         String ip = "";
         if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIp())){
@@ -314,9 +314,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权成功" + "<br/>");
             }
         }
-
-        map.put("msg",buffer.toString());
-        return map;
+        return ResultT.success(buffer.toString());
     }
 
     @Override
