@@ -56,16 +56,16 @@ public class ScheduleThread {
     private SpringClientFactory factory;
 
     public void start() {
-//        jobInfoService.init();
-//
-//        Thread scheduleThread = new Thread(this::jobToTrriger);
-//        scheduleThread.setDaemon(true);
-//        scheduleThread.setName("job -run");
-//        scheduleThread.start();
-//        Thread reserveThread = new Thread(this::checkRight);
-//        reserveThread.setDaemon(true);
-//        reserveThread.setName("job -pre");
-//        reserveThread.start();
+        jobInfoService.init();
+
+        Thread scheduleThread = new Thread(this::jobToTrriger);
+        scheduleThread.setDaemon(true);
+        scheduleThread.setName("job -run");
+        scheduleThread.start();
+        Thread reserveThread = new Thread(this::checkRight);
+        reserveThread.setDaemon(true);
+        reserveThread.setName("job -pre");
+        reserveThread.start();
     }
 
     public  void jobToTrriger() {
