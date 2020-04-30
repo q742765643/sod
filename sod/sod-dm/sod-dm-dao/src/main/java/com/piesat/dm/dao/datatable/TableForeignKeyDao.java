@@ -3,6 +3,7 @@ package com.piesat.dm.dao.datatable;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.TableForeignKeyEntity;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -13,5 +14,6 @@ import java.util.List;
  */
 public interface TableForeignKeyDao extends BaseDao<TableForeignKeyEntity> {
     List<TableForeignKeyEntity> findByClassLogicId(String classLogicId);
+    @Transactional
     int deleteByIdIn(List<String> ids);
 }

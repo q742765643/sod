@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataapply.NewdataTableColumnEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -14,6 +15,6 @@ import java.util.List;
 @Repository
 public interface NewdataTableColumnDao extends BaseDao<NewdataTableColumnEntity> {
     List<NewdataTableColumnEntity> findByApplyId(String applyId);
-
+    @Transactional
     void deleteByApplyId(String applyId);
 }

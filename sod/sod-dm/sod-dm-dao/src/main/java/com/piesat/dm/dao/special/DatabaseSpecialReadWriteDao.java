@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public interface DatabaseSpecialReadWriteDao extends BaseDao<DatabaseSpecialRead
      * @return
      */
     List<DatabaseSpecialReadWriteEntity> findBySdbIdAndDataType(String sdbId, String dataType);
-
+    @Transactional
     void deleteBySdbId(String sdbId);
 
     List<DatabaseSpecialReadWriteEntity> findBySdbIdAndDataClassId(String sdbId, String dataClassId);
