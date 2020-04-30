@@ -59,7 +59,7 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
      *@参数 [menu]
      *@返回值 java.util.List<com.piesat.ucenter.rpc.util.TreeSelect>
      *@author zzj
-     *@创建时间 2019/11/29 15:51 
+     *@创建时间 2019/11/29 15:51
      **/
     @Override
     public List<TreeSelect> treeSelect(MenuDto menu){
@@ -297,9 +297,17 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
      */
     @Override
     public MenuDto insertMenu(MenuDto menu)
-    {   MenuEntity menuEntity=menuMapstruct.toEntity(menu);
+    {
+        MenuEntity menuEntity=menuMapstruct.toEntity(menu);
         return menuMapstruct.toDto(this.saveNotNull(menuEntity));
     }
+
+    @Override
+    public void updateMenu(MenuDto menu) {
+        MenuEntity menuEntity=menuMapstruct.toEntity(menu);
+        this.menuMapper.updateMenu(menuEntity);
+    }
+
     /**
      * 根据菜单ID查询信息
      *
@@ -322,7 +330,7 @@ public class MenuServiceImpl extends BaseService<MenuEntity> implements MenuServ
     @Override
     public void deleteMenuById(String menuId)
     {
-       this.delete(menuId);
+        this.delete(menuId);
     }
 
     /**

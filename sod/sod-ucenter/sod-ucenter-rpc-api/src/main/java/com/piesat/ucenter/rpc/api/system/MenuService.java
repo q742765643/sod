@@ -66,6 +66,8 @@ public interface MenuService {
      */
     public MenuDto insertMenu(MenuDto menu);
 
+    public void updateMenu(MenuDto menu);
+
     /**
      * 根据菜单ID查询信息
      *
