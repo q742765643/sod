@@ -232,7 +232,7 @@ export default {
     },
 
     handlePower() {
-      if (this.multipleSelection.lenght == 0) {
+      if (this.multipleSelection.length == 0) {
         this.msgError("请选择一条数据");
         return;
       }
@@ -240,7 +240,7 @@ export default {
       this.powerMethods();
     },
     handleRefused() {
-      if (this.multipleSelection.lenght == 0) {
+      if (this.multipleSelection.length == 0) {
         this.msgError("请选择一条数据");
         return;
       }
@@ -258,7 +258,7 @@ export default {
     powerMethods(value) {
       let obj = {};
       // obj.userId = localStorage.getItem("loginUserId");
-      obj.userId = "admin";
+      obj.userId = this.$store.getters.name;
       obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};
