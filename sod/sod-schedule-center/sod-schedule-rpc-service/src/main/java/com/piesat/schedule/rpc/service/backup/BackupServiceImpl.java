@@ -166,7 +166,11 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
 
     @Override
     public void deleteBackupByIds(String[] backupIds) {
-        this.deleteByIds(Arrays.asList(backupIds));
+        try{
+            this.deleteByIds(Arrays.asList(backupIds));
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
         for (int i = 0; i < backupIds.length; i++) {
             diSendService.sendDeleteDi(backupIds[i]);
         }
