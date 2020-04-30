@@ -229,7 +229,7 @@ export default {
           if (value) {
             this.msgSuccess("拒绝成功");
           } else {
-            this.msgSuccess("授权成功");
+            this.msgSuccess(res.msg);
           }
           this.getList();
         } else {
