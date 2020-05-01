@@ -241,9 +241,10 @@ export default {
       let obj = {};
       obj.file_directory = row.file_directory;
       obj.filename = row.filename;
-      downHistoryDfcheckFile(obj).then(res => {
+      /*downHistoryDfcheckFile(obj).then(res => {
         this.downloadfileCommon(res);
-      });
+      });*/
+      this.download(row.file_directory +"/" +row.filename);
     },
     addReportData() {
       this.addDataDialog = true;
