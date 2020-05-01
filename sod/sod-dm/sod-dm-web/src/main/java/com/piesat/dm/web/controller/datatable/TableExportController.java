@@ -48,6 +48,8 @@ public class TableExportController {
     private DataClassService dataClassService;
     @Value("${fileUpload.savaPath}")
     private String outFilePath;
+    @Value("${serverfile.static.template.table-export-standard}")
+    private String modelPath;
 
     @ApiOperation(value = "数据用途列表")
     @RequiresPermissions("dm:tableExport:logicDefineList")
@@ -114,7 +116,7 @@ public class TableExportController {
             if(!basepath.exists()){
                 basepath.mkdirs();
             }
-            File file = new FreeMarkerUtil().createDoc(dataMap, outFilePath+"/"+outFileName,"template_standard.ftl",request);
+            File file = new FreeMarkerUtil().createDoc(dataMap, outFilePath+"/"+outFileName,modelPath,request);
             System.out.println(file.getAbsolutePath());
             Map<String,Object> map = new HashMap<>();
             map.put("filePath",file.getAbsolutePath());
