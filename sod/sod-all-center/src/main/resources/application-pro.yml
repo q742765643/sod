@@ -112,16 +112,18 @@ mmd:
 
 
 serverfile:
-#  dbfile: /home/sod/file/upload/dbfile
-#  filePath: /home/sod/file/upload/filePath
-#  dfcheck: /home/sod/file/upload/dfcheck
-#  special: /home/sod/file/upload/special
-#  cloud: /home/sod/file/upload/special
-  dbfile: D:/file
-  filePath: D:/file
-  dfcheck: D:/file
-  special: D:/file
-  cloud: D:/file
+  dbfile: /home/sod/file/upload/dbfile
+  filePath: /home/sod/file/upload/filePath
+  dfcheck: /home/sod/file/upload/dfcheck
+  special: /home/sod/file/upload/special
+  cloud: /home/sod/file/upload/special
+  user: /home/sod/file/update/user
+#  dbfile: D:/file
+#  filePath: D:/file
+#  dfcheck: D:/file
+#  special: D:/file
+#  cloud: D:/file
+#  user: D:/file
 
   static:
     template:
