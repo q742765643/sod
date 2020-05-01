@@ -25,7 +25,7 @@
         <include refid="selectDefineVo"/>
         where 1=1
         <if test="areaId != null and areaId != ''">
-            AND d.area_id = #{areaId}
+            AND d.area_id like #{areaId}
         </if>
     </select>
 

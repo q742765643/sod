@@ -24,17 +24,21 @@ public class FreeMarkerUtil {
 		configuration.setDefaultEncoding("utf-8");
 	}
 
-	public File createDoc(Map<String, Object> dataMap, String fileName, String modelname,HttpServletRequest request){
+	public File createDoc(Map<String, Object> dataMap, String fileName, String modelPath,HttpServletRequest request){
 		Writer out = null;
 		FileOutputStream fos = null;
 		try {
-			String path = ResourceUtils.getURL("classpath:").getPath();
+			/*String path = ResourceUtils.getURL("classpath:").getPath();
 			System.out.println("path"+path);
 			File file = new File(path);
-			File filePath = new File(file,modelname);
+			File filePath = new File(file,modelname);*/
+			File filePath = new File(modelPath);
+			String modelname = null;
 			//设置模板文件路径
-			if(file.exists() && filePath.exists()){
-				configuration.setDirectoryForTemplateLoading(file);
+			if(filePath.exists()){
+				modelname = filePath.getName();
+				File basepath = new File(modelPath.replace(modelname,""));
+				configuration.setDirectoryForTemplateLoading(basepath);
 			}else{
 				//模板文件不存在，将使用项目中备用的模板
 				configuration.setClassForTemplateLoading(FreeMarkerUtil.class, "/com/piesat");
