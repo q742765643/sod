@@ -287,11 +287,14 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	}
 
 	DbFileDto formFileInfo(String fileName){
+		String uuid = com.piesat.common.utils.UUID.randomUUID().toString().replaceAll("-", "");
 		DbFileDto df = new DbFileDto();
 		df.setFileName(fileName);
-		String name = fileName.substring(0, fileName.lastIndexOf("."));
-		String uuid = com.piesat.common.utils.UUID.randomUUID().toString().replaceAll("-", "");
 		String sourcePath = filePath + File.separator + uuid + "_" + fileName;
+		String suffix = fileName.substring(fileName.lastIndexOf("."));
+		if (".pdf".equals(suffix.toLowerCase())){
+		}
+		String name = fileName.substring(0, fileName.lastIndexOf("."));
 		String targetPath = filePath + File.separator + uuid + "_" + name + ".pdf";
 		Map<String, String> map = new HashMap<>();
 		map.put("sourcePath",sourcePath);

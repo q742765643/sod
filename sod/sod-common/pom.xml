@@ -337,6 +337,13 @@
             <artifactId>commons-collections</artifactId>
             <version>3.2.2</version>
         </dependency>
+            <!--gbase-->
+        <dependency>
+            <groupId>org.gbass</groupId>
+            <artifactId>connector-java</artifactId>
+            <version>8.3.81.53</version>
+            <classifier>bin</classifier>
+        </dependency>
     </dependencies>
 
     <build>

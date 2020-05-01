@@ -23,7 +23,7 @@ public class DatabaseUtil {
 
     public static DatabaseDcl getDatabase(DatabaseDto database, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = database.getDatabaseDefine().getDatabaseType();
+        String databaseType = database.getDatabaseDefine().getDatabaseType().toLowerCase();
         String databaseUrl = database.getDatabaseDefine().getDatabaseUrl();
         String databaseIp = database.getDatabaseDefine().getDatabaseIp();
         int port = Integer.parseInt(database.getDatabaseDefine().getDatabasePort());
@@ -49,7 +49,7 @@ public class DatabaseUtil {
 
     public static DatabaseDcl getPubDatabase(DatabaseDto database, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = database.getDatabaseDefine().getDatabaseType();
+        String databaseType = database.getDatabaseDefine().getDatabaseType().toLowerCase();
         String databaseUrl = database.getDatabaseDefine().getDatabaseUrl();
         String databaseIp = database.getDatabaseDefine().getDatabaseIp();
         int port = Integer.parseInt(database.getDatabaseDefine().getDatabasePort());

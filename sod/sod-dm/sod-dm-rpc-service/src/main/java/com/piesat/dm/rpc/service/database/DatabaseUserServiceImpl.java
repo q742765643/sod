@@ -321,11 +321,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 String password = databaseAdministratorEntity.getPassWord();
 
                 //判断是什么数据库
-                if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())){
+                if(databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getXugu())){
                     databaseVO = new Xugu(url,username,password);
-                }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())){
+                }else if(databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getGbase8a())){
                     databaseVO = new Gbase8a(url,username,password);
-                }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())){
+                }else if(databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getCassandra())){
                     databaseVO = new Cassandra(databaseDefineEntity.getDatabaseIp(),
                             Integer.parseInt(databaseDefineEntity.getDatabasePort()),
                             username,password,databaseEntity.getSchemaName());
@@ -511,7 +511,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                         String table_name = dataTableEntity.getTableName();
                         //下面通过表名取得对应资料存储编码。
                         //List<DminDataIdTable> lis = dminDataIdTableDao.getDataclassIdByTableName(table_name);
-                        if (databaseEntity.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")) {//xugu
+                        if (databaseEntity.getDatabaseDefine().getDatabaseType().toLowerCase().equalsIgnoreCase("xugu")) {//xugu
                             //进行权限撤销
                             if (databaseAdministratorEntity == null) {
                                 map.put("returnCode", 1);
@@ -721,7 +721,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 continue;
             }
 
-            if(databaseDefineDto.getDatabaseType().equalsIgnoreCase("xugu")){
+            if(databaseDefineDto.getDatabaseType().toLowerCase().equalsIgnoreCase("xugu")){
                 try {
                     Xugu xugu = new Xugu(databaseDefineDto.getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
                     xugu.updateAccount(databaseUserDto.getDatabaseUpId(),newPwd);

@@ -282,7 +282,7 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:createTable")
     @Log(title = "表信息管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/createTable")
-    public ResultT createTable(TableSqlDto tableSqlDto) {
+    public ResultT createTable(@RequestBody TableSqlDto tableSqlDto) {
         try {
             return this.dataTableService.createTable(tableSqlDto);
         } catch (Exception e) {
