@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
@@ -188,13 +189,13 @@ public class ConsistencyCheckController {
 
         //下载
         try {
-            response.setContentType("application/x-msdownload;");
-//            response.setHeader("Content-disposition", "attachment;filename="
-//                    + new String(fileName.getBytes("utf-8"), "ISO8859-1"));
+            response.setContentType("application/octet-stream;charset=UTF-8" );
+            response.setCharacterEncoding("UTF-8");
+            response.addHeader("Access-Control-Expose-Headers","content-disposition");
             response.addHeader("content-disposition","attachment;filename="+URLEncoder.encode(fileName, "utf-8"));
-            wb.write(response.getOutputStream());
-
-
+            OutputStream out = response.getOutputStream();
+            wb.write(out);
+            out.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }
