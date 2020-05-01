@@ -349,7 +349,7 @@ export function saveDataClassBaseInfo(query) {
 export function updateIsAllLine(query) {
   return request({
     url: baseUrl + '/dm/dataClass/updateIsAllLine',
-    method: 'get',
+    method: 'put',
     params: query
   })
 }

@@ -11,10 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.entity.clear.ClearEntity;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,6 +80,9 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	@Autowired
     private JobInfoService jobInfoService;
 
+	@GrpcHthtClient
+	private DictDataService dictDataService;
+
 	@Value("${mmd.userName}")
 	private String userName;
 
@@ -114,6 +120,14 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
 		PageBean pageBean=this.getPage(specification,pageForm,sort);
 		List<ComMetadataSyncCfgEntity> ces= (List<ComMetadataSyncCfgEntity>) pageBean.getPageData();
+		List<DictDataDto> dictData = this.dictDataService.selectDictDataByType("sys_mmd_sync_table");
+		for (ComMetadataSyncCfgEntity c:ces ) {
+			for (DictDataDto d:dictData ) {
+				if (c.getTableName().equals(d.getDictValue())){
+					c.setDescription(d.getRemark());
+				}
+			}
+		}
 		pageBean.setPageData(comMetadataSyncCfgMapstruct.toDto(ces));
 		return pageBean;
 	}
