@@ -87,6 +87,9 @@ export default {
       );
     },
     searchFun() {
+      if (this.tableInfo.id) {
+        this.queryParams.tableId = this.tableInfo.id;
+      }
       datastatisticsList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;

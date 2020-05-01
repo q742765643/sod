@@ -58,7 +58,10 @@
           @node-click="sourceNodeClick"
           ref="elTree"
         >
-          <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span
+            :class="data.haveClass?'hasClass custom-tree-node':'custom-tree-node'"
+            slot-scope="{ node, data }"
+          >
             <span class="el-tree-node__label">
               <i :class="data.icon"></i>
               <el-popover
