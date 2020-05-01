@@ -274,6 +274,7 @@ export default {
 
         cobj.dataClassId = element.DATA_CLASS_ID;
         cobj.cause = value;
+        cobj.tableName = element.TABLE_NAME;
         obj.dataAuthorityRecordList.push(cobj);
       });
       console.log(obj);
