@@ -200,11 +200,11 @@
                 @click="showDetailDialog(scope.row)"
               >查看详情</el-button>
               <el-button
-                size="small"
-                type="success"
+                type="text"
+                size="mini"
                 icon="el-icon-download"
                 @click="handleFileExport(scope.row)"
-              >导出</el-button>
+              >下载</el-button>
               <el-button
                 type="text"
                 size="mini"
@@ -371,7 +371,7 @@ export default {
       });
     },
     handleFileExport(row) {
-      downFile(row).then(res => {
+      downFile({ path: row.storageDirectory }).then(res => {
         this.downloadfileCommon(res);
       });
     },

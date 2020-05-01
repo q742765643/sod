@@ -258,7 +258,7 @@ export default {
     powerMethods(value) {
       let obj = {};
       // obj.userId = localStorage.getItem("loginUserId");
-      obj.userId = this.$store.getters.name;
+      obj.userId = this.formBaseInfo.USER_ID;
       obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};

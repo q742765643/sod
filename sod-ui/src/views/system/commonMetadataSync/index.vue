@@ -37,10 +37,9 @@
           :data="tableData"
           row-key="id"
           highlight-current-row
-          @selection-change="handleTaskSelectionChange"
+          @current-change="handleCurrentChange"
         >
           <el-table-column type="index" width="40" :index="table_index"></el-table-column>
-          <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="taskName" sortable label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="tableName" sortable label="表名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="apiUrl" label="接口url" width="350px" :show-overflow-tooltip="true"></el-table-column>
@@ -221,7 +220,7 @@ export default {
       // 立即同步元数据
       syncDescDialogVisible: false,
       syncDescList: [],
-      currentRow: [],
+      currentRow: null,
       //同步记录查询
       dateRange: [],
       loadingHis: false,
@@ -276,13 +275,9 @@ export default {
     syncCommonMetadata() {
       let ids = [];
       let apiType = [];
-      if (this.currentRow.length == 0) {
+      if (!this.currentRow) {
         this.$message({ type: "info", message: "请选择一行数据" });
         return;
-      }
-      for (var row in this.currentRow) {
-        ids.push(this.currentRow[row].id);
-        apiType.push(this.currentRow[row].apiType);
       }
       //显示延迟加载
       const loading = this.$loading({
@@ -291,11 +286,11 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)"
       });
-      let obj = {
-        ids: ids.join(","),
-        apiType: apiType.join(",")
-      };
-      syncDataNow(obj).then(res => {
+
+      syncDataNow({
+        ids: this.currentRow.id,
+        apiType: this.currentRow.apiType
+      }).then(res => {
         if (res.code == 200) {
           this.$message({
             type: "success",
@@ -314,22 +309,18 @@ export default {
       });
     },
     deleteShow() {
-      let ids = [];
-      if (this.currentRow.length == 0) {
+      if (!this.currentRow) {
         this.$message({ type: "info", message: "请选择一行数据" });
         return;
       }
-      for (var row in this.currentRow) {
-        ids.push(this.currentRow[row].id);
-      }
-      console.log(ids);
+
       this.$confirm("数据删除后将无法恢复，确认删除?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          delConfig({ ids: ids.join(",") }).then(res => {
+          delConfig({ ids: this.currentRow.id }).then(res => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
@@ -409,7 +400,7 @@ export default {
         .catch(() => {});
     },
     //选中行
-    handleTaskSelectionChange(val) {
+    handleCurrentChange(val) {
       this.currentRow = val;
     },
     handleHistorySelectionChange(val) {
@@ -418,7 +409,7 @@ export default {
     // 弹框取消
     cancelHandle() {
       this.handleObj = {};
-      this.currentRow = [];
+      this.currentRow = null;
       this.syncDescList = [];
       this.syncDescDialogVisible = false;
       this.handleDialog = false;

@@ -93,6 +93,7 @@ export function exportTable(query) {
   return request({
     url: baseUrl + "/dm/databaseDefine/export",
     method: "get",
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   });
 }

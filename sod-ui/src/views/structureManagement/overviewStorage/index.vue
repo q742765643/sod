@@ -456,20 +456,28 @@ export default {
       this.dialogSetting = true;
     },
     deleteCell(row) {
-      deleteColumnValue({ id: row.ID }).then(response => {
-        if (response.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
+      this.$confirm("确认删除" + row.CLASS_NAME + "吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteColumnValue({ id: row.ID }).then(response => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              this.handleQuery();
+            } else {
+              this.$message({
+                type: "error",
+                message: response.msg
+              });
+            }
           });
-          this.handleQuery();
-        } else {
-          this.$message({
-            type: "error",
-            message: response.msg
-          });
-        }
-      });
+        })
+        .catch(() => {});
     },
     // 关闭高级搜索
     closeSuperSearch() {

@@ -434,7 +434,7 @@
           <input-excel @getResult="getMyExcelData"></input-excel>
         </el-col>
         <el-col :span="12">
-          <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
+          <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">模板下载</el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -1012,7 +1012,7 @@ export default {
             tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
               if (res.code == 200) {
                 this.$message({
-                  message: "排序成功！",
+                  message: "操作成功！",
                   type: "success"
                 });
                 this.getCodeTable();

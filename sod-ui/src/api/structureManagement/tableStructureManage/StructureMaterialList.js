@@ -10,7 +10,7 @@ export function getBaseData(query) {
 }
 export function exportTable(query) {
   return request({
-    url: baseUrl + '/dm/databaseDefine/export',
+    url: baseUrl + '/dm/dataClass/exportBaseData',
     method: 'get',
     params: query,
     responseType: "arraybuffer"

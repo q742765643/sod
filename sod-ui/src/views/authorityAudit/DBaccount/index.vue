@@ -97,7 +97,7 @@
 import {
   databaseUserAll,
   deleteList,
-  exportData
+  download
 } from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
@@ -200,7 +200,7 @@ export default {
     },
     //导出
     handleExport() {
-      exportData(this.queryParams).then(res => {
+      download(this.queryParams).then(res => {
         this.downloadfileCommon(res);
       });
     },

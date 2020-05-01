@@ -597,11 +597,14 @@ export default {
     },
     // 文件下载
     handleExport() {
-      exprotFile({
-        examineMaterial: this.msgFormDialog.examineMaterial
-      }).then(res => {
-        this.downloadfileCommon(res);
-      });
+      if (this.msgFormDialog.examineMaterial) {
+        this.download(this.msgFormDialog.examineMaterial);
+      } else {
+        this.$message({
+          type: "error",
+          message: "当前没有文件可以下载"
+        });
+      }
     },
     // 模板下载
     demoDownload() {

@@ -67,13 +67,13 @@ export function getById(query) {
   })
 }
 
-// 下载
+// 导出
 export function download(query) {
   return request({
-    url: baseUrl + '/dm/databaseUser/download',
-    async: true,
+    url: baseUrl + 'dm/databaseUser/exportData',
     method: 'get',
-    params: query
+    params: query,
+    responseType: "arraybuffer"
   })
 }
 
@@ -86,15 +86,7 @@ export function update(data) {
   })
 }
 
-// 导出
-export function exportData(query) {
-  return request({
-    url: baseUrl + '/api/com/downloadByPath',
-    method: 'get',
-    params: query,
-    responseType: "arraybuffer"
-  })
-}
+
 // 模板下载
 export function demoDownload() {
   return request({
