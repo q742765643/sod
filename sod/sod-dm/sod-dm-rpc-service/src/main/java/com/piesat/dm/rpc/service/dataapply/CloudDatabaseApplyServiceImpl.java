@@ -69,7 +69,8 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         if(StringUtils.isNotNullString(pageForm.getT().getUserName())){
             //调用接口 根据用户名查询用户id
             List<String> userId= new ArrayList<String>();
-            List<UserEntity> userEntities = userDao.findByWebUsername(pageForm.getT().getUserName());
+            userId.add("noUseId");
+            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%"+pageForm.getT().getUserName()+"%");
             if(userEntities != null && userEntities.size()>0){
                 for(UserEntity userEntity : userEntities){
                     userId.add(userEntity.getUserName());
