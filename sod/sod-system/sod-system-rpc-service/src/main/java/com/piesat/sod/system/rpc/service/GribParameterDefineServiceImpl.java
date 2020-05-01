@@ -38,34 +38,35 @@ public class GribParameterDefineServiceImpl extends BaseService<GribParameterDef
 
     @Override
     public PageBean selectPageList(PageForm<GribParameterDefineDto> pageForm) {
-        GribParameterDefineEntity gribParameterDefineEntity=gribParameterDefineMapstruct.toEntity(pageForm.getT());
+        GribParameterDefineDto cribParameterDefineDto = pageForm.getT();
+//        GribParameterDefineEntity gribParameterDefineEntity=gribParameterDefineMapstruct.toEntity(pageForm.getT());
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(gribParameterDefineEntity.getGribVersion() != null){
-            specificationBuilder.add("gribVersion", SpecificationOperator.Operator.eq.name(),gribParameterDefineEntity.getGribVersion());
+        if(cribParameterDefineDto.getGribVersion()!=null&&cribParameterDefineDto.getGribVersion().toString().length()>0){
+            specificationBuilder.add("gribVersion", SpecificationOperator.Operator.eq.name(),cribParameterDefineDto.getGribVersion());
         }
-        if(gribParameterDefineEntity.getParameterId() != null){
-            specificationBuilder.add("parameterId", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getParameterId());
+        if(cribParameterDefineDto.getParameterId()!=null&&cribParameterDefineDto.getParameterId().toString().length()>0){
+            specificationBuilder.add("parameterId", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getParameterId());
         }
-        if(StringUtils.isNotNullString(gribParameterDefineEntity.getEleCodeShort())){
-            specificationBuilder.add("eleCodeShort", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getEleCodeShort());
+        if(StringUtils.isNotNullString(cribParameterDefineDto.getEleCodeShort())){
+            specificationBuilder.add("eleCodeShort", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getEleCodeShort());
         }
-        if(gribParameterDefineEntity.getSubjectId() != null){
-            specificationBuilder.add("subjectId", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getSubjectId());
+        if(cribParameterDefineDto.getSubjectId() != null){
+            specificationBuilder.add("subjectId", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getSubjectId());
         }
-        if(gribParameterDefineEntity.getClassify() != null){
-            specificationBuilder.add("classify", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getClassify());
+        if(cribParameterDefineDto.getClassify() != null){
+            specificationBuilder.add("classify", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getClassify());
         }
-        if(StringUtils.isNotNullString(gribParameterDefineEntity.getElementCn())){
-            specificationBuilder.add("elementCn", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getElementCn());
+        if(StringUtils.isNotNullString(cribParameterDefineDto.getElementCn())){
+            specificationBuilder.add("elementCn", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getElementCn());
         }
-        if(StringUtils.isNotNullString(gribParameterDefineEntity.getPublicConfig())){
-            specificationBuilder.add("publicConfig", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getPublicConfig());
+        if(StringUtils.isNotNullString(cribParameterDefineDto.getPublicConfig())){
+            specificationBuilder.add("publicConfig", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getPublicConfig());
         }
-        if(StringUtils.isNotNullString(gribParameterDefineEntity.getTemplateId())){
-            specificationBuilder.add("templateId", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getTemplateId());
+        if(StringUtils.isNotNullString(cribParameterDefineDto.getTemplateId())){
+            specificationBuilder.add("templateId", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getTemplateId());
         }
-        if(StringUtils.isNotNullString(gribParameterDefineEntity.getTemplateDesc())){
-            specificationBuilder.add("templateDesc", SpecificationOperator.Operator.likeAll.name(),gribParameterDefineEntity.getTemplateDesc());
+        if(StringUtils.isNotNullString(cribParameterDefineDto.getTemplateDesc())){
+            specificationBuilder.add("templateDesc", SpecificationOperator.Operator.likeAll.name(),cribParameterDefineDto.getTemplateDesc());
         }
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<GribParameterDefineEntity> GribParameterDefineEntities = (List<GribParameterDefineEntity>) pageBean.getPageData();

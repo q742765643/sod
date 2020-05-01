@@ -47,7 +47,7 @@ public class DatabaseUserManagerController {
     private DatabaseService databaseService;
     @Autowired
     private DatabaseUserService databaseUserService;
-    @Value("${fileUpload.savaPath}")
+    @Value("${serverfile.user}")
     private String fileAddress;
     @Value("${fileUpload.httpPath}")
     private String httpPath;

@@ -12,6 +12,7 @@ import com.piesat.ucenter.rpc.dto.dictionary.DefineDto;
 import com.piesat.ucenter.rpc.mapstruct.dictionary.DefineMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,9 @@ public class DefineServiceImpl extends BaseService<DefineEntity> implements Defi
         DefineEntity defineEntity=defineMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
         //根据条件查询当前分页所有
+        if(StringUtils.isNotBlank(defineEntity.getAreaId())){
+            defineEntity.setAreaId("%"+defineEntity.getAreaId()+"%");
+        }
         List<DefineEntity> defineEntities=defineMapper.selectDefineList(defineEntity);
         PageInfo<DefineEntity> pageInfo = new PageInfo<>(defineEntities);
         //获取当前页数据

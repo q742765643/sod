@@ -311,9 +311,9 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDto databaseDto : databaseList) {
+                for (DatabaseDefineDto databaseDto : all) {
                     if (databaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName());
+                        logicDatabaseDto.setDatabaseName(databaseDto.getDatabaseName());
                     }
                 }
             }
