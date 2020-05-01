@@ -26,7 +26,6 @@
     <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
     <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
     <result column="USER_TYPE" jdbcType="VARCHAR" property="userType" />
-    <result column="CAS_DEPT_NAME" jdbcType="VARCHAR" property="deptName" />
     <association property="dept"    column="dept_id" javaType="com.piesat.ucenter.entity.system.DeptEntity" resultMap="deptResult" />
     <collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
   </resultMap>
@@ -58,8 +57,7 @@
   </sql>
 
   <sql id="selectUserVo">
-        select u.id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status,
-       u.dept_name cas_dept_name, u.user_type, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
+        select u.id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
        d.id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.id as role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from t_sod_user u
@@ -69,7 +67,7 @@
     </sql>
   <select id="selectUserList" parameterType="com.piesat.ucenter.entity.system.UserEntity" resultMap="BaseResultMap">
     <include refid="selectUserVo"/>
-    where u.del_flag = '0' and u.user_type = '11'
+    where u.del_flag = '0' and u.user_type &lt;&gt; '11'
     <if test="userName != null and userName != ''">
       AND upper(u.user_name) like concat('%', upper(#{userName}), '%')
     </if>

@@ -114,11 +114,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         UserEntity userEntity = userMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
         List<UserEntity> userEntities = userMapper.selectUserList(userEntity);
-        for (UserEntity u:userEntities ) {
-            if ("11".equals(u.getUserType())){
-                u.getDept().setDeptName(u.getDeptName());
-            }
-        }
         PageInfo<UserEntity> pageInfo = new PageInfo<>(userEntities);
         List<UserDto> userDtos = userMapstruct.toDto(pageInfo.getList());
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), userDtos);
