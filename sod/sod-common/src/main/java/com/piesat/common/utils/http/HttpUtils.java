@@ -1,16 +1,21 @@
 package com.piesat.common.utils.http;
 
+import com.piesat.common.utils.MD5Util;
 import com.piesat.common.utils.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.security.cert.X509Certificate;
+import java.util.*;
 
 /**
  * 通用http发送方法
@@ -20,6 +25,67 @@ import java.security.cert.X509Certificate;
 public class HttpUtils
 {
     private static final Logger log = LoggerFactory.getLogger(HttpUtils.class);
+
+
+    public static String mmdGet(String url,String interfaceId,String userName,String password){
+
+//        String password = "100200";
+        // 创建Httpclient对象
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        String resultString = "";
+        CloseableHttpResponse response = null;
+        try {
+
+            // 创建uri
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put("nonce",  UUID.randomUUID().toString());
+            map.put("timestamp", Long.toString(new Date().getTime()));
+            map.put("userId", userName);
+            map.put("interfaceId", interfaceId);
+            map.put("pwd", password);
+
+            List<String> paramList = new ArrayList<>();
+
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                if (!entry.getKey().equals("sign")) {
+                    paramList.add(entry.getKey() + "=" + entry.getValue());
+                }
+            }
+//            Collections.sort(paramList);
+            String paramStr = org.apache.commons.lang.StringUtils.join(paramList, "&");
+            String sign = MD5Util.MD5Encode(paramStr).toUpperCase();
+            URIBuilder builder = new URIBuilder(url);
+            builder.addParameter("nonce", map.get("nonce"));
+            builder.addParameter("timestamp", map.get("timestamp"));
+            builder.addParameter("userId", map.get("userId"));
+            builder.addParameter("interfaceId", map.get("interfaceId"));
+            builder.addParameter("sign", sign);
+
+            URI uri = builder.build();
+            // 创建http GET请求
+            HttpGet httpGet = new HttpGet(uri);
+
+            // 执行请求
+            response = httpclient.execute(httpGet);
+            // 判断返回状态是否为200
+            if (response.getStatusLine().getStatusCode() == 200) {
+                resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (response != null) {
+                    response.close();
+                }
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultString;
+    }
 
     /**
      * 向指定 URL 发送GET方法的请求

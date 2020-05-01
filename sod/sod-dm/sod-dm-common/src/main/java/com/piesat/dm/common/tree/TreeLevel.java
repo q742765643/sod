@@ -11,6 +11,16 @@ public class TreeLevel implements ILevelTreeNode {
     private String name;
     private String type;
     private String icon;
+    private String have = "1";
+
+
+    public String getHave() {
+        return have;
+    }
+
+    public void setHave(String have) {
+        this.have = have;
+    }
 
     @Override
     public String getId() {
@@ -56,7 +66,7 @@ public class TreeLevel implements ILevelTreeNode {
 
     @Override
     public TreeAttributesMap getTreeAttributesMap() {
-        TreeAttributesMap treeMap = new TreeAttributesMap(this.id, this.name, this.type);
+        TreeAttributesMap treeMap = new TreeAttributesMap(this.id, this.name, this.type,this.have);
         treeMap.putAttributes("parentId", this.parentId);
         treeMap.putAttributes("icon", this.icon);
         return treeMap;

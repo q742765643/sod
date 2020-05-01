@@ -74,6 +74,11 @@ public class Tree {
             } else {
                 sb.append("disabled: false,");
             }
+            if (node.isHave()) {
+                sb.append("haveClass: true,");
+            } else {
+                sb.append("haveClass: false,");
+            }
             if (isLeaf) {
                 sb.append("children: [");
                 parserLevelNodeToJson(sb, node.getChild());

@@ -17,6 +17,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.entity.clear.ClearEntity;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,12 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 	@Autowired
     private JobInfoService jobInfoService;
+
+	@Value("${mmd.userName}")
+	private String userName;
+
+	@Value("${mmd.password}")
+	private String password;
 
 	@Override
 	public BaseDao<ComMetadataSyncCfgEntity> getBaseDao() {
@@ -289,7 +296,20 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 				if(StringUtil.isEmpty(url)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url为空");
 
 				//获取同步数据
-				String result = HttpUtils.sendGet(url,"");
+				String[] split = url.split("\\?");
+				if (split.length!=2){
+					return ResultT.failed("同步任务【"+ce.getTaskName()+"】url格式不正确");
+				}
+				String s1 = split[1];
+				String[] split1 = s1.split("&");
+				String interfaceId = null;
+				for (String p:split1 ) {
+					if (p.contains("interfaceId")){
+						 interfaceId = p.substring(p.lastIndexOf("=")+1);
+					}
+				}
+//				String result = HttpUtils.sendGet(url,"");
+				String result = HttpUtils.mmdGet(url,interfaceId,userName,password);
 				if(StringUtil.isEmpty(result)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值为空");
 
 				JSONObject obj = JSON.parseObject(result);

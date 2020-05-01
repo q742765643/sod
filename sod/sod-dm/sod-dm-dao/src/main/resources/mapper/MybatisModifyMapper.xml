@@ -5,6 +5,9 @@
     <update id="updateDataAuthorityConfig" parameterType="StorageConfigurationEntity">
         update T_SOD_STORAGE_CONFIGURATION
         <set>
+            <if test="storageDefineIdentifier != null">
+                storageDefineIdentifier = #{storageDefineIdentifier},
+            </if>
             <if test="syncIdentifier != null">
                 sync_identifier = #{syncIdentifier},
             </if>

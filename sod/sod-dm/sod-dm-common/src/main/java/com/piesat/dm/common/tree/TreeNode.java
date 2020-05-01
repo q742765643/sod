@@ -15,6 +15,7 @@ public class TreeNode {
     public static final String TREENODE_ATTRIBUTE_NAME_NAME = "name";       // 字段属性name
     public static final String TREENODE_ATTRIBUTE_NAME_ID = "id";           // 字段属性id
     public static final String TREENODE_ATTRIBUTE_TYPE_ID = "type";           // 字段属性id
+    public static final String TREENODE_ATTRIBUTE_HAVE_ID = "have";           // 字段属性id
     private Map<String,Object> attributes = new HashMap<String, Object>();  // 字段属性的Map
 
     private TreeNode parent = null;                                         //当前节点的父节点
@@ -58,6 +59,13 @@ public class TreeNode {
     public void setType(String type) {
         attributes.put(TREENODE_ATTRIBUTE_TYPE_ID,type);
     }
+
+    public String getHave() {
+        return (String) attributes.get(TREENODE_ATTRIBUTE_HAVE_ID);
+    }
+    public void setHave(String have) {
+        attributes.put(TREENODE_ATTRIBUTE_HAVE_ID,have);
+    }
     /**
      * 获取/设置 节点需要在树形结构中显示的信息
      * @return
@@ -81,6 +89,9 @@ public class TreeNode {
     }
 
     public boolean isShow(){return this.getType().equals("1");}
+    public boolean isHave(){
+        return this.getHave().equals("0");
+    }
 
     /**
      * 获取/设置 节点父节点信息
