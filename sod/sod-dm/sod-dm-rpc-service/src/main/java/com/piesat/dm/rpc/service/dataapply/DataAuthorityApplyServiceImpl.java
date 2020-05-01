@@ -153,7 +153,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             for(UserEntity userEntity:userEntities){
                 if(userEntity.getUserName().equals(authorityApply.getUserId())){
                     authorityApply.setUserName(userEntity.getWebUsername());
-                    authorityApply.setTelephone(userEntity.getTutorPhone());
+                    authorityApply.setTelephone(userEntity.getPhonenumber());
                     authorityApply.setDepartment(userEntity.getDeptName());
                 }
             }
