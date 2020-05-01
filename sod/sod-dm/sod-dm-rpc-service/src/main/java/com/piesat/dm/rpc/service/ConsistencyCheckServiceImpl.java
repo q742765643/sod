@@ -8,7 +8,9 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.dao.ConsistencyCheckDao;
+import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.entity.ConsistencyCheckEntity;
+import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.rpc.api.ConsistencyCheckService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
@@ -44,6 +46,8 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     private DatabaseService databaseService;
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private ShardingDao shardingDao;
 
 
     @Override
@@ -285,26 +289,71 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                         indexResult.set(6,indexDto.getIndexName());
                     }
                 }
-                //以物理库为基础，查找元数据库缺失的索引
-                for(String indexName : dbIndexs.keySet()){
-                    boolean flag = false;
-                    for(TableIndexDto indexDto1:indexList) {
-                        //TableIndexDto indexDto1 = indexIterator.next();
-                        if(indexName.equalsIgnoreCase(indexDto1.getIndexName())){
-                            flag = true;
-                            break;
-                        }
+            }
+            //以物理库为基础，查找元数据库缺失的索引
+            for(String indexName : dbIndexs.keySet()){
+                boolean flag = false;
+                for(TableIndexDto indexDto1:indexList) {
+                    //TableIndexDto indexDto1 = indexIterator.next();
+                    if(indexName.equalsIgnoreCase(indexDto1.getIndexName())){
+                        flag = true;
+                        break;
                     }
-                    if(!flag){
-                        if(StringUtils.isNotNullString(indexResult.get(5))) {
-                            indexResult.set(5,indexResult.get(5) + ";" + indexName);
-                        }else{
-                            indexResult.set(5,indexName);
-                        }
+                }
+                if(!flag){
+                    if(StringUtils.isNotNullString(indexResult.get(5))) {
+                        indexResult.set(5,indexResult.get(5) + ";" + indexName);
+                    }else{
+                        indexResult.set(5,indexName);
                     }
                 }
             }
             indexResults.add(indexResult);
+
+            shardingResult = Arrays.asList("", "", "","","","","");
+            shardingResult.set(0,tableName);
+            shardingResult.set(1,dataTableDto.getDataServiceId());
+            shardingResult.set(2,dataTableDto.getNameCn());
+            shardingResult.set(3,"存在");
+            //以元数据库分库分表为准，遍历元数据分库分表
+            List<ShardingEntity> shardingEntities = shardingDao.findByTableId(dataTableDto.getId());
+            Map<String, String> dbShardings = indexAndShardings.get("shardings");
+            List<String> dbShardingLists = new ArrayList<String>();
+            for(Map.Entry<String,String> entry : dbShardings.entrySet()){
+                dbShardingLists.add(entry.getValue());
+            }
+            if(shardingEntities != null && shardingEntities.size()>0){
+                for(ShardingEntity shardingEntity : shardingEntities) {
+                    if(!dbShardingLists.contains(shardingEntity.getColumnName())){
+                        //元数据多余的分库分表键
+                        if(StringUtils.isNotNullString(shardingResult.get(4))){
+                            shardingResult.set(4,shardingResult.get(4) +";"+shardingEntity.getColumnName());
+                        }else{
+                            shardingResult.set(4,shardingEntity.getColumnName());
+                        }
+                    }
+                }
+            }
+            //以物理库为基础，查找元数据库缺失的分库分表键
+            for(String dbSharding : dbShardingLists){
+                boolean flag = false;
+                if(shardingEntities != null && shardingEntities.size()>0){
+                    for(ShardingEntity shardingEntity : shardingEntities){
+                        if(dbSharding.equalsIgnoreCase(shardingEntity.getColumnName())){
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                if(!flag){
+                    if(StringUtils.isNotNullString(shardingResult.get(5))) {
+                        shardingResult.set(5,shardingResult.get(5) + ";" + dbSharding);
+                    }else{
+                        shardingResult.set(5,dbSharding);
+                    }
+                }
+            }
+            shardingResults.add(shardingResult);
         }
     }
 
