@@ -390,7 +390,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public PageBean findAllBizUser(PageForm<UserDto> pageForm) {
         UserEntity userEntity = this.userMapstruct.toEntity(pageForm.getT());
         SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
-        specificationBuilder.add("userType", SpecificationOperator.Operator.likeAll.name(), "11");
+        specificationBuilder.add("userType", SpecificationOperator.Operator.eq.name(), "11");
         if (StringUtils.isNotNullString(userEntity.getUserName())) {
             specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(), userEntity.getUserName());
         }
