@@ -189,11 +189,12 @@ public class ConsistencyCheckController {
         //下载
         try {
             response.setContentType("application/x-msdownload;");
-            response.setHeader("Content-disposition", "attachment;filename="
-                    + URLEncoder.encode(fileName, "utf-8"));
+//            response.setHeader("Content-disposition", "attachment;filename="
+//                    + new String(fileName.getBytes("utf-8"), "ISO8859-1"));
+            response.addHeader("content-disposition","attachment;filename="+fileName);
             wb.write(response.getOutputStream());
 
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
