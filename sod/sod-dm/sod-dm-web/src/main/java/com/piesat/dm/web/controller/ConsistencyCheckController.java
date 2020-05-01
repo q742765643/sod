@@ -190,7 +190,7 @@ public class ConsistencyCheckController {
         try {
             response.setContentType("application/x-msdownload;");
             response.setHeader("Content-disposition", "attachment;filename="
-                    + new String(fileName.getBytes("utf-8"), "ISO8859-1"));
+                    + URLEncoder.encode(fileName, "utf-8"));
             wb.write(response.getOutputStream());
 
         } catch (Exception e) {
