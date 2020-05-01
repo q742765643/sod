@@ -63,7 +63,7 @@ export function delByIdsKey(data) {
   return request({
     url: baseUrl + '/dm/foreignKey/delByIds',
     method: 'delete',
-    data: data
+    params: data
   })
 }
 
