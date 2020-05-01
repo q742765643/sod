@@ -129,7 +129,7 @@ export default {
     },
     // 获取库表修改通知
     getChangeEditList() {
-      let obj = { pageNum: 1, pageSize: 3, title: "表结构管理", params: {} };
+      let obj = { pageNum: 1, pageSize: 3, title: "表", params: {"orderBy":{"operTime":"desc"}} };
       list(obj).then(response => {
         this.infoList = response.data.pageData;
       });
@@ -159,7 +159,7 @@ export default {
     viewAll() {
       this.$router.push({
         name: "操作日志",
-        params: { title: "表结构管理" }
+        params: { title: "表" }
       });
     }
   }
