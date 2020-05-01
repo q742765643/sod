@@ -229,7 +229,7 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 			try {
 				String fileName = file.getName();
 				response.setCharacterEncoding("UTF-8");
-				response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+				response.addHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
 				response.addHeader("Content-Length", "" + file.length());
 				response.setContentType("application/octet-stream");
 				OutputStream out = response.getOutputStream();

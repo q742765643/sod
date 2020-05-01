@@ -700,7 +700,7 @@
 
     <select id="getDataTypeList" parameterType="String" resultType="java.util.Map">
         select * from t_sod_data_class where data_class_id in
-        (select distinct left(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
+        (select distinct leftb(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
     </select>
 
     <select id="findByDataServiceId" resultType="java.util.Map" parameterType="String">
@@ -750,14 +750,15 @@
     </select>
     <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
-        b.d_data_id,b.class_name,c.class_name type_name,d.table_name,e.database_name
+        b.d_data_id,b.class_name,c.class_name type_name,d.table_name,f.database_name
         FROM t_sod_database_special_read_write a
-        LEFT JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
-        LEFT JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON SUBSTR(b.d_data_id,1)
+        INNER JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
+        INNER JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON  SUBSTR(b.d_data_id,0,1)
         = c.d_data_id
-        LEFT JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
-        LEFT JOIN t_sod_database_define e ON a.database_id = e.id
-        WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType}
+        INNER JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
+        LEFT JOIN t_sod_database e ON a.database_id = e.id
+        LEFT JOIN t_sod_database_define f ON e.DATABASE_DEFINE_ID = f.id
+        WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType} and
         <if test="map.typeName != null and map.typeName != ''">
             and c.class_name like '%${map.typeName}%'
         </if>

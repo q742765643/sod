@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -651,7 +652,7 @@ public class ExcelUtil<T>
      */
     public String encodingFilename(String filename)
     {
-        filename = UUID.randomUUID().toString() + "_" + filename + ".xls";
+        filename = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" + filename + ".xls";
         return filename;
     }
 
