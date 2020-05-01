@@ -6,7 +6,7 @@
         update T_SOD_STORAGE_CONFIGURATION
         <set>
             <if test="storageDefineIdentifier != null">
-                storageDefineIdentifier = #{storageDefineIdentifier},
+                storage_define_identifier = #{storageDefineIdentifier},
             </if>
             <if test="syncIdentifier != null">
                 sync_identifier = #{syncIdentifier},
