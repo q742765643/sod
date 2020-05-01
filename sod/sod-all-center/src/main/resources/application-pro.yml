@@ -132,6 +132,7 @@ serverfile:
       databaseuser-application: /home/sod/file/static/大数据云平台存储账户申请模板.docx
       dataregister-application: /home/sod/file/static/个人数据注册上传模板.xlsx
       topic-application: /home/sod/file/static/专题库申请表模板.docx
+      table-export-standard: /homd/sod/file/static/template_standard.ftl
     database-client:
       xugu-client: /home/sod/file/static/虚谷数据库V9.0.zip
       gbase-client: /home/sod/file/static/GBaseDataStudio.zip
