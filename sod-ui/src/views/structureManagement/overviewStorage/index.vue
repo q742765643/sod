@@ -46,7 +46,7 @@
       </af-table-column>
       <af-table-column prop="D_DATA_ID" label="四级编码">
         <template slot-scope="scope">
-          <span>{{scope.row.C_ELEMENT_CODE}}</span>
+          <span>{{scope.row.D_DATA_ID}}</span>
         </template>
       </af-table-column>
       <af-table-column prop="LOGIC_NAME" label="数据用途">
