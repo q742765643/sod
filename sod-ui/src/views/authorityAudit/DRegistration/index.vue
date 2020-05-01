@@ -53,7 +53,7 @@
       <af-table-column prop="TYPE_NAME" label="数据名称" width="240" :show-overflow-tooltip="true"></af-table-column>
       <af-table-column prop="WEB_USERNAME" label="申请人"></af-table-column>
       <af-table-column prop="DEPT_NAME" label="机构"></af-table-column>
-      <af-table-column prop="PHONE" label="联系方式"></af-table-column>
+      <af-table-column prop="PHONENUMBER" label="联系方式"></af-table-column>
       <af-table-column
         prop="CREATE_TIME"
         label="申请时间"
