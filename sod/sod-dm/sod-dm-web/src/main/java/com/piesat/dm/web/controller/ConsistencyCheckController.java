@@ -191,7 +191,7 @@ public class ConsistencyCheckController {
             response.setContentType("application/x-msdownload;");
 //            response.setHeader("Content-disposition", "attachment;filename="
 //                    + new String(fileName.getBytes("utf-8"), "ISO8859-1"));
-            response.addHeader("content-disposition","attachment;filename="+fileName);
+            response.addHeader("content-disposition","attachment;filename="+URLEncoder.encode(fileName, "utf-8"));
             wb.write(response.getOutputStream());
 
 
