@@ -243,10 +243,12 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         StringBuffer buffer = new StringBuffer();
         //为每个数据表进行授权
         for(DataAuthorityRecordDto dataAuthorityRecordDto:dataAuthorityRecordList){
+            DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
             boolean flag = true;
-            if(!databaseIds.contains(dataAuthorityRecordDto.getDatabaseId())){
-                buffer.append("不具备对物理库：" + dataAuthorityRecordDto.getDatabaseId()+"的访问权限" + "<br/>");
+            if(!databaseIds.contains(databaseDto.getDatabaseDefine().getId())){
+                buffer.append("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"的访问权限" + "<br/>");
+                flag = false;
                 continue;
             }
 
@@ -254,7 +256,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             //获取资料对应的表信息
             //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
 
-            DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+
 
             //获取数据库管理账户
             DatabaseAdministratorDto databaseAdministratorDto = null;
@@ -269,7 +271,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
             if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){//xugu
                 if(databaseAdministratorDto == null){
-                    buffer.append("物理库：" + dataAuthorityRecordDto.getDatabaseId()+"没有管理员账户" + "<br/>");
+                    buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
+                    flag = false;
                     continue;
                 }
                 try {
@@ -282,14 +285,15 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 } catch (Exception e) {
                     e.printStackTrace();
                     flag = false;
-                    buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权失败" + "<br/>");
+                    buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"授权失败" + "<br/>");
                 }
 
 
 
             }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){//gbase8a
                 if(databaseAdministratorDto == null){
-                    buffer.append("物理库：" + dataAuthorityRecordDto.getDatabaseId()+"没有管理员账户" + "<br/>");
+                    buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
+                    flag = false;
                     continue;
                 }
                 try {
@@ -304,7 +308,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 } catch (Exception e) {
                     e.printStackTrace();
                     flag = false;
-                    buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权失败" +"<br/>");
+                    buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"授权失败" +"<br/>");
                 }
 
             }/*else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
@@ -312,7 +316,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }*/
             if(flag){
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
-                buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权成功" + "<br/>");
+                buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"授权成功" + "<br/>");
             }
         }
         return ResultT.success(buffer.toString());

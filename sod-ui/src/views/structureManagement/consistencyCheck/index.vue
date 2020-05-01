@@ -94,7 +94,11 @@
         <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
         <!--<el-table-column prop="database_id" label="检查ID"></el-table-column>-->
         <el-table-column prop="fileName" label="报告名称" min-width="300"></el-table-column>
-        <el-table-column prop="createTime" label="生成时间"></el-table-column>
+        <el-table-column prop="createTime" label="生成时间">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.createTime) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope1">
             <el-button
@@ -244,7 +248,7 @@ export default {
       /*downHistoryDfcheckFile(obj).then(res => {
         this.downloadfileCommon(res);
       });*/
-      this.download(row.file_directory +"/" +row.filename);
+      this.download(row.fileDirectory +"/" +row.fileName);
     },
     addReportData() {
       this.addDataDialog = true;
