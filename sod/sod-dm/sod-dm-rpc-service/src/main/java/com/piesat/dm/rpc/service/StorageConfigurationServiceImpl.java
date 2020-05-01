@@ -93,8 +93,8 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
             strings.add(map.get("DATA_CLASS_ID") == null ? "" : map.get("DATA_CLASS_ID").toString());
             strings.add(map.get("TABLE_NAME") == null ? "" : map.get("TABLE_NAME").toString());
             strings.add(map.get("LOGIC_NAME") == null ? "" : map.get("LOGIC_NAME").toString());
-            strings.add(map.get("DATABASE_NAME1") == null ? "" : map.get("DATABASE_NAME1").toString());
-            strings.add(map.get("P_SPECIAL_DATABASE_NAME") == null ? "" : map.get("P_SPECIAL_DATABASE_NAME").toString());
+            strings.add(map.get("DATABASE_NAME") == null ? "" : map.get("DATABASE_NAME").toString());
+            strings.add(map.get("SPECIAL_DATABASE_NAME") == null ? "" : map.get("SPECIAL_DATABASE_NAME").toString());
             lists.add(strings);
         }
         resultMap.put("headList",headList);

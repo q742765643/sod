@@ -33,7 +33,7 @@ export function editConfig(query) {
   return request({
     url: baseUrl + '/comMetaData/editConfig',
     method: 'put',
-    params: query
+    data: query
   })
 }
 

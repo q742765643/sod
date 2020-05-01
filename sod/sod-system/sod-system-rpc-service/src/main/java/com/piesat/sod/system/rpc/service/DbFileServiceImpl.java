@@ -3,8 +3,7 @@ package com.piesat.sod.system.rpc.service;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +50,9 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 
 	@Value("${serverfile.dbfile}")
 	private String fileArr;
+
+	@Value("${serverfile.filePath}")
+	private String filePath;
 
 	//新增字段模板
 	@Value("${serverfile.static.template.add-column}")
@@ -252,5 +254,50 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 			}
 		}
 	}
+
+	@Override
+	public DbFileDto fileSave(MultipartFile multipartFile, MultipartHttpServletRequest request) {
+		DbFileDto dfe = new DbFileDto();
+
+
+		Map<String,String> map = new HashMap<>();
+		if (multipartFile != null) {
+			String originalFileName = multipartFile.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+			map.put("fileName",originalFileName);
+			dfe.setFileName(originalFileName);
+			//新的文件名
+			String newFileName = UUID.randomUUID().toString() + originalFileName.substring(originalFileName.lastIndexOf("."));
+			File newFile = new File(filePath + File.separator + newFileName);
+			// 判断目标文件所在目录是否存在
+			if (!newFile.getParentFile().exists()) {
+				// 如果目标文件所在的目录不存在，则创建父目录
+				newFile.getParentFile().mkdirs();
+			}
+			//存入
+			try {
+				multipartFile.transferTo(newFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+
+
+		return null;
+	}
+
+	DbFileDto formFileInfo(String fileName){
+		DbFileDto df = new DbFileDto();
+		df.setFileName(fileName);
+		String name = fileName.substring(0, fileName.lastIndexOf("."));
+		String uuid = com.piesat.common.utils.UUID.randomUUID().toString().replaceAll("-", "");
+		String sourcePath = filePath + File.separator + uuid + "_" + fileName;
+		String targetPath = filePath + File.separator + uuid + "_" + name + ".pdf";
+		Map<String, String> map = new HashMap<>();
+		map.put("sourcePath",sourcePath);
+		map.put("targetPath",targetPath);
+		return df;
+	}
+
 
 }

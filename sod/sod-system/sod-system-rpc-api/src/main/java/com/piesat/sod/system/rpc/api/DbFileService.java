@@ -6,9 +6,11 @@ import com.piesat.sod.system.rpc.dto.DbFileDto;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /** 数据库文档管理
 *@description
@@ -50,4 +52,6 @@ public interface DbFileService {
 	void deleteByIds(String recordIds) throws Exception;
 
 	void downloadFile(HttpServletResponse response, String name);
+
+	DbFileDto fileSave(MultipartFile multipartFile,MultipartHttpServletRequest request);
 }
