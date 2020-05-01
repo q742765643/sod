@@ -26,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author yaya
@@ -174,6 +171,7 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     public CloudDatabaseApplyDto updateExamineStatus(String id, String examineStatus) {
         CloudDatabaseApplyEntity cloudDatabaseApplyEntity = this.getById(id);
         cloudDatabaseApplyEntity.setExamineStatus(examineStatus);
+        cloudDatabaseApplyEntity.setExamineTime(new Date());
         cloudDatabaseApplyEntity = this.saveNotNull(cloudDatabaseApplyEntity);
         return cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
     }
