@@ -330,7 +330,7 @@ export function managefieldPage(query) {
 // 基本信息查询
 export function getDataClassBaseInfo(query) {
   return request({
-    url: baseUrl + '/dm/classbaseinfo/getDataClassBaseInfo',
+    url: baseUrl + '/dm/classbaseinfo/getAllDataClassBaseInfo',
     method: 'get',
     params: query
   })
