@@ -48,6 +48,7 @@ public interface MybatisQueryMapper {
 
 
     List<Map<String, Object>> selectNewdataApplyPageList(@Param("map") Map<String, Object> map);
+    List<Map<String, Object>> selectDataApplyPageList(@Param("map") Map<String, Object> map);
 
     List<Map<String, Object>> queryNewdataApplyByApplyId(@Param("id") String id);
 

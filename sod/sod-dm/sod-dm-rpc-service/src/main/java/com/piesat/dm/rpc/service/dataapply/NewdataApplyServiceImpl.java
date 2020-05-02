@@ -93,10 +93,17 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Override
     public PageBean selectPageList(PageForm<Map<String,Object>> pageForm) {
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        List<Map<String,Object>> lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
-        for (Map<String,Object> m:lists ) {
-            m.put("LOGIC_ID",m.get("R_LOGIC_ID"));
+        Object status = pageForm.getT().get("status");
+        List<Map<String,Object>> lists = null;
+        if (status.equals(1)){
+            lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
+        }else {
+            lists = mybatisQueryMapper.selectDataApplyPageList(pageForm.getT());//自定义的接口
+            for (Map<String,Object> m:lists ) {
+                m.put("LOGIC_ID",m.get("R_LOGIC_ID"));
+            }
         }
+
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
         //获取当前页数据
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
