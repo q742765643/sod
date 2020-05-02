@@ -542,9 +542,15 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                 }
             }
         }
-        syncTaskEntity.setSourceTableFilter(sourceTableFilter.split(","));
-        syncTaskEntity.setColumnOper(columnOper.split(","));
-        syncTaskEntity.setSourceTableFilterText(sourceTableFilterText.split(","));
+        if(StringUtils.isNotNullString(sourceTableFilter)){
+            syncTaskEntity.setSourceTableFilter(sourceTableFilter.split(","));
+        }
+        if(StringUtils.isNotNullString(columnOper)){
+            syncTaskEntity.setColumnOper(columnOper.split(","));
+        }
+        if(StringUtils.isNotNullString(sourceTableFilterText)){
+            syncTaskEntity.setSourceTableFilterText(sourceTableFilterText.split(","));
+        }
 
         SyncTaskDto syncTaskDto = syncTaskMapstruct.toDto(syncTaskEntity);
 

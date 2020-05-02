@@ -256,11 +256,10 @@ export default {
         var resdata = response.data;
         resdata.forEach(element => {
           if (
-            element.DATABASE_TYPE &&
-            element.DATABASE_TYPE.indexOf("Gbase") != -1 &&
+            element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
             element.DATABASE_TYPE.indexOf("xugu") != -1
           ) {
-            this.databaseNameOptions.push(resdata[i]);
+            this.databaseNameOptions.push(element);
           }
         });
       });
