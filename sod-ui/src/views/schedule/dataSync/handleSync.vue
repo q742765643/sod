@@ -158,8 +158,8 @@
                 <el-option
                   v-for="(item,index) in columnArray"
                   :key="index"
-                  :label="item.label"
-                  :value="item.value"
+                  :label="item.celementCode+ '[' + item.eleName + ']'"
+                  :value="item.celementCode"
                 ></el-option>
               </el-select>
             </el-form-item>

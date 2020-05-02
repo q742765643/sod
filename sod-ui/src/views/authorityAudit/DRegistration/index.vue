@@ -540,7 +540,7 @@ export default {
           response => {
             this.handleMsgObj.dataLogicList = [
               {
-                logicFlag: this.currentRow.LOGIC_ID, //数据用途
+                logicFlag: this.currentRow.LOGIC_FLAG, //数据用途
                 logicName: this.currentRow.LOGIC_NAME, //数据用途
                 databaseId: this.currentRow.DATABASE_ID, //专题库id
                 databaseName: response.data.databaseName, //专题库名称

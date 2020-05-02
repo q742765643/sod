@@ -229,7 +229,7 @@ export default {
         tableName: "",
         ddataId: "",
         clearLimit: "",
-        jobCron: "",
+        jobCron: "0 0 2 * * ?",
         isAlarm: "",
         executorTimeout: "",
         jobDesc: ""
