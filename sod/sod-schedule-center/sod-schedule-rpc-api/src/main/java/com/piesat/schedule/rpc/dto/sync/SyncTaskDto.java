@@ -40,6 +40,7 @@ public class SyncTaskDto extends BaseDto {
      *  源库ID 缓存库BFDB
      */
     private String sourceDatabaseId;
+    private String sourceDatabaseName;
 
     /**
      * 目标库ID 服务库STDB、分析库HADB

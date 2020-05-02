@@ -10,13 +10,17 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.UUID;
 import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingDto;
@@ -80,6 +84,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     private DataLogicService dataLogicService;
     @GrpcHthtClient
     private StorageConfigurationService storageConfigurationService;
+    @GrpcHthtClient
+    private DatabaseService databaseService;
 
 
     @Override
@@ -165,9 +171,15 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                 syncTaskEntities = syncTaskEntities.subList(fromIndex, syncTaskEntities.size());
             }
         }
+
         //获取当前页数据
-        List<SyncTaskDto> levelDtos= syncTaskMapstruct.toDto(syncTaskEntities);
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),levelDtos);
+        List<SyncTaskDto> syncTaskDtos = syncTaskMapstruct.toDto(syncTaskEntities);
+        //查询物理库名称
+        for(SyncTaskDto syncTaskDto : syncTaskDtos){
+            DatabaseDto databaseDto = databaseService.getDotById(syncTaskDto.getSourceDatabaseId());
+            syncTaskDto.setSourceDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
+        }
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),syncTaskDtos);
         return pageBean;
     }
 

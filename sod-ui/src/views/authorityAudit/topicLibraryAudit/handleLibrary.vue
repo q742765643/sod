@@ -13,13 +13,13 @@
             <el-input size="small" v-model="msgFormDialog.uses"></el-input>
           </el-form-item>
           <el-form-item label="创建人" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.userId"></el-input>
+            <el-input size="small" :disabled="true" v-model="msgFormDialog.userName"></el-input>
           </el-form-item>
           <el-form-item label="机构" v-if="!handleObj.pageName">
             <el-input size="small" :disabled="true" v-model="msgFormDialog.department"></el-input>
           </el-form-item>
           <el-form-item label="联系方式" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.phoneNum"></el-input>
+            <el-input size="small" :disabled="true" v-model="msgFormDialog.userPhone"></el-input>
           </el-form-item>
           <el-form-item label="申请材料" v-if="!handleObj.pageName">
             <el-button

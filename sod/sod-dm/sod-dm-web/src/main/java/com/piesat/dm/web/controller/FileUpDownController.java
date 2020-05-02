@@ -17,6 +17,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -101,11 +102,17 @@ public class FileUpDownController {
                 return ResultT.failed("文件不存在");
             }
             ServletOutputStream outputStream = response.getOutputStream();
-            response.setContentType("application/force-download");
-            //设置编码，避免文件名中文乱码
             String fileName = file.getName();
+
+            /*response.setContentType("application/force-download");
+            //设置编码，避免文件名中文乱码
             response.setHeader("Content-Disposition", "attachment;filename="
-                    + new String(fileName.getBytes("gb2312"), "ISO8859-1"));
+                    + new String(fileName.getBytes("gb2312"), "ISO8859-1"));*/
+            response.setContentType("application/octet-stream;charset=UTF-8" );
+            response.setCharacterEncoding("UTF-8");
+            response.addHeader("Access-Control-Expose-Headers","content-disposition");
+            response.addHeader("content-disposition","attachment;filename="+ URLEncoder.encode(fileName, "utf-8"));
+
             outputStream.write(FileUtil.readBytes(filePath));
             IoUtil.close(outputStream);
             return null;
