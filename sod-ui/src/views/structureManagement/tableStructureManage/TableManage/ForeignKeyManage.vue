@@ -12,7 +12,7 @@
             <el-option
               v-for="item in keyColumnData"
               :key="item.dbEleCode"
-              :label="item.eleName"
+              :label="item.dbEleCode"
               :value="item.dbEleCode"
             ></el-option>
           </el-select>
@@ -29,7 +29,7 @@
             <el-option
               v-for="item in elColumnData"
               :key="item.dbEleCode"
-              :label="item.eleName"
+              :label="item.dbEleCode"
               :value="item.dbEleCode"
             ></el-option>
           </el-select>
