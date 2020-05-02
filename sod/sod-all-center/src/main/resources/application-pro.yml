@@ -116,7 +116,7 @@ serverfile:
   filePath: /home/sod/file/upload/filePath
   dfcheck: /home/sod/file/upload/dfcheck
   special: /home/sod/file/upload/special
-  cloud: /home/sod/file/upload/special
+  cloud: /home/sod/file/upload/cloud
   user: /home/sod/file/update/user
 #  dbfile: D:/file
 #  filePath: D:/file
