@@ -51,7 +51,7 @@ export function addManageField(data) {
 }
 export function findByType() {
   return request({
-    url: baseUrl + "/restApi/dicmgn/findByType?type=2",
+    url: baseUrl + "/system/dict/data//dictType/table_column_type",
     method: "get",
   });
 }

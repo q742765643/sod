@@ -90,11 +90,18 @@
     </el-dialog>
 
     <el-dialog title="历史报告表" :visible.sync="historyDialog" width="80%" height="50%" v-dialogDrag>
-      <el-table ref="singleTable" :data="historyData" highlight-current-row border stripe>
+      <el-table
+        ref="singleTable"
+        :data="historyData"
+        highlight-current-row
+        border
+        stripe
+        @sort-change="sortChange"
+      >
         <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
         <!--<el-table-column prop="database_id" label="检查ID"></el-table-column>-->
         <el-table-column prop="fileName" label="报告名称" min-width="300"></el-table-column>
-        <el-table-column prop="createTime" label="生成时间">
+        <el-table-column prop="createTime" label="生成时间" sortable="custom">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.createTime) }}</span>
           </template>
@@ -163,7 +170,12 @@ export default {
       historyObj: {
         pageNum: 1,
         pageSize: 10,
-        id: ""
+        id: "",
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
       rules: {
         taskName: [
@@ -177,6 +189,20 @@ export default {
     this.getOptions();
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.historyObj.params.orderBy = orderBy;
+      historyList(this.historyObj).then(response => {
+        this.historyData = response.data.pageData;
+        this.historyTotal = response.data.totalCount;
+        this.loading = false;
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -248,7 +274,7 @@ export default {
       /*downHistoryDfcheckFile(obj).then(res => {
         this.downloadfileCommon(res);
       });*/
-      this.download(row.fileDirectory +"/" +row.fileName);
+      this.download(row.fileDirectory + "/" + row.fileName);
     },
     addReportData() {
       this.addDataDialog = true;

@@ -28,13 +28,13 @@
 
       <el-collapse v-model="activeNames" @change="handleChange">
         <el-collapse-item title="CREATE" name="1">
-          <el-input type="textarea" size="small" v-model="msgFormDialog.createSql"></el-input>
+          <el-input type="textarea" size="small" v-model="msgFormDialog.createSql" readonly></el-input>
         </el-collapse-item>
         <el-collapse-item title="INSERT" name="2">
-          <el-input type="textarea" size="small" v-model="msgFormDialog.insertSql"></el-input>
+          <el-input type="textarea" size="small" v-model="msgFormDialog.insertSql" readonly></el-input>
         </el-collapse-item>
         <el-collapse-item title="SELECT" name="3">
-          <el-input type="textarea" size="small" v-model="msgFormDialog.selectSql"></el-input>
+          <el-input type="textarea" size="small" v-model="msgFormDialog.selectSql" readonly></el-input>
         </el-collapse-item>
       </el-collapse>
     </el-form>

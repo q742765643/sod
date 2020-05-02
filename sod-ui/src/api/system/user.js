@@ -3,11 +3,6 @@ const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询用户列表
 export function listUser(query) {
-  var orderBy = {
-    "userName": "asc",
-    "createTime ": "asc"
-  };
-  query.params.orderBy = orderBy;
   return request({
     url: baseUrl + '/system/user/list',
     method: 'get',

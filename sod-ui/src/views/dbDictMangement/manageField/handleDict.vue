@@ -14,9 +14,9 @@
         <el-select v-model="ruleForm.type">
           <el-option
             v-for="item in dictTypes"
-            :key="item.keyCol"
-            :label="item.keyCol"
-            :value="item.keyCol"
+            :key="item.dictValue"
+            :label="item.dictLabel"
+            :value="item.dictValue"
           ></el-option>
         </el-select>
       </el-form-item>
