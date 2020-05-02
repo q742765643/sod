@@ -115,7 +115,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         compileResult.put("indexResult",new ArrayList<List<String>>());
         compileResult.put("shardingResult",new ArrayList<List<String>>());
         try{
-            if("Gbase8a".equals(databaseDto.getDatabaseDefine().getDatabaseType())){
+            if("Gbase".equalsIgnoreCase(databaseDto.getDatabaseDefine().getDatabaseType())){
                 Gbase8a gbase8a = new Gbase8a(url, username, password);
                 //获取数据库中所有的表名
                 tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName()).getData();
@@ -125,7 +125,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                     Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)gbase8a.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
                     //物理库表索引和分库分表信息
                     Map<String,Map<String,String>> indexAndShardings = (Map<String,Map<String,String>>)gbase8a.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
-                    compareDifferences(databaseId,tableName,columnInfos,indexAndShardings,compileResult);
+                    compareDifferences(databaseId,tableName.toUpperCase(),columnInfos,indexAndShardings,compileResult);
 
                 }
             }else{
