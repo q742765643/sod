@@ -158,7 +158,7 @@ public class ConsistencyCheckController {
          databaseDto = databaseService.getDotById(databaseDto.getId());
 
         String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
-                +"元数据差异"+"_"+ DateUtils.dateTimeNow("YYYYMMDDHH")+".xls";
+                +"元数据差异"+"_"+ DateUtils.dateTimeNow("yyyyMMddhhMMss")+".xls";
 
 
         Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseDto.getId());

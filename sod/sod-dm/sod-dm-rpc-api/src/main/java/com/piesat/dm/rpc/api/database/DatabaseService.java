@@ -40,5 +40,5 @@ public interface DatabaseService {
 
     List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
 
-    List<Map<String, Object>> getDatabaseList(int ifDisplay);
+    List<Map<String, Object>> getDatabaseList(String ifDisplay);
 }
