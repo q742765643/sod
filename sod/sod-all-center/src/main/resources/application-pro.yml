@@ -117,7 +117,7 @@ serverfile:
   dfcheck: /home/sod/file/upload/dfcheck
   special: /home/sod/file/upload/special
   cloud: /home/sod/file/upload/cloud
-  user: /home/sod/file/update/user
+  user: /home/sod/file/upload/user
 #  dbfile: D:/file
 #  filePath: D:/file
 #  dfcheck: D:/file
@@ -139,8 +139,8 @@ serverfile:
       cassandra-client: /home/sod/file/static/Dbeaver.zip
 
 fileUpload:
-  savaPath:  /home/sod/file/upload/savePath
-  httpPath: /home/sod/file/upload/httpPath
+  savaPath: /home/sod/file/upload
+  httpPath: /upload
 
 businessParameters:
   databaseUserDefaultPassword: 111
