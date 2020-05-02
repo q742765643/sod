@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 *
 */
 @Data
-@Table(name="t_sod_data_class_count")
+@Table(name="T_SOD_DATA_CLASS_COUNT")
 @Entity
 @EqualsAndHashCode(callSuper = true)
 public class ClassCountEntity extends BaseEntity{/**

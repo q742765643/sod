@@ -386,6 +386,9 @@ public class GrpcService {
 
 
     public List<CmccElementEntity> queryCmccElements(DatumTableEntity datumTableEntity){
+        String c_datum_code = datumTableEntity.getC_datum_code();
+        c_datum_code = c_datum_code.substring(0, 11);
+        datumTableEntity.setC_datum_code(c_datum_code);
         return this.mybatisQueryMapper.queryCmccElements(datumTableEntity);
     }
 }

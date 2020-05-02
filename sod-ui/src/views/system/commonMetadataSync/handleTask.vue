@@ -86,7 +86,7 @@ export default {
         apiType: "",
         apiDataKey: "",
         primaryKey: "",
-        jobCron: ""
+        jobCron: "0 0 2 * * ?"
       },
       tableNames: [],
       rules: {

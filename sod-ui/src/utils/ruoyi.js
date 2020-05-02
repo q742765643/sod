@@ -87,6 +87,13 @@ export function download(filePath) {
   window.location.href = baseURL + "/api/com/downloadByPath?filePath=" + filePath;
 }
 export function downloadfileCommon(res) {
+  if (!res) {
+    this.$message({
+      type: "error",
+      message: "没有文件，无需下载"
+    });
+    return;
+  }
   // debugger
   console.log(res.headers);
   console.log(res.headers['content-disposition']);

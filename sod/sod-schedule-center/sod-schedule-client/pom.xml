@@ -46,6 +46,12 @@
             <groupId>com.htht</groupId>
             <artifactId>sod-dm-rpc-api</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>sod-dm-dao</artifactId>
+                    <groupId>com.htht</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.datastax.cassandra</groupId>

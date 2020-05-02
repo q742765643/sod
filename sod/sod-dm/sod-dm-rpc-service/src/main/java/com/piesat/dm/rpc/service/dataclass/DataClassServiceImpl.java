@@ -81,6 +81,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataClassBaseInfoService dataClassBaseInfoService;
     @Autowired
     private DataClassBaseInfoMapper dataClassBaseInfoMapper;
+
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
         return dataClassDao;
@@ -89,31 +90,31 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public DataClassDto saveDto(DataClassDto dataClassDto) {
         NewdataApplyDto newdataApplyDto = null;
-        if (StringUtils.isNotBlank(dataClassDto.getApplyId())){
+        if (StringUtils.isNotBlank(dataClassDto.getApplyId())) {
             newdataApplyDto = this.newdataApplyService.getDotById(dataClassDto.getApplyId());
             dataClassDto.setCreateBy(newdataApplyDto.getUserId());
-        }else {
-            UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        } else {
+            UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
             dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
         dataClassEntity = this.saveNotNull(dataClassEntity);
-        if (newdataApplyDto!=null){
+        if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
         }
         List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
         List<String> all = new ArrayList<>();
-        for (DataLogicDto aa:byDataClassId ) {
+        for (DataLogicDto aa : byDataClassId) {
             all.add(aa.getId());
         }
         List<String> nnn = new ArrayList<>();
-        for (DataLogicDto aa:dataClassDto.getDataLogicList() ) {
+        for (DataLogicDto aa : dataClassDto.getDataLogicList()) {
             nnn.add(aa.getId());
         }
         all.removeAll(nnn);
         byDataClassId.removeAll(dataClassDto.getDataLogicList());
-        for (String d:all ) {
+        for (String d : all) {
             dataLogicService.deleteById(d);
         }
         List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
@@ -237,7 +238,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
-    public JSONArray getSimpleTree(String databaseId){
+    public JSONArray getSimpleTree(String databaseId) {
         List<DataClassEntity> dataClassList = mybatisQueryMapper.getDataClassTree(databaseId);
         List l = new ArrayList();
         for (DataClassEntity d : dataClassList) {
@@ -384,18 +385,18 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         List<DataClassEntity> all = this.getAll(ssb.generateSpecification());
-        ExcelUtil<DataClassEntity> util=new ExcelUtil(DataClassEntity.class);
-        util.exportExcel(all,"资料概览信息");
+        ExcelUtil<DataClassEntity> util = new ExcelUtil(DataClassEntity.class);
+        util.exportExcel(all, "资料概览信息");
     }
 
     @Override
     public String findByParentId(String parentId) {
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(parentId,2);
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(parentId, 2);
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
         if (parentId.length() > 8) {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
-                String newId = dataClassId.substring(0,dataClassId.length()-5);
+                String newId = dataClassId.substring(0, dataClassId.length() - 5);
                 int no;
                 try {
                     int l = dataClassId.length() > 13 ? 3 : 4;
@@ -413,7 +414,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         } else {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
-                String newId = dataClassId.substring(0,dataClassId.length()-5);
+                String newId = dataClassId.substring(0, dataClassId.length() - 5);
                 int no;
                 try {
                     int l = dataClassId.length() > 13 ? 3 : 4;
@@ -435,12 +436,13 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public List<Map<String, Object>> getLogicByDdataId(String dDataId) {
         return this.mybatisQueryMapper.getLogicByDdataId(dDataId);
     }
+
     @Override
     public Map<String, Object> getDataClassCoreInfo(String c_datum_code) {
         String dataClassId = c_datum_code;
         Map<String, Object> map = new HashMap<>();
         List<LinkedHashMap<String, Object>> dataclasslist = mybatisQueryMapper.getDataClassInfo(dataClassId);
-        if (dataclasslist.size()==0){
+        if (dataclasslist.size() == 0) {
             map.put("returnCode", 1);
             map.put("returnMessage", "存储编码不存在");
             return map;
@@ -448,28 +450,28 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         String use_base_info = dataclasslist.get(0).get("USE_BASE_INFO").toString();
         DataClassBaseInfoDto dataClassCoreInfos = new DataClassBaseInfoDto();
 
-        if ("1".equals(use_base_info)){
-            dataClassCoreInfos=dataClassBaseInfoService.getDataClassBaseInfo(dataClassId);
-        }else{
+        if ("1".equals(use_base_info)) {
+            dataClassCoreInfos = dataClassBaseInfoService.getDataClassBaseInfo(dataClassId);
+        } else {
             DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(dataClassId);
             dataClassCoreInfos = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
         }
-        String C_COREMETA_ID=dataClassCoreInfos.getCCoremetaId();
+        String C_COREMETA_ID = dataClassCoreInfos.getCCoremetaId();
         List<LinkedHashMap<String, Object>> tempele = mybatisQueryMapper.selectTabOmincmccTempele(C_COREMETA_ID);
         List<Map<String, Object>> list = new ArrayList<>();
         for (int i = 0; i < tempele.size(); i++) {
             Map<String, Object> m = new HashMap<>();
-            m.put("C_BEGIN",tempele.get(i).get("C_BEGIN"));
-            m.put("C_END",tempele.get(i).get("C_END"));
-            m.put("C_OBSFREQ",tempele.get(i).get("C_OBSFREQ"));
-            if (m.get("C_OBSFREQ")!=null&&!"".equals(m.get("C_OBSFREQ"))){
+            m.put("C_BEGIN", tempele.get(i).get("C_BEGIN"));
+            m.put("C_END", tempele.get(i).get("C_END"));
+            m.put("C_OBSFREQ", tempele.get(i).get("C_OBSFREQ"));
+            if (m.get("C_OBSFREQ") != null && !"".equals(m.get("C_OBSFREQ"))) {
                 dataClassCoreInfos.setCBegin(m.get("C_BEGIN").toString());
                 dataClassCoreInfos.setCEnd(m.get("C_END").toString());
                 dataClassCoreInfos.setCObsfreq(m.get("C_OBSFREQ").toString());
             }
         }
         DataClassBaseInfoDto dataClassCoreInfo = dataClassCoreInfos;
-        if (c_datum_code.startsWith("F")&&"1".equals(use_base_info)) {
+        if (c_datum_code.startsWith("F") && "1".equals(use_base_info)) {
             List<LinkedHashMap<String, Object>> select = mybatisQueryMapper.selectGridAreaDefine(dataClassId);
             if (select.size() > 0) {
                 LinkedHashMap<String, Object> gad = select.get(0);
@@ -493,7 +495,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         map.put("data", dataClassCoreInfo);
         map.put("returnCode", 0);
         map.put("returnMessage", "获取数据成功");
-        return  map;
+        return map;
     }
 
     @Override
@@ -503,5 +505,32 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         DataClassEntity dataClassEntity = dataClassMapper.toEntity(dataClassDto1);
         dataClassEntity = this.saveNotNull(dataClassEntity);
         return dataClassMapper.toDto(dataClassEntity);
+    }
+
+    @Override
+    public Map<String, Object> getArchive(String ddataid) {
+        List<Map<String, Object>> archive = this.mybatisQueryMapper.getArchive(ddataid);
+        Date beginTime = null;
+        Date endTime = null;
+        for (Map<String, Object> m : archive) {
+            Object databegintime = m.get("DATABEGINTIME");
+            Object dataendtime = m.get("DATAENDTIME");
+            if (databegintime instanceof Date) {
+                Date begin = (Date) databegintime;
+                if (beginTime == null || beginTime.after(begin)) {
+                    beginTime = begin;
+                }
+            }
+            if (databegintime instanceof Date) {
+                Date end = (Date) dataendtime;
+                if (endTime == null || endTime.before(end)) {
+                    beginTime = end;
+                }
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("beginTime", beginTime);
+        map.put("endTime", endTime);
+        return map;
     }
 }

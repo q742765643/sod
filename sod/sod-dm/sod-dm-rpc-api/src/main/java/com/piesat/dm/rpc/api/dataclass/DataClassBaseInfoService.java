@@ -25,5 +25,7 @@ public interface DataClassBaseInfoService {
 
     DataClassBaseInfoDto getDataClassBaseInfo(String id);
 
+    DataClassBaseInfoDto getAllDataClassBaseInfo(String id);
+
     DataClassBaseInfoDto saveDataClassBaseInfo(DataClassBaseInfoDto dataClassBaseInfoDto);
 }

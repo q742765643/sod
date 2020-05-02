@@ -7,6 +7,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -47,17 +48,19 @@ public interface DataClassService {
 
     /**
      * 获取所有目录
+     *
      * @return
      */
-    List<Map<String, Object>>  getDataGroup();
+    List<Map<String, Object>> getDataGroup();
 
     /**
      * 获取data_class_id最大编码
+     *
      * @return
      */
     public String getDataClassIdNum();
 
-    PageBean getBaseData(PageForm<Map<String,String>> pageForm,DataClassDto dataClassDto);
+    PageBean getBaseData(PageForm<Map<String, String>> pageForm, DataClassDto dataClassDto);
 
 
     List<DataClassDto> findAllCategory();
@@ -74,4 +77,6 @@ public interface DataClassService {
     Map<String, Object> getDataClassCoreInfo(String c_datum_code);
 
     DataClassDto updateIsAllLine(DataClassDto dataClassDto);
+
+    Map<String, Object> getArchive(String ddataid);
 }

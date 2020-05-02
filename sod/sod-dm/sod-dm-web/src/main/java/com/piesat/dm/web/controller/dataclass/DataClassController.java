@@ -49,7 +49,7 @@ public class DataClassController {
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataClassDto dataClassDto) {
         DataClassDto byDataClassId = this.dataClassService.findByDataClassId(dataClassDto.getDataClassId());
-        if (StringUtils.isEmpty(dataClassDto.getId())&&byDataClassId != null) {
+        if (StringUtils.isEmpty(dataClassDto.getId()) && byDataClassId != null) {
             return ResultT.failed("存储编码已经存在！");
         }
         try {
@@ -68,6 +68,19 @@ public class DataClassController {
         try {
             DataClassDto dataClassDto = this.dataClassService.getDotById(id);
             return ResultT.success(dataClassDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询归档时间")
+    @RequiresPermissions("dm:dataClass:getArchive")
+    @GetMapping(value = "/getArchive")
+    public ResultT getArchive(String ddataid) {
+        try {
+            Map map = this.dataClassService.getArchive(ddataid);
+            return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -290,6 +303,7 @@ public class DataClassController {
             return ResultT.failed(e.getMessage());
         }
     }
+
     @ApiOperation(value = "根据存储编码编码获取资料详情")
     @GetMapping(value = "/getDataClassCoreInfo")
     public ResultT getDataClassCoreInfo(String dDataId) {
@@ -307,10 +321,9 @@ public class DataClassController {
 
     @PutMapping("/updateIsAllLine")
     @ApiOperation(value = "修改近线服务", notes = "修改近线服务")
-    public ResultT<DataClassDto> updateIsAllLine(DataClassDto dataClassDto)
-    {
-        ResultT<DataClassDto> resultT=new ResultT<>();
-        dataClassDto= this.dataClassService.updateIsAllLine(dataClassDto);
+    public ResultT<DataClassDto> updateIsAllLine(DataClassDto dataClassDto) {
+        ResultT<DataClassDto> resultT = new ResultT<>();
+        dataClassDto = this.dataClassService.updateIsAllLine(dataClassDto);
         resultT.setData(dataClassDto);
         return resultT;
     }

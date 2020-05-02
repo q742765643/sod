@@ -17,11 +17,10 @@ public class TreeAttributesMap {
      * @param id
      * @param name
      */
-    public TreeAttributesMap(Object id,Object name,Object type,Object have){
+    public TreeAttributesMap(Object id,Object name,Object type){
         attributes.put(TreeNode.TREENODE_ATTRIBUTE_NAME_ID,id);
         attributes.put(TreeNode.TREENODE_ATTRIBUTE_NAME_NAME,name);
         attributes.put(TreeNode.TREENODE_ATTRIBUTE_TYPE_ID,type);
-        attributes.put(TreeNode.TREENODE_ATTRIBUTE_HAVE_ID,have);
     }
 
     /**

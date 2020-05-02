@@ -66,7 +66,7 @@ public class TreeLevel implements ILevelTreeNode {
 
     @Override
     public TreeAttributesMap getTreeAttributesMap() {
-        TreeAttributesMap treeMap = new TreeAttributesMap(this.id, this.name, this.type,this.have);
+        TreeAttributesMap treeMap = new TreeAttributesMap(this.id, this.name, this.type);
         treeMap.putAttributes("parentId", this.parentId);
         treeMap.putAttributes("icon", this.icon);
         return treeMap;

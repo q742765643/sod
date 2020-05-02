@@ -67,6 +67,13 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getDatabaseClassTree(@Param("id") String id);
 
+    /**
+     * 归档时间查询
+     * @param ddataid
+     * @return
+     */
+    List<Map<String, Object>> getArchive(@Param("ddataid") String ddataid);
+
     List<Map<String, Object>> getDatabaseClassTreeMysql(@Param("id") String id);
 
     List<Map<String, Object>> getDatabaseClassTreePMysql(@Param("classIds") List<String> classIds, @Param("id") String id);

@@ -364,7 +364,16 @@ export default {
       this.getList();
     },
     /** 查询列表 */
-    getList() {
+    getList(superMsg) {
+      // 高级搜索
+      if (superMsg && superMsg.domains) {
+        let superList = superMsg.domains;
+        let newSuperForm = {};
+        for (let i = 0; i < superList.length; i++) {
+          newSuperForm[superList[i].select] = superList[i].value;
+        }
+        Object.assign(this.queryParams, newSuperForm);
+      }
       this.loading = true;
       console.log(this.queryParams);
       storageConfigurationList(this.queryParams).then(response => {

@@ -46,4 +46,5 @@ public interface ManageFieldGroupDao extends BaseDao<ManageFieldGroupEntity>{
 
 	List<ManageFieldGroupEntity> findByGroupId(String groupId);
 
+    ManageFieldGroupEntity findByFieldId(String id);
 }

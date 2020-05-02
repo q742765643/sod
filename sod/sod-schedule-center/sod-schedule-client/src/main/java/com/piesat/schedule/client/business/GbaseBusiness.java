@@ -82,6 +82,9 @@ public class GbaseBusiness extends BaseBusiness{
                 if(tableForeignKeyVo.getKeyColumn().toUpperCase().equals("D_RECORD_ID")){
                     break;
                 }
+                if(tableForeignKeyVo.getKeyColumn().toUpperCase().equals("D_FILE_ID")){
+                    break;
+                }
             }
 
         }

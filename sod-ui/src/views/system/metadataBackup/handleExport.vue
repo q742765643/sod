@@ -119,7 +119,7 @@ export default {
         taskName: "",
         databaseId: "",
         checked: [],
-        jobCron: "",
+        jobCron: "0 0 2 * * ?",
         storageDirectory: "",
         conditions: ""
       },
