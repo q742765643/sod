@@ -34,6 +34,7 @@ import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
@@ -95,44 +96,44 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public PageBean selectPageList(PageForm<DatabaseUserDto> pageForm) {
-        DatabaseUserEntity databaseUserEntity=databaseUserMapper.toEntity(pageForm.getT());
-        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotBlank(databaseUserEntity.getExamineStatus())){
-            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseUserEntity.getExamineStatus());
+        DatabaseUserEntity databaseUserEntity = databaseUserMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(databaseUserEntity.getExamineStatus())) {
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(), databaseUserEntity.getExamineStatus());
         }
-        if(StringUtils.isNotBlank(databaseUserEntity.getUserId())){
-            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(),databaseUserEntity.getUserId());
+        if (StringUtils.isNotBlank(databaseUserEntity.getUserId())) {
+            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(), databaseUserEntity.getUserId());
         }
-        Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
-        List<DatabaseUserEntity> databaseUserEntityList= (List<DatabaseUserEntity>) pageBean.getPageData();
+        Sort sort = Sort.by(Sort.Direction.ASC, "examineStatus").and(Sort.by(Sort.Direction.DESC, "createTime"));
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
+        List<DatabaseUserEntity> databaseUserEntityList = (List<DatabaseUserEntity>) pageBean.getPageData();
         List<DatabaseUserDto> databaseUserDtoList = databaseUserMapper.toDto(databaseUserEntityList);
         //获取数据库列表，查询展示数据库中文名称
         List<DatabaseDefineEntity> databaseDefineEntities = databaseDefineDao.findAll();
-        if(databaseUserDtoList!=null&&databaseUserDtoList.size()>0&&databaseDefineEntities!=null&&databaseDefineEntities.size()>0){
-            for(DatabaseUserDto dto : databaseUserDtoList){
+        if (databaseUserDtoList != null && databaseUserDtoList.size() > 0 && databaseDefineEntities != null && databaseDefineEntities.size() > 0) {
+            for (DatabaseUserDto dto : databaseUserDtoList) {
 
                 //获取数据库中文名称
-                if(StringUtils.isNotEmpty(dto.getApplyDatabaseId())){
+                if (StringUtils.isNotEmpty(dto.getApplyDatabaseId())) {
                     String[] applyDatabaseIdArray = dto.getApplyDatabaseId().split(",");
                     String applyDatabaseName = "";
-                    for(String applyDatabaseId : applyDatabaseIdArray){
-                        for(DatabaseDefineEntity databaseDefineEntity : databaseDefineEntities){
-                            if(applyDatabaseId.equals(databaseDefineEntity.getId())){
-                                applyDatabaseName += databaseDefineEntity.getDatabaseName()+",";
+                    for (String applyDatabaseId : applyDatabaseIdArray) {
+                        for (DatabaseDefineEntity databaseDefineEntity : databaseDefineEntities) {
+                            if (applyDatabaseId.equals(databaseDefineEntity.getId())) {
+                                applyDatabaseName += databaseDefineEntity.getDatabaseName() + ",";
                                 break;
                             }
                         }
                     }
-                    if(applyDatabaseName.length()>0){
-                        applyDatabaseName = applyDatabaseName.substring(0,applyDatabaseName.length()-1);
+                    if (applyDatabaseName.length() > 0) {
+                        applyDatabaseName = applyDatabaseName.substring(0, applyDatabaseName.length() - 1);
                     }
                     dto.setApplyDatabaseName(applyDatabaseName);
                 }
 
                 //获取申请用户信息
                 UserEntity userEntity = userDao.findByUserNameAndUserType(dto.getUserId(), "11");
-                if(userEntity != null){
+                if (userEntity != null) {
                     dto.setUserName(userEntity.getWebUsername());
                     dto.setDeptName(userEntity.getDeptName());
                     dto.setTutorPhone(userEntity.getTutorPhone());
@@ -144,7 +145,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return pageBean;
     }
 
-	@Override
+    @Override
     public DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto) {
         this.delete(databaseUserDto.getId());
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
@@ -155,8 +156,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public void exportData(String examineStatus) {
         List<DatabaseUserEntity> byExamineStatus = this.databaseUserDao.findByExamineStatus(examineStatus);
-        ExcelUtil<DatabaseUserEntity> util=new ExcelUtil(DatabaseUserEntity.class);
-        util.exportExcel(byExamineStatus,"数据库访问账户信息");
+        ExcelUtil<DatabaseUserEntity> util = new ExcelUtil(DatabaseUserEntity.class);
+        util.exportExcel(byExamineStatus, "数据库访问账户信息");
     }
 
     @Override
@@ -171,7 +172,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(databaseUserEntity);
         //调接口查申请人详情
         UserEntity userEntity = userDao.findByUserName(databaseUserDto.getUserId());
-        if(userEntity != null){
+        if (userEntity != null) {
             databaseUserDto.setUserName(userEntity.getWebUsername());
             databaseUserDto.setTutorPhone(userEntity.getTutorPhone());
             databaseUserDto.setDeptName(userEntity.getDeptName());
@@ -187,13 +188,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public DatabaseUserDto getDotByUserId(String userId) {
-        DatabaseUserEntity databaseUserEntity = databaseUserDao.findByUserIdAndExamineStatusNot(userId,"2");
+        DatabaseUserEntity databaseUserEntity = databaseUserDao.findByUserIdAndExamineStatusNot(userId, "2");
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
     @Override
-    public DatabaseUserDto findByUserIdAndExamineStatus(String userId,String examineStatus) {
-        DatabaseUserEntity databaseUserEntity = databaseUserDao.findByUserIdAndExamineStatus(userId,examineStatus);
+    public DatabaseUserDto findByUserIdAndExamineStatus(String userId, String examineStatus) {
+        DatabaseUserEntity databaseUserEntity = databaseUserDao.findByUserIdAndExamineStatus(userId, examineStatus);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
@@ -223,19 +224,19 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String picurl2 = map.get("picurl2");//修改前的申请材料，是否删除
 
         DatabaseUserEntity databaseUserEntity = new DatabaseUserEntity();
-        if(StringUtils.isNotEmpty(id)){
+        if (StringUtils.isNotEmpty(id)) {
             databaseUserEntity.setId(id);
         }
         databaseUserEntity.setApplyDatabaseId(database_ids);
-        if(StringUtils.isNotEmpty(filePath)){
+        if (StringUtils.isNotEmpty(filePath)) {
             databaseUserEntity.setApplyMaterial(filePath);
         }
-        if(StringUtils.isNotEmpty(data)){
+        if (StringUtils.isNotEmpty(data)) {
             JSONObject object = JSONObject.parseObject(data);
             String userId = (String) object.get("userId");
             databaseUserEntity.setUserId(userId);
         }
-        if(StringUtils.isNotEmpty(databaseup_password)){
+        if (StringUtils.isNotEmpty(databaseup_password)) {
             databaseUserEntity.setDatabaseUpPassword(databaseup_password);
         }
         databaseUserEntity.setDatabaseUpDesc(databaseup_desc);
@@ -248,7 +249,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public boolean empower(DatabaseUserDto databaseUserDto) {
-        try{
+        try {
             //根据ID获取旧的申请信息
             DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
             //待授权Id
@@ -257,45 +258,45 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             String[] haveEmpowerIdArr = oldDatabaseUserEntity.getDatabaseUpId().split(",");
             List<String> haveEmpowerIdist = Arrays.asList(haveEmpowerIdArr);
             //非首次审核通过，授权的id中去掉以前的id
-            if(oldDatabaseUserEntity.getExamineStatus().equals("1")){
+            if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
                 needEmpowerIdist.removeAll(haveEmpowerIdist);
             }
 
             /**为申请的IP授权**/
             //待授权IP
             String[] needEmpowerIpArr = databaseUserDto.getDatabaseUpIp().split(";");
-            for(String databaseId : needEmpowerIdist){
+            for (String databaseId : needEmpowerIdist) {
                 DatabaseDcl databaseVO = getDatabase(databaseId);
-                if(databaseVO!=null){
-                    databaseVO.addUser(databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),needEmpowerIpArr);
+                if (databaseVO != null) {
+                    databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
                 }
             }
 
             /**为已有账号修改密码**/
-            if(oldDatabaseUserEntity.getExamineStatus().equals("1")){
+            if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
                 needEmpowerIdist.addAll(haveEmpowerIdist);
             }
-            for(String databaseId : needEmpowerIdist){
+            for (String databaseId : needEmpowerIdist) {
                 DatabaseDcl databaseVO = getDatabase(databaseId);
-                if(databaseVO!=null){
-                    databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword());
+                if (databaseVO != null) {
+                    databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
                     databaseVO.closeConnect();
                 }
             }
 
             /**删除被撤销的数据库**/
             haveEmpowerIdist.removeAll(needEmpowerIdist);
-            for(String databaseId : haveEmpowerIdist){
+            for (String databaseId : haveEmpowerIdist) {
                 DatabaseDcl databaseVO = getDatabase(databaseId);
-                if(databaseVO!=null){
-                    for(String ip : needEmpowerIpArr){
-                        databaseVO.deleteUser(databaseUserDto.getDatabaseUpId(),ip);
+                if (databaseVO != null) {
+                    for (String ip : needEmpowerIpArr) {
+                        databaseVO.deleteUser(databaseUserDto.getDatabaseUpId(), ip);
                         databaseVO.closeConnect();
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -305,52 +306,52 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
      * @param databaseId
      * @return
      */
-    private DatabaseDcl getDatabase(String databaseId){
+    private DatabaseDcl getDatabase(String databaseId) {
         DatabaseDcl databaseVO = null;
-        try{
+        try {
             DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
             DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
             Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
             //访问路径、账号、密码
             String url = databaseDefineEntity.getDatabaseUrl();
 
-            if(databaseAdministratorSet!=null){
+            if (databaseAdministratorSet != null) {
                 //获取任意登录账号
                 DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
                 String username = databaseAdministratorEntity.getUserName();
                 String password = databaseAdministratorEntity.getPassWord();
 
                 //判断是什么数据库
-                if(databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getXugu())){
-                    databaseVO = new Xugu(url,username,password);
-                }else if(databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getGbase8a())){
-                    databaseVO = new Gbase8a(url,username,password);
-                }else if(databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getCassandra())){
+                if (databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getXugu())) {
+                    databaseVO = new Xugu(url, username, password);
+                } else if (databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getGbase8a())) {
+                    databaseVO = new Gbase8a(url, username, password);
+                } else if (databaseDefineEntity.getDatabaseType().toLowerCase().equals(databaseInfo.getCassandra())) {
                     databaseVO = new Cassandra(databaseDefineEntity.getDatabaseIp(),
                             Integer.parseInt(databaseDefineEntity.getDatabasePort()),
-                            username,password,databaseEntity.getSchemaName());
+                            username, password, databaseEntity.getSchemaName());
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return databaseVO;
     }
+
     @Override
-    public DatabaseUserDto applyDatabaseUser(HttpServletRequest request){
+    public DatabaseUserDto applyDatabaseUser(HttpServletRequest request) {
         DatabaseUserDto databases = new DatabaseUserDto();
-        try{
+        try {
             //下面定义存储存储上传信息的Map。
-            Map<String,Object> upLoadData= new HashMap<String,Object>();
+            Map<String, Object> upLoadData = new HashMap<String, Object>();
             HttpSession session = request.getSession();
             String path = session.getServletContext().getRealPath("");
             //下面取得文件目录的路径。
-            String upload_file_path = path + File.separator+"tupian";
+            String upload_file_path = path + File.separator + "tupian";
             //设置工厂
             DiskFileItemFactory factory = new DiskFileItemFactory();
             //设置文件存储位置
-            if(!Paths.get(upload_file_path).toFile().exists())
-            {
+            if (!Paths.get(upload_file_path).toFile().exists()) {
                 Paths.get(upload_file_path).toFile().mkdirs();
             }
             factory.setRepository(Paths.get(upload_file_path).toFile());
@@ -361,74 +362,53 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             upload.setHeaderEncoding("utf-8");
             String fileName = null;
             List<FileItem> list = upload.parseRequest((RequestContext) request);
-            for (FileItem item : list)
-            {
-                if (item.isFormField())
-                {
+            for (FileItem item : list) {
+                if (item.isFormField()) {
                     //程序执行到这里说明获取的是一般字段信息。
                     String name = item.getFieldName();
                     String value = item.getString("utf-8");
                     //下面将数据存入upLoadData中。
-                    if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)){//代码审查修改的
+                    if (!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {//代码审查修改的
                         upLoadData.put(name, value);
                     }
-                }
-                else
-                {
+                } else {
                     //程序执行到这里说明获取的是文件信息。
                     String name = item.getFieldName();
                     String value = item.getName();
-                    if(!StringUtils.isEmpty(Paths.get(value).getFileName().toString())){//代码审查修改的
-                        fileName =Paths.get(value).getFileName().toString();
+                    if (!StringUtils.isEmpty(Paths.get(value).getFileName().toString())) {//代码审查修改的
+                        fileName = Paths.get(value).getFileName().toString();
                     }
                     // 写文件到path目录，文件名问filename
-                    if(!StringUtils.isEmpty(fileName) && !StringUtils.isEmpty(name)){//代码审查修改的
+                    if (!StringUtils.isEmpty(fileName) && !StringUtils.isEmpty(name)) {//代码审查修改的
                         item.write(new File(upload_file_path, fileName));
                         //下面将数据存入upLoadData中。
-                        upLoadData.put(name, upload_file_path+fileName);
+                        upLoadData.put(name, upload_file_path + fileName);
                     }
                 }
             }
-            for (Map.Entry<String,Object> item : upLoadData.entrySet())
-            {
+            for (Map.Entry<String, Object> item : upLoadData.entrySet()) {
                 //下面取得upLoadData中的每个值。
                 String key = item.getKey();
                 Object val = item.getValue();
-                if(key.equals("databaseup_id")==true)
+                if (key.equals("databaseup_id") == true)
                     databases.setDatabaseUpId((String) val);
-                else if(key.equals("databaseup_password")==true)
-                {
-                    databases.setDatabaseUpPassword((String)val);
-                }
-                else if(key.equals("database_id")==true)
-                {
-                    databases.setApplyDatabaseId((String)val);
-                }
-                else if(key.equals("databaseup_desc")==true)
-                {
-                    databases.setDatabaseUpDesc((String)val);
-                }
-                else if(key.equals("user_id")==true)
-                {
-                    databases.setUserId((String)val);
-                }
-                else if(key.equals("database_id")==true)
-                {
-                    databases.setApplyDatabaseId((String)val);
-                }
-                else if(key.equals("DATABASEUP_IP")==true)
-                {
-                    databases.setDatabaseUpIp((String)val);
-                }
-                else if(key.equals("DATABASEUP_IP_SEGMENT")==true)
-                {
-                    databases.setDatabaseUpIpSegment((String)val);
-                }
-                else if(key.equals("databaseup_desc")==true)
-                {
-                    databases.setDatabaseUpDesc((String)val);
-                }
-                else if(key.equals("apply_material")==true){
+                else if (key.equals("databaseup_password") == true) {
+                    databases.setDatabaseUpPassword((String) val);
+                } else if (key.equals("database_id") == true) {
+                    databases.setApplyDatabaseId((String) val);
+                } else if (key.equals("databaseup_desc") == true) {
+                    databases.setDatabaseUpDesc((String) val);
+                } else if (key.equals("user_id") == true) {
+                    databases.setUserId((String) val);
+                } else if (key.equals("database_id") == true) {
+                    databases.setApplyDatabaseId((String) val);
+                } else if (key.equals("DATABASEUP_IP") == true) {
+                    databases.setDatabaseUpIp((String) val);
+                } else if (key.equals("DATABASEUP_IP_SEGMENT") == true) {
+                    databases.setDatabaseUpIpSegment((String) val);
+                } else if (key.equals("databaseup_desc") == true) {
+                    databases.setDatabaseUpDesc((String) val);
+                } else if (key.equals("apply_material") == true) {
                     databases.setApplyMaterial(fileName);
                 }
             }
@@ -442,10 +422,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         }
         return databases;
     }
+
     @Override
     public Map<String, Object> dataAuthorityCancel(String user_id, String database_id, String data_class_id, Integer apply_authoritys, String mark) {
         String ip = "";
-        String [] permission={"SELECT","UPDATE","INSERT","DELETE"};
+        String[] permission = {"SELECT", "UPDATE", "INSERT", "DELETE"};
         //下面根据用户ID取得审核通过的用户数据库访问账户信息。
         //获取用户up账户
         Map<String, Object> map = new HashMap<>();
@@ -453,15 +434,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         DataAuthorityApplyDto dataAuthorityApplyDto = new DataAuthorityApplyDto();
         dataAuthorityApplyDto.setUserId(user_id);
         List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
-        if(dbaccount!=null)
-        {
+        if (dbaccount != null) {
             //判断用户申请绑定的ip类型,并取得对应IP地址或IP地址段。
-            if(!StringUtils.isEmpty(dbaccount.getDatabaseUpIp()))
-            {
+            if (!StringUtils.isEmpty(dbaccount.getDatabaseUpIp())) {
                 ip = dbaccount.getDatabaseUpIp();
-            }
-            else if (!StringUtils.isEmpty(dbaccount.getDatabaseUpIpSegment()))
-            {
+            } else if (!StringUtils.isEmpty(dbaccount.getDatabaseUpIpSegment())) {
                 ip = dbaccount.getDatabaseUpIpSegment();
             }
 
@@ -469,38 +446,33 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             Map<String, String> hashmap = new HashMap<String, String>();
             //下面取得用户可用数据库ID。
             String a[] = dbaccount.getExamineDatabaseId().split(",");
-            try
-            {
+            try {
                 //下面判断是否为可分配权限的数据库ID。
                 Boolean Flag = false;
                 //下面取得database_id对应的父物理库ID。
                 DatabaseEntity databaseEntity = databaseDao.findById(database_id).get();
-                String parentDatabase_id=databaseEntity.getDatabaseDefine().getId();
+                String parentDatabase_id = databaseEntity.getDatabaseDefine().getId();
                 //下面判断已授权的物理库对应父物理库是否是南大或虚谷数据，并判断是否是用户可用的物理库。
-                if(parentDatabase_id.equals("HADB") || parentDatabase_id.equals("STDB") || parentDatabase_id.equals("BFDB") || parentDatabase_id.equals("FIDB"))
-                {
-                    for (int i = 0; i < a.length; i++)
-                    {
-                        if (a[i].equals(parentDatabase_id))
-                        {
-                            Flag =true;
+                if (parentDatabase_id.equals("HADB") || parentDatabase_id.equals("STDB") || parentDatabase_id.equals("BFDB") || parentDatabase_id.equals("FIDB")) {
+                    for (int i = 0; i < a.length; i++) {
+                        if (a[i].equals(parentDatabase_id)) {
+                            Flag = true;
                             break;
                         }
                     }
                 }
-                if(Flag==true)
-                {
+                if (Flag == true) {
                     //程序执行到这里说明该数据库ID为可分配权限的数据库。
                     //下面根据资料存储编码和物理库ID取得该资料的详细信息。
                     //下面取得资料信息。
-                    List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id,database_id);
+                    List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id, database_id);
                     //下面根据物理库ID取得物理库对应详细信息。
                     //DataBasePhysics databasephysics = dataBasePhysicsDao.queryDataBasePhysicsByDbIds(database_id);
                     //获取数据库管理账户
                     DatabaseAdministratorEntity databaseAdministratorEntity = null;
-                    Set<DatabaseAdministratorEntity>  databaseAdministratorList=databaseEntity.getDatabaseDefine().getDatabaseAdministratorList();
-                    for(DatabaseAdministratorEntity databasephysics : databaseAdministratorList){
-                        if(databasephysics.getIsManager()){
+                    Set<DatabaseAdministratorEntity> databaseAdministratorList = databaseEntity.getDatabaseDefine().getDatabaseAdministratorList();
+                    for (DatabaseAdministratorEntity databasephysics : databaseAdministratorList) {
+                        if (databasephysics.getIsManager()) {
                             databaseAdministratorEntity = databasephysics;
                             break;
                         }
@@ -671,22 +643,16 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     }
                     map.put("returnCode", 0);
                     map.put("returnMessage", "撤销权限成功");
-                }
-                else if(Flag==false)
-                {
+                } else if (Flag == false) {
                     map.put("returnCode", 3);
                     map.put("returnMessage", "不具备该物理库访问权限！");
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
                 map.put("returnCode", 2);
                 map.put("returnMessage", "撤销权限失败");
             }
-        }
-        else if(dbaccount==null)
-        {
+        } else if (dbaccount == null) {
             map.put("returnCode", 4);
             map.put("returnMessage", "该用户未创建数据库访问账户");
         }
@@ -698,41 +664,41 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public ResultT changePassword(String id, String oldPwd, String newPwd) {
         DatabaseUserDto databaseUserDto = this.getDotById(id);
-        if(!databaseUserDto.getDatabaseUpPassword().equals(oldPwd)){
-            return  ResultT.failed("输入的旧密码不正确");
+        if (!databaseUserDto.getDatabaseUpPassword().equals(oldPwd)) {
+            return ResultT.failed("输入的旧密码不正确");
         }
 
         StringBuffer buffer = new StringBuffer();
         boolean flag = true;
         String[] databaseIds = databaseUserDto.getExamineDatabaseId().split(",");
-        for(String databaseId : databaseIds){
+        for (String databaseId : databaseIds) {
             DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(databaseId);
             //获取数据库管理账户
             DatabaseAdministratorDto databaseAdministratorDto = null;
             Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDefineDto.getDatabaseAdministratorList();
-            for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
-                if(databaseAdministratorDto1.getIsManager()){
+            for (DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList) {
+                if (databaseAdministratorDto1.getIsManager()) {
                     databaseAdministratorDto = databaseAdministratorDto1;
                     break;
                 }
             }
-            if(databaseAdministratorDto == null){
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName()+",没有管理员账户" + "<br/>");
+            if (databaseAdministratorDto == null) {
+                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
             }
 
-            if(databaseDefineDto.getDatabaseType().toLowerCase().equalsIgnoreCase("xugu")){
+            if (databaseDefineDto.getDatabaseType().toLowerCase().equalsIgnoreCase("xugu")) {
                 try {
-                    Xugu xugu = new Xugu(databaseDefineDto.getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-                    xugu.updateAccount(databaseUserDto.getDatabaseUpId(),newPwd);
+                    Xugu xugu = new Xugu(databaseDefineDto.getDatabaseUrl(), databaseAdministratorDto.getUserName(), databaseAdministratorDto.getPassWord());
+                    xugu.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
                 } catch (Exception e) {
 
                 }
 
-            }else if(databaseDefineDto.getDatabaseType().equalsIgnoreCase("Gbase8a")){
+            } else if (databaseDefineDto.getDatabaseType().equalsIgnoreCase("Gbase8a")) {
                 try {
-                    Gbase8a gbase8a = new Gbase8a(databaseDefineDto.getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-                    gbase8a.updateAccount(databaseUserDto.getDatabaseUpId(),newPwd);
+                    Gbase8a gbase8a = new Gbase8a(databaseDefineDto.getDatabaseUrl(), databaseAdministratorDto.getUserName(), databaseAdministratorDto.getPassWord());
+                    gbase8a.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
                 } catch (Exception e) {
 
                 }
@@ -741,9 +707,25 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
         }
         //数据库全部更新成功，修改记录密码
-        if(flag){
+        if (flag) {
 
         }
         return null;
     }
+
+    @Override
+    public ResultT updateBizPwd(String bizUserId, String ids, String newPwd) {
+        for (String id : ids.split(",")) {
+            DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
+            try {
+                DatabaseDcl databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                databaseDcl.updateAccount(bizUserId,newPwd);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return ResultT.success();
+    }
+
+
 }
