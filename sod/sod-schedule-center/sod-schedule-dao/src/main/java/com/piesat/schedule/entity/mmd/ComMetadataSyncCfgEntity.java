@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 *
 */
 @Data
-@Table(name="t_sod_sync_commetadata_cfg")
+@Table(name="T_SOD_SYNC_COMMETADATA_CFG")
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("MMD")

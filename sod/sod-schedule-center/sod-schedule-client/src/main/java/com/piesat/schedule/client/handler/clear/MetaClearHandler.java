@@ -49,7 +49,7 @@ public class MetaClearHandler implements BaseHandler {
             BeanUtils.copyProperties(metaClearEntity,metaClearLogEntity);
             metaClearLogEntity.setId(null);
             metaClearLogEntity.setJobId(metaClearEntity.getId());
-
+            metaClearLogEntity.setTriggerTime(metaClearEntity.getTriggerLastTime());
             ReplaceVo replaceVo = new ReplaceVo();
             replaceVo.setMsg(metaClearEntity.getConditions());
             replaceVo.setBackupTime(metaClearEntity.getTriggerLastTime());

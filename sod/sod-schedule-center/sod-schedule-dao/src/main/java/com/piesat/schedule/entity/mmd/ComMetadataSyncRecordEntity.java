@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 */
 @Data
 @Entity
-@Table(name="t_sod_sync_commetadata_record")
+@Table(name="T_SOD_SYNC_COMMETADATA_RECORD")
 @EqualsAndHashCode(callSuper = true)
 public class ComMetadataSyncRecordEntity extends BaseEntity{
 
