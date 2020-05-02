@@ -122,7 +122,7 @@ public abstract class ExecuteBaseService {
                        server.setGrpcPort(Integer.valueOf(instanceInfo.getMetadata().get("gRPC.port")));
                        long count=redisUtil.scanSize(QUARTZ_HTHT_PERFORM+":"+server.getHost()+":"+server.getGrpcPort());
                        if(count<server.getLimit()){
-                             log.info("{}当前任务执行条数{}",server.getHost(),count);
+                             log.info("{}当前任务条数{}",server.getHost(),count);
                              server.setUse(Integer.parseInt(String.valueOf(count)));
                              servers.add(server);
                        }

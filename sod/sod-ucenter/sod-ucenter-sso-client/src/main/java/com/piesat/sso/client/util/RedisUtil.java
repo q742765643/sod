@@ -601,7 +601,8 @@ public class RedisUtil {
             @Override
             public Long doInRedis(RedisConnection connection) throws DataAccessException {
                 long count = 0L;
-                Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(key).count(1000).build());
+                String keys=key+"*";
+                Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(keys).count(1000).build());
                 while (cursor.hasNext()) {
                     cursor.next();
                     count++;
