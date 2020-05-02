@@ -6,6 +6,11 @@ export function english(str) {
   const reg = /^[a-zA-Z]+$/
   return reg.test(str)
 }
+/* 英文数字下划线 */
+export function EngNumLine(str) {
+  const reg = /^[A-Za-z0-9-_]+$/
+  return reg.test(str)
+}
 /**
  *
  * 10以内的中文

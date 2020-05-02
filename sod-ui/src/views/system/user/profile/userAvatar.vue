@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img v-bind:src="options.img" @click="editCropper()" title="点击上传头像" class="img-circle img-lg" />
+    <!-- <img v-bind:src="options.img" @click="editCropper()" title="点击上传头像" class="img-circle img-lg" /> -->
     <el-dialog v-dialogDrag :title="title" :visible.sync="open" width="800px">
       <el-row>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">

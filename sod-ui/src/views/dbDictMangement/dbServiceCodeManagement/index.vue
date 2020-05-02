@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import { EngNumLine } from "@/components/commonVaildate.js";
 import {
   defineList,
   addCode,
@@ -104,6 +105,15 @@ import {
 export default {
   name: "filedSearchDeploy",
   data() {
+    const ENLValidate = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入服务代码"));
+      } else if (!EngNumLine(value)) {
+        callback(new Error("服务代码只能以英文数字和下划线组成"));
+      } else {
+        callback();
+      }
+    };
     return {
       //查询条件
       queryParams: {
@@ -133,6 +143,7 @@ export default {
       dialogVisible: false,
       rules: {
         userEleCode: [
+          // { required: true, validator: ENLValidate, trigger: "blur" }
           { required: true, message: "请输入服务代码名称", trigger: "blur" }
         ],
         dbEleCode: [

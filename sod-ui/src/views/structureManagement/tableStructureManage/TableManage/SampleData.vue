@@ -6,9 +6,7 @@
         :key="index"
         :prop="item.prop"
         :label="item.label"
-      >
-        <span>{{item.label}}</span>
-      </af-table-column>
+      ></af-table-column>
     </el-table>
   </el-main>
 </template>

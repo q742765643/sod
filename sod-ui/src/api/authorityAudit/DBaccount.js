@@ -70,7 +70,7 @@ export function getById(query) {
 // 导出
 export function download(query) {
   return request({
-    url: baseUrl + 'dm/databaseUser/exportData',
+    url: baseUrl + '/dm/databaseUser/exportData',
     method: 'get',
     params: query,
     responseType: "arraybuffer"

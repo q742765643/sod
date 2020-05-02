@@ -350,7 +350,7 @@ export default {
       //账户列表
       this.getPhysicsUser(this.msgFormDialog.id); */
       //专题列表
-      this.getPhysicsSpecial(this.msgFormDialog.id);
+      this.getPhysicsSpecial(this.handleMsgObj.id);
     } else {
       //点击添加时处理
       this.isDbIdDisable = false;
