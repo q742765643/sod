@@ -318,16 +318,17 @@
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,bbb.DATABASE_ID, dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
         a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
-        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,bbb.ID as R_LOGIC_ID,
+        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,bbb.ID as R_LOGIC_ID,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = dbf.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = dbf.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = dbf.id) BACKUP_ST,
         b.C_DATUMTYPE as TYPE_NAME,c.LOGIC_NAME,d.WEB_USERNAME,cc.C_DATUM_CODE TYPE_PCODE,cc.C_DATUMTYPE TYPE_PNAME,
         d.DEPT_NAME,d.PHONENUMBER,f.*,bbb.STORAGE_TYPE,aaa.CLASS_NAME
         from t_sod_newdata_apply a
         left join t_sod_data_class aaa on a.DATA_CLASS_ID = aaa.DATA_CLASS_ID
         left join t_sod_data_logic bbb on bbb.DATA_CLASS_ID = aaa.DATA_CLASS_ID
-
         left join t_sod_database db on bbb.DATABASE_ID = db.id
         left join t_sod_database_define dbf on db.database_define_id = dbf.id
-
         left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
         left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
         left join t_sod_logic_define c on a.logic_id = c.logic_flag

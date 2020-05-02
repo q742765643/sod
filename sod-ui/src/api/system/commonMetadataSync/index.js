@@ -58,7 +58,8 @@ export function syncDataNow(query) {
   return request({
     url: baseUrl + '/comMetaData/syncDataNow',
     method: 'get',
-    params: query
+    params: query,
+    timeout:1000 * 60 * 20
   })
 }
 

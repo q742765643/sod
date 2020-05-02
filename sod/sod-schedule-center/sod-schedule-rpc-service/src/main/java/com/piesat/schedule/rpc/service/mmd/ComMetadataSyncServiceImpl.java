@@ -289,7 +289,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 				idArr = ids.split(",");
 				idList = Arrays.asList(idArr);
 //			}
-			List<String> strList = new ArrayList<>();
+			List<ComMetadataSyncRecordEntity> strList = new ArrayList<>();
 			for(String id:idList) {
 				if(StringUtil.isEmpty(id)) continue;
 
@@ -404,7 +404,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 				comMetadataSyncRecordDao.save(cre);
 				StringBuffer sb = new StringBuffer();
 				sb.append(ce.getTaskName()).append(":").append(succeed ? "同步成功（"+arr.size()+"）条" : "同步失败");
-				strList.add(sb.toString());
+				strList.add(cre);
 			}
 			return ResultT.success(strList);
 		} catch (Exception e) {
