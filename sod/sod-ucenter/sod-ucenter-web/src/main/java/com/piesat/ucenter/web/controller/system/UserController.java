@@ -5,6 +5,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.AESUtil;
+import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.dao.system.UserDao;
@@ -41,6 +42,9 @@ import java.util.*;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @GrpcHthtClient
+    private DatabaseUserService databaseUserService;
 
     @Value("${fileUpload.httpPath}")
     private String outFilePath;
@@ -254,6 +258,7 @@ public class UserController {
                 user.setPassword(s);
                 ResultT<String> resultT = new ResultT<>();
                 userService.editBase(user);
+//                databaseUserService.updateBizPwd(bizUserid ,user.getDbIds() ,newPwd);
                 return resultT;
             } catch (Exception e) {
                 e.printStackTrace();

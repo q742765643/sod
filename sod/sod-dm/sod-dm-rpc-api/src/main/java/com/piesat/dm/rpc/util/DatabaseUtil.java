@@ -5,7 +5,9 @@ import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
+import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 
 import java.util.List;
@@ -70,6 +72,33 @@ public class DatabaseUtil {
         }
         return db;
     }
+
+    public static DatabaseDcl getDatabaseDefine(DatabaseDefineDto databaseDefineDto, DatabaseInfo databaseInfo) throws Exception {
+        DatabaseDcl db = null;
+        String databaseType = databaseDefineDto.getDatabaseType().toLowerCase();
+        String databaseUrl = databaseDefineDto.getDatabaseUrl();
+        String databaseIp = databaseDefineDto.getDatabaseIp();
+        int port = Integer.parseInt(databaseDefineDto.getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = databaseDefineDto.getDatabaseAdministratorList();
+        DatabaseAdministratorDto dad = null;
+        for (DatabaseAdministratorDto da : dal) {
+            if (da.getIsManager()) {
+                dad = da;
+            }
+        }
+        if (dad == null) {
+            throw new Exception("数据库管理用户不存在");
+        }
+        if (databaseInfo.getXugu().equals(databaseType)) {
+            db = new Xugu(databaseUrl, dad.getUserName(), dad.getPassWord());
+        } else if (databaseInfo.getGbase8a().equals(databaseType)) {
+            db = new Gbase8a(databaseUrl, dad.getUserName(), dad.getPassWord());
+        } else if (databaseInfo.getCassandra().equals(databaseType)) {
+            db = new Cassandra(databaseIp, port, dad.getUserName(), dad.getPassWord(), null);
+        }
+        return db;
+    }
+
 
     public static DatabaseAdministratorDto getManagerUser(List<DatabaseAdministratorDto> list) {
         DatabaseAdministratorDto m = null;

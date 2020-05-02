@@ -17,4 +17,6 @@ public interface ConsistencyCheckHistoryService {
     List<ConsistencyCheckHistoryDto> findHistoryByDatabaseIdAndFileName(String databaseId, String fileName);
 
     ConsistencyCheckHistoryDto saveDto(ConsistencyCheckHistoryDto consistencyCheckHistoryDto);
+
+    void deleteById(String id);
 }

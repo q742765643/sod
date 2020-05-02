@@ -229,13 +229,17 @@ public class Cassandra implements DatabaseDcl {
         String columns = String.join(",", column);
         String sql = "SELECT " + columns + " FROM " + schema + "." + tableName + " limit " + row;
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        ResultSet rs = instance.execute(sql);
-        for (Row r : rs) {
-            Map<String, Object> rowData = new HashMap<String, Object>();
-            for (int i = 1; i <= column.size(); i++) {
-                rowData.put(column.get(i - 1), r.getObject(i));
+        try {
+            ResultSet rs = instance.execute(sql);
+            for (Row r : rs) {
+                Map<String, Object> rowData = new HashMap<String, Object>();
+                for (int i = 1; i <= column.size(); i++) {
+                    rowData.put(column.get(i - 1), r.getObject(i));
+                }
+                list.add(rowData);
             }
-            list.add(rowData);
+        }catch (Exception e){
+            throw new Exception("数据查询异常：请在对应物理库内创建表结构"+tableName);
         }
         return ResultT.success(list);
     }
