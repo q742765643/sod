@@ -147,7 +147,7 @@ public class DatabaseUserManagerController {
             Doc2PDF.doc2pdf(filePath,pdfPath);
             Map<String,Object> resultMap = new HashMap<>();
             resultMap.put("filePath",filePath);
-            resultMap.put("pdfPath",httpPath+"/"+pdfName);
+            resultMap.put("pdfPath",httpPath+"/user/"+pdfName);
             return ResultT.success(resultMap);
         } catch (Exception e) {
             e.printStackTrace();

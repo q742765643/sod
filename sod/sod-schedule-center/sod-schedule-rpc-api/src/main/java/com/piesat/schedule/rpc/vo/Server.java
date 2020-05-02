@@ -13,7 +13,7 @@ public class Server {
     private String host;
     private Integer httpPort;
     private Integer grpcPort;
-    private Integer limit=200;
+    private Integer limit=100;
     private Integer use;
 }
 

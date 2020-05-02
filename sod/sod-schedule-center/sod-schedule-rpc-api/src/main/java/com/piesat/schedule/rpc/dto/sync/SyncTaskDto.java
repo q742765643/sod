@@ -162,16 +162,16 @@ public class SyncTaskDto extends BaseDto {
     /**
      * 源表过滤字段
      */
-    private String[] sourceTableFilter;
+    private String[] sourceTableFilter = new String[]{};
 
     /**
      * 源表过滤字段使用的操作符
      */
-    private String[] columnOper;
+    private String[] columnOper = new String[]{};
 
     /**
      * 源表过滤字段对应的值
      */
-    private String[]  sourceTableFilterText;
+    private String[]  sourceTableFilterText = new String[]{};
 
 }

@@ -143,10 +143,10 @@
           <el-table-column prop="syncTableName" label="同步表名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="syncRecordNum" label="同步记录数"></el-table-column>
           <el-table-column prop="syncType" label="同步类型">
-            <template slot-scope="scope">
+           <!-- <template slot-scope="scope">
               <span v-if="scope.row.syncType == 1">全量同步</span>
               <span v-if="scope.row.syncType == 2">增量同步</span>
-            </template>
+            </template>-->
           </el-table-column>
           <el-table-column prop="syncModel" label="同步方式"></el-table-column>
           <el-table-column prop="runState" label="运行状态"></el-table-column>
@@ -170,14 +170,14 @@
       v-if="syncDescDialogVisible"
     >
       <div v-for="(item,index) in syncDescList" :key="index">
-        <div v-if="item.run_state=='同步成功'">
-          <span>同步表名{{index}}:{{item.syncTableName}}</span>
-          <span>同步记录数{{index}}:{{item.syncRecordNum}}</span>
+        <div v-if="item.runState=='同步成功'">
+          <span>[{{index}}]同步表名:{{item.syncTableName}}</span>
+          <span>同步记录数:{{item.syncRecordNum}}</span>
         </div>
         <div v-else>
-          <span>同步表名{{index}}:{{item.syncTableName}}</span>
-          <span>同步状态:{{item.run_state}}</span>
-          <span>失败原因:{{item.fail_reason}}</span>
+          <span>[{{index}}]同步表名:{{item.syncTableName}}</span>
+          <span>同步状态:{{item.runState}}</span>
+          <span>失败原因:{{item.failReason}}</span>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -297,12 +297,12 @@ export default {
             message: "同步成功"
           });
           loading.close(); //关闭延迟加载
-          this.syncDescList = res.data.data;
+          this.syncDescList = res.data;
           this.syncDescDialogVisible = true;
         } else {
           this.$message({
             type: "error",
-            message: "同步失败"
+            message: res.msg
           });
           loading.close(); //关闭延迟加载
         }

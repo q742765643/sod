@@ -102,7 +102,7 @@ export default {
       msgFormDialog: {
         taskName: "",
         databaseId: "",
-        jobCron: "",
+        jobCron: "0 0 2 * * ?",
         conditions: ""
       },
       ipList: [],

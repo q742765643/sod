@@ -52,8 +52,7 @@ public class DatumTypeInfoServiceImpl extends BaseService<DatumTypeInfoEntity> i
     @Override
     public JSONArray getTree() {
         String sql = "SELECT C_DATUM_CODE ID,C_DATUMTYPE NAME,C_DATUMPARENT_CODE PID,  " +
-                " (SELECT DISTINCT 'el-icon-tickets' FROM T_SOD_DATA_CLASS C WHERE C.D_DATA_ID = C_DATUM_CODE ) ICON, " +
-                " (SELECT DISTINCT 'el-icon-tickets' FROM T_SOD_DATA_CLASS C WHERE C.D_DATA_ID = C_DATUM_CODE and type =2 ) HAVE " +
+                " (SELECT DISTINCT 'el-icon-tickets' FROM T_SOD_DATA_CLASS C WHERE C.D_DATA_ID = C_DATUM_CODE AND C.TYPE = 2  ) ICON " +
                 " FROM T_SOD_DATA_DATUMTYPEINFO A " +
                 " WHERE  (SUBSTR(C_DATUM_CODE,13,1) NOT IN ('P','R') AND C_DATUMPARENT_CODE != 'G.0019.0001' " +
                 " AND C_DATUMPARENT_CODE != 'G.0019.0002' AND EXISTS( SELECT 1 FROM T_SOD_DATA_DATUMTYPEINFO B " +
@@ -72,11 +71,6 @@ public class DatumTypeInfoServiceImpl extends BaseService<DatumTypeInfoEntity> i
             } else {
                 tl.setType("0");
                 tl.setIcon(m.get("ICON").toString());
-            }
-            if (m.get("HAVE") == null) {
-                tl.setHave("1");
-            } else {
-                tl.setHave("0");
             }
             l.add(tl);
         }

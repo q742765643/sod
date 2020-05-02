@@ -195,7 +195,7 @@ export default {
         storageDirectory: "",
         tableName: "",
         ddataId: "",
-        jobCron: "",
+        jobCron: "0 0 2 * * ?",
         isAlarm: "",
         executorTimeout: "",
         executorFailRetryCount: "",

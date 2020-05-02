@@ -360,23 +360,11 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         this.delete(id);
     }
     @Override
-    public Map<String, Object> delApply(String applyId, String dDataId) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            NewdataApplyEntity newdataApplyEntity = new NewdataApplyEntity();
-            newdataApplyEntity.setDDataId(dDataId);
-            newdataApplyEntity.setUserId(applyId);
-            newdataApplyEntity.setExamineStatus(4);
-            newdataApplyDao.saveNotNull(newdataApplyEntity);
-            result.put("returnCode", "0");
-            result.put("returnMessage", "操作成功。");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            result.put("returnCode", "1");
-            result.put("returnMessage", "操作失败 : " + e.getMessage());
-        }
-        return result;
+    public void delApply(String applyId, String dDataId) {
+        NewdataApplyDto newdataApplyDto = this.getDotById(applyId);
+        newdataApplyDto.setExamineStatus(4);
+        NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
+        newdataApplyDao.saveNotNull(newdataApplyEntity);
     }
 
     @Override

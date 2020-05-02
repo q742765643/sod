@@ -254,15 +254,14 @@ export default {
     getOptions() {
       getDatabaseName().then(response => {
         var resdata = response.data;
-        for (var i = 0; i < resdata.length; i++) {
+        resdata.forEach(element => {
           if (
-            resdata[i].DATABASE_TYPE.indexOf("Gbase") == -1 &&
-            resdata[i].DATABASE_TYPE.indexOf("xugu") == -1
+            element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
+            element.DATABASE_TYPE.indexOf("xugu") != -1
           ) {
-            resdata[i].display = false;
+            this.databaseNameOptions.push(element);
           }
-        }
-        this.databaseNameOptions = resdata;
+        });
       });
     },
     /*点击历史报告列表事件 */

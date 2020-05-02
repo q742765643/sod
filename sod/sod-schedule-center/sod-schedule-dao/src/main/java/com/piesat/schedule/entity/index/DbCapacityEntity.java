@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 *
 */
 @Data
-@Table(name="t_sod_database_capacity_info")
+@Table(name="T_SOD_DATABASE_CAPACITY_INFO")
 @Entity
 @EqualsAndHashCode(callSuper = true)
 public class DbCapacityEntity extends BaseEntity{/**

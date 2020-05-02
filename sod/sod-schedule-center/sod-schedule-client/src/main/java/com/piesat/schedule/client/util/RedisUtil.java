@@ -1,13 +1,16 @@
 package com.piesat.schedule.client.util;
 
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +27,8 @@ public class RedisUtil {
 
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     public void setRedisTemplate(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -599,7 +604,7 @@ public class RedisUtil {
             @Override
             public Long doInRedis(RedisConnection connection) throws DataAccessException {
                 long count = 0L;
-                Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(key).count(1000).build());
+                Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(key+"*").count(1000).build());
                 while (cursor.hasNext()) {
                     cursor.next();
                     count++;
@@ -608,6 +613,35 @@ public class RedisUtil {
             }
         });
         return dbSize;
+    }
+    public List<String> scan(String key){
+        List<String> keys = Lists.newArrayList();
+        Cursor<String> cursor = null;
+        try {
+            cursor = scanCs(key+"*", 200);
+            while (cursor.hasNext()){
+                //找到一次就添加一次
+                keys.add(cursor.next());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(cursor!=null){
+                try {
+                    cursor.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        return keys;
+    }
+    private  Cursor<String> scanCs(String match, int count){
+        ScanOptions scanOptions = ScanOptions.scanOptions().match(match).count(count).build();
+        RedisSerializer<String> redisSerializer = (RedisSerializer<String>) redisTemplate.getKeySerializer();
+        return (Cursor)redisTemplate.executeWithStickyConnection((RedisCallback) redisConnection ->
+                new ConvertingCursor<>(redisConnection.scan(scanOptions), redisSerializer::deserialize));
     }
     public static void main(String[] args) {
 		/*JedisPool jedisPool = new JedisPool(null,"localhost",6379,100,"123456");

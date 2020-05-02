@@ -75,16 +75,26 @@ public class XuguBusiness extends BaseBusiness{
         }
 
     }
+    //先修改 按 and 和or 切割
     @Override
     public void backUpVtable(BackupLogEntity backupLogEntity,StrategyVo strategyVo,ResultT<String> resultT){
         StringBuilder sql=new StringBuilder();
         sql.append(" select a.* from ").append(backupLogEntity.getVTableName()).append(" a ,");//inner join
-        sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
+        sql.append(backupLogEntity.getTableName()).append(" b").append(" where ");
         String fkconditoins=TableForeignKeyUtil.getBackupSql(backupLogEntity.getForeignKey(),resultT);
+        sql.append(fkconditoins).append(" and a.D_DATETIME=b.D_DATETIME");
+        if(StringUtils.isNotNullString(backupLogEntity.getConditions())){
+            String[] cs=backupLogEntity.getConditions().split("and");
+            for(int i=0;i<cs.length;i++){
+                sql.append(" and ").append("b."+cs[i].trim());
+            }
+
+        }
+        //sql.append("(select * from ").append(backupLogEntity.getTableName()).append(" where ").append(backupLogEntity.getConditions()).append(") b");
         if(!resultT.isSuccess()){
             return;
         }
-        sql.append(" where ").append(fkconditoins);
+        sql.append(" and ").append(fkconditoins);
        // sql.append(" on a.").append(backupLogEntity.getForeignKey()).append("=b.").append(backupLogEntity.getForeignKey());
         Select2File select2File=new Select2File();
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".exp";
