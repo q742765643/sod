@@ -2,6 +2,7 @@ package com.piesat.sod.system.rpc.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -117,7 +118,6 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @description
 	 * @author wlg
 	 * @date 2020-01-17 17:09
-	 * @param manageFieldDto
 	 * @return
 	 * @throws Exception
 	 */
@@ -129,9 +129,10 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 		if(!StringUtil.isEmpty(mfe.getDbEleCode())) mfe.setDbEleCode("%"+mfe.getDbEleCode()+"%");
 
 		List<ManageFieldEntity> data = manageFieldMapper.findByConditions(mfe);
+		Map<String,Object> totalMap = manageFieldMapper.findTotal(mfe);
 		List<ManageFieldDto> dtoData = manageFieldMapstruct.toDto(data);
 		PageInfo<ManageFieldDto> pageInfo = new PageInfo<>(dtoData);
-		PageBean pageBean = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
+		PageBean pageBean = new PageBean(Integer.parseInt(totalMap.get("TOTAL").toString()),pageInfo.getPages(),dtoData);
 
 		return pageBean;
 	}
@@ -202,10 +203,15 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @param manageFieldDto
 	 * @throws Exception
 	 */
+	@Transactional
 	@Override
 	public void editManageField(ManageFieldDto manageFieldDto) throws Exception {
 		ManageFieldEntity mfe = manageFieldMapstruct.toEntity(manageFieldDto);
 		manageFieldDao.save(mfe);
+		//修改关联信息
+		ManageFieldGroupEntity manageFieldGroupEntity= manageFieldGroupDao.findByFieldId(mfe.getId());
+		manageFieldGroupEntity.setGroupId(mfe.getGroupId());
+		manageFieldGroupDao.save(manageFieldGroupEntity);
 	}
 
 	/**
