@@ -20,12 +20,14 @@ public interface DatabaseUserService {
 
     /**
      * 查询所有
+     *
      * @return
      */
     List<DatabaseUserDto> all();
 
     /**
      * 根据ID查询
+     *
      * @param id
      * @return
      */
@@ -33,12 +35,14 @@ public interface DatabaseUserService {
 
     /**
      * 根据ID删除
+     *
      * @param id
      */
     void delete(String id);
 
     /**
      * 根据UP账户查询
+     *
      * @param databaseUPId
      * @return
      */
@@ -46,6 +50,7 @@ public interface DatabaseUserService {
 
     /**
      * 根据userId查询
+     *
      * @param userId
      * @return
      */
@@ -53,23 +58,26 @@ public interface DatabaseUserService {
 
     /**
      * 根据userId和审核状态查询
+     *
      * @param userId
      * @param examineStatus
      * @return
      */
-    DatabaseUserDto findByUserIdAndExamineStatus(String userId,String examineStatus);
+    DatabaseUserDto findByUserIdAndExamineStatus(String userId, String examineStatus);
 
     /**
      * 新增
+     *
      * @param atabaseUserDto
      * @return
      */
     DatabaseUserDto saveDto(DatabaseUserDto atabaseUserDto);
 
-    DatabaseUserDto addOrUpdate(Map<String, String[]> parameterMap,String filePath);
+    DatabaseUserDto addOrUpdate(Map<String, String[]> parameterMap, String filePath);
 
     /**
      * 数据库授权
+     *
      * @param databaseUserDto
      * @return
      */
@@ -77,6 +85,7 @@ public interface DatabaseUserService {
 
     /**
      * 分页查询
+     *
      * @param pageForm
      * @return
      */
@@ -84,8 +93,9 @@ public interface DatabaseUserService {
 
     void exportData(String examineStatus);
 
-	/**
+    /**
      * 修改
+     *
      * @param databaseUserDto
      * @return
      */
@@ -96,4 +106,6 @@ public interface DatabaseUserService {
     Map<String, Object> dataAuthorityCancel(String user_id, String database_id, String data_class_id, Integer apply_authoritys, String mark);
 
     ResultT changePassword(String id, String oldPwd, String newPwd);
+
+    ResultT updateBizPwd(String bizUserId, String ids, String newPwd);
 }
