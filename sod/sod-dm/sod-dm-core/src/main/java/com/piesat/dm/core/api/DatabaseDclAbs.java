@@ -101,7 +101,8 @@ public abstract class DatabaseDclAbs implements DatabaseDcl {
                 list.add(rowData);
             }
         } catch (SQLException e) {
-            throw new Exception("数据查询异常：请在对应物理库内创建表结构"+tableName);
+            e.printStackTrace();
+//            throw new Exception("数据查询异常：请在对应物理库内创建表结构"+tableName);
         }
         return ResultT.success(list);
     }

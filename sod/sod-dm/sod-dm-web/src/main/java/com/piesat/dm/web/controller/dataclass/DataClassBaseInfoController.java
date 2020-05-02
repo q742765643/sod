@@ -95,6 +95,19 @@ public class DataClassBaseInfoController {
         }
     }
 
+    @ApiOperation(value = "根据存储编码查询所有基础信息")
+    @RequiresPermissions("dm:classbaseinfo:getAllDataClassBaseInfo")
+    @GetMapping(value = "/getAllDataClassBaseInfo")
+    public ResultT getAllDataClassBaseInfo(String id) {
+        try {
+            DataClassBaseInfoDto all = this.cataClassBaseInfoService.getAllDataClassBaseInfo(id);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "保存")
     @RequiresPermissions("dm:classbaseinfo:saveDataClassBaseInfo")
     @Log(title = "资料基础信息", businessType = BusinessType.INSERT)

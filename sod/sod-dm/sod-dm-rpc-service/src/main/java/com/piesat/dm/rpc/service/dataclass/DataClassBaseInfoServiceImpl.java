@@ -7,7 +7,9 @@ import com.piesat.dm.dao.dataclass.DataClassBaseInfoDao;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataClassBaseInfoService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.dto.dataclass.DataClassBaseInfoDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import java.util.List;
 public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoEntity> implements DataClassBaseInfoService {
     @Autowired
     private DataClassBaseInfoDao dataClassBaseInfoDao;
+    @Autowired
+    private DataClassService dataClassService;
     @Autowired
     private DataClassBaseInfoMapper dataClassBaseInfoMapper;
     @Autowired
@@ -56,6 +60,19 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
 
     @Override
     public DataClassBaseInfoDto getDataClassBaseInfo(String id) {
+        DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(id);
+        DataClassBaseInfoDto dataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
+        DataClassBaseInfoEntity SodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(id);
+        DataClassBaseInfoDto sodDataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(SodDataClassBaseInfo);
+        DataClassDto dataclass = this.dataClassService.findByDataClassId(id);
+        if (sodDataClassBaseInfoDto != null && dataclass.getUseBaseInfo() != 0) {
+            dataClassBaseInfoDto = dataClassBaseInfoDto.combineSydwCore(sodDataClassBaseInfoDto, dataClassBaseInfoDto);
+        }
+        return dataClassBaseInfoDto;
+    }
+
+    @Override
+    public DataClassBaseInfoDto getAllDataClassBaseInfo(String id) {
         DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(id);
         DataClassBaseInfoDto dataClassBaseInfoDto = this.dataClassBaseInfoMapper.toDto(dataClassBaseInfo);
         DataClassBaseInfoEntity SodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(id);
