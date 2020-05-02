@@ -66,7 +66,7 @@
       ></el-table-column>
       <el-table-column
         :show-overflow-tooltip="true"
-        prop="sourceDatabaseId"
+        prop="sourceDatabaseName"
         width="120px"
         label="源库"
       ></el-table-column>
