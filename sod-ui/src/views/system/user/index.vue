@@ -128,6 +128,7 @@
           :data="userList"
           row-key="id"
           @selection-change="handleSelectionChange"
+          @sort-change="sortChange"
         >
           <el-table-column type="selection" width="40" />
           <el-table-column label="用户名称" prop="userName" />
@@ -144,7 +145,7 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" prop="createTime" width="160">
+          <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
@@ -353,7 +354,12 @@ export default {
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
-        deptId: undefined
+        deptId: undefined,
+        params: {
+          orderBy: {
+            createTime: "desc"
+          }
+        }
       },
       // 表单校验
       rules: {
@@ -406,6 +412,16 @@ export default {
     });
   },
   methods: {
+    sortChange(column, prop, order) {
+      var orderBy = {};
+      if (column.order == "ascending") {
+        orderBy.createTime = "asc";
+      } else {
+        orderBy.createTime = "desc";
+      }
+      this.queryParams.params.orderBy = orderBy;
+      this.handleQuery();
+    },
     handleExport() {
       exportUser(this.queryParams).then(res => {
         this.downloadfileCommon(res);

@@ -672,7 +672,7 @@ export default {
           tableId: selectSourceTableID
         };
         //如果选择的是键值表的键表  todo
-        if (tableInfo.db_table_type == "K") {
+        if (tableInfo.db_table_type == "K" && !this.handleObj.id) {
           this.$message({
             showClose: true,
             message: "您选择了键值表类型的键表，系统自动匹配值表"
@@ -798,7 +798,7 @@ export default {
       // 目标表名
       this.msgFormDialog["target_table_name" + tname] =
         targetTableInfo.table_name;
-      if (targetTableInfo.db_table_type == "K") {
+      if (targetTableInfo.db_table_type == "K" && !this.handleObj.id) {
         this.$message({
           showClose: true,
           message: "您选择了键值表类型的键表，系统自动匹配值表"

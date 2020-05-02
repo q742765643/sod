@@ -139,6 +139,7 @@ import {
   getRecordByApplyId,
   updateRecordCheck
 } from "@/api/authorityAudit/materialPower/index";
+import { formatDate } from "@/utils/index";
 export default {
   name: "handleMaterialDialog",
   props: {
@@ -167,6 +168,9 @@ export default {
       await getApplyInfoById({ id: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           this.formBaseInfo = res.data;
+          this.formBaseInfo.CREATE_TIME = formatDate(
+            this.formBaseInfo.CREATE_TIME
+          );
         } else {
           this.msgError(res.msg);
         }
@@ -283,7 +287,7 @@ export default {
           if (value) {
             this.msgSuccess("拒绝成功");
           } else {
-            this.msgSuccess("授权成功:"+res.msg);
+            this.msgSuccess("授权成功:" + res.msg);
           }
           this.handleQuery();
         } else {

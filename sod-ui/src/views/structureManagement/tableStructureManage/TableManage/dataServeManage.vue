@@ -185,7 +185,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="要素服务代码">
+            <el-form-item label="要素服务代码" prop="eleServiceId">
               <el-select
                 filterable
                 @change="getEleUnit"
@@ -229,55 +229,55 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="要素中文名">
+            <el-form-item label="要素中文名" prop="eleNameCn">
               <el-input placeholder="要素中文名" v-model="msgFormDialog.eleNameCn"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="要素长名">
+            <el-form-item label="要素长名" prop="eleLongName">
               <el-input placeholder="要素长名" v-model="msgFormDialog.eleLongName"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="要素单位">
+            <el-form-item label="要素单位" prop="eleUnit">
               <el-input placeholder="要素单位" v-model="msgFormDialog.eleUnit"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="GRIB版本">
+            <el-form-item label="GRIB版本" prop="gribVersion">
               <el-input placeholder="GRIB版本" v-model="msgFormDialog.gribVersion"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="资料时次">
+            <el-form-item label="资料时次" prop="eleHours">
               <el-input placeholder="资料时次" v-model="msgFormDialog.eleHours"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="空间分辨率">
+            <el-form-item label="空间分辨率" prop>
               <el-input placeholder="空间分辨率" v-model="msgFormDialog.gridPixel"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="预报时效单位">
+            <el-form-item label="预报时效单位" prop="timeUnit">
               <el-input placeholder="预报时效单位" v-model="msgFormDialog.timeUnit"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="层次单位">
+            <el-form-item label="层次单位" prop>
               <el-input placeholder="层次单位" v-model="msgFormDialog.levelUnit"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="预报时效列表">
+            <el-form-item label="预报时效列表" prop="timeList">
               <el-input type="textarea" placeholder="预报时效列表" v-model="msgFormDialog.timeList"></el-input>
             </el-form-item>
           </el-col>
@@ -490,7 +490,7 @@ export default {
           levelType: this.optionsLevels[0].levelType,
           gribVersion: this.baseSet.gribVersion,
           timeUnit: this.baseSet.timeUnit,
-          areaId: this.baseSet.areaId,
+          areaId: this.baseSet.region,
           dataServiceId: this.rowData.DATA_CLASS_ID
         };
       } else {

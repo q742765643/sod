@@ -386,6 +386,24 @@ export default {
     },
     showEditIp() {
       this.innerVisible = true;
+      /* ipArryForm: {
+        domains: [
+          {
+            value: "",
+            select: ""
+          }
+        ]
+      } */
+      if (this.msgFormDialog.databaseUpIp) {
+        let ipsArry = this.msgFormDialog.databaseUpIp.split(",");
+        this.ipArryForm.domains = [];
+        ipsArry.forEach((element, index) => {
+          let obj = {};
+          obj.value = element;
+          obj.select = index;
+          this.ipArryForm.domains.push(obj);
+        });
+      }
     },
     // 眼睛开关
     showPwd() {

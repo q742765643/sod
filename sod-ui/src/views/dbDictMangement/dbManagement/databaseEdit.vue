@@ -245,7 +245,7 @@ import {
   findBaseByPId
 } from "@/api/dbDictMangement/dbManagement";
 import { getDicts } from "@/api/system/dict/data";
-import { english } from "@/components/commonVaildate.js";
+import { EngNumLine } from "@/components/commonVaildate.js";
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -258,7 +258,7 @@ export default {
     var nameValidate = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入数据库ID"));
-      } else if (!english(value)) {
+      } else if (!EngNumLine(value)) {
         callback(new Error("数据库ID只能由英文字母组成"));
       } else {
         callback();
