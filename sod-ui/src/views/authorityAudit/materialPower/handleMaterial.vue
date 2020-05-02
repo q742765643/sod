@@ -287,7 +287,11 @@ export default {
           if (value) {
             this.msgSuccess("拒绝成功");
           } else {
-            this.msgSuccess("授权成功:" + res.msg);
+            this.$message({
+              type: "success",
+              dangerouslyUseHTMLString: true,
+              message: "授权成功:" + res.msg
+            });
           }
           this.handleQuery();
         } else {
