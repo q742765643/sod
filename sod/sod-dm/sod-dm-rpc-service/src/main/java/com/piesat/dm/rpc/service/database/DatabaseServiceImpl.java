@@ -52,7 +52,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
 
     @Override
     public List<Map<String,Object>> getDatabaseName() {
-        String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME  from T_SOD_DATABASE t left join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id";
+        String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME,d.database_type DATABASE_TYPE  from T_SOD_DATABASE t left join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }
