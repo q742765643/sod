@@ -489,8 +489,12 @@ public class NewdataApplyController {
     @RequiresPermissions("api:newdataApply:delApply")
     @PostMapping(value="/api/newdataApply/delApply")
     public ResultT delApply(String applyId, String dDataId) {
-        Map<String, Object> map = this.newdataApplyService.delApply(applyId, dDataId);
-        return ResultT.success(map);
+        try {
+            this.newdataApplyService.delApply(applyId, dDataId);
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+        return ResultT.success();
     }
     @ApiOperation(value="根据物理库获取实例id")
     @RequiresPermissions("api:newdataApply:getSchemaInfo")

@@ -55,7 +55,7 @@ public interface NewdataApplyService {
 
     void deleteById(String id);
 
-    Map<String, Object> delApply(String applyId, String dDataId);
+    void delApply(String applyId, String dDataId);
 
     Map<String, Object> getSchemaInfo(String physicId, String userId);
 }
