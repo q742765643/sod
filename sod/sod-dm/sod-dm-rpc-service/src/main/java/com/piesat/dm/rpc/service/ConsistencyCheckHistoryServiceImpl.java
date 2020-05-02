@@ -67,4 +67,9 @@ public class ConsistencyCheckHistoryServiceImpl extends BaseService<ConsistencyC
         consistencyCheckHistoryEntity = this.saveNotNull(consistencyCheckHistoryEntity);
         return consistencyCheckHistoryMapper.toDto(consistencyCheckHistoryEntity);
     }
+
+    @Override
+    public void deleteById(String id) {
+        this.delete(id);
+    }
 }

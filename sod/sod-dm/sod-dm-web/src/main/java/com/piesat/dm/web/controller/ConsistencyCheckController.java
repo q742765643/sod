@@ -119,6 +119,15 @@ public class ConsistencyCheckController {
         return resultT;
     }
 
+    @DeleteMapping("/deleteHistoryById/{id}")
+    @ApiOperation(value = "根据id删除历史记录", notes = "根据id删除历史记录")
+    public ResultT<String> deleteHistoryById(@PathVariable String id)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        this.consistencyCheckHistoryService.deleteById(id);
+        return resultT;
+    }
+
     @PostMapping(value = "/downHistoryDfcheckFile")
     @ApiOperation(value = "历史报告下载", notes = "历史报告下载")
     public void downHistoryDfcheckFile(HttpServletResponse response, String filename,String file_directory){
