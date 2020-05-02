@@ -486,7 +486,7 @@ public class NewdataApplyController {
 
     //selectYang样例数据查询
     @ApiOperation(value="根据四级编码和申请单号申请删除")
-    @RequiresPermissions("api:newdataApply:delApply")
+    //@RequiresPermissions("api:newdataApply:delApply")
     @PostMapping(value="/api/newdataApply/delApply")
     public ResultT delApply(String applyId, String dDataId) {
         try {
