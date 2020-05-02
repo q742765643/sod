@@ -318,7 +318,7 @@
     <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
         select a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,bbb.DATABASE_ID, dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
         a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
-        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,bbb.ID as R_LOGIC_ID,
+        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,bbb.ID as R_LOGIC_ID,
         b.C_DATUMTYPE as TYPE_NAME,c.LOGIC_NAME,d.WEB_USERNAME,cc.C_DATUM_CODE TYPE_PCODE,cc.C_DATUMTYPE TYPE_PNAME,
         d.DEPT_NAME,d.PHONENUMBER,f.*,bbb.STORAGE_TYPE,aaa.CLASS_NAME
         from t_sod_newdata_apply a
