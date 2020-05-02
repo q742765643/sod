@@ -248,7 +248,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
                 if(!databaseIds.contains(databaseDto.getDatabaseDefine().getId())){
                     buffer.append("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"的访问权限" + "<br/>");
-                    continue;
+                    return ResultT.failed(buffer.toString());
                 }
 
                 //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
@@ -269,7 +269,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){//xugu
                     if(databaseAdministratorDto == null){
                         buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
-                        continue;
+                        return ResultT.failed(buffer.toString());
                     }
                     Xugu xugu = new Xugu(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
                     if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
@@ -281,7 +281,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){//gbase8a
                     if(databaseAdministratorDto == null){
                         buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
-                        continue;
+                        return ResultT.failed(buffer.toString());
                     }
                     Gbase8a gbase8a = new Gbase8a(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
                     List<String> ips = new ArrayList<String>();
