@@ -102,7 +102,7 @@ public class DatabaseUserManagerController {
     @GetMapping(value = "/databaseList")
     public ResultT databaseList() {
         try {
-            List<Map<String, Object>> allDatabaseDto = this.databaseService.getDatabaseList(1);
+            List<Map<String, Object>> allDatabaseDto = this.databaseService.getDatabaseList("1,3");
             return ResultT.success(allDatabaseDto);
         }catch (Exception e){
             e.printStackTrace();

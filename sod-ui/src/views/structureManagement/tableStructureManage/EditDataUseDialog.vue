@@ -137,6 +137,17 @@ export default {
               });
             }
           });
+          console.log(this.tableData);
+          let checkedArry = [];
+          this.tableData.forEach((element, index) => {
+            if (element.checkType) {
+              checkedArry.push(element);
+              this.tableData.splice(index, 1);
+            }
+          });
+          checkedArry.forEach((element, index) => {
+            this.tableData.unshift(element);
+          });
         } else {
           this.$message({
             type: "error",
