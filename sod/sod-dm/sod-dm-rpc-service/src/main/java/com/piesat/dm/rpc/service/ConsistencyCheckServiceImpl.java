@@ -115,7 +115,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         compileResult.put("indexResult",new ArrayList<List<String>>());
         compileResult.put("shardingResult",new ArrayList<List<String>>());
         try{
-            if("Gbase".equalsIgnoreCase(databaseDto.getDatabaseDefine().getDatabaseType())){
+            if("Gbase8a".equalsIgnoreCase(databaseDto.getDatabaseDefine().getDatabaseType())){
                 Gbase8a gbase8a = new Gbase8a(url, username, password);
                 //获取数据库中所有的表名
                 tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName()).getData();
