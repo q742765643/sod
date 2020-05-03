@@ -768,7 +768,7 @@
         INNER JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
         LEFT JOIN t_sod_database e ON a.database_id = e.id
         LEFT JOIN t_sod_database_define f ON e.DATABASE_DEFINE_ID = f.id
-        WHERE a.sdb_id = '${map.sdbId}' and a.data_type = ${map.dataType} and
+        WHERE a.sdb_id = ${map.sdbId} and a.data_type = ${map.dataType} and
         <if test="map.typeName != null and map.typeName != ''">
             and c.class_name like '%${map.typeName}%'
         </if>

@@ -225,6 +225,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      profileNames: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -320,6 +321,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id);
+      this.profileNames = selection.map(item => item.profileName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -338,8 +340,9 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
+      const profileNames = row.profileName || this.profileNames;
       this.$confirm(
-        '是否确认删除任务日志编号为"' + ids + '"的数据项?',
+        '是否确认删除任务日志编号为"' + profileNames + '"的数据项?',
         "警告",
         {
           confirmButtonText: "确定",

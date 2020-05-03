@@ -538,6 +538,7 @@ export default {
         // 根据专题库id查寻
         await databaseGet({ id: this.currentRow.DATABASE_ID }).then(
           response => {
+            debugger;
             this.handleMsgObj.dataLogicList = [
               {
                 logicFlag: this.currentRow.LOGIC_FLAG, //数据用途

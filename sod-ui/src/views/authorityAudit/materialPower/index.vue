@@ -87,6 +87,7 @@
       max-width="1100px"
       top="5vh"
       v-dialogDrag
+      :before-close="cancelHandle"
     >
       <handleMaterial v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
     </el-dialog>
