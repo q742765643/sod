@@ -204,6 +204,34 @@ public class UserController {
         }
     }
 
+    @PostMapping(value = "/updateBiz")
+//    @RequiresPermissions("system:user:saveBiz")
+    @ApiOperation(value = "注册用户申请", notes = "注册用户申请")
+    public ResultT updateBiz(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
+        try {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            File newFile = null;
+            if (applyPaper != null) {
+                String originalFileName1 = applyPaper.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                //新的文件名
+                String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                newFile = new File(outFilePath + File.separator + newFileName1);
+                // 判断目标文件所在目录是否存在
+                if (!newFile.getParentFile().exists()) {
+                    // 如果目标文件所在的目录不存在，则创建父目录
+                    newFile.getParentFile().mkdirs();
+                }
+                //存入
+                applyPaper.transferTo(newFile);
+            }
+            ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
+            return add;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "获取注册用户", notes = "获取注册用户")
     @RequiresPermissions("system:dict:gatAllBiz")
     @GetMapping("/gatAllBiz")

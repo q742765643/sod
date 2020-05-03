@@ -25,7 +25,7 @@ export function addConfig(query) {
   return request({
     url: baseUrl + '/comMetaData/addConfig',
     method: 'post',
-    params: query
+    data: query
   })
 }
 // 编辑

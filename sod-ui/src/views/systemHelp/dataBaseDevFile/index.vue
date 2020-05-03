@@ -56,7 +56,11 @@
       <el-table-column prop="fileName" label="文档名称"></el-table-column>
       <el-table-column prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
       <el-table-column prop="filePictrue" label="文档类型" width="100px"></el-table-column>
-      <el-table-column prop="updateTime" label="上传时间" width="180px" sortable="custom"></el-table-column>
+      <el-table-column prop="updateTime" label="上传时间" width="180px" sortable="custom">
+      <template slot-scope="scope" v-if="scope.row.updateTime">
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="100px">
         <template slot-scope="scope">
           <el-button
@@ -172,7 +176,7 @@ export default {
           type: "warning"
         })
           .then(() => {
-            deleteByIds(this.currentRow.recordId).then(response => {
+            deleteByIds(this.currentRow.id).then(response => {
               if (response.code == 200) {
                 this.$message({
                   type: "success",
@@ -214,7 +218,9 @@ export default {
       this.examineMaterial = res.msg;
       this.$refs.upload.clearFiles();
     },
-    downloadFile() {}
+    downloadFile(row) {
+      this.download(row.fileStorPath)
+    }
   }
 };
 </script>

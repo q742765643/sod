@@ -339,8 +339,8 @@ export function getDataClassBaseInfo(query) {
 export function saveDataClassBaseInfo(query) {
   return request({
     url: baseUrl + '/dm/classbaseinfo/saveDataClassBaseInfo',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 
@@ -350,6 +350,15 @@ export function updateIsAllLine(query) {
   return request({
     url: baseUrl + '/dm/dataClass/updateIsAllLine',
     method: 'put',
+    params: query
+  })
+}
+
+// 查询归档时间
+export function getArchive(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/getArchive',
+    method: 'get',
     params: query
   })
 }
