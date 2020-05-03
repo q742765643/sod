@@ -62,7 +62,7 @@ public class SendThread {
                 while (System.currentTimeMillis()-startTime<50000) {
                     try {
                         Set<Object> objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
-                        if(objects.isEmpty()||count>100){
+                        if(objects.isEmpty()){//||count>1000
                             break;
                         }
                         if (!objects.isEmpty()) {
@@ -85,7 +85,7 @@ public class SendThread {
                                 if(!resultT.isSuccess()){
                                     i++;
                                     j++;
-                                    Thread.sleep(6000);
+                                    //Thread.sleep(6000);
                                 }
 
                             }
