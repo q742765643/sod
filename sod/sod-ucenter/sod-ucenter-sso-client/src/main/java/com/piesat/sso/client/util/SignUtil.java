@@ -171,8 +171,7 @@ public class SignUtil {
                 String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
                 if (StringUtils.isNotBlank(casVo.getPwd()) && "nanda".equals(map.get("interfaceId"))) {
                     String pwd = casVo.getPwd();
-                    byte[] decode = Base64.getDecoder().decode(pwd);
-                    pwd = new String(decode);
+                    pwd = Base64Util.getDecoder(pwd);
                     if (!pwd.equals(password)){
                         throw new SignException("密码不正确");
                     }

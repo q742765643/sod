@@ -26,6 +26,7 @@ import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.sso.client.util.Base64Util;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -85,8 +86,9 @@ public class DatabaseVisibleService {
                 JSONArray aaa = new JSONArray();
                 JSONObject dd = new JSONObject();
                 dd.put("DATABASE_USER", userDto.getUserName());
-                dd.put("DATABASE_PASS", AESUtil.aesDecrypt(userDto.getPassword()).trim());
-                jo.put("DATABASE_ACCOUNT", dd);
+                dd.put("DATABASE_PASS", Base64Util.getEncoder(AESUtil.aesDecrypt(userDto.getPassword()).trim()));
+                aaa.add(dd);
+                jo.put("DATABASE_ACCOUNT", aaa);
                 jo.put("DATABASE_PORT", dotById.getDatabasePort());
                 jo.put("DATABASE_DESC", dotById.getDatabaseDesc());
                 jo.put("DATABASE_ID", dotById.getId());
@@ -116,7 +118,7 @@ public class DatabaseVisibleService {
                 JSONArray aaa = new JSONArray();
                 JSONObject dd = new JSONObject();
                 dd.put("DATABASE_USER", userDto.getUserName());
-                dd.put("DATABASE_PASS", AESUtil.aesDecrypt(userDto.getPassword()).trim());
+                dd.put("DATABASE_PASS", Base64Util.getEncoder(AESUtil.aesDecrypt(userDto.getPassword()).trim()));
                 aaa.add(dd);
                 jo.put("DATABASE_ACCOUNT", aaa);
                 jo.put("DATABASE_PORT", dotById.getDatabasePort());
@@ -316,10 +318,9 @@ public class DatabaseVisibleService {
         UserDto userDto = this.userService.selectUserByUserName(bizUserId);
         JSONObject tt = new JSONObject();
         tt.put("databaseUP_ID", userDto.getUserName());
-        tt.put("databaseUP_PASSWORD", AESUtil.aesDecrypt(userDto.getPassword()).trim());
+        tt.put("databaseUP_PASSWORD", Base64Util.getEncoder(AESUtil.aesDecrypt(userDto.getPassword()).trim()));
         tt.put("returnCode", 0);
         return ResultT.success(tt);
     }
-
 
 }
