@@ -590,7 +590,6 @@ export default {
       this.msgFormDialog.failureReason = value;
       let obj = this.msgFormDialog;
       obj.applyDatabaseId = obj.applyDatabaseId.join(",");
-      obj.examineDatabaseId = obj.applyDatabaseId;
       console.log(obj);
       // 审核
       update(obj).then(res => {
