@@ -917,7 +917,7 @@
     <select id="getDataAuthorityList" resultType="java.util.Map" parameterType="java.util.Map">
         select
         t1.database_id,t6.class_name as "categoryName",t1.apply_id
-        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
+        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
         t3.class_name as "dataName",t4.database_name as "databaseSchemaName",
         t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
         from
