@@ -9,12 +9,12 @@
             <el-radio :label="2">近线服务</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="归档开始时间" v-show="searchParams.isAllLine==2">
-           <el-input v-model="searchParams.startTime" size="small" readonly></el-input>
-        </el-form-item>
-        <el-form-item label="归档结束时间" v-show="searchParams.isAllLine==2">
-           <el-input v-model="searchParams.endTime" size="small" readonly></el-input>
-        </el-form-item>
+        <el-form-item label="归档结束时间" v-show="searchParams.isAllLine==2">
+          <el-input v-model="searchParams.startTime" size="small" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="归档结束时间" v-show="searchParams.isAllLine==2">
+          <el-input v-model="searchParams.endTime" size="small" readonly></el-input>
+        </el-form-item>
       </el-form>
       <el-table :data="tableData" stripe style="width: 100%;" row-key="id">
         <el-table-column type="index" width="50"></el-table-column>
@@ -51,7 +51,7 @@
 import {
   datastatisticsList,
   updateIsAllLine,
-        getArchive
+  getArchive
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "DataStatistics",
@@ -78,13 +78,12 @@ export default {
   }, */
   methods: {
     handleQuery(value) {
-      if(value == 2){
-      getArchive({ddataid:this.rowData.D_DATA_ID}).then(response => {
-        console.log(response)
-      });
-      }else{
-
-      }
+      if (value == 2) {
+        getArchive({ ddataid: this.rowData.D_DATA_ID }).then(response => {
+          console.log(response);
+        });
+      } else {
+      }
       let obj = {};
       obj.dataClassId = this.rowData.DATA_CLASS_ID;
       obj.isAllLine = value;
