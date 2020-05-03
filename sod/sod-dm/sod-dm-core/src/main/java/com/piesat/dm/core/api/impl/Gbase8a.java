@@ -3,14 +3,12 @@ package com.piesat.dm.core.api.impl;
 import com.piesat.dm.core.api.DatabaseDclAbs;
 import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 8a数据库管理
@@ -57,8 +55,10 @@ public class Gbase8a extends DatabaseDclAbs {
         if (userNum > 0) {
             throw new Exception("数据库用户已经存在！");
         }
+        String ipStr = StringUtils.join(ips, " ");
         for (String ip : ips) {
-            String sql = "CREATE USER '" + identifier + "'@'" + ip + "' IDENTIFIED BY '" + password + "'";
+//            String sql = "CREATE USER '" + identifier + "'@'" + ip + "' IDENTIFIED BY '" + password + "'";
+            String sql =  "create user "+identifier+" identified by '"+password+"' hosts '"+ipStr+"'";
             try {
                 stmt = connection.createStatement();
                 stmt.execute(sql);
