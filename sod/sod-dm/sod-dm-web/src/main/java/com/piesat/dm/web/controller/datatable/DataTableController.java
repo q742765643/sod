@@ -252,7 +252,7 @@ public class DataTableController {
     }
 
     @ApiOperation(value = "根据资料编码查询")
-    @RequiresPermissions("dm:dataTable:getByClassId")
+    //@RequiresPermissions("dm:dataTable:getByClassId")
     @GetMapping(value = "/getByClassId")
     public ResultT getByClassId(String dataClassId) {
         try {
