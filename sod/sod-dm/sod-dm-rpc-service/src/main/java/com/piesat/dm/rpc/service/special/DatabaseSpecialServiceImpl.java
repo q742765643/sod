@@ -15,11 +15,13 @@ import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
+import com.piesat.dm.dao.ReadAuthorityDao;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.*;
+import com.piesat.dm.entity.ReadAuthorityEntity;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
@@ -107,6 +109,10 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Autowired
     private DatabaseSpecialAccessMapper databaseSpecialAccessMapper;
+
+    @Autowired
+    private ReadAuthorityDao readAuthorityDao;
+
     @GrpcHthtClient
     private UserDao userDao;
     @Override
@@ -741,11 +747,20 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Override
     public DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto) {
+        //读申请是否自动授权
+        boolean readAuthorityFlag = false;
+        List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
+        if(readAuthorityEntities != null && readAuthorityEntities.size()>0){
+            if(readAuthorityEntities.get(0).getValue().equals("1")){
+                readAuthorityFlag = true;
+            }
+        }
+
             List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList = databaseSpecialDto.getDatabaseSpecialReadWriteList();
             if(databaseSpecialReadWriteList != null && databaseSpecialReadWriteList.size() > 0){
                 for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteList){
-                    // 如果是读权限，默认通过；写权限，待审核
-                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
+                    // 如果是读权限且允许默认通过，通过；否则，待审核
+                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1 && readAuthorityFlag) {
                         databaseSpecialReadWriteDto.setExamineStatus(1);
                     } else {
                         databaseSpecialReadWriteDto.setExamineStatus(3);//待授权
