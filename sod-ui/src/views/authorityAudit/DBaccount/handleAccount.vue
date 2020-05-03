@@ -458,8 +458,8 @@ export default {
         var dataList = [];
         for (var i = 0; i < resdata.length; i++) {
           var obj = {};
-          obj.key = resdata[i].ID;
-          obj.label = resdata[i].DATABASE_NAME;
+          obj.key = resdata[i].id;
+          obj.label = resdata[i].databaseName;
           dataList.push(obj);
         }
 
