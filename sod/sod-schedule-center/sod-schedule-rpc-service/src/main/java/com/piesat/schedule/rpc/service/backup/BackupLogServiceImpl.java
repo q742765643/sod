@@ -72,7 +72,7 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupLogEntity.getParamt().get("endTime"));
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"backupTime");
         PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<BackupLogEntity> backupLogEntities= (List<BackupLogEntity>) pageBean.getPageData();
         pageBean.setPageData(backupLogMapstruct.toDto(backupLogEntities));
@@ -86,7 +86,7 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
         if(StringUtils.isNotNullString(jobId)){
             specificationBuilder.add("jobId", SpecificationOperator.Operator.eq.name(),jobId);
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"backupTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<BackupLogEntity> backupLogEntities= (List<BackupLogEntity>) pageBean.getPageData();
         if(null!=backupLogEntities&&!backupLogEntities.isEmpty()){
@@ -133,7 +133,7 @@ public class BackupLogServiceImpl extends BaseService<BackupLogEntity> implement
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) backupLogEntity.getParamt().get("endTime"));
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort=Sort.by(Sort.Direction.ASC,"backupTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"backupTime");
         List<BackupLogEntity> backupLogEntities=this.getAll(specification,sort);
         return backupLogEntities;
 

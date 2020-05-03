@@ -62,7 +62,7 @@ public class MetaClearLogServiceImpl extends BaseService<MetaClearLogEntity> imp
         if(StringUtils.isNotNullString((String) metaClearLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaClearLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<MetaClearLogEntity> metaClearLogEntities= (List<MetaClearLogEntity>) pageBean.getPageData();
         pageBean.setPageData(metaClearLogMapstruct.toDto(metaClearLogEntities));
@@ -99,7 +99,7 @@ public class MetaClearLogServiceImpl extends BaseService<MetaClearLogEntity> imp
         if(StringUtils.isNotNullString((String) metaClearLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaClearLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<MetaClearLogEntity> metaClearLogEntities=this.getAll(specificationBuilder.generateSpecification(),sort);
         return metaClearLogEntities;
 

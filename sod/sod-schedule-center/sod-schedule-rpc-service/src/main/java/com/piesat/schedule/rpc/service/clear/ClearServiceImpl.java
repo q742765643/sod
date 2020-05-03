@@ -98,7 +98,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) clearEntity.getParamt().get("endTime"));
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<ClearEntity> clearEntities= (List<ClearEntity>) pageBean.getPageData();
         pageBean.setPageData(clearMapstruct.toDto(clearEntities));
@@ -263,7 +263,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) clearEntity.getParamt().get("endTime"));
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<ClearEntity> clearEntities=this.getAll(specification,sort);
         return clearEntities;
 

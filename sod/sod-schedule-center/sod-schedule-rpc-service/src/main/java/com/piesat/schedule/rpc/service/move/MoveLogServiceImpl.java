@@ -70,7 +70,7 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) moveLogEntity.getParamt().get("endTime"));
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<MoveLogEntity> moveEntities= (List<MoveLogEntity>) pageBean.getPageData();
         pageBean.setPageData(moveLogMapstruct.toDto(moveEntities));
@@ -84,7 +84,7 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
         if(StringUtils.isNotNullString(jobId)){
             specificationBuilder.add("jobId", SpecificationOperator.Operator.eq.name(),jobId);
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<MoveLogEntity> moveLogEntities= (List<MoveLogEntity>) pageBean.getPageData();
         if(null!=moveLogEntities&&!moveLogEntities.isEmpty()){
@@ -132,7 +132,7 @@ public class MoveLogServiceImpl extends BaseService<MoveLogEntity> implements Mo
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) moveLogEntity.getParamt().get("endTime"));
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<MoveLogEntity> moveEntities=this.getAll(specification,sort);
         return moveEntities;
 

@@ -117,7 +117,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 		}
 
 		Specification specification=specificationBuilder.generateSpecification();
-		Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+		Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
 		PageBean pageBean=this.getPage(specification,pageForm,sort);
 		List<ComMetadataSyncCfgEntity> ces= (List<ComMetadataSyncCfgEntity>) pageBean.getPageData();
 		List<DictDataDto> dictData = this.dictDataService.selectDictDataByType("sys_mmd_sync_table");

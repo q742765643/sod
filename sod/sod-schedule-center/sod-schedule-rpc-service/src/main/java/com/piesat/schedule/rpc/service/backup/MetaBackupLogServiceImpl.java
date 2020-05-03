@@ -71,7 +71,7 @@ public class MetaBackupLogServiceImpl extends BaseService<MetaBackupLogEntity> i
         if(StringUtils.isNotNullString((String) metaBackupLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaBackupLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<MetaBackupLogEntity> metaBackupLogEntities= (List<MetaBackupLogEntity>) pageBean.getPageData();
         pageBean.setPageData(metaBackupLogMapstruct.toDto(metaBackupLogEntities));
@@ -107,7 +107,7 @@ public class MetaBackupLogServiceImpl extends BaseService<MetaBackupLogEntity> i
         if(StringUtils.isNotNullString((String) metaBackupLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaBackupLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<MetaBackupLogEntity> metaBackupLogEntities=this.getAll(specificationBuilder.generateSpecification(),sort);
         return metaBackupLogEntities;
 

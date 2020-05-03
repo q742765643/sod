@@ -70,7 +70,7 @@ public class MetaRecoverLogServiceImpl extends BaseService<MetaRecoverLogEntity>
         if(StringUtils.isNotNullString((String) metaRecoverLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaRecoverLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<MetaRecoverLogEntity> metaRecoverLogEntities= (List<MetaRecoverLogEntity>) pageBean.getPageData();
         pageBean.setPageData(metaRecoverLogMapstruct.toDto(metaRecoverLogEntities));
