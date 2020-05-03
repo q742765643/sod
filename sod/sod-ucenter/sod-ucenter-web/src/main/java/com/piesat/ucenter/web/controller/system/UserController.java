@@ -223,7 +223,9 @@ public class UserController {
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/editBase")
-    public ResultT<String> editBase(String bizUserid, String checked) {
+    public ResultT<String> editBase(HttpServletRequest request) {
+        String bizUserid = request.getParameter("bizUserid");
+        String checked = request.getParameter("checked");
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);

@@ -8,12 +8,7 @@ package com.piesat.schedule.web.controller.mmd;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.github.pagehelper.util.StringUtil;
 import com.piesat.schedule.rpc.api.mmd.ComMetadataSyncService;
@@ -34,13 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @Api(value="公共元数据同步Controller",tags = {"公共元数据同步接口"})
 @Slf4j
 public class ComMetadataSyncController {
-	
+
 	@Autowired
 	private ComMetadataSyncService comMetadataSyncService;
-	
+
 	/**
 	 *  分页查询
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午4:03:33
 	 * @param comMetadataSyncCfgDto
@@ -62,10 +57,10 @@ public class ComMetadataSyncController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  新增同步任务配置
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午4:31:16
 	 * @param comMetadataSyncCfgDto
@@ -75,7 +70,7 @@ public class ComMetadataSyncController {
 	@PostMapping(value="/addConfig")
 	@RequiresPermissions("restApi:comMetaData:addConfig")
     @Log(title = "新增同步任务配置接口", businessType = BusinessType.INSERT)
-	public ResultT addConfig(ComMetadataSyncCfgDto comMetadataSyncCfgDto) {
+	public ResultT addConfig(@RequestBody ComMetadataSyncCfgDto comMetadataSyncCfgDto) {
 		log.info(">>>>>>新增同步任务配置");
 		try {
 			comMetadataSyncService.addConfig(comMetadataSyncCfgDto);
@@ -87,7 +82,7 @@ public class ComMetadataSyncController {
 	}
 	/**
 	 *  公共元数据同步任务主键查询
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午4:46:52
 	 * @param id
@@ -109,7 +104,7 @@ public class ComMetadataSyncController {
 	}
 	/**
 	 *  编辑同步任务配置
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午5:08:07
 	 * @param comMetadataSyncCfgDto
@@ -119,7 +114,7 @@ public class ComMetadataSyncController {
 	@PutMapping(value="/editConfig")
 	@RequiresPermissions("restApi:comMetaData:editConfig")
     @Log(title = "新增同步任务配置接口", businessType = BusinessType.UPDATE)
-	public ResultT editCfg(ComMetadataSyncCfgDto comMetadataSyncCfgDto) {
+	public ResultT editCfg(@RequestBody ComMetadataSyncCfgDto comMetadataSyncCfgDto) {
 		log.info(">>>>>>>>公共元数据同步任务修改");
 		try {
 			comMetadataSyncService.editConfig(comMetadataSyncCfgDto);
@@ -129,10 +124,10 @@ public class ComMetadataSyncController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  批量删除公共元数据同步任务
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午5:22:13
 	 * @param ids
@@ -153,10 +148,10 @@ public class ComMetadataSyncController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 *  获取公共元数据同步记录分页信息
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午5:58:22
 	 * @param comMetadataSyncRecordDto
@@ -180,7 +175,7 @@ public class ComMetadataSyncController {
 	}
 	/**
 	 *  删除公共元数据同步记录
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月17日下午6:02:48
 	 * @param ids
@@ -205,7 +200,7 @@ public class ComMetadataSyncController {
 	 *  立即同步公共元数据
 	 *  两个入口 : 1 公共元数据同步 立即同步按钮,传参数是ids
 	 *  2.新增数据注册 增量同步按钮 传参数是apiType
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月18日上午11:34:16
 	 * @param ids
