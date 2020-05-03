@@ -929,7 +929,7 @@ public class ImportData {
             backupEntity.setParentId(parent_id);
             backupEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
             backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
-            backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUP");
+            backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUPTEST");
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
