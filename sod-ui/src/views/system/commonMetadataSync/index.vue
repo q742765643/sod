@@ -171,11 +171,11 @@
     >
       <div v-for="(item,index) in syncDescList" :key="index">
         <div v-if="item.runState=='同步成功'">
-          <span>[{{index}}]同步表名:{{item.syncTableName}}</span>
+          <span>同步表名:{{item.syncTableName}}</span>
           <span>同步记录数:{{item.syncRecordNum}}</span>
         </div>
         <div v-else>
-          <span>[{{index}}]同步表名:{{item.syncTableName}}</span>
+          <span>同步表名:{{item.syncTableName}}</span>
           <span>同步状态:{{item.runState}}</span>
           <span>失败原因:{{item.failReason}}</span>
         </div>
