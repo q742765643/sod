@@ -56,7 +56,9 @@ public class ScheduleThread {
     private SpringClientFactory factory;
 
     public void start() {
-        jobInfoService.init();
+        new Thread(()->{
+            jobInfoService.init();
+        }).start();
 
         Thread scheduleThread = new Thread(this::jobToTrriger);
         scheduleThread.setDaemon(true);
