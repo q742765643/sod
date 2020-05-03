@@ -65,7 +65,10 @@ public class GrpcServiceProxy<T> implements InvocationHandler {
             StackTraceElement[] allStackTrace = Arrays.copyOf(exceptionStackTrace, exceptionStackTrace.length + responseStackTrace.length);
             System.arraycopy(responseStackTrace, 0, allStackTrace, exceptionStackTrace.length, responseStackTrace.length);
             exception.setStackTrace(allStackTrace);
-            throw exception;
+            response = grpcClientService.handle(serializeType, request, channel);
+            if (GrpcResponseStatus.ERROR.getCode() == response.getStatus()){
+                throw exception;
+            }
         }
         return response.getResult();
     }
