@@ -143,7 +143,7 @@
             >
               <el-table-column type="index" width="50"></el-table-column>
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="数据元代码" prop="celementCode"></el-table-column>
+              <el-table-column label="数据元代码" prop="c_element_code"></el-table-column>
               <el-table-column label="中文名称" prop="c_element_namech"></el-table-column>
               <el-table-column label="英文名称" prop="c_element_name"></el-table-column>
               <el-table-column label="数据类型" prop="c_datatype" width="70px"></el-table-column>
@@ -205,7 +205,7 @@
                       @click="searchFun('mmdata')"
                     >搜索</el-button>
                     <!-- <el-form-item label>
-                      
+
                     </el-form-item>-->
                   </el-col>
                 </el-row>
