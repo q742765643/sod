@@ -83,7 +83,7 @@
       </el-table-column>
       <el-table-column label="是否主键" prop="isPrimaryKey" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isNull">是</span>
+          <span v-if="scope.row.isPrimaryKey">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>

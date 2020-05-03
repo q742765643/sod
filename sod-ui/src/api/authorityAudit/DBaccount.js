@@ -12,7 +12,7 @@ export function addTable(data) {
 // 数据库列表
 export function databaseList(query) {
   return request({
-    url: baseUrl + '/dm/databaseDefine/all',
+    url: baseUrl + '/dm/databaseUser/databaseList',
     method: 'get',
     params: query
   })
@@ -90,7 +90,7 @@ export function update(data) {
 // 模板下载
 export function demoDownload() {
   return request({
-    url: baseUrl + '/dm/fileUpDown/download',
+    url: baseUrl + '/api/dbfile/downloadFile',
     method: 'get',
     params: {
       name: "databaseuser-application"
