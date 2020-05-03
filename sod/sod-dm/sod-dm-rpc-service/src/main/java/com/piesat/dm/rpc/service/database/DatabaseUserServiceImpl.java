@@ -155,7 +155,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public void exportData(String examineStatus) {
-        List<DatabaseUserEntity> byExamineStatus = this.databaseUserDao.findByExamineStatus(examineStatus);
+        List<DatabaseUserEntity> byExamineStatus = null;
+        if(StringUtils.isNotBlank(examineStatus)){
+            byExamineStatus = this.databaseUserDao.findByExamineStatus(examineStatus);
+        }else{
+            byExamineStatus = this.databaseUserDao.findAll();
+        }
         ExcelUtil<DatabaseUserEntity> util = new ExcelUtil(DatabaseUserEntity.class);
         util.exportExcel(byExamineStatus, "数据库访问账户信息");
     }
