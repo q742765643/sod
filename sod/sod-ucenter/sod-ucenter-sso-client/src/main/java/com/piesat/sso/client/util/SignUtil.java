@@ -260,7 +260,7 @@ public class SignUtil {
 
 
     public static void signJson(CasVo casVo, String data, WrapperedRequest wrapRequest, JSONObject object) throws Exception {
-        if (null != casVo.getData() && !"".equals(casVo.getData())) {
+//        if (null != casVo.getData() && !"".equals(casVo.getData())) {
             Map<String, Object> signMap = JSON.parseObject(data, Map.class);
             if (object.containsKey("interfaceId")) {
                 wrapRequest.putHeader("appId", casVo.getUserId());
@@ -287,7 +287,7 @@ public class SignUtil {
 //                wrapRequest.putHeader("pwd", casVo.getPwd());
                 checkSign(casVo, signMap);
             }
-        }
+//        }
 
     }
 

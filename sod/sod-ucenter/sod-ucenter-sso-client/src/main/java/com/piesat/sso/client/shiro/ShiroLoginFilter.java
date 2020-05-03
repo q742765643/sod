@@ -39,10 +39,10 @@ public class ShiroLoginFilter  implements Filter {
         //是否允许浏览器携带用户身份信息（cookie）
         response.setHeader( "Access-Control-Allow-Credentials", "true" );
          response.setHeader( "Access-Control-Expose-Headers", "Content-disposition" );
-        if (request.getMethod().equals( "OPTIONS" )) {
+     /*   if (request.getMethod().equals( "OPTIONS" )) {
             response.setStatus( 200 );
             return;
-        }
+        }*/
         filterChain.doFilter( servletRequest, response );
     }
 

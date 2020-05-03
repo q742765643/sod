@@ -236,7 +236,7 @@ public class UserController {
      */
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
-    @PutMapping("/editInfo")
+    @PostMapping("/editInfo")
     public ResultT<String> editInfo(@RequestBody UserDto user) {
         return userService.editBase(user);
     }
@@ -246,9 +246,15 @@ public class UserController {
      */
 //    @RequiresPermissions("system:user:updatePwd")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
-    @PutMapping("/updatePwd")
-    public ResultT<String> updatePwd(String bizUserid, String newPwd, String oldPwd) {
+    @PostMapping("/updatePwd")
+    public ResultT<String> updatePwd(HttpServletRequest request) {
+        String bizUserid = request.getParameter("bizUserid");
+        String newPwd = request.getParameter("newPwd");
+        String oldPwd = request.getParameter("oldPwd");
         UserDto userDto = this.userService.selectUserByUserName(bizUserid);
+        if (userDto==null){
+            return ResultT.failed("用户不存在");
+        }
         String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
         if (pwd.equals(oldPwd)) {
             UserDto user = new UserDto();

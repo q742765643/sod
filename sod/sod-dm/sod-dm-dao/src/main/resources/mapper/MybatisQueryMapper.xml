@@ -315,15 +315,16 @@
     </select>
 
     <!--新增注册资料-->
-    <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,bbb.DATABASE_ID, dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
+    <select id="selectDataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.id,a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,bbb.DATABASE_ID, dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
         a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
         a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,bbb.ID as R_LOGIC_ID,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = dbf.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = dbf.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = dbf.id) BACKUP_ST,
         b.C_DATUMTYPE as TYPE_NAME,c.LOGIC_NAME,d.WEB_USERNAME,cc.C_DATUM_CODE TYPE_PCODE,cc.C_DATUMTYPE TYPE_PNAME,
-        d.DEPT_NAME,d.PHONENUMBER,f.*,bbb.STORAGE_TYPE,aaa.CLASS_NAME
+        d.DEPT_NAME,d.PHONENUMBER,f.storage_define_identifier,f.sync_identifier,f.clean_identifier,f.move_identifier,f.backup_identifier,f.archiving_identifier,
+        f.sync_id,f.clear_id,f.move_id,f.backup_id,f.class_logic_id,bbb.STORAGE_TYPE,aaa.CLASS_NAME
         from t_sod_newdata_apply a
         left join t_sod_data_class aaa on a.DATA_CLASS_ID = aaa.DATA_CLASS_ID
         left join t_sod_data_logic bbb on bbb.DATA_CLASS_ID = aaa.DATA_CLASS_ID
@@ -345,6 +346,32 @@
         </where>
         order by a.create_time desc
     </select>
+
+    <!--新增注册资料-->
+    <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.id,a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG, a.DATABASE_ID,
+        a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
+        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,
+        b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype
+        type_pname,d.DEPT_NAME,d.PHONENUMBER,f.*
+        from t_sod_newdata_apply a
+        left join t_sod_data_datumtypeinfo b on a.d_data_id = b.c_datum_code
+        left join t_sod_data_datumtypeinfo cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
+        left join t_sod_logic_define c on a.logic_id = c.logic_flag
+        left join T_SOD_USER d on a.user_id = d.user_name and user_type='11'
+        left join T_SOD_DATA_LOGIC e on a.data_class_id = e.data_class_id
+        left join T_SOD_STORAGE_CONFIGURATION f on e.id=f.class_logic_id
+        <where>
+            <if test="map.status != null and map.status  != ''">
+                a.examine_status = #{map.status}
+            </if>
+            <if test="map.dataType != null and map.dataType != ''">
+                AND SUBSTR(b.C_DATUM_CODE,1,1) = #{map.dataType}
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
 
     <update id="updateNewdataApplyStatus">
         update t_sod_newdata_apply

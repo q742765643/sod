@@ -75,7 +75,7 @@
       <el-tab-pane label="恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="资料名称">
-            <el-input size="small" v-model="queryParams.profileName"></el-input>
+            <el-input size="small" v-model="rowlogForm.profileName"></el-input>
           </el-form-item>
           <el-form-item label="运行状态">
             <el-select style="width:200px" filterable v-model="rowlogForm.handleCode">
@@ -386,7 +386,7 @@ export default {
         this.rowlogForm = {
           pageNum: 1,
           pageSize: 10,
-          taskName: "",
+          profileName: "",
           databaseId: "",
           params: {
             orderBy: {
