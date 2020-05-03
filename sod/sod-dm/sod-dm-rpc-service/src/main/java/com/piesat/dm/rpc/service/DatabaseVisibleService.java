@@ -32,6 +32,7 @@ import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -66,6 +67,8 @@ public class DatabaseVisibleService {
     private DatabaseSpecialDao databaseSpecialDao;
     @Autowired
     private DatabaseDefineService databaseDefineService;
+    @Value("${fidbDownloadUrl}")
+    private String fidbDownloadUrl;
 
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
@@ -264,6 +267,7 @@ public class DatabaseVisibleService {
             dd.put("USER_ID", bizUserId);
             dd.put("APPLY_TIME", ds.getCreateTime());
             dd.put("USES", ds.getUses());
+            dd.put("APPLY_FILE_PATH", fidbDownloadUrl);
             dd.put("EXAMINE_STATUS", ds.getExamineStatus());
             dd.put("EXAMINE_TIME", ds.getExamineTime());
             dd.put("USE_STATUS", ds.getUseStatus());
