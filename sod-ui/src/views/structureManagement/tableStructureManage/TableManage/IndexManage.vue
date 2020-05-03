@@ -28,10 +28,10 @@
     >
       <div>
         <el-form :model="indexForm" label-width="120px" ref="indexForm">
-          <el-form-item label="索引名称">
+          <el-form-item label="索引名称" prop="indexName">
             <el-input v-model="indexForm.indexName" size="small"></el-input>
           </el-form-item>
-          <el-form-item label="索引类型">
+          <el-form-item label="索引类型"  prop="indexType">
             <el-select
               v-model="indexForm.indexType"
               size="small"
@@ -46,7 +46,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="索引字段">
+          <el-form-item label="索引字段"  prop="indexColumn">
             <el-select
               size="small"
               v-model="indexForm.indexColumn"
@@ -121,6 +121,7 @@ export default {
         });
         return;
       }
+      this.indexForm= { indexName: "TRAF_WEA_CHN_REP_TAB_UK", indexColumn: [] };
       this.indexTitle = "新增索引";
       this.indexForm.indexColumn = [];
       this.getDictByTypeMethods("table_index_type");
