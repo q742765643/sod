@@ -114,6 +114,7 @@
               :action="upLoadUrl"
               :before-remove="beforeRemove"
               :on-success="successUpload"
+              :headers="myHeaders"
               name="filename"
               multiple
             >
@@ -204,7 +205,10 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DM;
-
+import {
+  getToken,
+  createSign
+} from '@/utils/auth'
 import {
   databaseList,
   addTable,
@@ -221,6 +225,7 @@ import {
   ipUrlValidation,
   ipUrlValidation2
 } from "@/components/commonVaildate.js";
+var token =  getToken()
 export default {
   name: "handleAccountDialog",
 
@@ -290,6 +295,7 @@ export default {
       palceholderIp: "指定IP样例:192.168.1.1",
       dataBaseBox: [],
       handleDocxObj: {}, //预览
+      myHeaders: {Authorization: token},
       rules: {
         databaseUpId: [
           { required: true, validator: idValidate, trigger: "blur" }
