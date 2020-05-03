@@ -62,7 +62,7 @@ public class CommonController {
                 inputStream.read(buffer);
                 inputStream.close();
                 // 清空response
-                response.reset();
+                //response.reset();
                 // 设置response的Header
                 response.addHeader("Content-Disposition", "attachment;filename=" + new String(fileName));
                 response.addHeader("Content-Length", "" + file.length());
