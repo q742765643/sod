@@ -237,7 +237,11 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         }
 
         //用户up账户对应的可用物理库
-        List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
+        String examineDatabaseId = databaseUserDto.getExamineDatabaseId();
+        if(!StringUtils.isNotNullString(examineDatabaseId)){
+            return ResultT.failed("授权失败,用户对应数据库账户未审核");
+        }
+        List<String> databaseIds = Arrays.asList(examineDatabaseId.split(","));
 
 
         StringBuffer buffer = new StringBuffer();

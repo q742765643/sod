@@ -165,8 +165,8 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 			for(MultipartFile mf:fileList) {
 				DbFileEntity dfe = new DbFileEntity();
 				//文件路径
-				String filePath = fileArr + mf.getOriginalFilename();
-				String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
+				String filePath = fileArr + "/" +mf.getOriginalFilename();
+				String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.')+1);
 				String fileType = request.getParameter("fileType");
 				dfe.setFileName(mf.getOriginalFilename());
 				dfe.setFileSuffix(fileSuffix);
