@@ -353,3 +353,12 @@ export function updateIsAllLine(query) {
     params: query
   })
 }
+
+// 查询归档时间
+export function getArchive(query) {
+  return request({
+    url: baseUrl + '/dm/dataClass/getArchive',
+    method: 'get',
+    params: query
+  })
+}
