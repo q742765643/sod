@@ -696,7 +696,7 @@
         select
         c_element_code,cci_root_type_code,c_class_no,c_element_namech,c_element_name,c_short_name,c_define,
         c_subject_type,c_paramter_type,c_paramter_num,c_datatype,c_element_unit,c_element_pre,c_charactervalue,
-        c_status,c_version,c_notes,c_cod etable,c_submit_org_name,c_create_date,c_updated_date,c_modifier
+        c_status,c_version,c_notes,c_codetable,c_submit_org_name,c_create_date,c_updated_date,c_modifier
         from tab_omin_cm_cc_element
         <where>
             c_element_code in (select c_element_code from tab_omin_cm_cc_datumtypeelm where c_datum_code =
@@ -917,7 +917,7 @@
     <select id="getDataAuthorityList" resultType="java.util.Map" parameterType="java.util.Map">
         select
         t1.database_id,t6.class_name as "categoryName",t1.apply_id
-        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,
+        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
         t3.class_name as "dataName",t4.database_name as "databaseSchemaName",
         t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
         from

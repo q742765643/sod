@@ -2,10 +2,12 @@ package com.piesat.dm.web.controller.datatable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.common.util.FreeMarkerUtil;
+import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.datatable.ExportTableVO;
@@ -24,10 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 表结构导出
@@ -40,6 +39,8 @@ import java.util.Map;
 public class TableExportController {
     @Autowired
     private LogicDefineService logicDefineService;
+    @Autowired
+    private DatabaseDefineService databaseDefineService;
     @Autowired
     private DatabaseService databaseService;
     @Autowired
@@ -73,8 +74,19 @@ public class TableExportController {
     @GetMapping(value = "/databaseList")
     public ResultT databaseList() {
         try {
-            List<DatabaseDto> allDatabaseDto = this.databaseService.all();
-            return ResultT.success(allDatabaseDto);
+            List<DatabaseDefineDto> databaseDefineDtoList = this.databaseDefineService.getDatabaseDefineList();
+            List<DatabaseDto> databaseDtoList = databaseService.all();
+            List<DatabaseDto> resultList = new ArrayList<>();
+            if(databaseDefineDtoList!=null&&databaseDtoList!=null){
+                for(DatabaseDefineDto databaseDefine : databaseDefineDtoList){
+                    for(DatabaseDto databaseDto : databaseDtoList){
+                        if(databaseDto.getDatabaseDefine().getId().equals(databaseDefine.getId())){
+                            resultList.add(databaseDto);
+                        }
+                    }
+                }
+            }
+            return ResultT.success(resultList);
         }catch (Exception e){
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

@@ -154,29 +154,33 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	 * @throws Exception
 	 */
 	@Override
-	public void save(MultipartHttpServletRequest request) throws Exception {
-		// 获取文件存储路径 , 如果没有 , 创建
-		if(!Paths.get(fileArr).toFile().exists())
-			Paths.get(fileArr).toFile().mkdirs();
+	public void save(MultipartHttpServletRequest request){
+		try{
+			// 获取文件存储路径 , 如果没有 , 创建
+			if(!Paths.get(fileArr).toFile().exists())
+				Paths.get(fileArr).toFile().mkdirs();
 
-		List<MultipartFile> fileList = request.getFiles("file");
-		Date now = new Date();
-		for(MultipartFile mf:fileList) {
-			DbFileEntity dfe = new DbFileEntity();
-			//文件路径
-			String filePath = fileArr + mf.getOriginalFilename();
-			String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
-			String fileType = request.getParameter("fileType");
-			dfe.setFileName(mf.getOriginalFilename());
-			dfe.setFileSuffix(fileSuffix);
-			dfe.setUpdateTime(now);
-			dfe.setFileType(fileType);
-			dfe.setFileStorName(mf.getOriginalFilename());
-			dfe.setFileStorPath(filePath);
-			dfe.setFilePictrue("文档");
-			//上传文件到服务器指定路径
-			FileCopyUtils.copy(mf.getBytes(), new File(filePath));
-			dbFileDao.save(dfe);
+			List<MultipartFile> fileList = request.getFiles("file");
+			Date now = new Date();
+			for(MultipartFile mf:fileList) {
+				DbFileEntity dfe = new DbFileEntity();
+				//文件路径
+				String filePath = fileArr + "/" +mf.getOriginalFilename();
+				String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.')+1);
+				String fileType = request.getParameter("fileType");
+				dfe.setFileName(mf.getOriginalFilename());
+				dfe.setFileSuffix(fileSuffix);
+				dfe.setUpdateTime(now);
+				dfe.setFileType(fileType);
+				dfe.setFileStorName(mf.getOriginalFilename());
+				dfe.setFileStorPath(filePath);
+				dfe.setFilePictrue("文档");
+				//上传文件到服务器指定路径
+				FileCopyUtils.copy(mf.getBytes(), new File(filePath));
+				dbFileDao.save(dfe);
+			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 

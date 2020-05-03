@@ -110,6 +110,19 @@ public class DatabaseDefineController {
         }
     }
 
+    @ApiOperation(value = "查询可以展示的数据库列表")
+    @RequiresPermissions("dm:databaseDefine:getCanShowDatabaseDefineList")
+    @GetMapping(value = "/getCanShowDatabaseDefineList")
+    public ResultT getCanShowDatabaseDefineList() {
+        try {
+            List<DatabaseDefineDto> all = this.databaseDefineService.getDatabaseDefineList();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 //    @ApiOperation(value = "导出")
 //    @RequiresPermissions("dm:databaseDefine:export")
 //    @GetMapping(value = "/export")

@@ -14,9 +14,9 @@
     <!-- 条件查询 -->
     <select id="selectList" parameterType="com.piesat.sod.system.entity.DbFileEntity" resultMap="baseResult">
 		select
-			id,file_type,file_name,file_stor_name,file_stor_path, 
+			id,file_type,file_name,file_stor_name,file_stor_path,
 			update_time,file_picture,file_suffix
-		from 
+		from
 			t_sod_db_file
 		where 1=1
 		<if test="fileType != null and fileType != ''">
@@ -34,7 +34,6 @@
 		<if test="paramt.endTime != null">
 			and update_time &lt;=#{paramt.endTime}
 		</if>
-		order by update_time desc
     </select>
 
 </mapper>

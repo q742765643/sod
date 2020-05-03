@@ -137,6 +137,7 @@ public class CloudDatabaseApplyController {
     public ResultT save(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
         try {
             cloudDatabaseApplyDto.setExamineStatus("02");
+            cloudDatabaseApplyDto.setExamineTime(new Date());
             CloudDatabaseApplyDto save = this.cloudDatabaseApplyService.saveDto(cloudDatabaseApplyDto);
             return ResultT.success(save);
         } catch (Exception e) {

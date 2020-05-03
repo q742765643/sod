@@ -32,6 +32,7 @@ import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -66,6 +67,7 @@ public class DatabaseVisibleService {
     private DatabaseSpecialDao databaseSpecialDao;
     @Autowired
     private DatabaseDefineService databaseDefineService;
+
 
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;

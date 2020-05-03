@@ -48,7 +48,7 @@
           <el-row class="center">
             <el-col :span="24">
               <span>专题库英文简称:</span>
-              <span>{{this.msgFormDialog.simpleName}}</span>
+              <span>{{this.msgFormDialog.databaseSchema}}</span>
             </el-col>
           </el-row>
           <el-table :data="databaseList" border stripe style="width: 100%;">

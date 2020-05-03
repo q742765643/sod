@@ -144,6 +144,9 @@ fileUpload:
 
 businessParameters:
   databaseUserDefaultPassword: Asd123
+
+fidbDownloadUrl: http://10.40.17.34:8028/fileApi
+
 product:
   enable: true
 
