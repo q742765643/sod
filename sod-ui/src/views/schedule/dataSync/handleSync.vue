@@ -591,7 +591,10 @@ export default {
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
-      if (this.msgFormDialog.targetTables.length == 2) {
+      if (
+        this.msgFormDialog.targetTables &&
+        this.msgFormDialog.targetTables.length == 2
+      ) {
         this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
@@ -620,14 +623,36 @@ export default {
         this.stableFilterForm.domains.push(obj);
       });
       //todo
-      this.msgFormDialog.targetType = 0;
+      // this.msgFormDialog.targetType = 0;
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
-      if (this.msgFormDialog.targetTables.length == 2) {
+      if (
+        this.msgFormDialog.targetTables &&
+        this.msgFormDialog.targetTables.length == 2
+      ) {
         this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
+      console.log(this.editableTabs);
+
+      /* let newTabArry = []; tab回显
+      this.editableTabs.forEach((element, index) => {
+        this.handleObj.targetRelation.forEach((te, ti) => {
+          if (element.tableId == te.targetTableId) {
+            te.mapping.forEach((mItem, mIndex) => {
+              let obj = {
+                index: mIndex,
+                isdelete: false,
+                sourceColumn_: mItem.sourceColumn_,
+                targetColumn_: mItem.targetColumn_
+              };
+              newTabArry.push(obj)
+            });
+          }
+        });
+      });
+      this.editableTabs = newTabArry; */
     },
     //源数据库事件,根据数据库ID获取源表
     async sourceDBChange(selectSourceDB) {
@@ -958,31 +983,22 @@ export default {
         this.$emit("resetQuery");
       } else {
         //组装映射
-        //debugger;
+        debugger;
         //console.log(editableTabs);
-        let targetTableIds = "",
+        /* let targetTableIds = "",
           tableNames = "",
           data_class_ids = "",
-          tableNameCNs = "",
-          targetRelation = [],
+          tableNameCNs = "", */
+        let targetRelation = [],
           slaveRelation = {};
         for (var i = 0; i < this.editableTabs.length; i++) {
           var obj = this.editableTabs[i];
           var list = obj.list;
           var tableId = obj.tableId;
           if (obj.KandE == "K") {
-            //值表映射
-            this.msgFormDialog["targetColumn_K_" + tableId] = [];
-            this.msgFormDialog["sourceColumn_K_" + tableId] = [];
             let mapping = "";
             for (var j = 0; j < list.length; j++) {
-              if (!list.isdelete) {
-                this.msgFormDialog["targetColumn_K_" + tableId].push(
-                  list[j]["targetColumn_K_"]
-                );
-                this.msgFormDialog["sourceColumn_K_" + tableId].push(
-                  list[j]["sourceColumn_K_"]
-                );
+              if (!list[j].isdelete) {
                 mapping =
                   mapping +
                   "<" +
@@ -997,18 +1013,14 @@ export default {
             }
             slaveRelation.mapping = mapping;
           } else {
-            targetTableIds = targetTableIds + "," + tableId;
+            /*  targetTableIds = targetTableIds + "," + tableId;
             tableNames = tableNames + "," + obj.name;
             data_class_ids = data_class_ids + "," + obj.data_class_ids;
-            tableNameCNs = tableNameCNs + "," + obj.namecn;
+            tableNameCNs = tableNameCNs + "," + obj.namecn; */
 
-            let tfield = "",
-              sfield = "";
             let mapping = "";
             for (var j = 0; j < list.length; j++) {
-              if (!list.isdelete) {
-                tfield = tfield + "," + list[j]["targetColumn_"];
-                sfield = sfield + "," + list[j]["sourceColumn_"];
+              if (!list[j].isdelete) {
                 mapping =
                   mapping +
                   "<" +
@@ -1022,23 +1034,18 @@ export default {
               }
             }
             targetRelation.push({ targetTableId: tableId, mapping: mapping });
-            //console.log(tfield);
-
-            debugger;
-            if (tfield.length > 0) {
-              this.msgFormDialog["targetColumn_" + tableId] = tfield.substr(1);
-              this.msgFormDialog["sourceColumn_" + tableId] = sfield.substr(1);
-            }
           }
         }
-        if (targetTableIds.length > 0) {
+        /*   if (targetTableIds.length > 0) {
           this.msgFormDialog.targetTableIds = targetTableIds.substr(1);
           this.msgFormDialog.tableNames = tableNames.substr(1);
           this.msgFormDialog.data_class_ids = data_class_ids.substr(1);
           this.msgFormDialog.tableNameCNs = tableNameCNs.substr(1);
           this.msgFormDialog.targetRelation = targetRelation;
           this.msgFormDialog.slaveRelation = slaveRelation;
-        }
+        } */
+        this.msgFormDialog.targetRelation = targetRelation;
+        this.msgFormDialog.slaveRelation = slaveRelation;
 
         let ipAndPort = this.msgFormDialog.ipAndPort.split(":");
         this.msgFormDialog.execIp = ipAndPort[0];
@@ -1084,7 +1091,6 @@ export default {
                 });
               }
             });
-            //this.msgFormDialog[i_i] = v;
           } else {
             // console.log("error submit!!");
             return false;

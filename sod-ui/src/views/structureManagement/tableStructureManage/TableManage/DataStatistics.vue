@@ -9,8 +9,8 @@
             <el-radio :label="2">近线服务</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="归档结束时间" v-show="searchParams.isAllLine==2">
-          <el-input v-model="searchParams.startTime" size="small" readonly></el-input>
+        <el-form-item label="归档开始时间" v-show="searchParams.isAllLine==2">
+          <el-input v-model="searchParams.beginTime" size="small" readonly></el-input>
         </el-form-item>
         <el-form-item label="归档结束时间" v-show="searchParams.isAllLine==2">
           <el-input v-model="searchParams.endTime" size="small" readonly></el-input>
@@ -79,10 +79,11 @@ export default {
   methods: {
     handleQuery(value) {
       if (value == 2) {
-        getArchive({ ddataid: this.rowData.D_DATA_ID }).then(response => {
-          console.log(response);
+        getArchive({ ddataid: this.rowData.D_DATA_ID }).then(res => {
+          this.searchParams.endTime = res.data.endTime;
+          this.searchParams.beginTime = res.data.beginTime;
         });
-      } else {
+        return;
       }
       let obj = {};
       obj.dataClassId = this.rowData.DATA_CLASS_ID;
