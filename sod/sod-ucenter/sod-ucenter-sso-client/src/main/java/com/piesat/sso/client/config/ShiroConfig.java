@@ -67,6 +67,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/swagger-resources/**", "anon");
         filterChainDefinitionMap.put("/doc.html", "anon");
         filterChainDefinitionMap.put("/api/**", "anon");
+        filterChainDefinitionMap.put("/upload/**", "anon");
         filterChainDefinitionMap.put("/**", "authc");
         LinkedHashMap<String, Filter> filtsMap = new LinkedHashMap<>();
         // 这里使用自定义的filter
