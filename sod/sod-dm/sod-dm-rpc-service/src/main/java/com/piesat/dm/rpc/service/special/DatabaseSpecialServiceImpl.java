@@ -744,7 +744,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList = databaseSpecialDto.getDatabaseSpecialReadWriteList();
             if(databaseSpecialReadWriteList != null && databaseSpecialReadWriteList.size() > 0){
                 for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteList){
-                    // 如果是读权限，默认通过；写权限，默认拒绝
+                    // 如果是读权限，默认通过；写权限，待审核
                     if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
                         databaseSpecialReadWriteDto.setExamineStatus(1);
                     } else {
