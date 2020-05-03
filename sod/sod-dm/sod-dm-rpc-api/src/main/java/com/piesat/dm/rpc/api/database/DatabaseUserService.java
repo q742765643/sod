@@ -81,7 +81,7 @@ public interface DatabaseUserService {
      * @param databaseUserDto
      * @return
      */
-    boolean empower(DatabaseUserDto databaseUserDto);
+    ResultT empower(DatabaseUserDto databaseUserDto);
 
     /**
      * 分页查询

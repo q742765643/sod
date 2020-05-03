@@ -33,9 +33,10 @@ import java.util.*;
 
 /**
  * 数据库访问账户管理
+ *
+ * @author wulei
  * @Description
  * @ClassName DatabaseUserManagerController
- * @author wulei
  * @date 2020/2/10 10:17
  */
 @Api(tags = "数据库访问账户")
@@ -59,13 +60,13 @@ public class DatabaseUserManagerController {
     //@RequiresPermissions("dm:databaseUser:all")
     @GetMapping("/all")
     public ResultT<PageBean> list(DatabaseUserDto databaseUserDto, int pageNum, int pageSize) {
-        try{
+        try {
             ResultT<PageBean> resultT = new ResultT<>();
             PageForm<DatabaseUserDto> pageForm = new PageForm<>(pageNum, pageSize, databaseUserDto);
             PageBean pageBean = databaseUserService.selectPageList(pageForm);
             resultT.setData(pageBean);
             return resultT;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
@@ -104,7 +105,7 @@ public class DatabaseUserManagerController {
         try {
             List<Map<String, Object>> allDatabaseDto = this.databaseService.getDatabaseList("1,3");
             return ResultT.success(allDatabaseDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
@@ -124,30 +125,30 @@ public class DatabaseUserManagerController {
         }
     }
 
-    @ApiOperation(value="申请文件上传接口")
+    @ApiOperation(value = "申请文件上传接口")
     @RequiresPermissions("api:databaseUser:upload")
-    @PostMapping(value="/api/databaseUser/upload")
+    @PostMapping(value = "/api/databaseUser/upload")
     public ResultT uploadFile(MultipartHttpServletRequest request) {
         try {
             // 获取文件存储路径 , 如果没有 , 创建
-            if(!Paths.get(fileAddress).toFile().exists()){
+            if (!Paths.get(fileAddress).toFile().exists()) {
                 Paths.get(fileAddress).toFile().mkdirs();
             }
             List<MultipartFile> fileList = request.getFiles("filename");
             Date now = new Date();
             MultipartFile mf = fileList.get(0);
             //文件路径
-            String filePath = fileAddress  + "/" + mf.getOriginalFilename();
+            String filePath = fileAddress + "/" + mf.getOriginalFilename();
             String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
             //上传文件到服务器指定路径
             FileCopyUtils.copy(mf.getBytes(), new File(filePath));
             //转换PDF
-            String pdfName = mf.getOriginalFilename().substring(0,mf.getOriginalFilename().lastIndexOf("."))+".pdf";
+            String pdfName = mf.getOriginalFilename().substring(0, mf.getOriginalFilename().lastIndexOf(".")) + ".pdf";
             String pdfPath = fileAddress + "/" + pdfName;
-            Doc2PDF.doc2pdf(filePath,pdfPath);
-            Map<String,Object> resultMap = new HashMap<>();
-            resultMap.put("filePath",filePath);
-            resultMap.put("pdfPath",httpPath+"/user/"+pdfName);
+            Doc2PDF.doc2pdf(filePath, pdfPath);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("filePath", filePath);
+            resultMap.put("pdfPath", httpPath + "/user/" + pdfName);
             return ResultT.success(resultMap);
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,14 +156,14 @@ public class DatabaseUserManagerController {
         }
     }
 
-    @ApiOperation(value="申请文件下载接口")
+    @ApiOperation(value = "申请文件下载接口")
     @RequiresPermissions("api:databaseUser:download")
-    @GetMapping(value="/download")
-    public void download(String filepath,HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping(value = "/download")
+    public void download(String filepath, HttpServletRequest request, HttpServletResponse response) {
         File file = new File(filepath);
         String fileName = file.getName();
 
-        if(file.exists()){
+        if (file.exists()) {
             try {
                 String userAgent = request.getHeader("User-Agent");
                 if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
@@ -187,10 +188,10 @@ public class DatabaseUserManagerController {
                 outputStream.write(buffer);
                 outputStream.flush();
                 outputStream.close();
-            }catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }else{
+        } else {
             try {
                 response.setContentType("text/html; charset=UTF-8"); //转码
                 PrintWriter out = response.getWriter();
@@ -211,7 +212,7 @@ public class DatabaseUserManagerController {
     public ResultT ifUPExist(String databaseUPId) {
         try {
             DatabaseUserDto databaseUserDto = this.databaseUserService.getDotByUPID(databaseUPId);
-            if(databaseUserDto!=null){
+            if (databaseUserDto != null) {
                 return ResultT.success("YES");
             }
             return ResultT.success("NO");
@@ -227,7 +228,7 @@ public class DatabaseUserManagerController {
     public ResultT ifUserExist(String userId) {
         try {
             DatabaseUserDto databaseUserDto = this.databaseUserService.getDotByUserId(userId);
-            if(databaseUserDto!=null){
+            if (databaseUserDto != null) {
                 return ResultT.success("YES");
             }
             return ResultT.success("NO");
@@ -240,10 +241,10 @@ public class DatabaseUserManagerController {
     @ApiOperation(value = "根据用户id和审核状态查询")
 //    @RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
     @GetMapping(value = "/findByUserIdAndExamineStatus")
-    public ResultT findByUserIdAndExamineStatus(String userId,String examineStatus) {
+    public ResultT findByUserIdAndExamineStatus(String userId, String examineStatus) {
         try {
-            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,examineStatus);
-            if(databaseUserDto!=null){
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId, examineStatus);
+            if (databaseUserDto != null) {
                 return ResultT.success(databaseUserDto);
             }
             return ResultT.success();
@@ -258,7 +259,7 @@ public class DatabaseUserManagerController {
     @PostMapping(value = "/add")
     public ResultT save(@RequestBody DatabaseUserDto databaseUserDto) {
         try {
-			//默认待审核
+            //默认待审核
             databaseUserDto.setExamineStatus("0");
             DatabaseUserDto save = this.databaseUserService.saveDto(databaseUserDto);
             return ResultT.success(save);
@@ -269,25 +270,22 @@ public class DatabaseUserManagerController {
     }
 
 
-
-
-
     @ApiOperation(value = "审核")
     @RequiresPermissions("dm:databaseUser:update")
     @PostMapping(value = "/update")
     public ResultT update(@RequestBody DatabaseUserDto databaseUserDto) {
         try {
             //审核通过，给数据库授权
-            if(databaseUserDto.getExamineStatus().equals("1")){
+            if (databaseUserDto.getExamineStatus().equals("1")) {
                 //数据库授权
-                boolean b = this.databaseUserService.empower(databaseUserDto);
-                b= true;
-                if(b){
+                ResultT b = this.databaseUserService.empower(databaseUserDto);
+                if (b.getCode() == 200) {
                     databaseUserDto.setExamineStatus("1");
                     DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
                     return ResultT.success(update);
+                } else {
+                    return ResultT.failed("数据库授权失败，审核操作未完成,msg:" + b.getMsg());
                 }
-                return ResultT.success("数据库授权失败，审核操作未完成");
             }
             //审核不通过
             databaseUserDto.setExamineStatus("2");
@@ -308,8 +306,8 @@ public class DatabaseUserManagerController {
 
     @ApiOperation(value = "数据库访问账户申请")
     @RequiresPermissions("dm:databaseUser:applyDatabaseUser")
-    @PostMapping(value="applyDatabaseUser")
-    public ResultT applyDatabaseUser(HttpServletRequest request){
+    @PostMapping(value = "applyDatabaseUser")
+    public ResultT applyDatabaseUser(HttpServletRequest request) {
         try {
             DatabaseUserDto applyDatabaseUser = this.databaseUserService.applyDatabaseUser(request);
             return ResultT.success(applyDatabaseUser);
@@ -318,10 +316,11 @@ public class DatabaseUserManagerController {
             return ResultT.failed(e.getMessage());
         }
     }
+
     @ApiOperation(value = "数据库访问账户修改")
     //@RequiresPermissions("dm:databaseUser:updateDatabaseUser")
-    @PostMapping(value="updateDatabaseUser")
-    public ResultT updateDatabaseUser(HttpServletRequest request){
+    @PostMapping(value = "updateDatabaseUser")
+    public ResultT updateDatabaseUser(HttpServletRequest request) {
         try {
             DatabaseUserDto updateDatabaseUser = this.databaseUserService.applyDatabaseUser(request);
             return ResultT.success(updateDatabaseUser);
@@ -339,9 +338,9 @@ public class DatabaseUserManagerController {
             File newFile = null;
             if (applyMaterial != null) {
                 String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
-                if(StringUtils.isNotNullString(originalFileName1)){
+                if (StringUtils.isNotNullString(originalFileName1)) {
                     //新的文件名
-                    String newFileName1 = originalFileName1.substring(0,originalFileName1.lastIndexOf(".")) +"_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS",new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                    String newFileName1 = originalFileName1.substring(0, originalFileName1.lastIndexOf(".")) + "_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS", new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
                     newFile = new File(fileAddress + File.separator + newFileName1);
                     if (!newFile.getParentFile().exists()) {
                         newFile.getParentFile().mkdirs();
@@ -361,9 +360,9 @@ public class DatabaseUserManagerController {
 
     @ApiOperation(value = "数据库访问账户申请材料是否存在")
     @RequiresPermissions("dm:databaseUser:fileIsExist")
-    @PostMapping(value="fileIsExist")
-    public ResultT fileIsExist(HttpServletRequest request){
-        try{
+    @PostMapping(value = "fileIsExist")
+    public ResultT fileIsExist(HttpServletRequest request) {
+        try {
             String fileNames = request.getParameter("apply_material");
             fileNames = URLDecoder.decode(fileNames, "UTF-8");
             String fileName = request.getSession().getServletContext().getRealPath("") + File.separator + "tupian"
@@ -373,25 +372,26 @@ public class DatabaseUserManagerController {
                 return ResultT.success("NO");
             }
             return ResultT.success("YES");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
     }
+
     @ApiOperation(value = "判断用户是否存在数据库访问账户(已审核通过)")
     @RequiresPermissions("dm:databaseUser:existUser")
     @GetMapping(value = "/existUser")
     public ResultT existUser(String userId) {
         try {
-            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
-            Map<String , Object> map = new HashMap<>();
-            if( null == databaseUserDto.getDatabaseUpId()||databaseUserDto.getDatabaseUpId().equals("")){
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId, "1");
+            Map<String, Object> map = new HashMap<>();
+            if (null == databaseUserDto.getDatabaseUpId() || databaseUserDto.getDatabaseUpId().equals("")) {
                 map.put("returnCode", 1);
                 map.put("returnMessage", "当前用户没有UP账户");
                 map.put("databaseUP_ID", "-");
                 map.put("databaseUP_PASSWORD", "-");
                 return ResultT.success(map);
-            }else{
+            } else {
                 map.put("returnCode", 0);
                 map.put("returnMessage", "当前用户存在UP账户");
                 map.put("databaseUP_ID", databaseUserDto.getDatabaseUpId());
@@ -404,13 +404,14 @@ public class DatabaseUserManagerController {
             return ResultT.failed(e.getMessage());
         }
     }
-    @ApiOperation(value="针对具体物理库撤销读写权限")
+
+    @ApiOperation(value = "针对具体物理库撤销读写权限")
     @RequiresPermissions("api:databaseUser:dataAuthorityCancel")
-    @PostMapping(value="/api/databaseUser/dataAuthorityCancel")
-    public ResultT dataAuthorityCancel(String user_id, String database_id, String data_class_id, String apply_authority, String mark){
+    @PostMapping(value = "/api/databaseUser/dataAuthorityCancel")
+    public ResultT dataAuthorityCancel(String user_id, String database_id, String data_class_id, String apply_authority, String mark) {
         // 针对具体库中表撤销读写权限
         Integer apply_authoritys = Integer.parseInt(apply_authority);
-        Map<String, Object> map = databaseUserService.dataAuthorityCancel(user_id, database_id, data_class_id,apply_authoritys,mark);
+        Map<String, Object> map = databaseUserService.dataAuthorityCancel(user_id, database_id, data_class_id, apply_authoritys, mark);
         return ResultT.success(map);
     }
 
@@ -429,9 +430,9 @@ public class DatabaseUserManagerController {
 
     @ApiOperation(value = "修改密码（Portal调用）")
     @GetMapping(value = "/changePassword")
-    public ResultT changePassword(String id,String oldPwd,String newPwd) {
+    public ResultT changePassword(String id, String oldPwd, String newPwd) {
         try {
-            return databaseUserService.changePassword(id,oldPwd,newPwd);
+            return databaseUserService.changePassword(id, oldPwd, newPwd);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

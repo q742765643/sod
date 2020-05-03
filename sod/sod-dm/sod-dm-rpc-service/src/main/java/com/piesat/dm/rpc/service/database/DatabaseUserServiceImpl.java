@@ -248,14 +248,15 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
     @Override
-    public boolean empower(DatabaseUserDto databaseUserDto) {
+    public ResultT empower(DatabaseUserDto databaseUserDto) {
         try {
             //根据ID获取旧的申请信息
             DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
             //待授权Id
-            String[] needEmpowerIdArr = databaseUserDto.getDatabaseUpId().split(",");
+            String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
             List<String> needEmpowerIdist = Arrays.asList(needEmpowerIdArr);
-            String[] haveEmpowerIdArr = oldDatabaseUserEntity.getDatabaseUpId().split(",");
+            String examineDatabaseId = oldDatabaseUserEntity.getExamineDatabaseId();
+            String[] haveEmpowerIdArr = StringUtils.isEmpty(examineDatabaseId) ? new String[0]: examineDatabaseId.split(",");
             List<String> haveEmpowerIdist = Arrays.asList(haveEmpowerIdArr);
             //非首次审核通过，授权的id中去掉以前的id
             if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
@@ -266,7 +267,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             //待授权IP
             String[] needEmpowerIpArr = databaseUserDto.getDatabaseUpIp().split(";");
             for (String databaseId : needEmpowerIdist) {
-                DatabaseDcl databaseVO = getDatabase(databaseId);
+                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
@@ -278,7 +280,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 needEmpowerIdist.addAll(haveEmpowerIdist);
             }
             for (String databaseId : needEmpowerIdist) {
-                DatabaseDcl databaseVO = getDatabase(databaseId);
+                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
                     databaseVO.closeConnect();
@@ -288,7 +291,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             /**删除被撤销的数据库**/
             haveEmpowerIdist.removeAll(needEmpowerIdist);
             for (String databaseId : haveEmpowerIdist) {
-                DatabaseDcl databaseVO = getDatabase(databaseId);
+                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     for (String ip : needEmpowerIpArr) {
                         databaseVO.deleteUser(databaseUserDto.getDatabaseUpId(), ip);
@@ -298,8 +302,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return ResultT.failed(e.getMessage());
         }
-        return false;
+        return ResultT.success();
     }
 
     /**
