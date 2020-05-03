@@ -339,8 +339,8 @@ export function getDataClassBaseInfo(query) {
 export function saveDataClassBaseInfo(query) {
   return request({
     url: baseUrl + '/dm/classbaseinfo/saveDataClassBaseInfo',
-    method: 'get',
-    params: query
+    method: 'post',
+    data: query
   })
 }
 

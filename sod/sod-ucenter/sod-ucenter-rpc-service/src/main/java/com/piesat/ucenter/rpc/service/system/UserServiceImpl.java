@@ -379,9 +379,95 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             daa.setDataAuthorityRecordList(list);
             this.dataAuthorityApplyService.saveDto(daa);
         }
+        return ResultT.success(userEntity);
+    }
 
+    @Override
+    public ResultT updateBizUser(Map<String, String[]> parameterMap, String applyPaper) {
+        Map<String, String> map = new LinkedHashMap<>();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            if (entry.getValue().length > 0) {
+                map.put(entry.getKey(), entry.getValue()[0]);
+            }
+        }
+        String appNames = map.get("appName");
+        String bizUserid = map.get("bizUserid");
+        String applyAuthority = map.get("applyAuthority");
+        JSONObject jsonObject = JSONObject.parseObject(applyAuthority);
+        JSONObject sod = jsonObject.getJSONObject("sod");
+        String sodApi = sod.getString("sodApi");
+        String sodApp = sod.getString("sodApp");
+        JSONObject sodData = sod.getJSONObject("sodData");
+        String dbCreate = "0";
+        JSONArray applyData = null;
+        String dbIds = "";
+        if (sodData!=null){
+            dbIds = sodData.get("dbIds").toString();
+            dbCreate = sodData.get("dbCreate").toString();
+            applyData = sodData.getJSONArray("applyData");
+        }
 
+        UserEntity userEntity = this.userDao.findByUserName(bizUserid);
+        if (userEntity != null) {
+            return ResultT.failed("业务用户注册id不存在！");
+        }
+        String password = map.get("password");
+        try {
+            password = AESUtil.aesEncrypt(password).trim();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String bizType = map.get("bizType");
+        String bizIp = map.get("bizIp");
+        String validTime = map.get("validTime");
+        String remark = map.get("remark");
+        String webUsername = map.get("webUsername");
+        String legalUnits = map.get("legalUnits");
+        String deptName = map.get("deptName");
+        String phone = map.get("phone");
+        String tutorName = map.get("tutorName");
+        String tutorPhone = map.get("tutorPhone");
+        String webUserid = map.get("webUserid");
+//        String appCoin = map.get("appCoin");
+//        String applyAuthority = map.get("applyAuthority");
+//        String deptId = map.get("deptId");
+        String loginName = map.get("loginName");
+//        String userId = map.get("userId");
+//        String interfaceId = map.get("interfaceId");
+//        String nonce = map.get("nonce");
+//        String timestamp = map.get("timestamp");
 
+        userEntity.setUserType("11");
+        userEntity.setNickName(webUsername);
+        userEntity.setApplyPaper(applyPaper);
+        userEntity.setApplyTime(new Date());
+        userEntity.setAppName(appNames);
+        if (applyData!=null){
+            userEntity.setSodData("1");
+        }else {
+            userEntity.setSodData("0");
+        }
+        userEntity.setBizIp(bizIp);
+        userEntity.setBizType(bizType);
+        userEntity.setUserName(bizUserid);
+        userEntity.setChecked("0");
+        userEntity.setDeptName(deptName);
+        userEntity.setLastEditTime(new Date());
+        userEntity.setLegalUnits(legalUnits);
+        userEntity.setPassword(password);
+        userEntity.setPhonenumber(phone);
+        userEntity.setRemark(remark);
+        userEntity.setTutorName(tutorName);
+        userEntity.setTutorPhone(tutorPhone);
+        Date date = DateUtils.dateTime("yyyy-MM-dd", validTime);
+        userEntity.setValidTime(date);
+        userEntity.setWebUserId(webUserid);
+        userEntity.setWebUsername(webUsername);
+        userEntity.setDbIds(dbIds);
+        userEntity.setSodApi(sodApi);
+        userEntity.setDbCreate(dbCreate);
+        userEntity.setStatus("1".equals(sodApp) ? "0" : "1");
+        userEntity = this.userDao.saveNotNull(userEntity);
 
         return ResultT.success(userEntity);
     }

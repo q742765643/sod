@@ -155,9 +155,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public void exportData(String examineStatus) {
         List<DatabaseUserEntity> byExamineStatus = null;
-        if(StringUtils.isNotBlank(examineStatus)){
+        if (StringUtils.isNotBlank(examineStatus)) {
             byExamineStatus = this.databaseUserDao.findByExamineStatus(examineStatus);
-        }else{
+        } else {
             byExamineStatus = this.databaseUserDao.findAll();
         }
         ExcelUtil<DatabaseUserEntity> util = new ExcelUtil(DatabaseUserEntity.class);
@@ -253,49 +253,71 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public ResultT empower(DatabaseUserDto databaseUserDto) {
-        try {
-            //根据ID获取旧的申请信息
-            DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
-            //待授权Id
-            String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
-            List<String> needEmpowerIdist = Arrays.asList(needEmpowerIdArr);
-            String examineDatabaseId = oldDatabaseUserEntity.getExamineDatabaseId();
-            String[] haveEmpowerIdArr = StringUtils.isEmpty(examineDatabaseId) ? new String[0]: examineDatabaseId.split(",");
-            List<String> haveEmpowerIdist = Arrays.asList(haveEmpowerIdArr);
-            //非首次审核通过，授权的id中去掉以前的id
-            if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
-                needEmpowerIdist.removeAll(haveEmpowerIdist);
-            }
 
-            /**为申请的IP授权**/
-            //待授权IP
-            String[] needEmpowerIpArr = databaseUserDto.getDatabaseUpIp().split(";");
-            for (String databaseId : needEmpowerIdist) {
-                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+        //根据ID获取旧的申请信息
+        DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
+        //待授权Id
+        String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
+        List<String> needEmpowerIdist = Arrays.asList(needEmpowerIdArr);
+        String examineDatabaseId = oldDatabaseUserEntity.getExamineDatabaseId();
+        String[] haveEmpowerIdArr = StringUtils.isEmpty(examineDatabaseId) ? new String[0] : examineDatabaseId.split(",");
+        List<String> haveEmpowerIdist = Arrays.asList(haveEmpowerIdArr);
+        List<String> thisHaveIds = new ArrayList<>();
+        for (String id : haveEmpowerIdist) {
+            thisHaveIds.add(id);
+        }
+        StringBuffer sbff = new StringBuffer("");
+
+        //非首次审核通过，授权的id中去掉以前的id
+        if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
+            needEmpowerIdist.removeAll(haveEmpowerIdist);
+        }
+
+        /**为申请的IP授权**/
+        //待授权IP
+        String[] needEmpowerIpArr = databaseUserDto.getDatabaseUpIp().split(";");
+        for (String databaseId : needEmpowerIdist) {
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            try {
                 DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
                 }
+            } catch (Exception e) {
+                String message = e.getMessage();
+                if (message.contains("用户已经存在")) {
+                    thisHaveIds.add(databaseId);
+                } else {
+                    sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "/n");
+                }
             }
 
-            /**为已有账号修改密码**/
-            if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
-                needEmpowerIdist.addAll(haveEmpowerIdist);
-            }
-            for (String databaseId : needEmpowerIdist) {
-                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+        }
+
+        /**为已有账号修改密码**/
+        if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
+            needEmpowerIdist.addAll(haveEmpowerIdist);
+        }
+        for (String databaseId : needEmpowerIdist) {
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            try {
                 DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
                     databaseVO.closeConnect();
                 }
+            } catch (Exception e) {
+                sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "/n");
             }
 
-            /**删除被撤销的数据库**/
-            haveEmpowerIdist.removeAll(needEmpowerIdist);
-            for (String databaseId : haveEmpowerIdist) {
-                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+        }
+
+        /**删除被撤销的数据库**/
+        haveEmpowerIdist.removeAll(needEmpowerIdist);
+        for (String databaseId : haveEmpowerIdist) {
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            try {
                 DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     for (String ip : needEmpowerIpArr) {
@@ -303,12 +325,17 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                         databaseVO.closeConnect();
                     }
                 }
+            } catch (Exception e) {
+                sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "/n");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
         }
-        return ResultT.success();
+        String msg = sbff.toString();
+        if (StringUtils.isNotBlank(msg)) {
+            return ResultT.failed(msg);
+        } else {
+            return ResultT.success();
+        }
+
     }
 
     /**
@@ -728,7 +755,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
             try {
                 DatabaseDcl databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
-                databaseDcl.updateAccount(bizUserId,newPwd);
+                databaseDcl.updateAccount(bizUserId, newPwd);
             } catch (Exception e) {
                 e.printStackTrace();
             }

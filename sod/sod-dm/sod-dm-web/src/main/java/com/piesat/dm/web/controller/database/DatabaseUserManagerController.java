@@ -284,7 +284,8 @@ public class DatabaseUserManagerController {
                     DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
                     return ResultT.success(update);
                 } else {
-                    return ResultT.failed("数据库授权失败，审核操作未完成,msg:" + b.getMsg());
+                    DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
+                    return ResultT.failed(b.getMsg());
                 }
             }
             //审核不通过

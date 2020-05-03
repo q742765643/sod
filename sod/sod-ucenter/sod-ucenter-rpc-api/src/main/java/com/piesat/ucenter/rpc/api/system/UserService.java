@@ -97,6 +97,8 @@ public interface UserService {
 
     ResultT addBizUser(Map<String, String[]> parameterMap, String applyPaper);
 
+    ResultT updateBizUser(Map<String, String[]> parameterMap, String applyPaper);
+
     PageBean findAllBizUser(PageForm<UserDto> pageForm);
 
     ResultT editBase(UserDto user);

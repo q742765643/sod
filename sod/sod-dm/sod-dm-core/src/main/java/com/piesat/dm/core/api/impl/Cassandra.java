@@ -95,7 +95,7 @@ public class Cassandra implements DatabaseDcl {
         while (it.hasNext()) {
             Row row = it.next();
             if (identifier.equals(row.getObject(0))) {
-                throw new Exception("用户已存在!");
+                throw new Exception("数据库用户已经存在!");
             }
         }
         cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
