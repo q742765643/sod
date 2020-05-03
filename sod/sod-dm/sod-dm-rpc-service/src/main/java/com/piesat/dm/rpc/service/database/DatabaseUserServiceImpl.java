@@ -147,8 +147,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public DatabaseUserDto mergeDto(DatabaseUserDto databaseUserDto) {
-        this.delete(databaseUserDto.getId());
-        DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
+        DatabaseUserDto databaseUserDto1 = this.getDotById(databaseUserDto.getId());
+        databaseUserDto1.setExamineStatus(databaseUserDto.getExamineStatus());
+        DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto1);
         this.saveNotNull(databaseUserEntity);
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
