@@ -11,4 +11,8 @@ public interface DatabaseDefineDao extends BaseDao<DatabaseDefineEntity> {
     List<DatabaseDefineEntity> findByDatabaseType(String databaseType);
 
     List<DatabaseDefineEntity> findByIdIn(List<String> ids);
+
+    List<DatabaseDefineEntity> findByUserDisplayControlIn(List<String> paramList);
+
+    List<DatabaseDefineEntity> findByUserDisplayControlNot(int i);
 }
