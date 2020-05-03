@@ -75,6 +75,9 @@ public class DataClassBaseInfoEntity extends BaseEntity {
     @Column(name = "c_rpindname",columnDefinition = "varchar(225) default ''")
     private String cRpindname;
 
+    @Column(name = "c_rporgname",columnDefinition = "varchar(225) default ''")
+    private String cRporgname;
+
     @Column(name = "use_base_info",columnDefinition = "varchar(225) default ''")
     private String useBaseInfo;
 

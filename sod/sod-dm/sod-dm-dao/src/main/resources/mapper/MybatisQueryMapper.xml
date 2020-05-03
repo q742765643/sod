@@ -654,7 +654,7 @@
     <select id="getDataClassBaseInfo" resultType="DataClassBaseInfoEntity" parameterType="String">
         select aa.DATA_CLASS_ID dataClassId,b.C_IDABS cIdabs,b.C_MAINFREQ cMainfreq,b.c_coremeta_id cCoremetaId,
         b.C_DATASCAL cDatascal,c.C_WESTBL cWestbl,c.C_EASTBL cEastbl,c.C_SOUTHBL cSouthbl,
-        c.C_NORTHBL cNorthbl,c.C_GEODESC cGeodesc,
+        c.C_NORTHBL cNorthbl,c.C_GEODESC cGeodesc,h.C_RPORGNAME cRporgname,
         b.C_SOURCE cSource,d.C_NETNAME cNetname,a.C_NETTYPE cNettype,
         f.C_CREAT_NAME cCreatName,f.C_CHECKER cChecker,
         g.C_RPINDNAME cRpindname,aa.use_base_info useBaseInfo from
@@ -677,6 +677,9 @@
         left join
         (select * from tab_omin_cm_cc_dddidpocinfo gg where (gg.C_OPT_TYPE is null or gg.C_OPT_TYPE <![CDATA[ <> ]]>
         'delete')) g on c.C_COREMETA_ID = g.C_COREMETA_ID
+        left join
+        (select * from TAB_OMIN_CM_CC_IDPOC hh where (hh.C_OPT_TYPE is null or hh.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) h on c.C_COREMETA_ID = h.C_COREMETA_ID
         left join
         (select * from tab_omin_cm_cc_apply a where C_UPDATED_DATE = (select max(C_UPDATED_DATE) from
         tab_omin_cm_cc_apply b where a.C_DATA_ID = b.C_DATA_ID ))
