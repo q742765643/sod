@@ -5,6 +5,7 @@ import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,9 @@ public class DatabaseVisibleController {
 
     @Autowired
     private DatabaseVisibleService databaseVisibleService;
+
+    @Value("${fidbDownloadUrl}")
+    private String fidbDownloadUrl;
 
     @GetMapping("/getDatabaseByBizUserId")
     @ApiOperation(value = "根据业务用户id查询数据库", notes = "根据业务用户id查询数据库")
@@ -120,11 +124,18 @@ public class DatabaseVisibleController {
         ResultT result = this.databaseVisibleService.getSpecialInfo(specialId);
         return  result.getData();
     }
+
     @GetMapping("/getAccountInfo")
     @ApiOperation(value = "查询数据库用户", notes = "查询数据库用户")
     public Object getAccountInfo(String bizUserId) {
         ResultT result = this.databaseVisibleService.getAccountInfo(bizUserId);
        return  result.getData();
+    }
+
+    @GetMapping("/getDownloadUrl")
+    @ApiOperation(value = "查询下载url", notes = "查询下载url")
+    public String getDownloadUrl() {
+       return fidbDownloadUrl;
     }
 
 }

@@ -182,12 +182,12 @@ export default {
       this.$refs[formClass].validate(valid => {
         if (valid) {
           saveDataClassBaseInfo(this.tableFormObject).then(res => {
-            if (res.data.returnCode == 0) {
+            if (res.code == 200) {
               this.$message({ message: "编辑成功", type: "success" });
               this.$emit("handleClose");
             } else {
               this.$message({
-                message: res.data.returnMessage,
+                message: res.msg,
                 type: "warning"
               });
               return;
