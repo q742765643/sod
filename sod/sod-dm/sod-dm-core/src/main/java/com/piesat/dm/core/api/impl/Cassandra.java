@@ -48,7 +48,7 @@ public class Cassandra implements DatabaseDcl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new Exception("Cassandra数据库连接失败，请检查！ERROR INFO:" + e.getMessage());
+                throw new Exception("Cassandra数据库连接失败！");
             } finally {
                 lock.unlock();
             }
