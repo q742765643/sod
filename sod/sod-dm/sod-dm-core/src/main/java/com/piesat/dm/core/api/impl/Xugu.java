@@ -89,6 +89,28 @@ public class Xugu extends DatabaseDclAbs {
         }
     }
 
+    @Override
+    public void deleteUser(String identifier) throws Exception {
+        int num = 0;
+        String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + identifier.toUpperCase() + "'";
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getInt(1);
+            }
+            if (num > 0) {
+                sql = "DROP USER " + identifier;
+                stmt = connection.createStatement();
+                stmt.execute(sql);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("删除用户失败！errInfo：" + e.getMessage());
+        }
+    }
+
+
     public void disabledUser(String identifier) throws Exception {
         String sql = "ALTER USER " + identifier + " ACCOUNT LOCK ";
         try {
