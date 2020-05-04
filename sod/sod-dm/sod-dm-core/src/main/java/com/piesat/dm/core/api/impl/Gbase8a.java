@@ -90,6 +90,10 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
     public void deleteUser(String identifier) throws Exception {
+        int userNum = getUserNum(identifier);
+        if (userNum == 0) {
+            return;
+        }
         String sql = "DROP USER  " + identifier;
         stmt = connection.createStatement();
         stmt.execute(sql);

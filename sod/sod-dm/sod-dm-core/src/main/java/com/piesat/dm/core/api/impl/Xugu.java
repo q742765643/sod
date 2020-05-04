@@ -70,16 +70,10 @@ public class Xugu extends DatabaseDclAbs {
 
     @Override
     public void deleteUser(String identifier, String ip) throws Exception {
-        int num = 0;
-        String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + identifier.toUpperCase() + "'";
+        int userNum = getUserNum(identifier);
         try {
-            stmt = connection.createStatement();
-            rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                num = rs.getInt(1);
-            }
-            if (num > 0) {
-                sql = "DROP USER " + identifier;
+            if (userNum > 0) {
+                String sql = "DROP USER " + identifier;
                 stmt = connection.createStatement();
                 stmt.execute(sql);
             }
@@ -91,16 +85,10 @@ public class Xugu extends DatabaseDclAbs {
 
     @Override
     public void deleteUser(String identifier) throws Exception {
-        int num = 0;
-        String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + identifier.toUpperCase() + "'";
+        int userNum = getUserNum(identifier);
         try {
-            stmt = connection.createStatement();
-            rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                num = rs.getInt(1);
-            }
-            if (num > 0) {
-                sql = "DROP USER " + identifier;
+            if (userNum > 0) {
+                String sql = "DROP USER " + identifier;
                 stmt = connection.createStatement();
                 stmt.execute(sql);
             }
@@ -262,7 +250,7 @@ public class Xugu extends DatabaseDclAbs {
             while (rs.next()) {
                 num++;
             }
-            if (num>0)return ResultT.success(true);
+            if (num > 0) return ResultT.success(true);
             else return ResultT.success(false);
         } catch (SQLException e) {
             if (e.getMessage().contains("表或视图") && e.getMessage().contains("不存在")) {
@@ -282,9 +270,9 @@ public class Xugu extends DatabaseDclAbs {
             stmt.execute(delSql);
         } catch (SQLException e) {
             e.printStackTrace();
-           if (!e.getMessage().contains("新口令不能与老口令相同")){
-               return ResultT.failed(e.getMessage());
-           }
+            if (!e.getMessage().contains("新口令不能与老口令相同")) {
+                return ResultT.failed(e.getMessage());
+            }
         }
         return ResultT.success();
     }
@@ -294,9 +282,9 @@ public class Xugu extends DatabaseDclAbs {
         List<String> list = new ArrayList<String>();
         try {
             DatabaseMetaData metaData = connection.getMetaData();
-            rs = metaData.getTables(null, schema, null,new String[] { "TABLE" });
+            rs = metaData.getTables(null, schema, null, new String[]{"TABLE"});
             while (rs.next()) {
-                if(!rs.getString("TABLE_NAME").contains("#")){
+                if (!rs.getString("TABLE_NAME").contains("#")) {
                     list.add(rs.getString("TABLE_NAME"));
                 }
             }
@@ -309,23 +297,23 @@ public class Xugu extends DatabaseDclAbs {
 
     @Override
     public ResultT queryAllColumnInfo(String schema, String tableName) throws Exception {
-        Map<String,Map<String,Object>> columnInfos = new HashMap<String,Map<String,Object>>();
-        String sql = "select  table_schema,table_name,upper(column_name) column_name,column_type,is_nullable,column_comment"+
-                " from information_schema.columns where TABLE_NAME= '"+tableName+"' and table_schema='"+schema+"'";
+        Map<String, Map<String, Object>> columnInfos = new HashMap<String, Map<String, Object>>();
+        String sql = "select  table_schema,table_name,upper(column_name) column_name,column_type,is_nullable,column_comment" +
+                " from information_schema.columns where TABLE_NAME= '" + tableName + "' and table_schema='" + schema + "'";
         try {
             ps = connection.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Map columnOneInfo = new HashMap<String,Object>();
+                Map columnOneInfo = new HashMap<String, Object>();
                 columnOneInfo.put("column_name", rs.getString("column_name"));
                 columnOneInfo.put("column_type", rs.getString("column_type"));//类型和精度 decimal(4,0)  varchar(200)
                 columnOneInfo.put("column_comment", rs.getString("column_comment"));//字段含义
-                if("NO".equals(rs.getString("is_nullable"))){
+                if ("NO".equals(rs.getString("is_nullable"))) {
                     columnOneInfo.put("is_nullable", 0);
-                }else{
+                } else {
                     columnOneInfo.put("is_nullable", 1);
                 }
-                columnInfos.put(rs.getString("column_name"),columnOneInfo);
+                columnInfos.put(rs.getString("column_name"), columnOneInfo);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -336,22 +324,22 @@ public class Xugu extends DatabaseDclAbs {
 
     @Override
     public ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception {
-        HashMap<String,String> indexs = new HashMap<String,String>();
-        HashMap<String,String> shardings = new HashMap<String,String>();
-        Map<String,Map<String,String>> results = new HashMap<String,Map<String,String>>();
-        String sql = "select * from information_schema.index where table_name='"+tableName+"' and schema_name='"+schema+"'";
+        HashMap<String, String> indexs = new HashMap<String, String>();
+        HashMap<String, String> shardings = new HashMap<String, String>();
+        Map<String, Map<String, String>> results = new HashMap<String, Map<String, String>>();
+        String sql = "select * from information_schema.index where table_name='" + tableName + "' and schema_name='" + schema + "'";
         try {
             ps = connection.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                if(rs.getString("index_name").startsWith("auto")){
+                if (rs.getString("index_name").startsWith("auto")) {
                     shardings.put(rs.getString("index_name"), rs.getString("index_column"));
-                }else{
+                } else {
                     indexs.put(rs.getString("index_name"), rs.getString("index_column"));
                 }
             }
-            results.put("indexs",indexs);
-            results.put("shardings",shardings);
+            results.put("indexs", indexs);
+            results.put("shardings", shardings);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
