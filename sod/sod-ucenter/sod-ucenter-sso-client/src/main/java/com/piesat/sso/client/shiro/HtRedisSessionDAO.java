@@ -60,7 +60,7 @@ public class HtRedisSessionDAO extends AbstractSessionDAO {
                     logger.warn("Redis session expire time: " + this.expire * 1000 + " is less than Session timeout: " + session.getTimeout() + " . It may cause some problems.");
                 }
 
-                this.redisManager.set(key, value, this.expire);
+                this.redisManager.set(key, value, this.expire/1000L);
             }
         } else {
             logger.error("session or session id is null");
