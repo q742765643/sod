@@ -258,10 +258,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
         //待授权Id
         String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
-        List<String> needEmpowerIdist = Arrays.asList(needEmpowerIdArr);
+        List<String> needEmpowerIdist = new ArrayList<>(Arrays.asList(needEmpowerIdArr));
         String examineDatabaseId = oldDatabaseUserEntity.getExamineDatabaseId();
         String[] haveEmpowerIdArr = StringUtils.isEmpty(examineDatabaseId) ? new String[0] : examineDatabaseId.split(",");
-        List<String> haveEmpowerIdist = Arrays.asList(haveEmpowerIdArr);
+        List<String> haveEmpowerIdist = new ArrayList<>(Arrays.asList(haveEmpowerIdArr));
         List<String> thisHaveIds = new ArrayList<>();
         for (String id : haveEmpowerIdist) {
             thisHaveIds.add(id);
@@ -289,7 +289,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (message.contains("用户已经存在")) {
                     thisHaveIds.add(databaseId);
                 } else {
-                    sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "/n");
+                    sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                 }
             }
 
@@ -308,7 +308,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     databaseVO.closeConnect();
                 }
             } catch (Exception e) {
-                sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "/n");
+                sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
             }
 
         }
@@ -326,7 +326,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     }
                 }
             } catch (Exception e) {
-                sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "/n");
+                sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
             }
         }
         String msg = sbff.toString();

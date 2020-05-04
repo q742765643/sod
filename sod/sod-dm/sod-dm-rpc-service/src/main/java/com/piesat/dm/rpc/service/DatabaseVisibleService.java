@@ -190,7 +190,7 @@ public class DatabaseVisibleService {
                         jo.put("STORAGE_TYPE", dl.getStorageType());
                         JSONArray aaa = new JSONArray();
                         JSONObject bbb = new JSONObject();
-                        bbb.put("DATABASE_ID", databaseId);
+                        bbb.put("DATABASE_ID", dotById.getDatabaseDefine().getId());
                         bbb.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
                         aaa.add(bbb);
                         jo.put("DATABASE", aaa);

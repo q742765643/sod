@@ -232,7 +232,9 @@ public class Gbase8a extends DatabaseDclAbs {
             stmt.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResultT.failed(e.getMessage());
+            if (!e.getMessage().contains("Can't find any matching row in the user table")){
+                return ResultT.failed(e.getMessage());
+            }
         }
         return ResultT.success();
     }

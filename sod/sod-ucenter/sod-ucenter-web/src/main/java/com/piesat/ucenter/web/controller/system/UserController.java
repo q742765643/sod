@@ -1,6 +1,8 @@
 package com.piesat.ucenter.web.controller.system;
 
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.annotation.HtParam;
+import com.piesat.common.filter.WrapperedRequest;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -22,12 +24,15 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -252,8 +257,15 @@ public class UserController {
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping("/editBase")
     public ResultT<String> editBase(HttpServletRequest request) {
-        String bizUserid = request.getParameter("bizUserid");
-        String checked = request.getParameter("checked");
+        String body = null;
+        try {
+            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jo = JSONObject.parseObject(body);
+        String bizUserid = jo.getString("bizUserid");
+        String checked =  jo.getString("checked");
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);
@@ -278,9 +290,12 @@ public class UserController {
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/updatePwd")
     public ResultT<String> updatePwd(HttpServletRequest request) {
-        String bizUserid = request.getParameter("bizUserid");
-        String newPwd = request.getParameter("newPwd");
-        String oldPwd = request.getParameter("oldPwd");
+        try {
+            String body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
+            JSONObject jo = JSONObject.parseObject(body);
+        String bizUserid = jo.getString("bizUserid");
+        String newPwd = jo.getString("newPwd");
+        String oldPwd = jo.getString("oldPwd");
         UserDto userDto = this.userService.selectUserByUserName(bizUserid);
         if (userDto==null){
             return ResultT.failed("用户不存在");
@@ -302,6 +317,10 @@ public class UserController {
             }
         } else {
             return ResultT.failed("旧密码不正确！");
+        }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResultT.failed("参数不正确！");
         }
     }
 

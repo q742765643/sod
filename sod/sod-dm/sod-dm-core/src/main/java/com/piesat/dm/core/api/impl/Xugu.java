@@ -256,10 +256,13 @@ public class Xugu extends DatabaseDclAbs {
     public ResultT updateAccount(String dataBaseUser, String newPassword) {
         String delSql = "ALTER USER " + dataBaseUser + " IDENTIFIED BY '" + newPassword + "'";
         try {
+            stmt = connection.createStatement();
             stmt.execute(delSql);
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResultT.failed(e.getMessage());
+           if (!e.getMessage().contains("新口令不能与老口令相同")){
+               return ResultT.failed(e.getMessage());
+           }
         }
         return ResultT.success();
     }
