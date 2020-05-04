@@ -320,10 +320,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             try {
                 DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
-                    for (String ip : needEmpowerIpArr) {
-                        databaseVO.deleteUser(databaseUserDto.getDatabaseUpId(), ip);
-                        databaseVO.closeConnect();
-                    }
+                    databaseVO.deleteUser(databaseUserDto.getDatabaseUpId());
+                    databaseVO.closeConnect();
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");

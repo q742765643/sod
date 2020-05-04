@@ -19,7 +19,7 @@ import java.util.*;
 public class Gbase8a extends DatabaseDclAbs {
     private final String driver = "com.gbase.jdbc.Driver";
 
-    public Gbase8a(String url, String user, String password) throws Exception{
+    public Gbase8a(String url, String user, String password) throws Exception {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, user, password);
@@ -39,7 +39,6 @@ public class Gbase8a extends DatabaseDclAbs {
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
-            rs.next();
             if (rs.next()) {
                 num = rs.getInt(1);
             }
@@ -58,13 +57,13 @@ public class Gbase8a extends DatabaseDclAbs {
         String ipStr = StringUtils.join(ips, " ");
 //        for (String ip : ips) {
 //            String sql = "CREATE USER '" + identifier + "'@'" + ip + "' IDENTIFIED BY '" + password + "'";
-            String sql =  "create user "+identifier+" identified by '"+password+"' hosts '"+ipStr+"'";
-            try {
-                stmt = connection.createStatement();
-                stmt.execute(sql);
-            } catch (SQLException e) {
-                throw new Exception("新增用户失败！errInfo：" + e.getMessage());
-            }
+        String sql = "create user " + identifier + " identified by '" + password + "' hosts '" + ipStr + "'";
+        try {
+            stmt = connection.createStatement();
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            throw new Exception("新增用户失败！errInfo：" + e.getMessage());
+        }
 //        }
     }
 
@@ -91,22 +90,9 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
     public void deleteUser(String identifier) throws Exception {
-        String sql = "SELECT HOST FROM GBASE.USER WHERE USER ='" + identifier + "'";
-        try {
-            stmt = connection.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                String host = rs.getString("HOST").trim();
-                sql = "DROP USER ?@?";
-                ps = connection.prepareStatement(sql);
-                ps.setString(1, identifier);
-                ps.setString(2, host);
-                ps.executeUpdate();
-            }
-
-        } catch (SQLException e) {
-            throw new Exception("删除用户失败！errInfo：" + e.getMessage());
-        }
+        String sql = "DROP USER  " + identifier;
+        stmt = connection.createStatement();
+        stmt.execute(sql);
     }
 
     @Override
@@ -211,7 +197,7 @@ public class Gbase8a extends DatabaseDclAbs {
             while (rs.next()) {
                 num++;
             }
-            if (num>0)return ResultT.success(true);
+            if (num > 0) return ResultT.success(true);
             else return ResultT.success(false);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -232,7 +218,7 @@ public class Gbase8a extends DatabaseDclAbs {
             stmt.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-            if (!e.getMessage().contains("Can't find any matching row in the user table")){
+            if (!e.getMessage().contains("Can't find any matching row in the user table")) {
                 return ResultT.failed(e.getMessage());
             }
         }
@@ -242,12 +228,12 @@ public class Gbase8a extends DatabaseDclAbs {
     @Override
     public ResultT queryAllTableName(String schema) throws Exception {
         List<String> list = new ArrayList<String>();
-        String sql = "select table_name from information_schema.tables where table_schema='"+schema+"'";
+        String sql = "select table_name from information_schema.tables where table_schema='" + schema + "'";
         try {
             ps = connection.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                if(!rs.getString("TABLE_NAME").contains("#")){
+                if (!rs.getString("TABLE_NAME").contains("#")) {
                     list.add(rs.getString("TABLE_NAME"));
                 }
             }
@@ -260,23 +246,23 @@ public class Gbase8a extends DatabaseDclAbs {
 
     @Override
     public ResultT queryAllColumnInfo(String schema, String tableName) throws Exception {
-        Map<String,Map<String,Object>> columnInfos = new HashMap<String,Map<String,Object>>();
-        String sql = "select  table_schema,table_name,upper(column_name) column_name,data_type column_type,is_nullable,column_comment"+
-                " from information_schema.columns where TABLE_NAME= '"+tableName+"' and table_schema='"+schema+"'";
+        Map<String, Map<String, Object>> columnInfos = new HashMap<String, Map<String, Object>>();
+        String sql = "select  table_schema,table_name,upper(column_name) column_name,data_type column_type,is_nullable,column_comment" +
+                " from information_schema.columns where TABLE_NAME= '" + tableName + "' and table_schema='" + schema + "'";
         try {
             ps = connection.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Map columnOneInfo = new HashMap<String,Object>();
+                Map columnOneInfo = new HashMap<String, Object>();
                 columnOneInfo.put("column_name", rs.getString("column_name"));
                 columnOneInfo.put("column_type", rs.getString("column_type"));//类型和精度 decimal(4,0)  varchar(200)
                 columnOneInfo.put("column_comment", rs.getString("column_comment"));//字段含义
-                if("NO".equals(rs.getString("is_nullable"))){
+                if ("NO".equals(rs.getString("is_nullable"))) {
                     columnOneInfo.put("is_nullable", 0);
-                }else{
+                } else {
                     columnOneInfo.put("is_nullable", 1);
                 }
-                columnInfos.put(rs.getString("column_name"),columnOneInfo);
+                columnInfos.put(rs.getString("column_name"), columnOneInfo);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -287,24 +273,24 @@ public class Gbase8a extends DatabaseDclAbs {
 
     @Override
     public ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception {
-        HashMap<String,String> indexs = new HashMap<String,String>();
-        HashMap<String,String> shardings = new HashMap<String,String>();
-        Map<String,Map<String,String>> results = new HashMap<String,Map<String,String>>();
-        String sql = "select table_name,non_unique,index_schema,index_name,GROUP_CONCAT(column_name) as index_column from information_schema.STATISTICS "+
-                " WHERE TABLE_NAME='"+tableName+"' and index_schema='"+schema+"'"+
+        HashMap<String, String> indexs = new HashMap<String, String>();
+        HashMap<String, String> shardings = new HashMap<String, String>();
+        Map<String, Map<String, String>> results = new HashMap<String, Map<String, String>>();
+        String sql = "select table_name,non_unique,index_schema,index_name,GROUP_CONCAT(column_name) as index_column from information_schema.STATISTICS " +
+                " WHERE TABLE_NAME='" + tableName + "' and index_schema='" + schema + "'" +
                 " group by table_name,non_unique,index_schema,index_name;";
         try {
             ps = connection.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                if(rs.getString("index_name").startsWith("auto")){
+                if (rs.getString("index_name").startsWith("auto")) {
                     shardings.put(rs.getString("index_name"), rs.getString("index_column"));
-                }else{
+                } else {
                     indexs.put(rs.getString("index_name"), rs.getString("index_column"));
                 }
             }
-            results.put("indexs",indexs);
-            results.put("shardings",shardings);
+            results.put("indexs", indexs);
+            results.put("shardings", shardings);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

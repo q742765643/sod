@@ -110,6 +110,13 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
+    public void deleteUser(String identifier) {
+        identifier = identifier.toLowerCase();
+        String cql = "DROP USER IF EXISTS " + identifier;
+        instance.execute(cql);
+    }
+
+    @Override
     public void addEnable(String identifier, String resource, List<String> ips, int type) {
 
     }
