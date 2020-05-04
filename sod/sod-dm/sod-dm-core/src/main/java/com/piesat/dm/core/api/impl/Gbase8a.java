@@ -113,11 +113,8 @@ public class Gbase8a extends DatabaseDclAbs {
     public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         String permission = select ? "SELECT" : "SELECT,UPDATE,INSERT,DELETE";
         stmt = connection.createStatement();
-        for (int i = 0; i < ips.size(); i++) {
-            String sql = "GRANT " + permission + " ON " + resource + "." + tableName + " To '" + identifier + "'@'" + ips.get(i) + "' IDENTIFIED BY '" + password + "'";
-            System.out.println(sql);
-            stmt.execute(sql);
-        }
+        String sql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
+        stmt.execute(sql);
     }
 
     @Override
@@ -125,11 +122,8 @@ public class Gbase8a extends DatabaseDclAbs {
         String permission = ArrayUtils.toString(permissions, ",");
         try {
             stmt = connection.createStatement();
-            for (int i = 0; i < ips.size(); i++) {
-                String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM '" + identifier + "'@'" + ips.get(i) + "'";
-                System.out.println(sql);
-                stmt.execute(sql);
-            }
+            String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM '" + identifier;
+            stmt.execute(sql);
         } catch (SQLException e) {
             throw new Exception("撤销数据库授权失败！errInfo：" + e.getMessage());
         }
