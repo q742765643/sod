@@ -56,7 +56,7 @@ public class Gbase8a extends DatabaseDclAbs {
             throw new Exception("数据库用户已经存在！");
         }
         String ipStr = StringUtils.join(ips, " ");
-        for (String ip : ips) {
+//        for (String ip : ips) {
 //            String sql = "CREATE USER '" + identifier + "'@'" + ip + "' IDENTIFIED BY '" + password + "'";
             String sql =  "create user "+identifier+" identified by '"+password+"' hosts '"+ipStr+"'";
             try {
@@ -65,7 +65,7 @@ public class Gbase8a extends DatabaseDclAbs {
             } catch (SQLException e) {
                 throw new Exception("新增用户失败！errInfo：" + e.getMessage());
             }
-        }
+//        }
     }
 
     @Override
