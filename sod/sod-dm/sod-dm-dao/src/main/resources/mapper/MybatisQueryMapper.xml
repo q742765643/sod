@@ -1223,6 +1223,7 @@
         left join t_sod_database c on b.database_id = c.id
         left join t_sod_database_define c1 on c.database_define_id = c1.id
         <where>
+                b.authorize = 1
             <if test="bizUserId != null and bizUserId != ''">
                 and a.user_id = #{bizUserId}
             </if>
