@@ -297,6 +297,15 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
     @Override
+    public void bindIp(String identifier, String[] ips) throws Exception {
+//        alter user zwtest hosts'10.20.64.29 10.20.64.30';
+        String ipStr = StringUtils.join(ips, " ");
+        String sql = "ALTER USER  " + identifier +" HOSTS '" + ipStr + "'";
+        stmt = connection.createStatement();
+        stmt.execute(sql);
+    }
+
+    @Override
     public String queryRecordNum(String schema, String tableName) throws Exception {
         String num = "";
         String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;

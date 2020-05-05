@@ -1218,7 +1218,7 @@
 
 
     <select id="getDataClassByBizUserOrDatabase" parameterType="String"  resultType="java.util.LinkedHashMap">
-        select b.data_class_id from t_sod_data_authority_apply a
+        select b.DATA_CLASS_ID,c.DATABASE_DEFINE_ID from t_sod_data_authority_apply a
         left join t_sod_data_authority_record b  on a.id=b.apply_id
         left join t_sod_database c on b.database_id = c.id
         left join t_sod_database_define c1 on c.database_define_id = c1.id

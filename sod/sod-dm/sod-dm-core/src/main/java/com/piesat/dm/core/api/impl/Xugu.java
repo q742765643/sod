@@ -348,6 +348,11 @@ public class Xugu extends DatabaseDclAbs {
     }
 
     @Override
+    public void bindIp(String identifier, String[] ips) throws Exception {
+
+    }
+
+    @Override
     public String queryRecordNum(String schema, String tableName) throws Exception {
         String num = "";
         String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;

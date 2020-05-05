@@ -283,6 +283,11 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
+    public void bindIp(String identifier, String[] ips) throws Exception {
+
+    }
+
+    @Override
     public String queryRecordNum(String schema, String tableName) throws Exception {
         return null;
     }

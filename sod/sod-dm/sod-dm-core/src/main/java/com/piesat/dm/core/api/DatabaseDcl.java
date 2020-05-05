@@ -158,6 +158,8 @@ public interface DatabaseDcl {
 
     ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn);
 
+    void bindIp(String identifier,String[] ips) throws Exception;
+
     /**
      * 查询表中记录条数
      * @param schema

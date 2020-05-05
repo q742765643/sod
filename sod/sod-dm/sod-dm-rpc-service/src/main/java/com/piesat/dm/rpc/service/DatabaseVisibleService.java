@@ -161,6 +161,11 @@ public class DatabaseVisibleService {
             mm.put("META_DATA_STOR_TYPE", map.get("TYPE").equals(2) ? "资料" : "目录");
             mm.put("PARENT_CLASS_ID", map.get("PARENT_ID"));
             mm.put("CLASS_NAME", map.get("CLASS_NAME"));
+            for (LinkedHashMap<String, Object> obj : dataClassByBizUserOrDatabase) {
+                if (obj.get("DATA_CLASS_ID").equals(map.get("DATA_CLASS_ID"))){
+                    mm.put("DATABASE_ID",obj.get(""));
+                }
+            }
             mm.put("DATA_CLASS_ID", map.get("DATA_CLASS_ID"));
             ll.add(mm);
         }

@@ -311,7 +311,6 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
             }
-
         }
 
         /**删除被撤销的数据库**/
