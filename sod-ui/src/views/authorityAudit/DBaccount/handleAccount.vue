@@ -322,6 +322,8 @@ export default {
     if (this.handleObj.pageName == "业务用户审核") {
       this.userDiasbled = true;
       this.msgFormDialog.userName = this.handleObj.userName;
+      this.msgFormDialog.userId = this.handleObj.userName;
+      this.msgFormDialog.databaseUpId = this.handleObj.userName;
       this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
       this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
       this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;

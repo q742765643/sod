@@ -49,6 +49,8 @@ public interface DatabaseDcl {
      */
     void deleteUser(String identifier, String ip) throws Exception;
 
+    void deleteUser(String identifier) throws Exception;
+
     /**
      * 增加白名单用户
      *

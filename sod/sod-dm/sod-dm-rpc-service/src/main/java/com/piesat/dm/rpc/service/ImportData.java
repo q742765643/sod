@@ -214,7 +214,7 @@ public class ImportData {
         //importGridEleDecodeDefine();
         //importGridLayerLevel();
 
-        //executeBackUpMove();
+        executeBackUpMove();
 
         //importStorageConfig();
 
@@ -943,7 +943,7 @@ public class ImportData {
                         break;
                     }
                 }
-                if(StringUtils.isNotEmpty(tableName)){
+               /* if(StringUtils.isNotEmpty(tableName)){
                     for(DataTableEntity dataTableEntity: dataTableEntities){
                         if(dataTableEntity.getDbTableType().equals("E")){
                             String tableNameV = dataTableEntity.getTableName();
@@ -955,7 +955,7 @@ public class ImportData {
                 if(!StringUtils.isNotEmpty(tableName)){
                     tableName = dataTableEntities.get(0).getTableName();
                 }
-                backupEntity.setTableName(tableName);
+                backupEntity.setTableName(tableName);*/
             }
             //父表
             if(retry_count != null){
@@ -1046,7 +1046,7 @@ public class ImportData {
             if(dataTableEntities.size() == 1){
                 moveEntity.setTableName(dataTableEntities.get(0).getTableName());
             }else{
-                String tableName = "";
+               /* String tableName = "";
                 for(DataTableEntity dataTableEntity: dataTableEntities){
                     if(dataTableEntity.getDbTableType().equals("K")){
                         tableName = dataTableEntity.getTableName();
@@ -1056,7 +1056,7 @@ public class ImportData {
                 if(!StringUtils.isNotEmpty(tableName)){
                     tableName = dataTableEntities.get(0).getTableName();
                 }
-                moveEntity.setTableName(tableName);
+                moveEntity.setTableName(tableName);*/
             }
             moveEntity.setTargetDirectory("/CMADAAS/EXCHANGE/SOD/MOVE");
             moveEntity.setDatabaseType(databaseEntity1.get(0).getDatabaseDefine().getDatabaseType());
@@ -1126,7 +1126,7 @@ public class ImportData {
             if(dataTableEntities.size() == 1){
                 clearEntity.setTableName(dataTableEntities.get(0).getTableName());
             }else{
-                String tableName = "";
+                /*String tableName = "";
                 for(DataTableEntity dataTableEntity: dataTableEntities){
                     if(dataTableEntity.getDbTableType().equals("K")){
                         tableName = dataTableEntity.getTableName();
@@ -1136,7 +1136,7 @@ public class ImportData {
                 if(dataTableEntities.size()>0 && !StringUtils.isNotEmpty(tableName)){
                     tableName = dataTableEntities.get(0).getTableName();
                 }
-                clearEntity.setTableName(tableName);
+                clearEntity.setTableName(tableName);*/
             }
 
             clearEntity.setExecutorTimeout(2592000);//30天
@@ -1206,7 +1206,7 @@ public class ImportData {
             if(dataTableEntities.size() == 1){
                 clearEntity.setTableName(dataTableEntities.get(0).getTableName());
             }else{
-                String tableName = "";
+               /* String tableName = "";
                 for(DataTableEntity dataTableEntity: dataTableEntities){
                     if(dataTableEntity.getDbTableType().equals("K")){
                         tableName = dataTableEntity.getTableName();
@@ -1216,7 +1216,7 @@ public class ImportData {
                 if(!StringUtils.isNotEmpty(tableName)){
                     tableName = dataTableEntities.get(0).getTableName();
                 }
-                clearEntity.setTableName(tableName);
+                clearEntity.setTableName(tableName);*/
             }
 
             if(timeout != null){
@@ -2251,19 +2251,31 @@ public class ImportData {
         List<BackupEntity> backupEntityList = backupDao.findAll();
         List<BackUpDto> backUpDtoList = backupMapstruct.toDto(backupEntityList);
         for(BackUpDto backUpDto : backUpDtoList){
-            backupService.updateBackup(backUpDto);
+            try {
+                backupService.updateBackup(backUpDto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         List<MoveEntity> moveEntityList = moveDao.findAll();
         List<MoveDto> moveDtoList = moveMapstruct.toDto(moveEntityList);
         for(MoveDto moveDto : moveDtoList){
-            moveService.updateMove(moveDto);
+            try {
+                moveService.updateMove(moveDto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         List<ClearEntity> clearEntityList = clearDao.findAll();
         List<ClearDto> clearDtoList = clearMapstruct.toDto(clearEntityList);
         for(ClearDto clearDto : clearDtoList){
-            clearService.updateClear(clearDto);
+            try {
+                clearService.updateClear(clearDto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }

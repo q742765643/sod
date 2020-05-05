@@ -82,7 +82,7 @@ public class RecoverLogServiceImpl extends BaseService<RecoverLogEntity> impleme
         if(StringUtils.isNotNullString((String) recoverLogEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) recoverLogEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<RecoverLogEntity> recoverLogEntities= (List<RecoverLogEntity>) pageBean.getPageData();
         pageBean.setPageData(recoverLogMapstruct.toDto(recoverLogEntities));

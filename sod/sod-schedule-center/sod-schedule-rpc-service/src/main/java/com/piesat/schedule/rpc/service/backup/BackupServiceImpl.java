@@ -102,7 +102,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
             specificationBuilder.add("createTime", SpecificationOperator.Operator.les.name(), (String) backupEntity.getParamt().get("endTime"));
         }
         Specification specification = specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageBean pageBean = this.getPage(specification, pageForm, sort);
         List<BackupEntity> backupEntities = (List<BackupEntity>) pageBean.getPageData();
         pageBean.setPageData(backupMapstruct.toDto(backupEntities));
@@ -283,7 +283,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
             specificationBuilder.add("createTime", SpecificationOperator.Operator.les.name(), (String) backupEntity.getParamt().get("endTime"));
         }
         Specification specification = specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         List<BackupEntity> backupEntities = this.getAll(specification, sort);
         return backupEntities;
     }

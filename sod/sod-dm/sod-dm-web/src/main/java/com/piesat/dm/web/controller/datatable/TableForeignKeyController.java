@@ -98,9 +98,9 @@ public class TableForeignKeyController {
     @ApiOperation(value = "根据类型和逻辑库关系id查询")
     @RequiresPermissions("dm:foreignKey:findByClassLogicId")
     @GetMapping(value = "/findByClassLogicId")
-    public ResultT findByClassLogicId(String classLogicId){
+    public ResultT findByClassLogicId(String logicId){
         try {
-            List<TableForeignKeyDto> all = this.tableForeignKeyService.findByClassLogicId(classLogicId);
+            List<TableForeignKeyDto> all = this.tableForeignKeyService.findByClassLogicId(logicId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

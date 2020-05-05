@@ -1218,13 +1218,16 @@
 
 
     <select id="getDataClassByBizUserOrDatabase" parameterType="String"  resultType="java.util.LinkedHashMap">
-        select b.data_class_id from t_sod_data_authority_apply a left join t_sod_data_authority_record b  on a.id=b.apply_id
+        select b.data_class_id from t_sod_data_authority_apply a
+        left join t_sod_data_authority_record b  on a.id=b.apply_id
+        left join t_sod_database c on b.database_id = c.id
+        left join t_sod_database_define c1 on c.database_define_id = c1.id
         <where>
             <if test="bizUserId != null and bizUserId != ''">
                 and a.user_id = #{bizUserId}
             </if>
             <if test="database_id != null and database_id != ''">
-                and b.database_id = #{database_id}
+                and c1.id = #{database_id}
             </if>
         </where>
     </select>

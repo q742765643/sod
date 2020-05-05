@@ -6,8 +6,10 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.dao.ReadAuthorityDao;
 import com.piesat.dm.dao.dataapply.DataAuthorityApplyDao;
@@ -36,12 +38,14 @@ import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.ReadAuthorityMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityApplyMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityRecordMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.CmadaasApiUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.hibernate.dialect.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -87,6 +91,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private ReadAuthorityDao readAuthorityDao;
     @Autowired
     private ReadAuthorityMapper readAuthorityMapper;
+    @Autowired
+    private DatabaseInfo databaseInfo;
     @GrpcHthtClient
     private UserDao userDao;
     @Override
@@ -259,46 +265,23 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 //获取资料对应的表信息
                 //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
 
-                //获取数据库管理账户
-                DatabaseAdministratorDto databaseAdministratorDto = null;
-                Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
-                for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
-                    if(databaseAdministratorDto1.getIsManager()){
-                        databaseAdministratorDto = databaseAdministratorDto1;
-                        break;
+
+                DatabaseDcl databaseDcl = null;
+                try {
+                    databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+                }catch (Exception e){
+                    if (e.getMessage().contains("用户不存在")){
+                        buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
+                        continue;
                     }
                 }
 
+                if(dataAuthorityRecordDto.getAuthorize()==1){//授权读
+                    databaseDcl.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+                }else if(dataAuthorityRecordDto.getAuthorize()==2){//授权写
+                    databaseDcl.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+                }
 
-                if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){//xugu
-                    if(databaseAdministratorDto == null){
-                        buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
-                        return ResultT.failed(buffer.toString());
-                    }
-                    Xugu xugu = new Xugu(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-                    if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
-                        xugu.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
-                    }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//授权写
-                        xugu.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
-                    }
-
-                }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){//gbase8a
-                    if(databaseAdministratorDto == null){
-                        buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
-                        return ResultT.failed(buffer.toString());
-                    }
-                    Gbase8a gbase8a = new Gbase8a(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-                    List<String> ips = new ArrayList<String>();
-                    ips.add(ip);
-                    if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
-                        gbase8a.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),ips);
-                    }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//授权写
-                        gbase8a.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),ips);
-                    }
-
-                }/*else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
-                //Cassandra
-                }*/
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
                 buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"授权成功" + "<br/>");
             }

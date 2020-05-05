@@ -72,7 +72,7 @@ public class ClearLogServiceImpl extends BaseService<ClearLogEntity> implements 
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
 
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specification,pageForm,sort);
         List<ClearLogEntity> clearLogEntities= (List<ClearLogEntity>) pageBean.getPageData();
         pageBean.setPageData(clearLogMapstruct.toDto(clearLogEntities));
@@ -80,13 +80,14 @@ public class ClearLogServiceImpl extends BaseService<ClearLogEntity> implements 
 
     }
 
+    @Override
     public ClearLogDto selectClearLoByJobId(String jobId){
         PageForm pageForm=new PageForm(1,1);
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
         if(StringUtils.isNotNullString(jobId)){
             specificationBuilder.add("jobId", SpecificationOperator.Operator.eq.name(),jobId);
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<ClearLogEntity> clearLogEntities= (List<ClearLogEntity>) pageBean.getPageData();
         if(null!=clearLogEntities&&!clearLogEntities.isEmpty()){
@@ -135,7 +136,7 @@ public class ClearLogServiceImpl extends BaseService<ClearLogEntity> implements 
         }
         Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
 
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<ClearLogEntity> clearLogEntities=this.getAll(specification,sort);
         return clearLogEntities;
 

@@ -74,7 +74,7 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
         if(StringUtils.isNotNullString((String) metaClearEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaClearEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<MetaClearEntity> metaClearEntities= (List<MetaClearEntity>) pageBean.getPageData();
         pageBean.setPageData(metaClearMapstruct.toDto(metaClearEntities));
@@ -166,7 +166,7 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
         if(StringUtils.isNotNullString((String) metaClearEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaClearEntity.getParamt().get("endTime"));
         }
-        Sort sort=Sort.by(Sort.Direction.ASC,"createTime");
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<MetaClearEntity> metaClearEntities= this.getAll(specificationBuilder.generateSpecification(),sort);
         return metaClearEntities;
 

@@ -10,6 +10,7 @@ import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -48,7 +49,7 @@ public class Cassandra implements DatabaseDcl {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new Exception("Cassandra数据库连接失败，请检查！ERROR INFO:" + e.getMessage());
+                throw new Exception("Cassandra数据库连接失败！");
             } finally {
                 lock.unlock();
             }
@@ -86,24 +87,40 @@ public class Cassandra implements DatabaseDcl {
 
     }
 
-    @Override
-    public void addUser(String identifier, String password, String[] ips) throws Exception {
-        identifier = identifier.toLowerCase();
+    public int getUserNum(String user) throws Exception {
+        user = user.toLowerCase();
         String cql = "LIST USERS;";
         ResultSet rs = instance.execute(cql);
         Iterator<Row> it = rs.iterator();
         while (it.hasNext()) {
             Row row = it.next();
-            if (identifier.equals(row.getObject(0))) {
-                throw new Exception("数据库用户已经存在!");
+            if (user.equals(row.getObject(0).toString().toLowerCase())) {
+               return 1;
             }
         }
-        cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
+        return 0;
+    }
+
+    @Override
+    public void addUser(String identifier, String password, String[] ips) throws Exception {
+        identifier = identifier.toLowerCase();
+        int userNum = getUserNum(identifier);
+        if (userNum == 0) {
+            throw new Exception("数据库用户已经存在!");
+        }
+        String cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
         instance.execute(cql);
     }
 
     @Override
     public void deleteUser(String identifier, String ip) {
+        identifier = identifier.toLowerCase();
+        String cql = "DROP USER IF EXISTS " + identifier;
+        instance.execute(cql);
+    }
+
+    @Override
+    public void deleteUser(String identifier) throws Exception {
         identifier = identifier.toLowerCase();
         String cql = "DROP USER IF EXISTS " + identifier;
         instance.execute(cql);

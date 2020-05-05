@@ -32,13 +32,14 @@
         <el-upload
           v-model="examineMaterial"
           class="upload-demo"
-          accept=".docx, .pdf"
+          accept=".docx, .pdf,.doc"
           :limit="1"
           :action="upLoadUrl"
           multiple
           :on-success="successUpload"
           :before-upload="handleBefore"
           :data="uploadData"
+          :headers="myHeaders"
         >
           <el-button size="small" type="primary" icon="el-icon-upload">上传</el-button>
         </el-upload>
@@ -85,7 +86,12 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DM;
+import {
+  getToken,
+  createSign
+} from '@/utils/auth';
 import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
+var token =  getToken();
 export default {
   data() {
     return {
@@ -113,7 +119,8 @@ export default {
       upLoadUrl: baseUrl + "/api/dbfile/upload",
       uploadData: {},
       examineMaterial: "",
-      showFile: false
+      showFile: false,
+      myHeaders: {Authorization: token}
     };
   },
   created() {
@@ -203,7 +210,12 @@ export default {
       this.uploadData.filename = file;
     },
     successUpload(res, file) {
-      if (res.returnCode == 0) {
+      this.$message({
+        type: "success",
+        message: "导入成功"
+      });
+      this.getList();
+      /*if (res.returnCode == 0) {
         this.$message({
           type: "success",
           message: "导入成功"
@@ -214,7 +226,7 @@ export default {
           type: "error",
           message: "导入失败"
         });
-      }
+      }*/
       this.examineMaterial = res.msg;
       this.$refs.upload.clearFiles();
     },
