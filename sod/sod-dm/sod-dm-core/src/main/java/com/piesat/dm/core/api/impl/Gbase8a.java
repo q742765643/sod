@@ -309,4 +309,72 @@ public class Gbase8a extends DatabaseDclAbs {
         }
         return ResultT.success(results);
     }
+
+    @Override
+    public String queryRecordNum(String schema, String tableName) throws Exception {
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
+    }
+
+    @Override
+    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+        String minTime = "";
+        String sql = "SELECT MIN("+timeColumnName+") FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                minTime = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return minTime;
+    }
+
+    @Override
+    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+        String maxTime = "";
+        String sql = "SELECT MAX("+timeColumnName+") FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                maxTime = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return maxTime;
+    }
+
+    @Override
+    public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + "WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
+    }
 }

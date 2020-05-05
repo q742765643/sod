@@ -155,4 +155,48 @@ public interface DatabaseDcl {
     ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception;
 
     ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn);
+
+    /**
+     * 查询表中记录条数
+     * @param schema
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
+    String queryRecordNum(String schema, String tableName) throws Exception;
+
+
+    /**
+     * 获取最小时间
+     * @param schema
+     * @param tableName
+     * @param timeColumnName
+     * @return
+     * @throws Exception
+     */
+    String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception;
+
+    /**
+     * 获取最大时间
+     * @param schema
+     * @param tableName
+     * @param timeColumnName
+     * @return
+     * @throws Exception
+     */
+    String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception;
+
+
+    /**
+     *
+     * @param schema
+     * @param tableName
+     * @param timeColumnName
+     * @param beginTime
+     * @param endTime
+     * @return
+     * @throws Exception
+     */
+    String queryIncreCount(String schema, String tableName, String timeColumnName,String beginTime,String endTime) throws Exception;
+
 }

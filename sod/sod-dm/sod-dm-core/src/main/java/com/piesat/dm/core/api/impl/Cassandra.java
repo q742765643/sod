@@ -264,4 +264,24 @@ public class Cassandra implements DatabaseDcl {
     public ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn) {
         return null;
     }
+
+    @Override
+    public String queryRecordNum(String schema, String tableName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
+        return null;
+    }
 }

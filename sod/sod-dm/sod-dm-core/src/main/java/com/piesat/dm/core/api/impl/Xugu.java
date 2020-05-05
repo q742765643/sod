@@ -8,10 +8,8 @@ import javax.xml.transform.Result;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 虚谷数据库管理
@@ -21,6 +19,8 @@ import java.util.Map;
  */
 public class Xugu extends DatabaseDclAbs {
     private final String driver = "com.xugu.cloudjdbc.Driver";
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Xugu(String url, String user, String password) throws Exception {
         try {
@@ -332,6 +332,141 @@ public class Xugu extends DatabaseDclAbs {
             return ResultT.failed(e.getMessage());
         }
         return ResultT.success(results);
+    }
+
+    @Override
+    public String queryRecordNum(String schema, String tableName) throws Exception {
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
+    }
+
+    @Override
+    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+        String minTime = "";
+        // 获取所有分区号
+        String sql = "SELECT PARTI_VAL FROM DBA_PARTIS WHERE TABLE_ID=(SELECT TABLE_ID FROM DBA_TABLES A INNER JOIN DBA_SCHEMAS B ON A.SCHEMA_ID=B.SCHEMA_ID WHERE TABLE_NAME='"
+                + tableName.toUpperCase() + "' AND SCHEMA_NAME='"+schema.toUpperCase()+"') order by parti_no";
+        List<String> parti_val = new ArrayList<String>();
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                parti_val.add(rs.getString(1));
+            }
+            rs.close();
+            //表没有分区，不是分区表
+            if(parti_val.size() == 0){
+                sql = "SELECT MIN("+timeColumnName+") FROM "+schema+"."+tableName;
+                rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    minTime = rs.getString(1);
+                }
+            }else{
+                // 获取首分区键值，判断是否存在数据，否则偏移至第二个分区
+                sql = "SELECT MIN(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + "<"+parti_val.get(0)+"";
+                rs = stmt.executeQuery(sql);
+                if(rs.next()){
+                    minTime = rs.getString(1);
+                }else{
+                    for( int i=0;i<parti_val.size()-1;i++){
+                        //获取偏移分区间的最小值
+                        sql = "SELECT MIN(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + ">="+parti_val.get(i)+" AND " + timeColumnName + "<" +parti_val.get(i+1);
+                        rs = stmt.executeQuery(sql);
+                        if(!rs.next()){
+                            rs.close();
+                            continue;
+                        }
+                        minTime = rs.getString(1);
+                        if(minTime==null) {
+                            rs.close();
+                            continue;
+                        }else{
+                            break;
+                        }
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return minTime;
+    }
+
+    @Override
+    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+        String maxTime = "";
+        // 获取所有分区号
+        String sql = "SELECT PARTI_VAL FROM DBA_PARTIS WHERE TABLE_ID=(SELECT TABLE_ID FROM DBA_TABLES A INNER JOIN DBA_SCHEMAS B ON A.SCHEMA_ID=B.SCHEMA_ID WHERE UPPER(TABLE_NAME)='"
+                + tableName.toUpperCase() + "' AND SCHEMA_NAME='"+schema.toUpperCase()+"') order by parti_no DESC";
+        List<String> parti_val = new ArrayList<String>();
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                parti_val.add(rs.getString(1));
+            }
+            rs.close();
+            //表没有分区，不是分区表
+            if(parti_val.size() == 0){
+                sql = "SELECT MAX("+timeColumnName+") FROM "+schema+"."+tableName;
+                rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    maxTime = rs.getString(1);
+                }
+            }else{
+                for( int i=0;i<parti_val.size()-1;i++){
+                    //获取偏移分区间的最小值
+                    sql = "SELECT MAX(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + ">="+parti_val.get(i+1)+" AND " + timeColumnName + "<" +parti_val.get(i);
+                    rs = stmt.executeQuery(sql);
+                    if(!rs.next()){
+                        rs.close();
+                        continue;
+                    }
+                    maxTime = rs.getString(1);
+                    if(maxTime==null) {
+                        rs.close();
+                        continue;
+                    }else{
+                        break;
+                    }
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return maxTime;
+    }
+
+    @Override
+    public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + "WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
     }
 
 }
