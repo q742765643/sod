@@ -12,7 +12,7 @@
           <span>申请信息</span>
         </div>
         <el-row type="flex" class="row-bg" justify="center">
-          <el-col :span="8" v-if="this.searchObj.id == undefined">
+          <el-col :span="8" v-if="this.handleObj.id == undefined">
             <el-form-item label="申请用户" prop="userId">
               <el-select
                 size="small"
@@ -139,7 +139,7 @@
         <div slot="header" class="clearfix">
           <span>审核信息</span>
         </div>
-        <el-row type="flex" class="row-bg" justify="center" v-if="this.searchObj.id == undefined">
+        <el-row type="flex" class="row-bg" justify="center" v-if="this.handleObj.id == undefined">
           <el-col :span="8">
             <el-form-item label="审核人" prop="examiner">
               <el-input size="small" v-model="msgFormDialog.examiner" placeholder="审核人"></el-input>
@@ -443,7 +443,6 @@ export default {
       storageSpaceList: [],
       storageLogicList: [],
 
-      searchObj: {},
       contantTaskChose: [],
       msgFormDialog: {
         userId: "",
@@ -534,7 +533,6 @@ export default {
   },
   created() {
     this.getUserAll();
-    this.searchObj = this.handleObj;
     this.msgFormDialog = this.handleObj;
     //this.msgFormDialog.userId = "admin";
     this.getDicts("cloud_database_type").then(response => {
@@ -544,6 +542,7 @@ export default {
       this.cpuList = response.data;
     });
     this.initServerDetail();
+    this.msgFormDialog.examiner = this.$store.getters.name;
   },
   methods: {
     // 眼睛开关
@@ -616,10 +615,10 @@ export default {
     },
     // 获取服务器详情
     initServerDetail() {
-      if (this.searchObj.id) {
+      if (this.handleObj.id) {
         // 修改
-        this.msgFormDialog = this.searchObj;
-        this.msgFormDialog.userId = this.searchObj.application_user;
+        this.msgFormDialog = this.handleObj;
+        this.msgFormDialog.userId = this.handleObj.application_user;
         this.isDetail = true;
         if (this.msgFormDialog.examineStatus == "02") {
           this.examineStatus = true;
@@ -633,6 +632,7 @@ export default {
           this.examineStatus = false;
           console.log("没有状态");
         }
+        this.storageChange(this.msgFormDialog.storageLogic);
       }
     },
     //

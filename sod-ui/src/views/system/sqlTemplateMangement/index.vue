@@ -230,7 +230,7 @@ export default {
           //已存在不可添加
           if (response.data.length >= 1) {
             this.$message({
-              type: "warning",
+              type: "error",
               message: "此数据库已经添加，不可以重复添加"
             });
           }

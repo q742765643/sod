@@ -64,7 +64,12 @@
     />
 
     <!-- 弹窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="msgFormDialog" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="msgFormDialog"
+      v-dialogDrag
+    >
       <dataUsageEdit
         v-if="msgFormDialog"
         :handleObj="handleObj"
