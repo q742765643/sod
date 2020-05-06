@@ -89,6 +89,13 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	@Value("${mmd.password}")
 	private String password;
 
+
+	@Value("${are.userName}")
+	private String areUserName;
+
+	@Value("${are.password}")
+	private String arePassword;
+
 	@Override
 	public BaseDao<ComMetadataSyncCfgEntity> getBaseDao() {
 		return comMetadataSyncCfgDao;
@@ -324,7 +331,12 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 					}
 				}
 //				String result = HttpUtils.sendGet(url,"");
-				String result = HttpUtils.mmdGet(url,interfaceId,userName,password);
+				String result = "";
+				if (StringUtils.isEmpty(interfaceId)){
+					result= HttpUtils.arcGet(url,areUserName,arePassword);
+				}else {
+					result= HttpUtils.mmdGet(url,interfaceId,userName,password);
+				}
 				if(StringUtil.isEmpty(result)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值为空");
 
 				JSONObject obj = JSON.parseObject(result);

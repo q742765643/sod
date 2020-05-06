@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -60,6 +62,55 @@ public class HttpUtils
             builder.addParameter("timestamp", map.get("timestamp"));
             builder.addParameter("userId", map.get("userId"));
             builder.addParameter("interfaceId", map.get("interfaceId"));
+            builder.addParameter("sign", sign);
+
+            URI uri = builder.build();
+            // 创建http GET请求
+            HttpGet httpGet = new HttpGet(uri);
+
+            // 执行请求
+            response = httpclient.execute(httpGet);
+            // 判断返回状态是否为200
+            if (response.getStatusLine().getStatusCode() == 200) {
+                resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (response != null) {
+                    response.close();
+                }
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultString;
+    }
+
+
+    public static String arcGet(String url,String userName,String password){
+
+//        String password = "100200";
+        // 创建Httpclient对象
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        String resultString = "";
+        CloseableHttpResponse response = null;
+        try {
+
+            // 创建uri
+            HashMap<String, String> map = new LinkedHashMap<>();
+            map.put("nonce",  UUID.randomUUID().toString());
+            map.put("timestamp", Long.toString(new Date().getTime()));
+            map.put("userId", userName);
+            map.put("pwd", password);
+            String sign = getSign(map);
+            URIBuilder builder = new URIBuilder(url);
+            builder.addParameter("nonce", map.get("nonce"));
+            builder.addParameter("timestamp", map.get("timestamp"));
+            builder.addParameter("userId", map.get("userId"));
             builder.addParameter("sign", sign);
 
             URI uri = builder.build();
@@ -306,5 +357,63 @@ public class HttpUtils
         {
             return true;
         }
+    }
+
+    public static String getSign(HashMap<String, String> params/*,String pwd*/) {
+        String sign = "";
+//		String timestamp = params.remove("timestamp");
+//		String nonce = params.remove("nonce");
+        String paramString = "";
+        //业务请求参数拼接
+        Collection<String> keyset= params.keySet();
+        List<String> list = new ArrayList<String>(keyset);
+        Collections.sort(list);//对key键值按字典升序排序
+        String key = "";
+        for (int i = 0; i < list.size(); i++) {
+            key = list.get(i);
+            if(key!=null && !key.trim().equalsIgnoreCase("")) {
+                paramString += key.trim() + "=" + params.get(key).trim();
+                paramString += "&";
+            }
+        }
+        if (!paramString.equals("")) {
+            paramString = paramString.substring(0, paramString.length()-1);
+        }
+//        //timestamp和nonce参数拼接,以及密码拼接
+//        paramString += "timestamp=" + timestamp;
+//        paramString += "&nonce=" + nonce;
+//        paramString += "&pwd=" + pwd;
+        //进行MD5运算
+        MessageDigest md5;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            md5.reset();
+            byte[] byteArray = md5.digest(paramString.getBytes("utf-8"));
+
+            StringBuffer md5StrBuff = new StringBuffer();
+            //将加密后的byte数组转换为十六进制的字符串,否则的话生成的字符串会乱码
+            for (int i = 0; i < byteArray.length; i++) {
+                if (Integer.toHexString(0xFF & byteArray[i]).length() == 1){
+                    md5StrBuff.append("0").append(Integer.toHexString(0xFF & byteArray[i]));
+                } else {
+                    md5StrBuff.append(Integer.toHexString(0xFF & byteArray[i]));
+                }
+            }
+            sign = md5StrBuff.toString().toUpperCase();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return sign;
+    }
+
+    public static void main(String[] args) {
+        //usr_music/music#2020
+        String userName = "usr_music";
+        String pwd = "music#2020";
+        String s = arcGet("http://10.40.120.167:8080/arc/archive/productioncode/info", userName, pwd);
+        System.out.println(s);
     }
 }
