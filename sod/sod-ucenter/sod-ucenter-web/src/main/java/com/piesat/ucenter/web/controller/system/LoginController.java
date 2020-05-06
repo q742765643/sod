@@ -239,7 +239,9 @@ public class LoginController {
                 currentUser.logout();
                 resultT.setMessage("退出成功");
             }
-            response.setHeader( "Access-Control-Allow-Origin", "*" );
+            resultT.setMessage("退出成功");
+
+           /* response.setHeader( "Access-Control-Allow-Origin", "*" );
             // 允许请求的方法
             response.setHeader( "Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE,PUT" );
             // 多少秒内，不需要再发送预检验请求，可以缓存该结果
@@ -248,7 +250,7 @@ public class LoginController {
             response.setHeader( "Access-Control-Allow-Headers", "*" );
             //是否允许浏览器携带用户身份信息（cookie）
             response.setHeader( "Access-Control-Allow-Credentials", "true" );
-            response.setHeader( "Access-Control-Expose-Headers", "Content-disposition" );
+            response.setHeader( "Access-Control-Expose-Headers", "Content-disposition" );*/
         } catch (Exception e) {
             resultT.setErrorMessage("退出失败");
         }
