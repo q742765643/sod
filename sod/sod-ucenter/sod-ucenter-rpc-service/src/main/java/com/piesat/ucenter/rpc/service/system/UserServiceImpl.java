@@ -210,6 +210,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
      * @param userIds 需要删除的用户ID
      * @return 结果
      */
+    @Transactional
     @Override
     public void deleteUserByIds(List<String> userIds) {
         for (String userId : userIds) {
