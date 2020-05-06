@@ -151,6 +151,7 @@
 import { enable } from "@/api/structureManagement/tableStructureManage/index";
 import handleBaseMsg from "@/views/structureManagement/tableStructureManage/TableManage/handleBaseMsg";
 import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { tableNameVail } from "@/components/commonVaildate.js";
 export default {
   name: "TableInfoManage",
   components: {
@@ -289,6 +290,19 @@ export default {
     },
     save() {
       this.isEdit = !this.isEdit;
+      debugger;
+      /* if (!tableNameVail(this.Info.tableName)) {
+        this.$alert(
+          "表名需是英文字母和下划线组成，首位不能是下划线，下划线之后不能接下划线",
+          "提示",
+          {
+            type: "warning",
+            confirmButtonText: "确定",
+            callback: action => {}
+          }
+        );
+        return;
+      } */
       let saveObj = {};
       saveObj.classLogic = this.Info.classLogic;
       if (!saveObj.classLogic) {
