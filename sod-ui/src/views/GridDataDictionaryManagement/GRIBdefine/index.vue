@@ -334,7 +334,9 @@ export default {
       });
     },
     tableExoprt() {
-      exportJSON().then(response => {});
+      exportJSON(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
     },
     superClick() {
       this.superObj = {};
