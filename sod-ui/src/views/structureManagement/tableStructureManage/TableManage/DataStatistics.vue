@@ -67,7 +67,9 @@ export default {
         pageSize: 10
       },
       searchParams: {
-        isAllLine: 1
+        isAllLine: 1,
+        beginTime:"",
+        endTime:""
       },
       tableData: [],
       total: 0
