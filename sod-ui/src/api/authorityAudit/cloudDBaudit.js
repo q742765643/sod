@@ -63,7 +63,7 @@ export function exprotFile(query) {
 // 模板下载
 export function exportDemo() {
   return request({
-    url: baseUrl + '/dm/databaseDefine/export',
+    url: baseUrl + '/api/dbfile/downloadFile',
     method: 'get',
     params: {
       name: "clouddatabase-application"
