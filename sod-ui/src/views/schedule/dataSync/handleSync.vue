@@ -866,19 +866,29 @@ export default {
           }
           var obj = {};
           obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
-          obj.sourceColumn_ = sourceColumnName;
-          obj.index = i;
-          obj.isdelete = true;
-          this.handleObj.targetRelation.forEach((te, ti) => {
-            if (table_id == te.targetTableId) {
-              te.mapping.forEach((mItem, mIndex) => {
-                if (obj.targetColumn_ == mItem.targetColumn_) {
-                  obj.isdelete = false;
-                  obj.sourceColumn_ = mItem.sourceColumn_;
-                }
-              });
-            }
-          });
+          if (
+            this.handleObj.targetRelation &&
+            this.handleObj.targetRelation.length > 0
+          ) {
+            this.handleObj.targetRelation.forEach((te, ti) => {
+              if (table_id == te.targetTableId) {
+                te.mapping.forEach((mItem, mIndex) => {
+                  if (obj.targetColumn_ == mItem.targetColumn_) {
+                    obj.index = i;
+                    obj.isdelete = false;
+                    obj.targetColumn_ = mItem.targetColumn_;
+                    obj.sourceColumn_ = mItem.sourceColumn_;
+                  }
+                });
+              }
+            });
+          } else {
+            obj.index = i;
+            obj.isdelete = false;
+            obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
+            obj.sourceColumn_ = sourceColumnName;
+          }
+
           dataList.push(obj);
         }
 
@@ -926,19 +936,28 @@ export default {
         }
         var obj = {};
         obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
-        obj.sourceColumn_ = sourceColumnName;
-        obj.index = i;
-        obj.isdelete = true;
-        this.handleObj.targetRelation.forEach((te, ti) => {
-          if (element_obj.id == te.targetTableId) {
-            te.mapping.forEach((mItem, mIndex) => {
-              if (obj.targetColumn_ == mItem.targetColumn_) {
-                obj.isdelete = false;
-                obj.sourceColumn_ = mItem.sourceColumn_;
-              }
-            });
-          }
-        });
+        if (
+          this.handleObj.targetRelation &&
+          this.handleObj.targetRelation.length > 0
+        ) {
+          this.handleObj.targetRelation.forEach((te, ti) => {
+            if (element_obj.id == te.targetTableId) {
+              te.mapping.forEach((mItem, mIndex) => {
+                if (obj.targetColumn_ == mItem.targetColumn_) {
+                  obj.index = i;
+                  obj.isdelete = false;
+                  obj.targetColumn_ = mItem.targetColumn_;
+                  obj.sourceColumn_ = mItem.sourceColumn_;
+                }
+              });
+            }
+          });
+        } else {
+          obj.index = i;
+          obj.isdelete = false;
+          obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
+          obj.sourceColumn_ = sourceColumnName;
+        }
         dataList.push(obj);
       }
 
@@ -957,7 +976,6 @@ export default {
         sourceTableName: element_obj.table_name
       });
       this.editableTabsValue = element_obj.table_name;
-      console.log("2");
     },
 
     removeTab(targetName) {
