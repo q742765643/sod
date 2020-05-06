@@ -410,7 +410,7 @@ export default {
       obj.databaseId = this.msgFormDialog.databaseId;
       obj.sdbId = this.msgFormDialog.id;
       obj.sdbName = this.msgFormDialog.sdbName;
-      obj.simpleName = this.msgFormDialog.simpleName;
+      obj.simpleName = this.msgFormDialog.databaseSchema;
       obj.userId = this.msgFormDialog.userId;
       console.log(obj);
       empowerDatabaseSpecial(obj).then(res => {

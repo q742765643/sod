@@ -14,8 +14,7 @@ export function EngNumLine(str) {
 
 /* 英文字母和下划线组成，首位不能是下划线，下划线之后不能接下划线 */
 export function tableNameVail(str) {
-  // const reg = /^(?!_)(?!.*?_$) ([a-z0-9]*[-_]?[a-z0-9]+)+$/
-  const reg = /^(?!_)(?!.*?_$)[a-zA-Z]+$/
+  const reg = /^(?!_)(?!.*?_$)[a-zA-Z]([a-zA-Z]*[-_]?[a-zA-Z]+)+$/
   return reg.test(str)
 }
 

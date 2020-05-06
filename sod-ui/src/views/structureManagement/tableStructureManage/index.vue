@@ -167,7 +167,7 @@
     </el-dialog>
 
     <!-- SQL建表 -->
-    <el-dialog title="SQL建表" :visible.sync="handleSQLDialog" width="80%">
+    <el-dialog title="SQL建表" :visible.sync="handleSQLDialog" width="80%" v-dialogDrag>
       <handleSQL @cancelHandle="cancelHandle" v-if="handleSQLDialog" :handleSQLObj="handleSQLObj"></handleSQL>
     </el-dialog>
   </div>

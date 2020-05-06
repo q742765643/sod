@@ -309,8 +309,8 @@
               inactive-color="#909399"
             ></el-switch>
           </el-form-item>
-        </el-col> 
-        <el-col :span="12"> 
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="是否可改">
             <el-switch
               v-model="columnEditData.isUpdate"
@@ -337,7 +337,7 @@
             ></el-switch>
           </el-form-item>
         </el-col>
-        <el-col :span="12"> 
+        <el-col :span="12">
           <el-form-item label="是否管理字段">
             <el-switch
               v-model="columnEditData.isManager"
@@ -352,7 +352,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="中文描述"> 
+          <el-form-item label="中文描述">
             <el-input placeholder="中文描述" v-model="columnEditData.nameCn" size="small"></el-input>
           </el-form-item>
         </el-col>
@@ -919,7 +919,7 @@ export default {
               var firstChar = element.celementCode.substr(0, 1);
               let newCode = element.celementCode.replace(firstChar, "Q");
               switchObj.eleName = element.eleName + "质量标志";
-              switchObj.celementCode = newCode;
+              switchObj.cElementCode = newCode;
               switchObj.dbEleCode = newCode;
               publicRows.push(switchObj);
             }
@@ -1054,21 +1054,29 @@ export default {
       });
     },
     getMyExcelData(data) {
-      let flag=false;
+      let flag = false;
       // data 为读取的excel数据，在这里进行处理该数据
       console.log(data);
       data.forEach(element => {
         element.id = "";
         element.tableId = this.tableInfo.id;
-        if(!element.dbEleCode || !element.celementCode|| !element.userEleCode || !element.eleName || !element.type || !element.unitCn || !element.serialNumber){
-            flag=true;
+        if (
+          !element.dbEleCode ||
+          !element.celementCode ||
+          !element.userEleCode ||
+          !element.eleName ||
+          !element.type ||
+          !element.unitCn ||
+          !element.serialNumber
+        ) {
+          flag = true;
         }
       });
-      if(flag){
+      if (flag) {
         this.$message({
-            type: "error",
-            message: "表格内容不正确"
-          });
+          type: "error",
+          message: "表格内容不正确"
+        });
         return;
       }
 

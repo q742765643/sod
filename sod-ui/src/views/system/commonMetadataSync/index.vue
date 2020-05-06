@@ -76,14 +76,7 @@
       <el-tab-pane label="同步记录查询" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="同步表名">
-            <el-select style="width:200px" filterable v-model="rowlogForm.syncTableName">
-              <el-option
-                v-for="(item,index) in tableNames"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
+            <el-input v-model="rowlogForm.syncTableName" placeholder="请输入同步表名" />
           </el-form-item>
           <el-form-item label="运行状态">
             <el-select filterable style="width:150px" v-model="rowlogForm.runState">
@@ -143,7 +136,7 @@
           <el-table-column prop="syncTableName" label="同步表名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="syncRecordNum" label="同步记录数"></el-table-column>
           <el-table-column prop="syncType" label="同步类型">
-           <!-- <template slot-scope="scope">
+            <!-- <template slot-scope="scope">
               <span v-if="scope.row.syncType == 1">全量同步</span>
               <span v-if="scope.row.syncType == 2">增量同步</span>
             </template>-->
@@ -362,7 +355,7 @@ export default {
     },
     viewDaily(row) {
       this.activeName = "second";
-      this.rowlogForm.name = row.tableName;
+      this.rowlogForm.syncTableName = row.tableName;
       this.resetQuery();
     },
     // 删除记录
