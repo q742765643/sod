@@ -55,6 +55,8 @@ public class DataClassBaseInfoDto extends BaseDto {
 
     private String cRporgname;
 
+    private String cDocindnname;
+
     private String useBaseInfo;
 
     /**
