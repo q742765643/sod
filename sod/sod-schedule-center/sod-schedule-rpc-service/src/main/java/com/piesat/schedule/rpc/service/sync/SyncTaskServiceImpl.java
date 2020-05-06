@@ -565,6 +565,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             //目标表的编码
             SyncConfigEntity syncConfigEntity = syncConfigDao.findById(Integer.valueOf(configId));
             relation.put("targetTableId", syncConfigEntity.getTargetTableId());
+            //将mapping格式化成json
+            String mapping = syncMappingEntity.getMapping();
+            if(StringUtils.isNotNullString(mapping)){
+                ArrayList<Map<String, String>> mapArrayList = new ArrayList<>();
+                for(int i=0;i<mapping.split("\r\n").length;i++){
+                    String oneMapping = mapping.split("\r\n")[i];
+                    String targetColumn_ = oneMapping.substring(0,oneMapping.indexOf(">"));
+                    String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">")+1,oneMapping.indexOf("</"));
+                }
+            }
             relation.put("mapping", syncMappingEntity.getMapping());
             syncTaskDto.getTargetRelation().add(relation);
         }

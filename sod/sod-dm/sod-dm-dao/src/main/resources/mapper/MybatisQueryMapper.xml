@@ -657,7 +657,7 @@
         c.C_NORTHBL cNorthbl,c.C_GEODESC cGeodesc,h.C_RPORGNAME cRporgname,
         b.C_SOURCE cSource,d.C_NETNAME cNetname,a.C_NETTYPE cNettype,
         f.C_CREAT_NAME cCreatName,f.C_CHECKER cChecker,
-        g.C_RPINDNAME cRpindname,aa.use_base_info useBaseInfo from
+        g.C_RPINDNAME cRpindname,m.C_DOCINDNNAME cDocindnname,aa.use_base_info useBaseInfo from
         T_SOD_DATA_CLASS aa
         left join
         (select * from T_SOD_DATA_DATUMTYPEINFO aa where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]>
@@ -680,6 +680,9 @@
         left join
         (select * from TAB_OMIN_CM_CC_IDPOC hh where (hh.C_OPT_TYPE is null or hh.C_OPT_TYPE <![CDATA[ <> ]]>
         'delete')) h on c.C_COREMETA_ID = h.C_COREMETA_ID
+        left join
+        (select * from TAB_OMIN_CM_CC_DDDDOCAUTHINFO mm where (mm.C_OPT_TYPE is null or mm.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) m on c.C_COREMETA_ID = h.C_COREMETA_ID
         left join
         (select * from tab_omin_cm_cc_apply a where C_UPDATED_DATE = (select max(C_UPDATED_DATE) from
         tab_omin_cm_cc_apply b where a.C_DATA_ID = b.C_DATA_ID ))
