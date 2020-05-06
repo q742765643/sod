@@ -165,6 +165,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
+    @Transactional
     public ResultT<String> addGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto) {
         //判断存储编码是否重复
         DataClassDto dataClassResult = dataClassService.findByDataClassId(dataClassDto.getDataClassId());
@@ -197,6 +198,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
+    @Transactional
     public ResultT<String> updateGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto, String old_data_class_id) {
         //判断存储编码是否有改动
         if(!dataClassDto.getDataClassId().equals(old_data_class_id)){
@@ -237,6 +239,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
+    @Transactional
     public ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto) {
         dataTableDto.setTableName(dataTableDto.getTableName().toUpperCase());
         //为新增资料申请用户
@@ -352,6 +355,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         NewdataApplyEntity newdataApplyEntity = this.getById(id);
 

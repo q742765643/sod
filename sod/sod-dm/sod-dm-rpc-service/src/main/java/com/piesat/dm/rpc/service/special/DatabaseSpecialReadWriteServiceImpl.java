@@ -13,6 +13,7 @@ import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
 import jnr.ffi.annotations.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -133,6 +134,7 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     }
 
     @Override
+    @Transactional
     public Map<String, Object> deleteRecords(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         try {
