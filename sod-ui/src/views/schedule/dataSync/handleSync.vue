@@ -864,8 +864,7 @@ export default {
               break;
             }
           }
-          var obj = {};
-          obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
+
           if (
             this.handleObj.targetRelation &&
             this.handleObj.targetRelation.length > 0
@@ -873,23 +872,28 @@ export default {
             this.handleObj.targetRelation.forEach((te, ti) => {
               if (table_id == te.targetTableId) {
                 te.mapping.forEach((mItem, mIndex) => {
-                  if (obj.targetColumn_ == mItem.targetColumn_) {
+                  if (
+                    this.targetColumnDetail[i].celementCode ==
+                    mItem.targetColumn_
+                  ) {
+                    var obj = {};
                     obj.index = i;
                     obj.isdelete = false;
                     obj.targetColumn_ = mItem.targetColumn_;
                     obj.sourceColumn_ = mItem.sourceColumn_;
+                    dataList.push(obj);
                   }
                 });
               }
             });
           } else {
+            var obj = {};
             obj.index = i;
             obj.isdelete = false;
             obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
             obj.sourceColumn_ = sourceColumnName;
+            dataList.push(obj);
           }
-
-          dataList.push(obj);
         }
 
         let seleteobj = this.targetTableArray.find(item => {
@@ -934,8 +938,7 @@ export default {
             break;
           }
         }
-        var obj = {};
-        obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
+
         if (
           this.handleObj.targetRelation &&
           this.handleObj.targetRelation.length > 0
@@ -943,22 +946,28 @@ export default {
           this.handleObj.targetRelation.forEach((te, ti) => {
             if (element_obj.id == te.targetTableId) {
               te.mapping.forEach((mItem, mIndex) => {
-                if (obj.targetColumn_ == mItem.targetColumn_) {
+                if (
+                  this.targetVColumnDetail[i].celementCode ==
+                  mItem.targetColumn_
+                ) {
+                  var obj = {};
                   obj.index = i;
                   obj.isdelete = false;
                   obj.targetColumn_ = mItem.targetColumn_;
                   obj.sourceColumn_ = mItem.sourceColumn_;
+                  dataList.push(obj);
                 }
               });
             }
           });
         } else {
+          var obj = {};
           obj.index = i;
           obj.isdelete = false;
           obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
           obj.sourceColumn_ = sourceColumnName;
+          dataList.push(obj);
         }
-        dataList.push(obj);
       }
 
       this.editableTabs.push({
