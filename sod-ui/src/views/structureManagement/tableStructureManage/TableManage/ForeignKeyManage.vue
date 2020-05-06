@@ -113,7 +113,7 @@ export default {
       });
     },
     add() {
-      console.log(this.formData);
+      this.formData.classLogicId = this.rowData.LOGIC_ID;
       foreignKeySave(this.formData).then(response => {
         if (response.code == 200) {
           this.$message({
