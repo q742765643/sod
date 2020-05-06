@@ -94,7 +94,8 @@ import {
   defineSave,
   defineEdit,
   defineDelete,
-  detailById
+  detailById,
+  exportTable
 } from "@/api/GridDataDictionaryManagement/areaType";
 export default {
   components: {
@@ -273,7 +274,11 @@ export default {
         }
       });
     },
-    tableExoprt() {}
+    tableExoprt() {
+      exportTable(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    }
   }
 };
 </script>

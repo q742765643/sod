@@ -53,4 +53,8 @@ public interface DefineService {
 
 
     List<DefineDto> all();
+
+    void exportExcel(DefineDto defineDto);
+
+    List<DefineDto> findByParam(DefineDto defineDto);
 }
