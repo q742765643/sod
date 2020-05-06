@@ -53,6 +53,9 @@ import {
   updateIsAllLine,
   getArchive
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  parseTime
+} from "@/utils/ruoyi";
 export default {
   name: "DataStatistics",
   props: { rowData: Object, tableInfo: Object },
@@ -67,7 +70,9 @@ export default {
         pageSize: 10
       },
       searchParams: {
-        isAllLine: 1
+        isAllLine: 1,
+        beginTime:"",
+        endTime:""
       },
       tableData: [],
       total: 0
@@ -80,8 +85,8 @@ export default {
     handleQuery(value) {
       if (value == 2) {
         getArchive({ ddataid: this.rowData.D_DATA_ID }).then(res => {
-          this.searchParams.endTime = res.data.endTime;
-          this.searchParams.beginTime = res.data.beginTime;
+          this.searchParams.endTime = parseTime(res.data.endTime);
+          this.searchParams.beginTime = parseTime(res.data.beginTime);
         });
         return;
       }

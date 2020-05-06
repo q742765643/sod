@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * 专题库权限
@@ -45,4 +46,5 @@ public class DatabaseSpecialAuthorityDto extends BaseDto {
      */
     private Integer tableDataAccess;
 
+    private List<String> checkList;
 }

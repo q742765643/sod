@@ -1239,7 +1239,7 @@
         select data_class_id from t_sod_data_logic where database_id=#{databaseId})
         connect by t.data_class_id= prior t.parent_id
     </select>
-    <select id="getArchive" parameterType="String" resultType="DataClassEntity">
+    <select id="getArchive" parameterType="String" resultType="java.util.Map">
         SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM TAB_OMIN_CM_CC_DATUMTYPEHYP A
 		START WITH A.C_DATUM_CODE = #{ddataid}
 		CONNECT BY PRIOR A.C_SOURSDATUM_CODE = A.C_DATUM_CODE) B,DMIN_ARCHIVE_INFO C

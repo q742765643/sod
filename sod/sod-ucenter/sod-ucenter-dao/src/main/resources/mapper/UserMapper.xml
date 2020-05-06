@@ -67,7 +67,8 @@
     </sql>
   <select id="selectUserList" parameterType="com.piesat.ucenter.entity.system.UserEntity" resultMap="BaseResultMap">
     <include refid="selectUserVo"/>
-    where u.del_flag = '0' and u.user_type &lt;&gt; '11'
+    where u.del_flag = '0'
+    and (u.user_type is null or u.user_type != '11')
     <if test="userName != null and userName != ''">
       AND upper(u.user_name) like concat('%', upper(#{userName}), '%')
     </if>

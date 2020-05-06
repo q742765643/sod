@@ -521,10 +521,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                     beginTime = begin;
                 }
             }
-            if (databegintime instanceof Date) {
+            if (dataendtime instanceof Date) {
                 Date end = (Date) dataendtime;
                 if (endTime == null || endTime.before(end)) {
-                    beginTime = end;
+                    endTime = end;
                 }
             }
         }

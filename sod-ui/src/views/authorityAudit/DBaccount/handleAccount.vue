@@ -349,6 +349,7 @@ export default {
     },
     // 预览
     previewDocx() {
+      debugger;
       window.open(baseUrl + this.msgFormDialog.pdfPath);
     },
     // 申请绑定IP
