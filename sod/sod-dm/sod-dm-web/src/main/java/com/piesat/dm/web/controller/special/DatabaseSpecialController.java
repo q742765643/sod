@@ -232,6 +232,11 @@ public class DatabaseSpecialController {
     @PostMapping(value = "/empowerDatabaseSpecial")
     public ResultT empowerDatabaseSpecial(@RequestBody SpecialParamVO specialParamVO) {
         try {
+            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());
+            databaseSpecialDto.setExamineStatus("2");
+            databaseSpecialDto.setExamineTime(new Date());
+            databaseSpecialService.saveDto(databaseSpecialDto);
+
             DatabaseDto databaseDto = new DatabaseDto();
             databaseDto.setUserId(specialParamVO.getUserId());
             DatabaseDefineDto databaseDefineDto = new DatabaseDefineDto();
