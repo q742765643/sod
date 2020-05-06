@@ -1,8 +1,11 @@
 package com.piesat.schedule.rpc.service.sync;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.JsonArray;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -567,15 +570,19 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             relation.put("targetTableId", syncConfigEntity.getTargetTableId());
             //将mapping格式化成json
             String mapping = syncMappingEntity.getMapping();
+            JSONArray jsonArray = new JSONArray();
             if(StringUtils.isNotNullString(mapping)){
-                ArrayList<Map<String, String>> mapArrayList = new ArrayList<>();
                 for(int i=0;i<mapping.split("\r\n").length;i++){
+                    JSONObject jsonObject = new JSONObject();
                     String oneMapping = mapping.split("\r\n")[i];
-                    String targetColumn_ = oneMapping.substring(0,oneMapping.indexOf(">"));
-                    String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">")+1,oneMapping.indexOf("</"));
+                    String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">") + 1, oneMapping.indexOf("</"));
+                    String targetColumn_ = oneMapping.substring(oneMapping.indexOf("<") + 1, oneMapping.indexOf(">"));
+                    jsonObject.put("targetColumn_",targetColumn_);
+                    jsonObject.put("sourceColumn_",sourceColumn_);
+                    jsonArray.add(jsonObject);
                 }
             }
-            relation.put("mapping", syncMappingEntity.getMapping());
+            relation.put("mapping", jsonArray);
             syncTaskDto.getTargetRelation().add(relation);
         }
 
@@ -587,13 +594,28 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
             //获取config的id
             String configId = syncMappingEntity.getTargetTableId();
-            relation.put("mapping",syncMappingEntity.getMapping());
+            //将mapping格式化成json
+            String mapping = syncMappingEntity.getMapping();
+            JSONArray jsonArray = new JSONArray();
+            if(StringUtils.isNotNullString(mapping)){
+                for(int i=0;i<mapping.split("\r\n").length;i++){
+                    JSONObject jsonObject = new JSONObject();
+                    String oneMapping = mapping.split("\r\n")[i];
+                    String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">") + 1, oneMapping.indexOf("</"));
+                    String targetColumn_ = oneMapping.substring(oneMapping.indexOf("<") + 1, oneMapping.indexOf(">"));
+                    jsonObject.put("targetColumn_",targetColumn_);
+                    jsonObject.put("sourceColumn_",sourceColumn_);
+                    jsonArray.add(jsonObject);
+                }
+            }
+            relation.put("mapping",jsonArray);
             syncTaskDto.setSlaveRelation(relation);
         }
         String syncTaskJson = JSONObject.toJSONString(syncTaskDto);
         JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
         return jsonObject;
     }
+
 
     @Override
     public void exportExcel(SyncTaskDto syncTaskDto) {

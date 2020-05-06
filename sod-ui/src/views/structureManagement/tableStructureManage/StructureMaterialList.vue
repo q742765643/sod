@@ -22,7 +22,7 @@
     <el-table :data="tableData">
       <el-table-column label="资料名称" prop="className" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="存储编码" prop="dataClassId" width="200"></el-table-column>
-      <el-table-column label="四级编码" prop="DDataId" width="200"></el-table-column>
+      <el-table-column label="四级编码" prop="ddataId" width="200"></el-table-column>
       <el-table-column label="是否发布" prop="ifStopUse" width="80">
         <template slot-scope="scope">{{scope.row.ifStopUse==true?'是':'否'}}</template>
       </el-table-column>
