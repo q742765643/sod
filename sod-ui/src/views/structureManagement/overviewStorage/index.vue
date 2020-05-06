@@ -268,14 +268,13 @@
 </template>
 
 <script>
-const uuid = require("uuid/v4");
-import { createSign } from "@/utils/auth";
 import {
   storageConfigurationList,
   updateColumnValue,
   deleteColumnValue,
   exportTable
 } from "@/api/structureManagement/overviewStorage";
+import { getSyncInfo } from "@/api/schedule/dataSync";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 // 数据恢复
@@ -397,8 +396,16 @@ export default {
     handlSyncMethods(row) {
       this.handleMsgObj = {};
       if (row.SYNC_ID) {
-        this.handleMsgObj.id = row.SYNC_ID;
-        this.dialogMsgTitle = "编辑";
+        getSyncInfo(row.SYNC_ID).then(response => {
+          this.dialogMsgTitle = "编辑";
+          this.handleMsgObj = response.data;
+          // / 同步任务执行节点回显
+          this.handleMsgObj.ipAndPort =
+            this.handleMsgObj.execIp + ":" + this.handleMsgObj.execPort;
+          // 目标表回显
+          this.handleMsgObj.targetTable = this.handleMsgObj.targetRelation[0].targetTableId;
+          this.handleMsgObj.handleType = "edit";
+        });
       } else {
         this.handleMsgObj.databaseId = row.DATABASE_ID;
         this.handleMsgObj.dataClassId = row.DATA_CLASS_ID;

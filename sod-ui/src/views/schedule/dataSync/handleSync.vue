@@ -600,6 +600,7 @@ export default {
       }
     }
   },
+
   methods: {
     async initDetail() {
       this.msgFormDialog = this.handleObj;
@@ -634,26 +635,6 @@ export default {
         this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
-      console.log(this.editableTabs);
-
-      let newTabArry = [];
-      // tab回显;
-      this.editableTabs.forEach((element, index) => {
-        this.handleObj.targetRelation.forEach((te, ti) => {
-          if (element.tableId == te.targetTableId) {
-            te.mapping.forEach((mItem, mIndex) => {
-              let obj = {
-                index: mIndex,
-                isdelete: false,
-                sourceColumn_: mItem.sourceColumn_,
-                targetColumn_: mItem.targetColumn_
-              };
-              newTabArry.push(obj);
-            });
-          }
-        });
-      });
-      this.editableTabs = newTabArry;
     },
     //源数据库事件,根据数据库ID获取源表
     async sourceDBChange(selectSourceDB) {
@@ -796,6 +777,7 @@ export default {
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
+      this.editableTabs = [];
       if (!selectTargetTableID) {
         return;
       }
@@ -824,11 +806,14 @@ export default {
       // 目标表名
       this.msgFormDialog["target_table_name" + tname] =
         targetTableInfo.table_name;
-      if (targetTableInfo.db_table_type == "K" && !this.handleObj.id) {
-        this.$message({
-          showClose: true,
-          message: "您选择了键值表类型的键表，系统自动匹配值表"
-        });
+      if (targetTableInfo.db_table_type == "K") {
+        if (!this.handleObj.id) {
+          this.$message({
+            showClose: true,
+            message: "您选择了键值表类型的键表，系统自动匹配值表"
+          });
+        }
+
         var element_obj = "";
         this.targetTableArray.forEach(element => {
           if (
@@ -845,7 +830,7 @@ export default {
           this.targetVColumnDetail = res.data;
         });
         //源表值表和目标表的值表映射
-        this.ETableMapping(element_obj);
+        await this.ETableMapping(element_obj);
       }
       // 目标表字段
       await syncColumnByTableId({ tableId: selectTargetTableID }).then(res => {
@@ -883,7 +868,17 @@ export default {
           obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
           obj.sourceColumn_ = sourceColumnName;
           obj.index = i;
-          obj.isdelete = false;
+          obj.isdelete = true;
+          this.handleObj.targetRelation.forEach((te, ti) => {
+            if (table_id == te.targetTableId) {
+              te.mapping.forEach((mItem, mIndex) => {
+                if (obj.targetColumn_ == mItem.targetColumn_) {
+                  obj.isdelete = false;
+                  obj.sourceColumn_ = mItem.sourceColumn_;
+                }
+              });
+            }
+          });
           dataList.push(obj);
         }
 
@@ -904,6 +899,7 @@ export default {
           data_class_ids: data_class_id
         });
         this.editableTabsValue = table_name;
+        console.log("1");
       } //if end
     },
 
@@ -932,7 +928,17 @@ export default {
         obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
         obj.sourceColumn_ = sourceColumnName;
         obj.index = i;
-        obj.isdelete = false;
+        obj.isdelete = true;
+        this.handleObj.targetRelation.forEach((te, ti) => {
+          if (element_obj.id == te.targetTableId) {
+            te.mapping.forEach((mItem, mIndex) => {
+              if (obj.targetColumn_ == mItem.targetColumn_) {
+                obj.isdelete = false;
+                obj.sourceColumn_ = mItem.sourceColumn_;
+              }
+            });
+          }
+        });
         dataList.push(obj);
       }
 
@@ -951,6 +957,7 @@ export default {
         sourceTableName: element_obj.table_name
       });
       this.editableTabsValue = element_obj.table_name;
+      console.log("2");
     },
 
     removeTab(targetName) {
