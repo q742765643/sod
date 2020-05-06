@@ -31,15 +31,15 @@ public class IndexController {
 
 	@Autowired
 	private IndexService indexService;
-	
+
 	/**
 	 *  获取已办待办
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月19日下午4:44:36
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findUndoCount")
+//	@RequiresPermissions("restApi:index:findUndoCount")
 	@ApiOperation(value="获取已办待办",notes="获取已办待办")
 	@GetMapping(value="/findUndoCount")
 	public ResultT findUndoCount() {
@@ -61,9 +61,9 @@ public class IndexController {
 			//云数据库
 			Map<String,Object> ysjk = indexService.findCloudDBCount();
 			data.put("ysjk", ysjk);
-			
+
 			return ResultT.success(data);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResultT.failed(e.getMessage());
@@ -71,12 +71,12 @@ public class IndexController {
 	}
 	/**
 	 *  获取资料种数统计
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月19日下午5:11:12
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findDataMonthCount")
+//	@RequiresPermissions("restApi:index:findDataMonthCount")
 	@ApiOperation(value="获取最近12个月的资料数量统计",notes="获取最近12个月的资料数量统计")
 	@GetMapping(value="/findDataMonthCount")
 	public ResultT findDataMonthCount() {
@@ -91,12 +91,12 @@ public class IndexController {
 	}
 	/**
 	 *  获取文件列表
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月19日下午5:58:06
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findFileList")
+//	@RequiresPermissions("restApi:index:findFileList")
 	@ApiOperation(value="获取文件列表",notes="获取文件列表")
 	@GetMapping(value="/findFileList")
 	public ResultT findFileList() {
@@ -111,12 +111,12 @@ public class IndexController {
 	}
 	/**
 	 *  按资料分类统计资料数量
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月20日上午9:23:20
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findDataCount")
+//	@RequiresPermissions("restApi:index:findDataCount")
 	@ApiOperation(value="获取资料分类统计数量",notes="获取资料分类统计数量")
 	@GetMapping(value="/findDataCount")
 	public ResultT findDataCount() {
@@ -131,12 +131,12 @@ public class IndexController {
 	}
 	/**
 	 *  获取逻辑库资料数
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月20日上午10:36:02
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findLogicCountData")
+//	@RequiresPermissions("restApi:index:findLogicCountData")
 	@ApiOperation(value="统计逻辑库资料数",notes="统计逻辑库资料数")
 	@GetMapping(value="/findLogicCountData")
 	public ResultT findLogicCountData() {
@@ -151,12 +151,12 @@ public class IndexController {
 	}
 	/**
 	 *  获取所有已审主题
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月20日上午10:55:37
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findSpecialDbList")
+//	@RequiresPermissions("restApi:index:findSpecialDbList")
 	@ApiOperation(value="获取所有已审核专题库信息",notes="获取所有已审核的专题库信息")
 	@GetMapping(value="/findSpecialDbList")
 	public ResultT findSpecialDbList() {
@@ -171,12 +171,12 @@ public class IndexController {
 	}
 	/**
 	 *  获取逻辑库信息
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年2月20日上午11:19:17
 	 * @return
 	 */
-	@RequiresPermissions("restApi:index:findLogicInfo")
+//	@RequiresPermissions("restApi:index:findLogicInfo")
 	@ApiOperation(value="获取数据库用途信息",notes="获取数据库用途信息信息")
 	@GetMapping(value="/findLogicInfo")
 	public ResultT findLogicInfo() {
@@ -189,5 +189,5 @@ public class IndexController {
 			return ResultT.failed(e.getMessage());
 		}
 	}
-	
+
 }

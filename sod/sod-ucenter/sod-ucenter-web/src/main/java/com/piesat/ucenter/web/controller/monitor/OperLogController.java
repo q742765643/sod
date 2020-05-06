@@ -30,7 +30,7 @@ public class OperLogController {
     @Autowired
     private OperLogService operLogService;
 
-    @RequiresPermissions("monitor:operlog:list")
+//    @RequiresPermissions("monitor:operlog:list")
     @GetMapping("/list")
     public ResultT<PageBean> list(OperLogDto operLog, @HtParam(value="pageNum",defaultValue="1") int pageNum,
                                   @HtParam(value="pageSize",defaultValue="10") int pageSize)
