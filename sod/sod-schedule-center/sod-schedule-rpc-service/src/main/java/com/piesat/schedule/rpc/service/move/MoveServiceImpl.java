@@ -136,7 +136,8 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         moveEntity=this.saveNotNull(moveEntity);
         diSendService.sendMove(moveEntity);
         jobInfoService.start(moveMapstruct.toDto(moveEntity));
-        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), moveEntity.getTableName());
+        String tableName = moveEntity.getTableName();
+        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), tableName.contains(".")?tableName.substring(tableName.indexOf(".")+1):tableName);
         for (DataLogicDto dl : dataLogic) {
             StorageConfigurationDto scd = new StorageConfigurationDto();
             scd.setClassLogicId(dl.getId());
