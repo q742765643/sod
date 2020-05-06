@@ -231,7 +231,7 @@ public class LoginController {
         }
     }
     @PostMapping("/logout")
-    public ResultT<String> logout(){
+    public ResultT<String> logout(HttpServletResponse response){
         ResultT<String> resultT=new ResultT<>();
         try {
             Subject currentUser = SecurityUtils.getSubject();//获取当前用户信息
@@ -239,6 +239,16 @@ public class LoginController {
                 currentUser.logout();
                 resultT.setMessage("退出成功");
             }
+            response.setHeader( "Access-Control-Allow-Origin", "*" );
+            // 允许请求的方法
+            response.setHeader( "Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE,PUT" );
+            // 多少秒内，不需要再发送预检验请求，可以缓存该结果
+            response.setHeader( "Access-Control-Max-Age", "3600" );
+            // 表明它允许跨域请求包含xxx头
+            response.setHeader( "Access-Control-Allow-Headers", "*" );
+            //是否允许浏览器携带用户身份信息（cookie）
+            response.setHeader( "Access-Control-Allow-Credentials", "true" );
+            response.setHeader( "Access-Control-Expose-Headers", "Content-disposition" );
         } catch (Exception e) {
             resultT.setErrorMessage("退出失败");
         }
