@@ -76,7 +76,7 @@ spring:
     host: 10.40.79.18
     port: 6379
     timeout: 50000
-    password:
+#    password:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
@@ -107,9 +107,11 @@ log:
   level: INFO
 
 mmd:
-  userName: ENC(FikEX5/jz4GcDwDjettYjA==)
-  password: ENC(rkSMaEDip/2cRjGaz4CMWg==)
-
+  userName: ENC(YxpGRv4xpm1043WVImWDSw==)
+  password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
+are:
+  userName: ENC(02JaRsFt2QJ5l2Eg2a956Aa95LWT32ym)
+  password: ENC(NkH754xhhRjQcR8/xKwrmvaEydl3gi/g)
 
 serverfile:
   dbfile: /home/sod/file/upload/dbfile
