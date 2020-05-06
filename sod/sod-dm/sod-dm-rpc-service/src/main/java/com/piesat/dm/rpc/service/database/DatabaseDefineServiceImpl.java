@@ -57,6 +57,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     }
 
     @Override
+    @Transactional
     public DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto) {
         DatabaseDto databaseDto = databaseDefineDto.getDatabaseDto();
         if (StringUtils.isEmpty(databaseDto.getId())){

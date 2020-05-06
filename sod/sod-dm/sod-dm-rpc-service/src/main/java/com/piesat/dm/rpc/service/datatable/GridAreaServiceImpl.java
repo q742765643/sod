@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +53,7 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     }
 
     @Override
+    @Transactional
     public void deleteGridAreaByIds(String ids) {
         String[] split = ids.split(",");
         this.deleteByIds(Arrays.asList(split));

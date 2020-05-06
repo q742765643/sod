@@ -19,6 +19,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -52,6 +53,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    @Transactional
     public DataLogicDto saveDto(DataLogicDto dataLogicDto) {
         boolean isAdd = false;
         if (StringUtils.isEmpty(dataLogicDto.getId())) {
@@ -75,6 +77,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    @Transactional
     public List<DataLogicDto> saveList(List<DataLogicDto> dataLogicList) {
         List<DataLogicEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
         for (DataLogicEntity d : dataLogicEntities) {
@@ -153,6 +156,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         DataLogicDto dotById = this.getDotById(id);
         dataTableService.deleteByClassLogicId(dotById.getId());
