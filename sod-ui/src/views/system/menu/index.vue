@@ -251,9 +251,25 @@ export default {
       treeselect().then(response => {
         this.menuOptions = [];
         const menu = { id: 0, label: "主类目", children: [] };
-        menu.children = response.data;
+        if (this.title == "修改菜单") {
+          menu.children = response.data;
+          this.resetData(menu.children, this.form.menuName);
+          console.log(menu.children);
+        } else {
+          menu.children = response.data;
+        }
+
         this.menuOptions.push(menu);
       });
+    },
+    resetData(dataArr, name) {
+      for (var i in dataArr) {
+        if (dataArr[i].label == name) {
+          dataArr[i].isDisabled = true;
+        } else {
+          this.resetData(dataArr[i].children, name);
+        }
+      }
     },
     // 菜单显示状态字典翻译
     visibleFormat(row, column) {

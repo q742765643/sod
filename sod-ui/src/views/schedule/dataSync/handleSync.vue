@@ -636,7 +636,8 @@ export default {
       }
       console.log(this.editableTabs);
 
-      /* let newTabArry = []; tab回显
+      let newTabArry = [];
+      // tab回显;
       this.editableTabs.forEach((element, index) => {
         this.handleObj.targetRelation.forEach((te, ti) => {
           if (element.tableId == te.targetTableId) {
@@ -647,12 +648,12 @@ export default {
                 sourceColumn_: mItem.sourceColumn_,
                 targetColumn_: mItem.targetColumn_
               };
-              newTabArry.push(obj)
+              newTabArry.push(obj);
             });
           }
         });
       });
-      this.editableTabs = newTabArry; */
+      this.editableTabs = newTabArry;
     },
     //源数据库事件,根据数据库ID获取源表
     async sourceDBChange(selectSourceDB) {
@@ -983,12 +984,6 @@ export default {
         this.$emit("resetQuery");
       } else {
         //组装映射
-        debugger;
-        //console.log(editableTabs);
-        /* let targetTableIds = "",
-          tableNames = "",
-          data_class_ids = "",
-          tableNameCNs = "", */
         let targetRelation = [],
           slaveRelation = {};
         for (var i = 0; i < this.editableTabs.length; i++) {
@@ -996,54 +991,30 @@ export default {
           var list = obj.list;
           var tableId = obj.tableId;
           if (obj.KandE == "K") {
-            let mapping = "";
+            let mapping = [];
             for (var j = 0; j < list.length; j++) {
               if (!list[j].isdelete) {
-                mapping =
-                  mapping +
-                  "<" +
-                  list[j]["targetColumn_"] +
-                  ">" +
-                  list[j]["sourceColumn_"] +
-                  "</" +
-                  list[j]["targetColumn_"] +
-                  ">";
-                mapping = mapping + "\r\n";
+                let obj = {};
+                obj.targetColumn_ = list[j]["targetColumn_"];
+                obj.sourceColumn_ = list[j]["sourceColumn_"];
+                mapping.push(obj);
               }
             }
             slaveRelation.mapping = mapping;
           } else {
-            /*  targetTableIds = targetTableIds + "," + tableId;
-            tableNames = tableNames + "," + obj.name;
-            data_class_ids = data_class_ids + "," + obj.data_class_ids;
-            tableNameCNs = tableNameCNs + "," + obj.namecn; */
-
-            let mapping = "";
+            let mapping = [];
             for (var j = 0; j < list.length; j++) {
               if (!list[j].isdelete) {
-                mapping =
-                  mapping +
-                  "<" +
-                  list[j]["targetColumn_"] +
-                  ">" +
-                  list[j]["sourceColumn_"] +
-                  "</" +
-                  list[j]["targetColumn_"] +
-                  ">";
-                mapping = mapping + "\r\n";
+                let obj = {};
+                obj.targetColumn_ = list[j]["targetColumn_"];
+                obj.sourceColumn_ = list[j]["sourceColumn_"];
+                mapping.push(obj);
               }
             }
             targetRelation.push({ targetTableId: tableId, mapping: mapping });
           }
         }
-        /*   if (targetTableIds.length > 0) {
-          this.msgFormDialog.targetTableIds = targetTableIds.substr(1);
-          this.msgFormDialog.tableNames = tableNames.substr(1);
-          this.msgFormDialog.data_class_ids = data_class_ids.substr(1);
-          this.msgFormDialog.tableNameCNs = tableNameCNs.substr(1);
-          this.msgFormDialog.targetRelation = targetRelation;
-          this.msgFormDialog.slaveRelation = slaveRelation;
-        } */
+
         this.msgFormDialog.targetRelation = targetRelation;
         this.msgFormDialog.slaveRelation = slaveRelation;
 

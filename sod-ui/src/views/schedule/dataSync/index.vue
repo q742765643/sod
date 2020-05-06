@@ -284,6 +284,11 @@ export default {
       }
       console.log(this.queryParams);
       this.loading = true;
+      this.queryParams.params = {
+        orderBy: {
+          updateTime: "desc"
+        }
+      };
       syncList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
