@@ -360,6 +360,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         if (dataClassDto.getIfStopUse() != null) {
             ssb.add("ifStopUse", SpecificationOperator.Operator.eq.name(), dataClassDto.getIfStopUse());
         }
+        if (dataClassDto.getType() != null) {
+            ssb.add("type", SpecificationOperator.Operator.eq.name(), dataClassDto.getType());
+        }
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
         return page;

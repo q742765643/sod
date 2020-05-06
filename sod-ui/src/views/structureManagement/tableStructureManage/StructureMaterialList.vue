@@ -52,7 +52,8 @@ export default {
         className: "",
         ifStopUse: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
+        type:2
       },
       total: 0,
       tableData: []
