@@ -133,10 +133,7 @@
                   class="name"
                   :title="item.FILE_NAME"
                 >{{item.FILE_TYPE == 'dev'?'[开发文档] ':'[运维文档] '}}{{item.FILE_NAME}}</span>
-                <el-link
-                  type="primary"
-                  @click="downloadWord(item.FILE_STOR_PATH+'/'+item.FILE_STOR_NAME)"
-                >[下载]</el-link>
+                <el-link type="primary" @click="downloadWord(item.FILE_STOR_PATH)">[下载]</el-link>
               </div>
             </div>
           </div>
@@ -708,11 +705,18 @@ export default {
     // 帮助文档
     getHelpDocument() {
       findFileList().then(res => {
-        this.documentList = res.data;
+        res.data.forEach((element, index) => {
+          if (index == 8) {
+            return;
+          }
+          this.documentList.push(element);
+        });
       });
     },
     // 下载
-    downloadWord(name) {},
+    downloadWord(path) {
+      this.download(path);
+    },
 
     //获取接口详细信息
     getInterfaceInfo(name) {

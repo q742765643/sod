@@ -192,5 +192,8 @@ export default {
   .btnColBox {
     padding-top: 4px;
   }
+  .el-textarea__inner {
+    min-height: 300px !important;
+  }
 }
 </style>

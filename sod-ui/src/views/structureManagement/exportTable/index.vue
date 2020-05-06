@@ -248,8 +248,15 @@ export default {
     },
     handleQuery() {
       dataTree(this.queryParams).then(response => {
+        this.resetData(response.data);
         this.fromTreeData = response.data;
       });
+    },
+    resetData(dataArr) {
+      for (var i in dataArr) {
+        dataArr[i].pid = dataArr[i].parentId;
+        this.resetData(dataArr[i].children);
+      }
     },
     // 监听穿梭框组件添加
     addTreeInfo(fromData, toData, obj) {

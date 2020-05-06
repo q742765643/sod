@@ -291,7 +291,7 @@ export default {
     save() {
       this.isEdit = !this.isEdit;
       debugger;
-      /* if (!tableNameVail(this.Info.tableName)) {
+      if (!tableNameVail(this.Info.tableName)) {
         this.$alert(
           "表名需是英文字母和下划线组成，首位不能是下划线，下划线之后不能接下划线",
           "提示",
@@ -302,7 +302,7 @@ export default {
           }
         );
         return;
-      } */
+      }
       let saveObj = {};
       saveObj.classLogic = this.Info.classLogic;
       if (!saveObj.classLogic) {
