@@ -3,7 +3,7 @@
     <el-form ref="formClass" :model="tableFormObject" label-width="140px">
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="crpindname" label="负责人名:">
+          <el-form-item prop="crpindname" label="数据所有者:">
             <el-input v-model="tableFormObject.crpindname" size="small"></el-input>
           </el-form-item>
         </el-col>
@@ -51,7 +51,7 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="cnettype" label="站网:">
+          <el-form-item prop="cnettype" label="站网代码:">
             <el-input v-model="tableFormObject.cnettype" size="small"></el-input>
           </el-form-item>
         </el-col>
@@ -70,6 +70,42 @@
         <el-col :span="12">
           <el-form-item prop="cchecker" label="审核人名称:">
             <el-input v-model="tableFormObject.cchecker" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item prop="crpindname" label="数据维护人:">
+            <el-input v-model="tableFormObject.crpindname" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item prop="cdocindnname" label="数据集制作人:">
+            <el-input v-model="tableFormObject.cdocindnname" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item prop="cobsfreq" label="观测频率:">
+            <el-input v-model="tableFormObject.cobsfreq" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item prop="cgeodesc" label="描述:">
+            <el-input v-model="tableFormObject.cgeodesc" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item prop="crporgname" label="责任单位:">
+            <el-input v-model="tableFormObject.crporgname" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item prop="ccreatName" label="元数据编制人:">
+            <el-input v-model="tableFormObject.ccreatName" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>

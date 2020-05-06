@@ -190,36 +190,6 @@ export default {
           ]
         } */
       ],
-      /*  fromTreeData: [
-        {
-          children: [
-            {
-              children: [
-                {
-                  name: "CIPAS全球地面日值资料",
-                  disabled: false,
-                  id: "A.0049.0001.M001",
-                  type: "1",
-                  // pid: "A.0049.0001",
-                  parentId: "A.0049.0001"
-                }
-              ],
-              name: "CIPAS全球地面日值资料",
-              disabled: false,
-              id: "A.0049.0001",
-              type: "1",
-              // pid: "A.0049",
-              parentId: "A.0049"
-            }
-          ],
-          name: "CIPAS地面数据产品",
-          disabled: false,
-          id: "A.0049",
-          type: "1",
-          // pid: "A",
-          parentId: "A"
-        }
-      ], */
       toTreeData: [],
       modeTree: "transfer",
       treeTitle: ["数据库资料信息", "选择后的资料"],
@@ -269,30 +239,11 @@ export default {
   },
   created() {
     this.getDatabaseList(); //获取数据库列表
-    // this.resetData(this.fromTreeData)
-    // this.fromTreeData = this.resetData(this.fromTreeData);
-    console.log(this.fromTreeData);
   },
   methods: {
     getDatabaseList() {
       databaseList().then(response => {
         this.databaseList = response.data;
-      });
-    },
-    resetData(dataArr) {
-      dataArr.forEach(element => {
-        element.pid = element.parentId;
-        if (element.children) {
-          var child = element.children;
-          for (var i = 0; i < child.length; i++) {
-            child[i].pid = child[i].parentId;
-            if (child[i].children) {
-              this.resetData(child[i].children);
-            }
-          }
-        } else {
-          return;
-        }
       });
     },
     handleQuery() {

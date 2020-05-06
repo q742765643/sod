@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container menuTemplate">
     <el-form :inline="true" class="searchBox">
       <el-form-item label="菜单名称">
         <el-input
@@ -33,6 +33,7 @@
     </el-form>
 
     <el-table
+      id="menuTable"
       v-loading="loading"
       :data="menuList"
       row-key="id"
@@ -41,7 +42,7 @@
       <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160px"></el-table-column>
       <el-table-column prop="icon" label="图标" width="100px">
         <template slot-scope="scope">
-          <svg-icon :icon-class="scope.row.icon" />
+          <svg-icon :icon-class="scope.row.icon" v-if="scope.row.icon" />
         </template>
       </el-table-column>
       <el-table-column prop="orderNum" label="排序" width="60px"></el-table-column>
@@ -355,8 +356,13 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.searchBox {
-  margin-bottom: 24px;
+<style lang="scss" >
+.menuTemplate {
+  .searchBox {
+    margin-bottom: 24px;
+  }
+  #menuTable td:first-child {
+    text-align: left;
+  }
 }
 </style>
