@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.TableDataStatisticsEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 表数据统计
  *
@@ -12,4 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TableDataStatisticsDao extends BaseDao<TableDataStatisticsEntity> {
+    List<TableDataStatisticsEntity> findByDatabaseIdAndTableIdAndStatisticDate(String databaseId,String tableId,String statisticDate);
 }

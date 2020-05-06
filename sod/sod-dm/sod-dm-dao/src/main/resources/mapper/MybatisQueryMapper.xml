@@ -1218,13 +1218,17 @@
 
 
     <select id="getDataClassByBizUserOrDatabase" parameterType="String"  resultType="java.util.LinkedHashMap">
-        select b.data_class_id from t_sod_data_authority_apply a left join t_sod_data_authority_record b  on a.id=b.apply_id
+        select b.DATA_CLASS_ID,c.DATABASE_DEFINE_ID from t_sod_data_authority_apply a
+        left join t_sod_data_authority_record b  on a.id=b.apply_id
+        left join t_sod_database c on b.database_id = c.id
+        left join t_sod_database_define c1 on c.database_define_id = c1.id
         <where>
+                b.authorize = 1
             <if test="bizUserId != null and bizUserId != ''">
                 and a.user_id = #{bizUserId}
             </if>
             <if test="database_id != null and database_id != ''">
-                and b.database_id = #{database_id}
+                and c1.id = #{database_id}
             </if>
         </where>
     </select>
@@ -1235,7 +1239,7 @@
         select data_class_id from t_sod_data_logic where database_id=#{databaseId})
         connect by t.data_class_id= prior t.parent_id
     </select>
-    <select id="getArchive" parameterType="String" resultType="DataClassEntity">
+    <select id="getArchive" parameterType="String" resultType="java.util.Map">
         SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM TAB_OMIN_CM_CC_DATUMTYPEHYP A
 		START WITH A.C_DATUM_CODE = #{ddataid}
 		CONNECT BY PRIOR A.C_SOURSDATUM_CODE = A.C_DATUM_CODE) B,DMIN_ARCHIVE_INFO C

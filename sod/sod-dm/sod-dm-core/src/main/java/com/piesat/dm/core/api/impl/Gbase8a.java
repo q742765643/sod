@@ -90,6 +90,10 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
     public void deleteUser(String identifier) throws Exception {
+        int userNum = getUserNum(identifier);
+        if (userNum == 0) {
+            return;
+        }
         String sql = "DROP USER  " + identifier;
         stmt = connection.createStatement();
         stmt.execute(sql);
@@ -109,11 +113,8 @@ public class Gbase8a extends DatabaseDclAbs {
     public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         String permission = select ? "SELECT" : "SELECT,UPDATE,INSERT,DELETE";
         stmt = connection.createStatement();
-        for (int i = 0; i < ips.size(); i++) {
-            String sql = "GRANT " + permission + " ON " + resource + "." + tableName + " To '" + identifier + "'@'" + ips.get(i) + "' IDENTIFIED BY '" + password + "'";
-            System.out.println(sql);
-            stmt.execute(sql);
-        }
+        String sql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
+        stmt.execute(sql);
     }
 
     @Override
@@ -121,11 +122,8 @@ public class Gbase8a extends DatabaseDclAbs {
         String permission = ArrayUtils.toString(permissions, ",");
         try {
             stmt = connection.createStatement();
-            for (int i = 0; i < ips.size(); i++) {
-                String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM '" + identifier + "'@'" + ips.get(i) + "'";
-                System.out.println(sql);
-                stmt.execute(sql);
-            }
+            String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM '" + identifier;
+            stmt.execute(sql);
         } catch (SQLException e) {
             throw new Exception("撤销数据库授权失败！errInfo：" + e.getMessage());
         }
@@ -296,5 +294,82 @@ public class Gbase8a extends DatabaseDclAbs {
             return ResultT.failed(e.getMessage());
         }
         return ResultT.success(results);
+    }
+
+    @Override
+    public void bindIp(String identifier, String[] ips) throws Exception {
+//        alter user zwtest hosts'10.20.64.29 10.20.64.30';
+        String ipStr = StringUtils.join(ips, " ");
+        String sql = "ALTER USER  " + identifier +" HOSTS '" + ipStr + "'";
+        stmt = connection.createStatement();
+        stmt.execute(sql);
+    }
+
+    @Override
+    public String queryRecordNum(String schema, String tableName) throws Exception {
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
+    }
+
+    @Override
+    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+        String minTime = "";
+        String sql = "SELECT MIN("+timeColumnName+") FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                minTime = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return minTime;
+    }
+
+    @Override
+    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+        String maxTime = "";
+        String sql = "SELECT MAX("+timeColumnName+") FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                maxTime = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return maxTime;
+    }
+
+    @Override
+    public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + "WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
     }
 }

@@ -10,6 +10,7 @@ import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -86,19 +87,28 @@ public class Cassandra implements DatabaseDcl {
 
     }
 
-    @Override
-    public void addUser(String identifier, String password, String[] ips) throws Exception {
-        identifier = identifier.toLowerCase();
+    public int getUserNum(String user) throws Exception {
+        user = user.toLowerCase();
         String cql = "LIST USERS;";
         ResultSet rs = instance.execute(cql);
         Iterator<Row> it = rs.iterator();
         while (it.hasNext()) {
             Row row = it.next();
-            if (identifier.equals(row.getObject(0))) {
-                throw new Exception("数据库用户已经存在!");
+            if (user.equals(row.getObject(0).toString().toLowerCase())) {
+               return 1;
             }
         }
-        cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
+        return 0;
+    }
+
+    @Override
+    public void addUser(String identifier, String password, String[] ips) throws Exception {
+        identifier = identifier.toLowerCase();
+        int userNum = getUserNum(identifier);
+        if (userNum == 0) {
+            throw new Exception("数据库用户已经存在!");
+        }
+        String cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
         instance.execute(cql);
     }
 
@@ -110,7 +120,7 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
-    public void deleteUser(String identifier) {
+    public void deleteUser(String identifier) throws Exception {
         identifier = identifier.toLowerCase();
         String cql = "DROP USER IF EXISTS " + identifier;
         instance.execute(cql);
@@ -269,6 +279,31 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn) {
+        return null;
+    }
+
+    @Override
+    public void bindIp(String identifier, String[] ips) throws Exception {
+
+    }
+
+    @Override
+    public String queryRecordNum(String schema, String tableName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         return null;
     }
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.AESUtil;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
@@ -160,6 +161,11 @@ public class DatabaseVisibleService {
             mm.put("META_DATA_STOR_TYPE", map.get("TYPE").equals(2) ? "资料" : "目录");
             mm.put("PARENT_CLASS_ID", map.get("PARENT_ID"));
             mm.put("CLASS_NAME", map.get("CLASS_NAME"));
+            for (LinkedHashMap<String, Object> obj : dataClassByBizUserOrDatabase) {
+                if (obj.get("DATA_CLASS_ID").equals(map.get("DATA_CLASS_ID"))){
+                    mm.put("DATABASE_ID",obj.get(""));
+                }
+            }
             mm.put("DATA_CLASS_ID", map.get("DATA_CLASS_ID"));
             ll.add(mm);
         }
@@ -184,12 +190,13 @@ public class DatabaseVisibleService {
                     List<DataTableDto> byClassLogicId = dataTableService.getByClassLogicId(dl.getId());
                     for (DataTableDto dt : byClassLogicId) {
                         JSONObject jo = new JSONObject();
-                        jo.put("TABLE_NAME", dt.getTableName());
+                        jo.put("TABLE_NAME", dotById.getSchemaName() + "." + dt.getTableName());
                         jo.put("DATA_SERVICE_NAME", dt.getDataServiceName());
                         jo.put("D_DATA_ID", byDataClassId.getDDataId());
                         jo.put("STORAGE_TYPE", dl.getStorageType());
                         JSONArray aaa = new JSONArray();
                         JSONObject bbb = new JSONObject();
+                        bbb.put("SCHEMA_NAME", dotById.getSchemaName());
                         bbb.put("DATABASE_ID", dotById.getDatabaseDefine().getId());
                         bbb.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
                         aaa.add(bbb);
@@ -205,6 +212,11 @@ public class DatabaseVisibleService {
     }
 
     public ResultT getTableInfo(String tableName) {
+        String schemaName = "";
+        if (tableName.indexOf(".") != -1) {
+            schemaName = tableName.substring(0, tableName.lastIndexOf("."));
+            tableName = tableName.substring(tableName.lastIndexOf(".") + 1);
+        }
         JSONObject jo = new JSONObject();
         List<DataTableEntity> byTableName = dataTableDao.findByTableName(tableName);
         if (byTableName != null) {
@@ -215,7 +227,11 @@ public class DatabaseVisibleService {
             table_info.put("D_DATA_ID", dataClassDto.getDDataId());
             table_info.put("DATA_CLASS_ID", dataClassId);
             table_info.put("DATA_SERVICE_ID", dataTableEntity.getDataServiceId());
-            table_info.put("TABLE_NAME", dataTableEntity.getTableName());
+            if (StringUtils.isEmpty(schemaName)) {
+                table_info.put("TABLE_NAME", dataTableEntity.getTableName());
+            } else {
+                table_info.put("TABLE_NAME", schemaName + "." + dataTableEntity.getTableName());
+            }
             table_info.put("DATA_SERVICE_NAME", dataTableEntity.getDataServiceName());
             jo.put("table_info", table_info);
             JSONArray table_structure = new JSONArray();

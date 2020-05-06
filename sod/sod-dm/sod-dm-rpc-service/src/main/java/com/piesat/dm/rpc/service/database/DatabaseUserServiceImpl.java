@@ -283,6 +283,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
+                    thisHaveIds.add(databaseId);
                 }
             } catch (Exception e) {
                 String message = e.getMessage();
@@ -310,7 +311,6 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
             }
-
         }
 
         /**删除被撤销的数据库**/
@@ -322,11 +322,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (databaseVO != null) {
                     databaseVO.deleteUser(databaseUserDto.getDatabaseUpId());
                     databaseVO.closeConnect();
+                    thisHaveIds.remove(databaseId);
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
             }
         }
+        databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds,","));
         String msg = sbff.toString();
         if (StringUtils.isNotBlank(msg)) {
             return ResultT.failed(msg);
