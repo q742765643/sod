@@ -601,14 +601,15 @@ export default {
 
       //2.点击按钮可以跳转到对应楼层
       for (var i = 0; i < btns.length; i++) {
-        //绑定索引
-        btns[i].index = i;
         btns[i].onclick = function() {
           //排他
           for (var j = 0; j < btns.length; j++) {
             btns[j].className = "";
           }
           this.className = "active";
+          let pageFlag = this.children[0].hash;
+          // document.getElementsById(pageFlag).click();
+          document.querySelector(pageFlag).scrollIntoView(true);
         };
       }
     }

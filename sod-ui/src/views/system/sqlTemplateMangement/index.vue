@@ -24,6 +24,7 @@
     </el-row>
     <!-- 弹窗-->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       class="sqlTemDialog"
       :title="dialogTitle"

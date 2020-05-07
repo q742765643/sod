@@ -135,6 +135,7 @@
     />
     <!-- 高级搜索 -->
     <el-dialog
+      :close-on-click-modal="false"
       title="筛选"
       :visible.sync="dialogSuperSearch"
       :before-close="closeSuperSearch"
@@ -149,6 +150,7 @@
     </el-dialog>
     <!-- 配置 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="选择需要配置的选项"
       :visible.sync="dialogSetting"
@@ -191,6 +193,7 @@
 
     <!-- 数据恢复 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="结构化数据恢复"
       :visible.sync="handleDataRecoveryDialog"
@@ -206,6 +209,7 @@
 
     <!-- 表结构管理 存储结构 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"
@@ -218,6 +222,7 @@
     </el-dialog>
     <!-- 迁移清除 结构化数据清除进度 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogMsgTitle"
       :visible.sync="handleCLeadupDialog"
       :before-close="handleClose"
@@ -232,6 +237,7 @@
     </el-dialog>
     <!-- 迁移配置信息 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogMsgTitle"
       :visible.sync="handleMoveDialog"
       width="1200px"
@@ -242,6 +248,7 @@
     </el-dialog>
     <!-- 备份 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogMsgTitle"
       :visible.sync="handleBackupDialog"
       :before-close="handleClose"
@@ -256,7 +263,13 @@
       />
     </el-dialog>
     <!-- 数据同步 -->
-    <el-dialog :title="dialogMsgTitle" :visible.sync="handleSyncDialog" width="80%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogMsgTitle"
+      :visible.sync="handleSyncDialog"
+      width="80%"
+      v-dialogDrag
+    >
       <handleSync
         v-if="handleSyncDialog"
         :handleObj="handleMsgObj"

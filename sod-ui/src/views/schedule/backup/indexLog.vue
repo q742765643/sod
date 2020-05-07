@@ -140,7 +140,13 @@
     />
 
     <!-- 添加或修改备份配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="title"
+      :visible.sync="open"
+      width="800px"
+      v-dialogDrag
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="logDetailBox">
         <el-row>
           <el-col :span="24">
@@ -206,6 +212,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="执行过程"
       :visible.sync="allDetailDialog"
       v-if="allDetailDialog"

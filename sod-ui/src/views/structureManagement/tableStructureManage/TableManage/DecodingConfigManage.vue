@@ -32,6 +32,7 @@
     />
 
     <el-dialog
+      :close-on-click-modal="false"
       width="80%"
       title="选择"
       :visible.sync="dialogStatus.optConfig"
@@ -76,6 +77,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       width="80%"
       :title="dialogTitle"
       :visible.sync="dialogStatus.config"

@@ -65,7 +65,13 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog title="添加" :visible.sync="addDataDialog" width="40%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      title="添加"
+      :visible.sync="addDataDialog"
+      width="40%"
+      v-dialogDrag
+    >
       <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog">
         <el-form-item label="数据库选择:">
           <el-select
@@ -89,7 +95,14 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="历史报告表" :visible.sync="historyDialog" width="80%" height="50%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      title="历史报告表"
+      :visible.sync="historyDialog"
+      width="80%"
+      height="50%"
+      v-dialogDrag
+    >
       <el-table
         ref="singleTable"
         :data="historyData"

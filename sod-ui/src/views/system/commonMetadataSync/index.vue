@@ -76,7 +76,14 @@
       <el-tab-pane label="同步记录查询" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="同步表名">
-            <el-input v-model="rowlogForm.syncTableName" placeholder="请输入同步表名" />
+            <el-select size="small" filterable v-model="rowlogForm.syncTableName">
+              <el-option
+                v-for="(item,index) in tableNames"
+                :key="index"
+                :label="item.dictValue"
+                :value="item.dictValue"
+              ></el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="运行状态">
             <el-select filterable style="width:150px" v-model="rowlogForm.runState">
@@ -153,10 +160,17 @@
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="650px">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="dialogTitle"
+      :visible.sync="handleDialog"
+      width="650px"
+    >
       <handleSod @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleSod>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="同步详情"
       :visible.sync="syncDescDialogVisible"
@@ -233,7 +247,13 @@ export default {
     this.getTableNames();
   },
   methods: {
-    getTableNames() {},
+    getTableNames() {
+      getDictList(this.queryParams).then(res => {
+        if (res.code == 200) {
+          this.tableNames = res.data;
+        }
+      });
+    },
     // table自增定义方法
     table_index(index) {
       return (

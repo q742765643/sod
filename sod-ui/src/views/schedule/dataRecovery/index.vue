@@ -135,6 +135,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-dialog
+      :close-on-click-modal="false"
       width="90%"
       title="MD5校验"
       :visible.sync="innerCheckMD5Visible"
@@ -150,6 +151,7 @@
     </el-dialog>
 
     <el-dialog
+      :close-on-click-modal="false"
       title="详情"
       :visible.sync="logDetailDialog"
       v-if="logDetailDialog"
@@ -198,6 +200,7 @@
       </span>
 
       <el-dialog
+        :close-on-click-modal="false"
         :title="allDetailTitle"
         :visible.sync="allDetailDialog"
         v-if="allDetailDialog"

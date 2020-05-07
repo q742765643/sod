@@ -47,6 +47,7 @@
       <el-button @click="handleRecover('false')">取 消</el-button>
     </div>
     <el-dialog
+      :close-on-click-modal="false"
       width="90%"
       title="MD5校验"
       :visible.sync="innerCheckMD5Visible"

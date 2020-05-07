@@ -306,46 +306,60 @@ export default {
     },
     // 导出
     exportClick() {
-      this.handleExportObj = {};
-      let ids = [];
-      this.checkdTreesArry.forEach(element => {
-        if (element.split(".").length == 4) {
-          ids.push(element);
-        }
-      });
-      let obj = {};
-      obj.data_class_ids = ids.join(",");
-      obj.database_id = this.queryParams.database_id;
-      if (this.activeName == "first") {
-        obj.use_id = this.queryParams.use_id;
-        exportTable(obj).then(response => {
-          if (response.code == 200) {
-            downloadTable({ filePath: response.data.filePath }).then(res => {
-              this.downloadfileCommon(res);
+      this.$confirm("请确保已在【SQL建表】内保存待导出的SQL语句?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.handleExportObj = {};
+          let ids = [];
+          this.checkdTreesArry.forEach(element => {
+            if (element.split(".").length == 4) {
+              ids.push(element);
+            }
+          });
+          let obj = {};
+          obj.data_class_ids = ids.join(",");
+          obj.database_id = this.queryParams.database_id;
+          if (this.activeName == "first") {
+            obj.use_id = this.queryParams.use_id;
+            exportTable(obj).then(response => {
+              if (response.code == 200) {
+                downloadTable({ filePath: response.data.filePath }).then(
+                  res => {
+                    this.downloadfileCommon(res);
+                  }
+                );
+              }
+            });
+          } else if (this.activeName == "second") {
+            exportTableSimple(obj).then(response => {
+              if (response.code == 200) {
+                downloadTable({ filePath: response.data.filePath }).then(
+                  res => {
+                    this.downloadfileCommon(res);
+                  }
+                );
+              }
+            });
+          } else if (this.activeName == "third") {
+            let obj = {};
+            obj.data_class_ids = ids.join(",");
+            obj.database_id = this.queryParams.database_id;
+            obj.exportType = this.exportTyoe;
+            exportSQL(obj).then(response => {
+              if (response.code == 200) {
+                downloadTable({ filePath: response.data.filePath }).then(
+                  res => {
+                    this.downloadfileCommon(res);
+                  }
+                );
+              }
             });
           }
-        });
-      } else if (this.activeName == "second") {
-        exportTableSimple(obj).then(response => {
-          if (response.code == 200) {
-            downloadTable({ filePath: response.data.filePath }).then(res => {
-              this.downloadfileCommon(res);
-            });
-          }
-        });
-      } else if (this.activeName == "third") {
-        let obj = {};
-        obj.data_class_ids = ids.join(",");
-        obj.database_id = this.queryParams.database_id;
-        obj.exportType = this.exportTyoe;
-        exportSQL(obj).then(response => {
-          if (response.code == 200) {
-            downloadTable({ filePath: response.data.filePath }).then(res => {
-              this.downloadfileCommon(res);
-            });
-          }
-        });
-      }
+        })
+        .catch(() => {});
     }
   }
 };
