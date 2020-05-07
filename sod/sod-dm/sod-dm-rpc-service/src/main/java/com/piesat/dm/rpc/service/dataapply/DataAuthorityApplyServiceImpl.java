@@ -171,6 +171,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    @Transactional
     public DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto) {
         DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
         //新增申请设置成待审
@@ -226,6 +227,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    @Transactional
     public ResultT updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto) {
         Map<String, Object> map = new HashMap<String, Object>();
         List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
@@ -292,6 +294,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    @Transactional
     public Map<String, Object> updateOneRecordCheck(String userId,DataAuthorityRecordDto dataAuthorityRecordDto) {
         Map<String, Object> map = new HashMap<String, Object>();
 
@@ -404,6 +407,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    @Transactional
     public void updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause) {
         List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
 
@@ -443,6 +447,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
+    @Transactional
     public void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id, String data_class_id, String database_id, Integer authorize, String cause) {
         List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassIdAndDatabaseId(apply_id, data_class_id,database_id);
         if(dataAuthorityRecordEntities != null && dataAuthorityRecordEntities.size() > 0){

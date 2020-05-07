@@ -88,6 +88,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
+    @Transactional
     public DataClassDto saveDto(DataClassDto dataClassDto) {
         NewdataApplyDto newdataApplyDto = null;
         if (StringUtils.isNotBlank(dataClassDto.getApplyId())) {

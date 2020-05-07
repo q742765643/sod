@@ -940,10 +940,10 @@ export default {
         }
 
         if (
-          this.handleObj.targetRelation &&
-          this.handleObj.targetRelation.length > 0
+          this.handleObj.slaveRelation &&
+          this.handleObj.slaveRelation.length > 0
         ) {
-          this.handleObj.targetRelation.forEach((te, ti) => {
+          this.handleObj.slaveRelation.forEach((te, ti) => {
             if (element_obj.id == te.targetTableId) {
               te.mapping.forEach((mItem, mIndex) => {
                 if (

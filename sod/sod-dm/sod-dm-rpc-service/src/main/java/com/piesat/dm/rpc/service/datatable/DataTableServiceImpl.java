@@ -84,6 +84,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
+    @Transactional
     public DataTableDto saveDto(DataTableDto dataTableDto) {
         DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
         UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();

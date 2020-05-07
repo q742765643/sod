@@ -319,17 +319,20 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 				//获取同步数据
 				String[] split = url.split("\\?");
-				if (split.length!=2){
-					return ResultT.failed("同步任务【"+ce.getTaskName()+"】url格式不正确");
-				}
-				String s1 = split[1];
-				String[] split1 = s1.split("&");
+//				if (split.length!=2){
+//					return ResultT.failed("同步任务【"+ce.getTaskName()+"】url格式不正确");
+//				}
 				String interfaceId = null;
-				for (String p:split1 ) {
-					if (p.contains("interfaceId")){
-						 interfaceId = p.substring(p.lastIndexOf("=")+1);
+				if (split.length==2){
+					String s1 = split[1];
+					String[] split1 = s1.split("&");
+					for (String p:split1 ) {
+						if (p.contains("interfaceId")){
+							interfaceId = p.substring(p.lastIndexOf("=")+1);
+						}
 					}
 				}
+
 //				String result = HttpUtils.sendGet(url,"");
 				String result = "";
 				if (StringUtils.isEmpty(interfaceId)){

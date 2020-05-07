@@ -9,6 +9,7 @@ import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.dm.rpc.mapper.datatable.TableSqlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class TableSqlServiceImpl extends BaseService<TableSqlEntity> implements 
     }
 
     @Override
+    @Transactional
     public TableSqlDto saveDto(TableSqlDto tableSqlDto) {
         this.tableSqlDao.deleteByDatabaseIdAndTableName(tableSqlDto.getDatabaseId(),tableSqlDto.getTableName());
         TableSqlEntity tableSqlEntity = this.tableSqlMapper.toEntity(tableSqlDto);

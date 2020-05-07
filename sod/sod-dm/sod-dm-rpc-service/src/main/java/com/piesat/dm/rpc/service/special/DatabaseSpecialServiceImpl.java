@@ -57,9 +57,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -234,6 +234,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    @Transactional
     public DatabaseSpecialDto addOrUpdate(Map<String, String> map, String filePath) {
 
         String tdb_name = map.get("TDB_NAME");
@@ -324,6 +325,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
      */
     @Transactional
     @Override
+    @Transactional
     public void empowerDatabaseSpecial(DatabaseDto databaseDto) {
         System.out.println(databaseDto);
         try {
@@ -430,6 +432,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    @Transactional
     public void empowerDataOne(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
         try {
             //更新权限
@@ -458,6 +461,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    @Transactional
     public void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList) {
         try {
             for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtoList){
@@ -742,6 +746,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    @Transactional
     public DatabaseSpecialDto saveMultilRecord(DatabaseSpecialDto databaseSpecialDto) {
         //读申请是否自动授权
         boolean readAuthorityFlag = false;
@@ -797,6 +802,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    @Transactional
     public DatabaseSpecialAccessDto specialAccessAutho(DatabaseSpecialAccessDto databaseSpecialAccessDto) {
         DatabaseSpecialAccessEntity databaseSpecialAccessEntity = databaseSpecialAccessMapper.toEntity(databaseSpecialAccessDto);
         //审核通过，设置使用状态为2使用中
@@ -822,6 +828,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
+    @Transactional
     public Map<String, Object> updateBySql(String tdbId, String userId, String cause, String examineStatus) {
         DatabaseSpecialDto specialdb = new DatabaseSpecialDto();
         Map<String, Object> map = new HashMap<>();

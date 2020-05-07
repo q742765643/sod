@@ -58,6 +58,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    @Transactional
     public TableColumnDto saveDto(TableColumnDto tableColumnDto) throws Exception {
         String id = tableColumnDto.getId();
 
@@ -90,6 +91,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    @Transactional
     public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
         List<TableColumnDto> l = new ArrayList<>();
         for (TableColumnDto t : tableColumnDtoList) {
