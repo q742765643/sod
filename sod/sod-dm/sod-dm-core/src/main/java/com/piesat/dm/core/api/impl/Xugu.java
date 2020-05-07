@@ -42,9 +42,12 @@ public class Xugu extends DatabaseDclAbs {
             throw new Exception("数据库用户已经存在！");
         }
         String sql = "CREATE USER " + identifier + " IDENTIFIED BY '" + password + "'";
+        String sql1 = "GRANT CREATE ANY SCHEMA TO " + identifier;
+
         try {
             stmt = connection.createStatement();
             stmt.execute(sql);
+            stmt.execute(sql1);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("新增用户失败！errInfo：" + e.getMessage());
