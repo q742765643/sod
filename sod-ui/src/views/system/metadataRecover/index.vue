@@ -47,7 +47,7 @@
         <p style="font-size:14px">恢复文件</p>
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-tree
-            ref="eltree"
+            ref="eltreeS"
             node-key="id"
             show-checkbox
             :data="treedata"
@@ -191,9 +191,30 @@
             </el-scrollbar>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="所有执行过程">
+              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+              <el-button type="primary" size="small" @click="showAllDetail('所有执行过程')">显示全部</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="logDetailDialog = false">取 消</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="执行过程"
+      :visible.sync="allDetailDialog"
+      v-if="allDetailDialog"
+      width="1000px"
+      append-to-body
+      v-dialogDrag
+    >
+      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -220,6 +241,8 @@ export default {
   },
   data() {
     return {
+      allDetailDialog: false,
+      allDetailMsg: "",
       storageDirectoryOptions: [],
       activeName: "first",
       // 遮罩层
@@ -310,10 +333,14 @@ export default {
       }
     },
     setSelectedNode(data, obj) {
-      this.$refs.eltree.setCheckedNodes([data]);
+      // this.$refs.eltree.setCheckedNyodes([data]);
     },
     handleExe() {
-      let checkedArry = this.$refs.eltree.getCheckedKeys();
+      if (!this.queryParams.taskName) {
+        this.msgError("请输入任务名称");
+        return;
+      }
+      let checkedArry = this.$refs.eltreeS.getCheckedKeys();
       if (checkedArry.length != 1) {
         this.msgError("请选择一条数据");
         return;
@@ -405,10 +432,15 @@ export default {
           this.statusOptions,
           this.logFormDialog.handleCode
         );
-
-        let checkedTree = JSON.parse(res.data.backContent);
-        this.treedata = newTeam(checkedTree, "");
+        if (res.data.recoverContent) {
+          let checkedTree = JSON.parse(res.data.recoverContent);
+          this.TreeDetaildata = newTeam(checkedTree, "");
+        }
       });
+    },
+    showAllDetail(title) {
+      this.allDetailMsg = this.logFormDialog.handleMsg;
+      this.allDetailDialog = true;
     },
     // 上传
     handleBefore() {
@@ -468,6 +500,14 @@ export default {
 .logDetailBox {
   .el-select {
     width: 100%;
+  }
+  .el-textarea {
+    width: 90%;
+  }
+}
+.allDetailMsg {
+  .el-textarea__inner {
+    min-height: 300px !important;
   }
 }
 </style>

@@ -59,6 +59,11 @@ export default {
     this.msgFormDialog.taskName = this.handleObj.taskName;
     parsingPath({ path: this.handleObj.storageDirectory }).then(res => {
       this.treeJson = res.data.tree;
+      if (!this.treeJson) {
+        this.$emit("cancelHandle");
+        this.msgError("当前树结构为空，请重新选择");
+        return;
+      }
       this.treeJson.forEach(element => {
         element.nodeKey = element.pid + "+" + element.id;
       });
@@ -79,12 +84,22 @@ export default {
   methods: {
     trueDialog(formName) {
       let checkedArry = this.$refs.eltree.getCheckedKeys();
+      let halfcheckedArry = this.$refs.eltree.getHalfCheckedKeys();
       if (checkedArry.length == 0) {
         this.msgError("请选择数据库对象");
         return;
       }
       let newArry = [];
       checkedArry.forEach(element => {
+        this.treeJson.forEach(t => {
+          if (element == t.nodeKey) {
+            let obj = {};
+            obj = t;
+            newArry.push(obj);
+          }
+        });
+      });
+      halfcheckedArry.forEach(element => {
         this.treeJson.forEach(t => {
           if (element == t.nodeKey) {
             let obj = {};

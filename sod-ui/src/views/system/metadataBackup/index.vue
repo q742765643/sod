@@ -231,9 +231,9 @@
       title="详情"
       :visible.sync="logDetailDialog"
       v-if="logDetailDialog"
-      width="1000px"
+      width="1100px"
     >
-      <el-form ref="ruleForm" :model="logFormDialog" label-width="140px">
+      <el-form ref="ruleForm" :model="logFormDialog" label-width="140px" class="logDetailBox">
         <el-row>
           <el-col :span="12">
             <el-form-item label="任务名称">
@@ -270,9 +270,6 @@
             <el-form-item label="实际触发时间">
               <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
             </el-form-item>
-            <el-form-item label="执行过程">
-              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
-            </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-scrollbar wrap-class="scrollbar-wrapper">
@@ -280,9 +277,30 @@
             </el-scrollbar>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="执行过程">
+              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+              <el-button type="primary" size="small" @click="showAllDetail">显示全部</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="logDetailDialog = false">取 消</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="执行过程"
+      :visible.sync="allDetailDialog"
+      v-if="allDetailDialog"
+      width="1000px"
+      append-to-body
+      v-dialogDrag
+    >
+      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -313,6 +331,8 @@ export default {
   },
   data() {
     return {
+      allDetailDialog: false,
+      allDetailMsg: "",
       handleExportObj: {},
       activeName: "first",
       // 遮罩层
@@ -365,6 +385,10 @@ export default {
     this.getMetaBackupList();
   },
   methods: {
+    showAllDetail() {
+      this.allDetailMsg = this.logFormDialog.handleMsg;
+      this.allDetailDialog = true;
+    },
     handleExport() {
       exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -579,10 +603,20 @@ export default {
     width: 100%;
   }
   .el-scrollbar {
-    height: 510px;
+    height: 470px;
     .el-scrollbar__wrap {
       overflow-x: hidden;
     }
+  }
+}
+.allDetailMsg {
+  .el-textarea__inner {
+    min-height: 300px !important;
+  }
+}
+.logDetailBox {
+  .el-textarea {
+    width: 90%;
   }
 }
 </style>

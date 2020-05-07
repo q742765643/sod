@@ -350,17 +350,17 @@ export default {
 
     // mds校验
     handleExe() {
-      let checkedArry = this.$refs.eltree.getCheckedKeys();
-      if (checkedArry.length == 0) {
-        this.msgError("请选择一条数据");
-        return;
-      }
+      let checkedArry = this.$refs.eltree.getCheckedNodes();
       let childArry = [];
       checkedArry.forEach(element => {
         if (element.parent == false) {
-          childArry.push(element);
+          childArry.push(element.id);
         }
       });
+      if (checkedArry.length == 0) {
+        this.msgError("请选择一条子节点的数据");
+        return;
+      }
       let obj = {};
       obj.databaseId = this.queryParams.databaseId;
       obj.paths = childArry;
