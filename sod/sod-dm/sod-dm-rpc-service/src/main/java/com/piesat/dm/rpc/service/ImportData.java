@@ -12,9 +12,7 @@ import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.dataclass.DatumTypeInfoDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
-import com.piesat.dm.dao.datatable.DataTableDao;
-import com.piesat.dm.dao.datatable.ShardingDao;
-import com.piesat.dm.dao.datatable.TableDataStatisticsDao;
+import com.piesat.dm.dao.datatable.*;
 import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.StorageConfigurationEntity;
 import com.piesat.dm.entity.dataapply.*;
@@ -183,6 +181,15 @@ public class ImportData {
     private ClearMapstruct clearMapstruct;
     @Autowired
     private ClearService clearService;
+    @Autowired
+    private DataServerBaseInfoDao dataServerBaseInfoDao;
+    @Autowired
+    private GridDecodingDao gridDecodingDao;
+    @Autowired
+    private GridAreaDao gridAreaDao;
+    @Autowired
+    private DataServerConfigDao dataServerConfigDao;
+
     @GrpcHthtClient
     private UserDao userDao;
 
@@ -194,7 +201,8 @@ public class ImportData {
         impLogicDefine();
         importDatabaseData();
     }
-    public void implDataOther(){
+
+    public void implDataOther() {
 
         importSyncTask();
         importCloudDatabase();
@@ -221,6 +229,12 @@ public class ImportData {
         importStorageConfig();
 
         //importPortalUser();
+
+
+        importDataServiceBaseInfo();
+        importGridDecoding();
+        importAreaDefine();
+        importGridEEle();
     }
 
 
@@ -431,7 +445,7 @@ public class ImportData {
             dte.setCModifier(toString(m.get("C_MODIFIER")));
             dte.setCCreateDate((Date) (m.get("C_CREATE_DATE")));
             dte.setCUpdatedDate((Date) (m.get("C_UPDATED_DATE")));
-            dte.setVersion(((BigDecimal)(m.get("VERSION"))).intValue());
+            dte.setVersion(((BigDecimal) (m.get("VERSION"))).intValue());
             dte.setCBusinessFrequency(toString(m.get("C_BUSINESS_FREQUENCY")));
             dte.setCNettype(toString(m.get("C_NETTYPE")));
             dte.setCCoremetaId(toString(m.get("C_COREMETA_ID")));
@@ -439,7 +453,7 @@ public class ImportData {
         }
     }
 
-    public void importSyncTask(){
+    public void importSyncTask() {
         String sql = "select * from SYNC_TASK";
         List<Map> tasks = CodeDOM.getList(sql);
         for (Map<String, Object> m : tasks) {
@@ -453,19 +467,19 @@ public class ImportData {
             String source_table = this.toString(m.get("SOURCE_TABLE"));
             String sourceMappingIDs = "";
             String[] sourceTables = source_table.split(",");
-            for(String sourceTable : sourceTables){
-                String sourceMappingID = saveSync(sourceTable,target_database_id,"K");
-                if(StringUtils.isNotEmpty(sourceMappingIDs)){
+            for (String sourceTable : sourceTables) {
+                String sourceMappingID = saveSync(sourceTable, target_database_id, "K");
+                if (StringUtils.isNotEmpty(sourceMappingIDs)) {
                     sourceMappingIDs = sourceMappingIDs + "," + sourceMappingID;
-                }else{
+                } else {
                     sourceMappingIDs = sourceMappingID;
                 }
             }
 
             String slave_tables = this.toString(m.get("SLAVE_TABLES"));
-            String slaveMappingID  = "";
-            if(StringUtils.isNotEmpty(slave_tables)){
-                slaveMappingID = saveSync(slave_tables,target_database_id,"V");
+            String slaveMappingID = "";
+            if (StringUtils.isNotEmpty(slave_tables)) {
+                slaveMappingID = saveSync(slave_tables, target_database_id, "V");
             }
 
             /*String id = this.toString(m.get("TASK_ID"));
@@ -474,7 +488,7 @@ public class ImportData {
             }*/
 
             String task_name = this.toString(m.get("TASK_NAME"));
-            if(StringUtils.isNotEmpty(task_name)){
+            if (StringUtils.isNotEmpty(task_name)) {
                 syncTaskEntity.setTaskName(task_name);
             }
 
@@ -504,13 +518,13 @@ public class ImportData {
             syncTaskEntity.setBatchAmount(batch_amount);
 
             String begin_time = this.toString(m.get("BEGIN_TIME"));
-            if(StringUtils.isNotEmpty(begin_time)){
+            if (StringUtils.isNotEmpty(begin_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, begin_time);
                 syncTaskEntity.setBeginTime(date);
             }
 
             String last_success_time = this.toString(m.get("LAST_SUCCESS_TIME"));
-            if(StringUtils.isNotEmpty(last_success_time)){
+            if (StringUtils.isNotEmpty(last_success_time)) {
                 Date Date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, last_success_time);
                 syncTaskEntity.setBeginTime(Date);
             }
@@ -518,22 +532,22 @@ public class ImportData {
             String has_modify = this.toString(m.get("HAS_MODIFY"));
             syncTaskEntity.setHasModify(has_modify);
 
-            if(StringUtils.isNotEmpty(slaveMappingID)){
+            if (StringUtils.isNotEmpty(slaveMappingID)) {
                 syncTaskEntity.setSlaveTables(slaveMappingID);
             }
 
             String link_key = "";
-            Clob clob = (Clob)m.get("LINK_KEY");
+            Clob clob = (Clob) m.get("LINK_KEY");
             try {
-                char[] mapperChar = new char[(int)clob.length()];
+                char[] mapperChar = new char[(int) clob.length()];
                 int read = clob.getCharacterStream().read(mapperChar);
-                if(read > 0){
+                if (read > 0) {
                     link_key = String.valueOf(mapperChar);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(StringUtils.isNotEmpty(link_key)){
+            if (StringUtils.isNotEmpty(link_key)) {
                 syncTaskEntity.setLinkKey(link_key);
             }
 
@@ -547,7 +561,7 @@ public class ImportData {
             syncTaskEntity.setDiscardOnDuplicate(discard_on_duplicate);
 
             String exec_ip = this.toString(m.get("EXEC_IP"));
-            if(StringUtils.isNotEmpty(exec_ip)){
+            if (StringUtils.isNotEmpty(exec_ip)) {
                 syncTaskEntity.setExecIp(exec_ip);
             }
 
@@ -559,7 +573,6 @@ public class ImportData {
 
             Integer target_type = Integer.valueOf(this.toString(m.get("TARGET_TYPE")));
             syncTaskEntity.setTargetType(target_type);
-
 
 
             //查找源表id
@@ -574,39 +587,41 @@ public class ImportData {
 
 
     }
+
     String source_table_name = "";
-    public String saveSync(String mappingId,String databaseId,String flag){
-        String sql = "select * from SYNC_MAPPING where RECORD_ID='"+mappingId+"'";
+
+    public String saveSync(String mappingId, String databaseId, String flag) {
+        String sql = "select * from SYNC_MAPPING where RECORD_ID='" + mappingId + "'";
         List<Map> mapping = CodeDOM.getList(sql);
         String sourceMappingID = "";
 
-        for (Map<String, Object>  mapp: mapping) {
+        for (Map<String, Object> mapp : mapping) {
 
-            if(flag.equals("K")){
+            if (flag.equals("K")) {
                 source_table_name = this.toString(mapp.get("SOURCE_TABLE_NAME"));
             }
 
             String source_table_id = this.toString(mapp.get("SOURCE_TABLE_ID"));
             String filerIDS = "";
             //源表有过滤字段
-            if(StringUtils.isNotEmpty(source_table_id)){
+            if (StringUtils.isNotEmpty(source_table_id)) {
                 String[] filters = source_table_id.split(",");
-                for(String filterId:filters){
-                    sql = "select * from sync_filter where RECORD_ID='"+filterId+"'";
+                for (String filterId : filters) {
+                    sql = "select * from sync_filter where RECORD_ID='" + filterId + "'";
                     List<Map> filterMaps = CodeDOM.getList(sql);
-                    if(filterMaps != null && filterMaps.size()>0){
-                        for(Map<String, Object>  filter: filterMaps){
+                    if (filterMaps != null && filterMaps.size() > 0) {
+                        for (Map<String, Object> filter : filterMaps) {
                             String column_name = this.toString(filter.get("COLUMN_NAME"));
                             String filter_values = this.toString(filter.get("FILTER_VALUES"));
                             String column_oper = this.toString(filter.get("COLUMN_OPER"));
-                            if(StringUtils.isNotEmpty(column_name) && StringUtils.isNotEmpty(filter_values) && StringUtils.isNotEmpty(column_oper)){
+                            if (StringUtils.isNotEmpty(column_name) && StringUtils.isNotEmpty(filter_values) && StringUtils.isNotEmpty(column_oper)) {
                                 SyncFilterEntity syncFilterEntity = new SyncFilterEntity();
                                 syncFilterEntity.setColumnName(column_name);
                                 syncFilterEntity.setFilterValues(filter_values);
                                 syncFilterEntity.setColumnOper(column_oper);
                                 SyncFilterEntity filterEntity = syncFilterDao.saveNotNull(syncFilterEntity);
-                                if(StringUtils.isNotEmpty(filerIDS)){
-                                    filerIDS = filerIDS + ","+ filterEntity.getId();
+                                if (StringUtils.isNotEmpty(filerIDS)) {
+                                    filerIDS = filerIDS + "," + filterEntity.getId();
                                 }
                             }
                         }
@@ -622,10 +637,10 @@ public class ImportData {
             //必须是有值得
             String target_table_id = this.toString(mapp.get("TARGET_TABLE_ID"));
             String configID = "";
-            if(StringUtils.isNotEmpty(target_table_id)){
-                sql = "select * from sync_config where RECORD_ID='"+target_table_id+"'";
+            if (StringUtils.isNotEmpty(target_table_id)) {
+                sql = "select * from sync_config where RECORD_ID='" + target_table_id + "'";
                 List<Map> configMaps = CodeDOM.getList(sql);//根据主键查询，只能查出一条
-                if(configMaps != null && configMaps.size()>0){
+                if (configMaps != null && configMaps.size() > 0) {
                     String unique_keys = this.toString(configMaps.get(0).get("UNIQUE_KEYS"));
                     String ifpatitions = this.toString(configMaps.get(0).get("IFPATITIONS"));
                     String partition_keys = this.toString(configMaps.get(0).get("PARTITION_KEYS"));
@@ -636,22 +651,22 @@ public class ImportData {
                     List<Map<String, Object>> databaseIdAndTableName = dataTableService.getByDatabaseIdAndTableName(databaseId, target_table_name);
                     String target_table_Id = this.toString(databaseIdAndTableName.get(0).get("ID"));
                     SyncConfigEntity syncConfigEntity = new SyncConfigEntity();
-                    if(StringUtils.isNotEmpty(d_data_id)){
+                    if (StringUtils.isNotEmpty(d_data_id)) {
                         syncConfigEntity.setDDataId(d_data_id);
                     }
-                    if(StringUtils.isNotEmpty(ifpatitions)){
+                    if (StringUtils.isNotEmpty(ifpatitions)) {
                         syncConfigEntity.setIfpatitions(ifpatitions);
                     }
-                    if(StringUtils.isNotEmpty(is_kv)){
+                    if (StringUtils.isNotEmpty(is_kv)) {
                         syncConfigEntity.setIsKv(is_kv);
                     }
-                    if(StringUtils.isNotEmpty(partition_keys)){
+                    if (StringUtils.isNotEmpty(partition_keys)) {
                         syncConfigEntity.setPartitionKeys(partition_keys);
                     }
-                    if(StringUtils.isNotEmpty(unique_keys)){
+                    if (StringUtils.isNotEmpty(unique_keys)) {
                         syncConfigEntity.setUniqueKeys(unique_keys);
                     }
-                    if(StringUtils.isNotEmpty(target_table_Id)){
+                    if (StringUtils.isNotEmpty(target_table_Id)) {
                         syncConfigEntity.setTargetTableId(target_table_Id);
                     }
                     syncConfigEntity = syncConfigDao.saveNotNull(syncConfigEntity);
@@ -662,11 +677,11 @@ public class ImportData {
 
             //mapp
             String mappss = "";
-           Clob clob = (Clob)mapp.get("MAPPING");
+            Clob clob = (Clob) mapp.get("MAPPING");
             try {
-                char[] mapperChar = new char[(int)clob.length()];
+                char[] mapperChar = new char[(int) clob.length()];
                 int read = clob.getCharacterStream().read(mapperChar);
-                if(read > 0){
+                if (read > 0) {
                     mappss = String.valueOf(mapperChar);
                 }
             } catch (Exception e) {
@@ -675,16 +690,16 @@ public class ImportData {
 
             SyncMappingEntity syncMappingEntity = new SyncMappingEntity();
             syncMappingEntity.setMapping(mappss);
-            if(StringUtils.isNotEmpty(filerIDS)){
+            if (StringUtils.isNotEmpty(filerIDS)) {
                 syncMappingEntity.setSourceTableId(filerIDS);
             }
             syncMappingEntity.setSourceTableName(source_table_name);
             syncMappingEntity.setTargetTableId(configID);
             syncMappingEntity.setTargetTableName(target_table_name);
             syncMappingEntity = syncMappingDao.saveNotNull(syncMappingEntity);
-            if(StringUtils.isNotEmpty(sourceMappingID)){
+            if (StringUtils.isNotEmpty(sourceMappingID)) {
                 sourceMappingID = sourceMappingID + "," + syncMappingEntity.getId();
-            }else{
+            } else {
                 sourceMappingID = String.valueOf(syncMappingEntity.getId());
             }
         }
@@ -693,13 +708,11 @@ public class ImportData {
     }
 
 
-
-
-    public void impLogicDefine(){
+    public void impLogicDefine() {
         String sql = "select * from DMIN_DB_LOGIC_DEFINE";
         List<Map> logic = CodeDOM.getList(sql);
         for (Map<String, Object> m : logic) {
-            sql = "select * from DMIN_DB_LOGIC_PHYSICS where LOGIC_ID = '"+m.get("LOGIC_ID")+"'";
+            sql = "select * from DMIN_DB_LOGIC_PHYSICS where LOGIC_ID = '" + m.get("LOGIC_ID") + "'";
             LogicDefineEntity dte = new LogicDefineEntity();
             dte.setLogicFlag(toString(m.get("LOGIC_ID")));
             dte.setLogicName(toString(m.get("LOGIC_NAME")));
@@ -708,7 +721,7 @@ public class ImportData {
             String storage_type = toString(m.get("STORAGE_TYPE"));
             String[] split = storage_type.split(",");
             Set<LogicStorageTypesEntity> ls = new HashSet<>();
-            for (String s:split ) {
+            for (String s : split) {
                 LogicStorageTypesEntity lst = new LogicStorageTypesEntity();
                 lst.setStorageType(s);
                 lst.setCreateTime(new Date());
@@ -717,7 +730,7 @@ public class ImportData {
             dte.setLogicStorageTypesEntityList(ls);
             Set<LogicDatabaseEntity> lll = new HashSet<>();
             List<Map> lde = CodeDOM.getList(sql);
-            for (Map mm: lde ) {
+            for (Map mm : lde) {
                 String database_id = toString(mm.get("DATABASE_ID"));
                 LogicDatabaseEntity ld = new LogicDatabaseEntity();
                 ld.setDatabaseId(database_id);
@@ -757,11 +770,12 @@ public class ImportData {
             String tdb_id = toString(m.get("TDB_ID"));
             DatabaseEntity de = new DatabaseEntity();
             DatabaseDefineEntity dd = new DatabaseDefineEntity();
-            if (database_id.equals(parent_id)){
-                sql = "select * from DMIN_DB_PHYSICS_CONNECTION where DATABASE_ID = '"+database_id+"'";
+            if (database_id.equals(parent_id)) {
+                sql = "select * from DMIN_DB_PHYSICS_CONNECTION where DATABASE_ID = '" + database_id + "'";
                 Map map = CodeDOM.getList(sql).get(0);
                 dd.setId(database_id);
-                if (com.piesat.common.utils.StringUtils.isNotEmpty(database_capacity))dd.setDatabaseCapacity(Integer.parseInt(database_capacity));
+                if (com.piesat.common.utils.StringUtils.isNotEmpty(database_capacity))
+                    dd.setDatabaseCapacity(Integer.parseInt(database_capacity));
                 dd.setDatabaseInstance(database_instance);
                 dd.setDatabaseIp(toString(map.get("DATABASE_IP")));
                 dd.setDatabasePort(toString(map.get("DATABASE_PORT")));
@@ -787,14 +801,13 @@ public class ImportData {
             de.setStopUse(false);
             de.setCreateTime(new Date());
             DatabaseEntity save = this.databaseDao.save(de);
-            dataLogicDao.updateDatabaseId(save.getId(),database_id);
+            dataLogicDao.updateDatabaseId(save.getId(), database_id);
         }
     }
 
 
-
     //云数据库申请
-    public void  importCloudDatabase(){
+    public void importCloudDatabase() {
         String sql = "select * from dmin_cldb_application";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
@@ -826,19 +839,19 @@ public class ImportData {
             cloudDatabaseApplyEntity.setDatabaseUse(db_use);
             cloudDatabaseApplyEntity.setUserId(user_id);
 
-            if(StringUtils.isNotEmpty(application_system)){
+            if (StringUtils.isNotEmpty(application_system)) {
                 cloudDatabaseApplyEntity.setApplicationSystem(application_system);
             }
-            if(StringUtils.isNotEmpty(examine_material)){
+            if (StringUtils.isNotEmpty(examine_material)) {
                 cloudDatabaseApplyEntity.setExamineMaterial(examine_material);
             }
-            if(StringUtils.isNotEmpty(cpu_memory)){
+            if (StringUtils.isNotEmpty(cpu_memory)) {
                 cloudDatabaseApplyEntity.setCpuMemory(cpu_memory);
             }
-            if(StringUtils.isNotEmpty(storage_space)){
+            if (StringUtils.isNotEmpty(storage_space)) {
                 cloudDatabaseApplyEntity.setStorageSpace(storage_space);
             }
-            if(StringUtils.isNotEmpty(new_cpu_memory)){
+            if (StringUtils.isNotEmpty(new_cpu_memory)) {
                 cloudDatabaseApplyEntity.setNewCpuMemory(new_cpu_memory);
             }
 
@@ -847,26 +860,26 @@ public class ImportData {
             cloudDatabaseApplyEntity.setFailure_reason(failure_reason);
             cloudDatabaseApplyEntity.setExaminer(examiner);
 
-            if(StringUtils.isNotEmpty(examine_time)){
+            if (StringUtils.isNotEmpty(examine_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
                 cloudDatabaseApplyEntity.setExamineTime(date);
             }
 
             cloudDatabaseApplyEntity.setDatabaseIp(db_ip);
-            if(StringUtils.isNotEmpty(db_portnum)){
-                try{
+            if (StringUtils.isNotEmpty(db_portnum)) {
+                try {
                     cloudDatabaseApplyEntity.setDatabasePort(Integer.valueOf(db_portnum));
-                }catch (Exception e){
+                } catch (Exception e) {
                     cloudDatabaseApplyEntity.setDatabasePort(8080);
                 }
             }
             cloudDatabaseApplyEntity.setDatabaseUsername(db_username);
             cloudDatabaseApplyEntity.setDatabasePassword(db_password);
             cloudDatabaseApplyEntity.setStorageLogic(storage_logic);
-            if(StringUtils.isNotEmpty(mount_server)){
+            if (StringUtils.isNotEmpty(mount_server)) {
                 cloudDatabaseApplyEntity.setMountServer(mount_server);
             }
-            if(StringUtils.isNotEmpty(mount_directory)){
+            if (StringUtils.isNotEmpty(mount_directory)) {
                 cloudDatabaseApplyEntity.setMountDirectory(mount_directory);
             }
             cloudDatabaseApplyDao.saveNotNull(cloudDatabaseApplyEntity);
@@ -874,7 +887,7 @@ public class ImportData {
     }
 
     //数据备份
-    public void importBackUp(){
+    public void importBackUp() {
         String sql = "select * from DMIN_DATA_BACKUP_TASK";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
@@ -895,7 +908,7 @@ public class ImportData {
             String cron = toString(m.get("CRON"));
 
             Integer cron_status = null;
-            if(StringUtils.isNotEmpty(toString(m.get("CRON_STATUS")))){
+            if (StringUtils.isNotEmpty(toString(m.get("CRON_STATUS")))) {
                 cron_status = Integer.valueOf(toString(m.get("CRON_STATUS")));
             }
 
@@ -904,17 +917,17 @@ public class ImportData {
             String alarm = toString(m.get("ALARM"));
 
             Integer time_out = null;
-            if(StringUtils.isNotEmpty(toString(m.get("TIME_OUT")))){
+            if (StringUtils.isNotEmpty(toString(m.get("TIME_OUT")))) {
                 time_out = Integer.valueOf(toString(m.get("TIME_OUT")));
             }
 
             Integer retry_count = null;
-            if(StringUtils.isNotEmpty(toString(m.get("RETRY_COUNT")))){
+            if (StringUtils.isNotEmpty(toString(m.get("RETRY_COUNT")))) {
                 retry_count = Integer.valueOf(toString(m.get("RETRY_COUNT")));
             }
 
-            Integer between_retries =null;
-            if(StringUtils.isNotEmpty(toString(m.get("BETWEEN_RETRIES")))){
+            Integer between_retries = null;
+            if (StringUtils.isNotEmpty(toString(m.get("BETWEEN_RETRIES")))) {
                 between_retries = Integer.valueOf(toString(m.get("BETWEEN_RETRIES")));
             }
 
@@ -929,18 +942,18 @@ public class ImportData {
             backupEntity.setDdataId(dataClassEntity.getDDataId());
             //backupEntity.setForeignKey();
             backupEntity.setParentId(parent_id);
-            backupEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
+            backupEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName() + "_" + databaseEntity1.get(0).getDatabaseName() + "_" + dataClassEntity.getClassName());
             backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
             backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUPTEST");
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
-            if(dataTableEntities.size() == 1){
+            if (dataTableEntities.size() == 1) {
                 backupEntity.setTableName(dataTableEntities.get(0).getTableName());
-            }else{
+            } else {
                 String tableName = "";
-                for(DataTableEntity dataTableEntity: dataTableEntities){
-                    if(dataTableEntity.getDbTableType().equals("K")){
+                for (DataTableEntity dataTableEntity : dataTableEntities) {
+                    if (dataTableEntity.getDbTableType().equals("K")) {
                         tableName = dataTableEntity.getTableName();
                         break;
                     }
@@ -960,29 +973,29 @@ public class ImportData {
                 backupEntity.setTableName(tableName);*/
             }
             //父表
-            if(retry_count != null){
+            if (retry_count != null) {
                 backupEntity.setExecutorFailRetryCount(retry_count);
             }
-            if(time_out != null){
+            if (time_out != null) {
                 backupEntity.setExecutorTimeout(time_out);
             }
-            if(StringUtils.isNotEmpty(alarm)){
-                if(alarm.equals("on")){
+            if (StringUtils.isNotEmpty(alarm)) {
+                if (alarm.equals("on")) {
                     backupEntity.setIsAlarm("1");
-                }else{
+                } else {
                     backupEntity.setIsAlarm("0");
                 }
 
             }
-            if(StringUtils.isNotEmpty(cron)){
+            if (StringUtils.isNotEmpty(cron)) {
                 backupEntity.setJobCron(cron);
             }
-            if(between_retries != null){
+            if (between_retries != null) {
                 backupEntity.setRetryInterval(between_retries);
             }
             //backupEntity.setTriggerLastTime();//上次调度时间
             //backupEntity.setTriggerNextTime();//下次调度时间
-            if(cron_status != null){
+            if (cron_status != null) {
                 backupEntity.setTriggerStatus(cron_status);
             }
             backupDao.saveNotNull(backupEntity);
@@ -1012,7 +1025,7 @@ public class ImportData {
             String cron = toString(m.get("CRON"));
 
             Integer cron_status = null;
-            if(StringUtils.isNotEmpty(toString(m.get("CRON_STATUS")))){
+            if (StringUtils.isNotEmpty(toString(m.get("CRON_STATUS")))) {
                 cron_status = Integer.valueOf(toString(m.get("CRON_STATUS")));
             }
 
@@ -1023,7 +1036,7 @@ public class ImportData {
 
 
             Integer timeout = null;
-            if(StringUtils.isNotEmpty(toString(m.get("TIMEOUT")))){
+            if (StringUtils.isNotEmpty(toString(m.get("TIMEOUT")))) {
                 timeout = Integer.valueOf(toString(m.get("TIMEOUT")));
             }
 
@@ -1040,14 +1053,14 @@ public class ImportData {
 
             moveEntity.setIsClear("1");
             moveEntity.setMoveLimit(86400);
-            moveEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
+            moveEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName() + "_" + databaseEntity1.get(0).getDatabaseName() + "_" + dataClassEntity.getClassName());
             moveEntity.setSourceDirectory("/CMADAAS/DATA");
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
-            if(dataTableEntities.size() == 1){
+            if (dataTableEntities.size() == 1) {
                 moveEntity.setTableName(dataTableEntities.get(0).getTableName());
-            }else{
+            } else {
                /* String tableName = "";
                 for(DataTableEntity dataTableEntity: dataTableEntities){
                     if(dataTableEntity.getDbTableType().equals("K")){
@@ -1065,22 +1078,22 @@ public class ImportData {
             moveEntity.setParentId(physics_database);
 
             //父表
-            if(timeout != null){
+            if (timeout != null) {
                 moveEntity.setExecutorTimeout(timeout);
             }
-            if(StringUtils.isNotEmpty(alarm)){
-                if(alarm.equals("true")){
+            if (StringUtils.isNotEmpty(alarm)) {
+                if (alarm.equals("true")) {
                     moveEntity.setIsAlarm("1");
-                }else{
+                } else {
                     moveEntity.setIsAlarm("0");
                 }
 
             }
-            if(StringUtils.isNotEmpty(cron)){
+            if (StringUtils.isNotEmpty(cron)) {
                 moveEntity.setJobCron(cron);
             }
 
-            if(cron_status != null){
+            if (cron_status != null) {
                 moveEntity.setTriggerStatus(cron_status);
             }
             moveDao.saveNotNull(moveEntity);
@@ -1122,12 +1135,12 @@ public class ImportData {
             clearEntity.setDdataId(dataClassEntity.getDDataId());
 
             clearEntity.setParentId(physics_database);
-            clearEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
+            clearEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName() + "_" + databaseEntity1.get(0).getDatabaseName() + "_" + dataClassEntity.getClassName());
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
-            if(dataTableEntities.size() == 1){
+            if (dataTableEntities.size() == 1) {
                 clearEntity.setTableName(dataTableEntities.get(0).getTableName());
-            }else{
+            } else {
                 /*String tableName = "";
                 for(DataTableEntity dataTableEntity: dataTableEntities){
                     if(dataTableEntity.getDbTableType().equals("K")){
@@ -1173,7 +1186,7 @@ public class ImportData {
             String cron = toString(m.get("CRON"));
 
             Integer cron_status = null;
-            if(StringUtils.isNotEmpty(toString(m.get("CRON_STATUS")))){
+            if (StringUtils.isNotEmpty(toString(m.get("CRON_STATUS")))) {
                 cron_status = Integer.valueOf(toString(m.get("CRON_STATUS")));
             }
 
@@ -1184,7 +1197,7 @@ public class ImportData {
 
 
             Integer timeout = null;
-            if(StringUtils.isNotEmpty(toString(m.get("TIMEOUT")))){
+            if (StringUtils.isNotEmpty(toString(m.get("TIMEOUT")))) {
                 timeout = Integer.valueOf(toString(m.get("TIMEOUT")));
             }
 
@@ -1201,13 +1214,13 @@ public class ImportData {
             clearEntity.setDdataId(dataClassEntity.getDDataId());
 
             clearEntity.setParentId(physics_database);
-            clearEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName()+"_"+databaseEntity1.get(0).getDatabaseName()+"_"+dataClassEntity.getClassName());
+            clearEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName() + "_" + databaseEntity1.get(0).getDatabaseName() + "_" + dataClassEntity.getClassName());
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
-            if(dataTableEntities.size() == 1){
+            if (dataTableEntities.size() == 1) {
                 clearEntity.setTableName(dataTableEntities.get(0).getTableName());
-            }else{
+            } else {
                /* String tableName = "";
                 for(DataTableEntity dataTableEntity: dataTableEntities){
                     if(dataTableEntity.getDbTableType().equals("K")){
@@ -1221,22 +1234,22 @@ public class ImportData {
                 clearEntity.setTableName(tableName);*/
             }
 
-            if(timeout != null){
+            if (timeout != null) {
                 clearEntity.setExecutorTimeout(timeout);
             }
-            if(StringUtils.isNotEmpty(alarm)){
-                if(alarm.equals("true")){
+            if (StringUtils.isNotEmpty(alarm)) {
+                if (alarm.equals("true")) {
                     clearEntity.setIsAlarm("1");
-                }else{
+                } else {
                     clearEntity.setIsAlarm("0");
                 }
 
             }
-            if(StringUtils.isNotEmpty(cron)){
+            if (StringUtils.isNotEmpty(cron)) {
                 clearEntity.setJobCron(cron);
             }
 
-            if(cron_status!= null){
+            if (cron_status != null) {
                 clearEntity.setTriggerStatus(cron_status);
             }
 
@@ -1271,44 +1284,44 @@ public class ImportData {
 
             DatabaseUserEntity databaseUserEntity = new DatabaseUserEntity();
 
-            if(StringUtils.isNotEmpty(apply_database_id)){
+            if (StringUtils.isNotEmpty(apply_database_id)) {
                 databaseUserEntity.setApplyDatabaseId(apply_database_id);
             }
-            if(StringUtils.isNotEmpty(apply_material)){
+            if (StringUtils.isNotEmpty(apply_material)) {
                 databaseUserEntity.setApplyMaterial(apply_material);
             }
-            if(StringUtils.isNotEmpty(databaseup_desc)){
+            if (StringUtils.isNotEmpty(databaseup_desc)) {
                 databaseUserEntity.setDatabaseUpDesc(databaseup_desc);
             }
-            if(StringUtils.isNotEmpty(databaseup_id)){
+            if (StringUtils.isNotEmpty(databaseup_id)) {
                 databaseUserEntity.setDatabaseUpId(databaseup_id);
             }
-            if(StringUtils.isNotEmpty(databaseup_ip)){
+            if (StringUtils.isNotEmpty(databaseup_ip)) {
                 databaseUserEntity.setDatabaseUpIp(databaseup_ip);
             }
-            if(StringUtils.isNotEmpty(databaseup_ip_segment)){
+            if (StringUtils.isNotEmpty(databaseup_ip_segment)) {
                 databaseUserEntity.setDatabaseUpIpSegment(databaseup_ip_segment);
             }
-            if(StringUtils.isNotEmpty(databaseup_password)){
+            if (StringUtils.isNotEmpty(databaseup_password)) {
                 databaseUserEntity.setDatabaseUpPassword(databaseup_password);
             }
-            if(StringUtils.isNotEmpty(database_id)){
+            if (StringUtils.isNotEmpty(database_id)) {
                 databaseUserEntity.setExamineDatabaseId(database_id);
             }
-            if(StringUtils.isNotEmpty(examine_status)){
+            if (StringUtils.isNotEmpty(examine_status)) {
                 databaseUserEntity.setExamineStatus(examine_status);
             }
-            if(StringUtils.isNotEmpty(examine_time)){
+            if (StringUtils.isNotEmpty(examine_time)) {
                 Date Date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
                 databaseUserEntity.setExamineTime(Date);
             }
-            if(StringUtils.isNotEmpty(examiner)){
+            if (StringUtils.isNotEmpty(examiner)) {
                 databaseUserEntity.setExaminer(examiner);
             }
-            if(StringUtils.isNotEmpty(failure_reason)){
+            if (StringUtils.isNotEmpty(failure_reason)) {
                 databaseUserEntity.setFailureReason(failure_reason);
             }
-            if(StringUtils.isNotEmpty(user_id)){
+            if (StringUtils.isNotEmpty(user_id)) {
                 databaseUserEntity.setUserId(user_id);
             }
 
@@ -1330,13 +1343,13 @@ public class ImportData {
 
             PortalAuzEntity portalAuzEntity = new PortalAuzEntity();
             portalAuzEntity.setAccount(account);
-            if(StringUtils.isNotEmpty(employer)){
+            if (StringUtils.isNotEmpty(employer)) {
                 portalAuzEntity.setPost(employer);
             }
-            if(StringUtils.isNotEmpty(status)){
+            if (StringUtils.isNotEmpty(status)) {
                 portalAuzEntity.setStatus(status);
             }
-            if(StringUtils.isNotEmpty(username)){
+            if (StringUtils.isNotEmpty(username)) {
                 portalAuzEntity.setUsername(username);
             }
 
@@ -1368,30 +1381,30 @@ public class ImportData {
             String sort_no = toString(m.get("SORT_NO"));
 
             DatabaseSpecialEntity databaseSpecialEntity = new DatabaseSpecialEntity();
-            if(StringUtils.isNotEmpty(apply_time)){
+            if (StringUtils.isNotEmpty(apply_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time);
                 databaseSpecialEntity.setCreateTime(date);
             }
-            if(StringUtils.isNotEmpty(apply_file_path)){
+            if (StringUtils.isNotEmpty(apply_file_path)) {
                 databaseSpecialEntity.setApplyMaterial(apply_file_path);
             }
 
             databaseSpecialEntity.setDatabaseId(database_id);
             databaseSpecialEntity.setDatabaseSchema(database_schema_id);
             databaseSpecialEntity.setExamineStatus(examine_status);
-            if(StringUtils.isNotEmpty(examine_time)){
+            if (StringUtils.isNotEmpty(examine_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
                 databaseSpecialEntity.setExamineTime(date);
             }
-            if(StringUtils.isNotEmpty(examiner)){
+            if (StringUtils.isNotEmpty(examiner)) {
                 databaseSpecialEntity.setExaminer(examiner);
             }
-            if(StringUtils.isNotEmpty(cause)){
+            if (StringUtils.isNotEmpty(cause)) {
                 databaseSpecialEntity.setFailureReason(cause);
             }
             databaseSpecialEntity.setSdbImg(tdb_img);
             databaseSpecialEntity.setSdbName(tdb_name);
-            if(StringUtils.isNotEmpty(sort_no)){
+            if (StringUtils.isNotEmpty(sort_no)) {
                 databaseSpecialEntity.setSortNo(sort_no);
             }
             databaseSpecialEntity.setUseStatus(use_status);
@@ -1402,16 +1415,16 @@ public class ImportData {
 
             //更新数据库中的专题库id
             List<DatabaseEntity> databaseEntities = databaseDao.findByTdbId(tdb_id);
-            if(databaseEntities != null && databaseEntities.size()>0){
-                for(DatabaseEntity databaseEntity : databaseEntities){
+            if (databaseEntities != null && databaseEntities.size() > 0) {
+                for (DatabaseEntity databaseEntity : databaseEntities) {
                     databaseEntity.setTdbId(databaseSpecialEntity.getId());
                     databaseDao.saveNotNull(databaseEntity);
                 }
             }
 
-            sql = "select * from dmin_special_db_readwrite where tdb_id='"+tdb_id+"'";
+            sql = "select * from dmin_special_db_readwrite where tdb_id='" + tdb_id + "'";
             List<Map> readwriteList = CodeDOM.getList(sql);
-            if(readwriteList != null && readwriteList.size() > 0){
+            if (readwriteList != null && readwriteList.size() > 0) {
                 for (Map<String, Object> rwMap : readwriteList) {
                     String data_class_id = toString(rwMap.get("DATA_CLASS_ID"));
                     String logic_id = toString(rwMap.get("LOGIC_ID"));
@@ -1425,41 +1438,41 @@ public class ImportData {
 
                     DatabaseSpecialReadWriteEntity readWriteEntity = new DatabaseSpecialReadWriteEntity();
 
-                    if(StringUtils.isNotEmpty(apply_time1)){
+                    if (StringUtils.isNotEmpty(apply_time1)) {
                         Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time1);
                         readWriteEntity.setCreateTime(date);
                     }
-                    if(StringUtils.isNotEmpty(type_id)){
+                    if (StringUtils.isNotEmpty(type_id)) {
                         readWriteEntity.setTypeId(type_id);
                     }
-                    if(StringUtils.isNotEmpty(apply_authority)){
+                    if (StringUtils.isNotEmpty(apply_authority)) {
                         readWriteEntity.setApplyAuthority(Integer.valueOf(apply_authority));
                     }
                     readWriteEntity.setDataClassId(data_class_id);
                     readWriteEntity.setDataType(data_type);
 
-                    sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+logic_id+"'";
+                    sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='" + logic_id + "'";
                     List<Map> databaseList = CodeDOM.getList(sql);
-                    if(databaseList != null){
-                        String  database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
-                        String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
-                        String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
-                        String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+                    if (databaseList != null) {
+                        String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
+                        String special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                        String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                        String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
 
-                        if(data_type.intValue() == 2){//引用资料
-                            if(database_classify.equals("物理库")){
+                        if (data_type.intValue() == 2) {//引用资料
+                            if (database_classify.equals("物理库")) {
                                 List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", logic_id);
                                 readWriteEntity.setDatabaseId(databaseEntity1.get(0).getId());
-                            }else{
+                            } else {
                                 List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                                 readWriteEntity.setDatabaseId(defineId.get(0).getId());
                             }
-                        }else{//私有资料
+                        } else {//私有资料
                             List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                             readWriteEntity.setDatabaseId(defineId.get(0).getId());
                         }
                     }
-                    if(StringUtils.isNotEmpty(real_authority)){
+                    if (StringUtils.isNotEmpty(real_authority)) {
                         readWriteEntity.setEmpowerAuthority(Integer.valueOf(real_authority));
                     }
                     readWriteEntity.setExamineStatus(authorize);
@@ -1472,9 +1485,9 @@ public class ImportData {
                 }
             }
 
-            sql = "select * from dmin_special_db_tree where tdb_id='"+tdb_id+"'";
+            sql = "select * from dmin_special_db_tree where tdb_id='" + tdb_id + "'";
             List<Map> treeList = CodeDOM.getList(sql);
-            if(treeList != null && treeList.size()>0){
+            if (treeList != null && treeList.size() > 0) {
                 for (Map<String, Object> treeMap : treeList) {
                     String type_id = toString(treeMap.get("TYPE_ID"));
                     String type_name = toString(treeMap.get("TYPE_NAME"));
@@ -1484,7 +1497,7 @@ public class ImportData {
                     treeEntity.setTypeId(type_id);
                     treeEntity.setTypeName(type_name);
                     treeEntity.setParentId(parent_id);
-                    if(StringUtils.isNotEmpty(sort)){
+                    if (StringUtils.isNotEmpty(sort)) {
                         treeEntity.setSort(Integer.valueOf(sort));
                     }
                     treeEntity.setSdbId(databaseSpecialEntity.getId());
@@ -1492,33 +1505,33 @@ public class ImportData {
                 }
             }
 
-            sql = "select * from dmin_special_db_authority where tdb_id='"+tdb_id+"'";
+            sql = "select * from dmin_special_db_authority where tdb_id='" + tdb_id + "'";
             List<Map> authorityList = CodeDOM.getList(sql);
-            if(authorityList != null && authorityList.size() > 0){
+            if (authorityList != null && authorityList.size() > 0) {
                 for (Map<String, Object> authorityMap : authorityList) {
                     String create_table = toString(authorityMap.get("CREATE_TABLE"));
                     String delete_table = toString(authorityMap.get("DELETE_TABLE"));
                     String table_data_access = toString(authorityMap.get("TABLE_DATA_ACCESS"));
                     String database_id1 = toString(authorityMap.get("DATABASE_ID"));
                     DatabaseSpecialAuthorityEntity authorityEntity = new DatabaseSpecialAuthorityEntity();
-                    if(StringUtils.isNotEmpty(create_table)){
+                    if (StringUtils.isNotEmpty(create_table)) {
                         authorityEntity.setCreateTable(Integer.valueOf(create_table));
                     }
                     authorityEntity.setDatabaseId(database_id1);
-                    if(StringUtils.isNotEmpty(delete_table)){
+                    if (StringUtils.isNotEmpty(delete_table)) {
                         authorityEntity.setDeleteTable(Integer.valueOf(delete_table));
                     }
                     authorityEntity.setSdbId(databaseSpecialEntity.getId());
-                    if(StringUtils.isNotEmpty(table_data_access)){
+                    if (StringUtils.isNotEmpty(table_data_access)) {
                         authorityEntity.setTableDataAccess(Integer.valueOf(table_data_access));
                     }
                     databaseSpecialAuthorityDao.saveNotNull(authorityEntity);
                 }
             }
 
-            sql = "select * from dmin_special_db_accessapply where tdb_id='"+tdb_id+"'";
+            sql = "select * from dmin_special_db_accessapply where tdb_id='" + tdb_id + "'";
             List<Map> accessList = CodeDOM.getList(sql);
-            if(accessList != null && accessList.size() > 0){
+            if (accessList != null && accessList.size() > 0) {
                 for (Map<String, Object> accessMap : accessList) {
                     String access_authority = toString(accessMap.get("ACCESS_AUTHORITY"));
                     String user_id1 = toString(accessMap.get("USER_ID"));
@@ -1531,28 +1544,28 @@ public class ImportData {
                     String use_status1 = toString(accessMap.get("USE_STATUS"));
 
                     DatabaseSpecialAccessEntity accessEntity = new DatabaseSpecialAccessEntity();
-                    if(StringUtils.isNotEmpty(apply_time1)){
+                    if (StringUtils.isNotEmpty(apply_time1)) {
                         Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, apply_time1);
                         accessEntity.setCreateTime(date);
                     }
-                    if(StringUtils.isNotEmpty(access_authority)){
+                    if (StringUtils.isNotEmpty(access_authority)) {
                         accessEntity.setAccessAuthority(Integer.valueOf(access_authority));
                     }
-                    if(StringUtils.isNotEmpty(examine_status1)){
+                    if (StringUtils.isNotEmpty(examine_status1)) {
                         accessEntity.setExamineStatus(examine_status1);
                     }
-                    if(StringUtils.isNotEmpty(examine_time1)){
+                    if (StringUtils.isNotEmpty(examine_time1)) {
                         Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time1);
                         accessEntity.setExamineTime(date);
                     }
-                    if(StringUtils.isNotEmpty(examiner1)){
+                    if (StringUtils.isNotEmpty(examiner1)) {
                         accessEntity.setExaminer(examiner1);
                     }
-                    if(StringUtils.isNotEmpty(cause1)){
+                    if (StringUtils.isNotEmpty(cause1)) {
                         accessEntity.setFailureReason(cause1);
                     }
                     accessEntity.setSdbId(databaseSpecialEntity.getId());
-                    if(StringUtils.isNotEmpty(use_status1)){
+                    if (StringUtils.isNotEmpty(use_status1)) {
                         accessEntity.setUseStatus(use_status1);
                     }
                     accessEntity.setUserId(user_id1);
@@ -1561,7 +1574,6 @@ public class ImportData {
 
                 }
             }
-
 
 
         }
@@ -1596,19 +1608,19 @@ public class ImportData {
             String database_id = toString(m.get("DATABASE_ID"));//申请时是否有database_id
 
             NewdataApplyEntity newdataApplyEntity = new NewdataApplyEntity();
-            if(StringUtils.isNotEmpty(database_id)){
+            if (StringUtils.isNotEmpty(database_id)) {
                 String database_id_new = "";
-                sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+database_id+"'";
+                sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='" + database_id + "'";
                 List<Map> databaseList = CodeDOM.getList(sql);
-                if(databaseList != null && databaseList.size() > 0){
+                if (databaseList != null && databaseList.size() > 0) {
                     String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
-                    String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
-                    String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
-                    String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
-                    if(database_classify.equals("物理库")){
+                    String special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                    String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                    String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+                    if (database_classify.equals("物理库")) {
                         List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
                         database_id_new = databaseEntity1.get(0).getId();
-                    }else{
+                    } else {
                         List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                         database_id_new = defineId.get(0).getId();
                     }
@@ -1616,38 +1628,38 @@ public class ImportData {
                 newdataApplyEntity.setDatabaseId(database_id_new);
             }
             newdataApplyEntity.setDDataId(d_data_id);
-            if(StringUtils.isNotEmpty(data_class_id)){
+            if (StringUtils.isNotEmpty(data_class_id)) {
                 newdataApplyEntity.setDataClassId(data_class_id);
             }
             newdataApplyEntity.setDataFreq(datafreq);
             newdataApplyEntity.setDataOrigin(dataorigin);
-            if(StringUtils.isNotEmpty(data_prop)){
+            if (StringUtils.isNotEmpty(data_prop)) {
                 newdataApplyEntity.setDataProp(data_prop);
             }
-            if(StringUtils.isNotEmpty(data_service_id)){
+            if (StringUtils.isNotEmpty(data_service_id)) {
                 newdataApplyEntity.setDataServiceId(data_service_id);
             }
-            if(StringUtils.isNotEmpty(examine_status)){
+            if (StringUtils.isNotEmpty(examine_status)) {
                 newdataApplyEntity.setExamineStatus(Integer.valueOf(examine_status));
             }
-            if(StringUtils.isNotEmpty(examine_time)){
+            if (StringUtils.isNotEmpty(examine_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
                 newdataApplyEntity.setExamineTime(date);
             }
-            if(StringUtils.isNotEmpty(examiner)){
+            if (StringUtils.isNotEmpty(examiner)) {
                 newdataApplyEntity.setExaminer(examiner);
             }
-            if(StringUtils.isNotEmpty(freusefield)){
+            if (StringUtils.isNotEmpty(freusefield)) {
                 newdataApplyEntity.setFreuseField(freusefield);
             }
-            if(StringUtils.isNotEmpty(ispublish)){
+            if (StringUtils.isNotEmpty(ispublish)) {
                 newdataApplyEntity.setIsPublish(Integer.valueOf(ispublish));
             }
             newdataApplyEntity.setLogicId(logic_id);
-            if(StringUtils.isNotEmpty(memo)){
+            if (StringUtils.isNotEmpty(memo)) {
                 newdataApplyEntity.setMemo(memo);
             }
-            if(StringUtils.isNotEmpty(remark)){
+            if (StringUtils.isNotEmpty(remark)) {
                 newdataApplyEntity.setRemark(remark);
             }
             newdataApplyEntity.setTableName(table_name);
@@ -1655,7 +1667,7 @@ public class ImportData {
             newdataApplyEntity = newdataApplyDao.saveNotNull(newdataApplyEntity);
 
             //新增资料字段
-            sql = "select * from dmin_newdata_table_field where apply_id='"+apply_id+"'";
+            sql = "select * from dmin_newdata_table_field where apply_id='" + apply_id + "'";
             List<Map> fieldList = CodeDOM.getList(sql);
             for (Map<String, Object> fieldMap : fieldList) {
                 String c_element_code = toString(fieldMap.get("C_ELEMENT_CODE"));
@@ -1673,17 +1685,17 @@ public class ImportData {
                 newdataTableColumnEntity.setEleName(ele_name);
                 newdataTableColumnEntity.setType(type);
                 newdataTableColumnEntity.setAccuracy(accuracy);
-                if(StringUtils.isNotEmpty(unit)){
+                if (StringUtils.isNotEmpty(unit)) {
                     newdataTableColumnEntity.setUnit(unit);
                 }
-                if("1".equals(is_null)){
+                if ("1".equals(is_null)) {
                     newdataTableColumnEntity.setIsNull(true);
-                }else{
+                } else {
                     newdataTableColumnEntity.setIsNull(false);
                 }
-                if("1".equals(is_premary_key)){
+                if ("1".equals(is_premary_key)) {
                     newdataTableColumnEntity.setIsPrimaryKey(true);
-                }else{
+                } else {
                     newdataTableColumnEntity.setIsPrimaryKey(false);
                 }
                 newdataTableColumnEntity.setSerialNumber(Integer.valueOf(serial_number));
@@ -1772,19 +1784,19 @@ public class ImportData {
             DataAuthorityApplyEntity dataAuthorityApplyEntity = new DataAuthorityApplyEntity();
 
             dataAuthorityApplyEntity.setAuditStatus(audit_status);
-            if(StringUtils.isNotEmpty(examine_time)){
+            if (StringUtils.isNotEmpty(examine_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, examine_time);
                 dataAuthorityApplyEntity.setExamineTime(date);
             }
-            if(StringUtils.isNotEmpty(examiner)){
+            if (StringUtils.isNotEmpty(examiner)) {
                 dataAuthorityApplyEntity.setExaminer(examiner);
             }
             dataAuthorityApplyEntity.setUserId(user_id);
             //dataAuthorityApplyEntity = dataAuthorityApplyDao.saveNotNull(dataAuthorityApplyEntity);
 
-            sql = "select * from dmin_db_dataauthority where apply_id='"+apply_id+"'";
+            sql = "select * from dmin_db_dataauthority where apply_id='" + apply_id + "'";
             List<Map> recordList = CodeDOM.getList(sql);
-            if(recordList != null && recordList.size() > 0){
+            if (recordList != null && recordList.size() > 0) {
                 for (Map<String, Object> recordMap : recordList) {
                     String data_class_id = toString(recordMap.get("DATA_CLASS_ID"));
                     String database_id = toString(recordMap.get("DATABASE_ID"));
@@ -1794,35 +1806,35 @@ public class ImportData {
                     String qtdb_id = toString(recordMap.get("QTDB_ID"));
 
                     DataAuthorityRecordEntity dataAuthorityRecordEntity = new DataAuthorityRecordEntity();
-                    if(StringUtils.isNotEmpty(apply_authority)){
+                    if (StringUtils.isNotEmpty(apply_authority)) {
                         dataAuthorityRecordEntity.setApplyAuthority(Integer.valueOf(apply_authority));
                     }
-                    if(StringUtils.isNotEmpty(authorize)){
+                    if (StringUtils.isNotEmpty(authorize)) {
                         dataAuthorityRecordEntity.setAuthorize(Integer.valueOf(authorize));
                     }
-                    if(StringUtils.isNotEmpty(cause)){
+                    if (StringUtils.isNotEmpty(cause)) {
                         dataAuthorityRecordEntity.setCause(cause);
                     }
                     dataAuthorityRecordEntity.setDataClassId(data_class_id);
-                    if(StringUtils.isNotEmpty(database_id)){
+                    if (StringUtils.isNotEmpty(database_id)) {
                         String database_id_new = "";
-                        sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+database_id+"'";
+                        sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='" + database_id + "'";
                         List<Map> databaseList = CodeDOM.getList(sql);
-                        if(databaseList != null && databaseList.size() > 0){
+                        if (databaseList != null && databaseList.size() > 0) {
                             String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
-                            String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
-                            String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
-                            String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
-                            if(database_classify.equals("物理库")){
+                            String special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+                            String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+                            String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+                            if (database_classify.equals("物理库")) {
                                 List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
                                 database_id_new = databaseEntity1.get(0).getId();
-                            }else{
+                            } else {
                                 List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                                 database_id_new = defineId.get(0).getId();
                                 dataAuthorityRecordEntity.setQtdbId(defineId.get(0).getTdbId());
                             }
                         }
-                        if(StringUtils.isNotEmpty(database_id_new)){
+                        if (StringUtils.isNotEmpty(database_id_new)) {
                             dataAuthorityRecordEntity.setDatabaseId(database_id_new);
                         }
                     }
@@ -1849,37 +1861,37 @@ public class ImportData {
             String statistic_time = toString(m.get("STATISTIC_TIME"));
 
             TableDataStatisticsEntity tableDataStatisticsEntity = new TableDataStatisticsEntity();
-            if(StringUtils.isNotEmpty(begin_time)){
+            if (StringUtils.isNotEmpty(begin_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, begin_time);
                 tableDataStatisticsEntity.setBeginTime(date);
             }
             String database_id_new = getNewDatabaseId(database_id);
             tableDataStatisticsEntity.setDatabaseId(database_id_new);
-            if(StringUtils.isNotEmpty(day_total)){
+            if (StringUtils.isNotEmpty(day_total)) {
                 tableDataStatisticsEntity.setDayTotal(Integer.valueOf(day_total));
             }
-            if(StringUtils.isNotEmpty(end_time)){
+            if (StringUtils.isNotEmpty(end_time)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, end_time);
                 tableDataStatisticsEntity.setEndTime(date);
             }
-            if(StringUtils.isNotEmpty(record_count)){
+            if (StringUtils.isNotEmpty(record_count)) {
                 tableDataStatisticsEntity.setRecordCount(Double.valueOf(record_count));
             }
-            if(StringUtils.isNotEmpty(statistic_date)){
+            if (StringUtils.isNotEmpty(statistic_date)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, statistic_date);
                 tableDataStatisticsEntity.setStatisticDate(date);
             }
-            if(StringUtils.isNotEmpty(statistic_time)){
+            if (StringUtils.isNotEmpty(statistic_time)) {
                 tableDataStatisticsEntity.setStatisticTime(statistic_time);
             }
-           sql = "select * from DMIN_DATA_ID_TABLE where table_id='"+table_id+"'";
+            sql = "select * from DMIN_DATA_ID_TABLE where table_id='" + table_id + "'";
             List<Map> tableList = CodeDOM.getList(sql);
-            if(tableList != null && tableList.size()>0){
+            if (tableList != null && tableList.size() > 0) {
                 String data_class_id = toString(tableList.get(0).get("DATA_CLASS_ID"));
                 String table_name = toString(tableList.get(0).get("TABLE_NAME"));
                 List<Map<String, Object>> tableName = dataTableService.getByDatabaseIdAndTableName(database_id_new, table_name);
-                if(tableName != null && tableName.size()>0){
-                    for(Map<String,Object> map : tableName){
+                if (tableName != null && tableName.size() > 0) {
+                    for (Map<String, Object> map : tableName) {
                         tableDataStatisticsEntity.setId(null);
                         tableDataStatisticsEntity.setTableId(toString(map.get("ID")));
                         tableDataStatisticsDao.saveNotNull(tableDataStatisticsEntity);
@@ -1889,24 +1901,24 @@ public class ImportData {
         }
     }
 
-    public String getNewDatabaseId(String database_id_old){
+    public String getNewDatabaseId(String database_id_old) {
         String database_id_new = "";
-        String sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='"+database_id_old+"'";
+        String sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='" + database_id_old + "'";
         List<Map> databaseList = CodeDOM.getList(sql);
-        if(databaseList != null && databaseList.size() > 0){
+        if (databaseList != null && databaseList.size() > 0) {
             String database_classify = toString(databaseList.get(0).get("DATABASE_CLASSIFY"));
-            String  special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
-            String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
-            String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
-            if(database_classify.equals("物理库")){
+            String special_database_name = toString(databaseList.get(0).get("SPECIAL_DATABASE_NAME"));
+            String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
+            String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
+            if (database_classify.equals("物理库")) {
                 List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id_old);
                 database_id_new = databaseEntity1.get(0).getId();
-            }else{
+            } else {
                 List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                 database_id_new = defineId.get(0).getId();
             }
         }
-        return  database_id_new;
+        return database_id_new;
     }
 
     //公共元数据同步
@@ -1927,11 +1939,11 @@ public class ImportData {
             comMetadataSyncCfgEntity.setApiDataKey(interface_datakey);
             comMetadataSyncCfgEntity.setApiType(interface_type);
             comMetadataSyncCfgEntity.setApiUrl(interface_url);
-            if(StringUtils.isNotEmpty(primary_key)){
+            if (StringUtils.isNotEmpty(primary_key)) {
                 comMetadataSyncCfgEntity.setPrimaryKey(primary_key);
             }
             comMetadataSyncCfgEntity.setStartTime(start_time);
-            if(StringUtils.isNotEmpty(start_time_unit)){
+            if (StringUtils.isNotEmpty(start_time_unit)) {
                 comMetadataSyncCfgEntity.setStartTimeUnit(start_time_unit);
             }
             comMetadataSyncCfgEntity.setTaskName(task_name);
@@ -1941,6 +1953,7 @@ public class ImportData {
             comMetadataSyncCfgDao.saveNotNull(comMetadataSyncCfgEntity);
         }
     }
+
     //系统元数据备份
     public void importMetadataBackUp() {
         String sql = "select * from DMIN_METADATA_BACKUP";
@@ -1958,11 +1971,11 @@ public class ImportData {
             String database_id = toString(m.get("DATABASE_ID"));
 
             String back_content = "";
-            Clob clob = (Clob)m.get("BACK_CONTENT");
+            Clob clob = (Clob) m.get("BACK_CONTENT");
             try {
-                char[] mapperChar = new char[(int)clob.length()];
+                char[] mapperChar = new char[(int) clob.length()];
                 int read = clob.getCharacterStream().read(mapperChar);
-                if(read > 0){
+                if (read > 0) {
                     back_content = String.valueOf(mapperChar);
                 }
             } catch (Exception e) {
@@ -1970,15 +1983,15 @@ public class ImportData {
             }
 
             MetaBackupEntity metaBackupEntity = new MetaBackupEntity();
-            if(StringUtils.isNotEmpty(back_content)){
+            if (StringUtils.isNotEmpty(back_content)) {
                 metaBackupEntity.setBackContent(back_content);
             }
-            if(StringUtils.isNotEmpty(database_id)){
+            if (StringUtils.isNotEmpty(database_id)) {
                 String newDatabaseId = getNewDatabaseId(database_id);
                 metaBackupEntity.setDatabaseId(newDatabaseId);
                 Optional<DatabaseEntity> databaseEntity = databaseDao.findById(newDatabaseId);
                 DatabaseDto databaseDto = databaseService.getDotById(newDatabaseId);
-                metaBackupEntity.setDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
+                metaBackupEntity.setDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName());
                 metaBackupEntity.setDatabaseType(databaseDto.getDatabaseDefine().getDatabaseType());
                 metaBackupEntity.setParentId(databaseDto.getDatabaseDefine().getId());
             }
@@ -1986,7 +1999,7 @@ public class ImportData {
             metaBackupEntity.setStorageDirectory(storage_directory);
             metaBackupEntity.setTaskName(task_name);
             metaBackupEntity.setJobCron(cron);
-            if(StringUtils.isNotEmpty(cron_status)){
+            if (StringUtils.isNotEmpty(cron_status)) {
                 metaBackupEntity.setTriggerStatus(Integer.valueOf(cron_status));
             }
             metaBackupDao.saveNotNull(metaBackupEntity);
@@ -2060,39 +2073,39 @@ public class ImportData {
         String sql = "select * from g_api_data_ele_define";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String  user_ele_code = toString(m.get("USER_ELE_CODE"));
-            String  db_ele_code = toString(m.get("DB_ELE_CODE"));
-            String  ele_name = toString(m.get("ELE_NAME"));
-            String  description = toString(m.get("DESCRIPTION"));
-            String  has_sod = toString(m.get("HAS_SOD"));
-            String  user_ele_code_1 = toString(m.get("USER_ELE_CODE_1"));
-            String  ele_unit = toString(m.get("ELE_UNIT"));
-            String  is_code_param = toString(m.get("IS_CODE_PARAM"));
-            String  code_table_id = toString(m.get("CODE_TABLE_ID"));
+            String user_ele_code = toString(m.get("USER_ELE_CODE"));
+            String db_ele_code = toString(m.get("DB_ELE_CODE"));
+            String ele_name = toString(m.get("ELE_NAME"));
+            String description = toString(m.get("DESCRIPTION"));
+            String has_sod = toString(m.get("HAS_SOD"));
+            String user_ele_code_1 = toString(m.get("USER_ELE_CODE_1"));
+            String ele_unit = toString(m.get("ELE_UNIT"));
+            String is_code_param = toString(m.get("IS_CODE_PARAM"));
+            String code_table_id = toString(m.get("CODE_TABLE_ID"));
 
             ServiceCodeEntity serviceCodeEntity = new ServiceCodeEntity();
-            if(StringUtils.isNotEmpty(code_table_id)){
+            if (StringUtils.isNotEmpty(code_table_id)) {
                 serviceCodeEntity.setCodeTableId(code_table_id);
             }
-            if(StringUtils.isNotEmpty(db_ele_code)){
+            if (StringUtils.isNotEmpty(db_ele_code)) {
                 serviceCodeEntity.setDbEleCode(db_ele_code);
             }
-            if(StringUtils.isNotEmpty(description)){
+            if (StringUtils.isNotEmpty(description)) {
                 serviceCodeEntity.setDescription(description);
             }
-            if(StringUtils.isNotEmpty(ele_name)){
+            if (StringUtils.isNotEmpty(ele_name)) {
                 serviceCodeEntity.setEleName(ele_name);
             }
-            if(StringUtils.isNotEmpty(ele_unit)){
+            if (StringUtils.isNotEmpty(ele_unit)) {
                 serviceCodeEntity.setEleUnit(ele_unit);
             }
-            if(StringUtils.isNotEmpty(has_sod)){
+            if (StringUtils.isNotEmpty(has_sod)) {
                 serviceCodeEntity.setHasSod(has_sod);
             }
-            if(StringUtils.isNotEmpty(is_code_param)){
+            if (StringUtils.isNotEmpty(is_code_param)) {
                 serviceCodeEntity.setIsCodeParam(is_code_param);
             }
-            if(StringUtils.isNotEmpty(user_ele_code)){
+            if (StringUtils.isNotEmpty(user_ele_code)) {
                 serviceCodeEntity.setUserEleCode(user_ele_code);
             }
             serviceCodeDao.saveNotNull(serviceCodeEntity);
@@ -2104,106 +2117,108 @@ public class ImportData {
         String sql = "select * from dmin_grid_ele_service_define";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String  user_fcst_ele = toString(m.get("USER_FCST_ELE"));
-            String  db_fcst_ele = toString(m.get("DB_FCST_ELE"));
-            String  ele_property_name = toString(m.get("ELE_PROPERTY_NAME"));
-            String  ele_unit = toString(m.get("ELE_UNIT"));
-            String  ele_name = toString(m.get("ELE_NAME"));
+            String user_fcst_ele = toString(m.get("USER_FCST_ELE"));
+            String db_fcst_ele = toString(m.get("DB_FCST_ELE"));
+            String ele_property_name = toString(m.get("ELE_PROPERTY_NAME"));
+            String ele_unit = toString(m.get("ELE_UNIT"));
+            String ele_name = toString(m.get("ELE_NAME"));
 
             ServiceCodeDefineEntity serviceCodeDefineEntity = new ServiceCodeDefineEntity();
-            if(StringUtils.isNotEmpty(db_fcst_ele)){
+            if (StringUtils.isNotEmpty(db_fcst_ele)) {
                 serviceCodeDefineEntity.setDbFcstEle(db_fcst_ele);
             }
-            if(StringUtils.isNotEmpty(ele_name)){
+            if (StringUtils.isNotEmpty(ele_name)) {
                 serviceCodeDefineEntity.setEleName(ele_name);
             }
-            if(StringUtils.isNotEmpty(ele_property_name)){
+            if (StringUtils.isNotEmpty(ele_property_name)) {
                 serviceCodeDefineEntity.setElePropertyName(ele_property_name);
             }
-            if(StringUtils.isNotEmpty(ele_unit)){
+            if (StringUtils.isNotEmpty(ele_unit)) {
                 serviceCodeDefineEntity.setEleUnit(ele_unit);
             }
-            if(StringUtils.isNotEmpty(user_fcst_ele)){
+            if (StringUtils.isNotEmpty(user_fcst_ele)) {
                 serviceCodeDefineEntity.setUserFcstEle(user_fcst_ele);
             }
             serviceCodeDefineDao.saveNotNull(serviceCodeDefineEntity);
         }
     }
+
     //区域类别管理
     public void importGridAreaDefine() {
         String sql = "select * from dmin_grid_area_define_dir";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String  area_id = toString(m.get("AREA_ID"));
-            String  start_lat = toString(m.get("START_LAT"));
-            String  end_lat = toString(m.get("END_LAT"));
-            String  start_lon = toString(m.get("START_LON"));
-            String  end_lon = toString(m.get("END_LON"));
-            String  area_desc = toString(m.get("AREA_DESC"));
+            String area_id = toString(m.get("AREA_ID"));
+            String start_lat = toString(m.get("START_LAT"));
+            String end_lat = toString(m.get("END_LAT"));
+            String start_lon = toString(m.get("START_LON"));
+            String end_lon = toString(m.get("END_LON"));
+            String area_desc = toString(m.get("AREA_DESC"));
 
             DefineEntity defineEntity = new DefineEntity();
-            if(StringUtils.isNotEmpty(area_desc)){
+            if (StringUtils.isNotEmpty(area_desc)) {
                 defineEntity.setAreaDesc(area_desc);
             }
-            if(StringUtils.isNotEmpty(area_id)){
+            if (StringUtils.isNotEmpty(area_id)) {
                 defineEntity.setAreaId(area_id);
             }
-            if(StringUtils.isNotEmpty(end_lat)){
+            if (StringUtils.isNotEmpty(end_lat)) {
                 defineEntity.setEndLat(Double.valueOf(end_lat));
             }
-            if(StringUtils.isNotEmpty(end_lon)){
+            if (StringUtils.isNotEmpty(end_lon)) {
                 defineEntity.setEndLon(Double.valueOf(end_lon));
             }
-            if(StringUtils.isNotEmpty(start_lat)){
+            if (StringUtils.isNotEmpty(start_lat)) {
                 defineEntity.setStartLat(Double.valueOf(start_lat));
             }
-            if(StringUtils.isNotEmpty(start_lon)){
+            if (StringUtils.isNotEmpty(start_lon)) {
                 defineEntity.setStartLon(Double.valueOf(start_lon));
             }
             defineDao.saveNotNull(defineEntity);
         }
     }
+
     //grib参数定义
     public void importGridEleDecodeDefine() {
         String sql = "select * from dmin_grid_ele_decode_define";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String  ele_code_short = toString(m.get("ELE_CODE_SHORT"));
-            String  subject_id = toString(m.get("SUBJECT_ID"));
-            String  classify = toString(m.get("CLASSIFY"));
-            String  parameter_id = toString(m.get("PARAMETER_ID"));
-            String  grib_version = toString(m.get("GRIB_VERSION"));
-            String  element_cn = toString(m.get("ELEMENT_CN"));
-            String  public_config = toString(m.get("PUBLIC_CONFIG"));
-            String  template_id = toString(m.get("TEMPLATE_ID"));
-            String  template_desc = toString(m.get("TEMPLATE_DESC"));
+            String ele_code_short = toString(m.get("ELE_CODE_SHORT"));
+            String subject_id = toString(m.get("SUBJECT_ID"));
+            String classify = toString(m.get("CLASSIFY"));
+            String parameter_id = toString(m.get("PARAMETER_ID"));
+            String grib_version = toString(m.get("GRIB_VERSION"));
+            String element_cn = toString(m.get("ELEMENT_CN"));
+            String public_config = toString(m.get("PUBLIC_CONFIG"));
+            String template_id = toString(m.get("TEMPLATE_ID"));
+            String template_desc = toString(m.get("TEMPLATE_DESC"));
 
             GribParameterDefineEntity gribParameterDefineEntity = new GribParameterDefineEntity();
-            if(StringUtils.isNotEmpty(classify)){
+            if (StringUtils.isNotEmpty(classify)) {
                 gribParameterDefineEntity.setClassify(Integer.valueOf(classify));
             }
-            if(StringUtils.isNotEmpty(ele_code_short)){
+            if (StringUtils.isNotEmpty(ele_code_short)) {
                 gribParameterDefineEntity.setEleCodeShort(ele_code_short);
             }
-            if(StringUtils.isNotEmpty(element_cn)){
+            if (StringUtils.isNotEmpty(element_cn)) {
                 gribParameterDefineEntity.setElementCn(element_cn);
             }
-            if(StringUtils.isNotEmpty(grib_version)){
+            if (StringUtils.isNotEmpty(grib_version)) {
                 gribParameterDefineEntity.setGribVersion(Integer.valueOf(grib_version));
             }
-            if(StringUtils.isNotEmpty(parameter_id)){
+            if (StringUtils.isNotEmpty(parameter_id)) {
                 gribParameterDefineEntity.setParameterId(Integer.valueOf(parameter_id));
             }
-            if(StringUtils.isNotEmpty(public_config)){
+            if (StringUtils.isNotEmpty(public_config)) {
                 gribParameterDefineEntity.setPublicConfig(public_config);
             }
-            if(StringUtils.isNotEmpty(subject_id)){
+            if (StringUtils.isNotEmpty(subject_id)) {
                 gribParameterDefineEntity.setSubjectId(Integer.valueOf(subject_id));
             }
-            if(StringUtils.isNotEmpty(template_desc)){
+            if (StringUtils.isNotEmpty(template_desc)) {
                 gribParameterDefineEntity.setTemplateDesc(template_desc);
             }
-            if(StringUtils.isNotEmpty(template_id)){
+            if (StringUtils.isNotEmpty(template_id)) {
                 gribParameterDefineEntity.setTemplateId(template_id);
             }
             gribParameterDefineDao.saveNotNull(gribParameterDefineEntity);
@@ -2215,44 +2230,44 @@ public class ImportData {
         String sql = "select * from dmin_grid_layer_level";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String  grib_version = toString(m.get("GRIB_VERSION"));
-            String  level_type = toString(m.get("LEVEL_TYPE"));
-            String  level_code = toString(m.get("LEVEL_CODE"));
-            String  scale_divisor = toString(m.get("SCALE_DIVISOR"));
-            String  level_properity = toString(m.get("LEVEL_PROPERITY"));
-            String  level_name = toString(m.get("LEVEL_NAME"));
-            String  unit = toString(m.get("UNIT"));
+            String grib_version = toString(m.get("GRIB_VERSION"));
+            String level_type = toString(m.get("LEVEL_TYPE"));
+            String level_code = toString(m.get("LEVEL_CODE"));
+            String scale_divisor = toString(m.get("SCALE_DIVISOR"));
+            String level_properity = toString(m.get("LEVEL_PROPERITY"));
+            String level_name = toString(m.get("LEVEL_NAME"));
+            String unit = toString(m.get("UNIT"));
 
             LevelEntity levelEntity = new LevelEntity();
-            if(StringUtils.isNotEmpty(grib_version)){
+            if (StringUtils.isNotEmpty(grib_version)) {
                 levelEntity.setGribVersion(Integer.valueOf(grib_version));
             }
-            if(StringUtils.isNotEmpty(level_code)){
+            if (StringUtils.isNotEmpty(level_code)) {
                 levelEntity.setLevelCode(level_code);
             }
-            if(StringUtils.isNotEmpty(level_name)){
+            if (StringUtils.isNotEmpty(level_name)) {
                 levelEntity.setLevelName(level_name);
             }
-            if(StringUtils.isNotEmpty(level_properity)){
+            if (StringUtils.isNotEmpty(level_properity)) {
                 levelEntity.setLevelProperity(level_properity);
             }
-            if(StringUtils.isNotEmpty(level_type)){
+            if (StringUtils.isNotEmpty(level_type)) {
                 levelEntity.setLevelType(Integer.valueOf(level_type));
             }
-            if(StringUtils.isNotEmpty(scale_divisor)){
+            if (StringUtils.isNotEmpty(scale_divisor)) {
                 levelEntity.setScaleDivisor(scale_divisor);
             }
-            if(StringUtils.isNotEmpty(unit)){
+            if (StringUtils.isNotEmpty(unit)) {
                 levelEntity.setUnit(unit);
             }
             levelDao.saveNotNull(levelEntity);
         }
     }
 
-    public void executeBackUpMove(){
+    public void executeBackUpMove() {
         List<BackupEntity> backupEntityList = backupDao.findAll();
         List<BackUpDto> backUpDtoList = backupMapstruct.toDto(backupEntityList);
-        for(BackUpDto backUpDto : backUpDtoList){
+        for (BackUpDto backUpDto : backUpDtoList) {
             try {
                 backupService.updateBackup(backUpDto);
             } catch (Exception e) {
@@ -2262,7 +2277,7 @@ public class ImportData {
 
         List<MoveEntity> moveEntityList = moveDao.findAll();
         List<MoveDto> moveDtoList = moveMapstruct.toDto(moveEntityList);
-        for(MoveDto moveDto : moveDtoList){
+        for (MoveDto moveDto : moveDtoList) {
             try {
                 moveService.updateMove(moveDto);
             } catch (Exception e) {
@@ -2272,7 +2287,7 @@ public class ImportData {
 
         List<ClearEntity> clearEntityList = clearDao.findAll();
         List<ClearDto> clearDtoList = clearMapstruct.toDto(clearEntityList);
-        for(ClearDto clearDto : clearDtoList){
+        for (ClearDto clearDto : clearDtoList) {
             try {
                 clearService.updateClear(clearDto);
             } catch (Exception e) {
@@ -2282,9 +2297,9 @@ public class ImportData {
 
     }
 
-    public void importStorageConfig(){
+    public void importStorageConfig() {
         List<DataLogicEntity> dataLogicEntities = dataLogicDao.findAll();
-        for(DataLogicEntity dataLogicEntity : dataLogicEntities){
+        for (DataLogicEntity dataLogicEntity : dataLogicEntities) {
             String storageType = dataLogicEntity.getStorageType();
 
 
@@ -2292,49 +2307,48 @@ public class ImportData {
             storageConfigurationEntity.setClassLogicId(dataLogicEntity.getId());
 
             List<DataTableEntity> dataTableEntities = dataTableDao.findByClassLogic_Id(dataLogicEntity.getId());
-            if(dataTableEntities != null && dataTableEntities.size()>0){
+            if (dataTableEntities != null && dataTableEntities.size() > 0) {
                 //存储策略
                 storageConfigurationEntity.setStorageDefineIdentifier(1);
 
-                for(DataTableEntity dataTableEntity :dataTableEntities){
+                for (DataTableEntity dataTableEntity : dataTableEntities) {
                     String table_id = dataTableEntity.getId();
                     String dbTableType = dataTableEntity.getDbTableType();
-                    if(storageType.contains("K")){
-                        if(dbTableType.equals("E")){
+                    if (storageType.contains("K")) {
+                        if (dbTableType.equals("E")) {
                             continue;
                         }
                     }
 
                     //同步
                     List<SyncConfigEntity> syncConfigEntities = syncConfigDao.findByTargetTableId(table_id);
-                    if(syncConfigEntities != null && syncConfigEntities.size()>0){
+                    if (syncConfigEntities != null && syncConfigEntities.size() > 0) {
                         List<SyncMappingEntity> syncMappingEntities = syncMappingDao.findAllByTargetTableIdIn(Arrays.asList(String.valueOf(syncConfigEntities.get(0).getId()).split(",")));
                         SyncTaskEntity syncTaskEntity = syncTaskDao.findBySourceTable(String.valueOf(syncMappingEntities.get(0).getId()));
-                        if(syncTaskEntity != null){
+                        if (syncTaskEntity != null) {
                             storageConfigurationEntity.setSyncIdentifier(1);
                             storageConfigurationEntity.setSyncId(syncTaskEntity.getId());
                         }
                     }
 
 
-
                 }
             }
             //清除
             List<ClearEntity> clearEntities = clearDao.findByDatabaseIdAndDataClassId(dataLogicEntity.getDatabaseId(), dataLogicEntity.getDataClassId());
-            if(clearEntities != null && clearEntities.size()>0){
+            if (clearEntities != null && clearEntities.size() > 0) {
                 storageConfigurationEntity.setCleanIdentifier(1);
                 storageConfigurationEntity.setClearId(clearEntities.get(0).getId());
             }
             //迁移
             List<MoveEntity> moveEntities = moveDao.findByDatabaseIdAndDataClassId(dataLogicEntity.getDatabaseId(), dataLogicEntity.getDataClassId());
-            if(moveEntities != null && moveEntities.size()>0){
+            if (moveEntities != null && moveEntities.size() > 0) {
                 storageConfigurationEntity.setMoveIdentifier(1);
                 storageConfigurationEntity.setMoveId(moveEntities.get(0).getId());
             }
             //备份
             List<BackupEntity> backupEntities = backupDao.findByDatabaseIdAndDataClassId(dataLogicEntity.getDatabaseId(), dataLogicEntity.getDataClassId());
-            if(backupEntities != null && backupEntities.size()>0){
+            if (backupEntities != null && backupEntities.size() > 0) {
                 storageConfigurationEntity.setBackupIdentifier(1);
                 storageConfigurationEntity.setBackupId(backupEntities.get(0).getId());
             }
@@ -2344,20 +2358,20 @@ public class ImportData {
 
     }
 
-    public void importPortalUser(){
+    public void importPortalUser() {
         String sql = "select * from ts_user";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-            String  user_id = toString(m.get("USER_ID"));
-            String  user_name = toString(m.get("USER_NAME"));
-            String  login_name = toString(m.get("LOGIN_NAME"));
-            String  password = toString(m.get("PASSWORD"));
-            String  phone = toString(m.get("PHONE"));
-            String  deptunicode = toString(m.get("DEPTUNICODE"));
+            String user_id = toString(m.get("USER_ID"));
+            String user_name = toString(m.get("USER_NAME"));
+            String login_name = toString(m.get("LOGIN_NAME"));
+            String password = toString(m.get("PASSWORD"));
+            String phone = toString(m.get("PHONE"));
+            String deptunicode = toString(m.get("DEPTUNICODE"));
             String deptName = "";
-            sql = "select deptname from TS_DEPARTMENT where deptunicode='"+deptunicode+"'";
+            sql = "select deptname from TS_DEPARTMENT where deptunicode='" + deptunicode + "'";
             List<Map> deptnameList = CodeDOM.getList(sql);
-            if(deptnameList != null && deptnameList.size()>0){
+            if (deptnameList != null && deptnameList.size() > 0) {
                 deptName = toString(deptnameList.get(0).get("DEPTNAME"));
             }
             UserEntity userEntity = new UserEntity();
@@ -2371,4 +2385,139 @@ public class ImportData {
             userDao.saveNotNull(userEntity);
         }
     }
+
+
+    public void importDataServiceBaseInfo() {
+        String sql = "select * from DMIN_DATASERVICE_BASEINFOR";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String dataCLassId = toString(m.get("DATACLASSID"));
+            String eleField = toString(m.get("ELEFIELD"));
+            String regionField = toString(m.get("REGIONFIELD"));
+            String region = toString(m.get("REGION"));
+            String gribVersion = toString(m.get("GRIBVERSION"));
+            String fieldType = toString(m.get("FIELDTYPE"));
+            String processType = toString(m.get("PROCESSTYPE"));
+            String dataTime = toString(m.get("DATATIME"));
+            String timeUnit = toString(m.get("TIMEUNIT"));
+            String spatialResolution = toString(m.get("SPATIALRESOLUTION"));
+
+            DataServerBaseInfoEntity d = new DataServerBaseInfoEntity();
+
+            d.setDataCLassId(dataCLassId);
+            d.setDataTime(dataTime);
+            d.setEleField(eleField);
+            d.setFieldType(fieldType);
+            d.setGribVersion(gribVersion);
+            d.setProcessType(processType);
+            d.setRegion(region);
+            d.setRegionField(regionField);
+            d.setSpatialResolution(spatialResolution);
+            d.setTimeUnit(timeUnit);
+            d.setCreateTime(new Date());
+            dataServerBaseInfoDao.saveNotNull(d);
+        }
+    }
+
+    public void importGridDecoding() {
+        String sql = "select * from dmin_grid_decoding_config";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String grid_decode_id = toString(m.get("GRID_DECODE_ID"));
+            String data_service_id = toString(m.get("DATA_SERVICE_ID"));
+            String data_dpc_id = toString(m.get("DATA_DPC_ID"));
+            String ele_code_short = toString(m.get("ELE_CODE_SHORT"));
+            String subject_id = toString(m.get("SUBJECT_ID"));
+            String classify = toString(m.get("CLASSIFY"));
+            String parameter_id = toString(m.get("PARAMETER_ID"));
+            String grib_version = toString(m.get("GRIB_VERSION"));
+            String element_cn = toString(m.get("ELEMENT_CN"));
+            String public_config = toString(m.get("PUBLIC_CONFIG"));
+            String template_id = toString(m.get("TEMPLATE_ID"));
+
+            GridDecodingEntity g = new GridDecodingEntity();
+            g.setClassify(Integer.valueOf(classify));
+            g.setDataDpcId(data_dpc_id);
+            g.setDataServiceId(data_service_id);
+            g.setEleCodeShort(ele_code_short);
+            g.setElementCn(element_cn);
+            g.setGribVersion(Integer.valueOf(grib_version));
+            g.setGridDecodeId(grid_decode_id);
+            g.setParameterId(Integer.valueOf(parameter_id));
+            g.setPublicConfig(public_config);
+            g.setSubjectId(Integer.valueOf(subject_id));
+            g.setTemplateId(template_id);
+            g.setCreateTime(new Date());
+            gridDecodingDao.saveNotNull(g);
+        }
+    }
+
+    public void importAreaDefine() {
+
+        String sql = "select * from dmin_grid_area_define";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String data_service_id = toString(m.get("DATA_SERVICE_ID"));
+            String area_id = toString(m.get("AREA_ID"));
+            String area_region_desc = toString(m.get("AREA_REGION_DESC"));
+
+            GridAreaEntity g = new GridAreaEntity();
+            g.setAreaId(area_id);
+            g.setAreaRegionDesc(area_region_desc);
+            g.setDataServiceId(data_service_id);
+            gridAreaDao.saveNotNull(g);
+        }
+    }
+
+
+    public void importGridEEle() {
+        String sql = "select * from dmin_grid_ele_define";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String data_service_id = toString(m.get("DATA_SERVICE_ID"));
+            String area_id = toString(m.get("AREA_ID"));
+            String db_fcst_ele = toString(m.get("DB_FCST_ELE"));
+            String ele_service_id = toString(m.get("ELE_SERVICE_ID"));
+            String level_type = toString(m.get("LEVEL_TYPE"));
+            String grib_version = toString(m.get("GRIB_VERSION"));
+            String ele_name_cn = toString(m.get("ELE_NAME_CN"));
+            String ele_hours = toString(m.get("ELE_HOURS"));
+            String time_unit = toString(m.get("TIME_UNIT"));
+            String level_list = toString(m.get("LEVEL_LIST"));
+            String time_list = toString(m.get("TIME_LIST"));
+            String grid_pixel = toString(m.get("GRID_PIXEL"));
+            String insert_time = toString(m.get("INSERT_TIME"));
+            String count_time = toString(m.get("COUNT_TIME"));
+            String ele_long_name = toString(m.get("ELE_LONG_NAME"));
+            String field_type = toString(m.get("FIELD_TYPE"));
+            String genprocess_type = toString(m.get("GENPROCESS_TYPE"));
+            String s_number = toString(m.get("S_NUMBER"));
+            String level_unit = toString(m.get("LEVEL_UNIT"));
+            String scale_divisor = toString(m.get("SCALE_DIVISOR"));
+            String ele_unit = toString(m.get("ELE_UNIT"));
+
+            DataServerConfigEntity d = new DataServerConfigEntity();
+            d.setAreaId(area_id);
+            d.setDataServiceId(data_service_id);
+            d.setDbEleName(db_fcst_ele);
+            d.setEleHours(ele_hours);
+            d.setEleLongName(ele_long_name);
+            d.setEleNameCn(ele_name_cn);
+            d.setEleServiceId(ele_service_id);
+            d.setEleUnit(ele_unit);
+            d.setFieldType(Integer.valueOf(field_type));
+            d.setGribVersion(Integer.valueOf(grib_version));
+            d.setGridPixel(grid_pixel);
+            d.setLevelList(level_list);
+            d.setLevelType(Integer.valueOf(level_type));
+            d.setLevelUnit(level_unit);
+            d.setNum(Integer.valueOf(s_number));
+            d.setProcessType(Integer.valueOf(genprocess_type));
+            d.setScaleDivisor(scale_divisor);
+            d.setTimeList(time_list);
+            d.setCreateTime(new Date());
+            dataServerConfigDao.saveNotNull(d);
+        }
+    }
+
 }
