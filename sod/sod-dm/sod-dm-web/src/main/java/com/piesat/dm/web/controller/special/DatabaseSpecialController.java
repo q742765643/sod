@@ -232,11 +232,7 @@ public class DatabaseSpecialController {
     @PostMapping(value = "/empowerDatabaseSpecial")
     public ResultT empowerDatabaseSpecial(@RequestBody SpecialParamVO specialParamVO) {
         try {
-            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());
-            databaseSpecialDto.setExamineStatus("2");
-            databaseSpecialDto.setExamineTime(new Date());
-            databaseSpecialService.saveDto(databaseSpecialDto);
-
+            //授权
             DatabaseDto databaseDto = new DatabaseDto();
             databaseDto.setUserId(specialParamVO.getUserId());
             DatabaseDefineDto databaseDefineDto = new DatabaseDefineDto();
@@ -245,7 +241,13 @@ public class DatabaseSpecialController {
             databaseDto.setTdbId(specialParamVO.getSdbId());
             databaseDto.setDatabaseSpecialAuthorityList(specialParamVO.getDatabaseSpecialAuthorityList());
             databaseDto.setSchemaName(specialParamVO.getSimpleName());
+            databaseDto.setDatabaseName(specialParamVO.getSdbName());
             this.databaseSpecialService.empowerDatabaseSpecial(databaseDto);
+            //修改授权状态
+            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());
+            databaseSpecialDto.setExamineStatus("2");
+            databaseSpecialDto.setExamineTime(new Date());
+            databaseSpecialService.saveDto(databaseSpecialDto);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
