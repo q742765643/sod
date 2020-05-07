@@ -187,36 +187,38 @@ public class ImportData {
     private UserDao userDao;
 
 
-    public void implAll(){
-//        importDataClassData();
-//        importDataClassLogicData();
-//        importDatumData();
-//        impLogicDefine();
-//        importDatabaseData();
+    public void implDataClass() {
+        importDataClassData();
+        importDataClassLogicData();
+        importDatumData();
+        impLogicDefine();
+        importDatabaseData();
+    }
+    public void implDataOther(){
 
-        //importSyncTask();
-        //importCloudDatabase();
-        //importBackUp();
-        //importMove();
-        //importClear();
-        //importDatabaseUser();
-        //importPortalAuz();
-        //importSpecial();
-        //importNewData();
-        //importDataAuthority();
-        //importOnLineTime();
-        //importDsync();
-        //importMetadataBackUp();
-        //importManagerFiled();
-        //importEleData();
-        //importEleDataDefine();
-        //importGridAreaDefine();
-        //importGridEleDecodeDefine();
-        //importGridLayerLevel();
+        importSyncTask();
+        importCloudDatabase();
+        importBackUp();
+        importMove();
+        importClear();
+        importDatabaseUser();
+        importPortalAuz();
+        importSpecial();
+        importNewData();
+        importDataAuthority();
+        importOnLineTime();
+        importDsync();
+        importMetadataBackUp();
+        importManagerFiled();
+        importEleData();
+        importEleDataDefine();
+        importGridAreaDefine();
+        importGridEleDecodeDefine();
+        importGridLayerLevel();
 
-        executeBackUpMove();
+        //executeBackUpMove();
 
-        //importStorageConfig();
+        importStorageConfig();
 
         //importPortalUser();
     }
