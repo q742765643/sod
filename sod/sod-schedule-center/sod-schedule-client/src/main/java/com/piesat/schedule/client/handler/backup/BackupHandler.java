@@ -52,11 +52,10 @@ public class BackupHandler implements BaseHandler {
     private static final String BACKUP_TIME="backupTime";
 
     @Override
-    public void execute(JobInfoEntity jobInfoEntity) {
+    public void execute(JobInfoEntity jobInfoEntity,ResultT<String> resultT) {
         log.info("备份调用成功");
         BackupEntity backupEntity = (BackupEntity) jobInfoEntity;
         long occurTime = System.currentTimeMillis();
-        ResultT<String> resultT = new ResultT<>();
 
         DiSendVo diSendVo = new DiSendVo();
         diSendVo.setStartTimeS(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(backupEntity.getTriggerLastTime()));
@@ -159,6 +158,7 @@ public class BackupHandler implements BaseHandler {
                 backupLogService.delete(backupLogEntity.getId());
                 backupLogEntity.setIsEnd(2);
                 if (backupLogEntity.getBackupTime() < backupVo.getBackupTime()) {
+                    backupLogEntity.setHandleMsg(null);
                     compensateList.add(backupLogEntity);
                 }
             }
@@ -415,7 +415,12 @@ public class BackupHandler implements BaseHandler {
 
 
             } else {
-                backupTime = deafulBackupTime;
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date(deafulBackupTime));
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                backupTime = calendar.getTime().getTime();
             }
             map.put("mistiming", mistiming);
             map.put(BACKUP_TIME, backupTime);

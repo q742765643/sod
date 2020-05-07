@@ -73,7 +73,7 @@ spring:
     show-sql: true
     open-in-view: false
   redis:
-    host: 10.40.79.18
+    host: 10.40.16.17
     port: 6379
     timeout: 50000
     password:
@@ -97,7 +97,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.40.79.18:8002/eureka/
+      defaultZone: http://10.40.16.17:8002/eureka/
 
 DITASKADDURL: http://10.20.67.109/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
 DITASKDELURL: http://10.20.67.109/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd

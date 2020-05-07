@@ -47,7 +47,8 @@ class KafkaMonitor {
   var endTime:Date=_
   @BeanProperty
   var groupIds:JavaList[String]=_
-
+  @BeanProperty
+  var addresss:JavaList[String]=_
   @Transient
   @ApiModelProperty("别名")
   @BeanProperty

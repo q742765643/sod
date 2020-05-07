@@ -73,7 +73,7 @@
         select
         <include refid="Base_Column_List" />
         from T_SOD_JOB_BACKUP_INFO_LOG  where
-        JOB_ID = #{jobId,jdbcType=VARCHAR} order by  BACKUP_TIME desc
+        JOB_ID = #{jobId,jdbcType=VARCHAR} order by  BACKUP_TIME desc,CREATE_TIME desc
     </select>
     <select id="findByJobId" resultMap="BaseResultMap">
         select

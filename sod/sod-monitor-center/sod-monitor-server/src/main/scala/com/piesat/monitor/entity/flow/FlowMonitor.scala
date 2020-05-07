@@ -89,5 +89,4 @@ class FlowMonitor {
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   var endTime:Date=_
 
-  override def toString = s"FlowMonitor($name, $iiiii, $dataType, $id, $ddateTime, $collectionReceivable, $collectionRealIncome, $timely, $distributeReceivable, $distributeRealIncome, $putReceivable, $putRealIncome)"
 }

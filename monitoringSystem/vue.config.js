@@ -9,7 +9,7 @@ module.exports = {
     port: 9090,
     proxy: {
       [process.env.VUE_APP_FTP_API]: {
-        target: "http://10.1.100.69:8008",
+        target: "http://localhost:8008",
         changeOrigin: true,
         ws: true,
         pathRewrite: {
