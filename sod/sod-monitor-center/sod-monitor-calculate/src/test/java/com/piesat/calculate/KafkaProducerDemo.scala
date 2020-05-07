@@ -49,7 +49,7 @@ object KafkaProducerDemo {
       stationLevelFiled.setReceive("A.0001.0002.R003")
       stationLevelFiled.setSend("A.0001.0002.S003")
       stationLevelFiled.setTranTime(new Date())
-      stationLevelFiled.setDataTime(new Date(System.currentTimeMillis() -86400*1000))//*286400*1000
+      stationLevelFiled.setDataTime(new Date(System.currentTimeMillis()-86400*1000))//*286400*1000
       stationLevelFiled.setSystem("CTS")
       stationLevelFiled.setIiiii("11")
       stationLevelFiled.setProcessLink("1")

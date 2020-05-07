@@ -36,8 +36,7 @@ public class MetaClearHandler implements BaseHandler {
     @Autowired
     private DatabaseOperationService databaseOperationService;
     @Override
-    public void execute(JobInfoEntity jobInfoEntity) {
-        ResultT<String> resultT=new ResultT<>();
+    public void execute(JobInfoEntity jobInfoEntity,ResultT<String> resultT) {
         MetaClearEntity metaClearEntity= (MetaClearEntity) jobInfoEntity;
         this.preParam(metaClearEntity,resultT);
     }

@@ -644,7 +644,7 @@ export default {
       if (this.selColumnData.length != 1) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "error"
         });
       } else {
         this.codeTitle = "编辑字段";
@@ -670,7 +670,7 @@ export default {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "error"
         });
       } else {
         this.$confirm("确认要删除选中字段吗?", "提示", {
@@ -691,7 +691,7 @@ export default {
               } else {
                 this.$message({
                   message: "删除失败",
-                  type: "warning"
+                  type: "error"
                 });
                 return;
               }
@@ -792,7 +792,9 @@ export default {
           "是否显示",
           "是否主键",
           "中文描述",
+          "数据类型",
           "是否管理字段",
+          "是否修改数据库",
           "默认值",
           "序号"
         ];
@@ -808,6 +810,7 @@ export default {
           "isShow",
           "isPrimaryKey",
           "nameCn",
+          "type",
           "isManager",
           "updateDatabase",
           "defaultValue",
@@ -839,7 +842,7 @@ export default {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "error"
         });
       } else {
         let copyArry = [];
@@ -1008,7 +1011,7 @@ export default {
               switchObj.id = "";
               publicRows.push(switchObj);
             });
-            console.log(publicRows);
+
             tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
               if (res.code == 200) {
                 this.$message({
@@ -1054,10 +1057,42 @@ export default {
       });
     },
     getMyExcelData(data) {
-      let flag = false;
+      let tableJson = [
+        { name: "公共元数据字段", value: "dbEleCode" },
+        { name: "字段编码", value: "celementCode" },
+        { name: "服务代码", value: "userEleCode" },
+        { name: "中文简称", value: "eleName" },
+        { name: "数据精度", value: "accuracy" },
+        { name: "要素单位", value: "unitCn" },
+        { name: "是否可空", value: "isNull" },
+        { name: "是否可改", value: "isUpdate" },
+        { name: "是否显示", value: "isShow" },
+        { name: "是否主键", value: "isPrimaryKey" },
+        { name: "中文描述", value: "nameCn" },
+        { name: "是否管理字段", value: "isManager" },
+        { name: "数据类型", value: "type" },
+        { name: "是否修改数据库", value: "updateDatabase" },
+        { name: "默认值", value: "defaultValue" },
+        { name: "序号", value: "serialNumber" }
+      ];
+      let dataJson = [];
       // data 为读取的excel数据，在这里进行处理该数据
-      console.log(data);
       data.forEach(element => {
+        var obj = {};
+        let itemKeys = Object.keys(element);
+        itemKeys.forEach(ikey => {
+          tableJson.forEach(tkey => {
+            if (ikey == tkey.name) {
+              obj[tkey.value] = element[ikey];
+            }
+          });
+        });
+        dataJson.push(obj);
+      });
+      console.log(dataJson);
+      let flag = false;
+
+      dataJson.forEach(element => {
         element.id = "";
         element.tableId = this.tableInfo.id;
         if (
@@ -1080,17 +1115,15 @@ export default {
         return;
       }
 
-      tableColumnSaveList({ tableColumnList: data }).then(response => {
+      tableColumnSaveList({ tableColumnList: dataJson }).then(response => {
         if (response.code == 200) {
-          this.$message({ message: "操作成功", type: "success" });
-          this.$refs[formName].resetFields();
-          this.dialogStatus.columnDialog = false;
+          this.$message({ message: "导入成功", type: "success" });
+          this.exportInnerVisible = false;
           this.getCodeTable();
-          this.columnEditData = [];
         } else {
           this.$message({
             type: "error",
-            message: "操作失败"
+            message: "导入失败"
           });
         }
       });
@@ -1099,7 +1132,10 @@ export default {
     array_diff(a, b, tabActive) {
       for (var i = 0; i < b.length; i++) {
         for (var j = 0; j < a.length; j++) {
-          if (a[j].celementCode == b[i].celementCode) {
+          if (
+            a[j].celementCode == b[i].celementCode ||
+            a[j].c_element_code == b[i].celementCode
+          ) {
             a.splice(j, 1);
             j = j - 1;
             this.repeatIndex++;
@@ -1116,20 +1152,28 @@ export default {
         } else {
           if (tabActive == "first") {
             obj.eleName = element.c_element_namech;
-            obj.dbEleCode = element.celementCode;
-            obj.celementCode = element.celementCode;
+            obj.dbEleCode = element.c_element_code;
+            obj.celementCode = element.c_element_code;
             obj.type = element.c_datatype;
             obj.accuracy = element.c_element_pre;
             obj.isNull = false;
             obj.isUpdate = false;
+            obj.nameCn = element.c_notes;
+            obj.unit = element.c_element_unit;
+            obj.unitCn = element.c_element_unit;
+            obj.userEleCode = element.c_short_name;
           } else if (tabActive == "second") {
             obj.eleName = element.dbEleName;
             obj.dbEleCode = element.dbEleCode;
             obj.celementCode = element.dbEleCode;
             obj.type = element.type;
-            obj.accuracy = element.data_precision;
             obj.isNull = element.isNull;
             obj.isUpdate = element.isUpdate;
+            obj.accuracy = element.data_precision;
+            obj.nameCn = element.c_notes;
+            obj.unit = element.c_element_unit;
+            obj.unitCn = element.c_element_unit;
+            obj.userEleCode = element.c_short_name;
           }
           obj.switch = element.switch;
           obj.id = this.tableInfo.id;
@@ -1137,11 +1181,8 @@ export default {
           obj.updateDatabase = false;
           obj.isPrimaryKey = false;
           obj.isShow = false;
-          obj.nameCn = element.c_notes;
           obj.serialNumber = 0;
-          obj.unit = element.c_element_unit;
-          obj.unitCn = element.c_element_unit;
-          obj.userEleCode = element.c_short_name;
+
           newRows.push(obj);
         }
       });

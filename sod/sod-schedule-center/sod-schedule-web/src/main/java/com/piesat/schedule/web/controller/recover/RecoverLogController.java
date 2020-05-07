@@ -61,7 +61,7 @@ public class RecoverLogController {
     @RequiresPermissions("schedule:recoverLog:remove")
     @Log(title = "结构化数据恢复日志管理", businessType = BusinessType.DELETE)
     @ApiOperation(value = "删除结构化数据恢复日志", notes = "删除结构化数据恢复日志")
-    @DeleteMapping("/{metaRecoverLogIds}")
+    @DeleteMapping("/{recoverLogIds}")
     public  ResultT<String> remove(@PathVariable String[] recoverLogIds)
     {
         ResultT<String> resultT=new ResultT<>();

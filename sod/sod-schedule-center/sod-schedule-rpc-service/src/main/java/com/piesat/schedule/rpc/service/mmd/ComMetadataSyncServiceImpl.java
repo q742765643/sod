@@ -328,6 +328,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 					String[] split1 = s1.split("&");
 					for (String p:split1 ) {
 						if (p.contains("interfaceId")){
+							url = split[0];
 							interfaceId = p.substring(p.lastIndexOf("=")+1);
 						}
 					}

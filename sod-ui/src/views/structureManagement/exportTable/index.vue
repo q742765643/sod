@@ -247,6 +247,7 @@ export default {
       });
     },
     handleQuery() {
+      this.toTreeData = [];
       dataTree(this.queryParams).then(response => {
         this.resetData(response.data);
         this.fromTreeData = response.data;
