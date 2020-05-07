@@ -103,9 +103,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         DataSource dataSource=null;
         DatabaseService databaseService= SpringUtil.getBean(DatabaseService.class);
         List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
+        boolean flag=false;
         for(DatabaseDto databaseDto:databaseDtos){
                String parentId=databaseDto.getDatabaseDefine().getId();
                if(parentId.toUpperCase().equals(dataSourceName.toUpperCase())){
+                   flag=true;
                    ConnectVo connectVo =new ConnectVo();
                    Set<DatabaseAdministratorDto> databaseAdministratorDtos=databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
                    String userName="";
@@ -135,6 +137,9 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    }
                }
 
+        }
+        if(!flag){
+            throw new RuntimeException("切换数据源失败");
         }
 
         return dataSource;
