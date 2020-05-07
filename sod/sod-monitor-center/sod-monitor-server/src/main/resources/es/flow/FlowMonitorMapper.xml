@@ -54,7 +54,7 @@
             AND DATA_TYPE like '%${dataType}%'
         </if>
         <if test="endTime != null ">
-            AND ddateTime &lt;= #{endTime}
+            AND ddateTime &lt; #{endTime}
         </if>
         <if test="startTime != null ">
             AND  ddateTime &gt;= #{startTime}

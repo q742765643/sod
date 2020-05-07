@@ -255,6 +255,23 @@ public class DatabaseSpecialController {
         }
     }
 
+    @ApiOperation(value = "修改审核状态")
+    @RequiresPermissions("dm:databaseSpecial:updateExamineStatus")
+    @PostMapping(value = "/updateExamineStatus")
+    public ResultT updateExamineStatus(@RequestBody SpecialParamVO specialParamVO) {
+        try {
+            //修改授权状态
+            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());
+            databaseSpecialDto.setExamineStatus(specialParamVO.getExamineStatus());
+            databaseSpecialDto.setExamineTime(new Date());
+            databaseSpecialService.saveDto(databaseSpecialDto);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 	@Data
     private static class SpecialParamVO{
         //专题库ID
@@ -267,6 +284,8 @@ public class DatabaseSpecialController {
         String databaseId;
         //账户ID
         String userId;
+        //审核状态
+        String examineStatus;
         //权限列表
         List<DatabaseSpecialAuthorityDto> DatabaseSpecialAuthorityList;
     }

@@ -80,7 +80,7 @@ public class HtAuthenticationFilter extends FormAuthenticationFilter {
                 utoken.setRequest(req);
                 utoken.setOperatorType(OperatorType.CAS.ordinal());
                 subject.login(utoken);
-                redisUtil.set(THRID_LOGIN_APP_ID + appId, subject.getSession().getId(), 18000);
+                redisUtil.set(THRID_LOGIN_APP_ID + appId, subject.getSession().getId(), 180);
                 this.recordLogininfor(req, appId, resultT);
                 return true;
             } catch (Exception e) {

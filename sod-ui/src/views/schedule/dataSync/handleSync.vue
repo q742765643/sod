@@ -332,7 +332,7 @@
         </el-row>
         <el-row type="flex" class="row-bg" justify="center" v-if="this.addnewtargettable == 1">
           <el-col :span="12">
-            <el-form-item label="目标表" prop="targetTable">
+            <el-form-item label="目标表2" prop="targetTable">
               <i class="el-icon-plus"></i>
               <i class="el-icon-minus" @click="addnewtargettable = 0"></i>
               <el-select
@@ -366,8 +366,8 @@
       </el-card>
       <el-tabs v-model="editableTabsValue" closable type="card" @tab-remove="removeTab">
         <el-tab-pane
-          :key="item.name"
-          v-for="(item) in editableTabs"
+          :key="index"
+          v-for="(item,index) in editableTabs"
           :label="item.title"
           :name="item.name"
         >
@@ -777,7 +777,8 @@ export default {
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
-      this.editableTabs = [];
+      // debugger;
+      // this.editableTabs = [];
       if (!selectTargetTableID) {
         return;
       }
@@ -939,28 +940,7 @@ export default {
           }
         }
 
-        if (
-          this.handleObj.slaveRelation &&
-          this.handleObj.slaveRelation.length > 0
-        ) {
-          this.handleObj.slaveRelation.forEach((te, ti) => {
-            if (element_obj.id == te.targetTableId) {
-              te.mapping.forEach((mItem, mIndex) => {
-                if (
-                  this.targetVColumnDetail[i].celementCode ==
-                  mItem.targetColumn_
-                ) {
-                  var obj = {};
-                  obj.index = i;
-                  obj.isdelete = false;
-                  obj.targetColumn_ = mItem.targetColumn_;
-                  obj.sourceColumn_ = mItem.sourceColumn_;
-                  dataList.push(obj);
-                }
-              });
-            }
-          });
-        } else {
+        if (!this.handleObj.slaveRelation) {
           var obj = {};
           obj.index = i;
           obj.isdelete = false;
@@ -968,6 +948,16 @@ export default {
           obj.sourceColumn_ = sourceColumnName;
           dataList.push(obj);
         }
+      }
+      if (this.handleObj.slaveRelation) {
+        this.handleObj.slaveRelation.mapping.forEach((mItem, i) => {
+          var obj = {};
+          obj.index = i;
+          obj.isdelete = false;
+          obj.targetColumn_ = mItem.targetColumn_;
+          obj.sourceColumn_ = mItem.sourceColumn_;
+          dataList.push(obj);
+        });
       }
 
       this.editableTabs.push({
@@ -985,6 +975,7 @@ export default {
         sourceTableName: element_obj.table_name
       });
       this.editableTabsValue = element_obj.table_name;
+      console.log("2");
     },
 
     removeTab(targetName) {

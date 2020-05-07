@@ -53,6 +53,8 @@ object TransferAnalyze {
           var stationLevel: StationLevelEntity = objectMapper.readValue(result, classOf[StationLevelEntity])
           var stationLevelFiled: StationLevelFiledEntity = stationLevel.getStationLevelFiledEntity
           val timeFormat: SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")
+          val htimeFormat: SimpleDateFormat = new SimpleDateFormat("HH")
+
           var id: String = null
           var groupKey: String = null
           val filter = scala.collection.mutable.Map[String, Object]()
@@ -63,13 +65,13 @@ object TransferAnalyze {
           filter.put("fields.DATA_TIME", stationLevelFiled.dataTime)
           if (FlowConstant.RT_CTS_STATION_DI.equals(stationLevel.stype) || FlowConstant.RT_DPC_STATION_DI.equals(stationLevel.stype)) {
             id = stationLevelFiled.dataType + "_" + timeFormat.format(stationLevelFiled.dataTime) + "_" + stationLevelFiled.iiiii + "_" + stationLevelFiled.dataUpdateFlag
-            groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii
+            groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii+"||"+htimeFormat.format(stationLevelFiled.dataTime)
             filter.put("fields.IIiii", stationLevelFiled.iiiii)
           }
           if (FlowConstant.RT_CTS_FILE_DI.equals(stationLevel.stype) || FlowConstant.RT_DPC_FILE_DI.equals(stationLevel.stype)) {
             id = stationLevelFiled.dataType + "_" + stationLevelFiled.fileNameN + "_" + stationLevelFiled.dataUpdateFlag
             filter.put("fields.FILE_NAME_N", stationLevelFiled.fileNameN)
-            groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii
+            groupKey = stationLevelFiled.dataType + "||" + stationLevelFiled.iiiii+"||"+htimeFormat.format(stationLevelFiled.dataTime)
           }
           val dateFormat: SimpleDateFormat = new SimpleDateFormat("yyyy.MM.dd")
           stationLevel.setDdateTime(stationLevelFiled.dataTime)

@@ -1,7 +1,7 @@
 package com.piesat.calculate.sink
 
 import java.text.SimpleDateFormat
-import java.util.{ArrayList => JavaList}
+import java.util.{Date, ArrayList => JavaList}
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.serializer.SerializeConfig
@@ -170,6 +170,7 @@ class EsSink[T] {
             .field("collection_realIncome", element.collectionRealIncome)
             .field("put_realIncome",element.putRealIncome)
             .field("timely",element.timely)
+            .field("ddateTime",element.ddateTime)
             .endObject())
 
         }
@@ -190,10 +191,10 @@ class EsSink[T] {
           var id=update.id()
           var indexName=update.index()
           var indexs:Array[String]=indexName.split("-")
-          var dateString=indexs.apply(indexs.length-1)
-          var dateTime=dateFormat.parse(dateString)
+          //var dateString=indexs.apply(indexs.length-1)
+          //var dateTime=dateFormat.parse(dateString)
           var ids:Array[String]=id.split("\\|\\|")
-          if(ids.length!=3){
+          if(ids.length<3){
             return
           }
           var dataType=ids.apply(1)
@@ -211,9 +212,9 @@ class EsSink[T] {
           var mapPlayBill=mapPlayBills.get(0)
           if(mapPlayBill!=null){
             mapPlayBill.put("id",id)
-            mapPlayBill.put("ddateTime",dateTime)
             mapPlayBill.remove("createTime")
             var doc=update.doc().sourceAsMap()
+            mapPlayBill.put("ddateTime",doc.get("ddateTime"))
             mapPlayBill.put("collection_realIncome",doc.get("collection_realIncome"))
             mapPlayBill.put("put_realIncome",doc.get("put_realIncome"))
             mapPlayBill.put("distribute_realIncome",0.asInstanceOf[Object])

@@ -268,9 +268,9 @@ export default {
           (fff[2] * 1 + 1).toString();
         searchtext =
           searchtext +
-          "&starttime=" +
+          "&startTime=" +
           this.formInline.ddateTime +
-          "&endTime" +
+          "&endTime=" +
           endtime;
       }
       if (searchtext.length > 0) {

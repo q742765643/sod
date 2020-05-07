@@ -39,12 +39,11 @@ public class MoveHandler implements BaseHandler {
     @Autowired
     private MoveLogService moveLogService;
     @Override
-    public void execute(JobInfoEntity jobInfoEntity) {
+    public void execute(JobInfoEntity jobInfoEntity,ResultT<String> resultT) {
         MoveEntity moveEntity = (MoveEntity) jobInfoEntity;
         if(null!=moveEntity.getForeignKey()){
             moveEntity.setForeignKey(moveEntity.getForeignKey().toUpperCase());
         }
-        ResultT<String> resultT = new ResultT<>();
         this.preParam(moveEntity, resultT);
         log.info("迁移调用成功");
     }

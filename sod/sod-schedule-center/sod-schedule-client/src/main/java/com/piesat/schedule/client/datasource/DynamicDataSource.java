@@ -82,13 +82,16 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         dataSource.setUrl(url.replace("recv_mode=1","recv_mode=0"));
         dataSource.setUsername(username);
         dataSource.setPassword(password);
-        dataSource.setMinIdle(1);
+        dataSource.setMinIdle(3);
         dataSource.setMaxActive(20);
         dataSource.setPoolPreparedStatements(false);
         dataSource.setTestOnBorrow(true);
         dataSource.setTestOnReturn(true);
         dataSource.setMaxOpenPreparedStatements(0);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
+        if(url.indexOf("xugu")!=-1){
+            dataSource.setValidationQuery("select 1 ");
+        }
         return dataSource;
     }
 
@@ -105,8 +108,8 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                if(parentId.toUpperCase().equals(dataSourceName.toUpperCase())){
                    ConnectVo connectVo =new ConnectVo();
                    Set<DatabaseAdministratorDto> databaseAdministratorDtos=databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
-                   String userName="admin";
-                   String password="admin";
+                   String userName="";
+                   String password="";
                    try {
                        for(DatabaseAdministratorDto administratorDto:databaseAdministratorDtos){
                            if(administratorDto.getIsManager()) {
