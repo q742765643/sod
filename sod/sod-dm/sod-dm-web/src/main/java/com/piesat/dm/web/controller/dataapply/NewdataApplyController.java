@@ -191,6 +191,7 @@ public class NewdataApplyController {
     }
 
     @PostMapping(value = "/updateStatus")
+//    @RequiresPermissions("dm:newdataApply:updateStatus")
     @ApiOperation(value = "新增资料审核接口", notes = "存储资料审核接口")
     public ResultT updateStatus(@RequestBody NewdataApplyDto newdataApplyDto){
         try {
@@ -215,6 +216,7 @@ public class NewdataApplyController {
     }
 
 
+    //    @RequiresPermissions("dm:newdataApply:getDataClassLogic")
     @GetMapping("/getDataClassLogic/{classLogicIds}")
     @ApiOperation(value = "根据存储编码获取资料信息", notes = "根据存储编码获取资料信息")
     public  ResultT<List<Map<String,Object>>> getDataClassLogic(@PathVariable String[] classLogicIds){

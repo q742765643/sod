@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -62,6 +63,11 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
                     dto.setDDataId(map.get("D_DATA_ID") + "");
                     dto.setTableName(map.get("TABLE_NAME") + "");
                     dto.setDatabaseName(map.get("DATABASE_NAME") + "");
+                    if(map.get("FAILURE_REASON")!=null&&!map.get("FAILURE_REASON").toString().equals("null")){
+                        dto.setFailureReason(map.get("FAILURE_REASON").toString());
+                    }else{
+                        dto.setFailureReason("");
+                    }
                     dto.setApplyAuthority( getInteger(map,"APPLY_AUTHORITY", 1));
                     dto.setEmpowerAuthority(getInteger(map,"EMPOWER_AUTHORITY", 1));
                     dto.setExamineStatus(getInteger(map,"EXAMINE_STATUS", 1));

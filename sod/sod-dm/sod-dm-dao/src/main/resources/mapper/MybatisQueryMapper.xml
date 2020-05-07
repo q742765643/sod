@@ -792,7 +792,7 @@
         AND M.table_name = N.table_name
     </select>
     <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
-        SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,
+        SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,a.failure_reason,
         b.d_data_id,b.class_name,c.class_name type_name,d.table_name,f.database_name
         FROM t_sod_database_special_read_write a
         INNER JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
@@ -817,6 +817,7 @@
         <if test="map.examineStatus != null and map.examineStatus != ''">
             and a.examine_status = ${map.examineStatus}
         </if>
+        order by a.data_class_id
     </select>
     <select id="queryTableBylogics" resultType="java.util.Map" parameterType="java.util.List">
         select
