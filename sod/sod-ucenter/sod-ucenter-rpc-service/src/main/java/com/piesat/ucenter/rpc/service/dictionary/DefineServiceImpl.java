@@ -4,6 +4,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.ucenter.dao.dictionary.DefineDao;
 import com.piesat.ucenter.entity.dictionary.DefineEntity;
 import com.piesat.ucenter.mapper.dictionary.DefineMapper;
@@ -82,5 +85,24 @@ public class DefineServiceImpl extends BaseService<DefineEntity> implements Defi
     public List<DefineDto> all() {
         List<DefineEntity> all = this.defineDao.findAll();
         return this.defineMapstruct.toDto(all);
+    }
+
+    @Override
+    public void exportExcel(DefineDto defineDto) {
+        List<DefineDto> dtoList = this.findByParam(defineDto);
+        List<DefineEntity> entities=defineMapstruct.toEntity(dtoList);
+        ExcelUtil<DefineEntity> util=new ExcelUtil(DefineEntity.class);
+        util.exportExcel(entities,"区域类别管理");
+    }
+
+    @Override
+    public List<DefineDto> findByParam(DefineDto defineDto) {
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(com.piesat.common.utils.StringUtils.isNotNullString(defineDto.getAreaId())){
+            specificationBuilder.add("areaId", SpecificationOperator.Operator.eq.name(),defineDto.getAreaId());
+        }
+        List<DefineEntity> defineEntities = this.getAll(specificationBuilder.generateSpecification());
+        List<DefineDto> defineDtos = this.defineMapstruct.toDto(defineEntities);
+        return defineDtos;
     }
 }

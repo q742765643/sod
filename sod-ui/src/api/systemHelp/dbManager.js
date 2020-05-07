@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const baseUrl = process.env.VUE_APP_DM;
-// 查询表格
+// 下载
 export function downloadFile(query) {
   return request({
     url: baseUrl + '/api/dbfile/downloadFile',

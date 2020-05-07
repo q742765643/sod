@@ -89,6 +89,13 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 	@Value("${mmd.password}")
 	private String password;
 
+
+	@Value("${are.userName}")
+	private String areUserName;
+
+	@Value("${are.password}")
+	private String arePassword;
+
 	@Override
 	public BaseDao<ComMetadataSyncCfgEntity> getBaseDao() {
 		return comMetadataSyncCfgDao;
@@ -312,19 +319,28 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
 				//获取同步数据
 				String[] split = url.split("\\?");
-				if (split.length!=2){
-					return ResultT.failed("同步任务【"+ce.getTaskName()+"】url格式不正确");
-				}
-				String s1 = split[1];
-				String[] split1 = s1.split("&");
+//				if (split.length!=2){
+//					return ResultT.failed("同步任务【"+ce.getTaskName()+"】url格式不正确");
+//				}
 				String interfaceId = null;
-				for (String p:split1 ) {
-					if (p.contains("interfaceId")){
-						 interfaceId = p.substring(p.lastIndexOf("=")+1);
+				if (split.length==2){
+					String s1 = split[1];
+					String[] split1 = s1.split("&");
+					for (String p:split1 ) {
+						if (p.contains("interfaceId")){
+							url = split[0];
+							interfaceId = p.substring(p.lastIndexOf("=")+1);
+						}
 					}
 				}
+
 //				String result = HttpUtils.sendGet(url,"");
-				String result = HttpUtils.mmdGet(url,interfaceId,userName,password);
+				String result = "";
+				if (StringUtils.isEmpty(interfaceId)){
+					result= HttpUtils.arcGet(url,areUserName,arePassword);
+				}else {
+					result= HttpUtils.mmdGet(url,interfaceId,userName,password);
+				}
 				if(StringUtil.isEmpty(result)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值为空");
 
 				JSONObject obj = JSON.parseObject(result);

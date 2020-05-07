@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container menuTemplate">
     <el-form :inline="true" class="searchBox">
       <el-form-item label="菜单名称">
         <el-input
@@ -33,6 +33,7 @@
     </el-form>
 
     <el-table
+      id="menuTable"
       v-loading="loading"
       :data="menuList"
       row-key="id"
@@ -41,7 +42,7 @@
       <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160px"></el-table-column>
       <el-table-column prop="icon" label="图标" width="100px">
         <template slot-scope="scope">
-          <svg-icon :icon-class="scope.row.icon" />
+          <svg-icon :icon-class="scope.row.icon" v-if="scope.row.icon" />
         </template>
       </el-table-column>
       <el-table-column prop="orderNum" label="排序" width="60px"></el-table-column>
@@ -250,9 +251,25 @@ export default {
       treeselect().then(response => {
         this.menuOptions = [];
         const menu = { id: 0, label: "主类目", children: [] };
-        menu.children = response.data;
+        if (this.title == "修改菜单") {
+          menu.children = response.data;
+          this.resetData(menu.children, this.form.menuName);
+          console.log(menu.children);
+        } else {
+          menu.children = response.data;
+        }
+
         this.menuOptions.push(menu);
       });
+    },
+    resetData(dataArr, name) {
+      for (var i in dataArr) {
+        if (dataArr[i].label == name) {
+          dataArr[i].isDisabled = true;
+        } else {
+          this.resetData(dataArr[i].children, name);
+        }
+      }
     },
     // 菜单显示状态字典翻译
     visibleFormat(row, column) {
@@ -355,8 +372,13 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.searchBox {
-  margin-bottom: 24px;
+<style lang="scss" >
+.menuTemplate {
+  .searchBox {
+    margin-bottom: 24px;
+  }
+  #menuTable td:first-child {
+    text-align: left;
+  }
 }
 </style>

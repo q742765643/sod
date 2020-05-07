@@ -5,7 +5,7 @@
       <el-form-item label="格点要素服务代码:">
         <el-input size="small" v-model="queryParams.userFcstEle" />
       </el-form-item>
-      <el-form-item label="索引表存储代码:">
+      <el-form-item label="要素存储短名:">
         <el-input size="small" v-model="queryParams.dbFcstEle" />
       </el-form-item>
       <el-form-item>

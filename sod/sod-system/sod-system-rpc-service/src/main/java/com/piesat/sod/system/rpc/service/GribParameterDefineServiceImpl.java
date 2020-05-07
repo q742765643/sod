@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.sod.system.dao.GribParameterDefineDao;
 import com.piesat.sod.system.entity.GribParameterDefineEntity;
 import com.piesat.sod.system.rpc.api.GribParameterDefineService;
@@ -98,5 +99,31 @@ public class GribParameterDefineServiceImpl extends BaseService<GribParameterDef
     public List<GribParameterDefineDto> all() {
         List<GribParameterDefineEntity> all = this.getAll();
         return this.gribParameterDefineMapstruct.toDto(all);
+    }
+
+    @Override
+    public void exportExcel(GribParameterDefineDto gribParameterDefineDto) {
+        List<GribParameterDefineDto> gribParameterDefineDtos = this.findByParam(gribParameterDefineDto);
+        List<GribParameterDefineEntity> gribParameterDefineEntities = gribParameterDefineMapstruct.toEntity(gribParameterDefineDtos);
+        ExcelUtil<GribParameterDefineEntity> util=new ExcelUtil(GribParameterDefineEntity.class);
+        util.exportExcel(gribParameterDefineEntities,"GRIB参数定义");
+    }
+
+    @Override
+    public List<GribParameterDefineDto> findByParam(GribParameterDefineDto gribParameterDefineDto) {
+
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(com.piesat.common.utils.StringUtils.isNotNullString(gribParameterDefineDto.getGribVersion())){
+            specificationBuilder.add("gribVersion", SpecificationOperator.Operator.eq.name(),gribParameterDefineDto.getGribVersion());
+        }
+        if(com.piesat.common.utils.StringUtils.isNotNullString(gribParameterDefineDto.getParameterId())){
+            specificationBuilder.add("parameterId", SpecificationOperator.Operator.eq.name(),gribParameterDefineDto.getParameterId());
+        }
+        if(com.piesat.common.utils.StringUtils.isNotNullString(gribParameterDefineDto.getEleCodeShort())){
+            specificationBuilder.add("eleCodeShort", SpecificationOperator.Operator.eq.name(),gribParameterDefineDto.getEleCodeShort());
+        }
+        List<GribParameterDefineEntity> gribParameterDefineEntities = this.getAll(specificationBuilder.generateSpecification());
+        List<GribParameterDefineDto> gribParameterDefineDtos = this.gribParameterDefineMapstruct.toDto(gribParameterDefineEntities);
+        return gribParameterDefineDtos;
     }
 }

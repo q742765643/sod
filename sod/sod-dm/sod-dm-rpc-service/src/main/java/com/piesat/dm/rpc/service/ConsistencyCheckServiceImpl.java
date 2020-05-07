@@ -27,6 +27,7 @@ import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -90,6 +91,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     }
 
     @Override
+    @Transactional
     public void deleteRecordByIds(List<String> ids) {
         this.deleteByIds(ids);
     }

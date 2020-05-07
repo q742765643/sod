@@ -1,8 +1,11 @@
 package com.piesat.schedule.rpc.service.sync;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.JsonArray;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -215,11 +218,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         for(int i=0;i<targetRelationList.size();i++) {
             Map<String, Object>  targetRelation = targetRelationList.get(i);
             String targetTableId = (String) targetRelation.get("targetTableId");
-            String mapping = (String)targetRelation.get("mapping");
+            List<Map<String,String>> mapping = (List<Map<String,String>>)targetRelation.get("mapping");
             targetTableIds.add(targetTableId);
-
             //保存
-            String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(),targetTableId,mapping,filterRecordIds,StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
+            String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(),targetTableId, mappingListToString(mapping),filterRecordIds,StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
             if(sourceIds.length()>0) {
                 sourceIds.append(",").append(mappingRecordId);
             }else {
@@ -233,11 +235,11 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         if(slaveRelation != null && !slaveRelation.isEmpty()){
             String sourceVTableId = (String) slaveRelation.get("sourceVTableId");
             String targetVTableId = (String) slaveRelation.get("targetVTableId");
-            String mapping = (String)slaveRelation.get("mapping");
+            List<Map<String,String>> mapping = (List<Map<String,String>>)slaveRelation.get("mapping");
             String linkKey = (String)slaveRelation.get("linkKey");
             syncTaskDto.setLinkKey(linkKey);
 
-            String mappingRecordId = syncConfigAndMappingSaveDto(sourceVTableId,targetVTableId,mapping,"",true);
+            String mappingRecordId = syncConfigAndMappingSaveDto(sourceVTableId,targetVTableId,mappingListToString(mapping),"",true);
             slaveIds.append(mappingRecordId);
         }
         syncTaskDto.setSourceTable(sourceIds.toString());
@@ -370,6 +372,36 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         syncMappingEntity = syncMappingDao.saveNotNull(syncMappingEntity);
         return String.valueOf(syncMappingEntity.getId());
     }
+
+    public String mappingListToString(List<Map<String,String>> mapping){
+        String mappingString = "";
+        if(mapping != null && mapping.size()>0){
+            for(int i=0;i<mapping.size();i++){
+                Map<String, String> map = mapping.get(i);
+                String targetColumn_ =  map.get("targetColumn_");
+                String sourceColumn_ =  map.get("sourceColumn_");
+                mappingString = mappingString + "<" + targetColumn_ +">" +sourceColumn_ + "</" + targetColumn_ + ">"+"\r\n";
+            }
+        }
+        return  mappingString;
+    }
+    public JSONArray mappingStringToList(String mapping){
+        JSONArray jsonArray = new JSONArray();
+        if(StringUtils.isNotNullString(mapping)){
+            for(int i=0;i<mapping.split("\r\n").length;i++){
+                JSONObject jsonObject = new JSONObject();
+                String oneMapping = mapping.split("\r\n")[i];
+                String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">") + 1, oneMapping.indexOf("</"));
+                String targetColumn_ = oneMapping.substring(oneMapping.indexOf("<") + 1, oneMapping.indexOf(">"));
+                jsonObject.put("targetColumn_",targetColumn_);
+                jsonObject.put("sourceColumn_",sourceColumn_);
+                jsonArray.add(jsonObject);
+            }
+        }
+        return jsonArray;
+    }
+
+
 
     /**
      * 唯一索引/主键
@@ -567,15 +599,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             relation.put("targetTableId", syncConfigEntity.getTargetTableId());
             //将mapping格式化成json
             String mapping = syncMappingEntity.getMapping();
-            if(StringUtils.isNotNullString(mapping)){
-                ArrayList<Map<String, String>> mapArrayList = new ArrayList<>();
-                for(int i=0;i<mapping.split("\r\n").length;i++){
-                    String oneMapping = mapping.split("\r\n")[i];
-                    String targetColumn_ = oneMapping.substring(0,oneMapping.indexOf(">"));
-                    String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">")+1,oneMapping.indexOf("</"));
-                }
-            }
-            relation.put("mapping", syncMappingEntity.getMapping());
+            relation.put("mapping", mappingStringToList(mapping));
             syncTaskDto.getTargetRelation().add(relation);
         }
 
@@ -587,13 +611,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
             //获取config的id
             String configId = syncMappingEntity.getTargetTableId();
-            relation.put("mapping",syncMappingEntity.getMapping());
+            //将mapping格式化成json
+            String mapping = syncMappingEntity.getMapping();
+            relation.put("mapping",mappingStringToList(mapping));
             syncTaskDto.setSlaveRelation(relation);
         }
         String syncTaskJson = JSONObject.toJSONString(syncTaskDto);
         JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
         return jsonObject;
     }
+
 
     @Override
     public void exportExcel(SyncTaskDto syncTaskDto) {

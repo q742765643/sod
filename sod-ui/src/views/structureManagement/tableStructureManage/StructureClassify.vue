@@ -270,17 +270,25 @@ export default {
     },
     // 删除资料分类
     deleteSourceNode() {
-      console.log(this.editNodeId);
-      delByClass({ dataClassId: this.editNodeId }).then(response => {
-        if (response.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
+      this.$confirm("确认删除该节点吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          console.log(this.editNodeId);
+          delByClass({ dataClassId: this.editNodeId }).then(response => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              //刷新资料树
+              this.initMethodsTree(this.whichTree);
+            }
           });
-          //刷新资料树
-          this.initMethodsTree(this.whichTree);
-        }
-      });
+        })
+        .catch(() => {});
     },
     // 显示未创建、显示全部
     handleShowTree(type) {

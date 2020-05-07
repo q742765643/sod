@@ -653,7 +653,7 @@
 
     <select id="getDataClassBaseInfo" resultType="DataClassBaseInfoEntity" parameterType="String">
         select aa.DATA_CLASS_ID dataClassId,b.C_IDABS cIdabs,b.C_MAINFREQ cMainfreq,b.c_coremeta_id cCoremetaId,
-        b.C_DATASCAL cDatascal,c.C_WESTBL cWestbl,c.C_EASTBL cEastbl,c.C_SOUTHBL cSouthbl,
+        b.C_DATASCAL cDatascal,c.C_WESTBL cWestbl,c.C_EASTBL cEastbl,c.C_SOUTHBL cSouthbl,e.C_OBSFREQ cObsfreq,
         c.C_NORTHBL cNorthbl,c.C_GEODESC cGeodesc,h.C_RPORGNAME cRporgname,
         b.C_SOURCE cSource,d.C_NETNAME cNetname,a.C_NETTYPE cNettype,
         f.C_CREAT_NAME cCreatName,f.C_CHECKER cChecker,

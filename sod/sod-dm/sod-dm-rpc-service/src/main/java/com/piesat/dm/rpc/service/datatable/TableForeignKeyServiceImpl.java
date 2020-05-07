@@ -9,6 +9,7 @@ import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.dm.rpc.mapper.datatable.TableForeignKeyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
     }
 
     @Override
+    @Transactional
     public int deleteByIdIn(List<String> ids) {
         return this.tableForeignKeyDao.deleteByIdIn(ids);
     }

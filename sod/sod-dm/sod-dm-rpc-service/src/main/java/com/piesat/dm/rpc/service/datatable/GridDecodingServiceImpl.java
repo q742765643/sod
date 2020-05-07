@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +49,7 @@ public class GridDecodingServiceImpl extends BaseService<GridDecodingEntity> imp
     }
 
     @Override
+    @Transactional
     public List<GridDecodingDto> saveList(GridDecodingList gridDecodingList) {
         List<GridDecodingEntity> gridDecodingEntity = this.gridDecodingMapper.toEntity(gridDecodingList.getGridDecodingList());
         gridDecodingEntity = this.saveNotNull(gridDecodingEntity);
@@ -61,6 +63,7 @@ public class GridDecodingServiceImpl extends BaseService<GridDecodingEntity> imp
     }
 
     @Override
+    @Transactional
     public void delByIds(String ids) {
         String[] split = ids.split(",");
         this.deleteByIds(Arrays.asList(split));

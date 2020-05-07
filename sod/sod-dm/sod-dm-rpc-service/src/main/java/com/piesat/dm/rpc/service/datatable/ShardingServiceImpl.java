@@ -9,6 +9,7 @@ import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.mapper.datatable.ShardingMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class ShardingServiceImpl extends BaseService<ShardingEntity> implements 
     }
 
     @Override
+    @Transactional
     public List<ShardingDto> saveDto(List<ShardingDto> shardingDto) {
         List<ShardingEntity> shardingEntity = this.shardingMapper.toEntity(shardingDto);
         shardingEntity = this.saveNotNull(shardingEntity);

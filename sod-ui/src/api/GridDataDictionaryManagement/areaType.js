@@ -38,3 +38,12 @@ export function detailById(id) {
     method: 'get',
   })
 }
+// 下载
+export function exportTable(query) {
+  return request({
+    url: baseUrl + '/dictionary/define/exportTable',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

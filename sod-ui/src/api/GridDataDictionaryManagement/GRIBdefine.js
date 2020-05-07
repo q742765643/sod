@@ -31,10 +31,12 @@ export function gridEleDecodeDefineDelete(ids) {
   })
 }
 // 导出
-export function exportJSON() {
+export function exportJSON(query) {
   return request({
-    url: baseUrl + '/system/api/gridEleDecodeDefine/exportJSON',
-    method: 'post',
+    url: baseUrl + '/system/gribParameterDefine/exportTable',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
   })
 }
 // 导入

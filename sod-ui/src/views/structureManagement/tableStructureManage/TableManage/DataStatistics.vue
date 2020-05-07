@@ -53,9 +53,7 @@ import {
   updateIsAllLine,
   getArchive
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
-import {
-  parseTime
-} from "@/utils/ruoyi";
+import { parseTime } from "@/utils/ruoyi";
 export default {
   name: "DataStatistics",
   props: { rowData: Object, tableInfo: Object },
@@ -71,8 +69,8 @@ export default {
       },
       searchParams: {
         isAllLine: 1,
-        beginTime:"",
-        endTime:""
+        beginTime: "",
+        endTime: ""
       },
       tableData: [],
       total: 0
@@ -93,11 +91,7 @@ export default {
       let obj = {};
       obj.dataClassId = this.rowData.DATA_CLASS_ID;
       obj.isAllLine = value;
-      updateIsAllLine(obj).then(response => {
-        this.tableData = response.data.pageData;
-        this.total = response.data.totalCount;
-        this.loading = false;
-      });
+      updateIsAllLine(obj).then(response => {});
     },
     // table自增定义方法
     table_index(index) {

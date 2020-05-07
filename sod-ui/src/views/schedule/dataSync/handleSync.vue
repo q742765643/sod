@@ -332,7 +332,7 @@
         </el-row>
         <el-row type="flex" class="row-bg" justify="center" v-if="this.addnewtargettable == 1">
           <el-col :span="12">
-            <el-form-item label="目标表" prop="targetTable">
+            <el-form-item label="目标表2" prop="targetTable">
               <i class="el-icon-plus"></i>
               <i class="el-icon-minus" @click="addnewtargettable = 0"></i>
               <el-select
@@ -366,8 +366,8 @@
       </el-card>
       <el-tabs v-model="editableTabsValue" closable type="card" @tab-remove="removeTab">
         <el-tab-pane
-          :key="item.name"
-          v-for="(item) in editableTabs"
+          :key="index"
+          v-for="(item,index) in editableTabs"
           :label="item.title"
           :name="item.name"
         >
@@ -600,6 +600,7 @@ export default {
       }
     }
   },
+
   methods: {
     async initDetail() {
       this.msgFormDialog = this.handleObj;
@@ -634,25 +635,6 @@ export default {
         this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
-      console.log(this.editableTabs);
-
-      /* let newTabArry = []; tab回显
-      this.editableTabs.forEach((element, index) => {
-        this.handleObj.targetRelation.forEach((te, ti) => {
-          if (element.tableId == te.targetTableId) {
-            te.mapping.forEach((mItem, mIndex) => {
-              let obj = {
-                index: mIndex,
-                isdelete: false,
-                sourceColumn_: mItem.sourceColumn_,
-                targetColumn_: mItem.targetColumn_
-              };
-              newTabArry.push(obj)
-            });
-          }
-        });
-      });
-      this.editableTabs = newTabArry; */
     },
     //源数据库事件,根据数据库ID获取源表
     async sourceDBChange(selectSourceDB) {
@@ -795,6 +777,8 @@ export default {
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
+      // debugger;
+      // this.editableTabs = [];
       if (!selectTargetTableID) {
         return;
       }
@@ -823,11 +807,14 @@ export default {
       // 目标表名
       this.msgFormDialog["target_table_name" + tname] =
         targetTableInfo.table_name;
-      if (targetTableInfo.db_table_type == "K" && !this.handleObj.id) {
-        this.$message({
-          showClose: true,
-          message: "您选择了键值表类型的键表，系统自动匹配值表"
-        });
+      if (targetTableInfo.db_table_type == "K") {
+        if (!this.handleObj.id) {
+          this.$message({
+            showClose: true,
+            message: "您选择了键值表类型的键表，系统自动匹配值表"
+          });
+        }
+
         var element_obj = "";
         this.targetTableArray.forEach(element => {
           if (
@@ -844,7 +831,7 @@ export default {
           this.targetVColumnDetail = res.data;
         });
         //源表值表和目标表的值表映射
-        this.ETableMapping(element_obj);
+        await this.ETableMapping(element_obj);
       }
       // 目标表字段
       await syncColumnByTableId({ tableId: selectTargetTableID }).then(res => {
@@ -878,12 +865,36 @@ export default {
               break;
             }
           }
-          var obj = {};
-          obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
-          obj.sourceColumn_ = sourceColumnName;
-          obj.index = i;
-          obj.isdelete = false;
-          dataList.push(obj);
+
+          if (
+            this.handleObj.targetRelation &&
+            this.handleObj.targetRelation.length > 0
+          ) {
+            this.handleObj.targetRelation.forEach((te, ti) => {
+              if (table_id == te.targetTableId) {
+                te.mapping.forEach((mItem, mIndex) => {
+                  if (
+                    this.targetColumnDetail[i].celementCode ==
+                    mItem.targetColumn_
+                  ) {
+                    var obj = {};
+                    obj.index = i;
+                    obj.isdelete = false;
+                    obj.targetColumn_ = mItem.targetColumn_;
+                    obj.sourceColumn_ = mItem.sourceColumn_;
+                    dataList.push(obj);
+                  }
+                });
+              }
+            });
+          } else {
+            var obj = {};
+            obj.index = i;
+            obj.isdelete = false;
+            obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
+            obj.sourceColumn_ = sourceColumnName;
+            dataList.push(obj);
+          }
         }
 
         let seleteobj = this.targetTableArray.find(item => {
@@ -903,6 +914,7 @@ export default {
           data_class_ids: data_class_id
         });
         this.editableTabsValue = table_name;
+        console.log("1");
       } //if end
     },
 
@@ -927,12 +939,25 @@ export default {
             break;
           }
         }
-        var obj = {};
-        obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
-        obj.sourceColumn_ = sourceColumnName;
-        obj.index = i;
-        obj.isdelete = false;
-        dataList.push(obj);
+
+        if (!this.handleObj.slaveRelation) {
+          var obj = {};
+          obj.index = i;
+          obj.isdelete = false;
+          obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
+          obj.sourceColumn_ = sourceColumnName;
+          dataList.push(obj);
+        }
+      }
+      if (this.handleObj.slaveRelation) {
+        this.handleObj.slaveRelation.mapping.forEach((mItem, i) => {
+          var obj = {};
+          obj.index = i;
+          obj.isdelete = false;
+          obj.targetColumn_ = mItem.targetColumn_;
+          obj.sourceColumn_ = mItem.sourceColumn_;
+          dataList.push(obj);
+        });
       }
 
       this.editableTabs.push({
@@ -950,6 +975,7 @@ export default {
         sourceTableName: element_obj.table_name
       });
       this.editableTabsValue = element_obj.table_name;
+      console.log("2");
     },
 
     removeTab(targetName) {
@@ -983,12 +1009,6 @@ export default {
         this.$emit("resetQuery");
       } else {
         //组装映射
-        debugger;
-        //console.log(editableTabs);
-        /* let targetTableIds = "",
-          tableNames = "",
-          data_class_ids = "",
-          tableNameCNs = "", */
         let targetRelation = [],
           slaveRelation = {};
         for (var i = 0; i < this.editableTabs.length; i++) {
@@ -996,54 +1016,30 @@ export default {
           var list = obj.list;
           var tableId = obj.tableId;
           if (obj.KandE == "K") {
-            let mapping = "";
+            let mapping = [];
             for (var j = 0; j < list.length; j++) {
               if (!list[j].isdelete) {
-                mapping =
-                  mapping +
-                  "<" +
-                  list[j]["targetColumn_"] +
-                  ">" +
-                  list[j]["sourceColumn_"] +
-                  "</" +
-                  list[j]["targetColumn_"] +
-                  ">";
-                mapping = mapping + "\r\n";
+                let obj = {};
+                obj.targetColumn_ = list[j]["targetColumn_"];
+                obj.sourceColumn_ = list[j]["sourceColumn_"];
+                mapping.push(obj);
               }
             }
             slaveRelation.mapping = mapping;
           } else {
-            /*  targetTableIds = targetTableIds + "," + tableId;
-            tableNames = tableNames + "," + obj.name;
-            data_class_ids = data_class_ids + "," + obj.data_class_ids;
-            tableNameCNs = tableNameCNs + "," + obj.namecn; */
-
-            let mapping = "";
+            let mapping = [];
             for (var j = 0; j < list.length; j++) {
               if (!list[j].isdelete) {
-                mapping =
-                  mapping +
-                  "<" +
-                  list[j]["targetColumn_"] +
-                  ">" +
-                  list[j]["sourceColumn_"] +
-                  "</" +
-                  list[j]["targetColumn_"] +
-                  ">";
-                mapping = mapping + "\r\n";
+                let obj = {};
+                obj.targetColumn_ = list[j]["targetColumn_"];
+                obj.sourceColumn_ = list[j]["sourceColumn_"];
+                mapping.push(obj);
               }
             }
             targetRelation.push({ targetTableId: tableId, mapping: mapping });
           }
         }
-        /*   if (targetTableIds.length > 0) {
-          this.msgFormDialog.targetTableIds = targetTableIds.substr(1);
-          this.msgFormDialog.tableNames = tableNames.substr(1);
-          this.msgFormDialog.data_class_ids = data_class_ids.substr(1);
-          this.msgFormDialog.tableNameCNs = tableNameCNs.substr(1);
-          this.msgFormDialog.targetRelation = targetRelation;
-          this.msgFormDialog.slaveRelation = slaveRelation;
-        } */
+
         this.msgFormDialog.targetRelation = targetRelation;
         this.msgFormDialog.slaveRelation = slaveRelation;
 

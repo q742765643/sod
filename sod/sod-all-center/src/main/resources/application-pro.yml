@@ -44,6 +44,9 @@ spring:
     url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
     username: ENC(YxpGRv4xpm1043WVImWDSw==)
     password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
+    #url: jdbc:xugu://10.40.17.34:5138/USR_SOD1?char_set=utf8
+    #username: USR_SOD
+    #password: Pnmic_qwe123
     type: com.alibaba.druid.pool.DruidDataSource
     # 下面为连接池的补充设置，应用到上面所有数据源中
     # 初始化大小，最小，最大
@@ -67,7 +70,7 @@ spring:
       hibernate:
         hbm2ddl:
           auto: validate
-#          auto: update
+          #auto: update
         dialect: com.piesat.common.jpa.dialect.XuguDialect
         format_sql: true
     show-sql: true
@@ -76,7 +79,7 @@ spring:
     host: 10.40.16.17
     port: 6379
     timeout: 50000
-    password:
+#    password:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
@@ -106,10 +109,15 @@ log:
   path: ./log
   level: INFO
 
-mmd:
-  userName: ENC(FikEX5/jz4GcDwDjettYjA==)
-  password: ENC(rkSMaEDip/2cRjGaz4CMWg==)
+mng:
+  ip: 10.40.16.17
 
+mmd:
+  userName: dsmsys
+  password: nmic@100200
+are:
+  userName: usr_music
+  password: music#2020
 
 serverfile:
   dbfile: /home/sod/file/upload/dbfile

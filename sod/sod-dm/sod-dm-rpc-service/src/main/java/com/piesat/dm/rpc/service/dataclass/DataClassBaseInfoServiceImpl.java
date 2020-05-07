@@ -13,6 +13,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -84,6 +85,7 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
     }
 
     @Override
+    @Transactional
     public DataClassBaseInfoDto saveDataClassBaseInfo(DataClassBaseInfoDto dataClassBaseInfoDto) {
         DataClassBaseInfoEntity sodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(dataClassBaseInfoDto.getDataClassId());
         DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(dataClassBaseInfoDto.getDataClassId());

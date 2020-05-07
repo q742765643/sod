@@ -8,6 +8,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,5 +82,12 @@ public class GribParameterDefineController {
         List<GribParameterDefineDto> serviceCodeDto= this.gribParameterDefineService.all();
         resultT.setData(serviceCodeDto);
         return resultT;
+    }
+
+    @ApiOperation(value = "GRIB参数定义导出")
+    @RequiresPermissions("system:gribParameterDefine:exportTable")
+    @GetMapping("/exportTable")
+    public void exportExcel(GribParameterDefineDto gribParameterDefineDto){
+        gribParameterDefineService.exportExcel(gribParameterDefineDto);
     }
 }

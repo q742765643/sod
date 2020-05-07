@@ -10,6 +10,7 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialTreeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -152,6 +153,7 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
     }
 
     @Override
+    @Transactional
     public Map<String, Object> deleteRecordByTdbId(String tdbId, String typeId) {
         Map<String, Object> map = new HashMap<>();
         try {

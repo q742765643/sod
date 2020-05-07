@@ -284,6 +284,11 @@ export default {
       }
       console.log(this.queryParams);
       this.loading = true;
+      this.queryParams.params = {
+        orderBy: {
+          updateTime: "desc"
+        }
+      };
       syncList(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
@@ -346,11 +351,15 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const id = row.id;
-      this.$confirm('是否确认删除任务编号为"' + id + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$confirm(
+        '是否确认删除任务名称为"' + row.taskName + '"的数据项?',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
         .then(function() {
           return delSync(id);
         })

@@ -22,4 +22,8 @@ public interface GribParameterDefineService {
     public void deleteRecordByIds(List<String> ids);
 
     List<GribParameterDefineDto> all();
+
+    void exportExcel(GribParameterDefineDto gribParameterDefineDto);
+
+    List<GribParameterDefineDto> findByParam(GribParameterDefineDto gribParameterDefineDto);
 }

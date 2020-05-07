@@ -28,6 +28,7 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
@@ -46,6 +47,8 @@ import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.api.recover.MetaRecoverLogService;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.schedule.rpc.dto.clear.ClearDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
 import com.piesat.sod.system.rpc.api.SqlTemplateService;
@@ -59,6 +62,7 @@ import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -127,7 +131,7 @@ public class GrpcService {
     @GrpcHthtClient
     private ServiceCodeService serviceCodeService;
 
-
+    @Transactional
     public ResultT updateColumnValue(String id, String column, String value) {
         //删除配置
         if ("3".equals(value)) {
@@ -151,19 +155,19 @@ public class GrpcService {
                 if (StringUtils.isNotNullString(taskId)) {
                     moveService.deleteMoveByIds(new String[]{taskId});
                 }
-            }  else if (column.equals("clean_identifier")) {
+            } else if (column.equals("clean_identifier")) {
                 //删除迁移清楚
                 String taskId = storage.getClearId();
                 if (StringUtils.isNotNullString(taskId)) {
                     clearService.deleteClearByIds(new String[]{taskId});
                 }
-            }else if (column.equals("backup_identifier")) {
+            } else if (column.equals("backup_identifier")) {
                 //删除备份
                 String taskId = storage.getBackupId();
                 if (StringUtils.isNotNullString(taskId)) {
                     backupService.deleteBackupByIds(new String[]{taskId});
                 }
-            }else if (column.equals("archiving_identifier")) {
+            } else if (column.equals("archiving_identifier")) {
                 //恢复
 //                String taskId = storage.getClearId();
 //                if (StringUtils.isNotNullString(taskId)) {
@@ -177,14 +181,18 @@ public class GrpcService {
         return ResultT.success();
     }
 
+    @Transactional
     public ResultT deleteById(String id) {
         StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).orElse(null);
-        if (storage==null){
+        if (storage == null) {
             return ResultT.failed("概览信息未配置");
         }
         //删除存储结构
-        if (StringUtils.isNotEmpty(storage.getClassLogicId())){
-            dataLogicService.deleteById(storage.getClassLogicId());
+        if (StringUtils.isNotEmpty(storage.getClassLogicId())) {
+            DataLogicDto dotById = dataLogicService.getDotById(storage.getClassLogicId());
+            if (dotById != null) {
+                dataLogicService.deleteById(storage.getClassLogicId());
+            }
         }
         //删除同步配置
         if (StringUtils.isNotNullString(storage.getSyncId())) {
@@ -195,11 +203,17 @@ public class GrpcService {
         }
         //删除迁移清楚
         if (StringUtils.isNotNullString(storage.getClearId())) {
-            clearService.deleteClearByIds(new String[]{storage.getClearId()});
+            ClearDto clearById = clearService.findClearById(storage.getClearId());
+            if (clearById != null) {
+                clearService.deleteClearByIds(new String[]{storage.getClearId()});
+            }
         }
         //删除备份
         if (StringUtils.isNotNullString(storage.getBackupId())) {
-            backupService.deleteBackupByIds(new String[]{storage.getBackupId()});
+            BackUpDto backupById = backupService.findBackupById(storage.getBackupId());
+            if (backupById != null) {
+                backupService.deleteBackupByIds(new String[]{storage.getBackupId()});
+            }
         }
         //删除配置信息
         storageConfigurationDao.deleteById(id);
@@ -379,13 +393,13 @@ public class GrpcService {
         return un;
     }
 
-    public List<DictDataDto>  getDictByType(String dictType){
+    public List<DictDataDto> getDictByType(String dictType) {
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType(dictType);
         return DictDataDtos;
     }
 
 
-    public List<CmccElementEntity> queryCmccElements(DatumTableEntity datumTableEntity){
+    public List<CmccElementEntity> queryCmccElements(DatumTableEntity datumTableEntity) {
         String c_datum_code = datumTableEntity.getC_datum_code();
         c_datum_code = c_datum_code.substring(0, 11);
         datumTableEntity.setC_datum_code(c_datum_code);

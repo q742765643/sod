@@ -109,5 +109,12 @@ public class DefineController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "区域类别管理导出")
+    @RequiresPermissions("dictionary:define:exportTable")
+    @GetMapping("/exportTable")
+    public void exportExcel(DefineDto defineDto){
+        defineService.exportExcel(defineDto);
+    }
 }
 

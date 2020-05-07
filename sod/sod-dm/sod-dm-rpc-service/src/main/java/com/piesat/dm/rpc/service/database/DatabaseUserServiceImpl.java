@@ -47,6 +47,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +88,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private UserDao userDao;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
-
+    @Value("${mng.ip}")
+    private String mngIp;
 
     @Override
     public BaseDao<DatabaseUserEntity> getBaseDao() {
@@ -275,7 +277,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
         /**为申请的IP授权**/
         //待授权IP
-        String[] needEmpowerIpArr = databaseUserDto.getDatabaseUpIp().split(";");
+        String databaseUpIp = databaseUserDto.getDatabaseUpIp();
+        if (StringUtils.isNotBlank(databaseUpIp)) databaseUpIp += ";" + mngIp;
+
+        String[] needEmpowerIpArr = databaseUpIp.split(";");
         for (String databaseId : needEmpowerIdist) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
             try {
@@ -293,8 +298,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                 }
             }
-
         }
+
+
+
+
 
         /**为已有账号修改密码**/
         if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
@@ -325,10 +333,27 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     thisHaveIds.remove(databaseId);
                 }
             } catch (Exception e) {
+                sbff.append(databaseId + "修改绑定IP失败，msg:" + e.getMessage() + "\n");
+            }
+        }
+        databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds, ","));
+
+//修改绑定ip
+        for (String databaseId : thisHaveIds) {
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            try {
+                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                if (databaseVO != null) {
+                    databaseVO.bindIp(databaseUserDto.getDatabaseUpId(),needEmpowerIpArr);
+                    databaseVO.closeConnect();
+                }
+            } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
             }
         }
-        databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds,","));
+
+
+
         String msg = sbff.toString();
         if (StringUtils.isNotBlank(msg)) {
             return ResultT.failed(msg);
