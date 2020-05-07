@@ -357,7 +357,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         databaseDao.save(databaseEntity);
                     }
                     //授权
-                    /*try{
+                    try{
                         //申请创建模式
                         Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
                         //访问路径、账号、密码
@@ -402,7 +402,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         }
                     }catch(Exception e){
                         e.printStackTrace();
-                    }*/
+                    }
                 }
             }
         } catch (Exception e) {
