@@ -2,11 +2,9 @@ package com.piesat.dm.entity.dataapply;
 
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -22,6 +20,11 @@ public class NewdataApplyEntity{
     @Id
     @Column(name = "id", length = 36)
     private String id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    @Column(name = "create_time",nullable = false)
+    private Date createTime;
 
     /**
      * 四级编码

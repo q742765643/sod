@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.service;
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.UUID;
 import com.piesat.dm.common.codedom.CodeDOM;
 import com.piesat.dm.dao.StorageConfigurationDao;
 import com.piesat.dm.dao.dataapply.*;
@@ -196,7 +197,7 @@ public class ImportData {
     }
     public void implDataOther(){
 
-        importSyncTask();
+        /*importSyncTask();
         importCloudDatabase();
         importBackUp();
         importMove();
@@ -205,7 +206,7 @@ public class ImportData {
         importPortalAuz();
         importSpecial();
         importNewData();
-        importDataAuthority();
+        importDataAuthority();*/
         importOnLineTime();
         importDsync();
         importMetadataBackUp();
@@ -1652,6 +1653,7 @@ public class ImportData {
             }
             newdataApplyEntity.setTableName(table_name);
             newdataApplyEntity.setUserId(user_id);
+            newdataApplyEntity.setId(UUID.randomUUID().toString().replaceAll("-",""));
             newdataApplyEntity = newdataApplyDao.saveNotNull(newdataApplyEntity);
 
             //新增资料字段
@@ -1836,7 +1838,7 @@ public class ImportData {
 
     //在线时间检索
     public void importOnLineTime() {
-        String sql = "select * from DMIN_DATA_TABLE_COLLECT_INFO  where statistic_time>'2020-04-14'";
+        String sql = "select * from DMIN_DATA_TABLE_COLLECT_INFO  where statistic_time>'2020-05-01'";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
             String database_id = toString(m.get("DATABASE_ID"));
@@ -1995,7 +1997,7 @@ public class ImportData {
 
     //管理字段管理
     public void importManagerFiled() {
-        /*String sql = "select * from dmin_db_manager_fieldgroup";
+        String sql = "select * from dmin_db_manager_fieldgroup";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
             String  group_id = toString(m.get("GROUP_ID"));
@@ -2045,14 +2047,15 @@ public class ImportData {
             }
             manageFieldEntity.setUserEleCode(user_ele_code);
             manageFieldDao.saveNotNull(manageFieldEntity);
-        }*/
-        /*List<ManageFieldEntity> all = manageFieldDao.findAll();
+        }
+        ManageGroupEntity manageGroupEntity = manageGroupDao.findByGroupName("常用管理字段");
+        List<ManageFieldEntity> all = manageFieldDao.findAll();
         for(ManageFieldEntity manageFieldEntity : all){
             ManageFieldGroupEntity manageFieldGroupEntity = new ManageFieldGroupEntity();
-            manageFieldGroupEntity.setGroupId("f9dc3bc0b09146728f0c4eaa8fd8c639");
+            manageFieldGroupEntity.setGroupId(manageGroupEntity.getGroupId());
             manageFieldGroupEntity.setFieldId(manageFieldEntity.getId());
             manageFieldGroupDao.saveNotNull(manageFieldGroupEntity);
-        }*/
+        }
     }
 
     //服务代码管理
