@@ -89,3 +89,13 @@ export function exportTable(query) {
     responseType: "arraybuffer"
   })
 }
+
+
+// 拒绝
+export function updateExamineStatus(query) {
+  return request({
+    url: baseUrl + '/dm/databaseSpecial/updateExamineStatus',
+    method: 'get',
+    params: query,
+  })
+}

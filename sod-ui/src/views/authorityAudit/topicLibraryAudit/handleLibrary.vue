@@ -1,7 +1,7 @@
 <template>
   <section class="handleLiberyDialog">
-    <el-tabs type="border-card">
-      <el-tab-pane label="基本信息">
+    <el-tabs type="border-card" v-model="activeName">
+      <el-tab-pane label="基本信息" name="first">
         <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px">
           <el-form-item label="图标" v-if="!handleObj.pageName">
             <img v-if="sdbImg" :src="sdbImg" style="width:40px;" alt />
@@ -34,11 +34,16 @@
             <el-input size="small" v-model="msgFormDialog.sortNo"></el-input>
           </el-form-item>
           <div class="dialog-footer">
-            <el-button type="primary" @click="trueDialog('ruleForm')">保 存</el-button>
+            <el-button type="primary" @click="trueDialog('ruleForm')">通 过</el-button>
+            <el-button
+              type="danger"
+              @click="cancleDialog('ruleForm')"
+              v-if="!handleObj.pageName"
+            >拒 绝</el-button>
           </div>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="数据库授权">
+      <el-tab-pane label="数据库授权" name="second" v-if="flagBase">
         <el-form>
           <el-row class="center">
             <el-col :span="24">
@@ -75,7 +80,7 @@
           </el-row>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="专题库资料" v-if="!handleObj.pageName">
+      <el-tab-pane label="专题库资料" name="third" v-if="!handleObj.pageName && flagPower">
         <!-- 查询条件 -->
         <section class="searchCon">
           <el-form
@@ -122,7 +127,7 @@
           </el-table>
         </section>
       </el-tab-pane>
-      <el-tab-pane label="基础库资料" v-if="!handleObj.pageName">
+      <el-tab-pane label="基础库资料" name="fourth" v-if="!handleObj.pageName && flagPower">
         <!-- 查询条件 -->
         <section class="searchCon">
           <el-form
@@ -239,7 +244,8 @@ import {
   empowerDataOne,
   empowerDatabaseSpecial,
   saveBase,
-  exportTable
+  exportTable,
+  updateExamineStatus
 } from "@/api/authorityAudit/topicLibraryAudit";
 import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 export default {
@@ -252,6 +258,9 @@ export default {
   },
   data() {
     return {
+      activeName: "first",
+      flagBase: false,
+      flagPower: false,
       msgFormDialog: {},
       searchLibraryObj: {
         key: "typeName",
@@ -351,10 +360,32 @@ export default {
     trueDialog() {
       saveBase(this.msgFormDialog).then(res => {
         if (res.code == 200) {
-          this.$emit("closedialog");
           this.$message({
             type: "success",
             message: "保存成功"
+          });
+          this.flagBase = true;
+          this.activeName = "second";
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          });
+        }
+      });
+    },
+    // 拒绝
+    cancleDialog() {
+      let obj = {
+        examineStatus: "3",
+        sdbId: this.handleObj.id
+      };
+      updateExamineStatus(obj).then(res => {
+        if (res.code == 200) {
+          this.$emit("closedialog");
+          this.$message({
+            type: "success",
+            message: "拒绝成功"
           });
         } else {
           this.$message({
@@ -416,6 +447,8 @@ export default {
       empowerDatabaseSpecial(obj).then(res => {
         if (res.code == 200) {
           this.$message({ type: "success", message: "授权成功" });
+          this.flagPower = true;
+          this.activeName = "third";
           this.databaseList = [];
           this.initDetail();
           this.searchLibraryFun();

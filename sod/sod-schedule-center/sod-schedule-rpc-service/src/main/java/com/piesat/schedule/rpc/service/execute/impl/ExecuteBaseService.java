@@ -1,5 +1,6 @@
 package com.piesat.schedule.rpc.service.execute.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.shared.Application;
@@ -84,8 +85,8 @@ public abstract class ExecuteBaseService {
 
                   @Override
                   public int compare(Server o1, Server o2) {
-                     float a=o1.getUse()/o1.getLimit();
-                     float b=o2.getUse()/o2.getLimit();
+                     float a=o1.getUse()%o1.getLimit();
+                     float b=o2.getUse()%o2.getLimit();
                      if(a>b){
                            return 1;
                      }
@@ -140,7 +141,7 @@ public abstract class ExecuteBaseService {
                         }
                   }
                   if((ExecutorBlockStrategyEnum.CLUSTER_SERIAL.name()).equals(jobInfoEntity.getExecutorBlockStrategy())){
-                        long count=redisUtil.scanSize(QUARTZ_HTHT_CLUSTER_SERIAL);
+                        long count=redisUtil.scanSize(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfoEntity.getId());
                         if(count==0){
                               enabledServers.add(server);
                         }
@@ -178,6 +179,39 @@ public abstract class ExecuteBaseService {
             }
       }
 
+
+      public static void main(String[] args){
+            List<Server> servers=new ArrayList<>();
+            Server server1=new Server();
+            server1.setUse(60);
+            Server server2=new Server();
+            server2.setUse(40);
+            servers.add(server1);
+            servers.add(server2);
+            Collections.sort(servers, new Comparator<Server>() {
+
+                  @Override
+                  public int compare(Server o1, Server o2) {
+                        float a=o1.getUse()%o1.getLimit();
+                        System.out.println(o1.getUse());
+                        System.out.println(a);
+
+                        float b=o2.getUse()%o2.getLimit();
+                        System.out.println(b);
+
+                        if(a>b){
+                              return 1;
+                        }
+                        if(a==b){
+                              return 0;
+                        }else{
+                              return -1;
+                        }
+
+                  }
+            });
+            System.out.println(JSON.toJSONString(servers.get(0)));
+      }
 
 
 }

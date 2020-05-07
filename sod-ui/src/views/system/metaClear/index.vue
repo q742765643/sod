@@ -202,7 +202,7 @@
       v-if="logDetailDialog"
       width="1000px"
     >
-      <el-form ref="ruleForm" :model="logFormDialog" label-width="140px">
+      <el-form ref="ruleForm" :model="logFormDialog" label-width="140px" class="logDetailBox">
         <el-form-item label="任务名称">
           <el-input size="small" v-model="logFormDialog.taskName"></el-input>
         </el-form-item>
@@ -230,10 +230,24 @@
         </el-form-item>
         <el-form-item label="执行过程">
           <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+          <el-button type="primary" size="small" @click="showAllDetail('所有执行过程')">显示全部</el-button>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="logDetailDialog = false">取 消</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="执行过程"
+      :visible.sync="allDetailDialog"
+      v-if="allDetailDialog"
+      width="1000px"
+      append-to-body
+      v-dialogDrag
+    >
+      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -261,6 +275,8 @@ export default {
   },
   data() {
     return {
+      allDetailDialog: false,
+      allDetailMsg: "",
       activeName: "first",
       // 遮罩层
       loading: true,
@@ -308,6 +324,10 @@ export default {
     this.getMetaBackupList();
   },
   methods: {
+    showAllDetail(title) {
+      this.allDetailMsg = this.logFormDialog.handleMsg;
+      this.allDetailDialog = true;
+    },
     handleLogExport() {
       metaClearLogExport(this.rowlogForm).then(res => {
         this.downloadfileCommon(res);
@@ -509,6 +529,16 @@ export default {
 .metadataClearTem {
   .el-select {
     width: 100%;
+  }
+}
+.logDetailBox {
+  .el-textarea {
+    width: 88%;
+  }
+}
+.allDetailMsg {
+  .el-textarea__inner {
+    min-height: 300px !important;
   }
 }
 </style>

@@ -138,7 +138,7 @@
 
     <!-- 添加或修改备份配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" v-dialogDrag>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="logDetailBox">
         <el-row>
           <el-col :span="24">
             <el-form-item label="资料名称" prop="profileName">
@@ -193,6 +193,7 @@
           <el-col :span="24">
             <el-form-item label="执行过程">
               <el-input v-model="form.handleMsg" type="textarea"></el-input>
+              <el-button type="primary" size="small" @click="showAllDetail">显示全部</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -200,6 +201,19 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+    <el-dialog
+      title="执行过程"
+      :visible.sync="allDetailDialog"
+      v-if="allDetailDialog"
+      width="1000px"
+      append-to-body
+      v-dialogDrag
+    >
+      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="allDetailDialog = false">取 消</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -216,6 +230,8 @@ import { formatDate } from "@/utils/index";
 export default {
   data() {
     return {
+      allDetailDialog: false,
+      allDetailMsg: "",
       // 遮罩层
       loading: true,
       // 选中数组
@@ -264,6 +280,10 @@ export default {
     });
   },
   methods: {
+    showAllDetail() {
+      this.allDetailMsg = this.form.handleMsg;
+      this.allDetailDialog = true;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -361,3 +381,15 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.allDetailMsg {
+  .el-textarea__inner {
+    min-height: 300px !important;
+  }
+}
+.logDetailBox {
+  .el-textarea {
+    width: 80%;
+  }
+}
+</style>
