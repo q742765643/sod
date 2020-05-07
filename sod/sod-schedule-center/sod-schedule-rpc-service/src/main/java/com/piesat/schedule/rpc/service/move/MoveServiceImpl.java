@@ -141,8 +141,8 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         for (DataLogicDto dl : dataLogic) {
             StorageConfigurationDto scd = new StorageConfigurationDto();
             scd.setClassLogicId(dl.getId());
-            scd.setBackupIdentifier(1);
-            scd.setBackupId(moveEntity.getId());
+            scd.setMoveIdentifier(1);
+            scd.setMoveId(moveEntity.getId());
             this.storageConfigurationService.updateDataAuthorityConfig(scd);
         }
     }

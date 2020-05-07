@@ -470,6 +470,10 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 Integer applyAuthority = databaseSpecialReadWriteDto.getApplyAuthority();//申请权限
                 Integer examineStatus = databaseSpecialReadWriteDto.getExamineStatus();//授权状态
                 String userId = databaseSpecialReadWriteDto.getUserId();//用户ID
+                String failureReason = databaseSpecialReadWriteDto.getFailureReason();
+                if(examineStatus==1){
+                    failureReason = "-";
+                }
                 List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
 
                 if(!databaseId.equals("RADB")){
@@ -479,8 +483,18 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         cancelAuthority(userId,databaseId,dataClassId,1);
                     }
                 }
-                //更新数据库状态
-                mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
+
+                //更新授权状态
+                List<DatabaseSpecialReadWriteEntity> dataList = databaseSpecialReadWriteDao.findBySdbIdAndDataClassId(sdbId,dataClassId);
+                System.out.println(dataList.size());
+                if(dataList!=null&&dataList.size()>0){
+                    for(DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity : dataList){
+                        databaseSpecialReadWriteEntity.setExamineStatus(examineStatus);
+                        databaseSpecialReadWriteEntity.setFailureReason(failureReason);
+                        mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteEntity);
+                    }
+                }
+//                mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
             }
         } catch (Exception e) {
             e.printStackTrace();

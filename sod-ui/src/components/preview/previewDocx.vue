@@ -11,6 +11,7 @@
       size="small"
     >预览</el-button>
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       append-to-body
       title="文件预览"

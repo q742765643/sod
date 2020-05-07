@@ -17,8 +17,8 @@ public enum ExecuteEnum {
     CLEAR(HandleConstant.CLEAR,"executeClearService"),
     METABACKUP(HandleConstant.METABACKUP,"executeMetaBackupService"),
     METACLEAR(HandleConstant.METACLEAR,"executeMetaClearService"),
-    MMD(HandleConstant.MMD,"executeMmdSyncService");
-
+    MMD(HandleConstant.MMD,"executeMmdSyncService"),
+    JOB(HandleConstant.JOB,"executeJobService");
 
 
     private String name;

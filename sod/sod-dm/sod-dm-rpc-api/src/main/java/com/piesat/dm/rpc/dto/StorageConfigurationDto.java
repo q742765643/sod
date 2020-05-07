@@ -80,6 +80,11 @@ public class StorageConfigurationDto {
     private String clearId;
 
     /**
+     * 迁移任务ID
+     */
+    private String moveId;
+
+    /**
      * 备份任务ID
      */
     private String backupId;

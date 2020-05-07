@@ -91,6 +91,14 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     @Override
     public List<DatabaseDto> findByDatabaseClassify(String databaseClassify) {
         List<DatabaseEntity> databaseEntities = this.databaseDao.findByDatabaseClassify(databaseClassify);
+        //闲时优化
+        if(databaseEntities != null && databaseEntities.size()>0){
+            for(int i=databaseEntities.size()-1;i>-1;i--){
+                if(databaseEntities.get(i).getDatabaseDefine().getUserDisplayControl().intValue() != 1){
+                    databaseEntities.remove(databaseEntities.get(i));
+                }
+            }
+        }
         return this.databaseMapper.toDto(databaseEntities);
     }
 

@@ -51,7 +51,13 @@
       @pagination="searchFun"
     />
     <!-- 添加、编辑 -->
-    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleRoleDialog" width="650px">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="dialogTitle"
+      :visible.sync="handleRoleDialog"
+      width="650px"
+    >
       <handleRole
         v-if="handleRoleDialog"
         :handleObj="handleObj"
@@ -60,7 +66,13 @@
       />
     </el-dialog>
     <!-- 分配角色 -->
-    <el-dialog v-dialogDrag title="分配角色" :visible.sync="handlePowerDialog" width="650px">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      title="分配角色"
+      :visible.sync="handlePowerDialog"
+      width="650px"
+    >
       <handlePower @cancelHandle="cancelHandle" v-if="handlePowerDialog" :handleObj="handleObj"></handlePower>
     </el-dialog>
   </div>

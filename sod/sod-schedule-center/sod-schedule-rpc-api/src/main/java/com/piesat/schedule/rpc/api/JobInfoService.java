@@ -9,6 +9,9 @@ import java.util.Map;
  * Created by zzj on 2019/12/20.
  */
 public interface JobInfoService {
+
+    JobInfoDto saveDto(JobInfoDto jobInfoDto);
+
     public List<JobInfoDto> findJobList();
 
     public Object getJobById(String id);

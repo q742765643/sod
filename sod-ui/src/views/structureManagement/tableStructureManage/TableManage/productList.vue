@@ -44,6 +44,7 @@
     <!-- <Pagination :total="dataTotal" @paginationChange="paginationChange" ref="pagination"></Pagination> -->
 
     <el-dialog
+      :close-on-click-modal="false"
       class="productDialog"
       width="80%"
       :title="dialogTitle"

@@ -234,6 +234,7 @@
 
     <!-- 表结构管理 存储结构 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"
@@ -244,7 +245,13 @@
       <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
     </el-dialog>
     <!-- 数据同步 -->
-    <el-dialog :title="dialogMsgTitle" :visible.sync="handleSyncDialog" width="80%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogMsgTitle"
+      :visible.sync="handleSyncDialog"
+      width="80%"
+      v-dialogDrag
+    >
       <handleSync
         v-if="handleSyncDialog"
         :handleObj="handleMsgObj"
@@ -254,6 +261,7 @@
     </el-dialog>
     <!-- 迁移清除 结构化数据清除进度 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogMsgTitle"
       :visible.sync="handleCLeadupDialog"
       width="1100px"
@@ -266,11 +274,23 @@
       />
     </el-dialog>
     <!-- 迁移配置信息 -->
-    <el-dialog :title="dialogMsgTitle" :visible.sync="handleMoveDialog" width="1200px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogMsgTitle"
+      :visible.sync="handleMoveDialog"
+      width="1200px"
+      v-dialogDrag
+    >
       <handleMove @cancelHandle="handleClose" v-if="handleMoveDialog" :handleObj="handleMsgObj"></handleMove>
     </el-dialog>
     <!-- 备份 -->
-    <el-dialog :title="dialogMsgTitle" :visible.sync="handleBackupDialog" width="72%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogMsgTitle"
+      :visible.sync="handleBackupDialog"
+      width="72%"
+      v-dialogDrag
+    >
       <handleBackUp
         v-if="handleBackupDialog"
         :handleObj="handleMsgObj"
@@ -280,7 +300,13 @@
     </el-dialog>
 
     <!-- 数据恢复 -->
-    <el-dialog v-dialogDrag title="结构化数据恢复" :visible.sync="handleDataRecoveryDialog" width="1100px">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      title="结构化数据恢复"
+      :visible.sync="handleDataRecoveryDialog"
+      width="1100px"
+    >
       <DataRecovery
         v-if="handleDataRecoveryDialog"
         :handleObj="handleMsgObj"
@@ -289,7 +315,13 @@
     </el-dialog>
 
     <!-- 数据注册审核-->
-    <el-dialog :visible.sync="handleReDialog" title="存储资料审核" width="1100px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="handleReDialog"
+      title="存储资料审核"
+      width="1100px"
+      v-dialogDrag
+    >
       <reviewDataRegister
         v-if="handleReDialog"
         :handleObj="handleMsgObj"
@@ -298,7 +330,7 @@
     </el-dialog>
 
     <!-- 存储资料审核步骤 -->
-    <el-dialog :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
+    <el-dialog :close-on-click-modal="false" :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
       <revieStepRegister
         v-if="reviewStep"
         :handleObj="handleMsgObj"

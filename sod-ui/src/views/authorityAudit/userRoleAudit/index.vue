@@ -81,11 +81,23 @@
       @pagination="getList"
     />
     <!-- 新增/编辑 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="dialogVisible"
+      width="500px"
+      v-dialogDrag
+    >
       <handleWork v-if="dialogVisible" :handleMsgObj="handleMsgObj" @closeStep="closeStep" />
     </el-dialog>
     <!-- 角色授权 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogRole" width="500px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="dialogRole"
+      width="500px"
+      v-dialogDrag
+    >
       <div>
         <el-select
           v-model="roleIds"
@@ -109,6 +121,7 @@
     </el-dialog>
     <!-- 申请审核 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="dialogApply"
       width="1100px"

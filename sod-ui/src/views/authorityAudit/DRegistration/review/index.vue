@@ -70,6 +70,7 @@
       <el-button type="primary" v-if="stepNum==5" @click="$emit('closeStep')">审核通过</el-button>
     </div>
     <el-dialog
+      :close-on-click-modal="false"
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"

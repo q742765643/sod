@@ -14,9 +14,11 @@ import com.piesat.schedule.rpc.enums.ExecuteEnum;
 import com.piesat.schedule.rpc.lock.RedisLock;
 import com.piesat.schedule.rpc.mapstruct.JobInfoMapstruct;
 import com.piesat.schedule.rpc.service.execute.ExecuteService;
+import com.piesat.schedule.rpc.service.statistics.TableCollectHandler;
 import com.piesat.schedule.rpc.thread.ScheduleThread;
 import com.piesat.schedule.util.CronExpression;
 import com.piesat.sso.client.util.RedisUtil;
+import com.piesat.ucenter.rpc.dto.dictionary.DefineDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +49,8 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     private RedisUtil redisUtil;
     @Autowired
     private ScheduleThread scheduleThread;
-
-
+    @Autowired
+    private TableCollectHandler tableCollectHandler;
 
 
 
@@ -58,6 +60,14 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
     public BaseDao<JobInfoEntity> getBaseDao() {
         return jobInfoDao;
     }
+
+    @Override
+    public JobInfoDto saveDto(JobInfoDto jobInfoDto) {
+        JobInfoEntity jobInfoEntity = this.jobInfoMapstruct.toEntity(jobInfoDto);
+        jobInfoEntity = this.saveNotNull(jobInfoEntity);
+        return this.jobInfoMapstruct.toDto(jobInfoEntity);
+    }
+
     @Override
     public List<JobInfoDto> findJobList(){
         List<JobInfoEntity> jobInfoEntities=jobInfoMapper.findJobList();
@@ -70,6 +80,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
 
     @Override
     public void init(){
+        tableCollectHandler.init();
         List<JobInfoDto> jobInfoDtos=this.findJobList();
         for(JobInfoDto jobInfoDto:jobInfoDtos){
             Map<String,Object> map=new HashMap<>();

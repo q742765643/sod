@@ -64,7 +64,8 @@
               </el-select>
             </el-form-item>
             <el-form-item label="排序" prop="serialNo">
-              <el-input type="number" v-model="materialData.serialNo"></el-input>
+              <el-input-number v-model="materialData.serialNo" :min="1"></el-input-number>
+              <!-- <el-input type="number" v-model="materialData.serialNo" :min="0"></el-input> -->
             </el-form-item>
             <el-form-item label="是否发布" v-if="tableStructureManageContral">
               <el-select v-model="materialData.ifStopUse">
@@ -85,7 +86,12 @@
       <div class="editDataUse" v-if="!isSourceTree">
         <h4>编辑数据用途</h4>
         <div class="editUseDiv" @click="showEditDataUse">点击编辑</div>
-        <el-table border v-if="editUseShow" :data="materialData.dataLogicList" style="width: 98%">
+        <el-table
+          border
+          v-if="editUseShow"
+          :data="materialData.dataLogicListTable"
+          style="width: 98%"
+        >
           <el-table-column prop="logicName" label="用途描述"></el-table-column>
           <el-table-column prop="storageName" label="存储类型"></el-table-column>
           <el-table-column prop="databasePName" label="数据库名称"></el-table-column>
@@ -100,10 +106,10 @@
 
     <!-- 公共元数据资料树 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="公共元数据资料树"
       :visible.sync="publicTreeVisible"
-      :close-on-click-modal="false"
       :append-to-body="true"
     >
       <StructurePublicTree
@@ -114,10 +120,10 @@
     </el-dialog>
     <!-- 存储元数据资料树 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="存储元数据资料树"
       :visible.sync="storageTreeVisible"
-      :close-on-click-modal="false"
       :append-to-body="true"
     >
       <StructureStorageTree
@@ -130,6 +136,7 @@
 
     <!-- 编辑数据用途弹出层 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="数据用途选择"
       :visible.sync="editDataUseVisible"
@@ -203,9 +210,9 @@ export default {
         isAccess: 1,
         useBaseInfo: 0,
         serialNo: 0,
-        dataLogicList: [] //数据用途回显的树
+        dataLogicList: [], //数据用途回显的树
+        dataLogicListTable: [] //数据用途回显的树
       },
-      dataclasslogicOld: [],
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
       rules: {
@@ -289,7 +296,7 @@ export default {
         this.materialData.applyId = this.DRegistrationObj.applyId;
         this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
-        this.materialData.dataLogicList = this.DRegistrationObj.dataLogicList;
+        this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList;
         this.editUseShow = true;
         console.log(this.materialData);
       }
@@ -311,6 +318,7 @@ export default {
           ) {
             this.editUseShow = true;
             this.materialData.dataLogicList = response.data.dataLogicList;
+            this.materialData.dataLogicListTable = response.data.dataLogicList;
           }
           console.log(this.materialData.dataLogicList);
         } else {
@@ -359,8 +367,8 @@ export default {
     },
     // 显示编辑数据用途弹出层
     showEditDataUse() {
-      if (this.materialData.dataLogicList.length > 0) {
-        this.handleArry = this.materialData.dataLogicList;
+      if (this.materialData.dataLogicListTable.length > 0) {
+        this.handleArry = this.materialData.dataLogicListTable;
         console.log(this.handleArry);
       }
       this.editDataUseVisible = true;
@@ -368,7 +376,7 @@ export default {
     //确认编辑数据用途弹出层
     trueEditDataUseDialog(choseTableArry) {
       this.editUseShow = true;
-      this.materialData.dataLogicList = choseTableArry;
+      this.materialData.dataLogicListTable = choseTableArry;
       console.log(choseTableArry);
       this.editDataUseVisible = false;
     },
@@ -410,15 +418,14 @@ export default {
             else {
               handleMessage = "新增资料成功";
             }
-            if (this.materialData.dataLogicList.length == 0) {
+            let dataLogicList = this.materialData.dataLogicListTable;
+            if (dataLogicList.length == 0) {
               this.$message({
                 type: "error",
                 message: "请选择数据用途"
               });
               return false;
             }
-            let dataLogicList = this.materialData.dataLogicList;
-            this.dataclasslogicOld = dataLogicList;
             let newDataclasslogic = [];
             for (var i = 0; i < dataLogicList.length; i++) {
               let obj = {};
@@ -438,7 +445,7 @@ export default {
           console.log(this.materialData);
           //数据注册审核的数据用途只能选一条
           if (!resForm) {
-            if (this.materialData.dataLogicList.length != 1) {
+            if (this.materialData.dataLogicListTable.length != 1) {
               this.$message({
                 type: "error",
                 message: "只能选择一条数据用途"
@@ -474,7 +481,6 @@ export default {
             type: "error",
             message: response.msg
           });
-          this.materialData.dataLogicList = this.dataclasslogicOld;
         }
       });
     },
@@ -559,6 +565,9 @@ export default {
   }
   .editDataUse {
     margin-bottom: 20px;
+  }
+  .el-input-number--medium {
+    width: 100%;
   }
 }
 </style>

@@ -122,21 +122,21 @@
     </el-container>
     <!-- 资料概览弹出层 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="资料概览"
       :visible.sync="materialListVisible"
       width="70%"
-      :close-on-click-modal="false"
     >
       <StructureMaterialList v-if="materialListVisible" />
     </el-dialog>
     <!-- 新增、编辑资料  资料分类树 -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       :title="materialSingleTitle"
       :visible.sync="materialSingleVisible"
       width="90%"
-      :close-on-click-modal="false"
       top="5vh"
     >
       <StructureMaterialSingle
@@ -151,6 +151,7 @@
     </el-dialog>
     <!-- 表结构管理 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"
@@ -167,7 +168,13 @@
     </el-dialog>
 
     <!-- SQL建表 -->
-    <el-dialog title="SQL建表" :visible.sync="handleSQLDialog" width="80%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      title="SQL建表"
+      :visible.sync="handleSQLDialog"
+      width="80%"
+      v-dialogDrag
+    >
       <handleSQL @cancelHandle="cancelHandle" v-if="handleSQLDialog" :handleSQLObj="handleSQLObj"></handleSQL>
     </el-dialog>
   </div>

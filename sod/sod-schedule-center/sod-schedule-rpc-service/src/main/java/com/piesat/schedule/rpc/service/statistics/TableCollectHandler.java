@@ -16,6 +16,8 @@ import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.schedule.client.api.client.handler.base.BaseHandler;
 import com.piesat.schedule.dao.JobInfoDao;
 import com.piesat.schedule.entity.JobInfoEntity;
+import com.piesat.schedule.rpc.api.JobInfoService;
+import com.piesat.schedule.rpc.mapstruct.JobInfoMapstruct;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,9 @@ import java.util.*;
 public class TableCollectHandler  implements BaseHandler {
 
     @Autowired
-    private JobInfoDao jobInfoDao;
+    private JobInfoService jobInfoService;
+    @Autowired
+    private JobInfoMapstruct jobInfoMapstruct;
     @Autowired
     private DatabaseDao databaseDao;
     @GrpcHthtClient
@@ -45,7 +49,7 @@ public class TableCollectHandler  implements BaseHandler {
 
     public void init(){
         String id = "e10a1bbed9caea3540b4c3d2d7bf1331";
-        JobInfoEntity jobInfoEntity = jobInfoDao.getOne(id);
+        JobInfoEntity jobInfoEntity = (JobInfoEntity)jobInfoService.getJobById(id);
         if(jobInfoEntity == null){
             jobInfoEntity = new JobInfoEntity();
             jobInfoEntity.setId(id);
@@ -53,7 +57,7 @@ public class TableCollectHandler  implements BaseHandler {
             jobInfoEntity.setExecutorHandler("tableCollectHandler");
             jobInfoEntity.setJobCron("0 0 1 * * ?");
             jobInfoEntity.setTaskName("日增量统计任务");
-            jobInfoDao.saveNotNull(jobInfoEntity);
+            jobInfoService.saveDto(jobInfoMapstruct.toDto(jobInfoEntity));
         }
     }
 

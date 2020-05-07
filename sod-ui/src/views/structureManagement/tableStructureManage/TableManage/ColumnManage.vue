@@ -105,6 +105,7 @@
     </el-table>
     <!-- </el-table-column> -->
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       width="80%"
       title="公共元数据"
@@ -246,6 +247,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       width="80%"
       :title="codeTitle"
@@ -374,6 +376,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       width="80%"
       title="字段排序"
       :visible.sync="dialogStatus.codeSortDialog"
@@ -422,6 +425,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       class="exportCodeDialog"
       width="30%"
       title="操作"

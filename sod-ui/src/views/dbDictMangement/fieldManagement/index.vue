@@ -91,12 +91,22 @@
       </el-main>
     </el-container>
     <!-- 弹窗 树-->
-    <el-dialog :title="dialogTitle" :visible.sync="TreeDialog" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="TreeDialog"
+      v-dialogDrag
+    >
       <handleTree v-if="TreeDialog" :handleTreeObj="handleTreeObj" @cancelDialog="cancelDialog"></handleTree>
     </el-dialog>
 
     <!-- 弹窗 字典-->
-    <el-dialog :title="dialogTitle" :visible.sync="DictDialog" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="DictDialog"
+      v-dialogDrag
+    >
       <handleDict
         v-if="DictDialog"
         :handleGroup="handleGroup"

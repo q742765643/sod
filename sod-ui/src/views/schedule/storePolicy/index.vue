@@ -123,19 +123,43 @@
     </el-row>
 
     <!-- 弹窗 备份 -->
-    <el-dialog :title="dialogTitle" :visible.sync="backUpDialog" width="800px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="backUpDialog"
+      width="800px"
+      v-dialogDrag
+    >
       <handleBackUp @cancelHandle="cancelHandle" v-if="backUpDialog" :handleObj="handleObj"></handleBackUp>
     </el-dialog>
     <!-- 弹窗 清除-->
-    <el-dialog :title="dialogTitle" :visible.sync="clearDialog" width="800px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="clearDialog"
+      width="800px"
+      v-dialogDrag
+    >
       <handleClear @cancelHandle="cancelHandle" v-if="clearDialog" :handleObj="handleObj"></handleClear>
     </el-dialog>
     <!-- 弹窗 迁移 -->
-    <el-dialog :title="dialogTitle" :visible.sync="moveDialog" width="800px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="moveDialog"
+      width="800px"
+      v-dialogDrag
+    >
       <handleMove @cancelHandle="cancelHandle" v-if="moveDialog" :handleObj="handleObj"></handleMove>
     </el-dialog>
     <!-- 数据同步 -->
-    <el-dialog :title="dialogTitle" :visible.sync="SyncDialog" width="80%" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="SyncDialog"
+      width="80%"
+      v-dialogDrag
+    >
       <handleSync
         v-if="SyncDialog"
         :handleObj="handleObj"

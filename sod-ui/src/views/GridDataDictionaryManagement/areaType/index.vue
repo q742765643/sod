@@ -52,6 +52,7 @@
 
     <!-- 弹窗-->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="msgFormDialog"
       width="50%"

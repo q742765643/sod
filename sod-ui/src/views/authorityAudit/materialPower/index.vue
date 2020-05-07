@@ -81,6 +81,7 @@
       @pagination="getList"
     />
     <el-dialog
+      :close-on-click-modal="false"
       title="数据授权查看"
       :visible.sync="handleDialog"
       width="90%"
@@ -91,7 +92,13 @@
     >
       <handleMaterial v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
     </el-dialog>
-    <el-dialog title="权限配置" :visible.sync="handlepowerDialog" width="650px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      title="权限配置"
+      :visible.sync="handlepowerDialog"
+      width="650px"
+      v-dialogDrag
+    >
       <handlePower v-if="handlepowerDialog" @cancelHandle="cancelHandle" ref="myHandleServer" />
     </el-dialog>
   </div>
