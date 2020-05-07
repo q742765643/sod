@@ -89,11 +89,11 @@ public class DatabaseUtil {
         if (dad == null) {
             throw new Exception("数据库管理用户不存在");
         }
-        if (databaseInfo.getXugu().equals(databaseType)) {
+        if (databaseInfo.getXugu().toLowerCase().equals(databaseType)) {
             db = new Xugu(databaseUrl, dad.getUserName(), dad.getPassWord());
-        } else if (databaseInfo.getGbase8a().equals(databaseType)) {
+        } else if (databaseInfo.getGbase8a().toLowerCase().equals(databaseType)) {
             db = new Gbase8a(databaseUrl, dad.getUserName(), dad.getPassWord());
-        } else if (databaseInfo.getCassandra().equals(databaseType)) {
+        } else if (databaseInfo.getCassandra().toLowerCase().equals(databaseType)) {
             db = new Cassandra(databaseIp, port, dad.getUserName(), dad.getPassWord(), null);
         }
         return db;

@@ -6,10 +6,12 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.DatabaseSpecialDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
@@ -68,14 +70,19 @@ public class DatabaseVisibleService {
     private DatabaseSpecialDao databaseSpecialDao;
     @Autowired
     private DatabaseDefineService databaseDefineService;
-
+    @Autowired
+    private DatabaseUserDao databaseUserDao;
 
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
 
     public ResultT getDatabaseByBizUserId(String bizUserId) {
         UserDto userDto = this.userService.selectUserByUserName(bizUserId);
-        String dbIds = userDto.getDbIds();
+        List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(bizUserId);
+        String dbIds = "";
+        if (databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+            dbIds = databaseUserEntityList.get(0).getExamineDatabaseId();
+        }
         String[] split = dbIds.split(",");
         List<DatabaseDto> list = new ArrayList<>();
         JSONArray arr = new JSONArray();

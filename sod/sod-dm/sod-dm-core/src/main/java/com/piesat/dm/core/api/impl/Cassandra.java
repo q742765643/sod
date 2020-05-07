@@ -95,7 +95,7 @@ public class Cassandra implements DatabaseDcl {
         while (it.hasNext()) {
             Row row = it.next();
             if (user.equals(row.getObject(0).toString().toLowerCase())) {
-               return 1;
+                return 1;
             }
         }
         return 0;
@@ -105,7 +105,7 @@ public class Cassandra implements DatabaseDcl {
     public void addUser(String identifier, String password, String[] ips) throws Exception {
         identifier = identifier.toLowerCase();
         int userNum = getUserNum(identifier);
-        if (userNum == 0) {
+        if (userNum > 0) {
             throw new Exception("数据库用户已经存在!");
         }
         String cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
@@ -140,10 +140,8 @@ public class Cassandra implements DatabaseDcl {
     public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) {
         identifier = identifier.toLowerCase();
         String permission = select ? "SELECT" : "SELECT,UPDATE,INSERT,DELETE";
-        for (int i = 0; i < ips.size(); i++) {
-            String cql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
-            instance.execute(cql);
-        }
+        String cql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
+        instance.execute(cql);
     }
 
     @Override
@@ -151,10 +149,8 @@ public class Cassandra implements DatabaseDcl {
         identifier = identifier.toLowerCase();
         String permission = ArrayUtils.toString(permissions, ",");
         try {
-            for (int i = 0; i < ips.size(); i++) {
-                String cql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM " + identifier;
-                instance.execute(cql);
-            }
+            String cql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM " + identifier;
+            instance.execute(cql);
         } catch (Exception e) {
             throw new Exception("撤销Cassandra数据库授权失败！errInfo：" + e.getMessage());
         }
@@ -216,7 +212,7 @@ public class Cassandra implements DatabaseDcl {
                 it.next();
                 no++;
             }
-            if (no>0)return ResultT.success(true);
+            if (no > 0) return ResultT.success(true);
             else return ResultT.success(false);
         } catch (Exception e) {
             if (e.getMessage().contains("unconfigured table")) {
@@ -255,7 +251,7 @@ public class Cassandra implements DatabaseDcl {
                 }
                 list.add(rowData);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 //            throw new Exception("数据查询异常：请在对应物理库内创建表结构"+tableName);
         }

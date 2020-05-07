@@ -288,12 +288,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
-                    thisHaveIds.add(databaseId);
+                   if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
                 }
             } catch (Exception e) {
                 String message = e.getMessage();
                 if (message.contains("用户已经存在")) {
-                    thisHaveIds.add(databaseId);
+                    if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
                 } else {
                     sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                 }

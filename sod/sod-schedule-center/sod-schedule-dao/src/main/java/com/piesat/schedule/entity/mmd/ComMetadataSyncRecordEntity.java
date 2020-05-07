@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 public class ComMetadataSyncRecordEntity extends BaseEntity{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 4080326249096299646L;
 	/**
@@ -67,6 +67,6 @@ public class ComMetadataSyncRecordEntity extends BaseEntity{
 	 */
 	@Column(name="FAIL_REASON",length=500)
 	private String failReason;
-	
+
 
 }
