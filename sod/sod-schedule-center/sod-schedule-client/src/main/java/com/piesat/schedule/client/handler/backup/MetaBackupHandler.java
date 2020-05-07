@@ -44,8 +44,7 @@ public class MetaBackupHandler implements BaseHandler{
     @Autowired
     private MetaBackupLogService metaBackupLogService;
     @Override
-    public void execute(JobInfoEntity jobInfoEntity) {
-        ResultT<String> resultT=new ResultT<>();
+    public void execute(JobInfoEntity jobInfoEntity,ResultT<String> resultT) {
         MetaBackupEntity metaBackupEntity= (MetaBackupEntity) jobInfoEntity;
         this.preParam(metaBackupEntity,resultT);
     }

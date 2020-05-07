@@ -45,10 +45,9 @@ public class ClearHandler implements BaseHandler {
     @Autowired
     private DatabaseOperationService databaseOperationService;
     @Override
-    public void execute(JobInfoEntity jobInfoEntity) {
+    public void execute(JobInfoEntity jobInfoEntity,ResultT<String> resultT) {
         log.info("清除调用成功");
         ClearEntity clearEntity= (ClearEntity) jobInfoEntity;
-        ResultT<String> resultT=new ResultT<>();
         this.preParam(clearEntity,resultT);
     }
 

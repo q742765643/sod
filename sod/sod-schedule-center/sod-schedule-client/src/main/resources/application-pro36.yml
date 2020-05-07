@@ -67,7 +67,7 @@ spring:
     #database: mysql
     open-in-view: false
   redis:
-     host: 10.40.79.18
+     host: 10.40.16.17
      port: 6379
      timeout: 5000
      password:
@@ -92,7 +92,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-       defaultZone: http://10.40.79.18:8002/eureka/
+       defaultZone: http://10.40.16.17:8002/eureka/
 
 gbaseserver:
   ip: 10.40.17.36

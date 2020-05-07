@@ -917,7 +917,6 @@ export default {
             "first"
           );
           publicRows.forEach(element => {
-            debugger;
             if (element.switch) {
               var switchObj = Object.assign({}, element);
               var firstChar = element.celementCode.substr(0, 1);
@@ -952,7 +951,6 @@ export default {
       let msg = "";
       if (this.repeatIndex > 0) msg = "去重(" + this.repeatIndex + ")条,";
       if (publicRows.length > 0) {
-        debugger;
         if (this.tableType == "E-show") {
           publicRows.forEach(element => {
             element.isKvK = "true";
@@ -1134,7 +1132,10 @@ export default {
     array_diff(a, b, tabActive) {
       for (var i = 0; i < b.length; i++) {
         for (var j = 0; j < a.length; j++) {
-          if (a[j].celementCode == b[i].celementCode) {
+          if (
+            a[j].celementCode == b[i].celementCode ||
+            a[j].c_element_code == b[i].celementCode
+          ) {
             a.splice(j, 1);
             j = j - 1;
             this.repeatIndex++;
@@ -1151,20 +1152,28 @@ export default {
         } else {
           if (tabActive == "first") {
             obj.eleName = element.c_element_namech;
-            obj.dbEleCode = element.celementCode;
-            obj.celementCode = element.celementCode;
+            obj.dbEleCode = element.c_element_code;
+            obj.celementCode = element.c_element_code;
             obj.type = element.c_datatype;
             obj.accuracy = element.c_element_pre;
             obj.isNull = false;
             obj.isUpdate = false;
+            obj.nameCn = element.c_notes;
+            obj.unit = element.c_element_unit;
+            obj.unitCn = element.c_element_unit;
+            obj.userEleCode = element.c_short_name;
           } else if (tabActive == "second") {
             obj.eleName = element.dbEleName;
             obj.dbEleCode = element.dbEleCode;
             obj.celementCode = element.dbEleCode;
             obj.type = element.type;
-            obj.accuracy = element.data_precision;
             obj.isNull = element.isNull;
             obj.isUpdate = element.isUpdate;
+            obj.accuracy = element.data_precision;
+            obj.nameCn = element.c_notes;
+            obj.unit = element.c_element_unit;
+            obj.unitCn = element.c_element_unit;
+            obj.userEleCode = element.c_short_name;
           }
           obj.switch = element.switch;
           obj.id = this.tableInfo.id;
@@ -1172,11 +1181,8 @@ export default {
           obj.updateDatabase = false;
           obj.isPrimaryKey = false;
           obj.isShow = false;
-          obj.nameCn = element.c_notes;
           obj.serialNumber = 0;
-          obj.unit = element.c_element_unit;
-          obj.unitCn = element.c_element_unit;
-          obj.userEleCode = element.c_short_name;
+
           newRows.push(obj);
         }
       });

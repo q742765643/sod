@@ -45,8 +45,11 @@
         <if test="groupId != null and groupId != ''">
             AND  "kafka.consumergroup.id" = #{groupId}
         </if>
-        <if test="address != null and address != ''">
-            AND  "kafka.consumergroup.broker.address" like '%${address}'
+        <if test="addresss != null ">
+            AND
+            <foreach collection="addresss" item="item" index="index" open="(" close=")" separator=" or ">
+                "kafka.consumergroup.broker.address" like '%${item}'
+            </foreach>
         </if>
         <if test="groupIds != null">
             AND
@@ -75,8 +78,11 @@
         <if test="groupId != null and groupId != ''">
             AND  "kafka.consumergroup.id" = #{groupId}
         </if>
-        <if test="address != null and address != ''">
-            AND  "kafka.consumergroup.broker.address" = #{address}
+        <if test="addresss != null">
+            AND
+            <foreach collection="addresss" item="item" index="index" open="(" close=")" separator=" or ">
+                "kafka.consumergroup.broker.address" like '%${item}'
+            </foreach>
         </if>
     </select>
 </mapper>

@@ -45,9 +45,9 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="监测时间" min-width="150">
+            <el-table-column prop="timestamp" label="监测时间" min-width="150">
               <template slot-scope="scope1">
-                <span>{{scope1.row.createTime.substring(0,scope1.row.createTime.length-4)}}</span>
+                <span>{{scope1.row.timestamp.substring(0,scope1.row.timestamp.length-4)}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -71,7 +71,7 @@ export default {
   created() {
     console.log(this.$route);
     this.axios
-      .get(interfaceObj.processUsage + "?hostname=" + this.$route.params.baseIp)
+      .get(interfaceObj.processUsage + "?ip=" + this.$route.params.baseIp)
       .then(res => {
         if (res.status == 200) {
           this.tableData = res.data.data;

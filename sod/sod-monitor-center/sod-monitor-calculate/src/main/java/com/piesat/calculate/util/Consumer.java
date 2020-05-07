@@ -18,7 +18,7 @@ import java.util.Properties;
 public class Consumer {
     public static void main(String[] args) {
         Properties p = new Properties();
-        p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "10.211.55.7:9092");
+        p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "meteo_cloud1:9092,meteo_cloud2:9092,meteo_cloud3:9092");
         p.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         p.put(ConsumerConfig.GROUP_ID_CONFIG, "duanjt_test");
@@ -32,6 +32,8 @@ public class Consumer {
                 System.out.println(String.format("topic:%s,offset:%d,消息:%s", //
                         record.topic(), record.offset(), record.value()));
             }
+
+
         }
     }
 }

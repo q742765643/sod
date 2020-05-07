@@ -1,6 +1,7 @@
 package com.piesat.schedule.client.service;
 
 import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.business.BaseBusiness;
@@ -14,6 +15,8 @@ import com.piesat.schedule.client.util.RedisUtil;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.schedule.entity.recover.RecoverLogEntity;
+import com.piesat.util.ResultT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +32,7 @@ import java.util.concurrent.ExecutorService;
  * @创建人 zzj
  * @创建时间 2019/12/30 18:22
  */
+@Slf4j
 @Service
 public class ExecutorBizServiceImpl implements ExecutorBiz {
     protected static final String QUARTZ_HTHT_PERFORM="QUARTZ:HTHT:PERFORM";
@@ -49,17 +53,34 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
     @Override
     public void execute(JobInfoEntity jobInfo){
         executorService.execute(()->{
-            this.executeJob(jobInfo);
-        });
-    }
-    public void executeJob(JobInfoEntity jobInfo){
-        try {
-            BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getExecutorHandler());
-            baseHandler.execute(jobInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            boolean flag=false;
+            try {
+                int i=0;
+                boolean flag=false;
+                if(null==jobInfo.getExecutorFailRetryCount()){
+                    jobInfo.setExecutorFailRetryCount(0);
+                }
+                if(jobInfo.getExecutorFailRetryCount()==0){
+                    jobInfo.setExecutorFailRetryCount(1);
+                }
+                while (i<=jobInfo.getExecutorFailRetryCount()&&!flag){
+                    ResultT<String> resultT=new ResultT<>();
+                    this.executeJob(jobInfo,resultT);
+                    if(resultT.isSuccess()){
+                        flag=true;
+                    }else {
+                        Thread.sleep(60000);
+                    }
+                    if(i>=1){
+                        log.info("id:{},重试第{}次",jobInfo.getId(),i);
+                    }
+                    i++;
+
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                boolean flag=false;
                 while (!flag){
                     try {
                         redisUtil.del(QUARTZ_HTHT_PERFORM+":"+jobInfo.getExecutorAddress()+":"+jobInfo.getId());
@@ -70,7 +91,16 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
                         e.printStackTrace();
                     }
                 }
-
+            }
+        });
+    }
+    public void executeJob(JobInfoEntity jobInfo,ResultT<String> resultT){
+        try {
+            BaseHandler baseHandler= (BaseHandler) SpringUtil.getBean(jobInfo.getExecutorHandler());
+            baseHandler.execute(jobInfo,resultT);
+        } catch (Exception e) {
+            resultT.setErrorMessage(OwnException.get(e));
+            e.printStackTrace();
         }
     }
     @Override
@@ -142,7 +172,7 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
     @Override
     public void handMetaBack(JobInfoEntity jobInfoEntity){
         executorService.execute(()->{
-            metaBackupHandler.execute(jobInfoEntity);
+            metaBackupHandler.execute(jobInfoEntity,new ResultT<String>());
         });
     }
     @Override

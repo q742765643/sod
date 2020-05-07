@@ -15,4 +15,5 @@ import java.util.List;
 */
 @Repository
 public interface ManageGroupDao extends BaseDao<ManageGroupEntity>{
+    ManageGroupEntity findByGroupName(String groupName);
 }
