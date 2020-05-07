@@ -144,7 +144,7 @@ public class DatabaseController {
         }
     }
 
-    @ApiOperation(value = "查询所有物理库/专题库")
+    @ApiOperation(value = "查询所有物理库/专题库（portal调用）")
 //    @RequiresPermissions("dm:database:findByDatabaseClassify")
     @GetMapping(value = "/findByDatabaseClassify")
     public ResultT findByDatabaseClassify(String databaseClassify) {
