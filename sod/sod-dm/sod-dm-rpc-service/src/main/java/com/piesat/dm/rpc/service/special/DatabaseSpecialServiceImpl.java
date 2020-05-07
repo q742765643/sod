@@ -323,7 +323,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
      * 数据库授权
      * @param databaseDto
      */
-    @Transactional
     @Override
     @Transactional
     public void empowerDatabaseSpecial(DatabaseDto databaseDto) {
