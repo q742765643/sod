@@ -62,6 +62,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         DatabaseDto databaseDto = databaseDefineDto.getDatabaseDto();
         if (StringUtils.isEmpty(databaseDto.getId())){
             databaseDto.setCreateTime(new Date());
+            databaseDto.setStopUse(false);
         }
         if (StringUtils.isEmpty(databaseDefineDto.getId())){
             databaseDefineDto.setCreateTime(new Date());

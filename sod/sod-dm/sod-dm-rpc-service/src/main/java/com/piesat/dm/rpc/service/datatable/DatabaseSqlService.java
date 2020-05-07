@@ -160,7 +160,7 @@ public class DatabaseSqlService {
             String type = ds.getType().toLowerCase();
             String dataType = columnSet.getGbase8a().get(type);
             if (StringUtils.isBlank(dataType)) {
-                throw new Exception( "gbase8a不支持字段：" + type);
+                throw new Exception("gbase8a不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
             if (StringUtils.isNotBlank(accuracy)) {
@@ -248,7 +248,7 @@ public class DatabaseSqlService {
             }
             String column = ds.getDbEleCode() + " " + dataType + ",\n";
             columns.append(column);
-            if (is_kv_k) {
+            if (is_kv_k != null && is_kv_k) {
                 key_columns.add(ds.getDbEleCode());
             }
         }
