@@ -109,12 +109,15 @@ log:
   path: ./log
   level: INFO
 
+mng:
+  ip: 10.40.16.17
+
 mmd:
-  userName: ENC(YxpGRv4xpm1043WVImWDSw==)
-  password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
+  userName: dsmsys
+  password: nmic@100200
 are:
-  userName: ENC(02JaRsFt2QJ5l2Eg2a956Aa95LWT32ym)
-  password: ENC(NkH754xhhRjQcR8/xKwrmvaEydl3gi/g)
+  userName: usr_music
+  password: music#2020
 
 serverfile:
   dbfile: /home/sod/file/upload/dbfile
