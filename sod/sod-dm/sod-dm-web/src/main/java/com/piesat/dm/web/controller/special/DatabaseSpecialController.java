@@ -86,7 +86,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "获取专题库列表")
-    @RequiresPermissions("dm:databaseSpecial:specialList")
+//    @RequiresPermissions("dm:databaseSpecial:specialList")
     @GetMapping(value = "/specialList")
     public ResultT<PageBean> list(DatabaseSpecialDto databaseSpecialDto, int pageNum, int pageSize) {
         try{
@@ -102,7 +102,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据id查询")
-    //@RequiresPermissions("dm:databaseSpecial:getById")
+    @RequiresPermissions("dm:databaseSpecial:getById")
     @GetMapping(value = "/getById")
     public ResultT get(String id) {
         try {
@@ -129,7 +129,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "获取专题库资料列表")
-    @RequiresPermissions("dm:databaseSpecial:getSpecialDataList")
+//    @RequiresPermissions("dm:databaseSpecial:getSpecialDataList")
     @GetMapping(value = "/getSpecialDataList")
     public ResultT getSpecialDataList(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
         try {
@@ -215,7 +215,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据获取专题库对应数据库权限")
-    @RequiresPermissions("dm:databaseSpecial:getAuthorityBySdbId")
+//    @RequiresPermissions("dm:databaseSpecial:getAuthorityBySdbId")
     @GetMapping(value = "/getAuthorityBySdbId")
     public ResultT getAuthorityBySdbId(String sdbId) {
         try {
@@ -228,7 +228,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "数据库授权")
-    @RequiresPermissions("dm:databaseSpecial:empowerDatabaseSpecial")
+//    @RequiresPermissions("dm:databaseSpecial:empowerDatabaseSpecial")
     @PostMapping(value = "/empowerDatabaseSpecial")
     public ResultT empowerDatabaseSpecial(@RequestBody SpecialParamVO specialParamVO) {
         try {
@@ -256,7 +256,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "修改审核状态")
-    @RequiresPermissions("dm:databaseSpecial:updateExamineStatus")
+//    @RequiresPermissions("dm:databaseSpecial:updateExamineStatus")
     @GetMapping(value = "/updateExamineStatus")
     public ResultT updateExamineStatus(String sdbId, String examineStatus) {
         try {
@@ -291,7 +291,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "资料授权-单独")
-    @RequiresPermissions("dm:databaseSpecial:empowerDataOne")
+//    @RequiresPermissions("dm:databaseSpecial:empowerDataOne")
     @PostMapping(value = "/empowerDataOne")
     public ResultT empowerDataOne(@RequestBody DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
         try {
@@ -304,7 +304,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "资料授权-批量")
-    @RequiresPermissions("dm:databaseSpecial:empowerDataOne")
+//    @RequiresPermissions("dm:databaseSpecial:empowerDataOne")
     @PostMapping(value = "/empowerDataBatch")
     public ResultT empowerDataBatch(@RequestBody String listString) {
         try {
@@ -345,7 +345,7 @@ public class DatabaseSpecialController {
     }
 
     @ApiOperation(value = "根据审核状态查询")
-    @RequiresPermissions("dm:databaseSpecial:getByExamineStatus")
+//    @RequiresPermissions("dm:databaseSpecial:getByExamineStatus")
     @GetMapping(value = "/getByExamineStatus")
     public ResultT getByExamineStatus(String examineStatus) {
         try {
