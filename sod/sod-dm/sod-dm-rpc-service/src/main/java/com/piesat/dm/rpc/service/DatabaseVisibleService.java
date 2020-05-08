@@ -114,7 +114,11 @@ public class DatabaseVisibleService {
 
     public ResultT getDatabaseInfo(String databaseId, String bizUserId) {
         UserDto userDto = this.userService.selectUserByUserName(bizUserId);
-        String dbIds = userDto.getDbIds();
+        List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(bizUserId);
+        String dbIds = "";
+        if (databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+            dbIds = databaseUserEntityList.get(0).getExamineDatabaseId();
+        }
         String[] split = dbIds.split(",");
         JSONObject jo = new JSONObject();
         for (String id : split) {
