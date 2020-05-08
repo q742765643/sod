@@ -16,6 +16,7 @@ import {
   rsaencrypt
 } from '@/utils/rsaencrypt'
 import Cookies from 'js-cookie'
+import router from '@/router'
 const TokenKey = 'Admin-Token'
 const uuid = require('uuid/v4')
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
@@ -55,8 +56,8 @@ service.interceptors.request.use(
     } else if (typeof config.data != 'undefined') {
       //data = Encrypt(JSON.stringify(config.data))
       /* const param = {
-         "sign": "111111",
-         "data": data
+       "sign": "111111",
+       "data": data
        }*/
       const param = {
         "timestamp": new Date().getTime(),
@@ -92,21 +93,31 @@ service.interceptors.response.use(res => {
     const code = res.data.code;
     const responseURL = res.request.responseURL;
     if (code === 401) {
-      MessageBox.confirm(
-        '登录状态已过期，您可以继续留在该页面，或者重新登录',
-        '系统提示', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
+      router.beforeEach((to, from, next) => {
+        if (to.path === '/login') {
+          return;
+        } else {
+          MessageBox.confirm(
+            '登录状态已过期，您可以继续留在该页面，或者重新登录',
+            '系统提示', {
+              confirmButtonText: '重新登录',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }
+          ).then(() => {
+            localStorage.clear();
+            // window.location.href = "http://10.40.79.18:8080/dist/index.html";
+            store.dispatch('LogOut').then(() => {
+              // location.reload() // 为了重新实例化vue-router对象 避免bug
+              next({
+                path: '/'
+              })
+            })
+
+          })
+          console.log(this.$route.path)
         }
-      ).then(() => {
-        localStorage.clear();
-        window.location.href = "http://10.40.79.18:8080/dist/index.html";
-        /* store.dispatch('LogOut').then(() => {
-          location.reload() // 为了重新实例化vue-router对象 避免bug
-        }) */
       })
-      console.log(this.$route.path)
     } else if (code == undefined) {
       return res.data
     } else if (code !== 200) {
@@ -114,7 +125,8 @@ service.interceptors.response.use(res => {
         return res.data
       }
       Notification.error({
-        title: res.data.msg
+        dangerouslyUseHTMLString: true,
+        message: res.data.msg
       })
       return Promise.reject('error')
     } else {

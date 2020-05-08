@@ -1,1 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0d09a7"],{"694b":function(n,p,i){n.exports=i.p+"static/img/xgLibImage.e9520564.png"}}]);
