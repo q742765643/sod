@@ -253,44 +253,52 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
 
         StringBuffer buffer = new StringBuffer();
+        boolean flag = true;
         //为每个数据表进行授权
-        try{
-            for(DataAuthorityRecordDto dataAuthorityRecordDto:dataAuthorityRecordList){
-                DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+        for(DataAuthorityRecordDto dataAuthorityRecordDto:dataAuthorityRecordList){
+            DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
-                if(!databaseIds.contains(databaseDto.getDatabaseDefine().getId())){
-                    buffer.append("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"的访问权限" + "<br/>");
-                    return ResultT.failed(buffer.toString());
+            if(!databaseIds.contains(databaseDto.getDatabaseDefine().getId())){
+                buffer.append("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"的访问权限" + "<br/>");
+                flag = false;
+                continue;
+            }
+
+            //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
+            //获取资料对应的表信息
+            //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
+
+
+            DatabaseDcl databaseDcl = null;
+            try {
+                databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            }catch (Exception e){
+                if (e.getMessage().contains("用户不存在")){
+                    buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
+                    flag = false;
+                    continue;
                 }
-
-                //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
-                //获取资料对应的表信息
-                //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
-
-
-                DatabaseDcl databaseDcl = null;
-                try {
-                    databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-                }catch (Exception e){
-                    if (e.getMessage().contains("用户不存在")){
-                        buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
-                        continue;
-                    }
-                }
-
+            }
+            try{
                 if(dataAuthorityRecordDto.getAuthorize()==1){//授权读
                     databaseDcl.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
                 }else if(dataAuthorityRecordDto.getAuthorize()==2){//授权写
                     databaseDcl.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
                 }
-
-                mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
-                buffer.append("表："+dataAuthorityRecordDto.getTableName()+"物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"授权成功" + "<br/>");
+            }catch (Exception e){
+                buffer.append("表"+dataAuthorityRecordDto.getTableName()+"授权失败"+e.getMessage()+"<br/>");
+                flag = false;
+                continue;
             }
-        }catch(Exception e){
-            return ResultT.failed("授权失败:"+e.getMessage());
+
+
+            mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
         }
-        return ResultT.success(buffer.toString());
+        if(flag){
+            return  ResultT.success("授权成功");
+        }else {
+            return ResultT.failed(buffer.toString());
+        }
     }
 
     @Override
