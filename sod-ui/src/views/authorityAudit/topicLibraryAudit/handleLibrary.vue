@@ -187,7 +187,7 @@
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '1' && scope.row.applyAuthority == 1"
+                  v-if="(scope.row.examineStatus == '1' && scope.row.applyAuthority == 1)||scope.row.examineStatus == '2' "
                   type="success"
                   icon="el-icon-check"
                 >已授权</el-link>
@@ -195,20 +195,13 @@
                   :underline="false"
                   size="small"
                   v-if="scope.row.examineStatus == '1' && scope.row.applyAuthority == 2"
-                  type="success"
-                  icon="el-icon-check"
+                  type="warning"
+                  icon="el-icon-s-finance"
                 >待审核</el-link>
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '2' "
-                  type="success"
-                  icon="el-icon-check"
-                >已授权</el-link>
-                <el-link
-                  :underline="false"
-                  size="small"
-                  v-else
+                  v-if="scope.row.examineStatus == '3' "
                   type="danger"
                   icon="el-icon-close"
                 >拒绝</el-link>
@@ -230,13 +223,13 @@
                   type="text"
                   size="mini"
                   icon="el-icon-thumb"
-                  @click="updatePower(scope.row,'1')"
+                  @click="updatePower(scope.row,'2')"
                 >授权</el-button>
                 <el-button
                   type="text"
                   size="mini"
                   icon="el-icon-close"
-                  @click="updatePower(scope.row,'2')"
+                  @click="updatePower(scope.row,'3')"
                 >拒绝</el-button>
               </template>
             </el-table-column>
