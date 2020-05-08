@@ -434,14 +434,25 @@ export default {
     addPhysicsDefine() {
       let obj = {};
       let listArry = this.databaseList;
-      listArry.forEach(listele => {
+      /* listArry.forEach(listele => {
         let checkArry = listele.checkList;
         checkArry.forEach(cele => {
           if (listele[cele]) {
             listele[cele] = 2;
           }
         });
+      }); */
+      let keyJson = ["createTable", "deleteTable", "tableDataAccess"];
+      listArry.forEach(element => {
+        let checkArry = element.checkList;
+        keyJson.forEach(kitem => {
+          element[kitem] = 1;
+        });
+        checkArry.forEach(item => {
+          element[item] = 2;
+        });
       });
+      // console.log(listArry);
       obj.databaseSpecialAuthorityList = listArry;
       obj.databaseId = this.msgFormDialog.databaseId;
       obj.sdbId = this.msgFormDialog.id;
