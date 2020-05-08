@@ -62,6 +62,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/thirdLogin", "anon");
         filterChainDefinitionMap.put("/checkToken/*", "anon");
         filterChainDefinitionMap.put("/captchaImage", "anon");
+        filterChainDefinitionMap.put("/getInfo", "anon");
         filterChainDefinitionMap.put("/unauth", "anon");
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");

@@ -94,7 +94,6 @@ service.interceptors.response.use(res => {
     const code = res.data.code;
     const responseURL = res.request.responseURL;
     if (code === 401) {
-      debugger
       /*  router.beforeEach((to, from, next) => {
          if (to.path === '/login') {
            return;
@@ -121,7 +120,7 @@ service.interceptors.response.use(res => {
     } else if (code == undefined) {
       return res.data
     } else if (code !== 200) {
-      if (responseURL.indexOf('/comMetaData/syncDataNow') != -1) {
+      if (responseURL.indexOf('/comMetaData/syncDataNow') != -1 || responseURL.indexOf('/dm/dataAuthorityApply/updateRecordCheck') != -1) {
         return res.data
       }
       Notification.error({
