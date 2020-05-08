@@ -55,8 +55,8 @@ service.interceptors.request.use(
     } else if (typeof config.data != 'undefined') {
       //data = Encrypt(JSON.stringify(config.data))
       /* const param = {
-         "sign": "111111",
-         "data": data
+       "sign": "111111",
+       "data": data
        }*/
       const param = {
         "timestamp": new Date().getTime(),
@@ -103,10 +103,10 @@ service.interceptors.response.use(res => {
         localStorage.clear();
         window.location.href = "http://10.40.79.18:8080/dist/index.html";
         /* store.dispatch('LogOut').then(() => {
-          location.reload() // 为了重新实例化vue-router对象 避免bug
-        }) */
+         location.reload() // 为了重新实例化vue-router对象 避免bug
+         }) */
       })
-      console.log(this.$route.path)
+      //console.log(this.$route.path)
     } else if (code == undefined) {
       return res.data
     } else if (code !== 200) {
