@@ -154,13 +154,13 @@
               <el-button
                 type="primary"
                 size="small"
-                @click="batchUpdatePower('1')"
+                @click="batchUpdatePower('2')"
                 icon="el-icon-thumb"
               >授权</el-button>
               <el-button
                 type="danger"
                 size="small"
-                @click="batchUpdatePower('2')"
+                @click="batchUpdatePower('3')"
                 icon="el-icon-close"
               >拒绝</el-button>
             </el-form-item>
@@ -187,7 +187,21 @@
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '1'"
+                  v-if="scope.row.examineStatus == '1' && scope.row.applyAuthority == 1"
+                  type="success"
+                  icon="el-icon-check"
+                >已授权</el-link>
+                <el-link
+                  :underline="false"
+                  size="small"
+                  v-if="scope.row.examineStatus == '1' && scope.row.applyAuthority == 2"
+                  type="success"
+                  icon="el-icon-check"
+                >待审核</el-link>
+                <el-link
+                  :underline="false"
+                  size="small"
+                  v-if="scope.row.examineStatus == '2' "
                   type="success"
                   icon="el-icon-check"
                 >已授权</el-link>
@@ -197,7 +211,7 @@
                   v-else
                   type="danger"
                   icon="el-icon-close"
-                >已撤销</el-link>
+                >拒绝</el-link>
               </template>
             </el-table-column>
             <el-table-column prop="examine_status" label="备注">
