@@ -53,7 +53,7 @@ public class MetaBackupController {
         return resultT;
     }
 
-    @RequiresPermissions("schedule:backup:add")
+    @RequiresPermissions("schedule:metaBackup:add")
     @ApiOperation(value = "添加元数据备份任务", notes = "添加元数据备份任务")
     @Log(title = "元数据备份任务管理", businessType = BusinessType.INSERT)
     @PostMapping

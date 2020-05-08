@@ -488,15 +488,15 @@ public class NewdataApplyController {
 
     //selectYang样例数据查询
     @ApiOperation(value="根据四级编码和申请单号申请删除")
-    //@RequiresPermissions("api:newdataApply:delApply")
-    @PostMapping(value="/api/newdataApply/delApply")
+    //@RequiresPermissions("dm:newdataApply:delApply")
+    @GetMapping(value="/delApply")
     public ResultT delApply(String applyId, String dDataId) {
         try {
             this.newdataApplyService.delApply(applyId, dDataId);
         }catch (Exception e){
             return ResultT.failed(e.getMessage());
         }
-        return ResultT.success();
+        return ResultT.success("操作成功");
     }
     @ApiOperation(value="根据物理库获取实例id")
     @RequiresPermissions("api:newdataApply:getSchemaInfo")

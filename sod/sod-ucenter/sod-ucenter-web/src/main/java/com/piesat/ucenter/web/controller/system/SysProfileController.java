@@ -4,7 +4,9 @@ import com.piesat.common.utils.FileUploadUtils;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.sso.client.shiro.HtShiroRealm;
+import com.piesat.ucenter.rpc.api.system.DeptService;
 import com.piesat.ucenter.rpc.api.system.UserService;
+import com.piesat.ucenter.rpc.dto.system.DeptDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
@@ -36,6 +38,8 @@ public class SysProfileController {
     private UserService userService;
     @Autowired
     private FileUploadUtils fileUploadUtils;
+    @Autowired
+    private DeptService deptService;
 
     @GetMapping
     public ResultT profile()
@@ -43,6 +47,8 @@ public class SysProfileController {
         ResultT<Map<String,Object>> resultT=new ResultT<>();
         UserDto userDto = (UserDto) SecurityUtils.getSubject().getPrincipal();
         userDto=userService.selectUserById(userDto.getId());
+        DeptDto deptDto=deptService.selectDeptById(userDto.getDeptId());
+        userDto.setDept(deptDto);
         Map<String,Object> map=new HashMap<>();
         map.put("user",userDto);
         map.put("roleGroup", userService.selectUserRoleGroup(userDto.getUserName()));

@@ -20,5 +20,7 @@ public interface DatabaseUserDao extends BaseDao<DatabaseUserEntity> {
 
     List<DatabaseUserEntity> findByUserId(String userId);
 
+    List<DatabaseUserEntity> findByUserIdAndDatabaseUpId(String userId,String upId);
+
     List<DatabaseUserEntity> findByExamineStatus(String examineStatus);
 }

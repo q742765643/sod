@@ -65,6 +65,8 @@ public interface DatabaseUserService {
      */
     DatabaseUserDto findByUserIdAndExamineStatus(String userId, String examineStatus);
 
+
+    DatabaseUserDto findByUserIdAndDatabaseUpId(String userId,String upId);
     /**
      * 新增
      *

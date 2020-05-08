@@ -198,6 +198,7 @@ public class SyncTaskController {
         return  resultT;
     }
 
+    @RequiresPermissions("schedule:sync:getSyncById")
     @GetMapping(value = "/getSyncById/{taskId}")
     public ResultT<JSONObject> getSyncById(@PathVariable String taskId)
     {
