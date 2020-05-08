@@ -54,6 +54,7 @@ public class MetaBackupHandler implements BaseHandler{
         metadataVo.setStartTime(System.currentTimeMillis());
         MetaBackupLogEntity metaBackupLogEntity=new MetaBackupLogEntity();
         BeanUtils.copyProperties(metaBackupEntity,metaBackupLogEntity);
+        metaBackupLogEntity.setTriggerTime(metaBackupEntity.getTriggerLastTime());
         metaBackupLogEntity.setId(null);
         try {
             metaBackupLogEntity=this.insertMetaBackupLog(metaBackupLogEntity,metaBackupEntity,resultT);

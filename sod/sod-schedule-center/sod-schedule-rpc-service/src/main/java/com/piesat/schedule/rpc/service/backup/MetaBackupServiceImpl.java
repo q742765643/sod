@@ -155,9 +155,11 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
 
     @Override
     public void handExecute(MetaBackupDto metaBackupDto){
+
         MetaBackupEntity metaBackupEntity=metaBackupMapstruct.toEntity(metaBackupDto);
         metaBackupEntity.setType("METABACKUP");
         metaBackupEntity.setTriggerLastTime(System.currentTimeMillis());
+        this.getDataBase(metaBackupEntity);
         executorBiz.handMetaBack(metaBackupEntity);
 
     }
