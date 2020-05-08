@@ -158,9 +158,14 @@ public class LoginController {
         Map<String,Object> map=new HashMap<>();
 
         UserDto userDto = (UserDto)SecurityUtils.getSubject().getPrincipal();
-        // 角色集合
-        Set<String> roles = roleService.getRolePermission(userDto);
-        Set<String> permissions = menuService.getMenuPermission(userDto);
+        Set<String> roles=null;
+        Set<String> permissions=null;
+        if(userDto!=null) {
+            // 角色集合
+             roles = roleService.getRolePermission(userDto);
+             permissions = menuService.getMenuPermission(userDto);
+        }
+
 
         map.put("user", userDto);
         map.put("roles", roles);
