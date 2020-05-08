@@ -216,6 +216,7 @@ import { getToken, createSign } from "@/utils/auth";
 import {
   databaseList,
   addTable,
+  addBzi,
   ifUPExist,
   getById,
   update,
@@ -553,20 +554,37 @@ export default {
       obj.applyDatabaseId = obj.applyDatabaseId.join(",");
       console.log(obj);
       // 新增
-      addTable(obj).then(res => {
-        if (res.code == 200) {
-          this.$message({
-            type: "success",
-            message: "增加成功"
-          });
-          this.$emit("handleDialogClose");
-        } else {
-          this.$message({
-            type: "error",
-            message: res.msg
-          });
-        }
-      });
+      if (this.handleObj.pageName) {
+        addBzi(obj).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: "增加成功"
+            });
+            this.$emit("handleDialogClose");
+          } else {
+            this.$message({
+              type: "error",
+              message: res.msg
+            });
+          }
+        });
+      } else {
+        addTable(obj).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: "增加成功"
+            });
+            this.$emit("handleDialogClose");
+          } else {
+            this.$message({
+              type: "error",
+              message: res.msg
+            });
+          }
+        });
+      }
     },
     cancelDialog(formName) {
       if (!this.handleObj.id) {
