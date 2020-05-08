@@ -24,7 +24,7 @@ public class ScheduleConfig implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-       //scheduleThread.start();
+       scheduleThread.start();
     }
 }
 
