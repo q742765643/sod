@@ -45,14 +45,13 @@
       </el-form-item>
       <el-form-item label="登录时间">
         <el-date-picker
-          v-model="dateRange"
           size="small"
-          style="width: 240px"
-          value-format="yyyy-MM-dd hh:mm:ss"
+          v-model="dateRange"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
-          range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          :default-time="['00:00:00', '23:59:59']"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
