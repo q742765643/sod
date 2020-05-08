@@ -202,6 +202,7 @@ export default {
       console.log(obj);
       getRecordByApplyId(obj).then(res => {
         if (res.code == 200) {
+          this.loading = false;
           this.tableData = res.data;
           this.AUTHORIZE_NUM = 0;
           this.AUTHORIZEF_NUM0 = 0;
@@ -260,6 +261,7 @@ export default {
         .catch(() => {});
     },
     powerMethods(value) {
+      this.loading = true;
       let obj = {};
       // obj.userId = localStorage.getItem("loginUserId");
       obj.userId = this.formBaseInfo.USER_ID;
