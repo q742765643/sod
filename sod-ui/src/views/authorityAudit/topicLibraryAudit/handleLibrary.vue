@@ -485,7 +485,7 @@ export default {
     //单个库的授权或拒绝
     updatePower(row, status) {
       row.examineStatus = status;
-      if (status == "2") {
+      if (status == "3") {
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消"
@@ -514,7 +514,7 @@ export default {
     batchUpdatePower(status) {
       //判断是否勾选需要授权的资料
       if (this.multipleSelection.length > 0) {
-        if (status == "2") {
+        if (status == "3") {
           this.$prompt("请输入拒绝原因", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消"
@@ -522,14 +522,14 @@ export default {
             .then(({ value }) => {
               this.multipleSelection.forEach(element => {
                 element.failureReason = value;
-                element.examineStatus = 2;
+                element.examineStatus = 3;
               });
               this.editPowerBath();
             })
             .catch(() => {});
         } else {
           this.multipleSelection.forEach(element => {
-            element.examineStatus = 1;
+            element.examineStatus = 2;
           });
           this.editPowerBath();
         }
