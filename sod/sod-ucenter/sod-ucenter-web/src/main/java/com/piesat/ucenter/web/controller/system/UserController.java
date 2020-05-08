@@ -229,7 +229,7 @@ public class UserController {
                 //存入
                 applyPaper.transferTo(newFile);
             }
-            ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
+            ResultT add = userService.updateBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
             return add;
         } catch (Exception e) {
             e.printStackTrace();
