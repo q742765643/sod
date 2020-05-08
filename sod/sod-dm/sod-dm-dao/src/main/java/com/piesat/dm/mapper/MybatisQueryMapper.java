@@ -11,10 +11,7 @@ import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 联表查询Mapper
@@ -87,7 +84,7 @@ public interface MybatisQueryMapper {
 
     void updateDataAuthorityRecord(@Param("id") String id, @Param("authorize") Integer authorize, @Param("cause") String cause);
 
-    void updateDataAuthorityApply(@Param("id") String id, @Param("auditStatus") String auditStatus);
+    void updateDataAuthorityApply(@Param("id") String id, @Param("auditStatus") String auditStatus,@Param("examiner") String examiner,@Param("examineTime") Date examineTime);
 
     int getDataServiceMaxNum(@Param("data_service_id") String data_service_id);
 
