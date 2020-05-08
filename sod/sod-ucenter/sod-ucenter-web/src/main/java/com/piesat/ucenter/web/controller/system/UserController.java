@@ -255,7 +255,7 @@ public class UserController {
      */
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
-    @PutMapping("/editBase")
+    @PostMapping("/editBase")
     public ResultT<String> editBase(HttpServletRequest request) {
         String body = null;
         try {
