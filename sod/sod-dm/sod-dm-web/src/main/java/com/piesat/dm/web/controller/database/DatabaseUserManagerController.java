@@ -270,6 +270,33 @@ public class DatabaseUserManagerController {
     }
 
 
+    @ApiOperation(value = "新增Bzi")
+    //@RequiresPermissions("dm:databaseUser:addBzi")
+    @PostMapping(value = "/addBzi")
+    public ResultT saveBzi(@RequestBody DatabaseUserDto databaseUserDto) {
+        try {
+            //默认待审核
+            databaseUserDto.setExamineStatus("0");
+            DatabaseUserDto save = null;
+            DatabaseUserDto byUserId = this.databaseUserService.findByUserIdAndDatabaseUpId(databaseUserDto.getUserId(),databaseUserDto.getDatabaseUpId());
+            if (byUserId!=null){
+                byUserId.setApplyDatabaseId(databaseUserDto.getApplyDatabaseId());
+                byUserId.setDatabaseUpPassword(databaseUserDto.getDatabaseUpPassword());
+                byUserId.setRemarks(databaseUserDto.getRemarks());
+                byUserId.setDatabaseUpIp(databaseUserDto.getDatabaseUpId());
+                byUserId.setExamineStatus("0");
+                save = this.databaseUserService.saveDto(byUserId);
+            }else {
+                save = this.databaseUserService.saveDto(databaseUserDto);
+            }
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
     @ApiOperation(value = "审核")
     @RequiresPermissions("dm:databaseUser:update")
     @PostMapping(value = "/update")

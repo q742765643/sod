@@ -205,10 +205,20 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
     @Override
+    public DatabaseUserDto findByUserIdAndDatabaseUpId(String userId,String upId) {
+        List<DatabaseUserEntity> byUserId = this.databaseUserDao.findByUserIdAndDatabaseUpId(userId,upId);
+        DatabaseUserEntity d = null;
+        if (byUserId!=null&&byUserId.size()>0){
+            d = byUserId.get(0);
+        }
+        return this.databaseUserMapper.toDto(d);
+    }
+
+    @Override
     public DatabaseUserDto saveDto(DatabaseUserDto databaseUserDto) {
         DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databaseUserDto);
-        this.saveNotNull(databaseUserEntity);
-        return this.databaseUserMapper.toDto(databaseUserEntity);
+        DatabaseUserEntity databaseUserEntity1 = this.saveNotNull(databaseUserEntity);
+        return this.databaseUserMapper.toDto(databaseUserEntity1);
     }
 
     @Override
