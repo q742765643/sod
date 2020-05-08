@@ -140,10 +140,8 @@ public class Cassandra implements DatabaseDcl {
     public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) {
         identifier = identifier.toLowerCase();
         String permission = select ? "SELECT" : "SELECT,UPDATE,INSERT,DELETE";
-        for (int i = 0; i < ips.size(); i++) {
-            String cql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
-            instance.execute(cql);
-        }
+        String cql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
+        instance.execute(cql);
     }
 
     @Override
@@ -151,10 +149,8 @@ public class Cassandra implements DatabaseDcl {
         identifier = identifier.toLowerCase();
         String permission = ArrayUtils.toString(permissions, ",");
         try {
-            for (int i = 0; i < ips.size(); i++) {
-                String cql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM " + identifier;
-                instance.execute(cql);
-            }
+            String cql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM " + identifier;
+            instance.execute(cql);
         } catch (Exception e) {
             throw new Exception("撤销Cassandra数据库授权失败！errInfo：" + e.getMessage());
         }
