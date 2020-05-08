@@ -9,6 +9,13 @@ export function addTable(data) {
   })
 }
 
+export function addBzi(data) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/addBzi',
+    method: 'post',
+    data: data
+  })
+}
 // 数据库列表
 export function databaseList(query) {
   return request({

@@ -16,6 +16,8 @@ import {
   rsaencrypt
 } from '@/utils/rsaencrypt'
 import Cookies from 'js-cookie'
+import router from '@/router'
+
 const TokenKey = 'Admin-Token'
 const uuid = require('uuid/v4')
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
@@ -92,6 +94,15 @@ service.interceptors.response.use(res => {
     const code = res.data.code;
     const responseURL = res.request.responseURL;
     if (code === 401) {
+      debugger
+      /*  router.beforeEach((to, from, next) => {
+         if (to.path === '/login') {
+           return;
+         } else {
+           
+           // console.log(this.$route.path)
+         }
+       }) */
       MessageBox.confirm(
         '登录状态已过期，您可以继续留在该页面，或者重新登录',
         '系统提示', {
@@ -114,7 +125,8 @@ service.interceptors.response.use(res => {
         return res.data
       }
       Notification.error({
-        title: res.data.msg
+        dangerouslyUseHTMLString: true,
+        message: res.data.msg
       })
       return Promise.reject('error')
     } else {
