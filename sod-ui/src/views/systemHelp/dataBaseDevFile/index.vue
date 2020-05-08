@@ -30,12 +30,14 @@
       </el-col>
       <el-col :span="1.5">
         <el-upload
+          ref="uploadRef"
           v-model="examineMaterial"
           class="upload-demo"
-          accept=".docx, .pdf,.doc"
+          accept=".docx, .pdf, .doc"
           :limit="1"
           :action="upLoadUrl"
           multiple
+          :on-exceed="handleExceed"
           :on-success="successUpload"
           :before-upload="handleBefore"
           :data="uploadData"
@@ -58,7 +60,7 @@
       <el-table-column prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
       <el-table-column prop="filePictrue" label="文档类型" width="100px"></el-table-column>
       <el-table-column prop="updateTime" label="上传时间" width="180px" sortable="custom">
-      <template slot-scope="scope" v-if="scope.row.updateTime">
+        <template slot-scope="scope" v-if="scope.row.updateTime">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
@@ -86,12 +88,9 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_DM;
-import {
-  getToken,
-  createSign
-} from '@/utils/auth';
+import { getToken, createSign } from "@/utils/auth";
 import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
-var token =  getToken();
+var token = getToken();
 export default {
   data() {
     return {
@@ -120,13 +119,17 @@ export default {
       uploadData: {},
       examineMaterial: "",
       showFile: false,
-      myHeaders: {Authorization: token}
+      myHeaders: { Authorization: token }
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    // 上传限制
+    handleExceed() {
+      this.$message.error("当前限制选择1个文件");
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -228,10 +231,10 @@ export default {
         });
       }*/
       this.examineMaterial = res.msg;
-      this.$refs.upload.clearFiles();
+      this.$refs.uploadRef.clearFiles();
     },
     downloadFile(row) {
-      this.download(row.fileStorPath)
+      this.download(row.fileStorPath);
     }
   }
 };

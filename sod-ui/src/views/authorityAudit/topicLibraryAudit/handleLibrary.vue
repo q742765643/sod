@@ -34,7 +34,7 @@
             <el-input size="small" v-model="msgFormDialog.sortNo"></el-input>
           </el-form-item>
           <div class="dialog-footer">
-            <el-button type="primary" @click="trueDialog('ruleForm')">通 过</el-button>
+            <el-button type="primary" @click="trueDialog('ruleForm')">保 存</el-button>
             <el-button
               type="danger"
               @click="cancleDialog('ruleForm')"
@@ -142,7 +142,7 @@
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
                 <el-option label="申请权限" value="applyAuthority"></el-option>
-                <el-option label="审核状态" value="empowerAuthority"></el-option>
+                <el-option label="审核状态" value="examineStatus"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label>
@@ -182,12 +182,12 @@
               :formatter="applyAuthFormatter"
             ></el-table-column>
 
-            <el-table-column prop="empowerAuthority" label="审核状态">
+            <el-table-column prop="examineStatus" label="审核状态">
               <template slot-scope="scope">
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.empowerAuthority == '1'"
+                  v-if="scope.row.examineStatus == '1'"
                   type="success"
                   icon="el-icon-check"
                 >已授权</el-link>
@@ -202,7 +202,7 @@
             </el-table-column>
             <el-table-column prop="examine_status" label="备注">
               <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
+                <el-popover trigger="hover" placement="top" v-if="scope.row.failureReason">
                   <p>{{ scope.row.failureReason }}</p>
                   <div slot="reference" class="name-wrapper">
                     <el-tag size="medium">查看</el-tag>
@@ -213,15 +213,13 @@
             <el-table-column label="操作" width="240px">
               <template slot-scope="scope">
                 <el-button
-                  plain
-                  type="primary"
+                  type="text"
                   size="mini"
                   icon="el-icon-thumb"
                   @click="updatePower(scope.row,'1')"
                 >授权</el-button>
                 <el-button
-                  plain
-                  type="danger"
+                  type="text"
                   size="mini"
                   icon="el-icon-close"
                   @click="updatePower(scope.row,'2')"
@@ -302,6 +300,13 @@ export default {
     if (this.handleObj.id) {
       console.log(this.handleObj);
       this.initDetail();
+      if (this.handleObj.examineStatus == "1") {
+        this.flagBase = false;
+        this.flagPower = false;
+      } else {
+        this.flagBase = true;
+        this.flagPower = true;
+      }
     }
 
     this.searchLibraryFun();

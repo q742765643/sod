@@ -1,5 +1,5 @@
 <template lang="html">
-<el-dialog
+<el-dialog :close-on-click-modal="false"
       title="Cron表达式"
       :visible.sync="cronDialogVisible"
       :append-to-body="true"
@@ -7,7 +7,6 @@
       :show-close="false"
       max-height="500px"
       top="1vh"
-      :close-on-click-modal="false"
       v-dialogDrag
     >
   <div class="cron" :val="value_">

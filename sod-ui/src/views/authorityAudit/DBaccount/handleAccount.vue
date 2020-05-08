@@ -180,7 +180,14 @@
       <el-button type="primary" @click="trueDialog('ruleForm')">通 过</el-button>
       <el-button @click="cancelDialog('ruleForm')">不 通 过</el-button>
     </div>
-    <el-dialog width="30%" title="信息" :visible.sync="innerVisible" append-to-body v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      width="30%"
+      title="信息"
+      :visible.sync="innerVisible"
+      append-to-body
+      v-dialogDrag
+    >
       <div class="ipDialog">
         <el-alert title="范例(指定IP:192.168.1.1;IP段：192.168.1.%)" type="info" :closable="false"></el-alert>
         <el-form :model="ipArryForm" label-width="30px" ref="ipform" style="margin-top:10px;">

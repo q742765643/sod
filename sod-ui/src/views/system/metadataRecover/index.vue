@@ -135,7 +135,13 @@
       </el-tab-pane>
     </el-tabs>
     <!-- 恢复 -->
-    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handeleRecoverDialog" width="50%">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="dialogTitle"
+      :visible.sync="handeleRecoverDialog"
+      width="50%"
+    >
       <handeleRecover
         @cancelHandle="cancelHandle"
         v-if="handeleRecoverDialog"
@@ -144,6 +150,7 @@
     </el-dialog>
 
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="详情"
       :visible.sync="logDetailDialog"
@@ -205,6 +212,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="执行过程"
       :visible.sync="allDetailDialog"
       v-if="allDetailDialog"

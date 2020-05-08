@@ -45,6 +45,7 @@
           </el-form-item>
           <el-form-item prop="serialNumber" label="显示序号:">
             <el-input-number
+              :min="0"
               class="number"
               size="small"
               v-model="msgFormDialog.serialNumber"
@@ -72,6 +73,7 @@
           </el-form-item>
           <el-form-item prop="databasePort" label="数据库端口:">
             <el-input-number
+              :min="0"
               class="number"
               size="small"
               v-model="msgFormDialog.databasePort"
@@ -245,7 +247,12 @@ import {
   findBaseByPId
 } from "@/api/dbDictMangement/dbManagement";
 import { getDicts } from "@/api/system/dict/data";
-import { EngNumLine } from "@/components/commonVaildate.js";
+import {
+  EngNumLine,
+  ipUrlValidation,
+  ipUrlValidation2
+} from "@/components/commonVaildate.js";
+
 export default {
   name: "filedSearchDeploy",
   components: {},
@@ -264,6 +271,20 @@ export default {
         callback();
       }
     };
+    var ipValidate = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入数据库IP"));
+      } else if (!ipUrlValidation(value) && !ipUrlValidation2(value)) {
+        callback(
+          new Error(
+            "请输入正确IP地址,范例(指定IP:192.168.1.1;IP段：192.168.1.%)"
+          )
+        );
+      } else {
+        callback();
+      }
+    };
+
     return {
       dictsList: [],
       //专题列表
@@ -321,7 +342,7 @@ export default {
           { required: true, message: "请输入数据库驱动", trigger: "blur" }
         ],
         databaseIp: [
-          { required: true, message: "请输入数据库IP", trigger: "blur" }
+          { required: true, validator: ipValidate, trigger: "blur" }
         ],
         databasePort: [
           { required: true, message: "请输入数据库端口", trigger: "blur" },
@@ -372,10 +393,20 @@ export default {
           this.$message.error("请正确填写基本信息列表");
           return;
         } else {
+          let flagInfo = false;
+          if (this.msgFormDialog.databaseNodesList.length == 0) {
+            this.$message.error("存储信息列表不能为空");
+            return;
+          }
+          if (this.msgFormDialog.databaseAdministratorList.length == 0) {
+            this.$message.error("账户信息列表不能为空");
+            return;
+          }
           //验证存储信息列表的必填项是否输入
           this.msgFormDialog.databaseNodesList.forEach(element => {
             if (!element.databaseNode) {
               this.$message.error("请正确填写存储信息列表");
+              flagInfo = true;
               return;
             }
             this.$set(element, "databaseId", this.msgFormDialog.id);
@@ -384,9 +415,11 @@ export default {
           this.msgFormDialog.databaseAdministratorList.forEach(element => {
             if (!element.userName || !element.passWord) {
               this.$message.error("请正确填写账户信息列表");
+              flagInfo = true;
               return;
             }
           });
+
           //验证账户名称是否重复
           let names = [];
           this.msgFormDialog.databaseAdministratorList.some((item, i) => {
@@ -395,11 +428,15 @@ export default {
           names.sort();
           for (var i = 1; i < names.length; i++) {
             if (names[i - 1] === names[i]) {
+              flagInfo = true;
               this.$message.error("用户名重复！");
               return;
             }
           }
           console.log(this.msgFormDialog);
+          if (flagInfo) {
+            return;
+          }
           if (!this.handleMsgObj) {
             // 如果新增
             //验证数据库是否已存在

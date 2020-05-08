@@ -180,7 +180,13 @@
     />
 
     <!-- 添加或修改备份配置对话框 -->
-    <el-dialog :title="title" :visible.sync="openDialog" width="800px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="title"
+      :visible.sync="openDialog"
+      width="800px"
+      v-dialogDrag
+    >
       <handleBackUp @cancelHandle="cancelHandle" v-if="openDialog" :handleObj="handleObj"></handleBackUp>
     </el-dialog>
   </div>

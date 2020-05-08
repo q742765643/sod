@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 public class ComMetadataSyncRecordDto extends BaseDto{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3286392842561056997L;
 	/**

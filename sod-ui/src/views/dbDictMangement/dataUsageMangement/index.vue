@@ -2,14 +2,15 @@
   <div class="app-container">
     <!-- 数据用途管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="数据用途ID:">
+      <el-form-item label="数据用途ID:" prop="logicFlag">
         <el-input size="small" v-model="queryParams.logicFlag" placeholder="请输入数据用途ID" />
       </el-form-item>
-      <el-form-item label="用途描述:">
+      <el-form-item label="用途描述:" prop="logicName">
         <el-input size="small" v-model="queryParams.logicName" placeholder="请输入用途描述" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -121,6 +122,10 @@ export default {
     this.getList();
   },
   methods: {
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
     storageTypeShow(list) {
       let names = [];
       list.forEach(element => {

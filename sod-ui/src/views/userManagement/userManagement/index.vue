@@ -55,10 +55,22 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog v-dialogDrag :title="addOrEditorTitle" :visible.sync="dialogVisible" width="60%">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="addOrEditorTitle"
+      :visible.sync="dialogVisible"
+      width="60%"
+    >
       <userEdit @handleDialogClose="handleDialogClose" v-if="dialogVisible" :handleObj="handleObj"></userEdit>
     </el-dialog>
-    <el-dialog v-dialogDrag title="分配角色" :visible.sync="roleDialog" width="60%">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      title="分配角色"
+      :visible.sync="roleDialog"
+      width="60%"
+    >
       <roleEdit @handleDialogClose="handleDialogClose" v-if="roleDialog" :handleObj="handleObj"></roleEdit>
     </el-dialog>
   </div>

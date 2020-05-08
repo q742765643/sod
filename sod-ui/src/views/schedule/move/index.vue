@@ -180,7 +180,13 @@
     />
 
     <!-- 添加或修改迁移配置对话框 -->
-    <el-dialog :title="title" :visible.sync="openDialog" width="800px" v-dialogDrag>
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="title"
+      :visible.sync="openDialog"
+      width="800px"
+      v-dialogDrag
+    >
       <handleMove @cancelHandle="cancelHandle" v-if="openDialog" :handleObj="handleObj"></handleMove>
     </el-dialog>
   </div>

@@ -75,6 +75,7 @@
 
     <!-- 弹窗-->
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="msgFormDialog"
       width="50%"
@@ -126,6 +127,7 @@
     </el-dialog>
     <!-- 高级搜索 -->
     <el-dialog
+      :close-on-click-modal="false"
       title="筛选"
       :visible.sync="dialogSuperSearch"
       :before-close="closeSuperSearch"

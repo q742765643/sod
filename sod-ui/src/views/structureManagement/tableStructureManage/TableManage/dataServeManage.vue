@@ -132,6 +132,7 @@
     />
 
     <el-dialog
+      :close-on-click-modal="false"
       class="dataServeDialog"
       width="80%"
       :title="dialogTitle"

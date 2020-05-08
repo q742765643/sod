@@ -56,7 +56,13 @@
       @pagination="getList"
     />
 
-    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="650px">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="dialogTitle"
+      :visible.sync="handleDialog"
+      width="650px"
+    >
       <handleSod @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleSod>
     </el-dialog>
   </div>

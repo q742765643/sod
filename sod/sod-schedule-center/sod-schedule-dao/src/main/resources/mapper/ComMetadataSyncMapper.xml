@@ -17,8 +17,8 @@
     <!-- 公共元数据同步记录 -->
     <resultMap type="com.piesat.schedule.entity.mmd.ComMetadataSyncRecordEntity" id="recordMap">
     	<id column="ID" property="id" jdbcType="VARCHAR" />
-        <result column="START_TIME" property="startTime" jdbcType="DATE" />
-        <result column="STOP_TIME" property="stopTime" jdbcType="DATE" />
+        <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+        <result column="STOP_TIME" property="stopTime" jdbcType="TIMESTAMP" />
         <result column="SYNC_TABLE_NAME" property="syncTableName" jdbcType="VARCHAR" />
         <result column="SYNC_RECORD_NUM" property="syncRecordNum" jdbcType="INTEGER" />
         <result column="SYNC_TYPE" property="syncType" jdbcType="VARCHAR" />

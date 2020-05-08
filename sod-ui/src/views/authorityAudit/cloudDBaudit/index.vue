@@ -113,6 +113,7 @@
       @pagination="getList"
     />
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="handleDialog"
       width="90%"

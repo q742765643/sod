@@ -95,7 +95,7 @@ public class Cassandra implements DatabaseDcl {
         while (it.hasNext()) {
             Row row = it.next();
             if (user.equals(row.getObject(0).toString().toLowerCase())) {
-               return 1;
+                return 1;
             }
         }
         return 0;
@@ -105,7 +105,7 @@ public class Cassandra implements DatabaseDcl {
     public void addUser(String identifier, String password, String[] ips) throws Exception {
         identifier = identifier.toLowerCase();
         int userNum = getUserNum(identifier);
-        if (userNum == 0) {
+        if (userNum > 0) {
             throw new Exception("数据库用户已经存在!");
         }
         String cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
@@ -212,7 +212,7 @@ public class Cassandra implements DatabaseDcl {
                 it.next();
                 no++;
             }
-            if (no>0)return ResultT.success(true);
+            if (no > 0) return ResultT.success(true);
             else return ResultT.success(false);
         } catch (Exception e) {
             if (e.getMessage().contains("unconfigured table")) {
@@ -251,7 +251,7 @@ public class Cassandra implements DatabaseDcl {
                 }
                 list.add(rowData);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 //            throw new Exception("数据查询异常：请在对应物理库内创建表结构"+tableName);
         }

@@ -57,6 +57,7 @@ public class DataAuthorityApplyController {
         }
     }
 
+//    @RequiresPermissions("api:dataAuthorityApply:getApplyInfoById")
     @GetMapping(value = "/getApplyInfoById")
     @ApiOperation(value = "根据id查询申请信息", notes = "根据id查询申请信息")
     public ResultT<Map<String,Object>> getApplyInfoById(String id)
@@ -251,6 +252,7 @@ public class DataAuthorityApplyController {
         }
     }
 
+//    @RequiresPermissions("api:dataAuthorityApply:getReadAuthority")
     @GetMapping(value = "/getReadAuthority")
     @ApiOperation(value = "读权限默认通过，查询", notes = "读权限默认通过，查询")
     public ResultT getReadAuthority() {

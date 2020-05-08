@@ -80,6 +80,7 @@
     />
     <!-- 高级搜索 -->
     <el-dialog
+      :close-on-click-modal="false"
       title="筛选"
       :visible.sync="dialogSuperSearch"
       :before-close="handleClose"
@@ -94,6 +95,7 @@
     </el-dialog>
     <!-- 表结构管理 -->
     <el-dialog
+      :close-on-click-modal="false"
       :title="`表结构管理(${structureManageTitle})`"
       :visible.sync="structureManageVisible"
       width="100%"

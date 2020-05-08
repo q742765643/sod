@@ -223,10 +223,17 @@
         />
       </el-tab-pane>
     </el-tabs>
-    <el-dialog v-dialogDrag :title="dialogTitle" :visible.sync="handleDialog" width="70%">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="dialogTitle"
+      :visible.sync="handleDialog"
+      width="70%"
+    >
       <handleExportD @cancelHandle="cancelHandle" v-if="handleDialog" :handleObj="handleObj"></handleExportD>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       v-dialogDrag
       title="详情"
       :visible.sync="logDetailDialog"
@@ -291,6 +298,7 @@
       </span>
     </el-dialog>
     <el-dialog
+      :close-on-click-modal="false"
       title="执行过程"
       :visible.sync="allDetailDialog"
       v-if="allDetailDialog"

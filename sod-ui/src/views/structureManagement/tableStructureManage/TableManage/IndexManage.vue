@@ -20,6 +20,7 @@
       <el-table-column label="索引类型" prop="indexType"></el-table-column>
     </el-table>
     <el-dialog
+      :close-on-click-modal="false"
       width="65%"
       :title="indexTitle"
       :visible.sync="dialogStatus.indexDialog"
@@ -31,7 +32,7 @@
           <el-form-item label="索引名称" prop="indexName">
             <el-input v-model="indexForm.indexName" size="small"></el-input>
           </el-form-item>
-          <el-form-item label="索引类型"  prop="indexType">
+          <el-form-item label="索引类型" prop="indexType">
             <el-select
               v-model="indexForm.indexType"
               size="small"
@@ -46,7 +47,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="索引字段"  prop="indexColumn">
+          <el-form-item label="索引字段" prop="indexColumn">
             <el-select
               size="small"
               v-model="indexForm.indexColumn"
@@ -121,7 +122,10 @@ export default {
         });
         return;
       }
-      this.indexForm= { indexName: "TRAF_WEA_CHN_REP_TAB_UK", indexColumn: [] };
+      this.indexForm = {
+        indexName: "TRAF_WEA_CHN_REP_TAB_UK",
+        indexColumn: []
+      };
       this.indexTitle = "新增索引";
       this.indexForm.indexColumn = [];
       this.getDictByTypeMethods("table_index_type");
@@ -176,20 +180,28 @@ export default {
           type: "warning"
         });
       } else {
-        delTableIndex({ id: this.indexItemSel[0].id }).then(res => {
-          if (res.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功"
+        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            delTableIndex({ id: this.indexItemSel[0].id }).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "删除成功"
+                });
+                this.getIndexTable();
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
             });
-            this.getIndexTable();
-          } else {
-            this.$message({
-              message: res.msg,
-              type: "error"
-            });
-          }
-        });
+          })
+          .catch(() => {});
       }
     }
   },

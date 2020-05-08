@@ -14,6 +14,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileCopyUtils;
@@ -133,6 +134,7 @@ public class CloudDatabaseApplyController {
     }
 
     @PostMapping(value = "/save")
+    @RequiresPermissions("dm:cloudDatabaseApply:add")
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
         try {
@@ -184,6 +186,7 @@ public class CloudDatabaseApplyController {
     }
 
     @GetMapping("/updateExamineStatus")
+//    @RequiresPermissions("dm:cloudDatabaseApply:updateExamineStatus")
     @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
     public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id,String examineStatus)
     {
@@ -194,6 +197,7 @@ public class CloudDatabaseApplyController {
     }
 
     @GetMapping(value = "/getById")
+//    @RequiresPermissions("dm:cloudDatabaseApply:getById")
     @ApiOperation(value = "根据id查询", notes = "根据id查询")
     public ResultT<CloudDatabaseApplyDto> getById(String id)
     {
@@ -204,6 +208,7 @@ public class CloudDatabaseApplyController {
     }
 
     @DeleteMapping("/deleteById")
+//    @RequiresPermissions("dm:cloudDatabaseApply:deleteById")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> remove(String id)
     {

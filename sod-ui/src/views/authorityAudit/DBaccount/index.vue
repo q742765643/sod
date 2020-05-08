@@ -43,7 +43,12 @@
       <el-table-column prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='0'">待审核</span>
-          <el-link v-if="scope.row.examineStatus=='2'" @click="viewReason(scope.row)">审核未通过</el-link>
+          <el-link
+            type="primary"
+            :underline="false"
+            v-if="scope.row.examineStatus=='2'"
+            @click="viewReason(scope.row)"
+          >审核未通过</el-link>
           <span v-if="scope.row.examineStatus=='1'">审核通过</span>
         </template>
       </el-table-column>
@@ -76,6 +81,7 @@
       @pagination="getList"
     />
     <el-dialog
+      :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="handleDialog"
       width="90%"
@@ -170,7 +176,7 @@ export default {
     },
     //查看原因
     viewReason(row) {
-      this.$alert(row.failure_reason, "拒绝原因", {
+      this.$alert(row.failureReason, "拒绝原因", {
         confirmButtonText: "确定"
       });
     },

@@ -257,12 +257,12 @@ public class DatabaseSpecialController {
 
     @ApiOperation(value = "修改审核状态")
     @RequiresPermissions("dm:databaseSpecial:updateExamineStatus")
-    @PostMapping(value = "/updateExamineStatus")
-    public ResultT updateExamineStatus(@RequestBody SpecialParamVO specialParamVO) {
+    @GetMapping(value = "/updateExamineStatus")
+    public ResultT updateExamineStatus(String sdbId, String examineStatus) {
         try {
             //修改授权状态
-            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());
-            databaseSpecialDto.setExamineStatus(specialParamVO.getExamineStatus());
+            DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(sdbId);
+            databaseSpecialDto.setExamineStatus(examineStatus);
             databaseSpecialDto.setExamineTime(new Date());
             databaseSpecialService.saveDto(databaseSpecialDto);
             return ResultT.success();
