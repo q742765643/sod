@@ -151,6 +151,7 @@
 			examine_status != '1'
 		order by
 			create_time desc
+		limit 12
 	</select>
 	<!-- 获取数据用途信息 -->
 	<select id="findLogicInfo" resultType="java.util.Map">
