@@ -27,7 +27,7 @@
     </el-row>
     <!-- 列表 -->
     <el-table :data="tableData" stripe style="width: 100%;" ref="sodTable">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="name" label="功能名称" width="120px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="parentName" label="上级功能"></el-table-column>

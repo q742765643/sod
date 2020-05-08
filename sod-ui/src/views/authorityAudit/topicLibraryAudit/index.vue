@@ -25,7 +25,7 @@
       </el-form-item>
     </el-form>
     <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
@@ -75,7 +75,8 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <el-dialog :close-on-click-modal="false"
+    <el-dialog
+      :close-on-click-modal="false"
       :before-close="closeeditDialog"
       title="专题库资料授权查看"
       :visible.sync="handleDialog"
@@ -84,7 +85,8 @@
     >
       <handleLibrary v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
     </el-dialog>
-    <el-dialog :close-on-click-modal="false"
+    <el-dialog
+      :close-on-click-modal="false"
       :before-close="closeeditDialog"
       title="专题库创建"
       :visible.sync="applyTopicDialog"

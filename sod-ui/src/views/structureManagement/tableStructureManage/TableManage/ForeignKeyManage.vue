@@ -136,25 +136,36 @@ export default {
           type: "info"
         });
         return;
+      } else {
+        let ids = [];
+        let keyColumns = [];
+        this.multipleSelection.forEach(element => {
+          ids.push(element.id);
+          keyColumns.push(element.keyColumn);
+        });
+        this.$confirm("确认删除" + keyColumns.join(",") + "吗?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            delByIdsKey({ ids: ids.join(",") }).then(response => {
+              if (response.code == 200) {
+                this.$message({
+                  message: "外键关联删除成功！",
+                  type: "success"
+                });
+                this.getForeignKeyData();
+              } else {
+                this.$message({
+                  message: response.msg,
+                  type: "error"
+                });
+              }
+            });
+          })
+          .catch(() => {});
       }
-      let ids = [];
-      this.multipleSelection.forEach(element => {
-        ids.push(element.id);
-      });
-      delByIdsKey({ ids: ids.join(",") }).then(response => {
-        if (response.code == 200) {
-          this.$message({
-            message: "外键关联删除成功！",
-            type: "success"
-          });
-          this.getForeignKeyData();
-        } else {
-          this.$message({
-            message: response.msg,
-            type: "error"
-          });
-        }
-      });
     },
     // 根据LOGIC_ID查询外键关联
     getForeignKeyData() {

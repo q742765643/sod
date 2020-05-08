@@ -42,7 +42,7 @@
       ref="selectionTable"
       @row-click="handleClickTableRow"
     >
-      <el-table-column type="index" width="70"></el-table-column>
+      <el-table-column type="index" label="序号" width="70"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
         label="公共元数据字段"
@@ -117,7 +117,7 @@
           <el-tab-pane label="公共元数据字段" name="first">
             <div class="tableSearch">
               <el-form :inline="true">
-                <el-form-item label="数据元代码">
+                <el-form-item label="数据源代码">
                   <el-input v-model="searchMatedata.c_datatype" placeholder="数据源代码" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="中文名称">
@@ -142,9 +142,9 @@
               height="320"
               @selection-change="handleSelectionMatedata"
             >
-              <el-table-column type="index" width="50"></el-table-column>
+              <el-table-column label="序号" type="index" width="50"></el-table-column>
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="数据元代码" prop="c_element_code"></el-table-column>
+              <el-table-column label="数据源代码" prop="c_element_code"></el-table-column>
               <el-table-column label="中文名称" prop="c_element_namech"></el-table-column>
               <el-table-column label="英文名称" prop="c_element_name"></el-table-column>
               <el-table-column label="数据类型" prop="c_datatype" width="70px"></el-table-column>
@@ -300,7 +300,7 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="数据精度">
-            <el-input placeholder="数据精度" v-model="columnEditData.accuracy" size="small"></el-input>
+            <el-input-number v-model="columnEditData.accuracy" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">

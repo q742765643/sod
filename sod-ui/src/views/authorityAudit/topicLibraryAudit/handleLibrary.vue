@@ -112,7 +112,7 @@
         <!-- 列表 -->
         <section class="loadTable">
           <el-table :data="tableLibraryData" border style="width: 100%;">
-            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column type="index" label="序号" width="50"></el-table-column>
             <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column prop="ddataId" label="四级编码" :show-overflow-tooltip="true"></el-table-column>

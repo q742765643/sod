@@ -39,7 +39,7 @@
           highlight-current-row
           @current-change="handleCurrentChange"
         >
-          <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
           <el-table-column prop="taskName" sortable label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="tableName" sortable label="表名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="apiUrl" label="接口url" width="350px" :show-overflow-tooltip="true"></el-table-column>
@@ -128,7 +128,7 @@
           highlight-current-row
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="index" label="序号" width="40" :index="table_index_log"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="startTime" label="开始时间">
             <template slot-scope="scope">

@@ -68,7 +68,7 @@
           </el-col>
         </el-row>
         <el-table :data="tableData" @selection-change="handleSelectionChange">
-          <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label="关键字" prop="keyCol"></el-table-column>
           <el-table-column label="中文名" prop="nameCn"></el-table-column>

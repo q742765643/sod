@@ -19,7 +19,7 @@
     </el-row>
     <!-- 列表 -->
     <el-table ref="singleTable" :data="tableData" stripe style="width: 100%;">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="name" label="角色名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="roleKey" label="角色KEY"></el-table-column>

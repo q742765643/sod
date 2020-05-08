@@ -47,7 +47,7 @@
           </el-col>
         </el-row>
         <el-table :data="tableData" highlight-current-row @selection-change="handleSelectionChange">
-          <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label=" " prop="id" v-if="false"></el-table-column>
           <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>

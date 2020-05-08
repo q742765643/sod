@@ -49,7 +49,7 @@
       highlight-current-row
       @current-change="handleCurrentChange"
     >
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="fileName" label="文档名称"></el-table-column>
       <el-table-column prop="fileSuffix" label="文档后缀" width="100px"></el-table-column>
       <el-table-column prop="filePictrue" label="文档类型" width="100px"></el-table-column>
