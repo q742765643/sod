@@ -338,7 +338,11 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setRemark(remark);
         userEntity.setTutorName(tutorName);
         userEntity.setTutorPhone(tutorPhone);
-        Date date = DateUtils.dateTime("yyyy-MM-dd", validTime);
+        Date date = null;
+        try {
+            date = DateUtils.dateTime("yyyy-MM-dd", validTime);
+        }catch (Exception e){
+        }
         userEntity.setValidTime(date);
         userEntity.setWebUserId(webUserid);
         userEntity.setWebUsername(webUsername);
@@ -460,7 +464,11 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setRemark(remark);
         userEntity.setTutorName(tutorName);
         userEntity.setTutorPhone(tutorPhone);
-        Date date = DateUtils.dateTime("yyyy-MM-dd", validTime);
+        Date date = null;
+        try {
+            date = DateUtils.dateTime("yyyy-MM-dd", validTime);
+        }catch (Exception e){
+        }
         userEntity.setValidTime(date);
         userEntity.setWebUserId(webUserid);
         userEntity.setWebUsername(webUsername);

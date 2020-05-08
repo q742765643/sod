@@ -397,10 +397,7 @@ export default {
     },
     /** 根据角色ID查询菜单树结构 */
     getRoleMenuTreeselect(id) {
-      roleMenuTreeselect(id).then(response => {
-        this.getMenuTreeselect();
-        this.$refs.menu.setCheckedKeys(response.data);
-      });
+      this.getMenuTreeselect();
     },
     /** 根据角色ID查询部门树结构 */
     getRoleDeptTreeselect(id) {
@@ -491,6 +488,9 @@ export default {
       });
       getRole(id).then(response => {
         this.form = response.data;
+        roleMenuTreeselect(id).then(response => {
+          this.$refs.menu.setCheckedKeys(response.data);
+        });
         this.open = true;
         this.title = "修改角色";
       });

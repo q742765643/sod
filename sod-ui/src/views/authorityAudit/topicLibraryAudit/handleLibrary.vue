@@ -154,13 +154,13 @@
               <el-button
                 type="primary"
                 size="small"
-                @click="batchUpdatePower('1')"
+                @click="batchUpdatePower('2')"
                 icon="el-icon-thumb"
               >授权</el-button>
               <el-button
                 type="danger"
                 size="small"
-                @click="batchUpdatePower('2')"
+                @click="batchUpdatePower('3')"
                 icon="el-icon-close"
               >拒绝</el-button>
             </el-form-item>
@@ -187,17 +187,24 @@
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '1'"
+                  v-if="(scope.row.examineStatus == '1' && scope.row.applyAuthority == 1)||scope.row.examineStatus == '2' "
                   type="success"
                   icon="el-icon-check"
                 >已授权</el-link>
                 <el-link
                   :underline="false"
                   size="small"
-                  v-else
+                  v-if="scope.row.examineStatus == '1' && scope.row.applyAuthority == 2"
+                  type="warning"
+                  icon="el-icon-s-finance"
+                >待审核</el-link>
+                <el-link
+                  :underline="false"
+                  size="small"
+                  v-if="scope.row.examineStatus == '3' "
                   type="danger"
                   icon="el-icon-close"
-                >已撤销</el-link>
+                >拒绝</el-link>
               </template>
             </el-table-column>
             <el-table-column prop="examine_status" label="备注">
@@ -216,13 +223,13 @@
                   type="text"
                   size="mini"
                   icon="el-icon-thumb"
-                  @click="updatePower(scope.row,'1')"
+                  @click="updatePower(scope.row,'2')"
                 >授权</el-button>
                 <el-button
                   type="text"
                   size="mini"
                   icon="el-icon-close"
-                  @click="updatePower(scope.row,'2')"
+                  @click="updatePower(scope.row,'3')"
                 >拒绝</el-button>
               </template>
             </el-table-column>
@@ -478,7 +485,7 @@ export default {
     //单个库的授权或拒绝
     updatePower(row, status) {
       row.examineStatus = status;
-      if (status == "2") {
+      if (status == "3") {
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消"
@@ -507,7 +514,7 @@ export default {
     batchUpdatePower(status) {
       //判断是否勾选需要授权的资料
       if (this.multipleSelection.length > 0) {
-        if (status == "2") {
+        if (status == "3") {
           this.$prompt("请输入拒绝原因", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消"
@@ -515,14 +522,14 @@ export default {
             .then(({ value }) => {
               this.multipleSelection.forEach(element => {
                 element.failureReason = value;
-                element.examineStatus = 2;
+                element.examineStatus = 3;
               });
               this.editPowerBath();
             })
             .catch(() => {});
         } else {
           this.multipleSelection.forEach(element => {
-            element.examineStatus = 1;
+            element.examineStatus = 2;
           });
           this.editPowerBath();
         }
