@@ -78,7 +78,7 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
         if (StringUtils.isNotBlank(tableDataStatisticsEntity.getDatabaseId())) {
             ssb.add("databaseId", SpecificationOperator.Operator.eq.name(), tableDataStatisticsEntity.getDatabaseId());
         }
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, "statisticDate");
         PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
         List<TableDataStatisticsEntity> pageData = (List<TableDataStatisticsEntity>)page.getPageData();
         page.setPageData(this.tableDataStatisticsMapper.toDto(pageData));
