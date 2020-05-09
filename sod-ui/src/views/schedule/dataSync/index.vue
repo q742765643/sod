@@ -393,10 +393,14 @@ export default {
       getSyncInfo(id).then(response => {
         this.handleDialog = true;
         this.handleObj = response.data;
+
         // / 同步任务执行节点回显
         this.handleObj.ipAndPort =
           this.handleObj.execIp + ":" + this.handleObj.execPort;
         // 目标表回显
+        if (this.handleObj.targetRelation.length > 1) {
+          this.handleObj.targetTable2 = this.handleObj.targetRelation[1].targetTableId;
+        }
         this.handleObj.targetTable = this.handleObj.targetRelation[0].targetTableId;
         this.handleObj.handleType = type;
         console.log(this.handleObj);
