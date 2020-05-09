@@ -297,7 +297,10 @@ export default {
           }
           this.handleQuery();
         } else {
-          this.msgError(res.msg);
+          this.loading = false;
+          this.$alert(res.msg, "提示", {
+            dangerouslyUseHTMLString: true
+          });
         }
       });
     }

@@ -204,6 +204,7 @@ export default {
       }
     },
     powerMethods(value) {
+      this.loading = true;
       let obj = {};
       obj.userId = this.$store.getters.name;
       obj.dataAuthorityRecordList = [];
@@ -233,7 +234,10 @@ export default {
           }
           this.getList();
         } else {
-          this.msgError(res.msg);
+          this.loading = false;
+          this.$alert(res.msg, "提示", {
+            dangerouslyUseHTMLString: true
+          });
         }
       });
     },

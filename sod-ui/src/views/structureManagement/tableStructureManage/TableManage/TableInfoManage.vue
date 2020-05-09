@@ -292,8 +292,6 @@ export default {
     },
     save() {
       this.isEdit = !this.isEdit;
-      debugger;
-
       if (!this.Info.tableName || !tableNameVail(this.Info.tableName)) {
         this.$alert(
           "表名不能为空，并且需是英文字母和下划线组成，首位不能是下划线，下划线之后不能接下划线",
