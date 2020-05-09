@@ -33,13 +33,14 @@
           </el-col>
         </el-row>
         <el-table
+          border
           v-loading="loading"
           :data="tableData"
           row-key="id"
           highlight-current-row
           @current-change="handleCurrentChange"
         >
-          <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
           <el-table-column prop="taskName" sortable label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="tableName" sortable label="表名" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="apiUrl" label="接口url" width="350px" :show-overflow-tooltip="true"></el-table-column>
@@ -47,7 +48,7 @@
           <el-table-column prop="apiDataKey" label="接口关键字"></el-table-column>
           <el-table-column prop="jobCron" label="执行策略"></el-table-column>
           <el-table-column prop="description" label="来源" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column label="操作" width="160px">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -123,33 +124,34 @@
           </el-col>
         </el-row>
         <el-table
+          border
           v-loading="loadingHis"
           :data="logTableData"
           highlight-current-row
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" label="序号" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" :index="table_index_log"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="startTime" label="开始时间">
+          <el-table-column prop="startTime" label="开始时间" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.startTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="stopTime" label="结束时间">
+          <el-table-column prop="stopTime" label="结束时间" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.stopTime) }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="syncTableName" label="同步表名" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column prop="syncRecordNum" label="同步记录数"></el-table-column>
-          <el-table-column prop="syncType" label="同步类型">
+          <el-table-column prop="syncRecordNum" label="同步记录数" width="100"></el-table-column>
+          <el-table-column prop="syncType" label="同步类型" width="100">
             <!-- <template slot-scope="scope">
               <span v-if="scope.row.syncType == 1">全量同步</span>
               <span v-if="scope.row.syncType == 2">增量同步</span>
             </template>-->
           </el-table-column>
-          <el-table-column prop="syncModel" label="同步方式"></el-table-column>
-          <el-table-column prop="runState" label="运行状态"></el-table-column>
+          <el-table-column prop="syncModel" label="同步方式" width="100"></el-table-column>
+          <el-table-column prop="runState" label="运行状态" width="100"></el-table-column>
         </el-table>
         <pagination
           v-show="logDataTotal>0"

@@ -67,11 +67,11 @@
           <span v-if="scope.row.examineTime">{{ parseTime(scope.row.examineTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="storageLogic" label="数据库类型" width="120px"></el-table-column>
+      <el-table-column prop="storageLogic" label="数据库类型" width="100"></el-table-column>
       <el-table-column prop="databaseName" label="数据库名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="databaseUse" label="用 途" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="examineStatus" label="审核状态" width="80px" :formatter="statusShow"></el-table-column>
-      <el-table-column label="操作" width="260px">
+      <el-table-column label="操作" width="240">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.examineStatus=='01'"

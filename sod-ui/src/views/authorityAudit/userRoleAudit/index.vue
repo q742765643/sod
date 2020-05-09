@@ -25,6 +25,7 @@
     </el-form>
 
     <el-table
+      border
       highlight-current-row
       v-loading="loading"
       :data="tableData"
@@ -35,13 +36,13 @@
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名称"></el-table-column>
       <el-table-column prop="deptName" label="机构"></el-table-column>
-      <el-table-column prop="phonenumber" label="联系方式"></el-table-column>
-      <el-table-column prop="updateTime" label="创建时间" sortable="custom">
+      <el-table-column prop="phonenumber" label="联系方式" width="120"></el-table-column>
+      <el-table-column prop="updateTime" label="创建时间" sortable="custom" width="160">
         <template slot-scope="scope" v-if="scope.row.updateTime">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="审核状态">
+      <el-table-column prop="status" label="审核状态" width="100">
         <template slot-scope="scope">
           <el-link v-if="scope.row.checked == '0'" :underline="false" type="primary">待审核</el-link>
           <el-link v-else-if="scope.row.checked == '1'" :underline="false" type="success">审核通过</el-link>
@@ -51,7 +52,7 @@
           <el-link v-else :underline="false" type="info">未知</el-link>
         </template>
       </el-table-column>
-      <el-table-column label="角色授权" width="100">
+      <el-table-column label="角色授权" width="120">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -61,7 +62,7 @@
           >角色授权</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="申请审核" width="100">
+      <el-table-column label="申请审核" width="120">
         <template slot-scope="scope">
           <el-button
             type="text"
