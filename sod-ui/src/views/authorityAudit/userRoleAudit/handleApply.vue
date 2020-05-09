@@ -238,6 +238,7 @@ export default {
           this.$alert(res.msg, "提示", {
             dangerouslyUseHTMLString: true
           });
+          this.handleQuery();
         }
       });
     },
