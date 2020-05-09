@@ -12,7 +12,7 @@
       <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteConfig">删除</el-button>
     </el-button-group>
     <el-table :data="tableData" stripe @selection-change="res=>selData=res">
-      <el-table-column type="index" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="处理编码" prop="dataDpcId"></el-table-column>
       <el-table-column label="要素存储短名" prop="eleCodeShort"></el-table-column>

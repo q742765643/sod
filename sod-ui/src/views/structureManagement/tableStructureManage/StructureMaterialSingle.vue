@@ -334,7 +334,7 @@ export default {
     getChildCheckNode(checkNode) {
       console.log(checkNode);
       if (!this.isDisabledEdit) {
-        this.materialData.dataClassId = checkNode.id;
+        // this.materialData.dataClassId = checkNode.id;
         this.materialData.className = checkNode.name;
       }
       this.materialData.ddataId = checkNode.id;

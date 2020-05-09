@@ -49,7 +49,7 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" min-width="15" label=" "></el-table-column>
+      <el-table-column type="index" label=" " min-width="15"></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
       <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column

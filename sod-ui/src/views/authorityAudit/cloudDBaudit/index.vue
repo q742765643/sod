@@ -54,7 +54,7 @@
     </el-row>
 
     <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="申请用户" width="120px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="department" label="申请单位" width="120px"></el-table-column>
       <el-table-column prop="updateTime" label="申请时间" width="160px" sortable="custom">

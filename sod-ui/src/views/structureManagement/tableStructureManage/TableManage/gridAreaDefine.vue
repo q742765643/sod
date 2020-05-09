@@ -29,7 +29,7 @@
       style="width: 100%;"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="areaId" label="区域代码"></el-table-column>
       <el-table-column prop="areaRegionDesc" label="区域描述"></el-table-column>
@@ -102,6 +102,13 @@ export default {
       this.isEdit = !this.isEdit;
     },
     save() {
+      if (!this.selectArea) {
+        this.$message({
+          message: "请选择一条数据新增",
+          type: "error"
+        });
+        return;
+      }
       this.isEdit = !this.isEdit;
       var time = new Date();
       let obj = {};
@@ -130,8 +137,10 @@ export default {
     },
     deleteArea() {
       let ids = [];
+      let areaIds = [];
       this.multipleSelection.forEach(element => {
         ids.push(element.id);
+        areaIds.push(element.areaId);
       });
       if (ids.length == 0) {
         this.$message({
@@ -140,21 +149,28 @@ export default {
         });
         return;
       }
-      console.log(ids);
-      gridareaDel({ ids: ids.join(",") }).then(res => {
-        if (res.code == 200) {
-          this.searchFun();
-          this.$message({
-            type: "success",
-            message: "删除成功"
+      this.$confirm("确认删除" + areaIds.join(",") + "吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          gridareaDel({ ids: ids.join(",") }).then(res => {
+            if (res.code == 200) {
+              this.searchFun();
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+            } else {
+              this.$message({
+                message: res.msg,
+                type: "error"
+              });
+            }
           });
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
-          });
-        }
-      });
+        })
+        .catch(() => {});
     },
     forParent() {
       this.searchFun();

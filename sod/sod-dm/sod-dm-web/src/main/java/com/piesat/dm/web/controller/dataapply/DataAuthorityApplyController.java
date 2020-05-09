@@ -36,6 +36,7 @@ public class DataAuthorityApplyController {
 
 
     @GetMapping("/list")
+    //@RequiresPermissions("dm:dataAuthorityApply:list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     public ResultT<PageBean> list(DataAuthorityApplyDto dataAuthorityApplyDto, int pageNum, int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
@@ -57,8 +58,8 @@ public class DataAuthorityApplyController {
         }
     }
 
-//    @RequiresPermissions("api:dataAuthorityApply:getApplyInfoById")
     @GetMapping(value = "/getApplyInfoById")
+    //@RequiresPermissions("dm:dataAuthorityApply:getApplyInfoById")
     @ApiOperation(value = "根据id查询申请信息", notes = "根据id查询申请信息")
     public ResultT<Map<String,Object>> getApplyInfoById(String id)
     {
@@ -69,6 +70,7 @@ public class DataAuthorityApplyController {
     }
 
     @GetMapping(value = "/getRecordByByUserId")
+    //@RequiresPermissions("dm:dataAuthorityApply:getRecordByByUserId")
     @ApiOperation(value = "根据用户id查询申请资料信息", notes = "根据用户id查询申请资料信息")
     public ResultT getRecordByByUserId(String bizUserId)
     {
@@ -88,6 +90,7 @@ public class DataAuthorityApplyController {
 
 
     @GetMapping(value = "/getRecordByApplyId")
+    //@RequiresPermissions("dm:dataAuthorityApply:getRecordByApplyId")
     @ApiOperation(value = "根据申请id查询申请资料信息", notes = "根据申请id查询申请资料信息")
     public ResultT<List<Map<String,Object>>> getRecordByApplyId(DataAuthorityRecordDto dataAuthorityRecordDto)
     {
@@ -123,6 +126,7 @@ public class DataAuthorityApplyController {
     }
 
     @PutMapping(value = "/updateRecordCheck")
+    //@RequiresPermissions("dm:dataAuthorityApply:updateRecordCheck")
     @ApiOperation(value = "授权资料", notes = "授权资料")
     public ResultT updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
        return  dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
@@ -229,7 +233,7 @@ public class DataAuthorityApplyController {
      * @return
      */
     @ApiOperation(value="获取可申请资料清单")
-//    @RequiresPermissions("api:dataAuthorityApply:getApplyDataInfo")
+    //@RequiresPermissions("dm:dataAuthorityApply:getApplyDataInfo")
     @GetMapping(value = "/getApplyDataInfo")
     public ResultT getApplyDataInfo(String userId) {
     	try {
@@ -241,6 +245,7 @@ public class DataAuthorityApplyController {
 		}
     }
     @PostMapping(value = "/updateReadAuthority")
+    //@RequiresPermissions("dm:dataAuthorityApply:updateReadAuthority")
     @ApiOperation(value = "读权限默认通过修改", notes = "读权限默认通过修改")
     public ResultT updateReadAuthority(@RequestBody ReadAuthorityDto readAuthorityDto) {
         try {
@@ -252,8 +257,8 @@ public class DataAuthorityApplyController {
         }
     }
 
-//    @RequiresPermissions("api:dataAuthorityApply:getReadAuthority")
     @GetMapping(value = "/getReadAuthority")
+    //@RequiresPermissions("dm:dataAuthorityApply:getReadAuthority")
     @ApiOperation(value = "读权限默认通过，查询", notes = "读权限默认通过，查询")
     public ResultT getReadAuthority() {
         try {

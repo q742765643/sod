@@ -38,9 +38,9 @@
         </el-row>
       </el-form>
     </fieldset>
-    <fieldset style="margin-top:20px;margin-bottom:20px;" v-show="conIcon =='el-icon-arrow-up'">
+    <fieldset class="fieldsetBase" v-show="conIcon =='el-icon-arrow-up'">
       <legend>{{'默认配置设置'}}</legend>
-      <el-form ref="form" :model="baseSet" label-width="120px" :rules="baseRules">
+      <el-form ref="formBase" :model="baseSet" label-width="120px" :rules="baseRules">
         <el-row>
           <el-col :span="6">
             <el-form-item label="区域选择" prop="region">
@@ -56,12 +56,12 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input v-model="baseSet.gribVersion" size="small" type="number"></el-input>
+              <el-input-number v-model="baseSet.gribVersion" :min="0" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="场类型" prop="fieldType">
-              <el-input v-model="baseSet.fieldType" size="small" type="number"></el-input>
+              <el-input-number v-model="baseSet.fieldType" :min="0" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -106,7 +106,7 @@
       style="width: 100%;"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" width="45" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="45" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="45"></el-table-column>
       <el-table-column prop="areaId" label="区域代码"></el-table-column>
       <el-table-column prop="dbEleName" label="要素存储短名"></el-table-column>
@@ -459,20 +459,27 @@ export default {
       });
     },
     addBase() {
-      let obj = Object.assign(this.baseSet, this.baseServe);
-      obj.dataCLassId = this.rowData.DATA_CLASS_ID;
-      console.log(obj);
-      saveBase(obj).then(response => {
-        if (response.code == 200) {
-          this.$message({
-            type: "success",
-            message: "保存成功"
+      this.$refs["formBase"].validate(valid => {
+        if (valid) {
+          let obj = Object.assign(this.baseSet, this.baseServe);
+          obj.dataCLassId = this.rowData.DATA_CLASS_ID;
+          console.log(obj);
+          saveBase(obj).then(response => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "保存成功"
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: response.msg
+              });
+            }
           });
         } else {
-          this.$message({
-            type: "error",
-            message: response.msg
-          });
+          console.log("error submit!!");
+          return false;
         }
       });
     },
@@ -485,8 +492,8 @@ export default {
         this.msgFormDialog = {
           num: 85,
           scaleDivisor: 1,
-          eleHours: "0,12",
-          gridPixel: "0.25*0.25",
+          eleHours: this.baseSet.dataTime,
+          gridPixel: this.baseSet.spatialResolution,
           dbEleName: this.eleQueryAll[0].eleCodeShort,
           levelType: this.optionsLevels[0].levelType,
           gribVersion: this.baseSet.gribVersion,
@@ -528,23 +535,34 @@ export default {
     },
     deleteCell() {
       let ids = [];
+      let areaIds = [];
       this.multipleSelection.forEach(element => {
         ids.push(element.id);
+        areaIds.push(element.areaId);
       });
-      delByIds({ ids: ids.join(",") }).then(res => {
-        if (res.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
+
+      this.$confirm("确认删除" + areaIds.join(",") + "吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          delByIds({ ids: ids.join(",") }).then(res => {
+            if (res.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              this.searchFun();
+            } else {
+              this.$message({
+                type: "error",
+                message: res.msg
+              });
+            }
           });
-          this.searchFun();
-        } else {
-          this.$message({
-            type: "error",
-            message: res.msg
-          });
-        }
-      });
+        })
+        .catch(() => {});
     },
     columnCopy() {
       if (this.multipleSelection.length == 0) {
@@ -700,6 +718,13 @@ export default {
   }
   .el-select {
     width: 100%;
+  }
+  .fieldsetBase {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    .el-input-number--small {
+      width: 100%;
+    }
   }
 }
 .dataServeDialog {

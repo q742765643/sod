@@ -150,7 +150,7 @@
           @current-change="handleSelectionChange"
           style="width: 100%;"
         >
-          <el-table-column type="index" width="50"></el-table-column>
+          <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column prop="databaseNode" label="节点列表">
             <template slot-scope="scope">
               <el-input v-model="scope.row.databaseNode" placeholder="请输入节点IP"></el-input>
@@ -196,7 +196,7 @@
           @current-change="handleSelectionChange"
           style="width: 100%;"
         >
-          <el-table-column type="index" width="50"></el-table-column>
+          <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column prop="userName" label="登录用户">
             <template slot-scope="scope">
               <el-input v-model="scope.row.userName" placeholder="请输入用户名"></el-input>
@@ -224,7 +224,7 @@
       </el-tab-pane>
       <el-tab-pane label="专题列表" name="four" v-if="handleMsgObj.id">
         <el-table :data="physicsSpecialList" border stripe style="width: 100%;">
-          <el-table-column type="index" width="50"></el-table-column>
+          <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column prop="databaseName" label="专题名"></el-table-column>
           <el-table-column prop="schemaName" label="专题标识"></el-table-column>
           <el-table-column prop="userName" label="关联web用户"></el-table-column>
