@@ -14,5 +14,7 @@ public class ConnectVo {
     private int port;
     private String userName;
     private String passWord;
+    private String url;
+
 }
 

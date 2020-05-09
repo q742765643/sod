@@ -5,43 +5,46 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 
 import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.fetl.util.FetlUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AnalysisData implements Runnable{
+public class AnalysisData implements Callable<Boolean> {
 	private String parentId;
 	private int commitCount;
 	private List<byte[]> data;
 	private List<Integer> columnTypes;
 	private String preSql;
-	public AnalysisData(String parentId,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
+	private String tableName;
+	public AnalysisData(String parentId,String tableName,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
 		this.parentId = parentId;
 		this.commitCount = commitCount;
 		this.data = data;
 		this.columnTypes = columnTypes;
 		this.preSql = preSql;
+		this.tableName=tableName;
 	}
 	
 	@Override
-	public void run(){    
+	public Boolean call() throws Exception {
         if(data != null && data.size() != 0){
         	Connection con = null;
-			DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
 			int lineCount = 0;
 	        int index = 0;
 	        int length = 0;
+	        long kb=0;
 	        List<byte[][]> datas = new ArrayList<>();
 	        PreparedStatement ps = null;
 	        byte[][] rowData = null;
 	        try{
-				DataSourceContextHolder.setDataSource(parentId);
-				con=dynamicDataSource.getConnection();
+				con=FetlUtil.get_conn(parentId);
 				int columnCount = columnTypes.size();
 				int signCount = columnCount;
 				signCount = (signCount+3)/4;
@@ -92,7 +95,7 @@ public class AnalysisData implements Runnable{
 					lineCount++;
 					index = 0;
 					datas.add(rowData);
-					if(lineCount % commitCount == 0){
+					/*if(lineCount % commitCount == 0){
 						try{
 							ps.executeBatch();
 							datas.clear();
@@ -104,25 +107,28 @@ public class AnalysisData implements Runnable{
 								log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
 							}
 						}
-					}
+					}*/
 				}
+				log.info("批量提交表数据{}恢复{}条",tableName,lineCount);
 				ps.executeBatch();
 			} catch (SQLException e){
-				if(commitCount > 0) {
+				/*if(commitCount > 0) {
 					impData(ps,datas);
 					datas.clear();
-				}else {
+				}else {*/
 					log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
-				}
+				//}
+				throw new RuntimeException(tableName+"恢复数据异常错误");
 			} catch (Exception e){
-				log.error(e.getMessage());
+				log.error(OwnException.get(e));
+				throw new RuntimeException(tableName+"恢复数据异常错误");
 			} finally {
-				DataSourceContextHolder.clearDataSource();
 				data.clear();
 				FetlUtil.closePs(ps);
 				FetlUtil.closeConn(con);
 			}
         }
+        return Boolean.TRUE;
 	}	
 	public void impData(PreparedStatement ps, List<byte[][]> datas){
 		byte[][] rowData = new byte[datas.get(0).length][];
