@@ -28,7 +28,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table border v-loading="loading" :data="tableData" row-key="id">
       <af-table-column prop="CLASS_NAME" label="资料名称">
         <template slot-scope="scope">
           <span>{{scope.row.CLASS_NAME}}</span>
@@ -416,6 +416,9 @@ export default {
           this.handleMsgObj.ipAndPort =
             this.handleMsgObj.execIp + ":" + this.handleMsgObj.execPort;
           // 目标表回显
+          if (this.handleMsgObj.targetRelation.length > 1) {
+            this.handleMsgObj.targetTable2 = this.handleMsgObj.targetRelation[1].targetTableId;
+          }
           this.handleMsgObj.targetTable = this.handleMsgObj.targetRelation[0].targetTableId;
           this.handleMsgObj.handleType = "edit";
         });

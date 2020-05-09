@@ -19,7 +19,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table border v-loading="loading" :data="tableData" row-key="id">
       <af-table-column prop="C_ELEMENT_CODE" label="公共元数据字段">
         <template slot-scope="scope">
           <span>{{scope.row.C_ELEMENT_CODE}}</span>

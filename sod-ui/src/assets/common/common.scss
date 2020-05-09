@@ -65,27 +65,32 @@ body {
 
 // 表格
 .el-table {
-  font-size: 13px;
+  font-size: 14px;
 
   th,
   td {
     text-align: center;
+    font-size: 14px !important;
   }
 
   td {
-    padding: 4px 2px;
+    padding: 8px 2px;
   }
 
   th {
+    padding-top: 9px;
+    padding-bottom: 9px;
     border-bottom: 1px solid #dfe6ec;
+    background-color: #f1f4f7 !important;
   }
 
   th.gutter {
     display: table-cell !important;
   }
 
-  .el-link {
-    font-size: 13px;
+  .el-link,
+  .el-button--mini {
+    font-size: 14px;
   }
 
   .tableDownload {
@@ -95,6 +100,7 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
+
 }
 
 
@@ -212,7 +218,10 @@ ul {
 
   .sidebar-container {
     width: 240px !important;
-    background: linear-gradient(#011d79, #0b5ccc, #55cec7) !important;
+    background: url(../image/menuBk.png) !important;
+    background-repeat: repeat-x;
+    background-size: 100% 100%;
+    // background: linear-gradient(#011d79, #0b5ccc, #55cec7) !important;
 
     .router-link-exact-active {
       /*  display: block;
@@ -223,7 +232,7 @@ ul {
       background-size: 82% 100%;
       position: relative;
       color: #333; */
-      background:rgba(0, 0, 0, 0)
+      background:rgba(58, 169, 255, 1)
       /*  &:after {
         content: '';
         position: absolute;
@@ -246,22 +255,23 @@ ul {
       &:hover {
         // height: 80px;
         // line-height: 80px;
-        background-color: rgba(0, 0, 0, 0) !important;
+        background-color: rgba(58, 169, 255, 0) !important;
         // background: url(../image/menuActive.png) no-repeat;
         // background-size: 82% 100%;
-        color: #fff !important;
+        color: rgba(255, 241, 0, 1) !important;
       }
     }
   }
 
   .sidebar-logo-container {
     width: 90%;
-    margin: auto;
+    padding-left: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .sidebar-title {
-    letter-spacing: 4px;
+    letter-spacing: 1px;
+    font-size: 20px;
   }
 
   .main-container {
@@ -318,10 +328,13 @@ ul {
 }
 
 .el-menu--vertical {
-  background: linear-gradient(#011d79, #0b5ccc, #55cec7) !important;
+  // background: linear-gradient(#011d79, #0b5ccc, #55cec7) !important;
+  background: url(../image/menuBk.png) !important;
+  background-repeat: repeat-x;
+  background-size: 100% 100%;
 
   .router-link-exact-active {
-    background: rgba(0, 0, 0, 0)
+    background: rgba(58, 169, 255, 1)
       /* display: block;
     width: 100%;
     height: 80px;
@@ -340,7 +353,8 @@ ul {
   .nest-menu .el-submenu>.el-submenu__title {
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0) !important;
+      background-color: rgba(58, 169, 255, 0) !important;
+      color: rgba(255, 241, 0, 1) !important;
       /* height: 80px;
       line-height: 80px;
       background: url(../image/menuActive.png) no-repeat;

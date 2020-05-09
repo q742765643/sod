@@ -110,7 +110,7 @@
         <span>区域表示资料的数据场标识的空间范围，如：GLB，CHN；</span>
         <p class="title">4.场类型:</p>
         <span>数值模式产品按场类型（FIELD_TYPE）分为多种不同的产品，场类型的取值和对应含义如下表所示：</span>
-        <el-table :data="tableData1" style="width: 100%" border>
+        <el-table border :data="tableData1" style="width: 100%">
           <el-table-column prop="code" label="代码值"></el-table-column>
           <el-table-column prop="means" label="含义"></el-table-column>
           <el-table-column prop="code2" label="代码值"></el-table-column>
@@ -119,7 +119,7 @@
         <span>当场类型为1时是预报产品，为其它时不是正常的预报产品。比如，EC低分的场类型为2的气温、位势高度等要素产品，其实是标准差产品，不是预报产品。</span>
         <p class="title">5.加工过程类型:</p>
         <span>模式产品加工类型（GENPROCESS_TYPE字段）的含义如下：</span>
-        <el-table :data="tableData2" style="width: 100%" border>
+        <el-table border :data="tableData2" style="width: 100%">
           <el-table-column prop="code" label="代码值"></el-table-column>
           <el-table-column prop="means" label="含义"></el-table-column>
           <el-table-column prop="code2" label="代码值"></el-table-column>
@@ -294,7 +294,7 @@ export default {
       this.isEdit = !this.isEdit;
       if (!this.Info.tableName || !tableNameVail(this.Info.tableName)) {
         this.$alert(
-          "表名不能为空，并且需是英文字母和下划线组成，首位不能是下划线，下划线之后不能接下划线",
+          "表名不能为空，并且需是英文字母数字和下划线组成，首位不能是下划线，下划线之后不能接下划线",
           "提示",
           {
             type: "warning",

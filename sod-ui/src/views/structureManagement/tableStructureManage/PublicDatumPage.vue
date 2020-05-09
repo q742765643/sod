@@ -35,7 +35,7 @@
           </el-table-column>
         </el-table>
         <div class="childTableBox" v-show="childShow">
-          <el-table :data="tableDataChild" border>
+          <el-table border :data="tableDataChild">
             <el-table-column
               label="公共元数据字段"
               prop="dbEleCode"
@@ -59,7 +59,7 @@
             <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
             <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
           </el-table>
-          <el-table :data="tableIndexChild" border>
+          <el-table border :data="tableIndexChild">
             <el-table-column label="索引名称" prop="indexName"></el-table-column>
             <el-table-column label="索引列" prop="indexColumn"></el-table-column>
             <el-table-column label="索引类型" prop="indexType"></el-table-column>

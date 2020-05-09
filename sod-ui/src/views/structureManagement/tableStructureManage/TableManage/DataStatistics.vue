@@ -16,7 +16,7 @@
           <el-input v-model="searchParams.endTime" size="small" readonly></el-input>
         </el-form-item>
       </el-form>
-      <el-table :data="tableData" stripe style="width: 100%;" row-key="id">
+      <el-table border :data="tableData" stripe style="width: 100%;" row-key="id">
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column prop="statisticDate" label="统计日期">
           <template slot-scope="scope">

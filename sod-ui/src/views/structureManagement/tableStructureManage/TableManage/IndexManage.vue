@@ -13,7 +13,7 @@
       ref="selectionTable"
       @row-click="handleClickTableRow"
     >
-      <el-table-column type="index" label="序号"></el-table-column>
+      <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="索引名称" prop="indexName"></el-table-column>
       <el-table-column label="索引列" prop="indexColumn"></el-table-column>

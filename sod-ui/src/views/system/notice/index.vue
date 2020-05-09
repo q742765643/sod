@@ -67,7 +67,12 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="noticeList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
       <el-table-column label="序号" prop="noticeId" width="100" />
       <el-table-column label="公告标题" prop="noticeTitle" :show-overflow-tooltip="true" />

@@ -133,10 +133,9 @@ public class DataAuthorityApplyController {
     }
 
     @PutMapping(value = "/updateRecordCheckCancel")
-    @ApiOperation(value = "撤销已授权资料", notes = "撤销已授权资料")
+    @ApiOperation(value = "拒绝授权/撤销已授权资料", notes = "拒绝授权/撤销已授权资料")
     public ResultT updateRecordCheckCancel(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
-        Map<String,Object> result = dataAuthorityApplyService.updateRecordCheckCancel(dataAuthorityApplyDto);
-        return ResultT.success(result.get("msg"));
+        return dataAuthorityApplyService.updateRecordCheckCancel(dataAuthorityApplyDto);
     }
 
     @GetMapping(value = "/getRecordListByUserId")

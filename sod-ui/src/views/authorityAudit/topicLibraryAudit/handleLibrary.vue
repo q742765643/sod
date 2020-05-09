@@ -56,7 +56,7 @@
               <span>{{this.msgFormDialog.databaseSchema}}</span>
             </el-col>
           </el-row>
-          <el-table :data="databaseList" border stripe style="width: 100%;">
+          <el-table border :data="databaseList" stripe style="width: 100%;">
             <el-table-column prop="databaseId" label="数据库"></el-table-column>
             <el-table-column label="权限">
               <template slot-scope="scope">
@@ -111,7 +111,7 @@
         </section>
         <!-- 列表 -->
         <section class="loadTable">
-          <el-table :data="tableLibraryData" border style="width: 100%;">
+          <el-table border :data="tableLibraryData" style="width: 100%;">
             <el-table-column type="index" label="序号" width="50"></el-table-column>
             <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
@@ -168,7 +168,7 @@
         </section>
         <!-- 列表 -->
         <section class="loadTable">
-          <el-table :data="baseTableLibraryData" border @selection-change="handleSelectionChange">
+          <el-table border :data="baseTableLibraryData" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="45"></el-table-column>
             <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>

@@ -112,7 +112,7 @@ service.interceptors.response.use(res => {
     } else if (code == undefined) {
       return res.data
     } else if (code !== 200) {
-      if (responseURL.indexOf('/comMetaData/syncDataNow') != -1 || responseURL.indexOf('/dm/dataAuthorityApply/updateRecordCheck') != -1) {
+      if (responseURL.indexOf('/comMetaData/syncDataNow') != -1 || responseURL.indexOf('/dm/dataAuthorityApply/updateRecordCheck') != -1 || responseURL.indexOf('/dm/dataAuthorityApply/updateRecordCheckCancel') != -1) {
         return res.data
       }
       Notification.error({

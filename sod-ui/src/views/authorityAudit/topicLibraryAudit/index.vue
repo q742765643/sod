@@ -24,7 +24,7 @@
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>
@@ -47,7 +47,7 @@
           >
             <p>{{ scope.row.uses}}</p>
             <div slot="reference" class="name-wrapper">
-              <el-link :underline="false">查看用途</el-link>
+              <el-link :underline="false" type="primary">查看用途</el-link>
             </div>
           </el-popover>
         </template>
@@ -60,7 +60,7 @@
           <span v-if="scope.row.examineStatus=='4'">再次审核</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160px">
+      <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-edit" @click="editCell(scope.row)">修改权限</el-button>
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>

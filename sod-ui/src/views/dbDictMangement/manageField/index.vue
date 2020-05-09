@@ -46,16 +46,21 @@
             <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" highlight-current-row @selection-change="handleSelectionChange">
-          <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
+        <el-table
+          border
+          :data="tableData"
+          highlight-current-row
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label=" " prop="id" v-if="false"></el-table-column>
           <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
           <el-table-column label="服务编码" prop="userEleCode"></el-table-column>
           <el-table-column label="中文名称" prop="dbEleName"></el-table-column>
           <el-table-column label="字段类型" prop="type"></el-table-column>
-          <el-table-column label="字段精度" prop="dataPrecision"></el-table-column>
-          <el-table-column label="是否可为空" prop="nullAble" :formatter="formatBoolean"></el-table-column>
+          <el-table-column label="字段精度" prop="dataPrecision" width="100"></el-table-column>
+          <el-table-column label="是否可为空" prop="nullAble" :formatter="formatBoolean" width="100"></el-table-column>
         </el-table>
         <pagination
           v-show="total>0"

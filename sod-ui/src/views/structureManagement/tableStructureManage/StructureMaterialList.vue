@@ -19,7 +19,7 @@
     </el-form>
 
     <!-- 表格 -->
-    <el-table :data="tableData">
+    <el-table border :data="tableData">
       <el-table-column label="资料名称" prop="className" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="存储编码" prop="dataClassId" width="200"></el-table-column>
       <el-table-column label="四级编码" prop="ddataId" width="200"></el-table-column>
@@ -53,7 +53,7 @@ export default {
         ifStopUse: "",
         pageNum: 1,
         pageSize: 10,
-        type:2
+        type: 2
       },
       total: 0,
       tableData: []

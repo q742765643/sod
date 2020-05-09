@@ -56,6 +56,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 数据库访问账户管理
@@ -284,7 +285,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
             needEmpowerIdist.removeAll(haveEmpowerIdist);
         }
-
+        //过滤空字符串
+        needEmpowerIdist = needEmpowerIdist.stream().filter(string -> !string.isEmpty()).collect(Collectors.toList());
         /**为申请的IP授权**/
         //待授权IP
         String databaseUpIp = databaseUserDto.getDatabaseUpIp();
@@ -301,11 +303,14 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                    if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 String message = e.getMessage();
-                if (message.contains("用户已经存在")) {
-                    if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
-                } else {
-                    sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
+                if(StringUtils.isNotBlank(message)){
+                    if (message.contains("用户已经存在")) {
+                        if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
+                    } else {
+                        sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
+                    }
                 }
             }
         }
@@ -366,7 +371,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
         String msg = sbff.toString();
         if (StringUtils.isNotBlank(msg)) {
-            return ResultT.failed(msg);
+            System.out.println(msg);
+            //前端不需要返回这么详细的错误信息
+            return ResultT.failed("授权失败");
         } else {
             return ResultT.success();
         }

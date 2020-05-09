@@ -137,7 +137,8 @@
 import {
   getApplyInfoById,
   getRecordByApplyId,
-  updateRecordCheck
+  updateRecordCheck,
+  updateRecordCheckCancel
 } from "@/api/authorityAudit/materialPower/index";
 import { formatDate } from "@/utils/index";
 export default {
@@ -204,6 +205,7 @@ export default {
         if (res.code == 200) {
           this.loading = false;
           this.tableData = res.data;
+          this.AUTHORIZEF_NUM = 0;
           this.AUTHORIZE_NUM = 0;
           this.AUTHORIZEF_NUM0 = 0;
           this.tableData.forEach(element => {
@@ -284,25 +286,41 @@ export default {
         obj.dataAuthorityRecordList.push(cobj);
       });
       console.log(obj);
-      updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
-        if (res.code == 200) {
-          if (value) {
-            this.msgSuccess("拒绝成功");
+      if (value) {
+        updateRecordCheckCancel(JSON.parse(JSON.stringify(obj))).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              dangerouslyUseHTMLString: true,
+              message: "拒绝成功:" + res.msg
+            });
+            this.handleQuery();
           } else {
+            this.loading = false;
+            this.$alert(res.msg, "提示", {
+              dangerouslyUseHTMLString: true
+            });
+            this.handleQuery();
+          }
+        });
+      } else {
+        updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
+          if (res.code == 200) {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
               message: "授权成功:" + res.msg
             });
+            this.handleQuery();
+          } else {
+            this.loading = false;
+            this.$alert(res.msg, "提示", {
+              dangerouslyUseHTMLString: true
+            });
+            this.handleQuery();
           }
-          this.handleQuery();
-        } else {
-          this.loading = false;
-          this.$alert(res.msg, "提示", {
-            dangerouslyUseHTMLString: true
-          });
-        }
-      });
+        });
+      }
     }
   }
 };

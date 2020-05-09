@@ -306,8 +306,8 @@ export default {
           { required: true, validator: idValidate, trigger: "blur" },
           {
             min: 1,
-            max: 10,
-            message: "账户ID长度不能超过10个字符",
+            max: 16,
+            message: "账户ID长度不能超过16个字符",
             trigger: "blur"
           }
         ],

@@ -15,7 +15,6 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "T_SOD_JOB_SYNCTASK_INFO")
-@DiscriminatorValue("SYNCTASK")
 public class SyncTaskEntity extends BaseEntity {
 
     /**
@@ -104,7 +103,8 @@ public class SyncTaskEntity extends BaseEntity {
      * 是否有V_BBB字段，键值表默认配置为没有 0表示没有，1表示有
      */
     @Excel(name="是否有V_BBB字段")
-    @Column(name="has_modify", length = 10)
+    //@Column(name="has_modify", length = 10)
+    @Column(name="has_modify",columnDefinition = "varchar(1) default '0'")
     private String hasModify;
 
     /**

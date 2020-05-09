@@ -1,6 +1,6 @@
 <template>
   <section class="dailySyncDialog">
-    <el-table :data="tableData" highlight-current-row border stripe>
+    <el-table border :data="tableData" highlight-current-row stripe>
       <el-table-column type="index" label=" " min-width="15"></el-table-column>
       <el-table-column prop="beginTime" label="开始时间" min-width="100"></el-table-column>
       <el-table-column prop="endTime" label="结束时间" min-width="100"></el-table-column>

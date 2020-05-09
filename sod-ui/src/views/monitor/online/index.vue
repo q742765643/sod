@@ -25,7 +25,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="tableData" style="width: 100%;">
+    <el-table border v-loading="loading" :data="tableData" style="width: 100%;">
       <el-table-column label="登录名称" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column label="部门名称" prop="deptName" />
       <el-table-column label="主机" prop="ipaddr" :show-overflow-tooltip="true" />

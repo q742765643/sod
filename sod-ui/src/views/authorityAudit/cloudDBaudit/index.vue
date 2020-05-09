@@ -53,7 +53,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="申请用户" width="120px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="department" label="申请单位" width="120px"></el-table-column>
@@ -67,11 +67,11 @@
           <span v-if="scope.row.examineTime">{{ parseTime(scope.row.examineTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="storageLogic" label="数据库类型" width="120px"></el-table-column>
+      <el-table-column prop="storageLogic" label="数据库类型" width="100"></el-table-column>
       <el-table-column prop="databaseName" label="数据库名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="databaseUse" label="用 途" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="examineStatus" label="审核状态" width="80px" :formatter="statusShow"></el-table-column>
-      <el-table-column label="操作" width="260px">
+      <el-table-column label="操作" width="240">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.examineStatus=='01'"

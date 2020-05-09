@@ -27,9 +27,9 @@ public interface DataAuthorityApplyService {
 
     ResultT updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto);
 
-    Map<String, Object> updateOneRecordCheck(String userId, DataAuthorityRecordDto dataAuthorityRecordDto);
+    ResultT updateOneRecordCheck(String userId, DataAuthorityRecordDto dataAuthorityRecordDto);
 
-    Map<String,Object>  updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto);
+    ResultT  updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto);
 
     List<Map<String,Object>> getRecordListByUserId(String userId);
 
