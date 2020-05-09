@@ -384,15 +384,30 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                             //判断是什么数据库
                             if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())){
                                 databaseVO = new Xugu(url,username,password);
-                                databaseVO.createSchemas(schemaName,databaseUpId,null,dataAuthor,creatAuthor,dropAuthor,null);
+                                try{
+                                    databaseVO.createSchemas(schemaName,databaseUpId,null,dataAuthor,creatAuthor,dropAuthor,null);
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    logger.error("[E4006] 同名用户或模式已存在 ");
+                                }
                             }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())){
                                 databaseVO = new Gbase8a(url,username,password);
-                                databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
+                                try{
+                                    databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    logger.error("[E4006] 同名用户或模式已存在 ");
+                                }
                             }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())){
                                 databaseVO = new Cassandra(databaseDefineEntity.getDatabaseIp(),
                                         Integer.parseInt(databaseDefineEntity.getDatabasePort()),
                                         username,password,databaseDto.getSchemaName());
-                                databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
+                                try{
+                                    databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    logger.error("[E4006] 同名用户或模式已存在 ");
+                                }
                             }else{
                                 return;
                             }
