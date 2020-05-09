@@ -123,12 +123,23 @@ log:
   path: D:/log
   level: INFO
 
+mng:
+  ip: 10.40.16.17
+
+mmd:
+  userName: dsmsys
+  password: nmic@100200
+are:
+  userName: usr_music
+  password: music#2020
 
 serverfile:
-  dbfile: D:/upload/
-  filePath: D:/upload/
+  dbfile: /home/sod/file/upload/dbfile
+  filePath: /home/sod/file/upload/filePath
   dfcheck: /home/sod/file/upload/dfcheck
   special: /home/sod/file/upload/special
+  cloud: /home/sod/file/upload/cloud
+  user: /home/sod/file/upload/user
   static:
     template:
       add-column: E:/sod/sod_all/static/字段模板.xlsx
@@ -136,6 +147,7 @@ serverfile:
       databaseuser-application: E:/sod/sod_all/static/大数据云平台存储账户申请模板.docx
       dataregister-application: E:/sod/sod_all/static/个人数据注册上传模板.xlsx
       topic-application: E:/sod/sod_all/static/专题库申请表模板.docx
+      table-export-standard: /home/sod/file/static/template_standard.ftl
     database-client:
       xugu-client: E:/sod/sod_all/static/虚谷数据库V9.0.zip
       gbase-client: E:/sod/sod_all/static/GBaseDataStudio.zip
@@ -150,3 +162,7 @@ product:
 debug: true
 businessParameters:
   databaseUserDefaultPassword: 111
+
+fidbDownloadUrl: http://10.40.17.34:8028/fileApi
+
+
