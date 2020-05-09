@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "T_SOD_JOB_SYNCMAPPING_INFO")
-@DiscriminatorValue("SYNCMAPPING")
 public class SyncMappingEntity {
 
     @Id

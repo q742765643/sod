@@ -17,7 +17,6 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "T_SOD_JOB_SYNCTASK_INFO_LOG")
-@DiscriminatorValue("SYNCTASKLOG")
 public class SyncTaskLogEntity extends BaseEntity {
     /**
      * 任务id
