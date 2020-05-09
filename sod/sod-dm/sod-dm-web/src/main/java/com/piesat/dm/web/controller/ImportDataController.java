@@ -40,7 +40,7 @@ public class ImportDataController {
     @RequiresPermissions("dm:import:implDataOther")
     public ResultT implDataOther() {
         try {
-            //this.importData.implDataOther();
+            this.importData.implDataOther();
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

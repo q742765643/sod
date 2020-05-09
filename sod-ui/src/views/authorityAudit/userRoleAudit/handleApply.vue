@@ -273,7 +273,7 @@ export default {
     finishStep() {
       let status;
       if (this.stepNum == 0) {
-        status = 3;
+        status = 2;
       } else {
         status = 1;
       }

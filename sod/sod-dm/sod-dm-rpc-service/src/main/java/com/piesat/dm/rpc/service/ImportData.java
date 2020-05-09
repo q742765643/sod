@@ -215,7 +215,7 @@ public class ImportData {
         importSpecial();
         importNewData();
         importDataAuthority();*/
-        importOnLineTime();
+        /*mportOnLineTime();
         importDsync();
         importMetadataBackUp();
         importManagerFiled();
@@ -223,19 +223,19 @@ public class ImportData {
         importEleDataDefine();
         importGridAreaDefine();
         importGridEleDecodeDefine();
-        importGridLayerLevel();
+        importGridLayerLevel();*/
 
-        //executeBackUpMove();
+        executeBackUpMove();
 
-        importStorageConfig();
+        //importStorageConfig();
 
         //importPortalUser();
 
 
-        importDataServiceBaseInfo();
-        importGridDecoding();
-        importAreaDefine();
-        importGridEEle();
+        //importDataServiceBaseInfo();
+        //importGridDecoding();
+        //importAreaDefine();
+        //importGridEEle();
     }
 
 
