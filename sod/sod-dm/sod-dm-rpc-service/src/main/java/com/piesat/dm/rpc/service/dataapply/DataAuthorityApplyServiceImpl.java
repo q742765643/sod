@@ -232,7 +232,6 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     @Transactional
     public ResultT updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto) {
-        Map<String, Object> map = new HashMap<String, Object>();
         List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
 
         //获取用户up账户
@@ -283,9 +282,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }
             }
             try{
-                if(dataAuthorityRecordDto.getAuthorize()==1){//授权读
+                if(dataAuthorityRecordDto.getApplyAuthority()==1){//授权读
                     databaseDcl.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
-                }else if(dataAuthorityRecordDto.getAuthorize()==2){//授权写
+                }else if(dataAuthorityRecordDto.getApplyAuthority()==2){//授权写
                     databaseDcl.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
                 }
             }catch (Exception e){
@@ -306,15 +305,12 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     @Transactional
-    public Map<String, Object> updateOneRecordCheck(String userId,DataAuthorityRecordDto dataAuthorityRecordDto) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    public ResultT updateOneRecordCheck(String userId,DataAuthorityRecordDto dataAuthorityRecordDto) {
 
         //获取用户up账户
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(userId, "1");
         if(databaseUserDto == null){
-            map.put("code",false);
-            map.put("msg","授权失败,未找到用户对应数据库账户信息");
-            return map;
+            return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
         }
         String ip = "";
         if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIp())){
@@ -326,86 +322,86 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //用户up账户对应的可用物理库
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
 
+        DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
         if(!databaseIds.contains(dataAuthorityRecordDto.getDatabaseId())){
-            map.put("msg","不具备对物理库：" + dataAuthorityRecordDto.getDatabaseId()+"的访问权限" + "<br/>");
-            map.put("code",false);
-            return map;
+            return ResultT.failed("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"的访问权限" + "<br/>");
         }
 
         //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
         //获取资料对应的表信息
         //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
 
-        DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
-
-        //获取数据库管理账户
-        DatabaseAdministratorDto databaseAdministratorDto = null;
-        Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
-        for(DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList){
-            if(databaseAdministratorDto1.getIsManager()){
-                databaseAdministratorDto = databaseAdministratorDto1;
-                break;
+        DatabaseDcl databaseDcl = null;
+        try {
+            databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+        }catch (Exception e){
+            if (e.getMessage().contains("用户不存在")){
+                return ResultT.failed("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
             }
         }
 
-
-        if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("xugu")){//xugu
-            if(databaseAdministratorDto == null){
-                map.put("msg","物理库：" + dataAuthorityRecordDto.getDatabaseId()+"没有管理员账户" + "<br/>");
-                map.put("code",false);
-                return map;
+        try{
+            if(dataAuthorityRecordDto.getApplyAuthority()==1){//授权读
+                databaseDcl.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+            }else if(dataAuthorityRecordDto.getApplyAuthority()==2){//授权写
+                databaseDcl.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
             }
-            try {
-                Xugu xugu = new Xugu(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-                if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
-                    xugu.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
-                }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//授权写
-                    xugu.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                map.put("msg","表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权失败" + "<br/>");
-                map.put("code",false);
-                return map;
-            }
-
-
-
-        }else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")){//gbase8a
-            if(databaseAdministratorDto == null){
-                map.put("msg","物理库：" + dataAuthorityRecordDto.getDatabaseId()+"没有管理员账户" + "<br/>");
-                map.put("code",false);
-                return map;
-            }
-            try {
-                Gbase8a gbase8a = new Gbase8a(databaseDto.getDatabaseDefine().getDatabaseUrl(),databaseAdministratorDto.getUserName(),databaseAdministratorDto.getPassWord());
-                List<String> ips = new ArrayList<String>();
-                ips.add(ip);
-                if("1".equals(dataAuthorityRecordDto.getAuthorize())){//授权读
-                    gbase8a.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),ips);
-                }else if("2".equals(dataAuthorityRecordDto.getAuthorize())){//授权写
-                    gbase8a.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),databaseUserDto.getDatabaseUpPassword(),ips);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                map.put("code",false);
-                map.put("msg","表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权失败" +"<br/>");
-                return map;
-            }
-
-        }/*else if(databaseDto.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Cassandra")){
-            //Cassandra
-        }*/
+        }catch (Exception e){
+            return ResultT.failed("表"+dataAuthorityRecordDto.getTableName()+"授权失败"+e.getMessage()+"<br/>");
+        }
         mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
-        map.put("msg","表："+dataAuthorityRecordDto.getTableName()+"物理库：" + dataAuthorityRecordDto.getDatabaseId()+"授权成功" + "<br/>");
-        map.put("code",true);
-        return map;
+        return ResultT.success("授权成功");
     }
 
     @Override
-    public Map<String, Object> updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto) {
-        return null;
+    public ResultT updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto) {
+        List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
+
+        //获取用户up账户
+        DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(dataAuthorityApplyDto.getUserId(), "1");
+        if(databaseUserDto == null){
+            return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        boolean flag = true;
+        //循环
+        for(DataAuthorityRecordDto dataAuthorityRecordDto:dataAuthorityRecordList){
+
+            if(dataAuthorityRecordDto.getAuthorize() != null && dataAuthorityRecordDto.getAuthorize().intValue() == 1){//已授权资料，撤销授权
+                //获取物理库信息
+                DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+                DatabaseDcl databaseDcl = null;
+                try {
+                    databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+                }catch (Exception e){
+                    if (e.getMessage().contains("用户不存在")){
+                        buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
+                        flag = false;
+                        continue;
+                    }
+                }
+                try{
+                    if(dataAuthorityRecordDto.getApplyAuthority()==1){//撤销读权限
+                        databaseDcl.deletePermissions("SELECT".split(","),databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+                    }else if(dataAuthorityRecordDto.getApplyAuthority()==2){//撤销写权限
+                        databaseDcl.deletePermissions("SELECT,UPDATE,INSERT,DELETE".split(","),databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
+                    }
+                }catch (Exception e){
+                    buffer.append("表"+dataAuthorityRecordDto.getTableName()+"授权失败"+e.getMessage()+"<br/>");
+                    flag = false;
+                    continue;
+                }
+            }
+
+            mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
+        }
+        if(flag){
+            return  ResultT.success("拒绝成功");
+        }else {
+            return ResultT.failed(buffer.toString());
+        }
     }
 
     @Override

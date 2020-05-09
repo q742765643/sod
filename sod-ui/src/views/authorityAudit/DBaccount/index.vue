@@ -30,7 +30,7 @@
 
     <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="databaseUpId" label="账户ID" width="120px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="databaseUpId" label="账户ID" width="200" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="userName" label="关联用户" width="100px"></el-table-column>
       <el-table-column prop="deptName" label="机构" width="140px"></el-table-column>
       <el-table-column prop="tutorPhone" label="联系方式" width="120px"></el-table-column>
@@ -52,7 +52,7 @@
           <span v-if="scope.row.examineStatus=='1'">审核通过</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" class-name="small-padding fixed-width">
+      <el-table-column label="操作" class-name="small-padding fixed-width" width="160">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.examineStatus=='0'"

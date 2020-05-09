@@ -29,7 +29,7 @@ export function getRecordByApplyId(query) {
   })
 }
 
-// 审核拒绝
+// 审核授权
 export function updateRecordCheck(data1) {
   return request({
     url: baseUrl + '/dm/dataAuthorityApply/updateRecordCheck',
@@ -38,6 +38,14 @@ export function updateRecordCheck(data1) {
   })
 }
 
+// 审核拒绝
+export function updateRecordCheckCancel(data1) {
+  return request({
+    url: baseUrl + '/dm/dataAuthorityApply/updateRecordCheckCancel',
+    method: 'PUT',
+    data: data1
+  })
+}
 // 查询
 export function getReadAuthority(query) {
   return request({
