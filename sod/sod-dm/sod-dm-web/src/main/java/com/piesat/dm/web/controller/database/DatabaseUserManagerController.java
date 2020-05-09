@@ -257,7 +257,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "新增")
-    //@RequiresPermissions("dm:databaseUser:add")
+    @RequiresPermissions("dm:databaseUser:add")
     @PostMapping(value = "/add")
     public ResultT save(@RequestBody DatabaseUserDto databaseUserDto) {
         try {
@@ -273,7 +273,7 @@ public class DatabaseUserManagerController {
 
 
     @ApiOperation(value = "新增Bzi")
-    //@RequiresPermissions("dm:databaseUser:addBzi")
+    @RequiresPermissions("dm:databaseUser:addBzi")
     @PostMapping(value = "/addBzi")
     public ResultT saveBzi(@RequestBody DatabaseUserDto databaseUserDto) {
         try {
@@ -291,7 +291,16 @@ public class DatabaseUserManagerController {
             }else {
                 save = this.databaseUserService.saveDto(databaseUserDto);
             }
-            return ResultT.success(save);
+            //数据库授权
+            ResultT b = this.databaseUserService.empower(save);
+            if (b.getCode() == 200) {
+                databaseUserDto.setExamineStatus("1");
+                DatabaseUserDto update = this.databaseUserService.mergeDto(save);
+                return ResultT.success(update);
+            } else {
+                DatabaseUserDto update = this.databaseUserService.mergeDto(save);
+                return ResultT.failed(b.getMsg());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

@@ -280,8 +280,14 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String dbCreate = "0";
         JSONArray applyData = null;
         String dbIds = "";
-        if (sodData!=null){
+        if (sodData != null) {
             dbIds = sodData.get("dbIds").toString();
+            if (dbIds.startsWith(",")) {
+                dbIds = dbIds.replaceFirst(",", "");
+            }
+            if (dbIds.endsWith(",")) {
+                dbIds = dbIds.substring(0, dbIds.length() - 1);
+            }
             dbCreate = sodData.get("dbCreate").toString();
             applyData = sodData.getJSONArray("applyData");
         }
@@ -321,9 +327,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setApplyPaper(applyPaper);
         userEntity.setApplyTime(new Date());
         userEntity.setAppName(appNames);
-        if (applyData!=null){
+        if (applyData != null) {
             userEntity.setSodData("1");
-        }else {
+        } else {
             userEntity.setSodData("0");
         }
         userEntity.setBizIp(bizIp);
@@ -341,7 +347,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         Date date = null;
         try {
             date = DateUtils.dateTime("yyyy-MM-dd", validTime);
-        }catch (Exception e){
+        } catch (Exception e) {
         }
         userEntity.setValidTime(date);
         userEntity.setWebUserId(webUserid);
@@ -365,7 +371,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             spMap.put("TDB_NAME", remark);
             JSONArray jjj = new JSONArray();
             spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
-            this.databaseSpecialService.addOrUpdate(spMap,null);
+            this.databaseSpecialService.addOrUpdate(spMap, null);
             DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
             daa.setUserId(bizUserid);
             daa.setCreateTime(new Date());
@@ -406,7 +412,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String dbCreate = "0";
         JSONArray applyData = null;
         String dbIds = "";
-        if (sodData!=null){
+        if (sodData != null) {
             dbIds = sodData.get("dbIds").toString();
             dbCreate = sodData.get("dbCreate").toString();
             applyData = sodData.getJSONArray("applyData");
@@ -447,9 +453,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setApplyPaper(applyPaper);
         userEntity.setApplyTime(new Date());
         userEntity.setAppName(appNames);
-        if (applyData!=null){
+        if (applyData != null) {
             userEntity.setSodData("1");
-        }else {
+        } else {
             userEntity.setSodData("0");
         }
         userEntity.setBizIp(bizIp);
@@ -467,7 +473,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         Date date = null;
         try {
             date = DateUtils.dateTime("yyyy-MM-dd", validTime);
-        }catch (Exception e){
+        } catch (Exception e) {
         }
         userEntity.setValidTime(date);
         userEntity.setWebUserId(webUserid);
@@ -509,7 +515,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public ResultT editBase(UserDto user) {
         UserDto userDto = this.selectUserByUserName(user.getUserName());
-        if (userDto==null)return ResultT.failed("用户不存在!");
+        if (userDto == null) return ResultT.failed("用户不存在!");
         user.setId(userDto.getId());
         user.setPassword(null);
         this.saveNotNull(this.userMapstruct.toEntity(user));
