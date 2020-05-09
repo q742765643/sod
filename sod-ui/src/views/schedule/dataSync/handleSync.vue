@@ -372,7 +372,7 @@
           :name="item.name"
         >
           <el-table border :data="item.list" style="width: 100%">
-            <el-table-column type="index" label="序号" min-width="20"></el-table-column>
+            <el-table-column type="index" label="序号" width="50"></el-table-column>
             <el-table-column prop="targetColumn_" label="目标表字段" min-width="100"></el-table-column>
             <el-table-column prop="sourceColumn_" label="源表字段" min-width="100">
               <template slot-scope="scope1">
@@ -591,10 +591,7 @@ export default {
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
-      if (
-        this.msgFormDialog.targetTables &&
-        this.msgFormDialog.targetTables.length == 2
-      ) {
+      if (this.msgFormDialog.targetTable2) {
         this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
@@ -623,15 +620,11 @@ export default {
         obj.columnOper = this.msgFormDialog.columnOper[index];
         this.stableFilterForm.domains.push(obj);
       });
-
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
-      if (
-        this.msgFormDialog.targetTables &&
-        this.msgFormDialog.targetTables.length == 2
-      ) {
-        this.msgFormDialog.targetTable2 = this.msgFormDialog.targetTables[1].targetTableId;
+      if (this.msgFormDialog.targetTable2) {
+        this.addnewtargettable = 1;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
     },

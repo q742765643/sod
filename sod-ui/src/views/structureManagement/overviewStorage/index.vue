@@ -416,6 +416,9 @@ export default {
           this.handleMsgObj.ipAndPort =
             this.handleMsgObj.execIp + ":" + this.handleMsgObj.execPort;
           // 目标表回显
+          if (this.handleMsgObj.targetRelation.length > 1) {
+            this.handleMsgObj.targetTable2 = this.handleMsgObj.targetRelation[1].targetTableId;
+          }
           this.handleMsgObj.targetTable = this.handleMsgObj.targetRelation[0].targetTableId;
           this.handleMsgObj.handleType = "edit";
         });
