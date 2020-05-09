@@ -24,6 +24,7 @@
       </el-col>
     </el-row>
     <el-table
+      border
       :data="tableData"
       stripe
       highlight-current-row
@@ -36,8 +37,8 @@
       <el-table-column prop="dbEleCode" label="字段编码"></el-table-column>
       <el-table-column prop="eleName" label="要素中文名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="eleUnit" label="单位" width="120"></el-table-column>
-      <el-table-column prop="isCodeParam" label="是否有标识代码表"></el-table-column>
-      <el-table-column prop="codeTableId" label="标识代码表"></el-table-column>
+      <el-table-column prop="isCodeParam" label="是否有标识代码表" width="140"></el-table-column>
+      <el-table-column prop="codeTableId" label="标识代码表" width="120"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button

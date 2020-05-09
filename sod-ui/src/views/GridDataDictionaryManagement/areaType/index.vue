@@ -28,6 +28,7 @@
     </el-row>
 
     <el-table
+      border
       v-loading="loading"
       :data="tableData"
       row-key="id"

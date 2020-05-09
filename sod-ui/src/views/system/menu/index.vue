@@ -33,13 +33,14 @@
     </el-form>
 
     <el-table
+      border
       id="menuTable"
       v-loading="loading"
       :data="menuList"
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160px"></el-table-column>
+      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="icon" label="图标" width="100px">
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon" v-if="scope.row.icon" />
@@ -54,7 +55,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" class-name="small-padding fixed-width">
+      <el-table-column label="操作" class-name="small-padding fixed-width" width="200">
         <template slot-scope="scope">
           <el-button
             size="mini"

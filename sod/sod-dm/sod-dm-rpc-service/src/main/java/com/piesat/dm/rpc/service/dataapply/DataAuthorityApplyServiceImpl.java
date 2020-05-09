@@ -281,6 +281,11 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                     continue;
                 }
             }
+            if(!StringUtils.isNotNullString(dataAuthorityRecordDto.getTableName())){
+                buffer.append("表名为空，"+"授权失败"+"<br/>");
+                flag = false;
+                continue;
+            }
             try{
                 if(dataAuthorityRecordDto.getApplyAuthority()==1){//授权读
                     databaseDcl.addPermissions(true,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);

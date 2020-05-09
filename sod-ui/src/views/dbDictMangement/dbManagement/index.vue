@@ -28,6 +28,7 @@
     </el-row>
 
     <el-table
+      border
       class="unChoseAll"
       v-loading="loading"
       :data="tableData"
