@@ -127,6 +127,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    connectVo.setPort(Integer.parseInt(databaseDto.getDatabaseDefine().getDatabasePort()));
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
+                   connectVo.setUrl(databaseDto.getDatabaseDefine().getDatabaseUrl());
                    connectVoMap.put(parentId, connectVo);
                    if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
 
