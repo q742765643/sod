@@ -419,7 +419,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         }
 
         UserEntity userEntity = this.userDao.findByUserName(bizUserid);
-        if (userEntity != null) {
+        if (userEntity == null) {
             return ResultT.failed("业务用户注册id不存在！");
         }
         String password = map.get("password");
