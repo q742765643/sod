@@ -280,17 +280,8 @@ public class UserController {
     @Log(title = "用户管理--业务用户审核", businessType = BusinessType.UPDATE)
     @PostMapping("/editBaseSod")
     public ResultT<String> editBaseSod(HttpServletRequest request,
-                                    @RequestParam(value="bizUserid") String bizUserid,
-                                    @RequestParam(value="checked") String checked) {
-//        String body = null;
-//        try {
-//            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        JSONObject jo = JSONObject.parseObject(body);
-//        String bizUserid = jo.getString("bizUserid");
-//        String checked =  jo.getString("checked");
+                                    @RequestParam String bizUserid,
+                                    @RequestParam String checked) {
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);

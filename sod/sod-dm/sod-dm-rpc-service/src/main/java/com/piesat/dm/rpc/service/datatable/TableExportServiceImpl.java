@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -256,11 +258,16 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                 if(exportType==1){
                     StringBuilder sb = new StringBuilder();
                     for(Map<String,Object> sqlMap : sqlList){
+                        String sqlContent = "";
+                        if(sqlMap.get("TABLE_SQL")!=null){
+                            Clob sqlClob = (Clob) sqlMap.get("TABLE_SQL");
+                            sqlContent = ClobToString(sqlClob);
+                        }
                         String sql = "--"+sqlMap.getOrDefault("DATA_SERVICE_ID","")
                                 +"_"+sqlMap.getOrDefault("DATA_SERVICE_NAME","")
                                 +"_"+sqlMap.getOrDefault("TABLE_NAME","")
                                 +"\n"
-                                +sqlMap.getOrDefault("TABLE_SQL","")
+                                +sqlContent
                                 +"\n\n";
                         sb.append(sql);
                     }
@@ -303,6 +310,26 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
             e.printStackTrace();
         }
         return resultMap;
+    }
+
+    public String ClobToString(Clob clob) throws SQLException, IOException {
+        String ret = "";
+        Reader read= clob.getCharacterStream();
+        BufferedReader br = new BufferedReader(read);
+        String s = br.readLine();
+        StringBuffer sb = new StringBuffer();
+        while (s != null) {
+            sb.append(s);
+            s = br.readLine();
+        }
+        ret = sb.toString();
+        if(br != null){
+            br.close();
+        }
+        if(read != null){
+            read.close();
+        }
+        return ret;
     }
 
     @Override
