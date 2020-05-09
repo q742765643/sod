@@ -244,7 +244,7 @@ export default {
       if (!value) {
         callback(new Error("请输入账户ID"));
       } else if (unstartnumValidation(value)) {
-        callback(new Error("数据库账号不能以数字开头"));
+        callback(new Error("账户ID不能以数字开头"));
       } else if (this.handleObj.databaseUpId == undefined) {
         ifUPExist({ databaseUPId: value }).then(res => {
           if (res.ifExist == "YES") {
@@ -303,7 +303,13 @@ export default {
       myHeaders: { Authorization: token },
       rules: {
         databaseUpId: [
-          { required: true, validator: idValidate, trigger: "blur" }
+          { required: true, validator: idValidate, trigger: "blur" },
+          {
+            min: 1,
+            max: 10,
+            message: "账户ID长度不能超过10个字符",
+            trigger: "blur"
+          }
         ],
 
         databaseUpIp: [
@@ -313,7 +319,13 @@ export default {
           { required: true, message: "请选择数据库", trigger: "change" }
         ],
         databaseUpDesc: [
-          { required: true, message: "请输入用途说明", trigger: "blur" }
+          { required: true, message: "请输入用途说明", trigger: "blur" },
+          {
+            min: 1,
+            max: 50,
+            message: "用途说明长度不能超过50个字符",
+            trigger: "blur"
+          }
         ],
         userId: [
           { required: true, message: "请选择关联用户", trigger: "change" }
@@ -595,8 +607,10 @@ export default {
         this.$refs[formName].validate(valid => {
           if (valid) {
             this.$prompt("请输入拒绝原因", "提示", {
+              inputPattern: /^[\u4e00-\u9fa5]{1,15}$|^[\dA-Za-z_]{1,15}$/,
               confirmButtonText: "确定",
-              cancelButtonText: "取消"
+              cancelButtonText: "取消",
+              inputErrorMessage: "拒绝原因不能超过15个字符"
             })
               .then(({ value }) => {
                 this.auditMethods(value);

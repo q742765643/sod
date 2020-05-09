@@ -79,7 +79,7 @@
         row-key="id"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
@@ -297,7 +297,10 @@ export default {
           }
           this.handleQuery();
         } else {
-          this.msgError(res.msg);
+          this.loading = false;
+          this.$alert(res.msg, "提示", {
+            dangerouslyUseHTMLString: true
+          });
         }
       });
     }

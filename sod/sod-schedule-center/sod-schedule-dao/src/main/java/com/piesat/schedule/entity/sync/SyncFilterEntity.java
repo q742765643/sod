@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "T_SOD_JOB_SYNCFILTER_INFO")
-@DiscriminatorValue("SYNCFILTER")
 public class SyncFilterEntity {
 
     @Id

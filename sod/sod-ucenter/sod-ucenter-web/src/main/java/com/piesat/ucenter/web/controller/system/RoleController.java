@@ -134,6 +134,7 @@ public class RoleController {
      * 获取角色选择框列表
      */
     @GetMapping("/optionselect")
+    @RequiresPermissions("system:role:optionselect")
     public ResultT<List<RoleDto>> optionselect()
     {
         ResultT<List<RoleDto>> resultT=new ResultT<>();

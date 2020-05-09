@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "T_SOD_JOB_SYNCCONFIG_INFO")
-@DiscriminatorValue("SYNCCONFIG")
 public class SyncConfigEntity {
 
 

@@ -52,7 +52,7 @@
           highlight-current-row
           @selection-change="handleTaskSelectionChange"
         >
-          <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
@@ -157,7 +157,7 @@
           ref="multipleTable"
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="index" label="序号" width="40" :index="table_index_log"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
 

@@ -13,7 +13,7 @@
       ref="selectionTable"
       @row-click="handleClickTableRow"
     >
-      <el-table-column type="index"></el-table-column>
+      <el-table-column type="index" label="序号"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="索引名称" prop="indexName"></el-table-column>
       <el-table-column label="索引列" prop="indexColumn"></el-table-column>
@@ -28,7 +28,7 @@
       v-dialogDrag
     >
       <div>
-        <el-form :model="indexForm" label-width="120px" ref="indexForm">
+        <el-form :model="indexForm" label-width="120px" ref="indexFormRef" :rules="indexRules">
           <el-form-item label="索引名称" prop="indexName">
             <el-input v-model="indexForm.indexName" size="small"></el-input>
           </el-form-item>
@@ -90,7 +90,18 @@ export default {
       columnData: [],
       indexTypeOptions: [],
       dialogStatus: { indexDialog: false },
-      indexTitle: "新增索引"
+      indexTitle: "新增索引",
+      indexRules: {
+        indexName: [
+          { required: true, message: "请输入索引名称", trigger: "blur" }
+        ],
+        indexType: [
+          { required: true, message: "请选择索引类型", trigger: "change" }
+        ],
+        indexColumn: [
+          { required: true, message: "请选择索引字段", trigger: "change" }
+        ]
+      }
     };
   },
   methods: {
@@ -99,7 +110,7 @@ export default {
       this.$refs.selectionTable.toggleRowSelection(row);
     },
     cancel() {
-      this.$refs["indexForm"].resetFields();
+      this.$refs["indexFormRef"].resetFields();
       this.dialogStatus.indexDialog = false;
     },
     getIndexTable() {
@@ -155,20 +166,27 @@ export default {
       });
     },
     trueIndex() {
-      this.indexForm.tableId = this.tableInfo.id;
-      this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
-      console.log(this.indexForm);
-      tableIndexSave(this.indexForm).then(response => {
-        if (response.code == 200) {
-          this.$message({ message: "操作成功", type: "success" });
-          this.getIndexTable();
-          this.$refs["indexForm"].resetFields();
-          this.dialogStatus.indexDialog = false;
-        } else {
-          this.$message({
-            type: "error",
-            message: "操作失败"
+      this.$refs["indexFormRef"].validate(valid => {
+        if (valid) {
+          this.indexForm.tableId = this.tableInfo.id;
+          this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
+          console.log(this.indexForm);
+          tableIndexSave(this.indexForm).then(response => {
+            if (response.code == 200) {
+              this.$message({ message: "操作成功", type: "success" });
+              this.getIndexTable();
+              this.$refs["indexForm"].resetFields();
+              this.dialogStatus.indexDialog = false;
+            } else {
+              this.$message({
+                type: "error",
+                message: "操作失败"
+              });
+            }
           });
+        } else {
+          console.log("error submit!!");
+          return false;
         }
       });
     },

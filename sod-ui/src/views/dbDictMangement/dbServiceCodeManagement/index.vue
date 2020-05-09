@@ -30,7 +30,7 @@
       @selection-change="handleSelectionChange"
       style="width: 100%;"
     >
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="userEleCode" label="服务代码" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="dbEleCode" label="字段编码"></el-table-column>

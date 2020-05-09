@@ -225,7 +225,7 @@ export default {
       currentNodeArry: [],
       checkedKeys: [],
       expandedkeys: [],
-      upLoadUrl: '',
+      upLoadUrl: "",
       stepNum: 0,
       ruleForm: {
         name: "",

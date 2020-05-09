@@ -41,10 +41,12 @@ import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityRecordMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.CmadaasApiUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.hibernate.dialect.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -102,6 +104,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public PageBean selectPageList(PageForm<DataAuthorityApplyDto> pageForm) {
+        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
         DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(pageForm.getT());
 
         DataAuthorityApplyDto dataAuthorityApplyDto = pageForm.getT();
@@ -150,7 +153,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                         if (num == dataAuthorityRecordList.size()) {
                             //authorityApply.setAuditStatus("02");
                             //authorityApply = this.saveNotNull(authorityApply);
-                            this.mybatisQueryMapper.updateDataAuthorityApply(authorityApply.getId(),"02");
+                            this.mybatisQueryMapper.updateDataAuthorityApply(authorityApply.getId(),"02",loginUser.getUserName(),new Date());
                         }
                     }
                 }

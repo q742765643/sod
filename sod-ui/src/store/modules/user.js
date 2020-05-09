@@ -85,14 +85,6 @@ const user = {
           const user = res.data.user
           // const avatar = user.avatar == "" ? require("@/assets/image/profile.jpg") : process.env.VUE_APP_UCENTER_API + user.avatar;
           const avatar = user.avatar == "" ? require("@/assets/image/profile.jpg") : process.env.VUE_APP_DM + '/dm/fileUpDown/showImg?filePath=' + user.avatar;
-          /*  console.log(avatar); //地址
-           showImg({
-             filePath: avatar
-           }).then(res => {
-             if (res.code == 200) {
-               avatar = process.env.VUE_APP_DMWLEI + '/dm/fileUpDown/showImg?filePath=' + res.data
-             }
-           }); */
           if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', res.data.roles)
             commit('SET_PERMISSIONS', res.data.permissions)

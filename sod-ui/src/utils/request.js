@@ -94,14 +94,6 @@ service.interceptors.response.use(res => {
     const code = res.data.code;
     const responseURL = res.request.responseURL;
     if (code === 401) {
-      /*  router.beforeEach((to, from, next) => {
-         if (to.path === '/login') {
-           return;
-         } else {
-           
-           // console.log(this.$route.path)
-         }
-       }) */
       MessageBox.confirm(
         '登录状态已过期，您可以继续留在该页面，或者重新登录',
         '系统提示', {
@@ -111,10 +103,10 @@ service.interceptors.response.use(res => {
         }
       ).then(() => {
         localStorage.clear();
-        window.location.href = "http://10.40.79.18:8080/dist/index.html";
-        /* store.dispatch('LogOut').then(() => {
-         location.reload() // 为了重新实例化vue-router对象 避免bug
-         }) */
+        // window.location.href = "http://10.40.79.18:8080/dist/index.html";
+        store.dispatch('LogOut').then(() => {
+          location.reload() // 为了重新实例化vue-router对象 避免bug
+        })
       })
       //console.log(this.$route.path)
     } else if (code == undefined) {

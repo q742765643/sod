@@ -238,7 +238,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "获取注册用户", notes = "获取注册用户")
-    @RequiresPermissions("system:dict:gatAllBiz")
+    @RequiresPermissions("system:user:gatAllBiz")
     @GetMapping("/gatAllBiz")
     public ResultT<PageBean> gatAllBiz(UserDto userDto,
                                        @HtParam(value = "pageNum", defaultValue = "1") int pageNum,

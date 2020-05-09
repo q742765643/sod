@@ -25,7 +25,7 @@
         row-key="id"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
@@ -204,6 +204,7 @@ export default {
       }
     },
     powerMethods(value) {
+      this.loading = true;
       let obj = {};
       obj.userId = this.$store.getters.name;
       obj.dataAuthorityRecordList = [];
@@ -233,7 +234,10 @@ export default {
           }
           this.getList();
         } else {
-          this.msgError(res.msg);
+          this.loading = false;
+          this.$alert(res.msg, "提示", {
+            dangerouslyUseHTMLString: true
+          });
         }
       });
     },

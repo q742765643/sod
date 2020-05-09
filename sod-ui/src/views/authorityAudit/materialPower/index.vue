@@ -51,7 +51,7 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="机构"></el-table-column>
       <el-table-column prop="telephone" label="联系方式"></el-table-column>
