@@ -33,7 +33,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://10.40.17.44:8082`,
+        target: `http://localhost:8082`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_BASE_API]: ""
@@ -41,7 +41,7 @@ module.exports = {
       },
       //ucenter
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.40.17.44:8005`,
+        target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
@@ -49,7 +49,7 @@ module.exports = {
       },
       //schedule
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `http://10.40.17.44:8005`,
+        target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -57,7 +57,7 @@ module.exports = {
       },
       // dm模块
       [process.env.VUE_APP_DM]: {
-        target: `http://10.40.17.44:8005`,
+        target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""
@@ -65,7 +65,7 @@ module.exports = {
       },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
-        target: `http://10.40.17.44:8005`,
+        target: `http://localhost:8005`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYSTEM]: ""
