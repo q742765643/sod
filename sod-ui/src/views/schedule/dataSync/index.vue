@@ -422,13 +422,13 @@ export default {
           if(type == 1){
               //启动
               const url = "http://" + row.execIp + ":" + row.execPort + "/sod_sync/rest/restart/" + row.id;
-              await this.axios.get(url).then(res => {
+              this.axios.get(url).then(res => {
               });
 
           }else{
               //停止
               const url = "http://" + row.execIp + ":" + row.execPort + "/sod_sync/rest/stop/" + row.id;
-              await this.axios.get(url).then(res => {
+              this.axios.get(url).then(res => {
               });
           }
 
