@@ -501,9 +501,6 @@ export default {
         examiner: [
           { required: true, message: "请输入审核人", trigger: "blur" }
         ],
-        examineMaterial: [
-          { required: true, message: "请选择审核材料", trigger: "change" }
-        ],
         databaseIp: [
           { required: true, validator: ipValidate, trigger: "blur" }
         ],
@@ -679,6 +676,13 @@ export default {
         this.$emit("cancelHandle");
       } else {
         console.log(this.msgFormDialog);
+        if (!this.msgFormDialog.examineMaterial) {
+          this.$message({
+            type: "error",
+            message: "请选择审核材料"
+          });
+          return;
+        }
         this.$refs[formName].validate(valid => {
           if (valid) {
             if (this.handleObj.id) {

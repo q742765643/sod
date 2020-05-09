@@ -2,7 +2,7 @@
   <div class="home">
     <section>
       <!-- <div style="height:420px;"></div> -->
-      <el-carousel height="420px" trigger="click">
+      <el-carousel height="420px" trigger="click" :interval="100000">
         <el-carousel-item :key="index" v-for="(item, index) in bannerList">
           <img :src="item.src" @click="bannerGoPage(index)" />
         </el-carousel-item>
@@ -27,8 +27,14 @@
               <div :key="index" class="eventList" v-for="(item, index) in eventList">
                 <i class="el-icon-price-tag"></i>
                 <span class="name">{{ item.name }}</span>，待办
-                <span class="todoNum" @click="goPageUrl(item.name,1)">{{ item.uncheck }}</span>条，已办理
-                <span class="haveTodoNum" @click="goPageUrl(item.name,2)">{{ item.checked }}</span>条
+                <span
+                  class="todoNum"
+                  @click="goPageUrl(item.name,1)"
+                >{{ item.uncheck>99? '99+':item.uncheck}}</span>条，已办理
+                <span
+                  class="haveTodoNum"
+                  @click="goPageUrl(item.name,2)"
+                >{{ item.checked>99? '99+':item.checked }}</span>条
               </div>
             </div>
           </div>
@@ -782,9 +788,9 @@ section {
 .haveTodoNum {
   font-size: 14px;
   padding: 2px;
-  width: 22px;
-  height: 22px;
-  line-height: 22px;
+  width: 26px;
+  height: 26px;
+  line-height: 24px;
   text-align: center;
   border-radius: 50%;
   display: inline-block;
