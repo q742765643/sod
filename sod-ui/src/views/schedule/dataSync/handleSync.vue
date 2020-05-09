@@ -371,7 +371,7 @@
           :label="item.title"
           :name="item.name"
         >
-          <el-table :data="item.list" border style="width: 100%">
+          <el-table border :data="item.list" style="width: 100%">
             <el-table-column type="index" label="序号" min-width="20"></el-table-column>
             <el-table-column prop="targetColumn_" label="目标表字段" min-width="100"></el-table-column>
             <el-table-column prop="sourceColumn_" label="源表字段" min-width="100">
@@ -623,8 +623,7 @@ export default {
         obj.columnOper = this.msgFormDialog.columnOper[index];
         this.stableFilterForm.domains.push(obj);
       });
-      //todo
-      // this.msgFormDialog.targetType = 0;
+
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
@@ -679,11 +678,13 @@ export default {
           tableId: selectSourceTableID
         };
         //如果选择的是键值表的键表  todo
-        if (tableInfo.db_table_type == "K" && !this.handleObj.id) {
-          this.$message({
-            showClose: true,
-            message: "您选择了键值表类型的键表，系统自动匹配值表"
-          });
+        if (tableInfo.db_table_type == "K") {
+          if (!this.handleObj.id) {
+            this.$message({
+              showClose: true,
+              message: "您选择了键值表类型的键表，系统自动匹配值表"
+            });
+          }
           this.msgFormDialog.KandE = "K";
           //先查询建表对应值表的字段信息
           // 过滤出e表的tableID,查出E表的字段信息

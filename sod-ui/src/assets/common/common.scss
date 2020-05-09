@@ -65,27 +65,32 @@ body {
 
 // 表格
 .el-table {
-  font-size: 13px;
+  font-size: 14px;
 
   th,
   td {
     text-align: center;
+    font-size: 14px !important;
   }
 
   td {
-    padding: 4px 2px;
+    padding: 8px 2px;
   }
 
   th {
+    padding-top: 9px;
+    padding-bottom: 9px;
     border-bottom: 1px solid #dfe6ec;
+    background-color: #f1f4f7 !important;
   }
 
   th.gutter {
     display: table-cell !important;
   }
 
-  .el-link {
-    font-size: 13px;
+  .el-link,
+  .el-button--mini {
+    font-size: 14px;
   }
 
   .tableDownload {
@@ -95,6 +100,7 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
+
 }
 
 
@@ -256,12 +262,13 @@ ul {
 
   .sidebar-logo-container {
     width: 90%;
-    margin: auto;
+    padding-left: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .sidebar-title {
-    letter-spacing: 4px;
+    letter-spacing: 1px;
+    font-size: 20px;
   }
 
   .main-container {

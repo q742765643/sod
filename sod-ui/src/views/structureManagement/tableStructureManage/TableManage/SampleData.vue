@@ -1,6 +1,6 @@
 <template>
   <el-main style="padding-top:10px;">
-    <el-table class="tb-edit" highlight-current-row :data="tableData" border style="width: 100%">
+    <el-table border class="tb-edit" highlight-current-row :data="tableData" style="width: 100%">
       <af-table-column
         v-for="(item, index) in cols"
         :key="index"

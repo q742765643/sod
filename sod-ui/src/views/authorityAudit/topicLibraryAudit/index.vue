@@ -24,7 +24,7 @@
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>

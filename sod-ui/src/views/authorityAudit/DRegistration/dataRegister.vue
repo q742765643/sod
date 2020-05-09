@@ -142,7 +142,7 @@
           <el-form-item label="基本字段"></el-form-item>
         </el-col>
       </el-row>
-      <el-table :data="tableData" @selection-change="tableDataChange" border stripe>
+      <el-table border :data="tableData" @selection-change="tableDataChange" stripe>
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column label="字段名称" prop="c_element_code"></el-table-column>
         <el-table-column label="中文名" prop="c_element_namech"></el-table-column>
