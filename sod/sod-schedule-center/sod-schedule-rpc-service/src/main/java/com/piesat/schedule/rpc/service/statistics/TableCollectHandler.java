@@ -63,11 +63,15 @@ public class TableCollectHandler  implements BaseHandler {
 
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
+        getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<DatabaseEntity> databaseEntities = databaseDao.findAll();
         if(databaseEntities != null && databaseEntities.size()>0){
             for(DatabaseEntity databaseEntity : databaseEntities){
                 try {
+                    if(databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1){
+                        continue;
+                    }
                     String databaseType = databaseEntity.getDatabaseDefine().getDatabaseType();
                     String driverClassName = databaseEntity.getDatabaseDefine().getDriverClassName();
                     String databaseUrl = databaseEntity.getDatabaseDefine().getDatabaseUrl();
@@ -108,17 +112,17 @@ public class TableCollectHandler  implements BaseHandler {
                         String day_total = "";
                         String sql = "";
                         Map<String,Object> tableInfo = dataTableList.get(i);
-                        String table_name = String.valueOf(tableInfo.get("TABLE_NAME"));
+                        String table_name = String.valueOf(tableInfo.get("table_name"));
                         msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName()+"_"+databaseEntity.getDatabaseName()+"["+dataTableList.size()+"/"+i+"]"+":"+table_name);
 
                         //判断昨天数据是否已经统计入库
-                        List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("ID")), yesterdayZero);
+                        List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("ID")), yesterdayZeroDate);
                         if(tableDataStatisticsEntities != null && tableDataStatisticsEntities.size()>0){
                             continue;
                         }
 
                         //不统计值表数据
-                        if("E".equals(String.valueOf(tableInfo.get("DB_TABLE_TYPE"))) && String.valueOf(tableInfo.get("STORAGE_TYPE")).contains("K")){
+                        if("E".equals(String.valueOf(tableInfo.get("db_table_type"))) && String.valueOf(tableInfo.get("storage_type")).contains("K")){
                             continue;
                         }
                         String value = tableCollectInfo.get("table_name");
@@ -144,7 +148,7 @@ public class TableCollectHandler  implements BaseHandler {
                                 //最近记录的时间
                                 end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(),table_name,"D_DATETIME");
                                 //获取日增量
-                                day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(),table_name,"D_DATETIME",begin_time,end_time);
+                                day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(),table_name,"D_DATETIME",yesterdayZero,todayZero);
                                 tableCollectInfo.put(table_name,begin_time+","+end_time+","+record_count+","+day_total);
 
                             }catch (Exception e){
@@ -155,7 +159,7 @@ public class TableCollectHandler  implements BaseHandler {
 
                         //入库
                         TableDataStatisticsEntity tableDataStatisticsEntity = new TableDataStatisticsEntity();
-                        tableDataStatisticsEntity.setTableId(String.valueOf(tableInfo.get("ID")));
+                        tableDataStatisticsEntity.setTableId(String.valueOf(tableInfo.get("id")));
                         tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
                         tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
                         tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",yesterdayZero));
@@ -178,8 +182,10 @@ public class TableCollectHandler  implements BaseHandler {
 
     //昨天0点
     String yesterdayZero = "";
+    Date  yesterdayZeroDate = null;
     //今天0点
     String todayZero = "";
+
 
 
     public void getTimeRange() {
@@ -188,7 +194,8 @@ public class TableCollectHandler  implements BaseHandler {
         date.setMinutes(0);
         date.setSeconds(0);
         Long oneday = Long.parseLong(String.valueOf(1000 * 60 * 60 * 24));
-        yesterdayZero = sdf.format(new Date(date.getTime()-oneday));
+        yesterdayZeroDate = new Date(date.getTime()-oneday);
+        yesterdayZero = sdf.format(yesterdayZeroDate);
         todayZero = sdf.format(date);
     }
 }
