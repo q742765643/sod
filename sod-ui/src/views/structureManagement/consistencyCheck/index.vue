@@ -34,15 +34,16 @@
     </el-row>
 
     <el-table
+      border
       v-loading="loading"
       :data="tableData"
       row-key="id"
       @selection-change="handleCurrentChange"
     >
-      <el-table-column type="index" label=" " :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" :index="table_index" width="50"></el-table-column>
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="databaseName" label="专题库名称"></el-table-column>
-      <el-table-column prop="databaseDto.databaseDefine.databaseType" label="数据库类型"></el-table-column>
+      <el-table-column prop="databaseDto.databaseDefine.databaseType" label="数据库类型" width="120"></el-table-column>
       <el-table-column prop="databaseDto.databaseDefine.databaseInstance" label="专题库实例"></el-table-column>
       <el-table-column prop="databaseDto.schemaName" label="专题库模式"></el-table-column>
       <!--<el-table-column prop="database_desc" label="专题库描述"></el-table-column>-->
@@ -96,6 +97,7 @@
     </el-dialog>
 
     <el-dialog
+      border
       :close-on-click-modal="false"
       title="历史报告表"
       :visible.sync="historyDialog"
@@ -111,7 +113,7 @@
         stripe
         @sort-change="sortChange"
       >
-        <el-table-column type="index" label=" " min-width="20" :index="table_index_history"></el-table-column>
+        <el-table-column type="index" label="序号" width="50" :index="table_index_history"></el-table-column>
         <!--<el-table-column prop="database_id" label="检查ID"></el-table-column>-->
         <el-table-column prop="fileName" label="报告名称" min-width="300"></el-table-column>
         <el-table-column prop="createTime" label="生成时间" sortable="custom">
@@ -343,6 +345,7 @@ export default {
     },
     cancelDialog(formName) {
       this.msgFormDialog = false;
+      this.addDataDialog = false;
       this.$refs[formName].resetFields();
     },
     addReportRecord(formName) {

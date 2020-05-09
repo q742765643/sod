@@ -169,8 +169,10 @@ export default {
         dataType: 2,
         sdbId: this.forId
       };
+      this.loading = true;
       getRecordByByUserId({ bizUserId: this.forId }).then(res => {
         if (res.code == 200) {
+          this.loading = false;
           this.tableData = res.data;
           this.stepNum = 2;
         } else {
@@ -230,7 +232,11 @@ export default {
           if (value) {
             this.msgSuccess("拒绝成功");
           } else {
-            this.msgSuccess(res.msg);
+            this.$message({
+              type: "success",
+              dangerouslyUseHTMLString: true,
+              message: "授权成功:" + res.msg
+            });
           }
           this.getList();
         } else {
@@ -238,6 +244,7 @@ export default {
           this.$alert(res.msg, "提示", {
             dangerouslyUseHTMLString: true
           });
+          this.handleQuery();
         }
       });
     },

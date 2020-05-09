@@ -41,6 +41,7 @@
     </el-row>
     <!-- 表格 -->
     <el-table
+      border
       class="tableList"
       v-loading="loading"
       :data="tableData"

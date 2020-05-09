@@ -15,10 +15,10 @@
     <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="CLASS_NAME" label="资料名称"></el-table-column>
-      <el-table-column prop="D_DATA_ID" label="四级编码"></el-table-column>
+      <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
       <el-table-column prop="BEGIN_TIME" label="开始时间" width="120"></el-table-column>
       <el-table-column prop="END_TIME" label="结束时间" width="120" sortable="custom"></el-table-column>
-      <el-table-column prop="RECORD_COUNT" label="数据总量"></el-table-column>
+      <el-table-column prop="RECORD_COUNT" label="数据总量" width="100"></el-table-column>
       <el-table-column prop="IF_STOP_USE" label="是否发布" width="80">
         <template slot-scope="scope">
           <div class="cell" v-if="scope.row.IF_STOP_USE==true">是</div>

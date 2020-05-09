@@ -46,18 +46,19 @@
           </el-col>
         </el-row>
         <el-table
+          border
           v-loading="loading"
           :data="tableData"
           row-key="id"
           highlight-current-row
           @selection-change="handleTaskSelectionChange"
         >
-          <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="storageDirectory" label="存储目录" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column prop="jobCron" label="执行策略" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="jobCron" label="执行策略" width="120" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="isStructure" label="类型" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.isStructure==0">结构</span>
@@ -65,7 +66,7 @@
               <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
             </template>
           </el-table-column>
-          <el-table-column prop="triggerStatus" label="状态">
+          <el-table-column prop="triggerStatus" label="状态" width="80">
             <template slot-scope="scope">
               <el-link
                 icon="el-icon-circle-close"
@@ -81,7 +82,7 @@
               >启动</el-link>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="360px">
+          <el-table-column label="操作" width="400">
             <template slot-scope="scope">
               <el-button
                 type="text"
@@ -167,30 +168,31 @@
           </el-col>
         </el-row>
         <el-table
+          border
           v-loading="loadingHis"
           :data="logTableData"
           highlight-current-row
           ref="multipleTable"
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" label="序号" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" :index="table_index_log"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="storageDirectory" label="存储目录" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
-          <el-table-column width="200px" prop="handleTime" label="运行开始时间">
+          <el-table-column prop="handleTime" label="运行开始时间" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.handleTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="isStructure" label="类型">
+          <el-table-column prop="isStructure" label="类型" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.isStructure==0">结构</span>
               <span v-if="scope.row.isStructure==1">数据</span>
               <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
             </template>
           </el-table-column>
-          <el-table-column label="状态" prop="handleCode" :formatter="statusFormat"></el-table-column>
+          <el-table-column label="状态" prop="handleCode" :formatter="statusFormat" width="80"></el-table-column>
           <el-table-column label="操作" width="240px">
             <template slot-scope="scope">
               <el-button
