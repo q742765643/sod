@@ -244,6 +244,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }
         syncTaskDto.setSourceTable(sourceIds.toString());
         syncTaskDto.setSlaveTables(slaveIds.toString());
+        if(StringUtils.isNotNullString(syncTaskDto.getDiOff()) && "true".equals(syncTaskDto.getDiOff())){
+            syncTaskDto.setDiOff("1");
+        }else{
+            syncTaskDto.setDiOff("0");
+        }
+        if(StringUtils.isNotNullString(syncTaskDto.getDiscardOnDuplicate()) && "true".equals(syncTaskDto.getDiscardOnDuplicate())){
+            syncTaskDto.setDiscardOnDuplicate("1");
+        }else{
+            syncTaskDto.setDiscardOnDuplicate("0");
+        }
 
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
