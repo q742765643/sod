@@ -34,8 +34,8 @@ export function getRecordByByUserId(query) {
 
 export function editBase(data) {
   return request({
-    url: baseUrl + '/system/user/editBase',
-    method: 'post',
-    data: data
+    url: baseUrl + '/system/user/editBaseSod',
+    method: 'get',
+    params: data
   })
 }

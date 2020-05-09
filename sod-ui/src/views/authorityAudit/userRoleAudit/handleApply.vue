@@ -212,13 +212,14 @@ export default {
     powerMethods(value) {
       this.loading = true;
       let obj = {};
-      obj.userId = this.$store.getters.name;
+      debugger
+      obj.userId = this.forId;
       obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};
         cobj.id = element.ID;
         cobj.applyId = element.APPLY_ID;
-        cobj.databaseId = element.DATABASE_ID;
+        cobj.databaseId = element.SPECIAL_ID;
         cobj.applyAuthority = element.APPLY_AUTHORITY;
         if (value) {
           cobj.authorize = 2;
@@ -228,6 +229,7 @@ export default {
 
         cobj.dataClassId = element.DATA_CLASS_ID;
         cobj.cause = value;
+        cobj.tableName = element.TABLE_NAME;
         obj.dataAuthorityRecordList.push(cobj);
       });
       console.log(obj);

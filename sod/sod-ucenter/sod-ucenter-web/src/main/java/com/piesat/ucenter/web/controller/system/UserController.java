@@ -278,10 +278,8 @@ public class UserController {
      */
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理--业务用户审核", businessType = BusinessType.UPDATE)
-    @PostMapping("/editBaseSod")
-    public ResultT<String> editBaseSod(HttpServletRequest request,
-                                    @RequestParam(value="bizUserid") String bizUserid,
-                                    @RequestParam(value="checked") String checked) {
+    @GetMapping("/editBaseSod")
+    public ResultT<String> editBaseSod(String bizUserid, String checked) {
 //        String body = null;
 //        try {
 //            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));

@@ -91,6 +91,7 @@ public class NewdataApplyController {
     public ResultT save(@RequestBody NewdataApplyDto newdataApplyDto) {
         try {
             newdataApplyDto.setExamineStatus(1);
+            newdataApplyDto.setCreateTime(new Date());
             NewdataApplyDto save = this.newdataApplyService.saveDto(newdataApplyDto);
             return ResultT.success(save);
         } catch (Exception e) {
