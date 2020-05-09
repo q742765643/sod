@@ -1288,6 +1288,7 @@
         from t_sod_data_class t start with t.data_class_id in(
         select data_class_id from t_sod_data_logic where database_id=#{databaseId})
         connect by t.data_class_id= prior t.parent_id
+        order by t.data_class_id asc
     </select>
     <select id="getArchive" parameterType="String" resultType="java.util.Map">
         SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM TAB_OMIN_CM_CC_DATUMTYPEHYP A
