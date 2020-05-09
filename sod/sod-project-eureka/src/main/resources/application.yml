@@ -1,5 +1,5 @@
 server:
-  port: 8002
+  port: 18128
 
 spring:
   application:
@@ -17,7 +17,7 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://desktop-2vav0fh:8002/eureka/
+      defaultZone: http://desktop-2vav0fh:18128/eureka/
   server:
     enable-self-preservation: false
 
