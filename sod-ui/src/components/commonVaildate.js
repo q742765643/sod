@@ -63,7 +63,7 @@ export function ipUrlValidation2(str) {
  * 数据库账号不能以数字开头
  */
 export function unstartnumValidation(str) {
-  const reg = /^([0-9][a-zA-Z0-9]*[\u4e00-\u9fa5]*)$/
+  const reg = /^[0-9][a-zA-Z0-9_]/
   return reg.test(str)
 }
 /**
