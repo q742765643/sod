@@ -397,7 +397,7 @@ public class Xugu extends DatabaseDclAbs {
                 // 获取首分区键值，判断是否存在数据，否则偏移至第二个分区
                 sql = "SELECT MIN(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + "<"+parti_val.get(0)+"";
                 rs = stmt.executeQuery(sql);
-                if(rs.next()){
+                if(rs.next() && rs.getString(1) != null){
                     minTime = rs.getString(1);
                 }else{
                     for( int i=0;i<parti_val.size()-1;i++){
@@ -444,7 +444,7 @@ public class Xugu extends DatabaseDclAbs {
             if(parti_val.size() == 0){
                 sql = "SELECT MAX("+timeColumnName+") FROM "+schema+"."+tableName;
                 rs = stmt.executeQuery(sql);
-                if (rs.next()) {
+                if (rs.next() && rs.getString(1) != null) {
                     maxTime = rs.getString(1);
                 }
             }else{
@@ -476,7 +476,7 @@ public class Xugu extends DatabaseDclAbs {
     @Override
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         String num = "";
-        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + "WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + " WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);

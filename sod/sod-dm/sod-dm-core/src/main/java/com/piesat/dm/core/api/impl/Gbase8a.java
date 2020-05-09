@@ -359,7 +359,7 @@ public class Gbase8a extends DatabaseDclAbs {
     @Override
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         String num = "";
-        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + "WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + " WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
