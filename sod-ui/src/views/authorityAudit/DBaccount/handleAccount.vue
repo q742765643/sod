@@ -607,10 +607,13 @@ export default {
         this.$refs[formName].validate(valid => {
           if (valid) {
             this.$prompt("请输入拒绝原因", "提示", {
-              inputPattern: /^[\u4e00-\u9fa5]{1,15}$|^[\dA-Za-z_]{1,15}$/,
+              inputValidator: value => {
+                if (value.trim().length < 1 || value.trim().length > 15) {
+                  return "拒绝原因长度限制1-15个字符";
+                }
+              },
               confirmButtonText: "确定",
-              cancelButtonText: "取消",
-              inputErrorMessage: "拒绝原因不能超过15个字符"
+              cancelButtonText: "取消"
             })
               .then(({ value }) => {
                 this.auditMethods(value);
