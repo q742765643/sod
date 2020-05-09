@@ -48,6 +48,7 @@
       </el-col>
     </el-row>
     <el-table
+      border
       v-loading="loading"
       :data="tableData"
       row-key="id"
@@ -64,7 +65,7 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="100px">
+      <el-table-column label="操作" width="120px">
         <template slot-scope="scope">
           <el-button
             type="text"

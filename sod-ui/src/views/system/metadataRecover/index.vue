@@ -91,24 +91,25 @@
           </el-form-item>
         </el-form>
         <el-table
+          border
           v-loading="loadingHis"
           :data="logTableData"
           highlight-current-row
           ref="multipleTable"
           @selection-change="handleHistorySelectionChange"
         >
-          <el-table-column type="index" label="序号" width="40" :index="table_index_log"></el-table-column>
+          <el-table-column type="index" label="序号" width="50" :index="table_index_log"></el-table-column>
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="taskName" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="storageDirectory" label="恢复文件" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="databaseName" label="数据库"></el-table-column>
-          <el-table-column prop="handleTime" label="运行开始时间">
+          <el-table-column prop="handleTime" label="运行开始时间" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.handleTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="handleCode" label="状态" :formatter="statusFormat"></el-table-column>
-          <el-table-column label="操作">
+          <el-table-column prop="handleCode" label="状态" :formatter="statusFormat" width="80"></el-table-column>
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
               <el-button
                 type="text"

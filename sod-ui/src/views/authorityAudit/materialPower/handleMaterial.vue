@@ -205,6 +205,7 @@ export default {
         if (res.code == 200) {
           this.loading = false;
           this.tableData = res.data;
+          this.AUTHORIZEF_NUM = 0;
           this.AUTHORIZE_NUM = 0;
           this.AUTHORIZEF_NUM0 = 0;
           this.tableData.forEach(element => {

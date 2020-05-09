@@ -107,6 +107,7 @@
     </el-row>
 
     <el-table
+      border
       v-loading="loading"
       :data="backupList"
       row-key="id"
@@ -115,14 +116,14 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
-      <el-table-column label="执行策略" prop="jobCron" :show-overflow-tooltip="true" width="180" />
+      <el-table-column label="执行策略" prop="jobCron" :show-overflow-tooltip="true" width="160" />
       <el-table-column label="状态" prop="triggerStatus" :formatter="statusFormat" width="80" />
       <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="360" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="400" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"

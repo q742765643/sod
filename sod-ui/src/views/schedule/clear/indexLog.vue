@@ -88,6 +88,7 @@
     </el-row>
 
     <el-table
+      border
       v-loading="loading"
       :data="clearLogList"
       row-key="id"
@@ -103,7 +104,7 @@
         :show-overflow-tooltip="true"
       />
       <el-table-column label="状态" prop="handleCode" :formatter="statusFormat" width="80" />
-      <el-table-column label="创建时间" prop="createTime" width="180" sortable="custom">
+      <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
