@@ -238,7 +238,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "获取注册用户", notes = "获取注册用户")
-    @RequiresPermissions("system:user:gatAllBiz")
+    @RequiresPermissions("system:dict:gatAllBiz")
     @GetMapping("/gatAllBiz")
     public ResultT<PageBean> gatAllBiz(UserDto userDto,
                                        @HtParam(value = "pageNum", defaultValue = "1") int pageNum,
@@ -256,7 +256,30 @@ public class UserController {
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/editBase")
-    public ResultT<String> editBase(HttpServletRequest request,
+    public ResultT<String> editBase(HttpServletRequest request) {
+        String body = null;
+        try {
+            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JSONObject jo = JSONObject.parseObject(body);
+        String bizUserid = jo.getString("bizUserid");
+        String checked =  jo.getString("checked");
+        UserDto user = new UserDto();
+        user.setUserName(bizUserid);
+        user.setChecked(checked);
+        ResultT<String> resultT = new ResultT<>();
+        return userService.editBase(user);
+    }
+
+    /**
+     * 修改用户（外部状态）
+     */
+//    @RequiresPermissions("system:user:editBase")
+    @Log(title = "用户管理--业务用户审核", businessType = BusinessType.UPDATE)
+    @PostMapping("/editBaseSod")
+    public ResultT<String> editBaseSod(HttpServletRequest request,
                                     @RequestParam(value="bizUserid") String bizUserid,
                                     @RequestParam(value="checked") String checked) {
 //        String body = null;
