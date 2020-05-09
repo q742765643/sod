@@ -84,9 +84,10 @@
             type="text"
             size="mini"
             icon="el-icon-video-play"
+            @click="updateStatus(scope.row,1)"
             v-if="scope.row.runState=='error'"
           >启动</el-button>
-          <el-button type="text" size="mini" icon="el-icon-video-pause">停止</el-button>
+          <el-button type="text" size="mini" icon="el-icon-video-pause" @click="updateStatus(scope.row,2)">停止</el-button>
           <el-button
             type="text"
             size="mini"
@@ -405,7 +406,40 @@ export default {
         this.handleObj.handleType = type;
         console.log(this.handleObj);
       });
+    },
+
+    updateStatus(row, type) {
+      this.$confirm(
+        '是否确认启动/停止任务',
+        "警告",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(function() {
+          if(type == 1){
+              //启动
+              const url = "http://" + row.execIp + ":" + row.execPort + "/sod_sync/rest/restart/" + row.id;
+              await this.axios.get(url).then(res => {
+              });
+
+          }else{
+              //停止
+              const url = "http://" + row.execIp + ":" + row.execPort + "/sod_sync/rest/stop/" + row.id;
+              await this.axios.get(url).then(res => {
+              });
+          }
+
+        })
+        .then(() => {
+          this.getList();
+        })
+        .catch(function() {});
+
     }
+
   }
 };
 </script>
