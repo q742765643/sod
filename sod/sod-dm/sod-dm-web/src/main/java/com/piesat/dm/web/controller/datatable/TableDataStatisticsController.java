@@ -102,8 +102,8 @@ public class TableDataStatisticsController {
     @GetMapping(value = "/getOnlineTime")
     public ResultT getOnlineTime(String classDataId,String statisticDate) {
         try {
-            this.tableDataStatisticsService.getOnlineTime(classDataId, statisticDate);
-            return ResultT.success();
+            Map<String, Object> onlineTime = this.tableDataStatisticsService.getOnlineTime(classDataId, statisticDate);
+            return ResultT.success(onlineTime);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

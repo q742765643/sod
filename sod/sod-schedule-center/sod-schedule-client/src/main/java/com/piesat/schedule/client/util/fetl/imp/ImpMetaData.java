@@ -1,11 +1,6 @@
 package com.piesat.schedule.client.util.fetl.imp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,12 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.fetl.type.Type;
@@ -42,8 +36,8 @@ public class ImpMetaData{
 	}
 	
 	private List<Integer> columnTypes = new ArrayList<>();
-	private LinkedBlockingQueue<Runnable> task = null;
-	private ThreadPoolExecutor pool = null;
+	//private LinkedBlockingQueue<Runnable> task = null;
+	//private ThreadPoolExecutor pool = null;
 	
 	private int threadNum = 50;
 	private int commitCount = 1000;
@@ -85,16 +79,16 @@ public class ImpMetaData{
 							String[] columns = br.readLine().split("\t");
 							String fileName = file.getParentFile().getPath() + File.separator +  br.readLine();
 							br.readLine();//---end---
-							if(pool == null && task == null){
+							/*if(pool == null && task == null){
 								task = new LinkedBlockingQueue<Runnable>(taskNum);
 								pool = new ThreadPoolExecutor(threadNum, threadNum, 10, TimeUnit.SECONDS, task);
 								pool.allowCoreThreadTimeOut(true);
-							}
+							}*/
 //							impData(con, fileName, tableName.toUpperCase(), columns);
 //							if(database != null && !"null".equalsIgnoreCase(database)) {
 //								url = url.replace("SYSTEM", database);
 //							}
-							impDataReadFile(dataSource.getUrl(), fileName, tableName, columns);
+							impDataReadFile(dataSource.getUrl(), fileName, tableName, columns,sb);
 							continue;
 						}
 						if(line.equalsIgnoreCase("---end foreign key---")){
@@ -216,17 +210,23 @@ public class ImpMetaData{
 						String[] columns = br.readLine().split("\t");
 						String fileName =  file.getParentFile().getPath() + File.separator + br.readLine();
 						br.readLine();//---end---
-						if(pool == null && task == null){
+					/*	if(pool == null && task == null){
 							task = new LinkedBlockingQueue<Runnable>(taskNum);
 							pool = new ThreadPoolExecutor(threadNum, threadNum, 10, TimeUnit.SECONDS, task);
 							pool.allowCoreThreadTimeOut(true);
-						}
+						}*/
 //							impData(con, fileName, tableName, columns);
 //							if(database != null && "null".equalsIgnoreCase("null")) {
 //								url = url.replace("SYSTEM", database);
 //							}
-						log.info("恢复表{}数据",tableName);
-						impDataReadFile(parentId, fileName, tableName, columns);
+						log.info("开始恢复表{}数据",tableName);
+						try {
+							impDataReadFile(parentId, fileName, tableName, columns,sb);
+						} catch (Exception e) {
+							log.info(OwnException.get(e));
+						}
+						log.info("结束恢复表{}数据",tableName);
+
 					}
 				}
 				for(String foreign : foreigns){
@@ -237,7 +237,7 @@ public class ImpMetaData{
 					}
 				}
 			}
-			if(pool != null){
+		/*	if(pool != null){
 				pool.shutdown();
 			}
 			while(true){
@@ -245,7 +245,7 @@ public class ImpMetaData{
 				if(pool.isTerminated()){
 					break;
 				}
-			}
+			}*/
 		} catch (Exception e){
 			sb.append(e.getMessage());
 		} finally {
@@ -257,41 +257,75 @@ public class ImpMetaData{
 		return sb.toString();
  	}
 	
-	public void impDataReadFile(String parentId, String fileName, String tableName, String[] columns) throws Exception{
+	public void impDataReadFile(String parentId, String fileName, String tableName, String[] columns,StringBuffer sb) throws Exception{
+		LinkedBlockingQueue task = new LinkedBlockingQueue<Runnable>(taskNum);
+		ThreadPoolExecutor pool = new ThreadPoolExecutor(threadNum, threadNum, 10, TimeUnit.SECONDS, task);
 		List<Integer> types = new ArrayList<>();
 		String restorSql = connetSqlString2(columns, tableName,types);
 		DataInputStream dis = null;
 		File file = new File(fileName);
-		if(file.exists()){
-			List<byte[]> oneData = new ArrayList<byte[]>();
-			dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file),64*1024));
-			while(dis.available() !=0 ){
-				byte[] data = new byte[dis.readInt()];
-				dis.read(data);
-				oneData.add(data);
-				if(oneData.size() % taskRows == 0){
-					while(task.size() >= taskNum-5){
-						try {
-							Thread.sleep(3*1000);
-						} catch (InterruptedException e) {
-							continue;
-						}
-					}
-				    pool.execute(new AnalysisData(parentId,commitCount,oneData,restorSql,types));
-				    oneData = new ArrayList<byte[]>();
+		List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+		String ex="";
+		try {
+			if(file.exists()){
+                List<byte[]> oneData = new ArrayList<byte[]>();
+                dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file),64*1024));
+                while(dis.available() !=0 ){
+                    byte[] data = new byte[dis.readInt()];
+                    dis.read(data);
+                    oneData.add(data);
+                    if(oneData.size() % 1000 == 0){
+                    /*	while(task.size() >= taskNum-5){
+                            try {
+                                Thread.sleep(3*1000);
+                            } catch (InterruptedException e) {
+                                continue;
+                            }
+                        }*/
+                        Future<Boolean> future = pool.submit(
+                            new AnalysisData(parentId,tableName,commitCount,oneData,restorSql,types)
+                        );
+                        results.add(future);
+                        oneData = new ArrayList<byte[]>();
+                    }
+                    if(results.size()%50==0){
+                       for(int i=0;i<results.size();i++) {
+						   boolean flag1 = results.get(i).get();
+						   results.clear();
+						   results=new ArrayList<>();
+					   }
+                    }
+                }
+                if(!oneData.isEmpty()){
+                /*	while(task.size() >= taskNum-5){
+                        try {
+                            Thread.sleep(3*1000);
+                        } catch (InterruptedException e) {
+                            continue;
+                        }
+                    }*/
+                    Future<Boolean> future = pool.submit(
+                            new AnalysisData(parentId,tableName,commitCount,oneData,restorSql,types)
+                    );
+                    results.add(future);
+                }
+                for(int i=0;i<results.size();i++){
+					results.get(i).get();
 				}
-			}
-			if(!oneData.isEmpty()){
-				while(task.size() >= taskNum-5){
-					try {
-						Thread.sleep(3*1000);
-					} catch (InterruptedException e) {
-						continue;
-					}
+                results.clear();
+            }
+		} catch (Exception e) {
+			ex=e.getMessage();
+		} finally {
+			try {
+				if(null!=dis){
+					dis.close();
 				}
-			    pool.execute(new AnalysisData(parentId,commitCount,oneData,restorSql,types));
+				pool.shutdownNow();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			dis.close();
+			sb.append(ex);
 		}
 	}
 	

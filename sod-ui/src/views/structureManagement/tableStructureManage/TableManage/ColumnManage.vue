@@ -123,8 +123,8 @@
                 <el-form-item label="中文名称">
                   <el-input v-model="searchMatedata.c_datum_level" placeholder="中文名称" size="small"></el-input>
                 </el-form-item>
-                <el-form-item label="服务名称">
-                  <el-input v-model="searchMatedata.c_datumtype" placeholder="服务名称" size="small"></el-input>
+                <el-form-item label="服务代码">
+                  <el-input v-model="searchMatedata.c_datumtype" placeholder="服务代码" size="small"></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button
@@ -153,7 +153,7 @@
               <el-table-column label="特征值" prop="c_charactervalue"></el-table-column>
               <el-table-column label="状态" prop="c_status" width="60px"></el-table-column>
               <el-table-column label="要素说明" prop="c_notes" width="70px"></el-table-column>
-              <el-table-column label="服务名称" prop="c_short_name"></el-table-column>
+              <el-table-column label="服务代码" prop="c_short_name"></el-table-column>
               <el-table-column label="是否质控" prop="c_is_control" width="80px">
                 <template slot-scope="scope">
                   <el-switch
@@ -183,8 +183,8 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
-                    <el-form-item label="字段名称">
-                      <el-input v-model="searchMmdata.dbEleCode" placeholder="字段名称" size="small"></el-input>
+                    <el-form-item label="字段编码">
+                      <el-input v-model="searchMmdata.dbEleCode" placeholder="字段编码" size="small"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
@@ -193,8 +193,8 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
-                    <el-form-item label="服务名称">
-                      <el-input v-model="searchMmdata.userEleCode" placeholder="服务名称" size="small"></el-input>
+                    <el-form-item label="服务代码">
+                      <el-input v-model="searchMmdata.userEleCode" placeholder="服务代码" size="small"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="2">
@@ -219,8 +219,8 @@
               @selection-change="handleSelectionMmdata"
             >
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="字段名称" prop="dbEleCode"></el-table-column>
-              <el-table-column label="服务名称" prop="userEleCode"></el-table-column>
+              <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
+              <el-table-column label="服务代码" prop="userEleCode"></el-table-column>
               <el-table-column label="中文名称" prop="dbEleName"></el-table-column>
               <el-table-column label="字段短名" prop="eleName"></el-table-column>
               <el-table-column label="类型" prop="type"></el-table-column>
@@ -267,13 +267,13 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="字段名称" prop="celementCode">
-            <el-input placeholder="字段名称" v-model="columnEditData.celementCode" size="small"></el-input>
+          <el-form-item label="字段编码" prop="celementCode">
+            <el-input placeholder="字段编码" v-model="columnEditData.celementCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="服务名称" prop="userEleCode">
-            <el-input placeholder="服务名称" v-model="columnEditData.userEleCode" size="small"></el-input>
+          <el-form-item label="服务代码" prop="userEleCode">
+            <el-input placeholder="服务代码" v-model="columnEditData.userEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -408,7 +408,7 @@
                     <span>{{'序号:'}}{{ element.serialNumber }}</span>
                   </el-col>
                   <el-col :span="10">
-                    <span>{{'字段名称:'}}{{ element.celementCode }}</span>
+                    <span>{{'字段编码:'}}{{ element.celementCode }}</span>
                   </el-col>
                   <el-col :span="10">
                     <span>{{'中文简称:'}}{{ element.eleName }}</span>
@@ -481,7 +481,7 @@ export default {
       if (rule.field == "dbEleCode") {
         msg = "公共元数据字段";
       } else if (rule.field == "celementCode") {
-        msg = "字段名称";
+        msg = "字段编码";
       }
       if (value === "") {
         callback(new Error("请输入" + msg));
@@ -1095,7 +1095,6 @@ export default {
       });
       console.log(dataJson);
       let flag = false;
-
       dataJson.forEach(element => {
         element.id = "";
         element.tableId = this.tableInfo.id;
@@ -1109,12 +1108,14 @@ export default {
           !element.serialNumber
         ) {
           flag = true;
+          errorCode.push(element);
         }
       });
       if (flag) {
         this.$message({
           type: "error",
-          message: "表格内容不正确"
+          message:
+            "公共元数据字段,字段编码,服务代码,中文简称,数据类型,要素单位,序号都不能为空"
         });
         return;
       }

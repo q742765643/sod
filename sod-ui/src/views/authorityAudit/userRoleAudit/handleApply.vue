@@ -82,6 +82,7 @@
       </span>
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
+      <el-button type="danger" v-if="stepNum==0" @click="finishStep">拒绝</el-button>
       <el-button type="primary" v-if="stepNum!=3" @click="nextStep">下一步</el-button>
       <el-button type="primary" v-if="stepNum==3" @click="finishStep">完成</el-button>
     </div>
@@ -270,7 +271,13 @@ export default {
       this.multipleSelection = val;
     },
     finishStep() {
-      editBase({ bizUserid: this.forId, checked: 1 }).then(res => {
+      let status;
+      if (this.stepNum == 0) {
+        status = 2;
+      } else {
+        status = 1;
+      }
+      editBase({ bizUserid: this.forId, checked: status }).then(res => {
         if (res.code == 200) {
           this.msgSuccess("操作成功");
           this.$emit("closeStep");

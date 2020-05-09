@@ -171,7 +171,7 @@ export default {
       this.handleQuery();
     },
     addCell() {
-      this.dialogTitle = "新增数据库账户审核";
+      this.dialogTitle = "新增数据库账户";
       this.handleObj = {};
       this.handleDialog = true;
     },

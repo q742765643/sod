@@ -1,5 +1,9 @@
 package com.piesat.schedule.client.util.fetl.util;
 
+import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
+import com.piesat.schedule.client.vo.ConnectVo;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -13,10 +17,13 @@ import java.sql.Statement;
 
 public class FetlUtil
 {
-	public static Connection get_conn(String url) {
+	public static Connection get_conn(String parentId) {
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection(url);
+			Class.forName("com.xugu.cloudjdbc.Driver");
+			DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+			ConnectVo connectVo=dynamicDataSource.getConnectVo(parentId);
+			conn = DriverManager.getConnection(connectVo.getUrl()+"&char_set=utf8",connectVo.getUserName(),connectVo.getPassWord());
 			return conn;
 		} catch (Exception e) {
 			e.printStackTrace();

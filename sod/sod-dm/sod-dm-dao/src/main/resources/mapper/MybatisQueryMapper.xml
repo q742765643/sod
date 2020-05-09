@@ -201,7 +201,7 @@
                 left join T_SOD_DATABASE_DEFINE dd on d.database_define_id = dd.id
         where
             c.DATA_CLASS_ID = #{classDataId} and a.statistic_date >= #{statisticDate} and
-            dd.id in ('STDB','HADB','FIDB');
+            dd.id in ('STDB','HADB','FIDB') order by a.statistic_date desc;
     </select>
 
     <select id="getTableInfoByClassId" resultType="java.util.Map">
