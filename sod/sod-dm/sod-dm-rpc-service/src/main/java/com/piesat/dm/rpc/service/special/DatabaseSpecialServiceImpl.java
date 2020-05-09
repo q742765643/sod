@@ -338,7 +338,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 databaseDao.deleteByTdbId(sdbId);
                 //需要授权的数据库列表
                 List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList = databaseDto.getDatabaseSpecialAuthorityList();
-                for(int i=0; i<databaseSpecialAuthorityList.size();i++){
+                for(int i=0; i<databaseSpecialAuthorityList.size();i++) {
                     DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
                     //保存申请列表
                     DatabaseSpecialAuthorityEntity databaseSpecialAuthorityEntity = databaseSpecialAuthorityMapper.toEntity(databaseSpecialAuthorityDto);
@@ -346,7 +346,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     //需要处理的数据库ID
                     String databaseId = databaseSpecialAuthorityDto.getDatabaseId();
                     DatabaseDefineEntity databaseDefineEntity = databaseDefineDao.findById(databaseId).get();
-                    if(databaseDefineEntity!=null){
+                    if (databaseDefineEntity != null) {
                         DatabaseEntity databaseEntity = new DatabaseEntity();
                         databaseEntity.setDatabaseClassify("专题库");
                         databaseEntity.setDatabaseName(databaseDto.getDatabaseName());
@@ -356,7 +356,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         databaseEntity.setDatabaseDefine(databaseDefineEntity);
                         databaseDao.save(databaseEntity);
                     }
-                    //授权
+                }
+                //授权
+                for(int i=0; i<databaseSpecialAuthorityList.size();i++){
+                    DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
+                    String databaseId = databaseSpecialAuthorityDto.getDatabaseId();
+                    DatabaseDefineEntity databaseDefineEntity = databaseDefineDao.findById(databaseId).get();
                     try{
                         //申请创建模式
                         Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
@@ -387,7 +392,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                                 try{
                                     databaseVO.createSchemas(schemaName,databaseUpId,null,dataAuthor,creatAuthor,dropAuthor,null);
                                 }catch (Exception e){
-                                    e.printStackTrace();
                                     logger.error("[E4006] 同名用户或模式已存在 ");
                                 }
                             }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())){
@@ -395,7 +399,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                                 try{
                                     databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
                                 }catch (Exception e){
-                                    e.printStackTrace();
                                     logger.error("[E4006] 同名用户或模式已存在 ");
                                 }
                             }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())){
@@ -405,7 +408,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                                 try{
                                     databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
                                 }catch (Exception e){
-                                    e.printStackTrace();
                                     logger.error("[E4006] 同名用户或模式已存在 ");
                                 }
                             }else{
