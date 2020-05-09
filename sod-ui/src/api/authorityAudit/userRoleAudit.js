@@ -32,10 +32,10 @@ export function getRecordByByUserId(query) {
 // 点完成
 
 
-export function editBase(query) {
+export function editBase(data) {
   return request({
     url: baseUrl + '/system/user/editBaseSod',
     method: 'post',
-    params: query
+    data: data
   })
 }

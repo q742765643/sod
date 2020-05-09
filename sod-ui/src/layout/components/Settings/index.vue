@@ -17,7 +17,7 @@
       </div>
 
       <div class="drawer-item">
-        <span>固定 Header</span>
+        <span>固定 页头</span>
         <el-switch v-model="fixedHeader" class="drawer-switch" />
       </div>
 
