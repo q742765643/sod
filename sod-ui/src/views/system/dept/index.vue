@@ -40,6 +40,7 @@
     </el-form>
 
     <el-table
+      border
       v-loading="loading"
       :data="deptList"
       row-key="id"

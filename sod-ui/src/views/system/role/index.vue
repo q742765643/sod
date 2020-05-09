@@ -90,6 +90,7 @@
     </el-row>
 
     <el-table
+      border
       v-loading="loading"
       :data="roleList"
       row-key="id"

@@ -123,13 +123,14 @@
         </el-row>
 
         <el-table
+          border
           v-loading="loading"
           :data="userList"
           row-key="id"
           @selection-change="handleSelectionChange"
           @sort-change="sortChange"
         >
-          <el-table-column type="selection" width="40" />
+          <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label="用户名称" prop="userName" />
           <el-table-column label="用户昵称" prop="nickName" />
           <el-table-column label="部门" prop="dept.deptName" />
@@ -149,7 +150,7 @@
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="180" class-name="small-padding fixed-width">
+          <el-table-column label="操作" width="200" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
                 size="mini"

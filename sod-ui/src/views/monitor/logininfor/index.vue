@@ -86,6 +86,7 @@
     </el-row>
 
     <el-table
+      border
       v-loading="loading"
       :data="list"
       row-key="id"
