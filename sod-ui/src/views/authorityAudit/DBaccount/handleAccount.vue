@@ -244,7 +244,7 @@ export default {
       if (!value) {
         callback(new Error("请输入账户ID"));
       } else if (unstartnumValidation(value)) {
-        callback(new Error("数据库账号不能以数字开头"));
+        callback(new Error("账户ID不能以数字开头"));
       } else if (this.handleObj.databaseUpId == undefined) {
         ifUPExist({ databaseUPId: value }).then(res => {
           if (res.ifExist == "YES") {

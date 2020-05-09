@@ -39,7 +39,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="applyDatabaseName" label="可用数据库"></el-table-column>
+      <el-table-column prop="applyDatabaseName" label="可用数据库" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="examineStatus" label="状态" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='0'">待审核</span>
