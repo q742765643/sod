@@ -214,7 +214,7 @@ public class ImportData {
         importPortalAuz();
         importSpecial();
         importNewData();
-        importDataAuthority();*/
+        importDataAuthority();
         importOnLineTime();
         importDsync();
         importMetadataBackUp();
@@ -234,7 +234,7 @@ public class ImportData {
 
         importDataServiceBaseInfo();
         importGridDecoding();
-        importAreaDefine();
+        importAreaDefine();*/
         importGridEEle();
     }
 
@@ -2478,26 +2478,59 @@ public class ImportData {
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
             String data_service_id = toString(m.get("DATA_SERVICE_ID"));
-            String area_id = toString(m.get("AREA_ID"));
-            String db_fcst_ele = toString(m.get("DB_FCST_ELE"));
-            String ele_service_id = toString(m.get("ELE_SERVICE_ID"));
-            String level_type = toString(m.get("LEVEL_TYPE"));
-            String grib_version = toString(m.get("GRIB_VERSION"));
-            String ele_name_cn = toString(m.get("ELE_NAME_CN"));
-            String ele_hours = toString(m.get("ELE_HOURS"));
-            String time_unit = toString(m.get("TIME_UNIT"));
-            String level_list = toString(m.get("LEVEL_LIST"));
-            String time_list = toString(m.get("TIME_LIST"));
-            String grid_pixel = toString(m.get("GRID_PIXEL"));
-            String insert_time = toString(m.get("INSERT_TIME"));
-            String count_time = toString(m.get("COUNT_TIME"));
-            String ele_long_name = toString(m.get("ELE_LONG_NAME"));
-            String field_type = toString(m.get("FIELD_TYPE"));
-            String genprocess_type = toString(m.get("GENPROCESS_TYPE"));
-            String s_number = toString(m.get("S_NUMBER"));
-            String level_unit = toString(m.get("LEVEL_UNIT"));
-            String scale_divisor = toString(m.get("SCALE_DIVISOR"));
-            String ele_unit = toString(m.get("ELE_UNIT"));
+            String area_id = toString(m.get("AREA_ID"));//区域代码
+            String db_fcst_ele = toString(m.get("DB_FCST_ELE"));//格点要素存储代码
+            String ele_service_id = toString(m.get("ELE_SERVICE_ID"));//要素服务代码
+            String level_type = toString(m.get("LEVEL_TYPE"));//层次类型
+            String grib_version = toString(m.get("GRIB_VERSION"));//grib版本
+            String ele_name_cn = toString(m.get("ELE_NAME_CN"));//要素中文名
+            String ele_hours = toString(m.get("ELE_HOURS"));//资料时次
+            String time_unit = toString(m.get("TIME_UNIT"));//时效单位
+            //String level_list = toString(m.get("LEVEL_LIST"));//层次列表
+
+            String level_list = "";
+            Clob clob = (Clob) m.get("LEVEL_LIST");
+            if(clob != null){
+                try {
+                    char[] mapperChar = new char[(int) clob.length()];
+                    int read = clob.getCharacterStream().read(mapperChar);
+                    if (read > 0) {
+                        level_list = String.valueOf(mapperChar);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            //String time_list = toString(m.get("TIME_LIST"));//预报时效列表
+
+            String time_list = "";
+            Clob clob1 = (Clob) m.get("TIME_LIST");
+            if(clob1 != null){
+                try {
+                    char[] mapperChar = new char[(int) clob1.length()];
+                    int read = clob1.getCharacterStream().read(mapperChar);
+                    if (read > 0) {
+                        time_list = String.valueOf(mapperChar);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+
+            String grid_pixel = toString(m.get("GRID_PIXEL"));//空间分辨率
+            String insert_time = toString(m.get("INSERT_TIME"));//插入时间
+            String count_time = toString(m.get("COUNT_TIME"));//统计时间
+            String ele_long_name = toString(m.get("ELE_LONG_NAME"));//要素长名
+            String field_type = toString(m.get("FIELD_TYPE"));//场类型
+            String genprocess_type = toString(m.get("GENPROCESS_TYPE"));//加工过程类型
+            String s_number = toString(m.get("S_NUMBER"));//序号
+            String level_unit = toString(m.get("LEVEL_UNIT"));//层次单位
+            String scale_divisor = toString(m.get("SCALE_DIVISOR"));//层次转换因子
+            String ele_unit = toString(m.get("ELE_UNIT"));//要素单位
 
             DataServerConfigEntity d = new DataServerConfigEntity();
             d.setAreaId(area_id);
@@ -2508,14 +2541,22 @@ public class ImportData {
             d.setEleNameCn(ele_name_cn);
             d.setEleServiceId(ele_service_id);
             d.setEleUnit(ele_unit);
-            d.setFieldType(Integer.valueOf(field_type));
-            d.setGribVersion(Integer.valueOf(grib_version));
+            if(StringUtils.isNotEmpty(field_type)){
+                d.setFieldType(Integer.valueOf(field_type));
+            }
+            if(StringUtils.isNotEmpty(grib_version)){
+                d.setGribVersion(Integer.valueOf(grib_version));
+            }
             d.setGridPixel(grid_pixel);
             d.setLevelList(level_list);
             d.setLevelType(Integer.valueOf(level_type));
             d.setLevelUnit(level_unit);
-            d.setNum(Integer.valueOf(s_number));
-            d.setProcessType(Integer.valueOf(genprocess_type));
+            if(StringUtils.isNotEmpty(s_number)){
+                d.setNum(Integer.valueOf(s_number));
+            }
+            if(StringUtils.isNotEmpty(genprocess_type)){
+                d.setProcessType(Integer.valueOf(genprocess_type));
+            }
             d.setScaleDivisor(scale_divisor);
             d.setTimeList(time_list);
             d.setCreateTime(new Date());

@@ -56,7 +56,7 @@ public class DataServerConfigEntity extends BaseEntity {
     private String timeUnit;
 
     //层次列表
-    @Column(name = "level_list", length = 255)
+    @Column(name="level_list", columnDefinition="TEXT")
     private String levelList;
 
     //要素单位
@@ -64,7 +64,7 @@ public class DataServerConfigEntity extends BaseEntity {
     private String eleUnit;
 
     //预报时效列表
-    @Column(name = "time_list", length = 255)
+    @Column(name = "time_list", columnDefinition="TEXT")
     private String timeList;
 
     //空间分辨率
