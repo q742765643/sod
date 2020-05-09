@@ -99,7 +99,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="场类型" prop="field_type">
-            <el-input placeholder="场类型" v-model="msgFormDialog.field_type"></el-input>
+            <el-input-number v-model="msgFormDialog.field_type" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">

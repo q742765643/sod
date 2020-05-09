@@ -550,7 +550,13 @@
         update t_sod_data_authority_apply
         <set>
             <if test="auditStatus != null and auditStatus  != ''">
-                audit_status = #{auditStatus}
+                audit_status = #{auditStatus},
+            </if>
+            <if test="examiner != null and examiner  != ''">
+                examiner = #{examiner},
+            </if>
+            <if test="examineTime != null">
+                examine_time = #{examineTime},
             </if>
         </set>
         where id = #{id}

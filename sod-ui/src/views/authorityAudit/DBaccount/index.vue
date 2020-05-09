@@ -29,7 +29,7 @@
     </el-form>
 
     <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" width="50" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="databaseUpId" label="账户ID" width="120px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="userName" label="关联用户" width="100px"></el-table-column>
       <el-table-column prop="deptName" label="机构" width="140px"></el-table-column>
@@ -81,6 +81,7 @@
       @pagination="getList"
     />
     <el-dialog
+      :before-close="handleDialogClose"
       :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="handleDialog"

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container deptTemplate">
     <el-form :inline="true" class="searchBox">
       <el-form-item label="部门名称">
         <el-input
@@ -328,8 +328,18 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.searchBox {
-  margin-bottom: 24px;
+<style lang="scss" >
+.deptTemplate {
+  .searchBox {
+    margin-bottom: 24px;
+  }
+  .el-table {
+    th:first-child,
+    th:nth-child(5),
+    td:first-child,
+    td:last-child {
+      text-align: left;
+    }
+  }
 }
 </style>

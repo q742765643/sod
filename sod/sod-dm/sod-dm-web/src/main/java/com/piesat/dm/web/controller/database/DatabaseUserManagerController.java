@@ -10,12 +10,14 @@ import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jdk.nashorn.internal.runtime.logging.Logger;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -301,6 +303,7 @@ public class DatabaseUserManagerController {
     @RequiresPermissions("dm:databaseUser:update")
     @PostMapping(value = "/update")
     public ResultT update(@RequestBody DatabaseUserDto databaseUserDto) {
+        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
         try {
             //审核通过，给数据库授权
             if (databaseUserDto.getExamineStatus().equals("1")) {
@@ -308,6 +311,8 @@ public class DatabaseUserManagerController {
                 ResultT b = this.databaseUserService.empower(databaseUserDto);
                 if (b.getCode() == 200) {
                     databaseUserDto.setExamineStatus("1");
+                    databaseUserDto.setExamineTime(new Date());
+                    databaseUserDto.setExaminer(loginUser.getUserName());
                     DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
                     return ResultT.success(update);
                 } else {
@@ -317,6 +322,8 @@ public class DatabaseUserManagerController {
             }
             //审核不通过
             databaseUserDto.setExamineStatus("2");
+            databaseUserDto.setExamineTime(new Date());
+            databaseUserDto.setExaminer(loginUser.getUserName());
             DatabaseUserDto update = this.databaseUserService.mergeDto(databaseUserDto);
             return ResultT.success(update);
         } catch (Exception e) {

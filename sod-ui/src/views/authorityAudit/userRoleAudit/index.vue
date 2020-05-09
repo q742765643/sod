@@ -32,7 +32,7 @@
       @sort-change="sortChange"
       @current-change="handleCurrentChange"
     >
-      <el-table-column type="index" width="40" :index="table_index"></el-table-column>
+      <el-table-column type="index" label="序号" width="40" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名称"></el-table-column>
       <el-table-column prop="deptName" label="机构"></el-table-column>
       <el-table-column prop="phonenumber" label="联系方式"></el-table-column>

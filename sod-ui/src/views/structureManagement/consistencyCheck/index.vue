@@ -73,7 +73,7 @@
       v-dialogDrag
     >
       <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog">
-        <el-form-item label="数据库选择:">
+        <el-form-item label="数据库选择:" prop="databaseId">
           <el-select
             style="width:80%;"
             v-model="msgFormDialog.databaseId"
@@ -91,7 +91,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="addReportRecord('ruleForm')">确 定</el-button>
-        <el-button @click="addDataDialog= false">取 消</el-button>
+        <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -111,7 +111,7 @@
         stripe
         @sort-change="sortChange"
       >
-        <el-table-column type="index" min-width="20" label=" " :index="table_index_history"></el-table-column>
+        <el-table-column type="index" label=" " min-width="20" :index="table_index_history"></el-table-column>
         <!--<el-table-column prop="database_id" label="检查ID"></el-table-column>-->
         <el-table-column prop="fileName" label="报告名称" min-width="300"></el-table-column>
         <el-table-column prop="createTime" label="生成时间" sortable="custom">
@@ -191,8 +191,8 @@ export default {
         }
       },
       rules: {
-        taskName: [
-          { required: true, message: "请输入任务名称", trigger: "change" }
+        databaseId: [
+          { required: true, message: "请选择数据库", trigger: "change" }
         ]
       }
     };
@@ -309,23 +309,41 @@ export default {
         return;
       }
       let ids = [];
+      let databaseNames = [];
       this.currentRow.forEach(element => {
         ids.push(element.id);
+        databaseNames.push(element.databaseName);
       });
-      deleteByIds(ids.join(",")).then(response => {
-        if (response.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
-          });
-          this.handleQuery();
-        } else {
-          this.$message({
-            type: "error",
-            message: "删除失败"
-          });
+      this.$confirm(
+        "确认要删除专题库" + databaseNames.join(",") + "吗?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         }
-      });
+      )
+        .then(() => {
+          deleteByIds(ids.join(",")).then(response => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功"
+              });
+              this.handleQuery();
+            } else {
+              this.$message({
+                type: "error",
+                message: "删除失败"
+              });
+            }
+          });
+        })
+        .catch(() => {});
+    },
+    cancelDialog(formName) {
+      this.msgFormDialog = false;
+      this.$refs[formName].resetFields();
     },
     addReportRecord(formName) {
       this.$refs[formName].validate(valid => {
@@ -339,6 +357,7 @@ export default {
               this.$emit("resetQuery");
               this.handleQuery();
               this.addDataDialog = false;
+              this.$refs[formName].resetFields();
             } else {
               this.$message({
                 type: "error",

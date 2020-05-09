@@ -28,7 +28,7 @@
       stripe
       :default-sort="{prop: 'database_name', order: 'ascending'}"
     >
-      <el-table-column type="index" min-width="20" label=" " :index="table_index"></el-table-column>
+      <el-table-column type="index" label=" " min-width="20" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="userRealname" label="真实姓名"></el-table-column>
