@@ -499,6 +499,46 @@
         d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
         (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name
+        type_name,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name,ee.id database_id
+        from T_SOD_DATA_CLASS a
+        left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
+        left join T_SOD_DATA_LOGIC b on a.data_class_id = b.data_class_id
+        left join T_SOD_DATA_TABLE c on c.class_logic_id = b.id
+        left join T_SOD_DATABASE e on b.database_id = e.id
+        left join T_SOD_DATABASE_DEFINE ee on e.database_define_id = ee.id ) dd
+        on (d.data_class_id = dd.data_class_id and d.database_id = dd.database_id)
+        <where>
+            <if test="map.applyId != null and map.applyId  != ''">
+                d.apply_id = #{map.applyId}
+            </if>
+            <if test="map.typeName != null and map.typeName  != ''">
+                AND type_name like '%${map.typeName}%'
+            </if>
+            <if test="map.className != null and map.className  != ''">
+                AND class_name like '%${map.className}%'
+            </if>
+            <if test="map.tableName != null and map.tableName  != ''">
+                AND table_name like '%${map.tableName}%'
+            </if>
+            <if test="map.databaseName != null and map.databaseName  != ''">
+                AND database_name like '%${map.databaseName}%'
+            </if>
+            <if test="map.specialDatabaseName != null and map.specialDatabaseName  != ''">
+                AND special_database_name like '%${map.specialDatabaseName}%'
+            </if>
+            <if test="map.applyAuthority != null and map.applyAuthority  != ''">
+                AND apply_authority = #{map.applyAuthority}
+            </if>
+            <if test="map.authorize != null and map.authorize  != ''">
+                AND authorize = #{map.authorize}
+            </if>
+        </where>
+    </select>
+    <select id="getRecordByApplyId_bak" resultType="java.util.Map" parameterType="java.util.Map">
+        select distinct
+        d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
+        from t_sod_data_authority_record d left join
+        (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name
         type_name,b.database_id,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name
         from T_SOD_DATA_CLASS a
         left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
