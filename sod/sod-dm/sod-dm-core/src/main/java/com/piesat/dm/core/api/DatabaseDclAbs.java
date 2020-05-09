@@ -96,7 +96,7 @@ public abstract class DatabaseDclAbs implements DatabaseDcl {
             while (rs.next()) {
                 Map<String,Object> rowData = new HashMap<String,Object>();
                 for (int i = 1; i <= column.size(); i++) {
-                    rowData.put(column.get(i-1), rs.getObject(i));
+                    rowData.put(column.get(i-1), rs.getObject(i)+"");
                 }
                 list.add(rowData);
             }
