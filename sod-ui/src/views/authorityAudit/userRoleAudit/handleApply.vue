@@ -101,7 +101,10 @@ import {
   getRecordByByUserId,
   editBase
 } from "@/api/authorityAudit/userRoleAudit";
-import { updateRecordCheck } from "@/api/authorityAudit/materialPower/index";
+import {
+  updateRecordCheck,
+  updateRecordCheckCancel
+} from "@/api/authorityAudit/materialPower/index";
 export default {
   name: "handleApply",
   props: {
@@ -227,26 +230,41 @@ export default {
         obj.dataAuthorityRecordList.push(cobj);
       });
       console.log(obj);
-      updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
-        if (res.code == 200) {
-          if (value) {
-            this.msgSuccess("拒绝成功");
+      if (value) {
+        updateRecordCheckCancel(JSON.parse(JSON.stringify(obj))).then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              dangerouslyUseHTMLString: true,
+              message: "拒绝成功:" + res.msg
+            });
+            this.getList();
           } else {
+            this.loading = false;
+            this.$alert(res.msg, "提示", {
+              dangerouslyUseHTMLString: true
+            });
+            this.getList();
+          }
+        });
+      } else {
+        updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
+          if (res.code == 200) {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
               message: "授权成功:" + res.msg
             });
+            this.getList();
+          } else {
+            this.loading = false;
+            this.$alert(res.msg, "提示", {
+              dangerouslyUseHTMLString: true
+            });
+            this.getList();
           }
-          this.getList();
-        } else {
-          this.loading = false;
-          this.$alert(res.msg, "提示", {
-            dangerouslyUseHTMLString: true
-          });
-          this.handleQuery();
-        }
-      });
+        });
+      }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
