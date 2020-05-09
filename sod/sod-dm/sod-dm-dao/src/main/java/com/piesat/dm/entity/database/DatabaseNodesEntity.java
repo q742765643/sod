@@ -24,14 +24,14 @@ public class DatabaseNodesEntity extends BaseEntity {
      * 数据库id
      * database_id
      */
-    @Column(name = "database_id", nullable = false,columnDefinition = "varchar(225) default ''")
+    @Column(name = "database_id", columnDefinition = "varchar(225) default ''")
     private String databaseId;
 
     /**
      * 节点ip
      * database_node
      */
-    @Column(name = "database_node",columnDefinition = "varchar(225) default ''")
+    @Column(name = "database_node", columnDefinition = "varchar(225) default ''")
     private String databaseNode;
 
     /**

@@ -1,5 +1,5 @@
 server:
-  port: 8005
+  port: 28028
   servlet:
     context-path: /
   tomcat:
@@ -18,7 +18,7 @@ jasypt:
     password: HT95279527
 grpc:
   server:
-    port: 8006
+    port: 18028
   client:
     schedule-client-server:
       enableKeepAlive: true
@@ -44,7 +44,7 @@ spring:
     #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
     #username: ENC(YxpGRv4xpm1043WVImWDSw==)
     #password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
-    url: jdbc:xugu://10.40.17.34:5138/USR_SOD1?char_set=utf8
+    url: jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8
     username: USR_SOD
     password: Pnmic_qwe123
     type: com.alibaba.druid.pool.DruidDataSource
@@ -83,7 +83,7 @@ spring:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
-  callSettersOnNulls:  true
+  callSettersOnNulls: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #分页插件
@@ -100,7 +100,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.40.17.44:8002/eureka/
+      defaultZone: http://10.40.17.44:18128/eureka/
 
 DITASKADDURL: http://10.20.67.109/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
 DITASKDELURL: http://10.20.67.109/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
