@@ -256,16 +256,18 @@ public class UserController {
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/editBase")
-    public ResultT<String> editBase(HttpServletRequest request) {
-        String body = null;
-        try {
-            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JSONObject jo = JSONObject.parseObject(body);
-        String bizUserid = jo.getString("bizUserid");
-        String checked =  jo.getString("checked");
+    public ResultT<String> editBase(HttpServletRequest request,
+                                    @RequestParam(value="bizUserid") String bizUserid,
+                                    @RequestParam(value="checked") String checked) {
+//        String body = null;
+//        try {
+//            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        JSONObject jo = JSONObject.parseObject(body);
+//        String bizUserid = jo.getString("bizUserid");
+//        String checked =  jo.getString("checked");
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);
