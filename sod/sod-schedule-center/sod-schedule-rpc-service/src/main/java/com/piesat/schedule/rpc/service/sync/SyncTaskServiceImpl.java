@@ -254,6 +254,9 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }else{
             syncTaskDto.setDiscardOnDuplicate("0");
         }
+        if(syncTaskDto.getBeginTime() != null){
+            syncTaskDto.setLastSuccessTime(syncTaskDto.getBeginTime());
+        }
 
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
