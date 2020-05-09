@@ -2474,7 +2474,7 @@ public class ImportData {
 
 
     public void importGridEEle() {
-        String sql = "select * from dmin_grid_ele_define";
+        String sql = "select * from usr_sod2.dmin_grid_ele_define";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
             String data_service_id = toString(m.get("DATA_SERVICE_ID"));
@@ -2541,6 +2541,7 @@ public class ImportData {
             d.setEleNameCn(ele_name_cn);
             d.setEleServiceId(ele_service_id);
             d.setEleUnit(ele_unit);
+            d.setTimeUnit(time_unit);
             if(StringUtils.isNotEmpty(field_type)){
                 d.setFieldType(Integer.valueOf(field_type));
             }

@@ -108,7 +108,7 @@
     >
       <el-table-column type="index" label="序号" width="45" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="45"></el-table-column>
-      <el-table-column prop="areaId" label="区域代码1"></el-table-column>
+      <el-table-column prop="areaId" label="区域代码"></el-table-column>
       <el-table-column prop="dbEleName" label="要素存储短名"></el-table-column>
       <el-table-column prop="eleServiceId" label="要素服务代码"></el-table-column>
       <el-table-column prop="eleNameCn" label="要素中文名"></el-table-column>

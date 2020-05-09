@@ -30,9 +30,9 @@ public class CodeDOM {
     /**
      * 数据连接相关
      */
-    private static final String URL = "jdbc:xugu://10.40.17.34:5138/BABJ_SMDB";
-    private static final String USERNAME = "USR_SOD";
-    private static final String PASSWORD = "Pnmic_qwe123";
+    private static final String URL = "jdbc:xugu://10.40.17.34:5138/USR_SOD1";
+    private static final String USERNAME = "usr_manager";
+    private static final String PASSWORD = "manager_123";
     private static final String DRIVERCLASSNAME = "com.xugu.cloudjdbc.Driver";
     /**
      * 表名
