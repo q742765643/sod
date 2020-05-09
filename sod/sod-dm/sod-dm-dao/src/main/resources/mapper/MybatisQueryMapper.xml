@@ -496,10 +496,10 @@
     </select>
     <select id="getRecordByApplyId" resultType="java.util.Map" parameterType="java.util.Map">
         select distinct
-        d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
+        d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name,dd.special_id
         from t_sod_data_authority_record d left join
         (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name
-        type_name,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name,ee.id database_id
+        type_name,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name,ee.id database_id,e.id special_id
         from T_SOD_DATA_CLASS a
         left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
         left join T_SOD_DATA_LOGIC b on a.data_class_id = b.data_class_id

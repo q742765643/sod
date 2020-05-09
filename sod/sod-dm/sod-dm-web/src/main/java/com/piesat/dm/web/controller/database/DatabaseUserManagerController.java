@@ -294,7 +294,7 @@ public class DatabaseUserManagerController {
             //数据库授权
             ResultT b = this.databaseUserService.empower(save);
             if (b.getCode() == 200) {
-                databaseUserDto.setExamineStatus("1");
+                save.setExamineStatus("1");
                 DatabaseUserDto update = this.databaseUserService.mergeDto(save);
                 return ResultT.success(update);
             } else {
