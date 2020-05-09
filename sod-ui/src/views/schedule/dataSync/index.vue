@@ -48,7 +48,7 @@
         <el-button type="primary" icon="el-icon-refresh" size="small">刷新</el-button>
       </el-col>
     </el-row>
-    <el-table v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label=" " min-width="15"></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
       <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
@@ -67,18 +67,18 @@
       <el-table-column
         :show-overflow-tooltip="true"
         prop="sourceDatabaseName"
-        width="120px"
+        width="160"
         label="源库"
       ></el-table-column>
       <el-table-column prop="execIp" width="120px" label="执行主机"></el-table-column>
-      <el-table-column prop="execPort" width="120px" label="执行端口"></el-table-column>
+      <el-table-column prop="execPort" width="80" label="执行端口"></el-table-column>
       <el-table-column prop="updateTime" label="更新时间" width="160px" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
-      <el-table-column label="操作" min-width="400">
+      <el-table-column label="操作" width="460">
         <template slot-scope="scope">
           <el-button
             type="text"

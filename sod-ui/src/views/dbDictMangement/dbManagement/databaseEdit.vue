@@ -223,7 +223,7 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="专题列表" name="four" v-if="handleMsgObj.id">
-        <el-table :data="physicsSpecialList" border stripe style="width: 100%;">
+        <el-table border :data="physicsSpecialList" stripe style="width: 100%;">
           <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column prop="databaseName" label="专题名"></el-table-column>
           <el-table-column prop="schemaName" label="专题标识"></el-table-column>

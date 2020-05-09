@@ -28,7 +28,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableData" row-key="id">
+    <el-table border v-loading="loading" :data="tableData" row-key="id">
       <af-table-column prop="CLASS_NAME" label="资料名称">
         <template slot-scope="scope">
           <span>{{scope.row.CLASS_NAME}}</span>

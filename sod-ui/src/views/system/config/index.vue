@@ -90,7 +90,12 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="configList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" />
       <el-table-column label="参数主键" prop="configId" />
       <el-table-column label="参数名称" prop="configName" :show-overflow-tooltip="true" />

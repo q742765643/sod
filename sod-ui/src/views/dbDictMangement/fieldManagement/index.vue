@@ -67,7 +67,7 @@
             <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" @selection-change="handleSelectionChange">
+        <el-table border :data="tableData" @selection-change="handleSelectionChange">
           <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label="关键字" prop="keyCol"></el-table-column>

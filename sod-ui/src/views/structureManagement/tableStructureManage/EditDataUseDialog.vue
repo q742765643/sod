@@ -1,7 +1,7 @@
 <template>
   <section class="editDataUseDialog">
     <div class="materialCon selScrollBar">
-      <el-table :data="tableData" border class="selScrollBar">
+      <el-table border :data="tableData" class="selScrollBar">
         <el-table-column label="数据用途选择" prop="logicName">
           <template slot-scope="scope">
             <el-checkbox

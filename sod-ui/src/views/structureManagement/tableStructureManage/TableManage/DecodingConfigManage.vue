@@ -11,7 +11,7 @@
       <el-button type="primary" icon="el-icon-edit" size="small" @click="editConfig">编辑</el-button>
       <el-button type="primary" icon="el-icon-delete" size="small" @click="deleteConfig">删除</el-button>
     </el-button-group>
-    <el-table :data="tableData" stripe @selection-change="res=>selData=res">
+    <el-table border :data="tableData" stripe @selection-change="res=>selData=res">
       <el-table-column type="index" label="序号" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="处理编码" prop="dataDpcId"></el-table-column>
@@ -51,7 +51,7 @@
             <el-button type="primary" size="small" @click="searchOptConfig(1)">查询</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="optData" @selection-change="handleSelectionChange" ref="choseTable">
+        <el-table border :data="optData" @selection-change="handleSelectionChange" ref="choseTable">
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column label="短名" prop="eleCodeShort"></el-table-column>
           <el-table-column label="科目" prop="subjectId"></el-table-column>
