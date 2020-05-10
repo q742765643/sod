@@ -171,7 +171,7 @@ export default {
       this.defaultChecked = [];
       checkedTree.forEach(element => {
         this.treeJson.forEach(t => {
-          if (element.nodeKey == t.nodeKey) {
+          if (element.nodeKey == t.nodeKey&&element.isParent==false) {
             this.defaultChecked.push(element.nodeKey);
           }
         });
