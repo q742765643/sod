@@ -479,7 +479,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
                             row.put(fieldName, time);
                             sdf.setLenient(false);
                         } catch (Exception e) {
-                            row.put(fieldName, value);
+                            row.put(fieldName, null);
                         }
                     } else {
                         row.put(fieldName,value);
