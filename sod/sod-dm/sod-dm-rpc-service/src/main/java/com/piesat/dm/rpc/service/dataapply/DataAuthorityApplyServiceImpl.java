@@ -46,6 +46,7 @@ import com.piesat.util.CmadaasApiUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.hibernate.dialect.Database;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -570,7 +571,19 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
      */
 	@Override
 	public List<Map<String, Object>> getApplyDataInfo(String userId) throws Exception {
-		List<Map<String,Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
+	    //获取userId的可用物理库
+        DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(userId, "1");
+        List<Map<String,Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
+        if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
+            return  null;
+        }
+        List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
+        for(int i=result.size()-1;i>-1;i--){
+            Map<String, Object> map = result.get(i);
+            if(!databaseIds.contains((String)map.get("DATABASEID"))){
+                result.remove(map);
+            }
+        }
 		return result;
 	}
 

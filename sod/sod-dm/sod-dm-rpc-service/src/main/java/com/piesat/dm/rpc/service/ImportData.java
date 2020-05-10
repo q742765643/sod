@@ -225,7 +225,6 @@ public class ImportData {
         importGridEleDecodeDefine();
         importGridLayerLevel();
 
-        //executeBackUpMove();
 
         importStorageConfig();
 
@@ -235,7 +234,9 @@ public class ImportData {
         importDataServiceBaseInfo();
         importGridDecoding();
         importAreaDefine();*/
-        importGridEEle();
+        //importGridEEle();
+        executeBackUpMove();
+
     }
 
 

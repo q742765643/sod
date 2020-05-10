@@ -1,5 +1,5 @@
 server:
-  port: 1238
+  port: 8058
   servlet:
       context-path: /
 tomcat:
@@ -11,7 +11,7 @@ tomcat:
 
 grpc:
   server:
-    port: 6007
+    port: 18058
   client:
     schedule-server:
       enableKeepAlive: true
@@ -37,7 +37,7 @@ spring:
       max-request-size: 1000000000
   datasource:
       driver-class-name: com.xugu.cloudjdbc.Driver
-      url: jdbc:xugu://10.40.17.34:5138/USR_SOD1?char_set=utf8
+      url: jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8
       username: USR_SOD
       password: Pnmic_qwe123
       type: com.alibaba.druid.pool.DruidDataSource
@@ -92,7 +92,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-       defaultZone: http://10.40.17.44:8002/eureka/
+       defaultZone: http://10.40.17.44:28328/eureka/
 
 gbaseserver:
   ip: 10.40.17.36
