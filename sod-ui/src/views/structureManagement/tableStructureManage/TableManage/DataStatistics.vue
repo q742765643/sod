@@ -86,7 +86,7 @@ export default {
           this.searchParams.endTime = parseTime(res.data.endTime);
           this.searchParams.beginTime = parseTime(res.data.beginTime);
         });
-        return;
+        //return;
       }
       let obj = {};
       obj.dataClassId = this.rowData.DATA_CLASS_ID;
