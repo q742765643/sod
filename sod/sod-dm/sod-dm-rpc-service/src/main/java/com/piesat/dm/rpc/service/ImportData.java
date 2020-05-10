@@ -235,7 +235,7 @@ public class ImportData {
         importGridDecoding();
         importAreaDefine();*/
         //importGridEEle();
-        executeBackUpMove();
+        //executeBackUpMove();
 
     }
 
@@ -2528,9 +2528,10 @@ public class ImportData {
             String ele_long_name = toString(m.get("ELE_LONG_NAME"));//要素长名
             String field_type = toString(m.get("FIELD_TYPE"));//场类型
             String genprocess_type = toString(m.get("GENPROCESS_TYPE"));//加工过程类型
-            String s_number = toString(m.get("S_NUMBER"));//序号
+            String s_number = toString(m.get("s_number"));//序号
             String level_unit = toString(m.get("LEVEL_UNIT"));//层次单位
-            String scale_divisor = toString(m.get("SCALE_DIVISOR"));//层次转换因子
+            String scale_divisor = toString(m.get("scale_divisor"));//层次转换因子
+            System.out.println(scale_divisor);
             String ele_unit = toString(m.get("ELE_UNIT"));//要素单位
 
             DataServerConfigEntity d = new DataServerConfigEntity();
