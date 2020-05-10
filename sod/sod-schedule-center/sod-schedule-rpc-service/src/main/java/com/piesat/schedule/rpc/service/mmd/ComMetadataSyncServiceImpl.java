@@ -343,7 +343,12 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 				}
 				if(StringUtil.isEmpty(result)) return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值为空");
 
-				JSONObject obj = JSON.parseObject(result);
+				JSONObject obj = new JSONObject();
+				try {
+					obj = JSON.parseObject(result);
+				}catch (Exception e){
+					return ResultT.failed("同步任务【"+ce.getTaskName()+"】的接口url【"+url+"】的返回值异常,返回值为:"+result);
+				}
 
 				if(StringUtil.isEmpty(ce.getApiDataKey())) return ResultT.failed("请配置同步任务【"+ce.getTaskName()+"】的接口关键字");
 				JSONArray arr = obj.getJSONArray(ce.getApiDataKey());
