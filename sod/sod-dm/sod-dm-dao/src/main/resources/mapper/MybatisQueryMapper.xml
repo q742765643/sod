@@ -1226,7 +1226,7 @@
     <!-- 查询用户可申请资料 -->
     <select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
         select
-        t1.data_class_id as "dataClassId",
+        t1.data_class_id as "dataClassId",t4.id as "databaseId",
         t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】' as "dataName" ,
         t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl"
         from
@@ -1238,7 +1238,7 @@
             where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
         </if>
         group by
-        t1.data_class_id,
+        t1.data_class_id,t4.id,
         t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
         t3.schema_name,t3.id,t1.is_access
         order by
