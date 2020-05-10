@@ -88,6 +88,7 @@ public class DataTableController {
                 dataTableDto.setCreateTime(new Date());
                 dataTableDto.setDataServiceId(dataClassDto.getDataClassId());
                 dataTableDto.setDbTableType("E");
+                dataTableDto.setUserId(newdataApplyDto.getUserId());
                 dataTableDto.setNameCn(dataClassDto.getClassName());
                 dataTableDto.setDataServiceName(dataClassDto.getMetaDataName());
                 dataTableDto.setTableName(newdataApplyDto.getTableName());
