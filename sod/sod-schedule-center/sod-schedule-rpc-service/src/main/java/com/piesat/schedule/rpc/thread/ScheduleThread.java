@@ -139,7 +139,7 @@ public class  ScheduleThread {
             if (nowTime > jobInfo.getTriggerNextTime() + 3600000*12) {//PRE_READ_MS
                 log.info(">>>>>>>>>>> job, schedule misfire, jobId = {}" , typedTuple.getValue());
                 refreshNextValidTime(jobInfo, new Date());
-            } else if (nowTime > jobInfo.getTriggerNextTime()) {
+            } else if (nowTime >=jobInfo.getTriggerNextTime()) {
                 log.info(">>>>>>>>>>> job, schedule push, jobId {}" ,typedTuple.getValue());
                 this.trigger(jobInfo);
                 refreshNextValidTime(jobInfo, new Date());
@@ -150,7 +150,7 @@ public class  ScheduleThread {
 
                     refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
                 }
-            } else {
+            } else if(nowTime<jobInfo.getTriggerNextTime()+PRE_READ_MS){
                 int ringSecond = (int) ((jobInfo.getTriggerNextTime() / 1000) % 60);
 
                 pushTimeRing(ringSecond, jobInfo);
