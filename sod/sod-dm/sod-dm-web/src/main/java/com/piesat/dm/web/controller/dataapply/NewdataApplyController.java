@@ -182,14 +182,14 @@ public class NewdataApplyController {
      *
      * @return
      */
-    @GetMapping("/queryDatabaseDetail")
+    /*@GetMapping("/queryDatabaseDetail")
     @ApiOperation(value = "获取全部物理库和专题库", notes = "获取全部物理库和专题库")
     public ResultT<List<Map<String, Object>>> queryDatabaseDetail() {
         ResultT<List<Map<String, Object>>> resultT = new ResultT<>();
         List<Map<String, Object>> databaseNames = databaseService.getDatabaseName();
         resultT.setData(databaseNames);
         return resultT;
-    }
+    }*/
 
     @PostMapping(value = "/updateStatus")
 //    @RequiresPermissions("dm:newdataApply:updateStatus")
@@ -230,7 +230,7 @@ public class NewdataApplyController {
      *
      * @return
      */
-    @ApiOperation(value = "查询公共元数据资料分类树")
+    /*@ApiOperation(value = "查询公共元数据资料分类树")
     @GetMapping(value = "/getTree")
     public ResultT getTree() {
         try {
@@ -240,7 +240,7 @@ public class NewdataApplyController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
-    }
+    }*/
 
     @GetMapping("/getDataGroup")
     @ApiOperation(value = "查询父节点目录", notes = "查询父节点目录")
@@ -288,24 +288,9 @@ public class NewdataApplyController {
         return ResultT.success(listBYIn);
     }
 
-    @ApiOperation(value="保存申请资料配置接口",notes="保存申请资料配置接口")
+    /*@ApiOperation(value="保存申请资料配置接口",notes="保存申请资料配置接口")
     @PostMapping(value="/addGroup")
     public ResultT<String> addGroup(@RequestBody DataClassDto dataClassDto, HttpServletRequest request) {
-       /* DataClassEntity
-                access_control--isAccess
-                class_name
-                d_data_id
-                data_class_id
-                if_stop_use
-                meta_data_name
-                meta_data_stor_type
-                parent_class_id
-                serial_no
-                use_base_info
-        DataLogicEntity
-                logic_id
-                database_id
-                storage_type*/
         NewdataApplyDto newdataApplyDto = new NewdataApplyDto();
         newdataApplyDto.setId(request.getParameter("applyId"));
         newdataApplyDto.setDDataId(request.getParameter("dDataId"));
@@ -322,29 +307,11 @@ public class NewdataApplyController {
             newdataApplyDto.getDataLogicDtoList().add(dataLogicDto);
         }
         return newdataApplyService.addGroup(dataClassDto, newdataApplyDto);
-    }
+    }*/
 
-    @ApiOperation(value="更新申请资料配置接口",notes="更新申请资料配置接口")
+    /*@ApiOperation(value="更新申请资料配置接口",notes="更新申请资料配置接口")
     @PostMapping(value="/updateGroup")
     public ResultT<String> updateGroup(@RequestBody DataClassDto dataClassDto, HttpServletRequest request) {
-       /* DataClassEntity
-                access_control--isAccess
-                class_name
-                d_data_id
-                data_class_id
-                if_stop_use
-                meta_data_name
-                meta_data_stor_type
-                parent_class_id
-                serial_no
-                use_base_info
-        DataLogicEntity
-                logic_id
-                database_id
-                storage_type
-         old_data_class_id
-        */
-
         NewdataApplyDto newdataApplyDto = new NewdataApplyDto();
         newdataApplyDto.setId(request.getParameter("applyId"));
         newdataApplyDto.setDDataId(request.getParameter("dDataId"));
@@ -363,41 +330,39 @@ public class NewdataApplyController {
 
         String  old_data_class_id = request.getParameter("old_data_class_id");
         return newdataApplyService.updateGroup(dataClassDto, newdataApplyDto, old_data_class_id);
-    }
+    }*/
 
 
-    @GetMapping("/getDbDataById/{id}")
+    /*@GetMapping("/getDbDataById/{id}")
     @ApiOperation(value = "根据物理库id获取物理库信息", notes = "根据物理库id获取物理库信息")
     public  ResultT<DatabaseDefineDto> getDbDataById(@PathVariable String id){
         DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
         return ResultT.success(databaseDefineDto);
-    }
+    }*/
 
 
     /**
      * 一个表应该对应多个classLogic？
-     * @param dataTableDto
-     * @param request
      * @return
      */
-    @ApiOperation(value="更新或添加数据表接口",notes="更新或添加数据表接口")
+    /*@ApiOperation(value="更新或添加数据表接口",notes="更新或添加数据表接口")
     @PostMapping(value="/addOrUpdateDataTable")
     public ResultT<String> addOrUpdateDataTable(@RequestBody DataTableDto dataTableDto, HttpServletRequest request){
        return newdataApplyService.addOrUpdateDataTable(dataTableDto);
-    }
+    }*/
 
     //addDataStructure
-    @ApiOperation(value="添加表结构接口",notes="添加表结构接口")
+    /*@ApiOperation(value="添加表结构接口",notes="添加表结构接口")
     @PostMapping("/addDataStructure")
     public ResultT<String> addDataStructure(@RequestBody TableColumnDto tableColumnDto) {
         return this.newdataApplyService.addDataStructure(tableColumnDto);
-    }
+    }*/
 
-    @ApiOperation(value="修改表结构接口",notes="添加表结构接口")
+    /*@ApiOperation(value="修改表结构接口",notes="添加表结构接口")
     @PostMapping("/updateDataStructure")
     public ResultT<String> updateDataStructure(@RequestBody TableColumnDto tableColumnDto) {
         return this.newdataApplyService.updateDataStructure(tableColumnDto);
-    }
+    }*/
 
     /*@ApiOperation(value="根据物理库id获取表信息",notes="根据物理库id获取表信息")
     @PostMapping("getTableByPhysicsId/{databaseId}")
@@ -429,10 +394,9 @@ public class NewdataApplyController {
     /**
      * 外键可以对应多个datalogic,
      * 不同的物理库，相同的编码和存储类型，他们的表结构和外键是一样的，分库分表键不一定一样？
-     * @param dataLogicDto
      * @return
      */
-    @ApiOperation(value="根据存储编码、逻辑库、存储类型获取键值表的外键",notes="根据存储编码、物理库获取键值表的外键")
+    /*@ApiOperation(value="根据存储编码、逻辑库、存储类型获取键值表的外键",notes="根据存储编码、物理库获取键值表的外键")
     @PostMapping("/getForeignKey")
     public ResultT<List<Map<String,Object>>> getForeignKey(@RequestBody DataLogicDto dataLogicDto){
         List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
@@ -453,7 +417,7 @@ public class NewdataApplyController {
 
         }
         return ResultT.success(results);
-    }
+    }*/
 
     @ApiOperation(value="根据表id获取表分库分表信息",notes="根据表id获取表分库分表信息")
     @PostMapping("/findSharding/{id}")
@@ -464,17 +428,16 @@ public class NewdataApplyController {
 
     /**
      * 在线时间？
-     * @param id
      * @return
      */
-    @ApiOperation(value="根据资料id获取资料在线时间段",notes="根据资料id获取资料在线时间段")
+    /*@ApiOperation(value="根据资料id获取资料在线时间段",notes="根据资料id获取资料在线时间段")
     @PostMapping("/getArchiveInfo/{id}")
     public ResultT<Map<String,Object>> getArchiveInfo(@PathVariable String id){
         Map<String,Object> archiveInfo = newdataApplyService.getArchiveInfo(id);
         return ResultT.success(archiveInfo);
-    }
+    }*/
 
-    @GetMapping("/getTableDataInfo")
+   /* @GetMapping("/getTableDataInfo")
     @ApiOperation(value = "分页查询在线时间数据", notes = "分页查询在线时间数据")
     public ResultT<PageBean> getTableDataInfo(HttpServletRequest request,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
@@ -485,10 +448,9 @@ public class NewdataApplyController {
         PageBean pageBean = this.newdataApplyService.getTableDataInfo(tableId, databaseId, pageNum, pageSize);
         resultT.setData(pageBean);
         return resultT;
-    }
+    }*/
 
-    //selectYang样例数据查询
-    @ApiOperation(value="根据四级编码和申请单号申请删除")
+    @ApiOperation(value="根据四级编码和申请单号申请删除（portal调用）")
     //@RequiresPermissions("dm:newdataApply:delApply")
     @GetMapping(value="/delApply")
     public ResultT delApply(String applyId, String dDataId) {
@@ -505,6 +467,29 @@ public class NewdataApplyController {
     public ResultT getSchemaInfo(String physicId, String userId) {
         Map<String, Object> map = this.newdataApplyService.getSchemaInfo(physicId, userId);
         return ResultT.success(map);
+    }
+
+    @ApiOperation(value = "根据用户id查询资料（新增注册资料和专题库引用资料）（其他系统调用）")
+    @GetMapping(value = "/getDataInfoByUserId")
+    public ResultT getDataInfoByUserId(String userId,String dataClassId) {
+        try {
+            List<Map<String, Object>> dataInfoList = this.newdataApplyService.getDataInfoByUserId(userId,dataClassId);
+            return ResultT.success(dataInfoList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+    @ApiOperation(value = "获取专题库自建资料（其他系统调用）")
+    @GetMapping(value = "/getSpecialDBData")
+    public ResultT getSpecialDBData(String sdbId) {
+        try {
+            List<Map<String, Object>> dataInfoList = this.newdataApplyService.getSpecialDBData(sdbId);
+            return ResultT.success(dataInfoList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 
 }

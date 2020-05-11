@@ -58,4 +58,8 @@ public interface NewdataApplyService {
     void delApply(String applyId, String dDataId);
 
     Map<String, Object> getSchemaInfo(String physicId, String userId);
+
+    List<Map<String,Object>> getDataInfoByUserId(String userId,String dataClassId);
+
+    List<Map<String,Object>> getSpecialDBData(String sdbId);
 }

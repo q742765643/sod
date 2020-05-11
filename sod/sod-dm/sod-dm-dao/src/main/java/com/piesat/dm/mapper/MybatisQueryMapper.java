@@ -198,5 +198,9 @@ public interface MybatisQueryMapper {
 
     List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(@Param("bizUserId")String bizUserId,@Param("database_id")String database_id);
 
+    List<Map<String,Object>> getDataInfoByUserId(@Param("userId") String userId,@Param("dataClassId") String dataClassId);
+
+    List<Map<String,Object>> getSpecialDBData(@Param("sdbId") String sdbId);
+
     List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
 }

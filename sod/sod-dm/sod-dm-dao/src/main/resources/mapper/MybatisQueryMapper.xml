@@ -419,6 +419,9 @@
             <if test="entity.dataOrigin != null and entity.dataOrigin  != ''">
                 and a.data_origin = #{entity.dataOrigin}
             </if>
+            <if test="entity.examineStatus != null and entity.examineStatus  != ''">
+                and a.examine_status = #{entity.examineStatus}
+            </if>
         </where>
     </select>
     <select id="getColumnByIdAndDDataId" resultType="java.util.Map">
@@ -1281,6 +1284,55 @@
                 and c1.id = #{database_id}
             </if>
         </where>
+    </select>
+
+    <select id="getDataInfoByUserId"  resultType="java.util.Map">
+        select nvl(sna.id,(sdc.data_class_id || srw.sdb_id)) as APPLY_ID,srw.sdb_id,
+        dit.DATA_SERVICE_NAME,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
+        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name SPECIAL_DATABASE_NAME,sdb.schema_name DATABASE_SCHEMA_NAME,
+        sdd.id as PHYSICSID,sdd.DATABASE_NAME
+        from t_sod_data_table dit
+        inner join T_SOD_DATA_LOGIC sdl on dit.class_logic_id = sdl.id
+        inner join T_SOD_DATA_CLASS sdc on sdl.data_class_id = sdc.data_class_id
+        inner join T_SOD_LOGIC_DEFINE sld on sdl.logic_flag = sld.logic_flag
+        inner join T_SOD_DATABASE sdb on sdl.database_id = sdb.id
+        inner join T_SOD_DATABASE_DEFINE sdd on sdb.database_define_id = sdd.id
+        left join T_SOD_DATABASE_SPECIAL_READ_WRITE srw on srw.data_class_id = sdc.data_class_id
+        left join T_SOD_NEWDATA_APPLY sna on sna.data_class_id = sdc.data_class_id
+        where dit.user_id = #{userId}
+        <if test="dataClassId != null and dataClassId != ''">
+            and sdc.DATA_CLASS_ID = #{dataClassId}
+        </if>
+        group by
+        sna.id,srw.sdb_id,
+        dit.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,sdb.id,sdc.D_DATA_ID,
+        sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name,sdb.schema_name,
+        sdd.id,sdd.DATABASE_NAME
+        order by sdc.data_class_id asc
+    </select>
+
+    <!-- 获取专题库自建资料 -->
+    <select id="getSpecialDBData" resultType="java.util.Map">
+        select
+            nvl(sna.id,(sdc.DATA_CLASS_ID||srw.SDB_ID)) as APPLY_ID,
+            sdt.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,
+            wm_concat(sdt.TABLE_NAME) as TABLE_NAME,sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name SPECIAL_DATABASE_NAME,sdb.schema_name DATABASE_SCHEMA_NAME,
+            sdd.id DATABASE_ID,sdd.DATABASE_NAME
+        from
+            T_SOD_DATABASE_SPECIAL_READ_WRITE srw
+            inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
+            inner join T_SOD_DATA_LOGIC sdl on sdc.data_class_id = sdl.data_class_id
+            inner join t_sod_data_table sdt on sdt.class_logic_id = sdl.id
+            inner join T_SOD_LOGIC_DEFINE sld on sdl.logic_flag = sld.logic_flag
+            inner join T_SOD_DATABASE sdb on srw.database_id = sdb.id
+            inner join T_SOD_DATABASE_DEFINE sdd on sdb.database_define_id = sdd.id
+            left join T_SOD_NEWDATA_APPLY sna on sna.data_class_id = sdc.data_class_id
+        where srw.data_type = '1' and srw.sdb_id = #{sdbId}
+        group by
+            sna.id,
+            sdt.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,
+            sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name,sdb.schema_name,
+            sdd.id,sdd.DATABASE_NAME
     </select>
 
     <select id="getDataClassTree" parameterType="String" resultType="DataClassEntity">
