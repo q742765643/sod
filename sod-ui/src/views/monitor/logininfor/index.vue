@@ -46,7 +46,7 @@
       <el-form-item label="登录时间">
         <el-date-picker
           size="small"
-          v-model="dateRange"
+          v-model="queryParams.dateRange"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
           start-placeholder="开始日期"
@@ -182,6 +182,11 @@ export default {
     },
     /** 查询登录日志列表 */
     getList() {
+      if (this.queryParams.dateRange) {
+        this.dateRange = this.queryParams.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       this.loading = true;
       list(this.addDateRange(this.queryParams, this.dateRange)).then(
         response => {

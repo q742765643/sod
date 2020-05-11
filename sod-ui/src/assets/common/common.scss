@@ -3,7 +3,7 @@
 // $boderColor: #ebebeb;
 $backColor:#f1f4f7;
 $boderColor: #e5e8ec;
-$TableActive:#edf6ff;
+$TableActive:#dfeffd;
 
 html,
 body {
@@ -20,9 +20,8 @@ p {
   word-break: break-all;
 }
 
-.el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: rgba(241, 244, 247, 0.5);
-}
+
+
 
 // 弹框
 .el-dialog__header {
@@ -114,8 +113,12 @@ p {
     padding-right: 0;
   }
 
+
 }
 
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: $TableActive;
+}
 
 
 .app-main>.app-container {
@@ -162,6 +165,12 @@ p {
 .el-tree {
   min-width: 100%;
   display: inline-block !important;
+
+
+}
+
+.el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+  background-color: $TableActive;
 }
 
 // 查询box 

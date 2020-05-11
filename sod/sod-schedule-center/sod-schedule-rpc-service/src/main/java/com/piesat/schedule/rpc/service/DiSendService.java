@@ -78,7 +78,9 @@ public class DiSendService{
         diTaskConfiguration.setHandleProcess(0);
         diTaskConfiguration.setSrc(0);
         diTaskConfiguration.setSendPhys(clearEntity.getParentId());
-        this.sendAddDi(JSON.toJSONString(diTaskConfiguration, SerializerFeature.WriteNullStringAsEmpty));
+        if(clearEntity.getParentId().toUpperCase().indexOf("RADB")<=0){
+            this.sendAddDi(JSON.toJSONString(diTaskConfiguration, SerializerFeature.WriteNullStringAsEmpty));
+        }
     }
     public void sendMove(MoveEntity moveEntity){
         DiTaskConfiguration diTaskConfiguration=new DiTaskConfiguration();

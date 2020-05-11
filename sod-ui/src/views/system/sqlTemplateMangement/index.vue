@@ -30,107 +30,15 @@
       :title="dialogTitle"
       width="70%"
       :visible.sync="handleDailyVisible"
-      append-to-body
       @close="closeDialog"
     >
-      <el-row>
-        <el-col :span="9">
-          <el-form :inline="true">
-            <el-form-item label="数据库厂商：">
-              <el-select
-                v-model="handleSqlTemplate.databaseServer"
-                size="small"
-                :disabled="dialogTitle == '编辑模板'"
-              >
-                <el-option
-                  v-for="item in databaseList"
-                  :key="item.dictValue"
-                  :label="item.dictLabel"
-                  :value="`${item.dictValue}`"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-          <el-row class="rowBoxBtn">
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${tableName}')"
-                class="funButton"
-              >表名称</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${databaseName}')"
-                class="funButton"
-              >库名称</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${columnInfo}')"
-                class="funButton"
-              >字段信息</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${primaryColumn}')"
-                class="funButton"
-              >主键字段</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${tableDescription}')"
-                class="funButton"
-              >索引字段</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${indexColumn}')"
-                class="funButton"
-              >表描描述</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${DPartitionKey}')"
-                class="funButton"
-              >分库键</el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="medium"
-                type="primary"
-                @click="autoFillIn('${TPartitionKey}')"
-                class="funButton"
-              >分表键</el-button>
-            </el-col>
-          </el-row>
-        </el-col>
-        <el-col :span="15">
-          <textarea v-model="handleSqlTemplate.template" class="textClass" id="addtextareaId"></textarea>
-        </el-col>
-      </el-row>
-      <div class="dialog-footer" slot="footer">
-        <el-button type="primary" class="funButton" @click="trueDialog()">确定</el-button>
-        <el-button class="funButton" @click="closeDialog()">取消</el-button>
-      </div>
+      <handleSQL @closeDialog="closeDialog" v-if="handleDailyVisible" :handleObj="handleObj"></handleSQL>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import handleSQL from "@/views/system/sqlTemplateMangement/handleSql";
 import {
   getAllSqlList, //获取模板数据
   getDBtype, //获取数据库厂商
@@ -140,6 +48,9 @@ import {
   editTemplate //编辑模板
 } from "@/api/system/sqlTemplateMangement";
 export default {
+  components: {
+    handleSQL
+  },
   data() {
     return {
       // 遮罩层
@@ -157,11 +68,10 @@ export default {
           template: "${tableName}"
         }
       ],
-      databaseList: [], //数据类型
       // 弹窗
       dialogTitle: "新增模板",
       handleDailyVisible: false,
-      handleSqlTemplate: {
+      handleObj: {
         databaseServer: "",
         template: ""
       }
@@ -170,8 +80,6 @@ export default {
   created() {
     //获取sql模板
     this.getSqlData();
-    //获取数据库类型
-    this.getDBList();
   },
   methods: {
     //获取sql模板
@@ -180,17 +88,11 @@ export default {
         this.sqlData = response.data;
       });
     },
-    //获取数据库厂商
-    getDBList() {
-      this.getDicts("sys_database_type").then(response => {
-        this.databaseList = response.data;
-      });
-    },
     //编辑sql模板
     editSqlTemplate(item) {
       this.dialogTitle = "编辑模板";
       this.handleDailyVisible = true;
-      this.handleSqlTemplate = item;
+      this.handleObj = item;
     },
     //删除数据库
     deleteSqlTemplate(item) {
@@ -219,52 +121,9 @@ export default {
       this.dialogTitle = "新增模板";
       this.handleDailyVisible = true;
     },
-    autoFillIn(value) {
-      this.handleSqlTemplate.template += value;
-    },
-    trueDialog() {
-      //新增
-      if (this.dialogTitle == "新增模板") {
-        isAlreadyTem({
-          databaseServer: this.handleSqlTemplate.databaseServer
-        }).then(response => {
-          //已存在不可添加
-          if (response.data.length >= 1) {
-            this.$message({
-              type: "error",
-              message: "此数据库已经添加，不可以重复添加"
-            });
-          }
-          //添加
-          else {
-            saveSqlTemplate(this.handleSqlTemplate).then(response => {
-              if (response.code === 200) {
-                this.$message({
-                  type: "success",
-                  message: "新增成功"
-                });
-                this.handleDailyVisible = false;
-                this.getSqlData();
-              }
-            });
-          }
-        });
-      }
-      //编辑
-      else {
-        editTemplate(this.handleSqlTemplate).then(response => {
-          if (response.code === 200) {
-            this.$message({
-              type: "success",
-              message: "编辑成功"
-            });
-            this.handleDailyVisible = false;
-            this.getSqlData();
-          }
-        });
-      }
-    },
+
     closeDialog() {
+      this.getSqlData();
       this.handleDailyVisible = false;
     }
   }
