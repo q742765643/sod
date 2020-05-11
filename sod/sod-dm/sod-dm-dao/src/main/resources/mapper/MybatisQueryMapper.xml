@@ -1289,9 +1289,9 @@
 
     <select id="getDataInfoByUserId"  resultType="java.util.Map">
         select nvl(sna.id,(sdc.data_class_id || srw.sdb_id)) as APPLY_ID,srw.sdb_id,
-        dit.DATA_SERVICE_NAME,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
-        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name SPECIAL_DATABASE_NAME,sdb.schema_name DATABASE_SCHEMA_NAME,
-        sdd.id as PHYSICSID,sdd.DATABASE_NAME
+        dit.DATA_SERVICE_NAME dataname,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
+        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
+        sdd.id as PHYSICSID,sdd.DATABASE_NAME PHYSICSNAME
         from t_sod_data_table dit
         inner join T_SOD_DATA_LOGIC sdl on dit.class_logic_id = sdl.id
         inner join T_SOD_DATA_CLASS sdc on sdl.data_class_id = sdc.data_class_id
@@ -1316,9 +1316,9 @@
     <select id="getSpecialDBData" resultType="java.util.Map">
         select
             nvl(sna.id,(sdc.DATA_CLASS_ID||srw.SDB_ID)) as APPLY_ID,
-            sdt.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,
-            wm_concat(sdt.TABLE_NAME) as TABLE_NAME,sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name SPECIAL_DATABASE_NAME,sdb.schema_name DATABASE_SCHEMA_NAME,
-            sdd.id DATABASE_ID,sdd.DATABASE_NAME
+            sdt.DATA_SERVICE_NAME dataname,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,sdb.id as SCHEMAID,
+            wm_concat(sdt.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
+            sdd.id PHYSICSID,sdd.DATABASE_NAME PHYSICSNAME
         from
             T_SOD_DATABASE_SPECIAL_READ_WRITE srw
             inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
@@ -1331,7 +1331,7 @@
         where srw.data_type = '1' and srw.sdb_id = #{sdbId}
         group by
             sna.id,
-            sdt.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,
+            sdt.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,sdb.id,
             sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name,sdb.schema_name,
             sdd.id,sdd.DATABASE_NAME
     </select>

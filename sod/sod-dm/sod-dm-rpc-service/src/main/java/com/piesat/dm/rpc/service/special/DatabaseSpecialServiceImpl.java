@@ -805,7 +805,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
 
                     //到实际物理库授权
-                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1) {
+                    if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {
                         this.empowerDataOne(databaseSpecialReadWriteDto);
                     }
                 }
