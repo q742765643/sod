@@ -65,6 +65,8 @@ public class UserDto extends BaseDto {
     @ApiModelProperty("备注")
     private String remark;
 
+    private String pdfPath;
+
     private String appId;
 
     //@JsonIgnore

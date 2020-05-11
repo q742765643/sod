@@ -31,7 +31,7 @@ import java.util.concurrent.*;
  **/
 @Slf4j
 @Service
-public class ScheduleThread {
+public class  ScheduleThread {
     public static final long PRE_READ_MS = 5000;
     private static final String HTHT_LOCK = "htht_lock";
     private static final String QUARTZ_HTHT_JOB = "QUARTZ:HTHT:JOB";
@@ -136,7 +136,7 @@ public class ScheduleThread {
                 continue;
             }
             jobInfo.setJobCron(cron);
-            if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) {
+            if (nowTime > jobInfo.getTriggerNextTime() + 3600000*12) {//PRE_READ_MS
                 log.info(">>>>>>>>>>> job, schedule misfire, jobId = {}" , typedTuple.getValue());
                 refreshNextValidTime(jobInfo, new Date());
             } else if (nowTime > jobInfo.getTriggerNextTime()) {

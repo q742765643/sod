@@ -331,7 +331,7 @@ export default {
           { required: true, message: "请选择关联用户", trigger: "change" }
         ],
         applyMaterial: [
-          { required: true, message: "请选择申请材料", trigger: "change" }
+          { required: true, message: "请选择申请材料", trigger: "blur" }
         ]
       }
     };
@@ -348,6 +348,8 @@ export default {
       this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
       this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
       this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds.split(",");
+      this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
+
       this.isHideAdd = false;
       this.isHide = true;
     } else {

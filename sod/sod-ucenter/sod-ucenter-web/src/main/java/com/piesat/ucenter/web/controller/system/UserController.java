@@ -7,6 +7,7 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.AESUtil;
+import com.piesat.common.utils.Doc2PDF;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
@@ -24,6 +25,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -53,7 +56,8 @@ public class UserController {
 
     @Value("${serverfile.filePath}")
     private String outFilePath;
-
+    @Value("${fileUpload.httpPath}")
+    private String httpPath;
     @RequiresPermissions("system:user:list")
     @GetMapping("/list")
     public ResultT<PageBean> list(UserDto user, int pageNum, int pageSize) {
@@ -191,15 +195,23 @@ public class UserController {
             if (applyPaper != null) {
                 String originalFileName1 = applyPaper.getOriginalFilename();//旧的文件名(用户上传的文件名称)
                 //新的文件名
-                String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                //String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                String fileSuffix = originalFileName1.substring(originalFileName1.lastIndexOf('.'));
+                //上传文件到服务器指定路径
+                //转换PDF
+                String newFileName1=originalFileName1.substring(0, originalFileName1.lastIndexOf("."))+"_"+new SimpleDateFormat("yyyyMMddHHmms").format(new Date())+fileSuffix;
                 newFile = new File(outFilePath + File.separator + newFileName1);
-                // 判断目标文件所在目录是否存在
                 if (!newFile.getParentFile().exists()) {
                     // 如果目标文件所在的目录不存在，则创建父目录
                     newFile.getParentFile().mkdirs();
                 }
                 //存入
                 applyPaper.transferTo(newFile);
+                String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
+                String pdfPath = outFilePath + "/" + pdfName;
+                Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
+                parameterMap.put("pdfPath",(httpPath + "/filePath/" + pdfName).split(","));
+                // 判断目标文件所在目录是否存在
             }
             ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
             return add;
