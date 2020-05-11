@@ -150,7 +150,7 @@ public class  ScheduleThread {
 
                     refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
                 }
-            } else if(nowTime<jobInfo.getTriggerNextTime()+PRE_READ_MS){
+            } else if(nowTime + PRE_READ_MS > jobInfo.getTriggerNextTime()){
                 int ringSecond = (int) ((jobInfo.getTriggerNextTime() / 1000) % 60);
 
                 pushTimeRing(ringSecond, jobInfo);
