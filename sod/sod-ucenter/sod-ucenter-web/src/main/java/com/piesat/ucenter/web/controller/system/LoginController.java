@@ -80,7 +80,7 @@ public class LoginController {
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
             String ycode= (String) redisUtil.get(verifyKey);
-            if(null==ycode){
+            if(null==code){
                 resultT.setErrorMessage("验证码不能为空");
                 return resultT;
             }
