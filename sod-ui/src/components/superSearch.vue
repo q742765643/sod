@@ -179,7 +179,7 @@ export default {
       } else if (this.superDialogObj.pageName == "GRIB参数定义") {
         this.superChose = [
           {
-            label: "代码简写",
+            label: "要素存储短名",
             value: "eleCodeShort"
           },
           {
@@ -198,16 +198,16 @@ export default {
             label: "GRIB格式",
             value: "gribVersion"
           },
-          {
+          /* {
             label: "中文描述",
             value: "elementCn"
-          },
+          }, */
           {
-            label: "是否为公共",
+            label: "是否为共有配置",
             value: "publicConfig"
           },
           {
-            label: "模板ID",
+            label: "模板编号",
             value: "templateId"
           },
           {
