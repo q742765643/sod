@@ -1105,10 +1105,10 @@ export default {
           !element.eleName ||
           !element.type ||
           !element.unitCn ||
-          !element.serialNumber
+          (!element.serialNumber && element.serialNumber!=0)
         ) {
           flag = true;
-          errorCode.push(element);
+          // errorCode.push(element);
         }
       });
       if (flag) {

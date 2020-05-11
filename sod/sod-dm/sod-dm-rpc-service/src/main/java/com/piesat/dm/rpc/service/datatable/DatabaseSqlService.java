@@ -41,7 +41,7 @@ public class DatabaseSqlService {
                 throw new Exception("虚谷不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
-            if (StringUtils.isNotBlank(accuracy)) {
+            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";
@@ -163,7 +163,7 @@ public class DatabaseSqlService {
                 throw new Exception("gbase8a不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
-            if (StringUtils.isNotBlank(accuracy)) {
+            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";

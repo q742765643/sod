@@ -51,7 +51,7 @@ public class UserController {
     @GrpcHthtClient
     private DatabaseUserService databaseUserService;
 
-    @Value("${fileUpload.httpPath}")
+    @Value("${serverfile.filePath}")
     private String outFilePath;
 
     @RequiresPermissions("system:user:list")
