@@ -115,7 +115,8 @@ public class UserEntity extends BaseEntity {
     @Column(name="remark",length = 500)
     private String remark;
 
-
+    @Column(name="pdf_path",length = 500)
+    private String pdfPath;
     /** 角色组 */
     @Transient
     private String[] roleIds;

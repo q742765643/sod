@@ -21,7 +21,7 @@ export function findByTableId(query) {
 export function tableColumnDel(data) {
   return request({
     url: baseUrl + '/dm/tableColumn/delIds',
-    method: 'delete',
+    method: 'post',
     params: data
   })
 }

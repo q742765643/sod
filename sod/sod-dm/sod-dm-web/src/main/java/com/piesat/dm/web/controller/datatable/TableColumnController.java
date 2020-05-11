@@ -124,7 +124,7 @@ public class TableColumnController {
     @ApiOperation(value = "根据多个id删除")
     @RequiresPermissions("dm:tableColumn:delIds")
     @Log(title = "表字段管理", businessType = BusinessType.DELETE)
-    @DeleteMapping(value = "/delIds")
+    @PostMapping(value = "/delIds")
     public ResultT delByIds(String ids) {
         try {
             int i = this.tableColumnService.deleteByIdIn(Arrays.asList(ids.split(",")));
