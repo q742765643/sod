@@ -163,8 +163,12 @@ public class TableCollectHandler  implements BaseHandler {
                         tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
                         tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
                         tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",yesterdayZero));
-                        tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",begin_time));
-                        tableDataStatisticsEntity.setEndTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",end_time));
+                        if(StringUtils.isNotNullString(begin_time)){
+                            tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",begin_time));
+                        }
+                        if(StringUtils.isNotNullString(end_time)){
+                            tableDataStatisticsEntity.setEndTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",end_time));
+                        }
                         tableDataStatisticsEntity.setRecordCount(Double.valueOf(record_count));
                         tableDataStatisticsEntity.setDayTotal(Integer.valueOf(day_total));
                         tableDataStatisticsDao.saveNotNull(tableDataStatisticsEntity);
