@@ -75,41 +75,43 @@ public class  ScheduleThread {
             TimeUnit.MILLISECONDS.sleep(5000 - System.currentTimeMillis() % 1000);
         } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
-            Thread.currentThread().interrupt();
+            //Thread.currentThread().interrupt();
         }
         /********=======1.准备调度限制条数========*******/
         while (!scheduleThreadToStop) {
             try {
                 this.jobToTrrigerWhile();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("调度第一个WHILE:{}", OwnException.get(e));
             }
         }
     }
     public void jobToTrrigerWhile(){
+            boolean flag=redisLock.tryLock(HTHT_LOCK);
+
             int preReadCount = 300;
             long start = System.currentTimeMillis();
             boolean preReadSuc = true;
-            try {
-                /********=======2.reis分布式锁========*******/
-                boolean flag=redisLock.tryLock(HTHT_LOCK);
-                if(!flag){
-                    return;
-                }
-                long nowTime = System.currentTimeMillis();
+            if(flag){
+                try {
+                    /********=======2.reis分布式锁========*******/
 
-                Set<DefaultTypedTuple> scheduleList = redisUtil.rangeByScoreWithScores(QUARTZ_HTHT_JOB, nowTime + PRE_READ_MS, preReadCount);
-                if (scheduleList != null && !scheduleList.isEmpty() ) {
-                    this.checkSchedule(scheduleList, nowTime);
-                } else {
-                    preReadSuc = false;
-                }
+                    long nowTime = System.currentTimeMillis();
 
-            } catch (Exception e) {
-                log.error(OwnException.get(e));
-            } finally {
-                redisLock.delete(HTHT_LOCK);
+                    Set<DefaultTypedTuple> scheduleList = redisUtil.rangeByScoreWithScores(QUARTZ_HTHT_JOB, nowTime + PRE_READ_MS, preReadCount);
+                    if (scheduleList != null && !scheduleList.isEmpty() ) {
+                        this.checkSchedule(scheduleList, nowTime);
+                    } else {
+                        preReadSuc = false;
+                    }
+
+                } catch (Exception e) {
+                    log.error(OwnException.get(e));
+                } finally {
+                    redisLock.delete(HTHT_LOCK);
+                }
             }
+
             long cost = System.currentTimeMillis() - start;
             if (cost < 1000) {  // scan-overtime, not wait
                 try {
@@ -119,7 +121,7 @@ public class  ScheduleThread {
                     TimeUnit.MILLISECONDS.sleep((preReadSuc ? 1000 : PRE_READ_MS) - System.currentTimeMillis() % 1000);
                 } catch (InterruptedException e) {
                     log.error(e.getMessage(), e);
-                    Thread.currentThread().interrupt();
+                   //Thread.currentThread().interrupt();
                 }
             }
 
@@ -172,11 +174,15 @@ public class  ScheduleThread {
             TimeUnit.MILLISECONDS.sleep(1000 - System.currentTimeMillis() % 1000);
         } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
-            Thread.currentThread().interrupt();
+           //Thread.currentThread().interrupt();
         }
 
         while (!ringThreadToStop) {
-            this.checkRightwhile();
+            try {
+                this.checkRightwhile();
+            } catch (Exception e) {
+                log.error("调度第二个WHILE:{}", OwnException.get(e));
+            }
         }
     }
     public void checkRightwhile(){
@@ -205,7 +211,7 @@ public class  ScheduleThread {
         } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
 
-            Thread.currentThread().interrupt();
+           //Thread.currentThread().interrupt();
         }
     }
     public void trigger(JobInfoEntity jobInfo) {

@@ -19,6 +19,7 @@ import com.piesat.schedule.client.api.client.handler.base.BaseHandler;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.enums.ExecutorBlockStrategyEnum;
 import com.piesat.schedule.rpc.proxy.GrpcServiceProxy;
+import com.piesat.schedule.rpc.thread.ScheduleThread;
 import com.piesat.schedule.rpc.vo.Server;
 import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.util.ResultT;
@@ -68,9 +69,11 @@ public abstract class ExecuteBaseService {
                   }
                   this.remote(jobInfoEntity,server,resultT);
             }else{
-                  new Thread(()->{
-                        baseHandler.execute(jobInfoEntity,resultT);
-                  }).start();
+                  ScheduleThread.threadPool.execute(
+                          ()->{
+                                baseHandler.execute(jobInfoEntity,resultT);
+                          }
+                  );
             }
 
 

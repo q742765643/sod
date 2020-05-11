@@ -20,7 +20,7 @@ import java.util.Objects;
 @Component
 public class RedisLock {
     public static final String LOCK_PREFIX = "lock:";
-    public static final int LOCK_EXPIRE = 60000; // ms
+    public static final int LOCK_EXPIRE = 6000; // ms
 
     @Autowired
     @Qualifier("redisTemplate")
@@ -59,14 +59,19 @@ public class RedisLock {
 
     public boolean tryLock(String key){
         boolean result=false;
-        while (!result){
-            try {
+        //while (!result){
+            //try {
                 result = this.lock(key);
-                Thread.sleep(1000);
-            } catch (Exception e) {
-               log.error(OwnException.get(e));
-               break;
-            }
+                //Thread.sleep(1000);
+            //} catch (Exception e) {
+               //log.error(OwnException.get(e));
+               //break;
+            //}
+        //}
+        try {
+            result = this.lock(key);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
