@@ -7,7 +7,7 @@
         select
         A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,B.ID
         LOGIC_ID,B.LOGIC_FLAG,B.STORAGE_TYPE,B.DATABASE_ID,B.IS_COMPLETE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
-        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL,G.tableCount TABLECOUNT
+        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL,G.tableCount TABLECOUNT,H.TABLE_DESC
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATA_LOGIC B on A.data_class_id = B.data_class_id
         left join T_SOD_LOGIC_DEFINE E on B.logic_flag=E.logic_flag
@@ -19,6 +19,7 @@
         aa.CLASS_LOGIC_ID =bb.id
         inner join T_SOD_DATA_TABLE_COLUMN cc on aa.id = cc.TABLE_ID group by bb.id
         ) G ON G.id = B.id
+        left join T_SOD_DATA_TABLE H on B.id = H.CLASS_LOGIC_ID and db_table_type = 'E'
         WHERE
         F.dict_type = 'sys_storage_type' AND
         A.data_class_id in
