@@ -18,14 +18,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="用途描述">
-              <el-select disabled class="size-full" v-model="registerForm.LOGIC_ID">
-                <el-option
-                  :key="index"
-                  :label="item.logicName"
-                  :value="item.logicFlag"
-                  v-for="(item,index) in logicDBArr"
-                ></el-option>
-              </el-select>
+              <el-input disabled class="size-full" v-model="registerForm.LOGIC_NAME"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -100,9 +93,9 @@ export default {
     };
   },
   created() {
-    logicDefineAll().then(response => {
+    /* logicDefineAll().then(response => {
       this.logicDBArr = response.data;
-    });
+    }); */
     this.registerForm = this.handleObj;
     this.registerForm.examineStatus = 1;
   },
