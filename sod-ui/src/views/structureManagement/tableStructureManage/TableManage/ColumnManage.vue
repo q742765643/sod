@@ -1094,6 +1094,13 @@ export default {
         dataJson.push(obj);
       });
       console.log(dataJson);
+      if (dataJson.length == 0) {
+        this.$message({
+          type: "error",
+          message: "不能导入空表"
+        });
+        return;
+      }
       let flag = false;
       dataJson.forEach(element => {
         element.id = "";
@@ -1105,7 +1112,7 @@ export default {
           !element.eleName ||
           !element.type ||
           !element.unitCn ||
-          (!element.serialNumber && element.serialNumber!=0)
+          (!element.serialNumber && element.serialNumber != 0)
         ) {
           flag = true;
           // errorCode.push(element);

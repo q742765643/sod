@@ -88,7 +88,7 @@
                 label="描述代码"
                 prop="TABLE_DESC"
                 :show-overflow-tooltip="true"
-                v-if="this.treeRefreshData.id&&this.treeRefreshData.id.substring(0,1) == 'F'"
+                v-if="this.treeRefreshData&&this.treeRefreshData.id&&this.treeRefreshData.id.substring(0,1) == 'F'"
               ></el-table-column>
               <el-table-column label="操作" width="320px">
                 <template slot-scope="scope">
@@ -313,7 +313,6 @@ export default {
       }
 
       this.treeRefreshData = treeRefreshData;
-      console.log(this.treeRefreshData.id.substring(0, 1) == "F");
       // this.searchObj.stringList = "";
       if (checkedNodeStr && checkedNodeStr.style) {
         this.handleObj = checkedNodeStr;
