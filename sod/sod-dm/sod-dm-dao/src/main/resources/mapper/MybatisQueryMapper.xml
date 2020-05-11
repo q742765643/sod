@@ -1315,14 +1315,14 @@
     <!-- 获取专题库自建资料 -->
     <select id="getSpecialDBData" resultType="java.util.Map">
         select
-            nvl(sna.id,(sdc.DATA_CLASS_ID||srw.SDB_ID)) as APPLY_ID,
-            sdt.DATA_SERVICE_NAME dataname,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,sdb.id as SCHEMAID,
+            nvl(sna.id,(sdc.DATA_CLASS_ID||srw.SDB_ID)) as APPLY_ID,srw.SDB_ID,
+            sdt.DATA_SERVICE_NAME dataname,sdc.DATA_CLASS_ID ,sdb.id as SCHEMAID,sdc.D_DATA_ID,srw.database_id,
             wm_concat(sdt.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
             sdd.id PHYSICSID,sdd.DATABASE_NAME PHYSICSNAME
         from
             T_SOD_DATABASE_SPECIAL_READ_WRITE srw
             inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
-            inner join T_SOD_DATA_LOGIC sdl on sdc.data_class_id = sdl.data_class_id
+            inner join T_SOD_DATA_LOGIC sdl on sdc.data_class_id = sdl.data_class_id and srw.database_id = sdl.database_id
             inner join t_sod_data_table sdt on sdt.class_logic_id = sdl.id
             inner join T_SOD_LOGIC_DEFINE sld on sdl.logic_flag = sld.logic_flag
             inner join T_SOD_DATABASE sdb on srw.database_id = sdb.id

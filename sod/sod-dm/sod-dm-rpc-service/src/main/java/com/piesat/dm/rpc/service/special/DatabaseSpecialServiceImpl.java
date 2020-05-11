@@ -147,7 +147,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 }
             }
             specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(),userId);
-        }
+    }
         Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<DatabaseSpecialEntity> databaseSpecialEntities = (List<DatabaseSpecialEntity>) pageBean.getPageData();
@@ -162,7 +162,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             for(UserEntity userEntity:userEntities){
                 if(userEntity.getUserName().equals(databaseSpecialDto.getUserId())){
                     databaseSpecialDto.setUserName(userEntity.getWebUsername());
-                    databaseSpecialDto.setUserPhone(userEntity.getTutorPhone());
+                    databaseSpecialDto.setUserPhone(userEntity.getPhonenumber());
                     databaseSpecialDto.setDepartment(userEntity.getDeptName());
                 }
             }
