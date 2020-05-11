@@ -216,15 +216,25 @@ export default {
         return;
       }
       let ids = [];
+      let userFcstEles = [];
       this.choserow.forEach(element => {
         ids.push(element.id);
+        userFcstEles.push(element.userFcstEle);
       });
-      gridEleServiceDefineDelete(ids.join(",")).then(response => {
-        if (response.code == 200) {
-          this.msgSuccess("删除成功");
-          this.getList();
-        }
-      });
+      this.$confirm("是否删除" + userFcstEles.join(","), "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          gridEleServiceDefineDelete(ids.join(",")).then(response => {
+            if (response.code == 200) {
+              this.msgSuccess("删除成功");
+              this.getList();
+            }
+          });
+        })
+        .catch(() => {});
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();

@@ -61,7 +61,12 @@
       <el-table-column prop="classify" label="参数种类"></el-table-column>
       <el-table-column prop="parameterId" label="参数编码"></el-table-column>
       <el-table-column prop="gribVersion" label="GRIB版本"></el-table-column>
-      <el-table-column prop="publicConfig" label="是否为共有配置"></el-table-column>
+      <el-table-column prop="publicConfig" label="是否为共有配置">
+        <template slot-scope="scope">
+          <span v-if="scope.row.publicConfig == 'N'">否</span>
+          <span v-if="scope.row.publicConfig == 'Y'">是</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="templateId" label="模板编号"></el-table-column>
       <el-table-column prop="templateDesc" label="模板说明"></el-table-column>
     </el-table>
@@ -137,7 +142,7 @@
       <super-search
         v-if="dialogSuperSearch"
         :superObj="superObj"
-        @getList="getList"
+        @searchFun="getList"
         ref="supersearchinfo"
       />
     </el-dialog>
@@ -326,15 +331,25 @@ export default {
         return;
       }
       let ids = [];
+      let eleCodeShorts = [];
       this.choserow.forEach(element => {
         ids.push(element.id);
+        eleCodeShorts.push(element.eleCodeShort);
       });
-      gridEleDecodeDefineDelete(ids.join(",")).then(response => {
-        if (response.code == 200) {
-          this.msgSuccess("删除成功");
-          this.getList();
-        }
-      });
+      this.$confirm("是否删除" + eleCodeShorts.join(","), "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          gridEleDecodeDefineDelete(ids.join(",")).then(response => {
+            if (response.code == 200) {
+              this.msgSuccess("删除成功");
+              this.getList();
+            }
+          });
+        })
+        .catch(() => {});
     },
     tableExoprt() {
       exportJSON(this.queryParams).then(res => {
@@ -350,7 +365,9 @@ export default {
       this.queryParams = {
         gribVersion: "",
         parameterId: "",
-        eleCodeShort: ""
+        eleCodeShort: "",
+        pageNum: 1,
+        pageSize: 10
       };
       this.dialogSuperSearch = false;
     }

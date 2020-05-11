@@ -26,6 +26,8 @@ public interface JobInfoService {
 
     public void execute(String id);
 
+    public void executeB(String id,String time);
+
     public void startById(String id);
 
     public void stopById(String id);

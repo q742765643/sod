@@ -68,6 +68,7 @@
             <el-table
               :data="tableData"
               border
+              stripe
               highlight-current-row
               @current-change="handleCurrentChange"
               :span-method="objectSpanMethod"
@@ -84,6 +85,12 @@
               <el-table-column label="存储类型" prop="DICT_LABEL" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column label="数据库" prop="DATABASE_NAME_F" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column label="专题名" prop="DATABASE_NAME" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column
+                label="描述代码"
+                prop="TABLE_DESC"
+                :show-overflow-tooltip="true"
+                v-if="this.treeRefreshData&&this.treeRefreshData.id&&this.treeRefreshData.id.substring(0,1) == 'F'"
+              ></el-table-column>
               <el-table-column label="操作" width="320px">
                 <template slot-scope="scope">
                   <el-button size="small" @click="showStructureManage(scope.row)">
@@ -305,6 +312,7 @@ export default {
       if (treeRefreshData) {
         this.tableName = treeRefreshData.name;
       }
+
       this.treeRefreshData = treeRefreshData;
       // this.searchObj.stringList = "";
       if (checkedNodeStr && checkedNodeStr.style) {
@@ -621,9 +629,14 @@ export default {
       margin-bottom: 0px;
     }
 
-    .el-table .cell {
-      padding-left: 0px;
-      padding-right: 0px;
+    .el-table {
+      .cell {
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+      /* tr:nth-child(even) {
+        background: #edf6ff;
+      } */
     }
     .el-dropdown {
       margin-left: 1px;

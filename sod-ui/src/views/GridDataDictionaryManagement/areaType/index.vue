@@ -266,15 +266,25 @@ export default {
         return;
       }
       let ids = [];
+      let areaIds = [];
       this.choserow.forEach(element => {
         ids.push(element.id);
+        areaIds.push(element.areaId);
       });
-      defineDelete(ids.join(",")).then(response => {
-        if (response.code === 200) {
-          this.msgSuccess("删除成功");
-          this.getList();
-        }
-      });
+      this.$confirm("是否删除" + areaIds.join(","), "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          defineDelete(ids.join(",")).then(response => {
+            if (response.code === 200) {
+              this.msgSuccess("删除成功");
+              this.getList();
+            }
+          });
+        })
+        .catch(() => {});
     },
     tableExoprt() {
       exportTable(this.queryParams).then(res => {

@@ -687,6 +687,13 @@ export default {
             this.selColumnData.forEach(element => {
               ids.push(element.id);
             });
+            /* if (ids.length > 600) {
+              this.$message({
+                message: "不可以删除600个以上字段！",
+                type: "error"
+              });
+              return;
+            } */
             console.log(ids.join(","));
             tableColumnDel({ ids: ids.join(",") }).then(response => {
               if (response.code == 200) {
@@ -1094,6 +1101,13 @@ export default {
         dataJson.push(obj);
       });
       console.log(dataJson);
+      if (dataJson.length == 0) {
+        this.$message({
+          type: "error",
+          message: "不能导入空表"
+        });
+        return;
+      }
       let flag = false;
       dataJson.forEach(element => {
         element.id = "";
@@ -1105,7 +1119,7 @@ export default {
           !element.eleName ||
           !element.type ||
           !element.unitCn ||
-          (!element.serialNumber && element.serialNumber!=0)
+          (!element.serialNumber && element.serialNumber != 0)
         ) {
           flag = true;
           // errorCode.push(element);
