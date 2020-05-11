@@ -26,9 +26,6 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       if (store.getters.roles.length === 0) {
-        if (to.matched.length === 0) {
-          next('/401') // 判断此跳转路由的来源路由是否存在，存在的情况跳转到来源路由，否则跳转到404页面
-        }
         // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetInfo').then(res => {
             // 拉取user_info
@@ -56,7 +53,7 @@ router.beforeEach((to, from, next) => {
           })
       } else {
         if (to.matched.length === 0) {
-          next('/401') // 判断此跳转路由的来源路由是否存在，存在的情况跳转到来源路由，否则跳转到404页面
+          next('/401') // 判断此跳转路由的来源路由是否存在，存在的情况跳转到来源路由，否则跳转到401页面
         }
         next()
         // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓

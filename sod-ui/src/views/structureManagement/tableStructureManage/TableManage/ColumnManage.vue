@@ -687,6 +687,13 @@ export default {
             this.selColumnData.forEach(element => {
               ids.push(element.id);
             });
+            /* if (ids.length > 600) {
+              this.$message({
+                message: "不可以删除600个以上字段！",
+                type: "error"
+              });
+              return;
+            } */
             console.log(ids.join(","));
             tableColumnDel({ ids: ids.join(",") }).then(response => {
               if (response.code == 200) {
