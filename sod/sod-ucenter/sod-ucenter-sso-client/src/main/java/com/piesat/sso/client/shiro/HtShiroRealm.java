@@ -74,6 +74,9 @@ public class HtShiroRealm extends AuthorizingRealm {
             userDto.setLoginDate(new Date());
             SimpleAuthenticationInfo authenticationInfo = null;
             if ("11".equals(userDto.getUserType())){
+                if (!"3".equals(userDto.getChecked())){
+                    throw new LockedAccountException();
+                }
                 String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
                 authenticationInfo = new SimpleAuthenticationInfo(
                         userDto, //用户名
