@@ -68,6 +68,7 @@
             <el-table
               :data="tableData"
               border
+              stripe
               highlight-current-row
               @current-change="handleCurrentChange"
               :span-method="objectSpanMethod"
@@ -628,9 +629,14 @@ export default {
       margin-bottom: 0px;
     }
 
-    .el-table .cell {
-      padding-left: 0px;
-      padding-right: 0px;
+    .el-table {
+      .cell {
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+      /* tr:nth-child(even) {
+        background: #edf6ff;
+      } */
     }
     .el-dropdown {
       margin-left: 1px;

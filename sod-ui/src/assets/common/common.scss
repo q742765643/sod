@@ -3,6 +3,7 @@
 // $boderColor: #ebebeb;
 $backColor:#f1f4f7;
 $boderColor: #e5e8ec;
+$TableActive:#edf6ff;
 
 html,
 body {
@@ -17,6 +18,10 @@ body {
 
 p {
   word-break: break-all;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: rgba(241, 244, 247, 0.5);
 }
 
 // 弹框
@@ -71,6 +76,10 @@ p {
 .el-table {
   font-size: 14px;
 
+  tr:hover td {
+    background-color: $TableActive !important;
+  }
+
   th,
   td {
     text-align: center;
@@ -85,7 +94,7 @@ p {
     padding-top: 9px;
     padding-bottom: 9px;
     border-bottom: 1px solid #dfe6ec;
-    background-color: #f1f4f7 !important;
+    background-color: $backColor !important;
   }
 
   th.gutter {
