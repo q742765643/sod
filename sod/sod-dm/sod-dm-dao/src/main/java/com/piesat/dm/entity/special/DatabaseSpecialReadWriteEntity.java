@@ -59,6 +59,7 @@ public class DatabaseSpecialReadWriteEntity extends BaseEntity {
 
     /**
      * 审核状态
+     * 1：允许 2：禁止 3:待授权
      */
     @Column(name = "examine_status")
     private Integer examineStatus;
