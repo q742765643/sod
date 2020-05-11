@@ -44,7 +44,7 @@ import java.util.concurrent.Semaphore;
  **/
 @Slf4j
 public class GbaseBusiness extends BaseBusiness{
-    public static Semaphore semaphore= new Semaphore(50);
+    public static Semaphore semaphore= new Semaphore(20);
 
     @Override
     public void backUpKtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT) {

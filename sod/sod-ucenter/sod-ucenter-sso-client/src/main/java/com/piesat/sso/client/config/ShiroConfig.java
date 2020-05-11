@@ -119,7 +119,7 @@ public class ShiroConfig {
     public HtRedisCacheManager cacheManager() {
         HtRedisCacheManager redisCacheManager = new HtRedisCacheManager();
         redisCacheManager.setHtRedisManager(redisManager());
-        redisCacheManager.setExpire(300000);
+        redisCacheManager.setExpire(1800000);
         return redisCacheManager;
     }
 
@@ -143,7 +143,7 @@ public class ShiroConfig {
 
         htSessionManager.setSessionIdCookie(cookie());            // 设置JSESSIONID
         //全局会话超时时间（单位毫秒），默认30分钟  暂时设置为10秒钟 用来测试
-        htSessionManager.setGlobalSessionTimeout(300000);
+        htSessionManager.setGlobalSessionTimeout(1800000);
         //是否开启删除无效的session对象  默认为true
         htSessionManager.setDeleteInvalidSessions(true);
         //是否开启定时调度器进行检测过期session 默认为true
@@ -167,7 +167,7 @@ public class ShiroConfig {
     public HtRedisSessionDAO redisSessionDAO() {
         HtRedisSessionDAO redisSessionDAO = new HtRedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
-        redisSessionDAO.setExpire(300000);
+        redisSessionDAO.setExpire(1800000);
         return redisSessionDAO;
     }
 

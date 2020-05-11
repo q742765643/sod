@@ -6,6 +6,7 @@ import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
+import com.piesat.schedule.util.CronExpression;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sun.java2d.pipe.SpanShapeRenderer;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +128,23 @@ public class JobInfoController {
         }
         return resultT;
     }
+    @GetMapping(value = "/executeAllB")
+    @RequiresPermissions("schedule:job:execute")
+    @ApiOperation(value = "立即补偿所有", notes = "立即补偿所有")
+    public ResultT<String> executeAllB(String time){
+        ResultT resultT=new ResultT();
+        try {
+            List<JobInfoDto> jobInfoDtos=jobInfoService.findJobList();
+            for(JobInfoDto jobInfoDto:jobInfoDtos){
+                jobInfoService.executeB(jobInfoDto.getId(),time);
+            }
+        } catch (Exception e) {
 
+            log.error(OwnException.get(e));
+            resultT.setErrorMessage("立即执行失败");
+        }
+        return resultT;
+    }
 
 }
 
