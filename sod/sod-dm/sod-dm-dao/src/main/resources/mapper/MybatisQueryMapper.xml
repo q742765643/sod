@@ -751,13 +751,13 @@
             c_element_code in (select c_element_code from tab_omin_cm_cc_datumtypeelm where c_datum_code =
             #{c_datum_code})
             <if test="c_datatype != null and c_datatype != ''">
-                and upper(c_element_code) like #{c_datatype}
+                and upper(c_element_code) like '%${c_datatype}%'
             </if>
             <if test="c_datum_level != null and c_datum_level != ''">
-                and c_element_namech like #{c_datum_level}
+                and c_element_namech like '%${c_datum_level}%'
             </if>
             <if test="c_datumtype != null and c_datumtype != ''">
-                and upper(c_short_name) like #{c_datumtype}
+                and upper(c_short_name) like '%${c_datumtype}%'
             </if>
         </where>
     </select>
