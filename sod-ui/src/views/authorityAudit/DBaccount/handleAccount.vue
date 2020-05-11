@@ -41,7 +41,11 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="数据库选择" prop="applyDatabaseId">
-            <el-transfer v-model="msgFormDialog.applyDatabaseId" :data="dataBaseBox"></el-transfer>
+            <el-transfer
+              :titles="['未选择数据库列表', '已选择数据库列表']"
+              v-model="msgFormDialog.applyDatabaseId"
+              :data="dataBaseBox"
+            ></el-transfer>
           </el-form-item>
         </el-col>
       </el-row>

@@ -395,9 +395,14 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public String findByParentId(String parentId) {
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(parentId, 2);
+        List<DataClassEntity> byDDataId = this.dataClassDao.findByDDataId(parentId);
+        if (byDDataId==null||byDDataId.size()==0||byDDataId.get(0).getType()==2){
+            return "";
+        }
+        String pdataclassId = byDDataId.get(0).getDataClassId();
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(pdataclassId, 2);
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
-        if (parentId.length() > 8) {
+        if (pdataclassId.length() > 8) {
             if (dataClassDtos.size() > 0) {
                 String dataClassId = dataClassDtos.get(0).getDataClassId();
                 String newId = dataClassId.substring(0, dataClassId.length() - 5);
@@ -413,7 +418,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 String str = df.format(no);
                 return newId + ".M" + str;
             } else {
-                return parentId + ".M001";
+                return pdataclassId + ".M001";
             }
         } else {
             if (dataClassDtos.size() > 0) {
@@ -431,7 +436,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 String str = df.format(no);
                 return newId + "." + str;
             } else {
-                return parentId + ".0001";
+                return pdataclassId + ".0001";
             }
         }
     }

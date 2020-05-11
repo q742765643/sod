@@ -251,6 +251,7 @@ public class BackupHandler implements BaseHandler {
             resultT.setErrorMessage("数据备份表过程失败,资料名称{},错误{}",backupEntity.getProfileName(),OwnException.get(e));
             log.error("数据备份表过程失败,资料名称{},错误{}",backupEntity.getProfileName(),OwnException.get(e));
         }finally {
+            FileUtil.delFile(new File(strategyVo.getTempPtah()),resultT);
             FileUtil.delFile(new File(strategyVo.getTempZipPath()),resultT);
             FileUtil.delFileList(strategyVo.getDeleteFileList(),resultT);
             strategyVo.setEndTime(System.currentTimeMillis());

@@ -95,7 +95,7 @@
           <el-form-item label="时间范围">
             <el-date-picker
               style="width:300px"
-              v-model="dateRange"
+              v-model="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -438,7 +438,11 @@ export default {
     },
     dataBaseExpandForm() {
       this.loadingHis = true;
-      console.log(this.rowlogForm);
+      if (this.rowlogForm.dateRange) {
+        this.dateRange = this.rowlogForm.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       recordPage(this.addDateRange(this.rowlogForm, this.dateRange)).then(
         response => {
           this.logTableData = response.data.pageData;

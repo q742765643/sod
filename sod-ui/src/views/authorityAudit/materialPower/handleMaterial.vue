@@ -70,7 +70,7 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button type="primary" icon="el-icon-thumb" size="mini" @click="handlePower">授权</el-button>
-          <el-button type="danger" icon="el-icon-close" size="mini" @click="handleRefused">拒接</el-button>
+          <el-button type="danger" icon="el-icon-close" size="mini" @click="handleRefused">拒绝</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -254,8 +254,11 @@ export default {
       this.$prompt("请输入拒绝原因", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        inputPattern: /\S/,
-        inputErrorMessage: "拒绝原因不能为空"
+        inputValidator: value => {
+          if (value.trim().length < 1 || value.trim().length > 50) {
+            return "拒绝原因长度限制1-50个字符";
+          }
+        }
       })
         .then(({ value }) => {
           this.powerMethods(value);

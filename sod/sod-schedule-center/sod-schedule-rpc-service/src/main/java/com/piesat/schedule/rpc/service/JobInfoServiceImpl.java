@@ -173,7 +173,7 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
                 jobInfoEntity.setTriggerLastTime(nextValidTime.getTime());
                 scheduleThread.handT(jobInfoEntity);
             }
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

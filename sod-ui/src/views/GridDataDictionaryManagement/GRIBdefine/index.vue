@@ -3,7 +3,10 @@
     <!-- grib参数定义 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="GRIB版本:">
-        <el-input size="small" v-model="queryParams.gribVersion" placeholder="请输入GRIB版本" />
+        <el-select v-model.number="queryParams.gribVersion">
+          <el-option label="1" value="1"></el-option>
+          <el-option label="2" value="2"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="参数编码:">
         <el-input size="small" v-model="queryParams.parameterId" placeholder="请输入参数编码" />
@@ -235,6 +238,15 @@ export default {
           newSuperForm[superList[i].select] = superList[i].value;
         }
         Object.assign(this.queryParams, newSuperForm);
+      }
+      if (this.queryParams.publicConfig) {
+        if (this.queryParams.publicConfig == "是") {
+          this.queryParams.publicConfig = "Y";
+        } else if (this.queryParams.publicConfig == "否") {
+          this.queryParams.publicConfig = "N";
+        } else {
+          this.queryParams.publicConfig = "";
+        }
       }
       this.loading = true;
       gridEleDecodeDefineAll(this.queryParams).then(response => {

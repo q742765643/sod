@@ -55,7 +55,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="dateRange"
+          v-model="queryParams.dateRange"
           size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
@@ -310,6 +310,11 @@ export default {
     },
     /** 查询字典类型列表 */
     getList() {
+      if (this.queryParams.dateRange) {
+        this.dateRange = this.queryParams.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       this.loading = true;
       listBackupLog(this.addDateRange(this.queryParams, this.dateRange)).then(
         response => {
@@ -397,8 +402,16 @@ export default {
     },
     //导出
     handleExport() {
+      //显示延迟加载
+      const loading = this.$loading({
+        lock: true,
+        text: "下载中，请稍候",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
+        loading.close();
       });
     }
   }

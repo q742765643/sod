@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="dateRange"
+          v-model="queryParams.dateRange"
           size="small"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
@@ -356,6 +356,11 @@ export default {
     },
     /** 查询角色列表 */
     getList() {
+      if (this.queryParams.dateRange) {
+        this.dateRange = this.queryParams.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       this.loading = true;
       listRole(this.addDateRange(this.queryParams, this.dateRange)).then(
         response => {

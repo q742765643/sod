@@ -147,6 +147,9 @@
           </el-col>
           <el-col :span="10">
             <el-form-item label="单位审核材料" prop="examineMaterial">
+              <label slot="label">
+                <i style="color:red;">*</i>&nbsp;单位审核材料
+              </label>
               <el-upload
                 v-model="msgFormDialog.examineMaterial"
                 class="upload-demo"
@@ -197,6 +200,9 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="单位审核材料" prop="examineMaterial">
+              <label slot="label">
+                <i style="color:red;">*</i>&nbsp;单位审核材料
+              </label>
               <el-button @click="handleExport" size="small" type="success">下载查看审核文件</el-button>
             </el-form-item>
           </el-col>
