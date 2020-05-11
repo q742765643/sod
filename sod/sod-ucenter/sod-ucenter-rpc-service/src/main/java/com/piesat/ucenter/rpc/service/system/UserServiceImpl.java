@@ -529,4 +529,13 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         List<UserEntity> userEntities = this.userDao.findByUserType(userType);
         return userMapstruct.toDto(userEntities);
     }
+
+    @Override
+    public ResultT editPwd(UserDto user) {
+        UserDto userDto = this.selectUserByUserName(user.getUserName());
+        user.setId(userDto.getId());
+        user.setPassword(user.getPassword());
+        this.saveNotNull(this.userMapstruct.toEntity(user));
+        return ResultT.success();
+    }
 }

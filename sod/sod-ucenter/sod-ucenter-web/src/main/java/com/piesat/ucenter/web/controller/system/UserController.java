@@ -342,10 +342,7 @@ public class UserController {
             try {
                 String s = AESUtil.aesEncrypt(newPwd).trim();
                 user.setPassword(s);
-                ResultT<String> resultT = new ResultT<>();
-                userService.editBase(user);
-//                databaseUserService.updateBizPwd(bizUserid ,user.getDbIds() ,newPwd);
-                return resultT;
+                return userService.editPwd(user);
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResultT.failed(e.getMessage());

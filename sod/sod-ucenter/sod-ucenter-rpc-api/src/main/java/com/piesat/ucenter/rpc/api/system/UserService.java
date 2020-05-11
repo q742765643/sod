@@ -104,4 +104,6 @@ public interface UserService {
     ResultT editBase(UserDto user);
 
     List<UserDto> findByUserType(String userType);
+
+    ResultT editPwd(UserDto user);
 }
