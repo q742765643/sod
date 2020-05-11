@@ -1287,6 +1287,7 @@
         </where>
     </select>
 
+    
     <select id="getDataInfoByUserId"  resultType="java.util.Map">
         select nvl(sna.id,(sdc.data_class_id || srw.sdb_id)) as APPLY_ID,srw.sdb_id,
         dit.DATA_SERVICE_NAME dataname,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
