@@ -396,7 +396,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public String findByParentId(String parentId) {
         List<DataClassEntity> byDDataId = this.dataClassDao.findByDDataId(parentId);
-        if (byDDataId==null||byDDataId.size()==0){
+        if (byDDataId==null||byDDataId.size()==0||byDDataId.get(0).getType()==2){
             return "";
         }
         String pdataclassId = byDDataId.get(0).getDataClassId();
