@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -34,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 
 /**
  * @program: sod
@@ -44,7 +45,7 @@ import java.util.concurrent.Semaphore;
  **/
 @Slf4j
 public class GbaseBusiness extends BaseBusiness{
-    public static Semaphore semaphore= new Semaphore(20);
+    public static Semaphore semaphore= new Semaphore(50);
 
     @Override
     public void backUpKtable(BackupLogEntity backupLogEntity, StrategyVo strategyVo, ResultT<String> resultT) {
@@ -110,8 +111,8 @@ public class GbaseBusiness extends BaseBusiness{
         StringBuilder cmd=new StringBuilder();
         Runtime r = Runtime.getRuntime();
         StringBuilder msg=new StringBuilder();
-        BufferedReader bufrIn = null;
-        BufferedReader bufrError = null;
+        //BufferedReader bufrIn = null;
+        //BufferedReader bufrError = null;
         int exitVal=-1;
         try {
             DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
@@ -129,18 +130,35 @@ public class GbaseBusiness extends BaseBusiness{
                 String[] commands = new String[]{"/bin/sh", "-c", cmd.toString()};
 
                 Process proc = r.exec(commands);
-                exitVal = proc.waitFor();
+                // exitVal = proc.waitFor();
                 // 获取命令执行结果, 有两个结果: 正常的输出 和 错误的输出（PS: 子进程的输出就是主进程的输入）
-                bufrIn = new BufferedReader(new InputStreamReader(proc.getInputStream(), "UTF-8"));
-                bufrError = new BufferedReader(new InputStreamReader(proc.getErrorStream(), "UTF-8"));
+                //bufrIn = new BufferedReader(new InputStreamReader(proc.getInputStream(), "UTF-8"));
+                //bufrError = new BufferedReader(new InputStreamReader(proc.getErrorStream(), "UTF-8"));
 
                 // 读取输出
-                String line = null;
+             /*   String line = null;
                 while ((line = bufrIn.readLine()) != null) {
                     msg.append(line).append('\n');
                 }
                 while ((line = bufrError.readLine()) != null) {
                     msg.append(line).append('\n');
+                }*/
+                ExecutorService executorService = Executors.newFixedThreadPool(2);
+                Future<String> future1 = executorService.submit(()->{return handlerProcessBlock(proc.getInputStream());});
+                Future<String> future2 = executorService.submit(()->{return handlerProcessBlock(proc.getErrorStream());});
+                executorService.shutdown();
+                if (proc.waitFor(6, TimeUnit.HOURS)){//程序在限定时间内执行完毕
+                /* 退出码为0时 属于正常退出**/
+                    exitVal=proc.exitValue();
+                    msg.append(future1.get());
+                    if (proc.exitValue() != 0){//执行shell出错 记录错误信息
+                        msg.append(future2.get());
+                    }
+                }else {
+                    log.info("gbase exec time out!");//执行shell超时
+                    msg.append("gbase exec time out!");
+                    executorService.shutdownNow();//终止线程池任务执行
+                    proc.destroy();//kill 子进程
                 }
             }else {
                 resultT.setErrorMessage("gbase备份表{}失败,connect信息错误{}",tableName,sql.toString());
@@ -299,5 +317,30 @@ public class GbaseBusiness extends BaseBusiness{
         }
         return null;
     }
+
+    private static String handlerProcessBlock(InputStream inputStream){
+        BufferedReader reader = null;
+        try {
+            StringBuffer sb = new StringBuffer();
+            String buff;
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((buff = reader.readLine()) != null) {
+                sb.append(buff.trim()).append("\n");
+            }
+            return sb.toString();
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            if (reader != null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }
+
 }
 

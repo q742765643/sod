@@ -113,6 +113,7 @@ public class ImportData {
     private SyncFilterDao syncFilterDao;
     @GrpcHthtClient
     private BackupDao backupDao;
+
     @GrpcHthtClient
     private MoveDao moveDao;
     @GrpcHthtClient
@@ -235,6 +236,8 @@ public class ImportData {
         importGridDecoding();
         importAreaDefine();*/
         //importGridEEle();
+        //executeBackUpMove();
+        importBackUp();
         //executeBackUpMove();
 
     }
@@ -890,7 +893,7 @@ public class ImportData {
 
     //数据备份
     public void importBackUp() {
-        String sql = "select * from DMIN_DATA_BACKUP_TASK";
+        String sql = "select * from USR_SOD2.DMIN_DATA_BACKUP_TASK";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
 
@@ -934,6 +937,7 @@ public class ImportData {
             }
 
             BackupEntity backupEntity = new BackupEntity();
+            backupEntity.setId(m.get("TASK_ID").toString());
             backupEntity.setConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-0d}' and D_DATETIME>='{yyyy-MM-dd,-1d}'");
             backupEntity.setDataClassId(data_class_id);
             backupEntity.setDatabaseId(database_id);
@@ -946,7 +950,7 @@ public class ImportData {
             backupEntity.setParentId(parent_id);
             backupEntity.setProfileName(databaseEntity1.get(0).getDatabaseDefine().getDatabaseName() + "_" + databaseEntity1.get(0).getDatabaseName() + "_" + dataClassEntity.getClassName());
             backupEntity.setSecondConditions("D_DATA_ID='{ddataId}' and D_DATETIME<'{yyyy-MM-dd,-1d}' and D_DATETIME>='{yyyy-MM-dd,-2d}'");
-            backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUPTEST");
+            backupEntity.setStorageDirectory("/CMADAAS/EXCHANGE/SOD/BACKUP");
 
 
             List<DataTableEntity> dataTableEntities = dataTableDao.getByDatabaseIdAndClassId(database_id, data_class_id);
@@ -1000,7 +1004,8 @@ public class ImportData {
             if (cron_status != null) {
                 backupEntity.setTriggerStatus(cron_status);
             }
-            backupDao.saveNotNull(backupEntity);
+
+            backupService.saveBackup( backupMapstruct.toDto(backupEntity));
 
         }
     }
