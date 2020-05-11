@@ -279,7 +279,7 @@ export default {
         });
       } else if (name == "数据授权审核") {
         this.$router.push({
-          name: "资料访问权限审核",
+          name: "资料访问权限",
           params: { status: "0" + value }
         });
       } else if (name == "数据库账户审核") {

@@ -422,6 +422,7 @@ export default {
     async getAllLevelMethods() {
       await getAllLevel().then(response => {
         this.optionsLevels = response.data;
+        this.optionsLevels.push({ levelType: 999998 });
       });
     },
     async modeEleQueryAll() {

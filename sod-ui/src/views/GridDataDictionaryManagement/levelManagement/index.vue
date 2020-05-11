@@ -250,15 +250,25 @@ export default {
         return;
       }
       let ids = [];
+      let levelNames = [];
       this.choserow.forEach(element => {
         ids.push(element.id);
+        levelNames.push(element.levelName);
       });
-      levelDelete(ids.join(",")).then(response => {
-        if (response.code === 200) {
-          this.msgSuccess("删除成功");
-          this.getList();
-        }
-      });
+      this.$confirm("是否删除" + levelNames.join(","), "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          levelDelete(ids.join(",")).then(response => {
+            if (response.code === 200) {
+              this.msgSuccess("删除成功");
+              this.getList();
+            }
+          });
+        })
+        .catch(() => {});
     },
     tableExoprt() {},
     superClick() {}

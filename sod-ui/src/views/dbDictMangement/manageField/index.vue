@@ -34,13 +34,13 @@
         </el-form>
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
-            <el-button size="small" type="primary" icon="el-icon-plus" @click="addRow()">新增字典</el-button>
+            <el-button size="small" type="primary" icon="el-icon-plus" @click="addRow()">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="primary" icon="el-icon-edit" @click="editRow()">编辑字典</el-button>
+            <el-button size="small" type="primary" icon="el-icon-edit" @click="editRow()">编辑</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除字典</el-button>
+            <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteRow()">删除</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>

@@ -15,6 +15,10 @@ body {
   }
 }
 
+p {
+  word-break: break-all;
+}
+
 // 弹框
 .el-dialog__header {
   border-bottom: 1px solid #dcdfe6;
