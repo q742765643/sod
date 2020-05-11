@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -155,6 +156,27 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         jobInfoEntity.setTriggerLastTime(System.currentTimeMillis());
         jobInfoEntity.setType(type);
         scheduleThread.handT(jobInfoEntity);
+
+    }
+    public void executeB(String id,String time){
+        String type=jobInfoMapper.findTypeById(id);
+        String serviceName= ExecuteEnum.getService(type);
+        ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
+        JobInfoEntity jobInfoEntity=executeService.getById(id);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date=simpleDateFormat.parse(time);
+
+            Date nextValidTime = new CronExpression(jobInfoEntity.getJobCron()).getNextValidTimeAfter(date);
+            if(nextValidTime.getTime()<System.currentTimeMillis()){
+                jobInfoEntity.setType(type);
+                jobInfoEntity.setTriggerLastTime(nextValidTime.getTime());
+                scheduleThread.handT(jobInfoEntity);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

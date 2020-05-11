@@ -11,13 +11,13 @@
       <el-form-item label="上传时间">
         <el-date-picker
           size="small"
-          v-model="dateRange"
+          v-model="queryParams.dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           value-format="yyyy-MM-dd HH:mm:ss"
-        >></el-date-picker>
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -102,14 +102,11 @@ export default {
         pageSize: 10,
         fileName: "",
         fileSuffix: "",
-        endDate: "",
-        startDate: "",
         params: {
           orderBy: {
             updateTime: "desc"
           }
-        },
-        fileType: ""
+        }
       },
       dateRange: [],
       uoploaFile: "",
@@ -155,6 +152,11 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
+      if (this.queryParams.dateRange) {
+        this.dateRange = this.queryParams.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       getpage(this.addDateRange(this.queryParams, this.dateRange)).then(
         response => {
           this.tableData = response.data.pageData;
@@ -169,9 +171,11 @@ export default {
         pageSize: 10,
         fileName: "",
         fileSuffix: "",
-        endDate: "",
-        startDate: "",
-        order: "desc"
+        params: {
+          orderBy: {
+            updateTime: "desc"
+          }
+        }
       };
       this.dateRange = [];
       this.handleQuery();
