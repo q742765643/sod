@@ -21,6 +21,4 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
     List<DataClassEntity> findByParentIdOrderByDataClassIdDesc(String parentId);
 
     List<DataClassEntity> findByParentIdAndTypeOrderByDataClassIdDesc(String parentId,int type);
-
-    List<DataClassEntity> findByDDataId();
 }
