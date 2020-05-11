@@ -115,6 +115,7 @@ service.interceptors.response.use(res => {
       if (responseURL.indexOf('/comMetaData/syncDataNow') != -1 || responseURL.indexOf('/dm/dataAuthorityApply/updateRecordCheck') != -1 || responseURL.indexOf('/dm/dataAuthorityApply/updateRecordCheckCancel') != -1) {
         return res.data
       }
+      console.log(res.data.msg)
       Notification.error({
         dangerouslyUseHTMLString: true,
         message: res.data.msg

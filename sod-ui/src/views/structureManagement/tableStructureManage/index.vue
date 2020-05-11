@@ -634,9 +634,6 @@ export default {
         padding-left: 0px;
         padding-right: 0px;
       }
-      /* tr:nth-child(even) {
-        background: #edf6ff;
-      } */
     }
     .el-dropdown {
       margin-left: 1px;

@@ -28,7 +28,7 @@
       <el-form-item label="申请时间">
         <el-date-picker
           size="small"
-          v-model="dateRange"
+          v-model="queryParams.dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -218,6 +218,11 @@ export default {
     },
     /** 查询列表 */
     getList() {
+      if (this.queryParams.dateRange) {
+        this.dateRange = this.queryParams.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       this.loading = true;
       console.log(this.addDateRange(this.queryParams, this.dateRange));
       cldbApplicationAll(

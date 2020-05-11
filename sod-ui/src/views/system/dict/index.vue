@@ -45,7 +45,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="dateRange"
+          v-model="queryParams.dateRange"
           size="small"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
@@ -251,6 +251,11 @@ export default {
     /** 查询字典类型列表 */
     getList() {
       this.loading = true;
+      if (this.queryParams.dateRange) {
+        this.dateRange = this.queryParams.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       listType(this.addDateRange(this.queryParams, this.dateRange)).then(
         response => {
           this.typeList = response.data.pageData;

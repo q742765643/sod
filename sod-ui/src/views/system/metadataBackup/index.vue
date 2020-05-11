@@ -146,7 +146,7 @@
           <el-form-item label="时间范围">
             <el-date-picker
               style="width:300px"
-              v-model="dateRange"
+              v-model="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -400,8 +400,16 @@ export default {
       this.allDetailDialog = true;
     },
     handleExport() {
+      //显示延迟加载
+      const loading = this.$loading({
+        lock: true,
+        text: "下载中，请稍候",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
+        loading.close();
       });
     },
     handleFileExport(row) {
@@ -538,6 +546,11 @@ export default {
     //日志列表
     getListLog() {
       this.loading = true;
+      if (this.rowlogForm.dateRange) {
+        this.dateRange = this.rowlogForm.dateRange;
+      } else {
+        this.dateRange = [];
+      }
       console.log(this.rowlogForm);
       listLog(this.addDateRange(this.rowlogForm, this.dateRange)).then(
         response => {

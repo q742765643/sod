@@ -129,8 +129,16 @@ export default {
   created() {},
   methods: {
     handleExport(queryParam) {
+      //显示延迟加载
+      const loading = this.$loading({
+        lock: true,
+        text: "下载中，请稍候",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       downloadFile(queryParam).then(res => {
         this.downloadfileCommon(res);
+        loading.close();
       });
     },
     webClick() {
