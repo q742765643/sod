@@ -62,7 +62,13 @@
             :class="data.haveClass?'hasClass custom-tree-node':'custom-tree-node'"
             slot-scope="{ node, data }"
           >
-            <span class="el-tree-node__label">
+            <span class="el-tree-node__label" v-if="whichTree == '数据用途分类树'||whichTree == '数据库分类树'">
+              <i :class="data.icon"></i>
+              <el-popover placement="top-start" trigger="hover" :content="node.label">
+                <el-button type="text" slot="reference">{{ node.label }}</el-button>
+              </el-popover>
+            </span>
+            <span class="el-tree-node__label" v-else>
               <i :class="data.icon"></i>
               <el-popover
                 placement="top-start"
@@ -313,10 +319,15 @@ export default {
     },
     // 返回
     backTop() {
-      this.sourceTreeOp = true;
+      this.sourceTreeOp = false;
       this.publicActive = false;
       this.publicTreeTextActive = false;
       this.backBtn = false;
+      if (this.whichTree == "公共元数据结构树") {
+        this.publicActive = true;
+      } else {
+        this.sourceTreeOp = true;
+      }
     }
   }
 };

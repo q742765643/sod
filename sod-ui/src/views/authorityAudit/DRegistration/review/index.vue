@@ -129,7 +129,7 @@ export default {
       structureManageVisible: false, //表结构管理
       structureManageTitle: "",
       tableData: [],
-      tableDetail: {},
+      tableDetail: [],
       currentRow: [],
       returnMaterialInfo: {} //StructureMaterialSingle新增资料成功后返回的数据
     };
@@ -149,13 +149,18 @@ export default {
       if (this.stepNum == 1) {
         // 如果有字段，可以继续网下走
         if (
+          this.tableDetail.length > 0 &&
           this.tableDetail[0].columns &&
           this.tableDetail[0].columns.length > 0
         ) {
           this.stepNum = 2;
+          this.handleMsgObj = {};
+          this.handleMsgObj.pageName = "数据注册审核";
+          this.handleMsgObj.databaseId = this.tableData[0].DATABASE_ID; //目标库
+          this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         } else {
           this.$message({
-            message: "请新增字段！",
+            message: "表结构信息不完整",
             type: "danger"
           });
           return;
@@ -164,32 +169,25 @@ export default {
       }
       // 数据同步
       if (this.stepNum == 2) {
-        this.handleMsgObj = {};
-        this.handleMsgObj.pageName = "数据注册审核";
-        this.handleMsgObj.databaseId = this.tableData[0].DATABASE_ID; //目标库
-        this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         this.$refs.syncRef.trueDialog("ruleForm");
-        this.stepNum = 3;
         return;
       }
       // 数据迁移
       if (this.stepNum == 3) {
-        this.handleMsgObj = {};
-        this.handleMsgObj.pageName = "数据注册审核";
-        this.handleMsgObj.databaseId = this.tableData[0].DATABASE_ID; //目标库
-        this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
         this.$refs.moveRef.trueDialog("ruleForm");
-        this.stepNum = 4;
         return;
       }
       // 数据备份
       if (this.stepNum == 4) {
         this.$refs.backupRef.trueDialog("ruleForm");
-        this.stepNum = 5;
         return;
       }
     },
-
+    getStepFlag(stepFlag) {
+      if (stepFlag) {
+        this.stepNum = this.stepNum++;
+      }
+    },
     // 资料新增
     addOrEditSuccess(returnInfo) {
       console.log(returnInfo);

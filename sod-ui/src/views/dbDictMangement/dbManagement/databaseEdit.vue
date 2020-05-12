@@ -24,14 +24,14 @@
               v-model="msgFormDialog.databaseDto.databaseClassify"
             />
           </el-form-item>
-          <el-form-item label="数据库名称:">
+          <!--  <el-form-item label="数据库名称:">
             <el-input
               size="small"
               disabled="disabled"
               v-model="msgFormDialog.databaseDto.databaseName"
               placeholder="请输入数据库实例"
             />
-          </el-form-item>
+          </el-form-item>-->
           <el-form-item prop="id" label="数据库ID:">
             <el-input
               size="small"

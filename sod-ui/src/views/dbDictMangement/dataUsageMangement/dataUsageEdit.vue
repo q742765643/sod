@@ -17,8 +17,7 @@
           size="small"
           filterable
           v-model="msgFormDialog.storageType"
-          :disabled="isDisabled"
-          multiple="multiple"
+          multiple
           @change="$forceUpdate()"
         >
           <el-option
@@ -35,8 +34,7 @@
           size="small"
           filterable
           v-model="msgFormDialog.databaseId"
-          :disabled="isDisabled"
-          multiple="multiple"
+          multiple
         >
           <el-option
             v-for="item in dbNamesList"
@@ -92,6 +90,20 @@ export default {
         callback();
       }
     };
+    var DBIdValidate = (rule, value, callback) => {
+      if (!value || this.msgFormDialog.databaseId.length == 0) {
+        callback(new Error("请选择数据库名称"));
+      } else {
+        callback();
+      }
+    };
+    var TypeValidate = (rule, value, callback) => {
+      if (!value || this.msgFormDialog.storageType.length == 0) {
+        callback(new Error("请选择表类型"));
+      } else {
+        callback();
+      }
+    };
     return {
       isDisabled: false,
       //编辑页面列
@@ -120,10 +132,10 @@ export default {
         ],
 
         storageType: [
-          { required: true, message: "请选择表类型", trigger: "change" }
+          { required: true, validator: TypeValidate, trigger: "change" }
         ],
         databaseId: [
-          { required: true, message: "请选择数据库名称", trigger: "change" }
+          { required: true, validator: DBIdValidate, trigger: "change" }
         ],
         serialNumber: [
           { required: true, message: "请输入序号 ", trigger: "blur" }

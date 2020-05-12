@@ -89,7 +89,7 @@
         </el-row>
 
         <el-row class="row-bg">
-          <el-form :model="stableFilterForm" label-width="150px" class="superSearchDialog">
+          <el-form :model="stableFilterForm" label-width="150px" class="spacliClass">
             <el-form-item
               v-for="domain in stableFilterForm.domains"
               :key="domain.key"
@@ -182,7 +182,7 @@
               prop="syncPeriod"
               v-if="this.msgFormDialog.syncType == 1"
             >
-              <el-input size="medium" v-model="msgFormDialog.syncPeriod" placeholder="请输入数字"></el-input>
+              <el-input-number size="medium" v-model="msgFormDialog.syncPeriod" :min="0"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -222,7 +222,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="批处理条数(条)" prop="batchAmount">
-              <el-input size="medium" v-model="msgFormDialog.batchAmount" placeholder="请输入数字"></el-input>
+              <el-input-number size="medium" v-model="msgFormDialog.batchAmount" :min="0"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -294,7 +294,7 @@
         </el-row>
         <el-row
           type="flex"
-          class="row-bg"
+          class="spacliClass"
           justify="center"
           v-if="this.msgFormDialog.targetType == 0"
         >
@@ -330,7 +330,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row type="flex" class="row-bg" justify="center" v-if="this.addnewtargettable == 1">
+        <el-row type="flex" class="spacliClass" justify="center" v-if="this.addnewtargettable == 1">
           <el-col :span="12">
             <el-form-item label="目标表2" prop="targetTable">
               <i class="el-icon-plus"></i>
@@ -583,9 +583,11 @@ export default {
       await this.initDetail();
     }
     if (
+      this.handleObj.pageName == "数据注册审核" ||
       this.handleObj.pageName == "存储结构概览" ||
       this.handleObj.pageName == "资料存储策略"
     ) {
+      console.log(this.handleObj);
       this.msgFormDialog.targetDatabaseId = this.handleObj.databaseId; //目标库
       this.msgFormDialog.targetTable = this.handleObj.dataClassId; //目标表
       // 目标表下拉框
@@ -776,7 +778,10 @@ export default {
       if (!selectTargetTableID) {
         return;
       }
-      if (this.sourceColumnDetail.length == 0) {
+      if (
+        this.sourceColumnDetail.length == 0 &&
+        this.handleObj.pageName != "数据注册审核"
+      ) {
         this.$message({
           showClose: true,
           message: "请先选择一个源表"
@@ -1059,6 +1064,7 @@ export default {
         });
 
         this.$refs[formName].validate(valid => {
+          debugger;
           if (valid) {
             let msg = "";
             if (this.handleObj.id) {
@@ -1073,7 +1079,11 @@ export default {
                   type: "success",
                   message: msg
                 });
-                this.$emit("resetQuery");
+                if (this.handleObj.pageName == "数据注册审核") {
+                  this.$emit("getStepFlag", true);
+                } else {
+                  this.$emit("resetQuery");
+                }
               } else {
                 this.$message({
                   type: "error",
@@ -1082,8 +1092,10 @@ export default {
               }
             });
           } else {
-            // console.log("error submit!!");
-            return false;
+            if (this.handleObj.pageName == "数据注册审核") {
+              this.$emit("getStepFlag", false);
+            }
+            console.log("error submit!!");
           }
         });
       }
@@ -1104,23 +1116,26 @@ export default {
   .el-select {
     width: 100%;
   }
-  .el-icon-plus,
-  .el-icon-minus {
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
-    text-align: center;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
+  .spacliClass {
+    .el-icon-plus,
+    .el-icon-minus {
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      text-align: center;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .el-icon-plus {
+      background: #409eff;
+    }
+    .el-icon-minus {
+      background: #f56c6c;
+      margin-left: 8px;
+    }
   }
-  .el-icon-plus {
-    background: #409eff;
-  }
-  .el-icon-minus {
-    background: #f56c6c;
-    margin-left: 8px;
-  }
+
   .brotherItem {
     .el-form-item__content {
       margin-left: 1px !important;
@@ -1130,6 +1145,9 @@ export default {
     display: flex;
     justify-content: flex-end;
     padding: 10px 0;
+  }
+  .el-input-number {
+    width: 100%;
   }
 }
 </style>

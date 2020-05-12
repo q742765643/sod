@@ -311,9 +311,8 @@ export default {
     searchFun(checkedNodeStr, treeRefreshData) {
       if (treeRefreshData) {
         this.tableName = treeRefreshData.name;
+        this.treeRefreshData = treeRefreshData;
       }
-
-      this.treeRefreshData = treeRefreshData;
       // this.searchObj.stringList = "";
       if (checkedNodeStr && checkedNodeStr.style) {
         this.handleObj = checkedNodeStr;

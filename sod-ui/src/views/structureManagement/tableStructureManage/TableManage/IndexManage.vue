@@ -175,7 +175,7 @@ export default {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.getIndexTable();
-              this.$refs["indexForm"].resetFields();
+              this.$refs["indexFormRef"].resetFields();
               this.dialogStatus.indexDialog = false;
             } else {
               this.$message({

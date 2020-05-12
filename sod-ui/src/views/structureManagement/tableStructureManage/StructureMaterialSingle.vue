@@ -297,6 +297,21 @@ export default {
         this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
         this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList;
+        getNewDataClassId({ parentId: this.materialData.ddataId }).then(res => {
+          if (res.code == 200) {
+            this.materialData.dataClassId = res.data;
+            if (res.data == "") {
+              let code = checkNode.id.split(".");
+              if (code.length == 4) {
+                let fCode = code[3].substring(0, 1);
+                code[3] = code[3].replace(fCode, "M");
+                this.materialData.dataClassId = code.join(".");
+              } else {
+                this.materialData.dataClassId = checkNode.id;
+              }
+            }
+          }
+        });
         this.editUseShow = true;
         console.log(this.materialData);
       }
