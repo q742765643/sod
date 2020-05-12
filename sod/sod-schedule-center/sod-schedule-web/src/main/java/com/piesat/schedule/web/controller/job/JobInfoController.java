@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -145,6 +146,23 @@ public class JobInfoController {
         }
         return resultT;
     }
+    @GetMapping(value = "/findThread")
+    @ApiOperation(value = "获取所有线程", notes = "获取所有线程")
+    public ResultT<List<String>> findThread(){
+      ResultT<List<String>> resultT=new ResultT<>();
+      List<String> list=new ArrayList<>();
+      ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+      int noThreads = currentGroup.activeCount();
+      Thread[] lstThreads = new Thread[noThreads];
+      currentGroup.enumerate(lstThreads);
+      for (int i = 0; i < noThreads; i++){
+          list.add("线程号：" + i + " = " + lstThreads[i].getName());
+
+      }
+      resultT.setData(list);
+      return resultT;
+    }
+
 
 }
 

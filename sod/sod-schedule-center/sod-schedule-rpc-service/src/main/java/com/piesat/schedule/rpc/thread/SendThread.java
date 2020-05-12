@@ -38,9 +38,10 @@ public class SendThread {
     private RedisLock redisLock;
     public void init(){
 
-      new Thread(()->{
-          this.start();
-      }).start();
+        Thread scheduleThread = new Thread(this::start);
+        scheduleThread.setDaemon(true);
+        scheduleThread.setName("job -send");
+        scheduleThread.start();
     }
     public void start(){
         while (!sendThreadToStop) {
@@ -63,7 +64,7 @@ public class SendThread {
                 int j=0;
 
                 long startTime=System.currentTimeMillis();
-                while (System.currentTimeMillis()-startTime<5000) {
+                while (System.currentTimeMillis()-startTime<50000) {
                     try {
                         Set<Object> objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
                         if(objects.isEmpty()){//||count>1000
@@ -95,8 +96,10 @@ public class SendThread {
                             }
                         }
                     } catch (Exception e) {
+                        i++;
+                        j++;
                         log.error("线程消费第二个WHILE异常:{}", OwnException.get(e));
-                        break;
+                        //break;
                     }
 
                 }
@@ -120,7 +123,7 @@ public class SendThread {
             executeService.executeBusiness(jobInfo,resultT);
         } catch (Exception e) {
             resultT.setCode(301);
-            e.printStackTrace();
+            log.error("调度发送失败{}",OwnException.get(e));
         }
         return resultT;
     }

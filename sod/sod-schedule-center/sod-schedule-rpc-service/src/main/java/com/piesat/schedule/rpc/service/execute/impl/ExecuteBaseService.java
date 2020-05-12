@@ -81,6 +81,11 @@ public abstract class ExecuteBaseService {
       }
       public  Server operationalControl(JobInfoEntity jobInfoEntity,List<Server> servers,ResultT<String> resultT){
             if(servers.size()==0){
+                  try {
+                        Thread.sleep(6000);
+                  } catch (InterruptedException e) {
+                        e.printStackTrace();
+                  }
                   resultT.setCode(301);
                   return null;
             }

@@ -42,7 +42,7 @@ public class ExecuteClearServiceImpl extends ExecuteBaseService implements Execu
     @Override
     public void checkExecutorBlockStrategyEnum(List<Server> servers, JobInfoEntity jobInfoEntity) {
          ClearEntity clearEntity= (ClearEntity) jobInfoEntity;
-         if("XUGU".equals(clearEntity.getDatabaseType())){
+         if("XUGU".equals(clearEntity.getDatabaseType().toUpperCase())){
              jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.CLUSTER_SERIAL.name());
          }else{
              jobInfoEntity.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.TASK_SERIAL.name());
