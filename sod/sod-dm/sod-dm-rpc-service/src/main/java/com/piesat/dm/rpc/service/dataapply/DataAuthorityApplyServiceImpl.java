@@ -85,8 +85,6 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Autowired
     private DataTableService dataTableService;
     @Autowired
-    private DataAuthorityRecordDao dataAuthorityRecordService;
-    @Autowired
     private DataClassService dataClassService;
     @Autowired
     private DataTableDao dataTableDao;
@@ -131,6 +129,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         if(StringUtils.isNotNullString((String) dataAuthorityApplyEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) dataAuthorityApplyEntity.getParamt().get("endTime"));
         }
+        List<String> allApplyId = this.dataAuthorityRecordDao.findAllApplyId();
+        specificationBuilder.add("id", SpecificationOperator.Operator.in.name(),allApplyId);
         Sort sort = Sort.by(Sort.Direction.DESC,"auditStatus","createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<DataAuthorityApplyEntity> dataAuthorityApplyEntities = (List<DataAuthorityApplyEntity>) pageBean.getPageData();
