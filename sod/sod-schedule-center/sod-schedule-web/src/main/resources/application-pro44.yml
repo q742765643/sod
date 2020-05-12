@@ -24,7 +24,6 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
-  client:
     schedule-server:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
@@ -107,8 +106,8 @@ eureka:
     service-url:
       defaultZone: http://10.40.17.44:28328/eureka/
 
-DITASKADDURL: http://10.20.67.109/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
-DITASKDELURL: http://10.20.67.109/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
 
 log:
   path: ./logs

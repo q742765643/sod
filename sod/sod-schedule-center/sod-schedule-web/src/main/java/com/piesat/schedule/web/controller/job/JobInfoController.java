@@ -1,13 +1,37 @@
 package com.piesat.schedule.web.controller.job;
 
+import com.alibaba.fastjson.JSON;
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.grpc.config.GrpcAutoConfiguration;
 import com.piesat.common.utils.OwnException;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.schedule.dao.backup.BackupDao;
+import com.piesat.schedule.dao.clear.ClearDao;
+import com.piesat.schedule.dao.move.MoveDao;
+import com.piesat.schedule.entity.backup.BackupEntity;
+import com.piesat.schedule.entity.clear.ClearEntity;
+import com.piesat.schedule.entity.move.MoveEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
+import com.piesat.schedule.rpc.api.backup.BackupService;
+import com.piesat.schedule.rpc.api.clear.ClearService;
+import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.schedule.rpc.dto.clear.ClearDto;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
+import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
+import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
+import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
+import com.piesat.schedule.rpc.proxy.GrpcServiceProxy;
 import com.piesat.schedule.rpc.service.DataBaseService;
+import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.schedule.util.CronExpression;
 import com.piesat.util.ResultT;
+import io.grpc.Channel;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.internal.DnsNameResolverProvider;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @program: sod
@@ -40,6 +65,26 @@ public class JobInfoController {
     private JobInfoService jobInfoService;
     @Autowired
     private DataBaseService dataBaseService;
+    @Autowired
+    private BackupService backupService;
+    @Autowired
+    private BackupMapstruct backupMapstruct;
+    @Autowired
+    private MoveMapstruct moveMapstruct;
+    @Autowired
+    private MoveService moveService;
+    @Autowired
+    private ClearMapstruct clearMapstruct;
+    @Autowired
+    private ClearService clearService;
+    @Autowired
+    private BackupDao backupDao;
+    @Autowired
+    private MoveDao moveDao;
+    @Autowired
+    private ClearDao clearDao;
+    @Autowired
+    private DiSendService diSendService;
 
     @GetMapping("/findAllDataBase")
     @ApiOperation(value = "查询所有物理库接口", notes = "查询所有物理库接口")
@@ -149,20 +194,75 @@ public class JobInfoController {
     @GetMapping(value = "/findThread")
     @ApiOperation(value = "获取所有线程", notes = "获取所有线程")
     public ResultT<List<String>> findThread(){
-      ResultT<List<String>> resultT=new ResultT<>();
-      List<String> list=new ArrayList<>();
-      ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
-      int noThreads = currentGroup.activeCount();
-      Thread[] lstThreads = new Thread[noThreads];
-      currentGroup.enumerate(lstThreads);
-      for (int i = 0; i < noThreads; i++){
-          list.add("线程号：" + i + " = " + lstThreads[i].getName());
+        ResultT<List<String>> resultT=new ResultT<>();
+        List<String> list=new ArrayList<>();
+        ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+        int noThreads = currentGroup.activeCount();
+        Thread[] lstThreads = new Thread[noThreads];
+        currentGroup.enumerate(lstThreads);
+        for (int i = 0; i < noThreads; i++){
+            list.add("线程号：" + i + " = " + lstThreads[i].getName()+",线程状态="+ lstThreads[i].getState());
 
-      }
-      resultT.setData(list);
-      return resultT;
+        }
+        resultT.setData(list);
+        return resultT;
     }
+    @GetMapping(value = "/channel")
+    @ApiOperation(value = "获取所有通道", notes = "获取所有通道")
+    public ResultT<List<String>> channel(){
+        ConcurrentHashMap<String, Channel> grpcChannel= GrpcAutoConfiguration.ProxyUtil.grpcChannel;
+        ConcurrentHashMap<String, ManagedChannel> grpcChannel1= GrpcServiceProxy.grpcChannel;
+        ResultT<List<String>> resultT=new ResultT<>();
+        List<String> list=new ArrayList<>();
+        grpcChannel.forEach((k,v)->list.add("Channel:"+k));
+        grpcChannel1.forEach((k,v)->list.add("ManagedChannel:"+k));
+        resultT.setData(list);
+        return resultT;
+    }
+    @GetMapping(value = "/addchannel")
+    @ApiOperation(value = "增加通道", notes = "增加通道")
+    public ResultT<List<String>> addchannel(){
 
+        ResultT<List<String>> resultT=new ResultT<>();
+        List<String> list=new ArrayList<>();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("10.40.17.35", 18058)
+                .defaultLoadBalancingPolicy("round_robin")
+                .nameResolverFactory(new DnsNameResolverProvider())
+                .usePlaintext().build();
+        resultT.setData(list);
+        return resultT;
+    }
+    @GetMapping(value = "/sendDI")
+    @ApiOperation(value = "发送di配置", notes = "发送di配置")
+    public ResultT<String> sendDI() {
+        List<BackupEntity> backupEntityList = backupDao.findAll();
+        for (BackupEntity backupEntity : backupEntityList) {
+            try {
+                diSendService.sendBackup(backupEntity);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<MoveEntity> moveEntityList = moveDao.findAll();
+        for (MoveEntity moveDto : moveEntityList) {
+            try {
+                diSendService.sendMove(moveDto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<ClearEntity> clearEntityList = clearDao.findAll();
+        for (ClearEntity clearDto : clearEntityList) {
+            try {
+                diSendService.sendClear(clearDto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new ResultT<>();
+    }
 
 }
 
