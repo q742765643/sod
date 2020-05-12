@@ -1287,12 +1287,12 @@
         </where>
     </select>
 
-    
+
     <select id="getDataInfoByUserId"  resultType="java.util.Map">
         select nvl(sna.id,(sdc.data_class_id || srw.sdb_id)) as APPLY_ID,srw.sdb_id,
         dit.DATA_SERVICE_NAME dataname,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
         wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
-        sdd.id as PHYSICSID,sdd.DATABASE_NAME PHYSICSNAME
+        sdd.id as PHYSICSID,sdd.DATABASE_NAME PHYSICNAME,sdc.is_access is_publish
         from t_sod_data_table dit
         inner join T_SOD_DATA_LOGIC sdl on dit.class_logic_id = sdl.id
         inner join T_SOD_DATA_CLASS sdc on sdl.data_class_id = sdc.data_class_id
@@ -1309,7 +1309,7 @@
         sna.id,srw.sdb_id,
         dit.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,sdb.id,sdc.D_DATA_ID,
         sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name,sdb.schema_name,
-        sdd.id,sdd.DATABASE_NAME
+        sdd.id,sdd.DATABASE_NAME,sdc.is_access
         order by sdc.data_class_id asc
     </select>
 
@@ -1319,7 +1319,7 @@
             nvl(sna.id,(sdc.DATA_CLASS_ID||srw.SDB_ID)) as APPLY_ID,srw.SDB_ID,
             sdt.DATA_SERVICE_NAME dataname,sdc.DATA_CLASS_ID ,sdb.id as SCHEMAID,sdc.D_DATA_ID,srw.database_id,
             wm_concat(sdt.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
-            sdd.id PHYSICSID,sdd.DATABASE_NAME PHYSICSNAME
+            sdd.id PHYSICSID,sdd.DATABASE_NAME PHYSICNAME,sdc.is_access is_publish
         from
             T_SOD_DATABASE_SPECIAL_READ_WRITE srw
             inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
@@ -1334,7 +1334,7 @@
             sna.id,
             sdt.DATA_SERVICE_NAME,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,sdb.id,
             sdl.logic_flag,sld.LOGIC_NAME,sdb.database_name,sdb.schema_name,
-            sdd.id,sdd.DATABASE_NAME
+            sdd.id,sdd.DATABASE_NAME,sdc.is_access
     </select>
 
     <select id="getDataClassTree" parameterType="String" resultType="DataClassEntity">
