@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataclass.DataOnlineTimeDao;
 import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -65,8 +66,12 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         for(int i=0; i<lists.size();i++){
             Map<String, Object> stringObjectMap = lists.get(i);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            stringObjectMap.put("BEGIN_TIME",sdf.format(stringObjectMap.get("BEGIN_TIME")));
-            stringObjectMap.put("END_TIME", sdf.format(stringObjectMap.get("END_TIME")));
+            if(stringObjectMap.get("BEGIN_TIME") != null){
+                stringObjectMap.put("BEGIN_TIME",sdf.format(stringObjectMap.get("BEGIN_TIME")));
+            }
+            if(stringObjectMap.get("END_TIME") != null){
+                stringObjectMap.put("END_TIME", sdf.format(stringObjectMap.get("END_TIME")));
+            }
             for (int j = 0; j < dataOnlineTimeEntities.size(); j++) {
                 DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeEntities.get(j);
                 if (dataOnlineTimeEntity.getDataClassId().equals(stringObjectMap.get("DATA_CLASS_ID"))) {
