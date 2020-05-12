@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author: zzj
  * @create: 2019-12-27 18:03
  **/
-@Component
+/*@Component
 public class CustomConfig implements ApplicationRunner {
     @Autowired
     private SendThread sendThread;
@@ -20,5 +20,5 @@ public class CustomConfig implements ApplicationRunner {
     public void run(ApplicationArguments applicationArguments) throws Exception {
        sendThread.init();
     }
-}
+}*/
 

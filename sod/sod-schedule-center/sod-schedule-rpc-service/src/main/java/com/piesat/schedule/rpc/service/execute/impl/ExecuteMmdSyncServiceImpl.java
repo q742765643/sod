@@ -2,6 +2,7 @@ package com.piesat.schedule.rpc.service.execute.impl;
 
 import java.util.List;
 
+import com.piesat.schedule.rpc.thread.ScheduleThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,12 +52,18 @@ public class ExecuteMmdSyncServiceImpl extends ExecuteBaseService implements Exe
 	 */
 	public void executeBusiness(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
 		log.info(">>>>>>>>>>执行公共元数据自动同步");
-		try {
-			String id = jobInfoEntity.getId();
-			comMetadataSyncService.syncDataNow(id, null, 1);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ScheduleThread.threadPool.execute(
+				()->{
+					try {
+						String id = jobInfoEntity.getId();
+
+						comMetadataSyncService.syncDataNow(id, null, 1);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+		);
+
 		
 	}
 

@@ -117,13 +117,14 @@ public class SendThread {
 
     public ResultT<String> execute(JobInfoEntity jobInfo){
         ResultT<String> resultT=new ResultT<>();
+        String serviceName="";
         try {
-            String serviceName= ExecuteEnum.getService(jobInfo.getType());
+            serviceName= ExecuteEnum.getService(jobInfo.getType());
             ExecuteService executeService= (ExecuteService) SpringUtil.getBean(serviceName);
             executeService.executeBusiness(jobInfo,resultT);
         } catch (Exception e) {
             resultT.setCode(301);
-            log.error("调度发送失败{}",OwnException.get(e));
+            log.error("调度发送失败{},{}",OwnException.get(e),serviceName);
         }
         return resultT;
     }

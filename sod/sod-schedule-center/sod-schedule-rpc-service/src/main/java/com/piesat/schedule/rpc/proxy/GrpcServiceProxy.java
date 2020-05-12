@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  **/
 @Slf4j
 public class GrpcServiceProxy<T>  implements InvocationHandler {
-    private static ConcurrentHashMap<String, ManagedChannel> grpcChannel=new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ManagedChannel> grpcChannel=new ConcurrentHashMap<>();
     private Class<T> grpcService;
 
     private Object invoker;
@@ -77,22 +77,25 @@ public class GrpcServiceProxy<T>  implements InvocationHandler {
         GrpcClientService grpcClientService= SpringUtil.getBean(GrpcClientService.class);
         String serviceName=grpcServer.getHost()+":"+grpcServer.getGrpcPort();
         ManagedChannel channel=null;
-        if(null!=grpcChannel.get(serviceName)){
-            channel=grpcChannel.get(serviceName);
-        }else{
+        synchronized (this){
+            if(null!=grpcChannel.get(serviceName)){
+                channel=grpcChannel.get(serviceName);
+            }else{
 
             /*channel= ManagedChannelBuilder.forAddress(grpcServer.getHost(), grpcServer.getGrpcPort()).nameResolverFactory(new
                     DnsNameResolverProvider()).usePlaintext(true).build();*/
-            channel = ManagedChannelBuilder.forAddress(grpcServer.getHost(), grpcServer.getGrpcPort())
-                    .defaultLoadBalancingPolicy("round_robin")
-                    .nameResolverFactory(new DnsNameResolverProvider())
-                    .usePlaintext().build();
+                channel = ManagedChannelBuilder.forAddress(grpcServer.getHost(), grpcServer.getGrpcPort())
+                        .defaultLoadBalancingPolicy("round_robin")
+                        .nameResolverFactory(new DnsNameResolverProvider())
+                        .usePlaintext().build();
             /*channel  = NettyChannelBuilder
                     .forAddress(grpcServer.getHost(),grpcServer.getGrpcPort())
                     .sslContext(GrpcSslContexts.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
                     .build();*/
-            grpcChannel.put(serviceName,channel);
+                grpcChannel.put(serviceName,channel);
+            }
         }
+
         GrpcResponse response = grpcClientService.handle(serializeType, request,channel);
         log.info("grpc{}.{},返回码{}",request.getClazz(),request.getMethod(),response.getStatus());
 
