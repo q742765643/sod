@@ -779,12 +779,11 @@ section {
   text-indent: 7px;
   font-size: 14px;
   cursor: pointer;
-  margin-bottom: 10px;
   border-radius: 6px;
   height: 40px;
   line-height: 40px;
   background: #f5f5f5;
-  margin-top: 10px;
+  margin: 20px 0;
   i {
     padding-right: 6px;
   }
