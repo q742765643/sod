@@ -90,6 +90,9 @@ export default {
   z-index: 1001;
   width: calc(100% - #{$sideBarWidth});
   transition: width 0.28s;
+  #tags-view-container {
+    background: #f1f4f7;
+  }
 }
 
 .hideSidebar .fixed-header {

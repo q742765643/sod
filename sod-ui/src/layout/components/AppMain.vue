@@ -32,16 +32,22 @@ export default {
 }
 
 .fixed-header + .app-main {
-  padding-top: 50px;
+  padding-top: 70px;
+  .app-container {
+    margin-top: 0;
+  }
 }
 
 .hasTagsView {
   .app-main {
     min-height: calc(100vh - 110px);
+    .app-container {
+      margin-top: 0;
+    }
   }
 
   .fixed-header + .app-main {
-    padding-top: 84px;
+    padding-top: 106px;
   }
 }
 </style>

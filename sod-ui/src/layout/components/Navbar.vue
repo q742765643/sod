@@ -19,9 +19,9 @@
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
-        <el-tooltip content="布局大小" effect="dark" placement="bottom">
+        <!--  <el-tooltip content="布局大小" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip>-->
         <el-popover placement="bottom" width="360" trigger="hover" popper-class="headerpop">
           <div class="divInfo">
             <ul class="ulInfoBox">
@@ -129,7 +129,12 @@ export default {
     },
     // 获取库表修改通知
     getChangeEditList() {
-      let obj = { pageNum: 1, pageSize: 3, title: "表", params: {"orderBy":{"operTime":"desc"}} };
+      let obj = {
+        pageNum: 1,
+        pageSize: 3,
+        title: "表",
+        params: { orderBy: { operTime: "desc" } }
+      };
       list(obj).then(response => {
         this.infoList = response.data.pageData;
       });
@@ -153,8 +158,7 @@ export default {
       }).then(() => {
         this.$store.dispatch("LogOut").then(() => {
           //location.reload();
-          this.$router.push('/login');
-
+          this.$router.push("/login");
         });
       });
     },
@@ -265,8 +269,8 @@ export default {
     cursor: pointer;
     .ulInfoBox li {
       color: #fff;
-      font-size: 12px;
-      padding: 35px 32px 15px 32px;
+      font-size: 13px;
+      padding: 4px 12px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     }
     .ulInfoBox li:hover {
@@ -275,7 +279,6 @@ export default {
     .editInfo {
       display: flex;
       justify-content: space-between;
-      padding-top: 12px;
       color: #5d99dd;
     }
     .viewAll {
