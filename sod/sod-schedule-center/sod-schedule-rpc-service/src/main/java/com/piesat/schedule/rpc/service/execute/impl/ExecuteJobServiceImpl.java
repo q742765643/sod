@@ -21,7 +21,7 @@ public class ExecuteJobServiceImpl extends ExecuteBaseService implements Execute
 
     @Override
     public JobInfoEntity getById(String id) {
-        return jobInfoDao.getOne(id);
+        return jobInfoDao.findById(id).get();
     }
 
     @Override
