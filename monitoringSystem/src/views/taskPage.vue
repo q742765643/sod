@@ -366,7 +366,9 @@ export default {
     },
     /**获取Rabbit监控表格*/
     getRabbitMonitorLag() {
-      let urlobj = { alias: this.editableTabsValue };
+        let urlobj = new FormData();
+        urlobj.append("alias",this.editableTabsValue)
+        //let urlobj = { alias: this.editableTabsValue };
       this.axios.post(interfaceObj.rabbitMonitorLag, urlobj).then(res => {
         if (res.status == 200) {
           this.editableTabs.forEach(item => {

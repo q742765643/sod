@@ -278,7 +278,7 @@ export default {
               namedata = [];
             if (res.data.data) {
               res.data.data.forEach((item, index) => {
-                let total = (item.total / 1024 / 1024).toFixed(0) + "GB";
+                let total = (item.free / 1024 / 1024 / 1024).toFixed(2) + "GB";
                 this.fileList.push({
                   deviceName: item.deviceName,
                   usedPct: (item.free / item.total).toFixed(2),

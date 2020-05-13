@@ -81,7 +81,13 @@ class ProcessService @Autowired()(processMapper: ProcessMapper,processDao:Proces
               p.timestamp=pl.timestamp
            }
          }
+        if("".equals(p.processState)){
+            p.processState="0"
+            p.timestamp=new Date()
+
+        }
       }
+
       list
 
   }

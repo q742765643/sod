@@ -17,7 +17,7 @@
     </resultMap>
     <sql id="Base_Column_List">
          "host.name" ip,
-         avg("system.cpu.total.pct") totalCpuPct,
+         avg("system.cpu.total.pct")/avg("system.cpu.cores") totalCpuPct,
          avg("system.memory.actual.used.pct") usedPct,
          avg("system.filesystem.used.pct") filePct,
          max("system.network.in.packets") netWork
