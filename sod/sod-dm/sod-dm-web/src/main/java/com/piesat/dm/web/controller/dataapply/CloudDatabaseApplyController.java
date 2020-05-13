@@ -86,6 +86,7 @@ public class CloudDatabaseApplyController {
     }
 
     @ApiOperation(value="申请文件下载接口")
+    @RequiresPermissions("dm:cloudDatabaseApply:download")
     @GetMapping(value="/download")
     public void download(HttpServletRequest request, HttpServletResponse response) {
         String fullPath = request.getParameter("filePath");
@@ -190,7 +191,7 @@ public class CloudDatabaseApplyController {
     }
 
     @GetMapping("/updateExamineStatus")
-//    @RequiresPermissions("dm:cloudDatabaseApply:updateExamineStatus")
+    @RequiresPermissions("dm:cloudDatabaseApply:updateExamineStatus")
     @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
     public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id,String examineStatus)
     {
@@ -222,6 +223,7 @@ public class CloudDatabaseApplyController {
     }
 
     @DeleteMapping("/deleteByIdPortal")
+    @RequiresPermissions("dm:cloudDatabaseApply:deleteByIdPortal")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> deleteByIdPortal(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
     {
@@ -249,6 +251,7 @@ public class CloudDatabaseApplyController {
         return resultT;
     }
     @GetMapping(value = "/getRecentTime")
+    @RequiresPermissions("dm:cloudDatabaseApply:getRecentTime")
     @ApiOperation(value = "根据存储编码和cts编码查询进线时间", notes = "根据存储编码和cts编码查询进线时间")
     public ResultT getRecentTime(String classDataId, String ctsCode)
     {
