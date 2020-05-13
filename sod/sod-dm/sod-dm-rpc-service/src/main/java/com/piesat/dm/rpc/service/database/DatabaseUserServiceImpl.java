@@ -139,7 +139,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (userEntity != null) {
                     dto.setUserName(userEntity.getWebUsername());
                     dto.setDeptName(userEntity.getDeptName());
-                    dto.setTutorPhone(userEntity.getTutorPhone());
+                    dto.setPhonenumber(userEntity.getPhonenumber());
                 }
             }
         }

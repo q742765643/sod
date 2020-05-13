@@ -60,6 +60,7 @@ public class DictDataController {
      * 根据字典类型查询字典数据信息
      */
     @GetMapping(value = "/dictType/{dictType}")
+    @RequiresPermissions("system:dict:dictType")
     public ResultT<List<DictDataDto>> dictType(@PathVariable String dictType)
     {
         ResultT<List<DictDataDto>> resultT=new ResultT<>();

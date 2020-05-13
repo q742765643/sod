@@ -231,7 +231,9 @@ public class Cassandra implements DatabaseDcl {
             instance.execute(cql);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResultT.failed(e.getMessage());
+            if (!e.getMessage().contains("新口令不能与老口令相同")) {
+                return ResultT.failed(e.getMessage());
+            }
         }
         return ResultT.success();
     }

@@ -59,7 +59,7 @@ public class DatabaseUserManagerController {
     private String defaultPassword;
 
     @ApiOperation(value = "分页获取数据列表")
-    //@RequiresPermissions("dm:databaseUser:all")
+    @RequiresPermissions("dm:databaseUser:all")
     @GetMapping("/all")
     public ResultT<PageBean> list(DatabaseUserDto databaseUserDto, int pageNum, int pageSize) {
         try {
@@ -75,7 +75,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "根据id查询")
-    //@RequiresPermissions("dm:databaseUser:getById")
+    @RequiresPermissions("dm:databaseUser:getById")
     @GetMapping(value = "/getById")
     public ResultT get(String id) {
         try {
@@ -88,7 +88,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "根据用户id查询")
-    //@RequiresPermissions("dm:databaseUser:getByUserId")
+    @RequiresPermissions("dm:databaseUser:getByUserId")
     @GetMapping(value = "/getByUserId")
     public ResultT getByUserId(String userId) {
         try {
@@ -128,7 +128,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "申请文件上传接口")
-    @RequiresPermissions("api:databaseUser:upload")
+    @RequiresPermissions("dm:databaseUser:upload")
     @PostMapping(value = "/api/databaseUser/upload")
     public ResultT uploadFile(MultipartHttpServletRequest request) {
         try {
@@ -241,7 +241,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "根据用户id和审核状态查询")
-//    @RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
+    @RequiresPermissions("dm:databaseUser:findByUserIdAndExamineStatus")
     @GetMapping(value = "/findByUserIdAndExamineStatus")
     public ResultT findByUserIdAndExamineStatus(String userId, String examineStatus) {
         try {
@@ -362,7 +362,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "数据库访问账户修改")
-    //@RequiresPermissions("dm:databaseUser:updateDatabaseUser")
+    @RequiresPermissions("dm:databaseUser:updateDatabaseUser")
     @PostMapping(value = "updateDatabaseUser")
     public ResultT updateDatabaseUser(HttpServletRequest request) {
         try {
@@ -375,6 +375,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    @RequiresPermissions("dm:databaseUser:addOrUpdateDatabaseUser")
     @PostMapping(value = "/addOrUpdateDatabaseUser")
     public ResultT addOrUpdateDatabaseUser(HttpServletRequest request, @RequestParam(value = "apply_material", required = false) MultipartFile applyMaterial) {
         try {
@@ -460,6 +461,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "获取数据库访问账户默认密码（Portal调用）")
+    @RequiresPermissions("dm:databaseUser:getDefaultPassword")
     @GetMapping(value = "/getDefaultPassword")
     public ResultT<String> getDefaultPassword() {
         try {
@@ -473,6 +475,7 @@ public class DatabaseUserManagerController {
     }
 
     @ApiOperation(value = "修改密码（Portal调用）")
+    @RequiresPermissions("dm:databaseUser:changePassword")
     @GetMapping(value = "/changePassword")
     public ResultT changePassword(String id, String oldPwd, String newPwd) {
         try {

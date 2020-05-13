@@ -84,7 +84,7 @@
           <el-form-item label="联系方式">
             <el-input
               size="small"
-              v-model="msgFormDialog.tutorPhone"
+              v-model="msgFormDialog.phonenumber"
               :disabled="isDisabled"
               placeholder="联系方式"
             ></el-input>
@@ -474,7 +474,7 @@ export default {
         //这里的userBox就是上面遍历的数据源
         return item.userName === selectUserId; //筛选出匹配数据
       });
-      this.msgFormDialog.tutorPhone = obj.phone;
+      this.msgFormDialog.phonenumber = obj.phonenumber;
       this.msgFormDialog.deptName = obj.deptName;
     },
     // 获取数据库

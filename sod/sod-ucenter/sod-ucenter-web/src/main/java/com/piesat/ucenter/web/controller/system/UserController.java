@@ -381,7 +381,7 @@ public class UserController {
         return resultT;
     }
 
-//    @RequiresPermissions("system:user:getUserByType")
+    @RequiresPermissions("system:user:getUserByType")
     @GetMapping(value = "/getUserByType")
     @ApiOperation(value = "根据类型获取用户", notes = "根据类型获取用户")
     public ResultT getAllPortalUser(String userType)
