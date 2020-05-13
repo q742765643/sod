@@ -571,7 +571,7 @@ export default {
         //这里的userBox就是上面遍历的数据源
         return item.userName === selectUserId; //筛选出匹配数据
       });
-      this.msgFormDialog.telephone = obj.tutorPhone;
+      this.msgFormDialog.telephone = obj.phonenumber;
       this.msgFormDialog.department = obj.deptName;
     },
     // 获取所有用户信息

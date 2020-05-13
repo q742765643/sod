@@ -30,10 +30,10 @@
 
     <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="databaseUpId" label="账户ID" width="200" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="userName" label="关联用户" width="100px"></el-table-column>
+      <el-table-column prop="databaseUpId" label="账户ID" width="180" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="userName" label="关联用户" width="120px"></el-table-column>
       <el-table-column prop="deptName" label="机构" width="140px"></el-table-column>
-      <el-table-column prop="tutorPhone" label="联系方式" width="120px"></el-table-column>
+      <el-table-column prop="phonenumber" label="联系方式" width="120px"></el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="160px" sortable="custom">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>

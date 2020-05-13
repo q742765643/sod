@@ -82,7 +82,7 @@ export default {
       } else if (this.superDialogObj.pageName == "存储字段检索") {
         this.superChose = [
           {
-            label: "公共元数据库字段",
+            label: "公共元数据字段",
             value: "dbEleCode"
           },
           {
@@ -229,10 +229,6 @@ export default {
           {
             value: "flowDir",
             label: "数据流向标识"
-          },
-          {
-            value: "sourceDBId",
-            label: "源库"
           },
           {
             value: "sourceDBId",

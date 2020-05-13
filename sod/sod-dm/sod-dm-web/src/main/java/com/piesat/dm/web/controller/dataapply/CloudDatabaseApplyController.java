@@ -51,6 +51,7 @@ public class CloudDatabaseApplyController {
     private String fileAddress;
 
     @GetMapping("/list")
+    @RequiresPermissions("dm:cloudDatabaseApply:list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     public ResultT<PageBean> list(CloudDatabaseApplyDto cloudDatabaseApplyDto, int pageNum, int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
@@ -62,6 +63,7 @@ public class CloudDatabaseApplyController {
 
     @ApiOperation(value="申请文件上传接口")
     @PostMapping(value="/upload")
+    @RequiresPermissions("dm:cloudDatabaseApply:upload")
     public ResultT uploadFile(MultipartHttpServletRequest request) {
         try {
             // 获取文件存储路径 , 如果没有 , 创建
@@ -84,6 +86,7 @@ public class CloudDatabaseApplyController {
     }
 
     @ApiOperation(value="申请文件下载接口")
+    @RequiresPermissions("dm:cloudDatabaseApply:download")
     @GetMapping(value="/download")
     public void download(HttpServletRequest request, HttpServletResponse response) {
         String fullPath = request.getParameter("filePath");
@@ -134,7 +137,7 @@ public class CloudDatabaseApplyController {
     }
 
     @PostMapping(value = "/save")
-    @RequiresPermissions("dm:cloudDatabaseApply:add")
+    @RequiresPermissions("dm:cloudDatabaseApply:save")
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
         try {
@@ -149,6 +152,7 @@ public class CloudDatabaseApplyController {
     }
 
     @PutMapping("/edit")
+    @RequiresPermissions("dm:cloudDatabaseApply:edit")
     @ApiOperation(value = "编辑", notes = "编辑")
     public ResultT<CloudDatabaseApplyDto> edit(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
     {
@@ -159,6 +163,7 @@ public class CloudDatabaseApplyController {
     }
 
     @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    @RequiresPermissions("dm:cloudDatabaseApply:addOrUpdate")
     @PostMapping(value = "/addOrUpdate")
     public ResultT addOrUpdate(HttpServletRequest request, @RequestParam(value = "examineMaterial", required = false) MultipartFile applyMaterial) {
         try {
@@ -186,7 +191,7 @@ public class CloudDatabaseApplyController {
     }
 
     @GetMapping("/updateExamineStatus")
-//    @RequiresPermissions("dm:cloudDatabaseApply:updateExamineStatus")
+    @RequiresPermissions("dm:cloudDatabaseApply:updateExamineStatus")
     @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
     public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id,String examineStatus)
     {
@@ -197,7 +202,7 @@ public class CloudDatabaseApplyController {
     }
 
     @GetMapping(value = "/getById")
-//    @RequiresPermissions("dm:cloudDatabaseApply:getById")
+    @RequiresPermissions("dm:cloudDatabaseApply:getById")
     @ApiOperation(value = "根据id查询", notes = "根据id查询")
     public ResultT<CloudDatabaseApplyDto> getById(String id)
     {
@@ -218,6 +223,7 @@ public class CloudDatabaseApplyController {
     }
 
     @DeleteMapping("/deleteByIdPortal")
+    @RequiresPermissions("dm:cloudDatabaseApply:deleteByIdPortal")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> deleteByIdPortal(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
     {
@@ -228,12 +234,14 @@ public class CloudDatabaseApplyController {
 
     @ApiOperation(value = "根据字典类型查询")
     @GetMapping("/getDictDataByType/{type}")
+    @RequiresPermissions("dm:cloudDatabaseApply:getDictDataByType")
     public ResultT getDictDataByType(@PathVariable String type){
         List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType(type);
         return  ResultT.success(dictDataDtos);
     }
 
     @GetMapping(value = "/getByUserId")
+    @RequiresPermissions("dm:cloudDatabaseApply:getByUserId")
     @ApiOperation(value = "根据用户id查询", notes = "根据用户id查询")
     public ResultT<List<CloudDatabaseApplyDto>> getByUserId(String userId)
     {
@@ -243,6 +251,7 @@ public class CloudDatabaseApplyController {
         return resultT;
     }
     @GetMapping(value = "/getRecentTime")
+    @RequiresPermissions("dm:cloudDatabaseApply:getRecentTime")
     @ApiOperation(value = "根据存储编码和cts编码查询进线时间", notes = "根据存储编码和cts编码查询进线时间")
     public ResultT getRecentTime(String classDataId, String ctsCode)
     {

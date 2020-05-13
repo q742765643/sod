@@ -14,8 +14,8 @@ object KafkaProducerDemo {
   def main(args: Array[String]): Unit = {
     val prop = new Properties
     // 指定请求的kafka集群列表
-    prop.put("bootstrap.servers", "meteo_cloud1:9092,meteo_cloud2:9092,meteo_cloud3:9092") // 指定响应方式
-    //prop.setProperty("zookeeper.connect", "meteo_cloud2:2181")
+    prop.put("bootstrap.servers", "meteo-cloud1:9092,meteo-cloud2:9092,meteo-cloud3:9092") // 指定响应方式
+    //prop.setProperty("zookeeper.connect", "meteo-cloud2:2181")
 
     //prop.put("acks", "0")
     prop.put("acks", "all")

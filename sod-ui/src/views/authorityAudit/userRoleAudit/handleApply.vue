@@ -215,14 +215,13 @@ export default {
     powerMethods(value) {
       this.loading = true;
       let obj = {};
-      debugger;
       obj.userId = this.forId;
       obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
         let cobj = {};
         cobj.id = element.ID;
         cobj.applyId = element.APPLY_ID;
-        cobj.databaseId = element.SPECIAL_ID;
+        cobj.databaseId = element.DATABASE_ID;
         cobj.applyAuthority = element.APPLY_AUTHORITY;
         if (value) {
           cobj.authorize = 2;
