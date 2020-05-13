@@ -95,4 +95,8 @@ public class DatabaseSpecialReadWriteDto extends BaseDto {
 
     @ApiParam("四级编码")
     private String dDataId;
+
+    //接受前端条件查询参数 通过/拒绝
+    private String applyAuthorityString;
+    private String examineStatusString;
 }
