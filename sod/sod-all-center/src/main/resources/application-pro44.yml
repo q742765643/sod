@@ -109,12 +109,16 @@ log:
   path: ./log
   level: INFO
 
+#数据库可视化部署节点
 mng:
-  ip: 10.40.16.17
+  ip: 10.40.17.44
 
+#公共元数据接口
 mmd:
   userName: dsmsys
   password: nmic@100200
+
+#归档系统接口
 are:
   userName: usr_music
   password: music#2020
