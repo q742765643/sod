@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -38,6 +39,7 @@ public class CommonController {
 	 * @param response
 	 */
 	@ApiOperation(value="根据文件路径下载文件",notes="根据文件路径下载文件")
+    @RequiresPermissions("api:com:downloadByPath")
 	@GetMapping(value="/api/com/downloadByPath")
 	public void downloadByPath(HttpServletRequest request, HttpServletResponse response) {
 		String fullPath = request.getParameter("filePath");

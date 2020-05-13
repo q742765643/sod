@@ -110,4 +110,6 @@ public class DatabaseUserDto extends BaseDto {
     private String deptName;
 
     private String tutorPhone;
+
+    private String phonenumber;
 }

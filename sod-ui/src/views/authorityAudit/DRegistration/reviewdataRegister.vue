@@ -45,8 +45,10 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="审核状态">
-              <el-radio v-model="registerForm.examineStatus" :label="1">通过</el-radio>
-              <el-radio v-model="registerForm.examineStatus" :label="2">不通过</el-radio>
+              <el-radio-group v-model="registerForm.examineStatus">
+                <el-radio :label="1">通过</el-radio>
+                <el-radio :label="2">不通过</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
@@ -73,10 +75,7 @@
 </template>
 
 <script>
-import {
-  logicDefineAll,
-  updateStatus
-} from "@/api/authorityAudit/DRegistration/reviewdataRegister";
+import { updateStatus } from "@/api/authorityAudit/DRegistration/reviewdataRegister";
 export default {
   name: "reviewDataRegister",
   props: {
@@ -93,11 +92,7 @@ export default {
     };
   },
   created() {
-    /* logicDefineAll().then(response => {
-      this.logicDBArr = response.data;
-    }); */
     this.registerForm = this.handleObj;
-    this.registerForm.examineStatus = 1;
   },
   methods: {
     checkFuc(type) {
