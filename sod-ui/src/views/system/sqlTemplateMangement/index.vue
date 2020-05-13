@@ -41,11 +41,7 @@
 import handleSQL from "@/views/system/sqlTemplateMangement/handleSql";
 import {
   getAllSqlList, //获取模板数据
-  getDBtype, //获取数据库厂商
-  saveSqlTemplate, //添加模板
-  isAlreadyTem, //是否已存在模板
   delTemplate, //删除模板
-  editTemplate //编辑模板
 } from "@/api/system/sqlTemplateMangement";
 export default {
   components: {
