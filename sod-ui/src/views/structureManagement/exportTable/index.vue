@@ -306,6 +306,14 @@ export default {
     },
     // 导出
     exportClick() {
+      if (this.checkdTreesArry.length == 0) {
+        this.$message({
+          showClose: true,
+          message: "请选择要导出的数据",
+          type: "error"
+        });
+        return;
+      }
       this.handleExportObj = {};
       let ids = [];
       this.checkdTreesArry.forEach(element => {

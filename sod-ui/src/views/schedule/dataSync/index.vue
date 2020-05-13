@@ -292,23 +292,21 @@ export default {
           this.queryParams[element.value] = this.queryParams.searchValue;
         }
       });
-      // 高级搜索
+      // 判断是否是高级搜索
+      let queryObj = {};
       if (superMsg && superMsg.domains) {
+        this.queryParams.pageNum = 1;
         let superList = superMsg.domains;
         let newSuperForm = {};
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        Object.assign(this.queryParams, newSuperForm);
+        queryObj = Object.assign(this.queryParams, newSuperForm);
+      } else {
+        queryObj = this.queryParams;
       }
-      console.log(this.queryParams);
       this.loading = true;
-      this.queryParams.params = {
-        orderBy: {
-          updateTime: "desc"
-        }
-      };
-      syncList(this.queryParams).then(response => {
+      syncList(queryObj).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -364,7 +362,6 @@ export default {
       this.handleObj = {};
     },
     closeSuperSearch() {
-      this.resetQuery();
       this.dialogSuperSearch = false;
     },
     /** 删除按钮操作 */

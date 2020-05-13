@@ -156,6 +156,7 @@ export default {
     },
     /** 查询列表 */
     getList(superSearchForm) {
+      // 判断是否是高级搜索
       let queryObj = {};
       if (superSearchForm) {
         this.queryParams.pageNum = 1;

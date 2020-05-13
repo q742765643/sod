@@ -377,18 +377,21 @@ export default {
     },
     /** 查询列表 */
     getList(superMsg) {
-      // 高级搜索
+      // 判断是否是高级搜索
+      let queryObj = {};
       if (superMsg && superMsg.domains) {
+        this.queryParams.pageNum = 1;
         let superList = superMsg.domains;
         let newSuperForm = {};
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        Object.assign(this.queryParams, newSuperForm);
+        queryObj = Object.assign(newSuperForm, this.queryParams);
+      } else {
+        queryObj = this.queryParams;
       }
       this.loading = true;
-      console.log(this.queryParams);
-      storageConfigurationList(this.queryParams).then(response => {
+      storageConfigurationList(queryObj).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
