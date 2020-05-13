@@ -145,6 +145,30 @@ public class LoginController {
         }
         return resultT;
     }
+
+    @ApiOperation(value = "第三方登录", notes = "第三方登录")
+    @GetMapping("/getToken")
+    public ResultT<Map<String,Object>> getToken()
+    {
+        ResultT<Map<String,Object>> resultT=new ResultT<>();
+        Map<String,Object> map=new HashMap<>();
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            UserDto loginUser = (UserDto) subject.getPrincipal();
+            map.put("token", subject.getSession().getId());
+            map.put("userId", loginUser.getUserName());
+            resultT.setData(map);
+        } catch (LockedAccountException e) {
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_402_ERROR);
+        }catch (UnknownAccountException e){
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_404_ERROR);
+        }catch (IncorrectCredentialsException e){
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
+        }catch (AuthenticationException ex){
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_405_ERROR);
+        }
+        return resultT;
+    }
     /**
      * 校验token
      */
