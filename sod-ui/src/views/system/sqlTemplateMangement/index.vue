@@ -119,6 +119,7 @@ export default {
     },
     addSqlTemplate() {
       this.dialogTitle = "新增模板";
+      this.handleObj = {};
       this.handleDailyVisible = true;
     },
 

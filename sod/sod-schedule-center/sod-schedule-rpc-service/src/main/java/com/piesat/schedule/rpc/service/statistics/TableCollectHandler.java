@@ -31,6 +31,7 @@ import java.util.*;
  * @description TODO
  * @date 2020/5/4 10:16
  */
+
 @Service("tableCollectHandler")
 public class TableCollectHandler  implements BaseHandler {
 

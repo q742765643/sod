@@ -99,12 +99,12 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="迁移限制频率" prop="moveLimit">
-            <el-input v-model="msgFormDialog.moveLimit" placeholder="请输入迁移限制频率单位为秒" />
+            <el-input-number v-model="msgFormDialog.moveLimit" :min="0"></el-input-number>秒
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+            <el-input-number v-model="msgFormDialog.executorTimeout" :min="0"></el-input-number>分钟
           </el-form-item>
         </el-col>
 
@@ -133,7 +133,7 @@
         </el-col>
         <el-col :span="20">
           <el-form-item label="执行策略" prop="jobCron">
-            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" />
+            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="4">
@@ -341,7 +341,11 @@ export default {
             updateMove(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
-                this.$emit("cancelHandle");
+                if (this.handleObj.pageName == "数据注册审核") {
+                  this.$emit("getStepFlag", true);
+                } else {
+                  this.$emit("cancelHandle");
+                }
               } else {
                 this.msgError(response.msg);
               }
@@ -350,11 +354,19 @@ export default {
             addMove(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
-                this.$emit("cancelHandle");
+                if (this.handleObj.pageName == "数据注册审核") {
+                  this.$emit("getStepFlag", true);
+                } else {
+                  this.$emit("cancelHandle");
+                }
               } else {
                 this.msgError(response.msg);
               }
             });
+          }
+        } else {
+          if (this.handleObj.pageName == "数据注册审核") {
+            this.$emit("getStepFlag", false);
           }
         }
       });

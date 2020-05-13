@@ -417,6 +417,7 @@ export default {
     };
   },
   created() {
+    console.log(this.$route.params.status);
     // 查询数据分类
     getDataClassify().then(response => {
       this.dbtypeselect = response.data;

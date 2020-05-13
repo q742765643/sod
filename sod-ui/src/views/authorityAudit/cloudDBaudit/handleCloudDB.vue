@@ -174,18 +174,15 @@
         <el-row type="flex" class="row-bg" justify="center" v-else>
           <el-col :span="8">
             <el-form-item label="审核状态" prop="examineStatus">
-              <el-radio
+              <el-radio-group
+                v-model="msgFormDialog.examineStatus"
                 @change="statusChange"
                 :disabled="isDetailStatus"
-                v-model="msgFormDialog.examineStatus"
-                label="02"
-              >允许</el-radio>
-              <el-radio
-                @change="statusChange"
-                :disabled="isDetailStatus"
-                v-model="msgFormDialog.examineStatus"
-                label="03"
-              >拒绝</el-radio>
+              >
+                <el-radio label="02" :disabled="exeFlag">允许</el-radio>
+                <el-radio label="03" :disabled="exeFlag">拒绝</el-radio>
+                <el-radio label="05">释放</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -220,7 +217,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <el-card class="box-card" v-if="examineStatus || msgFormDialog.storageLogic !='database'">
+      <el-card class="box-card" v-if="msgFormDialog.storageLogic !='database'">
         <div slot="header" class="clearfix">
           <span>分配信息</span>
         </div>
@@ -367,7 +364,7 @@
 
     <!-- 确定取消 -->
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm')" v-if="!isDetailStatus">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
   </section>
@@ -444,11 +441,10 @@ export default {
       uploadData: {},
       upLoadUrl: baseUrl + "/dm/cloudDatabaseApply/upload",
       isDisabled: false,
-      examineStatus: true,
       userBox: [], //获取所有用户
       storageSpaceList: [],
       storageLogicList: [],
-
+      exeFlag: false,
       contantTaskChose: [],
       msgFormDialog: {
         userId: "",
@@ -619,21 +615,26 @@ export default {
     // 获取服务器详情
     initServerDetail() {
       if (this.handleObj.id) {
+        debugger;
         // 修改
         this.msgFormDialog = this.handleObj;
         this.msgFormDialog.userId = this.handleObj.application_user;
         this.isDetail = true;
         if (this.msgFormDialog.examineStatus == "02") {
-          this.examineStatus = true;
           this.isDetailStatus = true;
         } else if (this.msgFormDialog.examineStatus == "03") {
           this.isDetailStatus = true;
-          this.examineStatus = false;
           this.isReason = true;
         } else {
           this.isDetailStatus = false;
-          this.examineStatus = false;
-          console.log("没有状态");
+        }
+
+        if (this.handleObj.examineStatus == "04") {
+          this.exeFlag = true;
+          this.msgFormDialog.examineStatus = "05";
+        }
+        if (this.msgFormDialog.examineStatus == "01") {
+          this.msgFormDialog.examineStatus = "02";
         }
         this.storageChange(this.msgFormDialog.storageLogic);
       }
@@ -641,10 +642,8 @@ export default {
     //
     statusChange(val) {
       if (val == "02") {
-        this.examineStatus = true;
         this.isReason = false;
       } else {
-        this.examineStatus = false;
         this.isReason = true;
       }
     },
@@ -677,58 +676,54 @@ export default {
     },
 
     trueDialog(formName) {
-      if (this.isDetailStatus == true) {
-        this.$refs[formName].resetFields();
-        this.$emit("cancelHandle");
-      } else {
-        console.log(this.msgFormDialog);
-        if (!this.msgFormDialog.examineMaterial) {
-          this.$message({
-            type: "error",
-            message: "请选择审核材料"
-          });
-          return;
-        }
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            if (this.handleObj.id) {
-              editCldb(this.msgFormDialog).then(res => {
-                if (res.code == 200) {
-                  this.$message({
-                    type: "success",
-                    message: "编辑成功"
-                  });
-                  this.$emit("handleDialogClose");
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: res.msg
-                  });
-                }
-              });
-            } else {
-              this.msgFormDialog.examineStatus = "02";
-              saveCldb(this.msgFormDialog).then(res => {
-                if (res.code == 200) {
-                  this.$message({
-                    type: "success",
-                    message: "增加成功"
-                  });
-                  this.$emit("handleDialogClose");
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: res.msg
-                  });
-                }
-              });
-            }
-          } else {
-            console.log("error submit!!");
-            return false;
-          }
+      console.log(this.msgFormDialog);
+      if (!this.msgFormDialog.examineMaterial) {
+        this.$message({
+          type: "error",
+          message: "请选择审核材料"
         });
+        return;
       }
+
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          /*  if (this.handleObj.id) {
+            editCldb(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "编辑成功"
+                });
+                this.$emit("handleDialogClose");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
+            });
+          } else {
+            this.msgFormDialog.examineStatus = "02";
+            saveCldb(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "增加成功"
+                });
+                this.$emit("handleDialogClose");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
+            });
+          } */
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     cancelDialog(formName) {
       this.$refs[formName].resetFields();

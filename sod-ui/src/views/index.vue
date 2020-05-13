@@ -274,32 +274,32 @@ export default {
     goPageUrl(name, value) {
       if (name == "新增资料审核") {
         this.$router.push({
-          //name: "数据注册审核",
-          path: "/authorityAudit/DRegistration",
+          name: "数据注册审核",
+          // path: "/authorityAudit/DRegistration",
           params: { status: value }
         });
       } else if (name == "数据授权审核") {
         this.$router.push({
-          //name: "资料访问权限审核",
-          path: "/authorityAudit/materialPower",
+          name: "资料访问权限",
+          // path: "/authorityAudit/materialPower",
           params: { status: "0" + value }
         });
       } else if (name == "数据库账户审核") {
         this.$router.push({
-          //name: "数据库访问账户",
-          path: "/authorityAudit/DBaccount",
+          name: "数据库访问账户",
+          // path: "/authorityAudit/DBaccount",
           params: { status: String(value - 1) }
         });
       } else if (name == "业务专题库审核") {
         this.$router.push({
-          //name: "专题库审核",
-          path: "/authorityAudit/topicLibraryAudit",
+          name: "专题库审核",
+          // path: "/authorityAudit/topicLibraryAudit",
           params: { status: String(value) }
         });
       } else if (name == "云数据库审核") {
         this.$router.push({
-          //name: "云数据库审核",
-          path: "/authorityAudit/cloudDBaudit",
+          name: "云数据库审核",
+          // path: "/authorityAudit/cloudDBaudit",
           params: { status: "0" + value }
         });
       }
@@ -779,12 +779,11 @@ section {
   text-indent: 7px;
   font-size: 14px;
   cursor: pointer;
-  margin-bottom: 10px;
   border-radius: 6px;
   height: 40px;
   line-height: 40px;
   background: #f5f5f5;
-  margin-top: 10px;
+  margin: 20px 0;
   i {
     padding-right: 6px;
   }

@@ -302,7 +302,11 @@ export default {
             updateBackup(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
-                this.$emit("cancelHandle");
+                if (this.handleObj.pageName == "数据注册审核") {
+                  this.$emit("getStepFlag", true);
+                } else {
+                  this.$emit("cancelHandle");
+                }
               } else {
                 this.msgError(response.msg);
               }
@@ -311,11 +315,19 @@ export default {
             addBackup(this.msgFormDialog).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
-                this.$emit("cancelHandle");
+                if (this.handleObj.pageName == "数据注册审核") {
+                  this.$emit("getStepFlag", true);
+                } else {
+                  this.$emit("cancelHandle");
+                }
               } else {
                 this.msgError(response.msg);
               }
             });
+          }
+        } else {
+          if (this.handleObj.pageName == "数据注册审核") {
+            this.$emit("getStepFlag", false);
           }
         }
       });

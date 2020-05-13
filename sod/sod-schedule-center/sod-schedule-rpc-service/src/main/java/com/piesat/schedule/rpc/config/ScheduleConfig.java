@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 public class ScheduleConfig implements InitializingBean, DisposableBean {
     @Autowired
     private ScheduleThread scheduleThread;
+    @Autowired
+    private SendThread sendThread;
     @Override
     public void destroy() throws Exception {
 
@@ -24,6 +26,7 @@ public class ScheduleConfig implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+       sendThread.init();
        scheduleThread.start();
     }
 }
