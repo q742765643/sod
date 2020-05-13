@@ -231,25 +231,29 @@ export default {
     /** 查询列表 */
     getList(superMsg) {
       // 判断是否是高级搜索
+      let queryObj = {};
       if (superMsg && superMsg.domains) {
+        this.queryParams.pageNum = 1;
         let superList = superMsg.domains;
         let newSuperForm = {};
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        Object.assign(this.queryParams, newSuperForm);
+        queryObj = Object.assign(newSuperForm, this.queryParams);
+      } else {
+        queryObj = this.queryParams;
       }
-      if (this.queryParams.publicConfig) {
-        if (this.queryParams.publicConfig == "是") {
-          this.queryParams.publicConfig = "Y";
-        } else if (this.queryParams.publicConfig == "否") {
-          this.queryParams.publicConfig = "N";
+      if (queryObj.publicConfig) {
+        if (queryObj.publicConfig == "是") {
+          queryObj.publicConfig = "Y";
+        } else if (queryObj.publicConfig == "否") {
+          queryObj.publicConfig = "N";
         } else {
-          this.queryParams.publicConfig = "";
+          queryObj.publicConfig = "";
         }
       }
       this.loading = true;
-      gridEleDecodeDefineAll(this.queryParams).then(response => {
+      gridEleDecodeDefineAll(queryObj).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
