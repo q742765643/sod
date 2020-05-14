@@ -225,7 +225,14 @@ public class  ScheduleThread {
                 String  type = (String) redisUtil.hget(QUARTZ_HTHT_CRON + jobInfo.getId(), "type");
                 String serviceName = ExecuteEnum.getService(type);
                 ExecuteService executeService = (ExecuteService) SpringUtil.getBean(serviceName);
-                JobInfoEntity newJob = executeService.getById(jobInfo.getId());
+                JobInfoEntity newJob = null;
+                try {
+                    newJob = executeService.getById(jobInfo.getId());
+                } catch (Exception e) {
+                    jobInfoService.stop(jobInfo.getId());
+                    log.error(OwnException.get(e));
+                    return;
+                }
                 if (1 != newJob.getTriggerStatus()) {
                     jobInfoService.stop(newJob.getId());
                     return;

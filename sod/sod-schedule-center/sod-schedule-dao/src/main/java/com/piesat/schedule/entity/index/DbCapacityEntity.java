@@ -37,9 +37,9 @@ public class DbCapacityEntity extends BaseEntity{/**
 	private String databaseLogic;
 	
 	@Column(name="TOTAL_CAPACITY",length=10)
-	private String totalCapacity;
+	private long totalCapacity;
 	
 	@Column(name="USED_CAPACITY",length=10)
-	private String usedCapacity;
+	private long usedCapacity;
 
 }

@@ -41,7 +41,8 @@ spring:
       max-request-size: 1000000000
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=USR_SOD
+    #模式区分大小写大写为"USR_SOD"需带引号
+    url: jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=usr_sod
     username: soder
     password: soder123
     type: com.alibaba.druid.pool.DruidDataSource
@@ -74,7 +75,7 @@ spring:
     open-in-view: false
   redis:
     host: 10.1.6.117
-    port: 6379
+    port: 8001
     timeout: 50000
 #    password:
 mybatis:

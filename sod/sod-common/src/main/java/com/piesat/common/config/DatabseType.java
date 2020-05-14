@@ -38,6 +38,9 @@ public class DatabseType {
         if(url.indexOf("xugu")!=-1){
             type="xugu";
         }
+        if(url.indexOf("postgresql")!=-1){
+            type="postgresql";
+        }
 
     }
 
