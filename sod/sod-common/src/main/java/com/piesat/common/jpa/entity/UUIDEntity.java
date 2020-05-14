@@ -20,7 +20,7 @@ import java.io.Serializable;
 public class UUIDEntity implements Serializable
 {
     @Id
-    @Column(length = 32)
+    @Column(length = 50)
     @GeneratedValue(generator = "htht.uuid")
     @GenericGenerator(name = "htht.uuid", strategy = "com.piesat.common.jpa.generator.UUIDStringGenerator")
     private String id;

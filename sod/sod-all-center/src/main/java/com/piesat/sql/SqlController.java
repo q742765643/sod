@@ -1,5 +1,11 @@
 package com.piesat.sql;
 
+import com.alibaba.fastjson.JSON;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.SQLExec;
+import org.apache.tools.ant.types.EnumeratedAttribute;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.bouncycastle.cms.RecipientId.password;
 
 /**
  * @program: sod
@@ -26,11 +34,58 @@ public class SqlController {
     private static String[] table = {""};//table数组
     private static List<String> insertList = new ArrayList<String>();//全局存放insertsql文件的数据
     private static String filePath = "/zzj/data/sql/";//绝对路径导出数据的文件
+    public static void  initSql() {
+
+        connectSQL("org.postgresql.Driver", "jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=usr_sod", "soder", "soder123");//连接数据库
+
+        //List<Map<String, Object>> map=queryMapList(sql,null);
+        try {
+            ResultSet ts=conn.getMetaData().getTables(null,"usr_sod",null,new String[]{"TABLE"});
+            List<String> ll=new ArrayList<>();
+            while (ts.next()) {
+                String tableName=ts.getString("TABLE_NAME");
+                sm.executeUpdate("DELETE FROM "+tableName);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        File[] files=new File(filePath).listFiles();
+
+        for(File file:files){
+            try {
+                SQLExec sqlExec = new SQLExec();
+                sqlExec.setDriver("org.postgresql.Driver");
+                sqlExec.setUrl("jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=usr_sod");
+                sqlExec.setUserid("soder");
+                sqlExec.setPassword("soder123");
+                sqlExec.setEncoding("UTF8");
+                sqlExec.setSrc(file);
+                sqlExec.setOnerror((SQLExec.OnError) (EnumeratedAttribute.getInstance(SQLExec.OnError.class, "abort")));
+                sqlExec.setProject(new Project()); // 要指定这个属性，不然会出错
+                sqlExec.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("结束");
+
+
+    }
+    public static void main(String[] args)  {
+        String aa="'aaa'";
+        aa=aa.replaceAll("'","''");
+        System.out.println(aa);
+         initSql();
+    }
+
 
     /**
      * 导出数据库表*@paramargs *@throwsSQLException
      */
-    public static void main(String[] args) throws SQLException {
+    public static void main2(String[] args) throws SQLException {
         List<String> listSQL = new ArrayList<String>();
         connectSQL("com.xugu.cloudjdbc.Driver", "jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8", "USR_SOD", "Pnmic_qwe123");//连接数据库
 
@@ -49,6 +104,16 @@ public class SqlController {
         table=ll.toArray(new String[ll.size()]);
         listSQL = createSQL();//创建查询语句
             executeSQL(conn, sm, listSQL);//执行sql并拼装
+
+
+    }
+    public static void main1(String[] args) throws SQLException {
+        connectSQL("org.postgresql.Driver", "jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=\"USR_SOD\"", "soder", "soder123");//连接数据库
+
+        String sql="select count(1) from usr_sod.t_sod_data_class where type = '2' and update_time <= '2020-05-14 09:56:41' ";
+        List<Map<String, Object>> map=queryMapList(sql,null);
+        System.out.println(JSON.toJSONString(map));
+
 
 
     }
@@ -209,11 +274,12 @@ public class SqlController {
                                 value = "";
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                         if(value==null){
                             value="hthtnull";
                         }
+                        value=value.replaceAll("'","''");
                         if (i == 1 || i == columnCount) {
                             if(i==columnCount){
                                 ColumnName.append(",");
@@ -227,19 +293,17 @@ public class SqlController {
                                 } else if (Types.DATE == rsmd.getColumnType(i) || Types.TIME == rsmd.getColumnType(i) || Types.TIMESTAMP == rsmd.getColumnType(i)) {
                                     ColumnValue.append("'").append(value).append("',");
                                 } else {
-                                    ColumnValue.append(value).append(",");
-
+                                    ColumnValue.append("'").append(value).append("',");
                                 }
                             }else{
                                 if (Types.CHAR == rsmd.getColumnType(i) || Types.VARCHAR == rsmd.getColumnType(i) || Types.LONGVARCHAR == rsmd.getColumnType(i)) {
-                                    ColumnValue.append("'").append(value);
+                                    ColumnValue.append("'").append(value).append("'");
                                 } else if (Types.SMALLINT == rsmd.getColumnType(i) || Types.INTEGER == rsmd.getColumnType(i) || Types.BIGINT == rsmd.getColumnType(i) || Types.FLOAT == rsmd.getColumnType(i) || Types.DOUBLE == rsmd.getColumnType(i) || Types.NUMERIC == rsmd.getColumnType(i) || Types.DECIMAL == rsmd.getColumnType(i)|| Types.TINYINT == rsmd.getColumnType(i)) {
                                     ColumnValue.append(value);
                                 } else if (Types.DATE == rsmd.getColumnType(i) || Types.TIME == rsmd.getColumnType(i) || Types.TIMESTAMP == rsmd.getColumnType(i)) {
                                     ColumnValue.append("'").append(value).append("'");
                                 } else {
-                                    ColumnValue.append(value);
-
+                                    ColumnValue.append("'").append(value).append("'");
                                 }
                             }
 
@@ -252,7 +316,7 @@ public class SqlController {
                             } else if (Types.DATE == rsmd.getColumnType(i) || Types.TIME == rsmd.getColumnType(i) || Types.TIMESTAMP == rsmd.getColumnType(i)) {
                                 ColumnValue.append("'").append(value).append("',");
                             } else {
-                                ColumnValue.append(value).append(",");
+                                ColumnValue.append("'").append(value).append("',");
                             }
                         }
                     }
@@ -260,7 +324,10 @@ public class SqlController {
                     System.out.println(ColumnValue.toString());
                     insertSQL(ColumnName, ColumnValue,table[j]);
                 }
+                createFile(table[j]);//创建文件
+                insertList.clear();
             }
+
         }
         return rs;
     }
@@ -274,9 +341,8 @@ public class SqlController {
         StringBuffer insertSQL = new StringBuffer();
         insertSQL.append(insert).append(" ")
                 .append(tableName).append("(").append(ColumnName.toString()).append(")").append(values).append("(").append(ColumnValue.toString().replaceAll("'hthtnull'","null")).append(");");
-        insertList.add(insertSQL.toString());
-        createFile(tableName);//创建文件
-        insertList.clear();
+        insertList.add(insertSQL.toString().replaceAll("hthtnull","null"));
+
 
 
     }
