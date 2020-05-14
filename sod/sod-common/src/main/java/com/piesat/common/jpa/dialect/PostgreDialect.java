@@ -1,14 +1,14 @@
 package com.piesat.common.jpa.dialect;
 
-import org.hibernate.dialect.MySQL5InnoDBDialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 
 /**
  * @program: sod
  * @description:
  * @author: zzj
- * @create: 2020-02-03 15:55
+ * @create: 2020-05-13 18:20
  **/
-public class MysqlDialect  extends MySQL5InnoDBDialect {
+public class PostgreDialect extends PostgreSQLDialect {
     @Override
     public String getAddForeignKeyConstraintString(
             String constraintName,

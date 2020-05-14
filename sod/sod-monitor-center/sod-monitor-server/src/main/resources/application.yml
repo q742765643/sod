@@ -61,7 +61,7 @@ mybatis:
 
 #分页插件
 pagehelper:
-  helper-dialect: mysql
+  helper-dialect: es
   reasonable: true
   support-methods-arguments: true
   params: count=countSql

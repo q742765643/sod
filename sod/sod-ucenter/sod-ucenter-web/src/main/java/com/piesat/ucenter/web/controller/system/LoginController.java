@@ -90,6 +90,10 @@ public class LoginController {
                 resultT.setErrorMessage("验证码不能为空");
                 return resultT;
             }
+            if(ycode==null){
+                resultT.setErrorMessage("验证码过期");
+                return resultT;
+            }
             if(!ycode.equals(code.toUpperCase())){
                 resultT.setErrorMessage("验证码错误");
                 return resultT;
