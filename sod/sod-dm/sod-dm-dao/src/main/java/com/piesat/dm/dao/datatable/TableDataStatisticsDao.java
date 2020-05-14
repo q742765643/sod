@@ -15,5 +15,5 @@ import java.util.List;
  */
 @Repository
 public interface TableDataStatisticsDao extends BaseDao<TableDataStatisticsEntity> {
-    List<TableDataStatisticsEntity> findByDatabaseIdAndTableIdAndStatisticDate(String databaseId, String tableId, String statisticDate);
+    List<TableDataStatisticsEntity> findByDatabaseIdAndTableIdAndStatisticDate(String databaseId, String tableId, Date statisticDate);
 }

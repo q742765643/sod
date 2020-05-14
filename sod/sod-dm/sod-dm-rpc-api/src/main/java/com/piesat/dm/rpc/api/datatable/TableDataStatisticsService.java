@@ -30,4 +30,6 @@ public interface TableDataStatisticsService {
 
     Map<String,Object> getOnlineTime(String classDataId, String statisticDate);
 
+    public List<TableDataStatisticsDto> findByParam(TableDataStatisticsDto tableDataStatisticsDto);
+
 }

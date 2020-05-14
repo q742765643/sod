@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -109,4 +110,22 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
         return map;
     }
 
+    @Override
+    public List<TableDataStatisticsDto> findByParam(TableDataStatisticsDto tableDataStatisticsDto) {
+
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(com.piesat.common.utils.StringUtils.isNotNullString(tableDataStatisticsDto.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),tableDataStatisticsDto.getDatabaseId());
+        }
+        if(com.piesat.common.utils.StringUtils.isNotNullString(tableDataStatisticsDto.getTableId())){
+            specificationBuilder.add("tableId", SpecificationOperator.Operator.eq.name(),tableDataStatisticsDto.getTableId());
+        }
+        if(tableDataStatisticsDto.getStatisticDate() != null){
+            String statisticDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(tableDataStatisticsDto.getStatisticDate());
+            specificationBuilder.add("statisticDate", SpecificationOperator.Operator.ges.name(),statisticDate);
+        }
+        List<TableDataStatisticsEntity> tableDataStatisticsEntities = this.getAll(specificationBuilder.generateSpecification());
+        List<TableDataStatisticsDto> tableDataStatisticsDtos = this.tableDataStatisticsMapper.toDto(tableDataStatisticsEntities);
+        return tableDataStatisticsDtos;
+    }
 }
