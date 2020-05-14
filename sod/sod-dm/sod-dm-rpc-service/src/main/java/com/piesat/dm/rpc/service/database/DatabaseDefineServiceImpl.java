@@ -123,8 +123,9 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         DatabaseDefineDto dotById = this.getDotById(id);
         DatabaseDto database = new DatabaseDto();
         database.setDatabaseDefine(dotById);
+        DatabaseDcl db = null;
         try {
-            DatabaseDcl db = DatabaseUtil.getPubDatabase(database, databaseInfo);
+            db = DatabaseUtil.getPubDatabase(database, databaseInfo);
             if (db!=null){
                 db.closeConnect();
                 dotById.setCheckConn(1);
@@ -134,6 +135,10 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         } catch (Exception e) {
             dotById.setCheckConn(2);
 //            e.printStackTrace();
+        }finally {
+            if (db!=null){
+                db.closeConnect();
+            }
         }
         this.saveDto(dotById);
         return dotById;

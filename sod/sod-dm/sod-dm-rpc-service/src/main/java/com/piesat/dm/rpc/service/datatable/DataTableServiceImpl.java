@@ -87,15 +87,15 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Transactional
     public DataTableDto saveDto(DataTableDto dataTableDto) {
         DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
-        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         dataTableEntity.setCreator(loginUser.getUserName());
         dataTableEntity = this.saveNotNull(dataTableEntity);
         List<StorageConfigurationDto> sc = this.storageConfigurationService.findByClassLogicId(dataTableEntity.getClassLogic().getId());
-        if (sc!=null&&sc.size()>0) {
+        if (sc != null && sc.size() > 0) {
             StorageConfigurationDto storageConfigurationDto = sc.get(0);
             storageConfigurationDto.setStorageDefineIdentifier(1);
             this.storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
-        }else {
+        } else {
             StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
             storageConfigurationDto.setClassLogicId(dataTableEntity.getClassLogic().getId());
             storageConfigurationDto.setStorageDefineIdentifier(1);
@@ -149,12 +149,12 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         } else {
             resultList = mybatisQueryMapper.getInfoByUserId(userId);
         }
-        for(Map<String, Object>  map : resultList){
-            map.put("id",map.get("ID"));
-            map.put("pId",map.get("PID"));
-            map.put("name",map.get("NAME"));
+        for (Map<String, Object> map : resultList) {
+            map.put("id", map.get("ID"));
+            map.put("pId", map.get("PID"));
+            map.put("name", map.get("NAME"));
         }
-        return  resultList;
+        return resultList;
     }
 
     @Override
@@ -253,8 +253,19 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public ResultT getSampleData(SampleData sampleData) throws Exception {
         DatabaseEntity databaseEntity = this.databaseDao.findById(sampleData.getDatabaseId()).get();
         DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
-        DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-        return database.queryData(databaseDto.getSchemaName(), sampleData.getTableName(), sampleData.getColumn(), 10);
+        DatabaseDcl database = null;
+        ResultT r = new ResultT();
+        try {
+            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            r = database.queryData(databaseDto.getSchemaName(), sampleData.getTableName(), sampleData.getColumn(), 10);
+            database.closeConnect();
+        } catch (Exception e) {
+        } finally {
+            if (database != null) {
+                database.closeConnect();
+            }
+        }
+        return r;
     }
 
     @Override
@@ -332,12 +343,18 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public ResultT createTable(TableSqlDto tableSqlDto) {
         DatabaseEntity databaseEntity = this.databaseDao.findById(tableSqlDto.getDatabaseId()).get();
         DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
+        DatabaseDcl database = null;
         try {
-            DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
             database.createTable(tableSqlDto.getTableSql(), tableSqlDto.getTableName(), tableSqlDto.getDelOld());
+            database.closeConnect();
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
+        } finally {
+            if (database != null) {
+                database.closeConnect();
+            }
         }
         return ResultT.success();
     }
@@ -346,13 +363,19 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public ResultT existTable(TableSqlDto tableSqlDto) {
         DatabaseEntity databaseEntity = this.databaseDao.findById(tableSqlDto.getDatabaseId()).get();
         DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
+        DatabaseDcl database = null;
         try {
-            DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
             ResultT resultT = database.existTable(databaseDto.getSchemaName(), tableSqlDto.getTableName());
+            database.closeConnect();
             return resultT;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
+        } finally {
+            if (database != null) {
+                database.closeConnect();
+            }
         }
     }
 

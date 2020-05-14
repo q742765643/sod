@@ -100,7 +100,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     public PageBean selectPageList(PageForm<SyncTaskDto> pageForm) {
         //实体转换
         SyncTaskEntity syncTaskEntity = syncTaskMapstruct.toEntity(pageForm.getT());
-        syncTaskEntity.setRunState(pageForm.getT().getRunState());
+        //syncTaskEntity.setRunState(pageForm.getT().getRunState());
 
         //指定了运行状态就查询所有记录，没有指定运行状态按页码查询
         if(!StringUtils.isNotNullString(syncTaskEntity.getRunState())){
@@ -120,8 +120,13 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                 sync.setId("");
                 String allStatus = getStatusById(sync,"getallstatus");
                 if(!"error".equals(allStatus)) {
-                    JSONObject jsonObject = JSONObject.parseObject(allStatus);
-                    jsonThree.putAll(jsonObject);
+                    try{
+                        JSONObject jsonObject = JSONObject.parseObject(allStatus);
+                        jsonThree.putAll(jsonObject);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
                 }
             }
         }
@@ -178,10 +183,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //获取当前页数据
         List<SyncTaskDto> syncTaskDtos = syncTaskMapstruct.toDto(syncTaskEntities);
         //查询物理库名称
-        for(SyncTaskDto syncTaskDto : syncTaskDtos){
+       /* for(SyncTaskDto syncTaskDto : syncTaskDtos){
             DatabaseDto databaseDto = databaseService.getDotById(syncTaskDto.getSourceDatabaseId());
             syncTaskDto.setSourceDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
-        }
+        }*/
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),syncTaskDtos);
         return pageBean;
     }

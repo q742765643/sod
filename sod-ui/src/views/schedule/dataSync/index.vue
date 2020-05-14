@@ -216,7 +216,7 @@ export default {
           label: "任务名称"
         },
         {
-          value: "sourceDBId",
+          value: "sourceDatabaseName",
           label: "源库"
         },
         {
@@ -224,7 +224,7 @@ export default {
           label: "数据来源标识"
         },
         {
-          value: "flowDir",
+          value: "dataFlowDirectionId",
           label: "数据流向标识"
         }
       ],
