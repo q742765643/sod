@@ -1887,7 +1887,7 @@ public class ImportData {
             }
             if (StringUtils.isNotEmpty(statistic_date)) {
                 Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, statistic_date);
-                tableDataStatisticsEntity.setStatisticDate(statistic_date);
+                tableDataStatisticsEntity.setStatisticDate(date);
             }
             if (StringUtils.isNotEmpty(statistic_time)) {
                 tableDataStatisticsEntity.setStatisticTime(statistic_time);

@@ -163,8 +163,8 @@ public class TableCollectHandler  implements BaseHandler {
                         tableDataStatisticsEntity.setTableId(String.valueOf(tableInfo.get("id")));
                         tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
                         tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
-                        //tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",yesterdayZero));
-                        tableDataStatisticsEntity.setStatisticDate(yesterdayZero);
+                        tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",yesterdayZero));
+                        //tableDataStatisticsEntity.setStatisticDate(yesterdayZero);
                         if(StringUtils.isNotNullString(begin_time)){
                             tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",begin_time));
                         }

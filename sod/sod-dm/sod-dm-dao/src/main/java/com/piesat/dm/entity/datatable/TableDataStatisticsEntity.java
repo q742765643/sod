@@ -27,7 +27,7 @@ public class TableDataStatisticsEntity extends BaseEntity {
     private String tableId;
 
     @Column(name = "statistic_date", length = 255)
-    private String statisticDate;
+    private Date statisticDate;
 
     @Column(name = "begin_time", length = 255)
     private Date beginTime;
