@@ -12,7 +12,9 @@ import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.datatable.TableDataStatisticsEntity;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
+import com.piesat.dm.rpc.api.datatable.TableDataStatisticsService;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
+import com.piesat.dm.rpc.dto.datatable.TableDataStatisticsDto;
 import com.piesat.schedule.client.api.client.handler.base.BaseHandler;
 import com.piesat.schedule.dao.JobInfoDao;
 import com.piesat.schedule.entity.JobInfoEntity;
@@ -45,6 +47,8 @@ public class TableCollectHandler  implements BaseHandler {
     private DataTableService dataTableService;
     @GrpcHthtClient
     private TableDataStatisticsDao tableDataStatisticsDao;
+    @GrpcHthtClient
+    private TableDataStatisticsService tableDataStatisticsService;
 
     private  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -68,9 +72,9 @@ public class TableCollectHandler  implements BaseHandler {
         StringBuffer msg = new StringBuffer();
         List<DatabaseEntity> databaseEntities = databaseDao.findAll();
         if(databaseEntities != null && databaseEntities.size()>0){
-            for(DatabaseEntity databaseEntity : databaseEntities){
+            for(DatabaseEntity databaseEntity : databaseEntities)
                 try {
-                    if(databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1){
+                    if (databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
                         continue;
                     }
                     String databaseType = databaseEntity.getDatabaseDefine().getDatabaseType();
@@ -81,15 +85,15 @@ public class TableCollectHandler  implements BaseHandler {
                     String schemaName = databaseEntity.getSchemaName();
 
                     List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(databaseEntity.getId());
-                    if(dataTableList == null || dataTableList.size() == 0){
+                    if (dataTableList == null || dataTableList.size() == 0) {
                         continue;
                     }
 
                     //获取数据库管理账户
                     DatabaseAdministratorEntity databaseAdministratorEntity = null;
                     Set<DatabaseAdministratorEntity> databaseAdministratorList = databaseEntity.getDatabaseDefine().getDatabaseAdministratorList();
-                    for(DatabaseAdministratorEntity databaseAdministratorEntity1 : databaseAdministratorList){
-                        if(databaseAdministratorEntity1.getIsManager()){
+                    for (DatabaseAdministratorEntity databaseAdministratorEntity1 : databaseAdministratorList) {
+                        if (databaseAdministratorEntity1.getIsManager()) {
                             databaseAdministratorEntity = databaseAdministratorEntity1;
                             break;
                         }
@@ -97,62 +101,67 @@ public class TableCollectHandler  implements BaseHandler {
 
                     //获取链接
                     DatabaseDcl databaseDcl = null;
-                    if("xugu".equalsIgnoreCase(databaseType)){
+                    if ("xugu".equalsIgnoreCase(databaseType)) {
                         Xugu xugu = new Xugu(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = xugu;
-                    }else if("gbase8a".equalsIgnoreCase(databaseType)){
-                        Gbase8a gbase8a = new Gbase8a(databaseUrl,databaseAdministratorEntity.getUserName(),databaseAdministratorEntity.getPassWord());
+                    } else if ("gbase8a".equalsIgnoreCase(databaseType)) {
+                        Gbase8a gbase8a = new Gbase8a(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = gbase8a;
                     }
 
-                    Map<String,String>  tableCollectInfo = new HashMap<String,String>();
-                    for(int i=0;i<dataTableList.size();i++){
+                    Map<String, String> tableCollectInfo = new HashMap<String, String>();
+                    for (int i = 0; i < dataTableList.size(); i++) {
                         String begin_time = "";
                         String end_time = "";
                         String record_count = "";
                         String day_total = "";
                         String sql = "";
-                        Map<String,Object> tableInfo = dataTableList.get(i);
+                        Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
-                        msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName()+"_"+databaseEntity.getDatabaseName()+"["+dataTableList.size()+"/"+i+"]"+":"+table_name);
+                        msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName() + "_" + databaseEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
                         //判断昨天数据是否已经统计入库
-                        List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZero);
-                        if(tableDataStatisticsEntities != null && tableDataStatisticsEntities.size()>0){
+                        //List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);
+                        TableDataStatisticsDto tableDataStatisticsDto = new TableDataStatisticsDto();
+                        tableDataStatisticsDto.setDatabaseId(databaseEntity.getId());
+                        tableDataStatisticsDto.setTableId(String.valueOf(tableInfo.get("id")));
+                        tableDataStatisticsDto.setStatisticDate(yesterdayZeroDate);
+                        List<TableDataStatisticsDto> tableDataStatisticsDtos = tableDataStatisticsService.findByParam(tableDataStatisticsDto);
+                        if (tableDataStatisticsDtos != null && tableDataStatisticsDtos.size() > 0) {
                             continue;
                         }
 
                         //不统计值表数据
-                        if("E".equals(String.valueOf(tableInfo.get("db_table_type"))) && String.valueOf(tableInfo.get("storage_type")).contains("K")){
+                        if ("E".equals(String.valueOf(tableInfo.get("db_table_type"))) && String.valueOf(tableInfo.get("storage_type")).contains("K")) {
                             continue;
                         }
                         String value = tableCollectInfo.get("table_name");
 
                         //日候旬月年  手动赋值
-                        if(String.valueOf(table_name).contains("1981_2010")){
+                        if (String.valueOf(table_name).contains("1981_2010")) {
                             //tableCollectInfo.put(String.valueOf(tableInfo.get("TABLE_NAME")),"1981-01-01 00:00:00"+","+"2010-01-01 00:00:00"+","+"10000"+","+"10000");
                             begin_time = "1981-01-01 00:00:00";
                             end_time = "2010-01-01 00:00:00";
                             record_count = "10000";
                             day_total = "10000";
-                        }else if(value !=null){
+                        } else if (value != null) {
                             begin_time = value.split(",")[0];
                             end_time = value.split(",")[1];
                             record_count = value.split(",")[2];
                             day_total = value.split(",")[3];
-                        }else {
+                        } else {
                             try {
                                 //获取总记录数
-                                record_count = databaseDcl.queryRecordNum(databaseEntity.getSchemaName(),table_name);
+                                record_count = databaseDcl.queryRecordNum(databaseEntity.getSchemaName(), table_name);
                                 //最早记录的时间
-                                begin_time = databaseDcl.queryMinTime(databaseEntity.getSchemaName(),table_name,"D_DATETIME");
+                                begin_time = databaseDcl.queryMinTime(databaseEntity.getSchemaName(), table_name, "D_DATETIME");
                                 //最近记录的时间
-                                end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(),table_name,"D_DATETIME");
+                                end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(), table_name, "D_DATETIME");
                                 //获取日增量
-                                day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(),table_name,"D_DATETIME",yesterdayZero,todayZero);
-                                tableCollectInfo.put(table_name,begin_time+","+end_time+","+record_count+","+day_total);
+                                day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(), table_name, "D_DATETIME", yesterdayZero, todayZero);
+                                tableCollectInfo.put(table_name, begin_time + "," + end_time + "," + record_count + "," + day_total);
 
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
@@ -163,28 +172,27 @@ public class TableCollectHandler  implements BaseHandler {
                         tableDataStatisticsEntity.setTableId(String.valueOf(tableInfo.get("id")));
                         tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
                         tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
-                        tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",yesterdayZero));
+                        tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", yesterdayZero));
                         //tableDataStatisticsEntity.setStatisticDate(yesterdayZero);
-                        if(StringUtils.isNotNullString(begin_time)){
-                            tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",begin_time));
+                        if (StringUtils.isNotNullString(begin_time)) {
+                            tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", begin_time));
                         }
-                        if(StringUtils.isNotNullString(end_time)){
-                            tableDataStatisticsEntity.setEndTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",end_time));
+                        if (StringUtils.isNotNullString(end_time)) {
+                            tableDataStatisticsEntity.setEndTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", end_time));
                         }
-                        if(StringUtils.isNotNullString(record_count)){
+                        if (StringUtils.isNotNullString(record_count)) {
                             tableDataStatisticsEntity.setRecordCount(Double.valueOf(record_count));
                         }
-                        if(StringUtils.isNotNullString(day_total)){
+                        if (StringUtils.isNotNullString(day_total)) {
                             tableDataStatisticsEntity.setDayTotal(Integer.valueOf(day_total));
                         }
                         tableDataStatisticsDao.saveNotNull(tableDataStatisticsEntity);
                     }
 
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
         }
 
     }
