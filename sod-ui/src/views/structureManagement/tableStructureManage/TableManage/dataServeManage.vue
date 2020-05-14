@@ -106,22 +106,22 @@
       style="width: 100%;"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" label="序号" width="45" :index="table_index"></el-table-column>
-      <el-table-column type="selection" width="45"></el-table-column>
-      <el-table-column prop="areaId" label="区域代码"></el-table-column>
-      <el-table-column prop="dbEleName" label="要素存储短名"></el-table-column>
-      <el-table-column prop="eleServiceId" label="要素服务代码"></el-table-column>
-      <el-table-column prop="eleNameCn" label="要素中文名"></el-table-column>
-      <el-table-column prop="eleUnit" label="要素单位"></el-table-column>
-      <el-table-column prop="levelType" label="层次类型"></el-table-column>
-      <el-table-column prop="scaleDivisor" label="层次转换因子"></el-table-column>
-      <el-table-column prop="eleHours" label="资料时次"></el-table-column>
-      <el-table-column prop="gridPixel" label="空间分辨率"></el-table-column>
-      <el-table-column prop="timeUnit" label="预报时效单位"></el-table-column>
-      <el-table-column prop="timeList" label="预报时效列表"></el-table-column>
-      <el-table-column prop="levelUnit" label="层次单位"></el-table-column>
-      <el-table-column prop="levelList" label="层次列表"></el-table-column>
-      <el-table-column prop="eleLongName" label="要素长名"></el-table-column>
+      <el-table-column type="index" label="序号" width="55" :index="table_index"></el-table-column>
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column prop="areaId" label="区域代码" width="100" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="dbEleName" label="要素存储短名" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleServiceId" label="要素服务代码" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleNameCn" label="要素中文名" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleUnit" label="要素单位" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="levelType" label="层次类型" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="scaleDivisor" label="层次转换因子" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleHours" label="资料时次" width="200"></el-table-column>
+      <el-table-column prop="gridPixel" label="空间分辨率" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="timeUnit" label="预报时效单位" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="timeList" label="预报时效列表" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="levelUnit" label="层次单位" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="levelList" label="层次列表" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="eleLongName" label="要素长名" width="200"></el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
