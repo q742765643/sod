@@ -25,7 +25,8 @@
               type="primary"
               @click="autoFillIn('${tableName}')"
               class="funButton"
-            >表名称</el-button>
+            >表名称
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -33,7 +34,8 @@
               type="primary"
               @click="autoFillIn('${databaseName}')"
               class="funButton"
-            >库名称</el-button>
+            >库名称
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -41,7 +43,8 @@
               type="primary"
               @click="autoFillIn('${columnInfo}')"
               class="funButton"
-            >字段信息</el-button>
+            >字段信息
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -49,7 +52,8 @@
               type="primary"
               @click="autoFillIn('${primaryColumn}')"
               class="funButton"
-            >主键字段</el-button>
+            >主键字段
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -57,7 +61,8 @@
               type="primary"
               @click="autoFillIn('${tableDescription}')"
               class="funButton"
-            >索引字段</el-button>
+            >索引字段
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -65,7 +70,8 @@
               type="primary"
               @click="autoFillIn('${indexColumn}')"
               class="funButton"
-            >表描描述</el-button>
+            >表描描述
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -73,7 +79,8 @@
               type="primary"
               @click="autoFillIn('${DPartitionKey}')"
               class="funButton"
-            >分库键</el-button>
+            >分库键
+            </el-button>
           </el-col>
           <el-col :span="12">
             <el-button
@@ -81,7 +88,8 @@
               type="primary"
               @click="autoFillIn('${TPartitionKey}')"
               class="funButton"
-            >分表键</el-button>
+            >分表键
+            </el-button>
           </el-col>
         </el-row>
       </el-col>
@@ -97,101 +105,106 @@
 </template>
 
 <script>
-// cron表达式
-export default {
-  name: "SQLTemplate",
+  import {
+    saveSqlTemplate, //添加模板
+    isAlreadyTem, //是否已存在模板
+    editTemplate //编辑模板
+  } from '@/api/system/sqlTemplateMangement'
+  // cron表达式
+  export default {
+    name: 'SQLTemplate',
 
-  props: {
-    handleObj: {
-      type: Object
-    }
-  },
-  data() {
-    return {
-      disabledFlag: false,
-      databaseList: [], //数据类型
-      handleSqlTemplate: {}
-    };
-  },
-  created() {
-    //获取数据库类型
-    this.getDBList();
-  },
-  methods: {
-    //获取数据库厂商
-    getDBList() {
-      this.getDicts("sys_database_type").then(response => {
-        this.databaseList = response.data;
-        this.handleSqlTemplate = this.handleObj;
-        if (this.handleObj.id) {
-          this.disabledFlag = true;
+    props: {
+      handleObj: {
+        type: Object
+      }
+    },
+    data() {
+      return {
+        disabledFlag: false,
+        databaseList: [], //数据类型
+        handleSqlTemplate: {}
+      }
+    },
+    created() {
+      //获取数据库类型
+      this.getDBList()
+    },
+    methods: {
+      //获取数据库厂商
+      getDBList() {
+        this.getDicts('sys_database_type').then(response => {
+          this.databaseList = response.data
+          this.handleSqlTemplate = this.handleObj
+          if (this.handleObj.id) {
+            this.disabledFlag = true
+          }
+        })
+      },
+
+      autoFillIn(insertTxt) {
+        // this.handleObj.template += value;
+        var elInput = document.getElementById('addtextareaId')
+        var startPos = elInput.selectionStart
+        var endPos = elInput.selectionEnd
+        if (startPos === undefined || endPos === undefined) return
+        var txt = elInput.value
+        var result =
+          txt.substring(0, startPos) + insertTxt + txt.substring(endPos)
+        elInput.value = result
+        elInput.focus()
+        elInput.selectionStart = startPos + insertTxt.length
+        elInput.selectionEnd = startPos + insertTxt.length
+      },
+
+      trueDialog() {
+        //新增
+        if (!this.handleObj.databaseServer) {
+          isAlreadyTem({
+            databaseServer: this.handleObj.databaseServer
+          }).then(response => {
+            //已存在不可添加
+            if (response.data.length >= 1) {
+              this.$message({
+                type: 'error',
+                message: '此数据库已经添加，不可以重复添加'
+              })
+            }
+            //添加
+            else {
+              saveSqlTemplate(this.handleObj).then(response => {
+                if (response.code === 200) {
+                  this.$message({
+                    type: 'success',
+                    message: '新增成功'
+                  })
+                  this.$emit('closeDialog')
+                }
+              })
+            }
+          })
         }
-      });
-    },
-
-    autoFillIn(insertTxt) {
-      // this.handleObj.template += value;
-      var elInput = document.getElementById("addtextareaId");
-      var startPos = elInput.selectionStart;
-      var endPos = elInput.selectionEnd;
-      if (startPos === undefined || endPos === undefined) return;
-      var txt = elInput.value;
-      var result =
-        txt.substring(0, startPos) + insertTxt + txt.substring(endPos);
-      elInput.value = result;
-      elInput.focus();
-      elInput.selectionStart = startPos + insertTxt.length;
-      elInput.selectionEnd = startPos + insertTxt.length;
-    },
-
-    trueDialog() {
-      //新增
-      if (!this.handleObj.databaseServer) {
-        isAlreadyTem({
-          databaseServer: this.handleObj.databaseServer
-        }).then(response => {
-          //已存在不可添加
-          if (response.data.length >= 1) {
-            this.$message({
-              type: "error",
-              message: "此数据库已经添加，不可以重复添加"
-            });
-          }
-          //添加
-          else {
-            saveSqlTemplate(this.handleObj).then(response => {
-              if (response.code === 200) {
-                this.$message({
-                  type: "success",
-                  message: "新增成功"
-                });
-                this.$emit("closeDialog");
-              }
-            });
-          }
-        });
+        //编辑
+        else {
+          editTemplate(this.handleObj).then(response => {
+            if (response.code === 200) {
+              this.$message({
+                type: 'success',
+                message: '编辑成功'
+              })
+              this.$emit('closeDialog')
+            }
+          })
+        }
+      },
+      closeDialog(formName) {
+        this.$emit('closeDialog')
       }
-      //编辑
-      else {
-        editTemplate(this.handleObj).then(response => {
-          if (response.code === 200) {
-            this.$message({
-              type: "success",
-              message: "编辑成功"
-            });
-            this.$emit("closeDialog");
-          }
-        });
-      }
-    },
-    closeDialog(formName) {
-      this.$emit("closeDialog");
     }
   }
-};
 </script>
 
 <style lang="scss">
-.SQLTemplate {
-}
+  .SQLTemplate {
+  }
 </style>

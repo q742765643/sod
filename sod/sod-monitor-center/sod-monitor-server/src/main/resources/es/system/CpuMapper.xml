@@ -34,7 +34,7 @@
          "system.cpu.softirq.pct",
          "system.cpu.nice.pct",
          "system.cpu.system.pct",
-         "system.cpu.total.pct"
+         "system.cpu.total.pct"/"system.cpu.cores"  "system.cpu.total.pct"
     </sql>
 
     <select id="list" resultMap="BaseResultMap">

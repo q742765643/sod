@@ -48,9 +48,22 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
             paramMap.put("typeName", databaseSpecialReadWriteDto.getTypeName());
             paramMap.put("dataName", databaseSpecialReadWriteDto.getDataName());
             paramMap.put("tableName", databaseSpecialReadWriteDto.getTableName());
-            paramMap.put("applyAuthority", databaseSpecialReadWriteDto.getApplyAuthority());
-            paramMap.put("examineStatus", databaseSpecialReadWriteDto.getExamineStatus());
-
+            if(StringUtils.isNotNullString(databaseSpecialReadWriteDto.getApplyAuthorityString())){
+                if(databaseSpecialReadWriteDto.getApplyAuthorityString().equals("只读")){
+                    paramMap.put("applyAuthority", 1);
+                }else{
+                    paramMap.put("applyAuthority", 2);
+                }
+            }
+            if(StringUtils.isNotNullString(databaseSpecialReadWriteDto.getExamineStatusString())){
+                if(databaseSpecialReadWriteDto.getExamineStatusString().equals("拒绝")){
+                    paramMap.put("examineStatus", 3);
+                }else if(databaseSpecialReadWriteDto.getExamineStatusString().contains("已授权")){
+                    paramMap.put("examineStatus", 2);
+                }else if(databaseSpecialReadWriteDto.getExamineStatusString().contains("待审核")){
+                    paramMap.put("examineStatus", 1);
+                }
+            }
             List<Map<String, Object>> dataList = mybatisQueryMapper.getDatabaseSpecialReadWriteList(paramMap);
             if (dataList != null && dataList.size() > 0) {
                 for (Map<String, Object> map : dataList) {

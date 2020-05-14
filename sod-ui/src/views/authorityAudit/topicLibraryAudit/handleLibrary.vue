@@ -141,8 +141,8 @@
                 <el-option label="资料分类" value="typeName"></el-option>
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
-                <el-option label="申请权限" value="applyAuthority"></el-option>
-                <el-option label="审核状态" value="examineStatus"></el-option>
+                <el-option label="申请权限" value="applyAuthorityString"></el-option>
+                <el-option label="审核状态" value="examineStatusString"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label>
