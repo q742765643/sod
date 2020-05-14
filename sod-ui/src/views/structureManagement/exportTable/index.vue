@@ -234,7 +234,7 @@ export default {
         { key: "中文描述", value: "name_cn" }
       ],
       isIndeterminate: false,
-      checkdTreesArry: []
+      toIds: []
     };
   },
   created() {
@@ -263,22 +263,17 @@ export default {
     addTreeInfo(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的        {keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
-      console.log("fromData:", fromData);
+      /* console.log("fromData:", fromData);
       console.log("toData:", toData);
-      console.log("obj:", obj);
-      obj.keys.forEach(element => {
-        this.checkdTreesArry.push(element);
-      });
+      console.log("obj:", obj); */
+      this.toTreeData = toData;
     },
     // 监听穿梭框组件移除
     removeTreeInfo(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
-      console.log("fromData:", fromData);
-      const newData = this.checkdTreesArry.filter(
-        l2 => obj.keys.findIndex(l1 => l2 === l1) !== -1
-      );
-      this.checkdTreesArry = newData;
+      console.log("toData:", toData);
+      this.toTreeData = toData;
     },
     handleClick() {},
     // 全选
@@ -304,9 +299,17 @@ export default {
         this.isIndeterminate = false;
       }
     },
+    resetDataTo(dataArr) {
+      for (var i in dataArr) {
+        if (dataArr[i].id.split(".").length == 4) {
+          this.toIds.push(dataArr[i].id);
+        }
+        this.resetDataTo(dataArr[i].children);
+      }
+    },
     // 导出
     exportClick() {
-      if (this.checkdTreesArry.length == 0) {
+      if (this.toTreeData.length == 0) {
         this.$message({
           showClose: true,
           message: "请选择要导出的数据",
@@ -314,15 +317,12 @@ export default {
         });
         return;
       }
+      this.toIds = [];
+      let dataArr = this.toTreeData;
+      this.resetDataTo(dataArr);
       this.handleExportObj = {};
-      let ids = [];
-      this.checkdTreesArry.forEach(element => {
-        if (element.split(".").length == 4) {
-          ids.push(element);
-        }
-      });
       let obj = {};
-      obj.data_class_ids = ids.join(",");
+      obj.data_class_ids = this.toIds.join(",");
       obj.database_id = this.queryParams.database_id;
       if (this.activeName == "first") {
         obj.use_id = this.queryParams.use_id;

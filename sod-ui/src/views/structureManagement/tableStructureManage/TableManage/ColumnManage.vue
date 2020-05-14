@@ -567,10 +567,20 @@ export default {
     },
     /* 复用字段 */
     getColumnTables() {
+      if (!this.tableInfo.id) {
+        this.$message({
+          type: "error",
+          message: "表不存在"
+        });
+        return;
+      }
       this.getmatedata();
       this.getmmdata();
       this.matedataSelection = [];
       this.mmdataSelection = [];
+      this.searchMatedata = {};
+      this.searchMmdata = {};
+      this.activePublicName = "first";
       this.dialogStatus.publicMatedataDialog = true;
     },
     // 公共元数据
@@ -862,15 +872,10 @@ export default {
           type: "error"
         });
       } else {
-        let copyArry = [];
-        this.selColumnData.forEach(element => {
-          let obj = {};
-          element.id = "";
-          element.tableId = "";
-          obj = element;
-          copyArry.push(obj);
-        });
-        sessionStorage.setItem("copyColumn", JSON.stringify(copyArry));
+        sessionStorage.setItem(
+          "copyColumn",
+          JSON.stringify(this.selColumnData)
+        );
         this.$message({
           message: "复制成功",
           type: "success"
@@ -878,6 +883,13 @@ export default {
       }
     },
     columnPaste() {
+      if (!this.tableInfo.id) {
+        this.$message({
+          type: "error",
+          message: "表不存在"
+        });
+        return;
+      }
       this.repeatIndex = 0;
       let pasteArry = JSON.parse(sessionStorage.getItem("copyColumn"));
       pasteArry = this.array_diff(pasteArry, this.columnData, "paste");

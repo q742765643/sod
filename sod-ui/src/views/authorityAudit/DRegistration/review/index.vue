@@ -47,15 +47,30 @@
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==2">
         <!-- 同步 -->
-        <handleSync :handleObj="handleMsgObj" ref="syncRef" :formPage="formPage" />
+        <handleSync
+          :handleObj="handleMsgObj"
+          ref="syncRef"
+          :formPage="formPage"
+          @getStepFlag="getStepFlag"
+        />
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==3">
         <!-- 迁移 -->
-        <handleMove :handleObj="handleMsgObj" ref="moveRef" :formPage="formPage"></handleMove>
+        <handleMove
+          :handleObj="handleMsgObj"
+          ref="moveRef"
+          @getStepFlag="getStepFlag"
+          :formPage="formPage"
+        ></handleMove>
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==4">
         <!-- 备份 -->
-        <handleBackUp :handleObj="handleMsgObj" ref="backupRef" :formPage="formPage" />
+        <handleBackUp
+          :handleObj="handleMsgObj"
+          ref="backupRef"
+          @getStepFlag="getStepFlag"
+          :formPage="formPage"
+        />
       </el-card>
       <el-card class="box-card" shadow="never" v-if="stepNum==5">
         <span
@@ -121,7 +136,7 @@ export default {
   },
   data() {
     return {
-      stepNum: 0,
+      stepNum: 2,
       formPage: "数据注册审核",
       isSourceTree: false, //资料
       rowData: {},
@@ -161,7 +176,7 @@ export default {
         } else {
           this.$message({
             message: "表结构信息不完整",
-            type: "danger"
+            type: "error"
           });
           return;
         }
@@ -170,22 +185,20 @@ export default {
       // 数据同步
       if (this.stepNum == 2) {
         this.$refs.syncRef.trueDialog("ruleForm");
-        return;
       }
       // 数据迁移
       if (this.stepNum == 3) {
         this.$refs.moveRef.trueDialog("ruleForm");
-        return;
       }
       // 数据备份
       if (this.stepNum == 4) {
         this.$refs.backupRef.trueDialog("ruleForm");
-        return;
       }
     },
     getStepFlag(stepFlag) {
       if (stepFlag) {
-        this.stepNum = this.stepNum++;
+        this.stepNum = this.stepNum + 1;
+        return;
       }
     },
     // 资料新增

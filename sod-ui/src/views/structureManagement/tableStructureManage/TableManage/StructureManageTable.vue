@@ -207,6 +207,7 @@
                         v-if="tabs.table.ka"
                         tableType="E-show"
                         :tableInfo="elObj.tableInfo"
+                        :rowData="rowData"
                       ></v-column>
                     </div>
                   </el-collapse-item>
@@ -219,6 +220,7 @@
                         v-on:reloadTableInfo="getTableInfo"
                         v-if="tabs.table.ka"
                         :tableInfo="elObj.tableInfo"
+                        :rowData="rowData"
                       ></v-column>
                     </div>
                   </el-collapse-item>

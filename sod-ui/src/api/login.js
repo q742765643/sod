@@ -48,7 +48,7 @@ export function checkToken(token) {
 }
 
 
-export function getToken(query) {
+export function getTokenPortal(query) {
   return request({
     url: baseUrl + '/getToken' + query,
     method: 'get',

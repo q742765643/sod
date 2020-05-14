@@ -352,7 +352,8 @@ export default {
       checked5: "",
       rowId: "",
       // 数据恢复
-      handleDataRecoveryDialog: false
+      handleDataRecoveryDialog: false,
+      superMsg: {}
     };
   },
   created() {
@@ -372,6 +373,7 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.supeMsg = {};
       this.queryParams.pageNum = 1;
       this.getList();
     },
@@ -379,14 +381,20 @@ export default {
     getList(superMsg) {
       // 判断是否是高级搜索
       let queryObj = {};
-      if (superMsg && superMsg.domains) {
-        this.queryParams.pageNum = 1;
-        let superList = superMsg.domains;
+      if (
+        (superMsg && superMsg.domains) ||
+        (this.superMsg && this.superMsg.domains)
+      ) {
+        if (superMsg.domains) {
+          this.queryParams.pageNum = 1;
+          this.superMsg = superMsg;
+        }
+        let superList = this.superMsg.domains;
         let newSuperForm = {};
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        queryObj = Object.assign(newSuperForm, this.queryParams);
+        queryObj = Object.assign(this.queryParams, newSuperForm);
       } else {
         queryObj = this.queryParams;
       }
