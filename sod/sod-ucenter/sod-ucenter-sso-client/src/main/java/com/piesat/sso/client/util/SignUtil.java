@@ -110,7 +110,7 @@ public class SignUtil {
     }
 
     public static void checkSign(CasVo casVo, Map<String, Object> signMap) {
-        if (casVo.getTimestamp() < System.currentTimeMillis() - 1000 * 60 * 10) {
+        if (casVo.getTimestamp() < System.currentTimeMillis() - 1000 * 60 * 60 * 24) {
             throw new SignException("请求时间已过期");
         }
         if (casVo.getNonce().length() < 15) {
@@ -137,7 +137,7 @@ public class SignUtil {
     }
 
     public static void checkPortalSign(CasVo casVo, String signString) {
-        if (casVo.getTimestamp() < System.currentTimeMillis() - 1000 * 60 * 10) {
+        if (casVo.getTimestamp() < System.currentTimeMillis() - 1000 * 60 * 60 * 24) {
             throw new SignException("请求时间已过期");
         }
         if (casVo.getNonce().length() < 15) {
@@ -172,7 +172,7 @@ public class SignUtil {
                 if (StringUtils.isNotBlank(casVo.getPwd()) && "nanda".equals(map.get("interfaceId"))) {
                     String pwd = casVo.getPwd();
                     pwd = Base64Util.getDecoder(pwd);
-                    if (!pwd.equals(password)){
+                    if (!pwd.equals(password)) {
                         throw new SignException("密码不正确");
                     }
                 }
@@ -260,32 +260,32 @@ public class SignUtil {
 
     public static void signJson(CasVo casVo, String data, WrapperedRequest wrapRequest, JSONObject object) throws Exception {
 //        if (null != casVo.getData() && !"".equals(casVo.getData())) {
-            Map<String, Object> signMap = JSON.parseObject(data, Map.class);
-            if (object.containsKey("interfaceId")) {
-                wrapRequest.putHeader("appId", casVo.getUserId());
-                UserService userService = SpringUtil.getBean(UserService.class);
-                String userId = object.getString("userId");
-                UserDto userDto = userService.selectUserByUserName(userId);
-                if (userDto != null) {
-                    String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
-                    object.put("pwd", password);
-                    casVo.setPwd(password);
+        Map<String, Object> signMap = JSON.parseObject(data, Map.class);
+        if (object.containsKey("interfaceId")) {
+            wrapRequest.putHeader("appId", casVo.getUserId());
+            UserService userService = SpringUtil.getBean(UserService.class);
+            String userId = object.getString("userId");
+            UserDto userDto = userService.selectUserByUserName(userId);
+            if (userDto != null) {
+                String password = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+                object.put("pwd", password);
+                casVo.setPwd(password);
+            }
+            wrapRequest.putHeader("pwd", casVo.getPwd());
+            List<String> paramList = new ArrayList<>();
+            for (Map.Entry<String, Object> entry : object.entrySet()) {
+                if (!entry.getKey().equals("sign")) {
+                    paramList.add(entry.getKey() + "=" + entry.getValue());
                 }
-                wrapRequest.putHeader("pwd", casVo.getPwd());
-                List<String> paramList = new ArrayList<>();
-                for (Map.Entry<String, Object> entry : object.entrySet()) {
-                    if (!entry.getKey().equals("sign")) {
-                        paramList.add(entry.getKey() + "=" + entry.getValue());
-                    }
-                }
-                Collections.sort(paramList);
-                String paramStr = StringUtils.join(paramList, "&");
-                checkPortalSign(casVo, paramStr);
-            } else {
+            }
+            Collections.sort(paramList);
+            String paramStr = StringUtils.join(paramList, "&");
+            checkPortalSign(casVo, paramStr);
+        } else {
 //                wrapRequest.putHeader("appId", casVo.getUserId());
 //                wrapRequest.putHeader("pwd", casVo.getPwd());
-                checkSign(casVo, signMap);
-            }
+            checkSign(casVo, signMap);
+        }
 //        }
 
     }
