@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { getCodeImg } from "@/api/login";
+import { getCodeImg, getToken } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 
@@ -102,6 +102,17 @@ export default {
     }
   },
   created() {
+    let winHref = window.location.href;
+    if (winHref.indexOf("interfaceId") > -1) {
+      let urlParam = winHref.split("?")[1];
+      getToken("?" + urlParam).then(response => {
+        Cookies.set("username", response.data.userId, { expires: 30 });
+        Cookies.set("password", encrypt(response.data.pwd), {
+          expires: 30
+        });
+        this.$router.push({ path: "/" });
+      });
+    }
     this.getCode();
     this.getCookie();
   },
