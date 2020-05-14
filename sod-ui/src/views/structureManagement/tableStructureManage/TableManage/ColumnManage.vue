@@ -94,12 +94,12 @@
           <span v-else>否</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否修改数据库" prop="updateDatabase" width="140px">
+      <!--<el-table-column label="是否修改数据库" prop="updateDatabase" width="140px">
         <template slot-scope="scope">
           <span v-if="scope.row.updateDatabase">是</span>
           <span v-else>否</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="默认值" prop="defaultValue" width="100px"></el-table-column>
       <el-table-column label="序号" prop="serialNumber" width="100px"></el-table-column>
     </el-table>
@@ -800,7 +800,7 @@ export default {
           "中文描述",
           "数据类型",
           "是否管理字段",
-          "是否修改数据库",
+          /*"是否修改数据库",*/
           "默认值",
           "序号"
         ];
@@ -818,16 +818,17 @@ export default {
           "nameCn",
           "type",
           "isManager",
-          "updateDatabase",
+          /*"updateDatabase",*/
           "defaultValue",
           "serialNumber"
         ];
         let newArry = [];
         this.columnData.forEach(element => {
+          debugger
           tableProp.forEach(item => {
-            if (element[item] === false) {
+            if (element[item] == false) {
               element[item] = "否";
-            } else if (element[item] === true) {
+            } else if (element[item] == true) {
               element[item] = "是";
             }
           });
