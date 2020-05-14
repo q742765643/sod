@@ -79,7 +79,7 @@ spring:
         hbm2ddl:
           auto: update
         #dialect: com.xugu.dialect.XuguDialect5
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialect: com.piesat.common.jpa.dialect.MysqlDialect
         format_sql: true
     show-sql: true
     #database: mysql

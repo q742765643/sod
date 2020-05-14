@@ -117,7 +117,7 @@ public class TableCollectHandler  implements BaseHandler {
                         msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName()+"_"+databaseEntity.getDatabaseName()+"["+dataTableList.size()+"/"+i+"]"+":"+table_name);
 
                         //判断昨天数据是否已经统计入库
-                        List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("ID")), yesterdayZeroDate);
+                        List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZero);
                         if(tableDataStatisticsEntities != null && tableDataStatisticsEntities.size()>0){
                             continue;
                         }
@@ -164,14 +164,19 @@ public class TableCollectHandler  implements BaseHandler {
                         tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
                         tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
                         tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",yesterdayZero));
+                        //tableDataStatisticsEntity.setStatisticDate(yesterdayZero);
                         if(StringUtils.isNotNullString(begin_time)){
                             tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",begin_time));
                         }
                         if(StringUtils.isNotNullString(end_time)){
                             tableDataStatisticsEntity.setEndTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss",end_time));
                         }
-                        tableDataStatisticsEntity.setRecordCount(Double.valueOf(record_count));
-                        tableDataStatisticsEntity.setDayTotal(Integer.valueOf(day_total));
+                        if(StringUtils.isNotNullString(record_count)){
+                            tableDataStatisticsEntity.setRecordCount(Double.valueOf(record_count));
+                        }
+                        if(StringUtils.isNotNullString(day_total)){
+                            tableDataStatisticsEntity.setDayTotal(Integer.valueOf(day_total));
+                        }
                         tableDataStatisticsDao.saveNotNull(tableDataStatisticsEntity);
                     }
 
