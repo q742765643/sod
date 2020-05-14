@@ -202,4 +202,7 @@ public class SyncTaskEntity extends BaseEntity {
      */
     @Transient
     private String[]  sourceTableFilterText;
+
+    @Transient
+    private String sourceDatabaseName;
 }

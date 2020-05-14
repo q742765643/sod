@@ -28,6 +28,7 @@
         <result column="discard_on_duplicate" jdbcType="VARCHAR" property="discardOnDuplicate" />
         <result column="exec_ip" jdbcType="VARCHAR"  property="execIp" />
         <result column="exec_port" jdbcType="INTEGER" property="execPort" />
+        <result column="sourceDatabaseName" jdbcType="VARCHAR" property="sourceDatabaseName" />
     </resultMap>
     <resultMap id="LogResultMap" type="com.piesat.schedule.entity.sync.SyncTaskLogEntity" >
         <result column="id" property="id" />
@@ -59,7 +60,9 @@
         from T_SOD_JOB_SYNCTASK_INFO d
     </sql>
     <select id="selectPageList" parameterType="com.piesat.schedule.entity.sync.SyncTaskEntity" resultMap="BaseResultMap">
-        <include refid="selectVo"/>
+        select d.*,dbd.sourceDatabaseName from T_SOD_JOB_SYNCTASK_INFO d
+        left join
+        (select dd.database_name || '_' || db.database_name as sourceDatabaseName, db.id from t_sod_database db inner join t_sod_database_define dd on db.database_define_id = dd.id) dbd  on dbd.id=d.source_database_id
         where 1=1
         <if test="taskName!=null and taskName!=''">
             and d.TASK_NAME like '%${taskName}%'
@@ -78,6 +81,9 @@
         </if>
         <if test="execPort!=null and execPort!=''">
             and d.EXEC_PORT like '%${execPort}%'
+        </if>
+        <if test="sourceDatabaseName!=null and sourceDatabaseName!=''">
+            and dbd.sourceDatabaseName like '%${sourceDatabaseName}%'
         </if>
     </select>
 
