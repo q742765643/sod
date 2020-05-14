@@ -88,7 +88,7 @@
         </template>
       </el-table-column>
       <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
-      <el-table-column label="是否管理字段" prop="isManager" width="100px">
+      <el-table-column label="是否管理字段" prop="isManager" width="120px">
         <template slot-scope="scope">
           <span v-if="scope.row.isManager">是</span>
           <span v-else>否</span>
@@ -822,7 +822,18 @@ export default {
           "defaultValue",
           "serialNumber"
         ];
-        exportExcel(theader, tableProp, this.columnData);
+        let newArry = [];
+        this.columnData.forEach(element => {
+          tableProp.forEach(item => {
+            if (element[item] === false) {
+              element[item] = "否";
+            } else if (element[item] === true) {
+              element[item] = "是";
+            }
+          });
+          newArry.push(element);
+        });
+        exportExcel(theader, tableProp, newArry);
       } else {
         window.location.href = "";
       }
@@ -1077,7 +1088,7 @@ export default {
         { name: "中文描述", value: "nameCn" },
         { name: "是否管理字段", value: "isManager" },
         { name: "数据类型", value: "type" },
-        { name: "是否修改数据库", value: "updateDatabase" },
+        // { name: "是否修改数据库", value: "updateDatabase" },
         { name: "默认值", value: "defaultValue" },
         { name: "序号", value: "serialNumber" }
       ];
@@ -1119,6 +1130,11 @@ export default {
           flag = true;
           // errorCode.push(element);
         }
+        element.isNull = element.isNull.toLowerCase();
+        element.isUpdate = element.isUpdate.toLowerCase();
+        element.isShow = element.isShow.toLowerCase();
+        element.isManager = element.isManager.toLowerCase();
+        element.isPrimaryKey = element.isPrimaryKey.toLowerCase();
       });
       if (flag) {
         this.$message({

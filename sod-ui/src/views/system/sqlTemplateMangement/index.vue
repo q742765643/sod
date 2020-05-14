@@ -41,7 +41,7 @@
 import handleSQL from "@/views/system/sqlTemplateMangement/handleSql";
 import {
   getAllSqlList, //获取模板数据
-  delTemplate, //删除模板
+  delTemplate //删除模板
 } from "@/api/system/sqlTemplateMangement";
 export default {
   components: {
@@ -106,14 +106,10 @@ export default {
             this.getSqlData();
           });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+        .catch(() => {});
     },
     addSqlTemplate() {
+      debugger;
       this.dialogTitle = "新增模板";
       this.handleObj = {};
       this.handleDailyVisible = true;
@@ -156,9 +152,9 @@ export default {
 }
 .sqlTemDialog {
   .rowBoxBtn {
-    padding: 0px 50px;
+    padding-top: 12px;
     .el-col {
-      text-align: center;
+      text-align: left;
       margin-bottom: 12px;
       .funButton {
         width: 98px;
