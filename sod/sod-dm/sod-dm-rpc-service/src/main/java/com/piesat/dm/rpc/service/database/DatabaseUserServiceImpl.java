@@ -295,8 +295,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String[] needEmpowerIpArr = databaseUpIp.split(";");
         for (String databaseId : needEmpowerIdist) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            DatabaseDcl databaseVO = null;
             try {
-                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
@@ -312,6 +313,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                         sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                     }
                 }
+            }finally {
+                if (databaseVO!=null){
+                    databaseVO.closeConnect();
+                }
             }
         }
 
@@ -325,14 +330,19 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         }
         for (String databaseId : needEmpowerIdist) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            DatabaseDcl databaseVO = null;
             try {
-                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
                     databaseVO.closeConnect();
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
+            }finally {
+                if (databaseVO!=null){
+                    databaseVO.closeConnect();
+                }
             }
         }
 
@@ -340,8 +350,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         haveEmpowerIdist.removeAll(needEmpowerIdist);
         for (String databaseId : haveEmpowerIdist) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            DatabaseDcl databaseVO = null;
             try {
-                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.deleteUser(databaseUserDto.getDatabaseUpId());
                     databaseVO.closeConnect();
@@ -349,6 +360,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "修改绑定IP失败，msg:" + e.getMessage() + "\n");
+            }finally {
+                if (databaseVO!=null){
+                    databaseVO.closeConnect();
+                }
             }
         }
         databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds, ","));
@@ -356,14 +371,19 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 //修改绑定ip
         for (String databaseId : thisHaveIds) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            DatabaseDcl databaseVO = null;
             try {
-                DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
                     databaseVO.bindIp(databaseUserDto.getDatabaseUpId(),needEmpowerIpArr);
                     databaseVO.closeConnect();
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
+            }finally {
+                if (databaseVO!=null){
+                    databaseVO.closeConnect();
+                }
             }
         }
 
@@ -409,9 +429,14 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                             Integer.parseInt(databaseDefineEntity.getDatabasePort()),
                             username, password, databaseEntity.getSchemaName());
                 }
+                databaseVO.closeConnect();
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            if (databaseVO!=null){
+                databaseVO.closeConnect();
+            }
         }
         return databaseVO;
     }
@@ -795,11 +820,17 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public ResultT updateBizPwd(String bizUserId, String ids, String newPwd) {
         for (String id : ids.split(",")) {
             DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
+            DatabaseDcl databaseDcl = null;
             try {
-                DatabaseDcl databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
                 databaseDcl.updateAccount(bizUserId, newPwd);
+                databaseDcl.closeConnect();
             } catch (Exception e) {
                 e.printStackTrace();
+            }finally {
+                if (databaseDcl!=null){
+                    databaseDcl.closeConnect();
+                }
             }
         }
         return ResultT.success();
