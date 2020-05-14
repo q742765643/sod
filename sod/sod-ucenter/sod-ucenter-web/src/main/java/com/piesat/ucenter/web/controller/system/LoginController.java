@@ -161,6 +161,8 @@ public class LoginController {
             UserDto loginUser = (UserDto) subject.getPrincipal();
             map.put("token", subject.getSession().getId());
             map.put("userId", loginUser.getUserName());
+            String password = AESUtil.aesDecrypt(loginUser.getPassword()).trim();
+            map.put("pwd",password);
             resultT.setData(map);
         } catch (LockedAccountException e) {
             resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_402_ERROR);
