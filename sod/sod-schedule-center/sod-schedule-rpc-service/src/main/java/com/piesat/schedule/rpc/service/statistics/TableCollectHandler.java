@@ -163,6 +163,10 @@ public class TableCollectHandler  implements BaseHandler {
 
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            }finally {
+                                if (databaseDcl!=null){
+                                    databaseDcl.closeConnect();
+                                }
                             }
 
                         }

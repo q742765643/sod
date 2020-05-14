@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { getCodeImg, getToken } from "@/api/login";
+import { getCodeImg, getTokenPortal } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 
@@ -105,7 +105,7 @@ export default {
     let winHref = window.location.href;
     if (winHref.indexOf("interfaceId") > -1) {
       let urlParam = winHref.split("?")[1];
-      getToken("?" + urlParam).then(response => {
+      getTokenPortal("?" + urlParam).then(response => {
         Cookies.set("username", response.data.userId, { expires: 30 });
         Cookies.set("password", encrypt(response.data.pwd), {
           expires: 30

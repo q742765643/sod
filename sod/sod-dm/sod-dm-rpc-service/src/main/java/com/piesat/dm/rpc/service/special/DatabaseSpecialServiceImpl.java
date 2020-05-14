@@ -94,7 +94,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DataTableDao dataTableDao;
     @Autowired
     private DatabaseInfo databaseInfo;
-	@Autowired
+    @Autowired
     private DatabaseDefineDao databaseDefineDao;
     @Autowired
     private DatabaseSpecialTreeDao databaseSpecialTreeDao;
@@ -103,7 +103,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
     @Autowired
-    private DatabaseSpecialAccessDao  databaseSpecialAccessDao;
+    private DatabaseSpecialAccessDao databaseSpecialAccessDao;
     @Autowired
     private MybatisModifyMapper mybatisModifyMapper;
 
@@ -115,6 +115,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @GrpcHthtClient
     private UserDao userDao;
+
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
         return databaseSpecialDao;
@@ -129,27 +130,27 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public PageBean getPage(PageForm<DatabaseSpecialDto> pageForm) {
         DatabaseSpecialEntity databaseSpecialEntity = this.databaseSpecialMapper.toEntity(pageForm.getT());
-        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotNullString(databaseSpecialEntity.getExamineStatus())){
-            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseSpecialEntity.getExamineStatus());
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotNullString(databaseSpecialEntity.getExamineStatus())) {
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(), databaseSpecialEntity.getExamineStatus());
         }
-        if(StringUtils.isNotNullString(databaseSpecialEntity.getSdbName())){
-            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getSdbName());
+        if (StringUtils.isNotNullString(databaseSpecialEntity.getSdbName())) {
+            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(), databaseSpecialEntity.getSdbName());
         }
-        if(StringUtils.isNotNullString(pageForm.getT().getUserName())){
+        if (StringUtils.isNotNullString(pageForm.getT().getUserName())) {
             //调用接口 根据用户名查询用户id
-            List<String> userId= new ArrayList<String>();
+            List<String> userId = new ArrayList<String>();
             userId.add("noUseId");
-            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%"+pageForm.getT().getUserName()+"%");
-            if(userEntities != null && userEntities.size()>0){
-                for(UserEntity userEntity : userEntities){
+            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%" + pageForm.getT().getUserName() + "%");
+            if (userEntities != null && userEntities.size() > 0) {
+                for (UserEntity userEntity : userEntities) {
                     userId.add(userEntity.getUserName());
                 }
             }
-            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(),userId);
-    }
-        Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, "examineStatus").and(Sort.by(Sort.Direction.DESC, "createTime"));
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<DatabaseSpecialEntity> databaseSpecialEntities = (List<DatabaseSpecialEntity>) pageBean.getPageData();
 
         List<DatabaseSpecialDto> databaseSpecialDtos = databaseSpecialMapper.toDto(databaseSpecialEntities);
@@ -157,10 +158,10 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         //调用接口获取所有的用户信息
         List<UserEntity> userEntities = userDao.findByUserType("11");
         //循环遍历
-        for(DatabaseSpecialDto databaseSpecialDto : databaseSpecialDtos){
+        for (DatabaseSpecialDto databaseSpecialDto : databaseSpecialDtos) {
             //遍历所有用户信息找到每条记录对应的用户信息
-            for(UserEntity userEntity:userEntities){
-                if(userEntity.getUserName().equals(databaseSpecialDto.getUserId())){
+            for (UserEntity userEntity : userEntities) {
+                if (userEntity.getUserName().equals(databaseSpecialDto.getUserId())) {
                     databaseSpecialDto.setUserName(userEntity.getWebUsername());
                     databaseSpecialDto.setUserPhone(userEntity.getPhonenumber());
                     databaseSpecialDto.setDepartment(userEntity.getDeptName());
@@ -182,8 +183,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Transactional
     @Override
-    public void deleteAccessBySdbIdAndUserId(String sdbId,String userId) {
-        this.databaseSpecialAccessDao.deleteBySdbIdAndUserId(sdbId,userId);
+    public void deleteAccessBySdbIdAndUserId(String sdbId, String userId) {
+        this.databaseSpecialAccessDao.deleteBySdbIdAndUserId(sdbId, userId);
     }
 
     @Override
@@ -197,27 +198,27 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         DatabaseSpecialEntity databaseSpecialEntity = this.getById(id);
         DatabaseSpecialDto databaseSpecialDto = this.databaseSpecialMapper.toDto(databaseSpecialEntity);
         //为数据库中午名称赋值
-        if(databaseSpecialDto!=null){
+        if (databaseSpecialDto != null) {
             String[] databaseArray = databaseSpecialDto.getDatabaseId().split(",");
             //查询数据库信息列表
             List<DatabaseDefineEntity> databaseDefineEntityList = databaseDefineDao.findAll();
             String databaseName = "";
-            for(String databaseId : databaseArray){
-                for(DatabaseDefineEntity databaseDefineEntity : databaseDefineEntityList){
+            for (String databaseId : databaseArray) {
+                for (DatabaseDefineEntity databaseDefineEntity : databaseDefineEntityList) {
                     //根据数据库ID判断数据库名称
-                    if(databaseId.equals(databaseDefineEntity.getId())){
-                        databaseName += databaseDefineEntity.getDatabaseName()+",";
+                    if (databaseId.equals(databaseDefineEntity.getId())) {
+                        databaseName += databaseDefineEntity.getDatabaseName() + ",";
                     }
                 }
             }
-            if(databaseName.length()>0){
-                databaseName = databaseName.substring(0,databaseName.length()-1);
+            if (databaseName.length() > 0) {
+                databaseName = databaseName.substring(0, databaseName.length() - 1);
             }
             databaseSpecialDto.setDatabaseName(databaseName);
 
             //调接口查申请人详情
             UserEntity userEntity = userDao.findByUserName(databaseSpecialDto.getUserId());
-            if(userEntity != null){
+            if (userEntity != null) {
                 databaseSpecialDto.setUserName(userEntity.getWebUsername());
                 databaseSpecialDto.setUserPhone(userEntity.getTutorPhone());
                 databaseSpecialDto.setDepartment(userEntity.getDeptName());
@@ -248,28 +249,28 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         String databaseSpecialReadWriteList = map.get("databaseSpecialReadWriteList");
 
         DatabaseSpecialEntity databaseSpecialEntity = new DatabaseSpecialEntity();
-        if(StringUtils.isNotNullString(tdb_name)){
+        if (StringUtils.isNotNullString(tdb_name)) {
             databaseSpecialEntity.setSdbName(tdb_name);
         }
-        if(StringUtils.isNotNullString(tdb_id)){
+        if (StringUtils.isNotNullString(tdb_id)) {
             databaseSpecialEntity.setId(tdb_id);
         }
-        if(StringUtils.isNotNullString(uses)){
+        if (StringUtils.isNotNullString(uses)) {
             databaseSpecialEntity.setUses(uses);
         }
-        if(StringUtils.isNotNullString(tdb_img)){
+        if (StringUtils.isNotNullString(tdb_img)) {
             databaseSpecialEntity.setSdbImg(tdb_img);
         }
-        if(StringUtils.isNotNullString(database_id)){
+        if (StringUtils.isNotNullString(database_id)) {
             databaseSpecialEntity.setDatabaseId(database_id);
         }
-        if(StringUtils.isNotNullString(database_schema_id)){
+        if (StringUtils.isNotNullString(database_schema_id)) {
             databaseSpecialEntity.setDatabaseSchema(database_schema_id);
         }
-        if(StringUtils.isNotNullString(filePath)){
+        if (StringUtils.isNotNullString(filePath)) {
             databaseSpecialEntity.setApplyMaterial(filePath);
         }
-        if(StringUtils.isNotEmpty(data)){
+        if (StringUtils.isNotEmpty(data)) {
             JSONObject object = JSONObject.parseObject(data);
             String userId = (String) object.get("userId");
             databaseSpecialEntity.setUserId(userId);
@@ -280,9 +281,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         databaseSpecialEntity.setUseStatus("2");
         databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
 
-        if(StringUtils.isNotEmpty(database_id)){
+        if (StringUtils.isNotEmpty(database_id)) {
             String[] split = database_id.split(",");
-            for (String databaseId :split ) {
+            for (String databaseId : split) {
                 DatabaseSpecialAuthorityEntity dsa = new DatabaseSpecialAuthorityEntity();
                 dsa.setDatabaseId(databaseId);
                 dsa.setCreateTable(1);
@@ -295,11 +296,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         }
 
 
-        if(StringUtils.isNotEmpty(databaseSpecialReadWriteList)){
+        if (StringUtils.isNotEmpty(databaseSpecialReadWriteList)) {
             JSONArray objects = JSONArray.parseArray(databaseSpecialReadWriteList);
-            if(objects != null && objects.size()>0){
-                for(int i = 0;i<objects.size();i++){
-                    Map<String,String> mapReadWrite = (Map<String,String>)objects.get(i);
+            if (objects != null && objects.size() > 0) {
+                for (int i = 0; i < objects.size(); i++) {
+                    Map<String, String> mapReadWrite = (Map<String, String>) objects.get(i);
                     DatabaseSpecialReadWriteEntity readWriteEntity = new DatabaseSpecialReadWriteEntity();
                     readWriteEntity.setSdbId(databaseSpecialEntity.getId());
                     readWriteEntity.setDataClassId(mapReadWrite.get("dataClassId"));
@@ -321,6 +322,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     /**
      * 数据库授权
+     *
      * @param databaseDto
      */
     @Override
@@ -331,14 +333,14 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             String userId = databaseDto.getUserId();
             //判断用户是否申请过数据库账户
             List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
-            if(databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+            if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
                 //删除历史授权记录，重新添加
                 String sdbId = databaseDto.getTdbId();
                 databaseSpecialAuthorityDao.deleteBySdbId(sdbId);
                 databaseDao.deleteByTdbId(sdbId);
                 //需要授权的数据库列表
                 List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList = databaseDto.getDatabaseSpecialAuthorityList();
-                for(int i=0; i<databaseSpecialAuthorityList.size();i++) {
+                for (int i = 0; i < databaseSpecialAuthorityList.size(); i++) {
                     DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
                     //保存申请列表
                     DatabaseSpecialAuthorityEntity databaseSpecialAuthorityEntity = databaseSpecialAuthorityMapper.toEntity(databaseSpecialAuthorityDto);
@@ -358,21 +360,21 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     }
                 }
                 //授权
-                for(int i=0; i<databaseSpecialAuthorityList.size();i++){
+                for (int i = 0; i < databaseSpecialAuthorityList.size(); i++) {
                     DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
                     String databaseId = databaseSpecialAuthorityDto.getDatabaseId();
                     DatabaseDefineEntity databaseDefineEntity = databaseDefineDao.findById(databaseId).get();
-                    try{
+                    DatabaseDcl databaseVO = null;
+                    try {
                         //申请创建模式
                         Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
                         //访问路径、账号、密码
                         String url = databaseDefineEntity.getDatabaseUrl();
-                        if(databaseAdministratorSet!=null){
+                        if (databaseAdministratorSet != null) {
                             //获取任意登录账号
                             DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
                             String username = databaseAdministratorEntity.getUserName();
                             String password = databaseAdministratorEntity.getPassWord();
-                            DatabaseDcl databaseVO = null;
                             //
                             String schemaName = databaseDto.getSchemaName();
                             DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
@@ -387,38 +389,42 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                             //删除表权限
                             boolean dropAuthor = databaseSpecialAuthorityDto.getDeleteTable() == 2;
                             //判断是什么数据库
-                            if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())){
-                                databaseVO = new Xugu(url,username,password);
-                                try{
-                                    databaseVO.createSchemas(schemaName,databaseUpId,null,dataAuthor,creatAuthor,dropAuthor,null);
-                                }catch (Exception e){
+                            if (databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())) {
+                                databaseVO = new Xugu(url, username, password);
+                                try {
+                                    databaseVO.createSchemas(schemaName, databaseUpId, null, dataAuthor, creatAuthor, dropAuthor, null);
+                                } catch (Exception e) {
                                     logger.error("[E4006] 同名用户或模式已存在 ");
                                 }
-                            }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())){
-                                databaseVO = new Gbase8a(url,username,password);
-                                try{
-                                    databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
-                                }catch (Exception e){
+                            } else if (databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())) {
+                                databaseVO = new Gbase8a(url, username, password);
+                                try {
+                                    databaseVO.createSchemas(schemaName, databaseUpId, databaseUpPassword, dataAuthor, creatAuthor, dropAuthor, databaseUpIpList);
+                                } catch (Exception e) {
                                     logger.error("[E4006] 同名用户或模式已存在 ");
                                 }
-                            }else if(databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())){
+                            } else if (databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())) {
                                 databaseVO = new Cassandra(databaseDefineEntity.getDatabaseIp(),
                                         Integer.parseInt(databaseDefineEntity.getDatabasePort()),
-                                        username,password,databaseDto.getSchemaName());
-                                try{
-                                    databaseVO.createSchemas(schemaName,databaseUpId,databaseUpPassword,dataAuthor,creatAuthor,dropAuthor,databaseUpIpList);
-                                }catch (Exception e){
+                                        username, password, databaseDto.getSchemaName());
+                                try {
+                                    databaseVO.createSchemas(schemaName, databaseUpId, databaseUpPassword, dataAuthor, creatAuthor, dropAuthor, databaseUpIpList);
+                                } catch (Exception e) {
                                     logger.error("[E4006] 同名用户或模式已存在 ");
                                 }
-                            }else{
+                            } else {
                                 return;
                             }
-                            if(databaseVO!=null){
+                            if (databaseVO != null) {
                                 databaseVO.closeConnect();
                             }
                         }
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
+                    } finally {
+                        if (databaseVO != null) {
+                            databaseVO.closeConnect();
+                        }
                     }
                 }
             }
@@ -428,21 +434,21 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
 
-	@Override
+    @Override
     public PageBean selectPageList(PageForm<DatabaseSpecialDto> pageForm) {
-        DatabaseSpecialEntity databaseSpecialEntity=databaseSpecialMapper.toEntity(pageForm.getT());
-        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotBlank(databaseSpecialEntity.getExamineStatus())){
-            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),databaseSpecialEntity.getExamineStatus());
+        DatabaseSpecialEntity databaseSpecialEntity = databaseSpecialMapper.toEntity(pageForm.getT());
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(databaseSpecialEntity.getExamineStatus())) {
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(), databaseSpecialEntity.getExamineStatus());
         }
-        if(StringUtils.isNotBlank(databaseSpecialEntity.getSdbName())){
-            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getSdbName());
+        if (StringUtils.isNotBlank(databaseSpecialEntity.getSdbName())) {
+            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(), databaseSpecialEntity.getSdbName());
         }
-        if(StringUtils.isNotBlank(databaseSpecialEntity.getUserId())){
-            specificationBuilder.add("userId", SpecificationOperator.Operator.likeAll.name(),databaseSpecialEntity.getUserId());
+        if (StringUtils.isNotBlank(databaseSpecialEntity.getUserId())) {
+            specificationBuilder.add("userId", SpecificationOperator.Operator.likeAll.name(), databaseSpecialEntity.getUserId());
         }
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
-        List<DatabaseSpecialEntity> databaseSpecialList= (List<DatabaseSpecialEntity>) pageBean.getPageData();
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, null);
+        List<DatabaseSpecialEntity> databaseSpecialList = (List<DatabaseSpecialEntity>) pageBean.getPageData();
         pageBean.setPageData(databaseSpecialMapper.toDto(databaseSpecialList));
         return pageBean;
     }
@@ -456,19 +462,19 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     .toEntity(databaseSpecialReadWriteDto);
             mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteEntity);
 
-            if(databaseSpecialReadWriteDto.getDatabaseId()!="RADB"){
+            if (databaseSpecialReadWriteDto.getDatabaseId() != "RADB") {
                 String userId = databaseSpecialReadWriteDto.getUserId();
                 String databaseId = databaseSpecialReadWriteDto.getDatabaseId();
                 String dataClassId = databaseSpecialReadWriteDto.getDataClassId();
                 Integer applyAuthority = databaseSpecialReadWriteDto.getApplyAuthority();
-                Map<String,Object> paramMap = new HashMap<>();
+                Map<String, Object> paramMap = new HashMap<>();
 
-                if(databaseSpecialReadWriteDto.getExamineStatus()==1){
+                if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {
                     //授权
-                    empowerAuthority(userId,databaseId,dataClassId,applyAuthority);
-                }else if(databaseSpecialReadWriteDto.getExamineStatus()==2){
+                    empowerAuthority(userId, databaseId, dataClassId, applyAuthority);
+                } else if (databaseSpecialReadWriteDto.getExamineStatus() == 2) {
                     //撤销授权
-                    cancelAuthority(userId,databaseId,dataClassId,1);
+                    cancelAuthority(userId, databaseId, dataClassId, 1);
                 }
             }
         } catch (Exception e) {
@@ -480,7 +486,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Transactional
     public void empowerDataBatch(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtoList) {
         try {
-            for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtoList){
+            for (DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtoList) {
                 String sdbId = databaseSpecialReadWriteDto.getSdbId();//专题库ID
                 String dataClassId = databaseSpecialReadWriteDto.getDataClassId();//存储编码
                 String databaseId = databaseSpecialReadWriteDto.getDatabaseId();//数据库ID
@@ -488,24 +494,24 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 Integer examineStatus = databaseSpecialReadWriteDto.getExamineStatus();//授权状态
                 String userId = databaseSpecialReadWriteDto.getUserId();//用户ID
                 String failureReason = databaseSpecialReadWriteDto.getFailureReason();
-                if(examineStatus==1){
+                if (examineStatus == 1) {
                     failureReason = "-";
                 }
-                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
+                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
 
-                if(!databaseId.equals("RADB")){
-                    if(databaseSpecialReadWriteDto.getExamineStatus()==1){//授权
-                        empowerAuthority(userId,databaseId,dataClassId,applyAuthority);
-                    }else if(databaseSpecialReadWriteDto.getExamineStatus()==2){//撤销权限
-                        cancelAuthority(userId,databaseId,dataClassId,1);
+                if (!databaseId.equals("RADB")) {
+                    if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {//授权
+                        empowerAuthority(userId, databaseId, dataClassId, applyAuthority);
+                    } else if (databaseSpecialReadWriteDto.getExamineStatus() == 2) {//撤销权限
+                        cancelAuthority(userId, databaseId, dataClassId, 1);
                     }
                 }
 
                 //更新授权状态
-                List<DatabaseSpecialReadWriteEntity> dataList = databaseSpecialReadWriteDao.findBySdbIdAndDataClassId(sdbId,dataClassId);
+                List<DatabaseSpecialReadWriteEntity> dataList = databaseSpecialReadWriteDao.findBySdbIdAndDataClassId(sdbId, dataClassId);
                 System.out.println(dataList.size());
-                if(dataList!=null&&dataList.size()>0){
-                    for(DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity : dataList){
+                if (dataList != null && dataList.size() > 0) {
+                    for (DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity : dataList) {
                         databaseSpecialReadWriteEntity.setExamineStatus(examineStatus);
                         databaseSpecialReadWriteEntity.setFailureReason(failureReason);
                         mybatisModifyMapper.modifyDatabaseSpecialReadWrite(databaseSpecialReadWriteEntity);
@@ -519,9 +525,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    public Map<String,Object> getDataTreeBySdbId(String sdbId) {
+    public Map<String, Object> getDataTreeBySdbId(String sdbId) {
 
-        Map<String,Object> resultMap =  new HashMap<String,Object>();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
 
         List<Ztree> data = new ArrayList<Ztree>();
 
@@ -537,8 +543,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         // 根据专题库ID获取对应树信息。
         int maxTypeId = 1;
         List<DatabaseSpecialTreeEntity> databaseSpecialTreeEntities = databaseSpecialTreeDao.findBySdbId(sdbId);
-        if(databaseSpecialTreeEntities != null && databaseSpecialTreeEntities.size() > 0){
-            for(DatabaseSpecialTreeEntity databaseSpecialTree : databaseSpecialTreeEntities){
+        if (databaseSpecialTreeEntities != null && databaseSpecialTreeEntities.size() > 0) {
+            for (DatabaseSpecialTreeEntity databaseSpecialTree : databaseSpecialTreeEntities) {
 
                 //获取最大类型id
                 if (Integer.parseInt(databaseSpecialTree.getTypeId()) > maxTypeId) {
@@ -565,15 +571,15 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 data.add(tree);
             }
         }
-        resultMap.put("maxTypeId",maxTypeId);
-        resultMap.put("data",data);
+        resultMap.put("maxTypeId", maxTypeId);
+        resultMap.put("data", data);
         return resultMap;
     }
 
     @Override
-    public Map<String,Object> getTreeBySdbId(String sdbId) {
+    public Map<String, Object> getTreeBySdbId(String sdbId) {
 
-        Map<String,Object> resultMap =  new HashMap<String,Object>();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
 
         List<Ztree> data = new ArrayList<Ztree>();
 
@@ -589,8 +595,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         // 根据专题库ID获取对应树信息。
         int maxTypeId = 1;
         List<DatabaseSpecialTreeEntity> databaseSpecialTreeEntities = databaseSpecialTreeDao.findBySdbId(sdbId);
-        if(databaseSpecialTreeEntities != null && databaseSpecialTreeEntities.size() > 0){
-            for(DatabaseSpecialTreeEntity databaseSpecialTree : databaseSpecialTreeEntities){
+        if (databaseSpecialTreeEntities != null && databaseSpecialTreeEntities.size() > 0) {
+            for (DatabaseSpecialTreeEntity databaseSpecialTree : databaseSpecialTreeEntities) {
 
                 //获取最大类型id
                 if (Integer.parseInt(databaseSpecialTree.getTypeId()) > maxTypeId) {
@@ -605,8 +611,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 data.add(tree);
             }
         }
-        resultMap.put("maxTypeId",maxTypeId);
-        resultMap.put("data",data);
+        resultMap.put("maxTypeId", maxTypeId);
+        resultMap.put("data", data);
         return resultMap;
     }
 
@@ -648,18 +654,18 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     /**
      * 授权
      */
-    private void empowerAuthority(String userId,String databaseId,String dataClassId,Integer applyAuthority){
+    private void empowerAuthority(String userId, String databaseId, String dataClassId, Integer applyAuthority) {
         DatabaseDcl databaseVO = null;
         try {
             //判断用户是否申请过数据库账户
             List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
-            if(databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+            if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
                 DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
                 //up账户IP
                 String databaseUPIp = null;
-                if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())){
+                if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())) {
                     databaseUPIp = databaseUserEntity.getDatabaseUpIp();
-                }else if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())){
+                } else if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())) {
                     databaseUPIp = databaseUserEntity.getDatabaseUpIpSegment();
                 }
                 //获取用户可用的物理库ID
@@ -668,37 +674,37 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
                 String databaseDefineId = databaseEntity.getDatabaseDefine().getId();
                 String[] xuguDatabaseArray = {"HADB"};
-                String[] gbaseDatabaseArray = {"STDB","BFDB","FIDB"};
+                String[] gbaseDatabaseArray = {"STDB", "BFDB", "FIDB"};
                 //判断待授权物理库是否是用户可用
-                if(Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
+                if (Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
                         (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)
-                        || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))){
+                                || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))) {
                     DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
                     Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
                     //访问路径、账号、密码
                     String url = databaseDefineEntity.getDatabaseUrl();
-                    if(databaseAdministratorSet!=null) {
+                    if (databaseAdministratorSet != null) {
                         //获取任意登录账号
                         DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
                         String username = databaseAdministratorEntity.getUserName();
                         String password = databaseAdministratorEntity.getPassWord();
 
                         //虚谷
-                        if(Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)){
-                            databaseVO = new Xugu(url,username,password);
-                        }else if(Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)){//南大
-                            databaseVO = new Gbase8a(url,username,password);
+                        if (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)) {
+                            databaseVO = new Xugu(url, username, password);
+                        } else if (Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)) {//南大
+                            databaseVO = new Gbase8a(url, username, password);
                         }
-                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
-                        for(DataTableEntity dataTableEntity : dataTableList){
+                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
+                        for (DataTableEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();
                             //默认读权限
                             boolean select = true;
-                            if(applyAuthority==2){//读写权限
+                            if (applyAuthority == 2) {//读写权限
                                 select = false;
                             }
-                            databaseVO.addPermissions(select,databaseEntity.getSchemaName(),
-                                     tableName,databaseUserEntity.getDatabaseUpId(),null,null);
+                            databaseVO.addPermissions(select, databaseEntity.getSchemaName(),
+                                    tableName, databaseUserEntity.getDatabaseUpId(), null, null);
                         }
                     }
                 }
@@ -706,7 +712,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(databaseVO!=null){
+            if (databaseVO != null) {
                 databaseVO.closeConnect();
             }
         }
@@ -715,18 +721,18 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     /**
      * 撤销权限
      */
-    private void cancelAuthority(String userId,String databaseId,String dataClassId,Integer mark){
+    private void cancelAuthority(String userId, String databaseId, String dataClassId, Integer mark) {
         DatabaseDcl databaseVO = null;
         try {
             //判断用户是否申请过数据库账户
             List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
-            if(databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+            if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
                 DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
                 //up账户IP
                 String databaseUPIp = null;
-                if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())){
+                if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())) {
                     databaseUPIp = databaseUserEntity.getDatabaseUpIp();
-                }else if(StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())){
+                } else if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())) {
                     databaseUPIp = databaseUserEntity.getDatabaseUpIpSegment();
                 }
                 //获取用户可用的物理库ID
@@ -735,33 +741,33 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
                 String databaseDefineId = databaseEntity.getDatabaseDefine().getId();
                 String[] xuguDatabaseArray = {"HADB"};
-                String[] gbaseDatabaseArray = {"STDB","BFDB","FIDB"};
+                String[] gbaseDatabaseArray = {"STDB", "BFDB", "FIDB"};
                 //判断待授权物理库是否是用户可用
-                if(Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
+                if (Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
                         (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)
-                                || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))){
+                                || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))) {
                     DatabaseDefineEntity databaseDefineEntity = databaseEntity.getDatabaseDefine();
                     Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
                     //访问路径、账号、密码
                     String url = databaseDefineEntity.getDatabaseUrl();
-                    if(databaseAdministratorSet!=null) {
+                    if (databaseAdministratorSet != null) {
                         //获取任意登录账号
                         DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
                         String username = databaseAdministratorEntity.getUserName();
                         String password = databaseAdministratorEntity.getPassWord();
 
                         //虚谷
-                        if(Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)){
-                            databaseVO = new Xugu(url,username,password);
-                        }else if(Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)){//南大
-                            databaseVO = new Gbase8a(url,username,password);
+                        if (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)) {
+                            databaseVO = new Xugu(url, username, password);
+                        } else if (Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)) {//南大
+                            databaseVO = new Gbase8a(url, username, password);
                         }
-                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId,databaseId);
-                        String[] permissions = {"SELECT","UPDATE","INSERT","DELETE"};
-                        for(DataTableEntity dataTableEntity : dataTableList){
+                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
+                        String[] permissions = {"SELECT", "UPDATE", "INSERT", "DELETE"};
+                        for (DataTableEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();
-                            databaseVO.deletePermissions(permissions,databaseEntity.getSchemaName(),
-                                    dataTableEntity.getTableName(),databaseUserEntity.getDatabaseUpId(),null,null);
+                            databaseVO.deletePermissions(permissions, databaseEntity.getSchemaName(),
+                                    dataTableEntity.getTableName(), databaseUserEntity.getDatabaseUpId(), null, null);
                         }
                     }
                 }
@@ -769,7 +775,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(databaseVO!=null){
+            if (databaseVO != null) {
                 databaseVO.closeConnect();
             }
         }
@@ -781,41 +787,41 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         //读申请是否自动授权
         boolean readAuthorityFlag = false;
         List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
-        if(readAuthorityEntities != null && readAuthorityEntities.size()>0){
-            if(readAuthorityEntities.get(0).getValue().equals("1")){
+        if (readAuthorityEntities != null && readAuthorityEntities.size() > 0) {
+            if (readAuthorityEntities.get(0).getValue().equals("1")) {
                 readAuthorityFlag = true;
             }
         }
 
-            List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList = databaseSpecialDto.getDatabaseSpecialReadWriteList();
-            if(databaseSpecialReadWriteList != null && databaseSpecialReadWriteList.size() > 0){
-                for(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteList){
-                    // 如果是读权限且允许默认通过，通过；否则，待审核
-                    if (databaseSpecialReadWriteDto.getApplyAuthority() == 1 && readAuthorityFlag) {
-                        databaseSpecialReadWriteDto.setExamineStatus(1);
-                    } else {
-                        databaseSpecialReadWriteDto.setExamineStatus(3);//待授权
-                    }
+        List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList = databaseSpecialDto.getDatabaseSpecialReadWriteList();
+        if (databaseSpecialReadWriteList != null && databaseSpecialReadWriteList.size() > 0) {
+            for (DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteList) {
+                // 如果是读权限且允许默认通过，通过；否则，待审核
+                if (databaseSpecialReadWriteDto.getApplyAuthority() == 1 && readAuthorityFlag) {
+                    databaseSpecialReadWriteDto.setExamineStatus(1);
+                } else {
+                    databaseSpecialReadWriteDto.setExamineStatus(3);//待授权
+                }
 
-                    // 默认分类
-                    databaseSpecialReadWriteDto.setTypeId("9999");
-                    //申请资料（非自建）
-                    databaseSpecialReadWriteDto.setDataType(2);
-                    //保存
-                    databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
+                // 默认分类
+                databaseSpecialReadWriteDto.setTypeId("9999");
+                //申请资料（非自建）
+                databaseSpecialReadWriteDto.setDataType(2);
+                //保存
+                databaseSpecialReadWriteDao.save(databaseSpecialReadWriteMapper.toEntity(databaseSpecialReadWriteDto));
 
-                    //到实际物理库授权
-                    if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {
-                        this.empowerDataOne(databaseSpecialReadWriteDto);
-                    }
+                //到实际物理库授权
+                if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {
+                    this.empowerDataOne(databaseSpecialReadWriteDto);
                 }
             }
+        }
         return databaseSpecialDto;
     }
 
     @Override
     public DatabaseSpecialAccessDto getSpecialAccess(String tdbId, String userId) {
-        DatabaseSpecialAccessEntity special = databaseSpecialAccessDao.findBySdbIdAndUserId(tdbId,userId);
+        DatabaseSpecialAccessEntity special = databaseSpecialAccessDao.findBySdbIdAndUserId(tdbId, userId);
         return databaseSpecialAccessMapper.toDto(special);
     }
 
@@ -836,7 +842,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     public DatabaseSpecialAccessDto specialAccessAutho(DatabaseSpecialAccessDto databaseSpecialAccessDto) {
         DatabaseSpecialAccessEntity databaseSpecialAccessEntity = databaseSpecialAccessMapper.toEntity(databaseSpecialAccessDto);
         //审核通过，设置使用状态为2使用中
-        if(databaseSpecialAccessEntity.getExamineStatus().equals("2")){
+        if (databaseSpecialAccessEntity.getExamineStatus().equals("2")) {
             databaseSpecialAccessEntity.setUseStatus("2");
         }
         databaseSpecialAccessEntity.setExamineTime(new Date());
@@ -844,17 +850,17 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         mybatisModifyMapper.updateSpecialAccess(databaseSpecialAccessEntity);
 
         //给专题库下的资料授权
-        if(databaseSpecialAccessEntity.getExamineStatus().equals("2")){
+        if (databaseSpecialAccessEntity.getExamineStatus().equals("2")) {
             List<DatabaseSpecialReadWriteEntity> databaseSpecialReadWriteEntities = this.databaseSpecialReadWriteDao.findBySdbId(databaseSpecialAccessDto.getSdbId());
-            if(databaseSpecialReadWriteEntities != null && databaseSpecialReadWriteEntities.size() > 0){
-                for(int i=0;i<databaseSpecialReadWriteEntities.size();i++){
+            if (databaseSpecialReadWriteEntities != null && databaseSpecialReadWriteEntities.size() > 0) {
+                for (int i = 0; i < databaseSpecialReadWriteEntities.size(); i++) {
                     DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity = databaseSpecialReadWriteEntities.get(i);
-                    empowerAuthority(databaseSpecialAccessEntity.getUserId(),databaseSpecialReadWriteEntity.getDatabaseId(),
-                            databaseSpecialReadWriteEntity.getDataClassId(),databaseSpecialReadWriteEntity.getApplyAuthority());
+                    empowerAuthority(databaseSpecialAccessEntity.getUserId(), databaseSpecialReadWriteEntity.getDatabaseId(),
+                            databaseSpecialReadWriteEntity.getDataClassId(), databaseSpecialReadWriteEntity.getApplyAuthority());
                 }
             }
         }
-       return databaseSpecialAccessDto;
+        return databaseSpecialAccessDto;
     }
 
     @Override
@@ -873,9 +879,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         specialdb.setExamineStatus(examineStatus);
         specialdb.setId(tdbId);
         specialdb.setUserId(userId);
-        if(examineStatus.equals("1") || examineStatus.equals("3")){
+        if (examineStatus.equals("1") || examineStatus.equals("3")) {
             specialdb.setUseStatus("1");
-        }else if(examineStatus.equals("2")){
+        } else if (examineStatus.equals("2")) {
             specialdb.setUseStatus("2");
         }//else if(examineStatus.equals("2")&&)
         databaseSpecialDao.save(databaseSpecialMapper.toEntity(specialdb));
@@ -883,20 +889,20 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
          * 给资料授权
          */
         try {
-            Map<String,Object> dataMap = new HashMap<String, Object>();
-            Map<String,Object> parammap = new HashMap<String, Object>();
+            Map<String, Object> dataMap = new HashMap<String, Object>();
+            Map<String, Object> parammap = new HashMap<String, Object>();
             //根据专题库ID获取到专题库资料列表
-            getAllRecordByTdbId(tdbId,dataMap);
-            if(dataMap.get("returnCode").toString().equals("0")){
-                JSONArray data=(JSONArray) dataMap.get("data");
-                if(data!=null&&data.size()>0){
+            getAllRecordByTdbId(tdbId, dataMap);
+            if (dataMap.get("returnCode").toString().equals("0")) {
+                JSONArray data = (JSONArray) dataMap.get("data");
+                if (data != null && data.size() > 0) {
                     //遍历单条授权
-                    for(int i=0; i<data.size(); i++){
+                    for (int i = 0; i < data.size(); i++) {
                         JSONObject obj = (JSONObject) data.get(i);
                         String data_class_id = obj.getString("DATA_CLASS_ID");//存储编码
                         int apply_authority = Integer.parseInt(obj.getString("APPLY_AUTHORITY"));//授权权限
                         String logic_id = obj.getString("LOGIC_ID");//物理库id
-                        empowerAuthority(userId,logic_id, data_class_id, apply_authority);
+                        empowerAuthority(userId, logic_id, data_class_id, apply_authority);
                     }
                 }
                 map.put("returnCode", "0");
@@ -905,116 +911,114 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         } catch (Exception e) {
             e.printStackTrace();
             map.put("returnCode", "1");
-            map.put("returnMessage", "操作失败 : "+e.getMessage());
+            map.put("returnMessage", "操作失败 : " + e.getMessage());
         }
         return map;
     }
 
     @Override
     public Map<String, Object> getRecordByTdbId(String tdbId, String typeId, String cause) {
-            Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
-            //下面定义一个JSONObject对象，用来存储对应专题库信息。
-            JSONObject createApplyData = new JSONObject();
-            //下面定义JSONArray，来存储数据表信息。
+        //下面定义一个JSONObject对象，用来存储对应专题库信息。
+        JSONObject createApplyData = new JSONObject();
+        //下面定义JSONArray，来存储数据表信息。
 
-            //下面根据专题库ID号获取对应专题库信息。
-            DatabaseSpecialDto oneRecord = this.databaseSpecialMapper.toDto(getById(tdbId));
-            if(oneRecord!=null)
-            {
-                //下面取得专题库ID号。
-                createApplyData.put("TDB_ID", oneRecord.getId());
-                //下面取得专题库名称。
-                createApplyData.put("TDB_NAME", oneRecord.getSdbName());
-                //下面取得专题库图标路径。
-                createApplyData.put("TDB_IMG", oneRecord.getSdbImg());
-                //下面取得申请用户ID。
-                createApplyData.put("USER_ID", oneRecord.getUserId());
-                //下面取得申请时间。
-                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date applyTime=oneRecord.getCreateTime();
-                String strApplyTime=sdf.format(applyTime);
-                createApplyData.put("APPLY_TIME", strApplyTime);
-                //下面取得用途。
-                createApplyData.put("USES", oneRecord.getUses());
-                //下面取得申请材料路径。
-                createApplyData.put("APPLY_FILE_PATH", oneRecord.getApplyMaterial());
-                //下面取得审核人。
-                createApplyData.put("EXAMINER", oneRecord.getExaminer());
-                //下面取得审核状态。
-                createApplyData.put("EXAMINE_STATUS", oneRecord.getExamineStatus());
-                //下面取得审核时间。
-                SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date examineTime=oneRecord.getExamineTime();
-                String strexamineTime=sdf1.format(examineTime);
-                createApplyData.put("EXAMINE_TIME", strexamineTime);
-                //下面取得拒绝原因。
-                createApplyData.put("CAUSE", oneRecord.getFailureReason());
-                //下面取得专题库使用状态。
-                createApplyData.put("USE_STATUS", oneRecord.getUseStatus());
-                //下面取得物理库id。
-                createApplyData.put("DATABASE_ID", oneRecord.getDatabaseId());
-                createApplyData.put("SCHEMA_ID", oneRecord.getDatabaseSchema());
+        //下面根据专题库ID号获取对应专题库信息。
+        DatabaseSpecialDto oneRecord = this.databaseSpecialMapper.toDto(getById(tdbId));
+        if (oneRecord != null) {
+            //下面取得专题库ID号。
+            createApplyData.put("TDB_ID", oneRecord.getId());
+            //下面取得专题库名称。
+            createApplyData.put("TDB_NAME", oneRecord.getSdbName());
+            //下面取得专题库图标路径。
+            createApplyData.put("TDB_IMG", oneRecord.getSdbImg());
+            //下面取得申请用户ID。
+            createApplyData.put("USER_ID", oneRecord.getUserId());
+            //下面取得申请时间。
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date applyTime = oneRecord.getCreateTime();
+            String strApplyTime = sdf.format(applyTime);
+            createApplyData.put("APPLY_TIME", strApplyTime);
+            //下面取得用途。
+            createApplyData.put("USES", oneRecord.getUses());
+            //下面取得申请材料路径。
+            createApplyData.put("APPLY_FILE_PATH", oneRecord.getApplyMaterial());
+            //下面取得审核人。
+            createApplyData.put("EXAMINER", oneRecord.getExaminer());
+            //下面取得审核状态。
+            createApplyData.put("EXAMINE_STATUS", oneRecord.getExamineStatus());
+            //下面取得审核时间。
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date examineTime = oneRecord.getExamineTime();
+            String strexamineTime = sdf1.format(examineTime);
+            createApplyData.put("EXAMINE_TIME", strexamineTime);
+            //下面取得拒绝原因。
+            createApplyData.put("CAUSE", oneRecord.getFailureReason());
+            //下面取得专题库使用状态。
+            createApplyData.put("USE_STATUS", oneRecord.getUseStatus());
+            //下面取得物理库id。
+            createApplyData.put("DATABASE_ID", oneRecord.getDatabaseId());
+            createApplyData.put("SCHEMA_ID", oneRecord.getDatabaseSchema());
 
-                //下面根据专题库ID号获取对应授权允许的数据表信息。
-                List<Map<String, Object>> dataList=this.mybatisQueryMapper.getRecordByTdbId(tdbId,typeId,cause);
-                map.put("data", dataList);
-            }
+            //下面根据专题库ID号获取对应授权允许的数据表信息。
+            List<Map<String, Object>> dataList = this.mybatisQueryMapper.getRecordByTdbId(tdbId, typeId, cause);
+            map.put("data", dataList);
+        }
 
-            //下面给result赋值。
-            map.put("specialDb", createApplyData);
-            return map;
+        //下面给result赋值。
+        map.put("specialDb", createApplyData);
+        return map;
     }
 
     @Override
     public Map<String, Object> getOneRecordByTdbId(String tdbId, String typeId, String status) {
-            Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
-            //下面定义一个JSONObject对象，用来存储对应专题库信息。
-            JSONObject createApplyData = new JSONObject();
-            //下面根据专题库ID号获取对应专题库信息。
-            DatabaseSpecialDto oneRecord = this.databaseSpecialMapper.toDto(getById(tdbId));
-            if(oneRecord!=null)
-            {
-                //下面取得专题库ID号。
-                createApplyData.put("TDB_ID", oneRecord.getId());
-                //下面取得专题库名称。
-                createApplyData.put("TDB_NAME", oneRecord.getSdbName());
-                //下面取得专题库图标路径。
-                createApplyData.put("TDB_IMG", oneRecord.getSdbImg());
-                //下面取得申请用户ID。
-                createApplyData.put("USER_ID", oneRecord.getUserId());
-                //下面取得申请时间。
-                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date applyTime=oneRecord.getCreateTime();
-                String strApplyTime=sdf.format(applyTime);
-                createApplyData.put("APPLY_TIME", strApplyTime);
-                //下面取得用途。
-                createApplyData.put("USES", oneRecord.getUses());
-                //下面取得申请材料路径。
-                createApplyData.put("APPLY_FILE_PATH", oneRecord.getApplyMaterial());
-                //下面取得审核人。
-                createApplyData.put("EXAMINER", oneRecord.getExaminer());
-                //下面取得审核状态。
-                createApplyData.put("EXAMINE_STATUS", oneRecord.getExamineStatus());
-                //下面取得审核时间。
-                SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date examineTime=oneRecord.getExamineTime();
-                String strexamineTime=sdf1.format(examineTime);
-                createApplyData.put("EXAMINE_TIME", strexamineTime);
-                //下面取得拒绝原因。
-                createApplyData.put("CAUSE", oneRecord.getFailureReason());
-                //下面取得专题库使用状态。
-                createApplyData.put("USE_STATUS", oneRecord.getUseStatus());
+        //下面定义一个JSONObject对象，用来存储对应专题库信息。
+        JSONObject createApplyData = new JSONObject();
+        //下面根据专题库ID号获取对应专题库信息。
+        DatabaseSpecialDto oneRecord = this.databaseSpecialMapper.toDto(getById(tdbId));
+        if (oneRecord != null) {
+            //下面取得专题库ID号。
+            createApplyData.put("TDB_ID", oneRecord.getId());
+            //下面取得专题库名称。
+            createApplyData.put("TDB_NAME", oneRecord.getSdbName());
+            //下面取得专题库图标路径。
+            createApplyData.put("TDB_IMG", oneRecord.getSdbImg());
+            //下面取得申请用户ID。
+            createApplyData.put("USER_ID", oneRecord.getUserId());
+            //下面取得申请时间。
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date applyTime = oneRecord.getCreateTime();
+            String strApplyTime = sdf.format(applyTime);
+            createApplyData.put("APPLY_TIME", strApplyTime);
+            //下面取得用途。
+            createApplyData.put("USES", oneRecord.getUses());
+            //下面取得申请材料路径。
+            createApplyData.put("APPLY_FILE_PATH", oneRecord.getApplyMaterial());
+            //下面取得审核人。
+            createApplyData.put("EXAMINER", oneRecord.getExaminer());
+            //下面取得审核状态。
+            createApplyData.put("EXAMINE_STATUS", oneRecord.getExamineStatus());
+            //下面取得审核时间。
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date examineTime = oneRecord.getExamineTime();
+            String strexamineTime = sdf1.format(examineTime);
+            createApplyData.put("EXAMINE_TIME", strexamineTime);
+            //下面取得拒绝原因。
+            createApplyData.put("CAUSE", oneRecord.getFailureReason());
+            //下面取得专题库使用状态。
+            createApplyData.put("USE_STATUS", oneRecord.getUseStatus());
 
-                //下面根据专题库ID号获取对应授权允许的数据表信息。
-                List<Map<String,Object>> dataList=mybatisQueryMapper.getAuthorizeRecordByTdbId(tdbId,typeId,status);
-                map.put("dataList", dataList);
-            }
+            //下面根据专题库ID号获取对应授权允许的数据表信息。
+            List<Map<String, Object>> dataList = mybatisQueryMapper.getAuthorizeRecordByTdbId(tdbId, typeId, status);
+            map.put("dataList", dataList);
+        }
 
-            //下面给result赋值。
-            map.put("specialDb", createApplyData);
-            return map;
+        //下面给result赋值。
+        map.put("specialDb", createApplyData);
+        return map;
     }
 
     @Override
@@ -1078,39 +1082,31 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public Map<String, Object> saveOneRecord(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        try
-        {
+        try {
             //下面通过request取得传入的JSONObject对象对应字符串。
             StringBuilder responseStrBuilder = new StringBuilder();
-            BufferedReader streamReader = new BufferedReader( new InputStreamReader(request.getInputStream(), "UTF-8"));
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
             String inputStr;
-            while ((inputStr = streamReader.readLine()) != null)
-            {
+            while ((inputStr = streamReader.readLine()) != null) {
                 responseStrBuilder.append(inputStr);
             }
 
             //下面定义DminSpecialDbAccessapply对象。
-            DatabaseSpecialAccessEntity oneRecord=new DatabaseSpecialAccessEntity();
+            DatabaseSpecialAccessEntity oneRecord = new DatabaseSpecialAccessEntity();
             //下面从responseStrBuilder中获取专题库引用申请信息。
             JSONObject oneTableInfo = JSONObject.parseObject(responseStrBuilder.toString());
             //下面遍历JSONObject对象。
             Iterator iterator = oneTableInfo.keySet().iterator();
-            while(iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 String key = (String) iterator.next();
                 String value = oneTableInfo.getString(key);
 
                 //下面循环读取每个数据。
-                if(key.equals("TDB_ID")==true)
-                {
+                if (key.equals("TDB_ID") == true) {
                     oneRecord.setSdbId(value);
-                }
-                else if(key.equals("USER_ID")==true)
-                {
+                } else if (key.equals("USER_ID") == true) {
                     oneRecord.setUserId(value);
-                }
-                else if(key.equals("USES")==true)
-                {
+                } else if (key.equals("USES") == true) {
                     oneRecord.setUses(value);
                 }
             }
@@ -1118,7 +1114,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             //下面设置访问权限。
             oneRecord.setAccessAuthority(2);//默认设置为2-完整访问权限。
             //下面设置申请时间。
-            Date now=new Date();
+            Date now = new Date();
             oneRecord.setCreateTime(now);
             //下面设置审核状态。
             oneRecord.setExamineStatus("1");
@@ -1131,13 +1127,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             map.put("returnCode", 0);
             map.put("returnMessage", "保存数据成功");
             streamReader.close();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             //下面生成返回信息。
             map.put("returnCode", 1);
-            map.put("returnMessage", "保存数据失败："+e.getMessage());
+            map.put("returnMessage", "保存数据失败：" + e.getMessage());
         }
         //下面返回值。
         return map;
@@ -1145,6 +1139,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     /**
      * 根据专题库id获取所有对应资料
+     *
      * @param tdbId
      * @param map
      */

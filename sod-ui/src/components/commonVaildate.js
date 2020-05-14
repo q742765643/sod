@@ -12,9 +12,9 @@ export function EngNumLine(str) {
   return reg.test(str)
 }
 
-/* 英文字母和下划线组成，首位不能是下划线，下划线之后不能接下划线 */
+/* 表名首位允许是字母以及下划线；首位之后可以是字母，数字以及下划线；下划线后不能接下划线 */
 export function tableNameVail(str) {
-  const reg = /^(?!_)(?!.*?_$)[a-zA-Z0-9]([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+$/
+  const reg = /(^_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)/
   return reg.test(str)
 }
 

@@ -51,7 +51,7 @@ export default {
       if (this.superDialogObj.pageName == "存储结构概览") {
         this.superChose = [
           {
-            label: "资料用途",
+            label: "数据用途",
             value: "logicName"
           },
           {
@@ -75,7 +75,7 @@ export default {
             value: "DDataId"
           },
           {
-            label: "专题库名称",
+            label: "专题名",
             value: "specialDatabaseName"
           }
         ];
@@ -195,7 +195,7 @@ export default {
             value: "parameterId"
           },
           {
-            label: "GRIB格式",
+            label: "GRIB版本",
             value: "gribVersion"
           },
           /* {

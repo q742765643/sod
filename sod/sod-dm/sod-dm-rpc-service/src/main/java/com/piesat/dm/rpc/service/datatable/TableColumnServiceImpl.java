@@ -85,7 +85,16 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
             DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).get();
             DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
             DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            database.updateColumn(databaseDto.getSchemaName(), datatable.getTableName(), oldColumn, newColumn);
+            try {
+                database.updateColumn(databaseDto.getSchemaName(), datatable.getTableName(), oldColumn, newColumn);
+                database.closeConnect();
+            } catch (Exception e) {
+            } finally {
+                if (database != null) {
+                    database.closeConnect();
+                }
+            }
+
         }
         return this.tableColumnMapper.toDto(tableColumnEntity);
     }
@@ -96,7 +105,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         List<TableColumnDto> l = new ArrayList<>();
         for (TableColumnDto t : tableColumnDtoList) {
             TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(t);
-            if (StringUtils.isEmpty(tableColumnEntity.getId())){
+            if (StringUtils.isEmpty(tableColumnEntity.getId())) {
                 tableColumnEntity.setVersion(0);
                 tableColumnEntity.setCreateTime(new Date());
                 tableColumnEntity.setId(null);

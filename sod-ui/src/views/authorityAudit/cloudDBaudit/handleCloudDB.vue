@@ -687,7 +687,7 @@ export default {
 
       this.$refs[formName].validate(valid => {
         if (valid) {
-          /*  if (this.handleObj.id) {
+          if (this.handleObj.id) {
             editCldb(this.msgFormDialog).then(res => {
               if (res.code == 200) {
                 this.$message({
@@ -718,7 +718,7 @@ export default {
                 });
               }
             });
-          } */
+          }
         } else {
           console.log("error submit!!");
           return false;

@@ -580,7 +580,6 @@ export default {
         // 根据专题库id查寻
         await databaseGet({ id: this.currentRow.DATABASE_ID }).then(
           response => {
-            debugger;
             this.handleMsgObj.dataLogicList = [
               {
                 logicFlag: this.currentRow.LOGIC_FLAG, //数据用途
@@ -593,14 +592,6 @@ export default {
             this.reviewStep = true;
           }
         );
-
-        /* databaseId: "d205145e5ce147febdaf96eb37f21118"
-databaseName: "基础库"
-databasePName: "结构化数据库"
-logicFlag: "Case"
-logicName: "科研个例数据"
-storageName: "要素表"
-storageType: "E_table" */
       } else {
         // 取消/拒绝
         this.getList();

@@ -142,7 +142,8 @@ export default {
       tableData: [],
       // 高级搜索
       dialogSuperSearch: false,
-      superObj: {}
+      superObj: {},
+      superMsg: {}
     };
   },
   created() {
@@ -151,21 +152,28 @@ export default {
   methods: {
     /** 搜索按钮操作 */
     handleQuery() {
+      this.supeMsg = {};
       this.queryParams.pageNum = 1;
       this.getList("");
     },
     /** 查询列表 */
-    getList(superSearchForm) {
+    getList(superMsg) {
       // 判断是否是高级搜索
       let queryObj = {};
-      if (superSearchForm) {
-        this.queryParams.pageNum = 1;
-        let superList = superSearchForm.domains;
+      if (
+        (superMsg && superMsg.domains) ||
+        (this.superMsg && this.superMsg.domains)
+      ) {
+        if (superMsg.domains) {
+          this.queryParams.pageNum = 1;
+          this.superMsg = superMsg;
+        }
+        let superList = this.superMsg.domains;
         let newSuperForm = {};
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        queryObj = Object.assign(newSuperForm, this.queryParams);
+        queryObj = Object.assign(this.queryParams, newSuperForm);
       } else {
         queryObj = this.queryParams;
       }

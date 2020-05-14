@@ -220,7 +220,7 @@ export default {
     successUpload(res, file) {
       this.$message({
         type: "success",
-        message: "导入成功"
+        message: "上传成功"
       });
       this.getList();
       /*if (res.returnCode == 0) {
