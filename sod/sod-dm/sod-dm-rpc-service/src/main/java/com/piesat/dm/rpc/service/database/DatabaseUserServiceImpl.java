@@ -181,7 +181,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         UserEntity userEntity = userDao.findByUserName(databaseUserDto.getUserId());
         if (userEntity != null) {
             databaseUserDto.setUserName(userEntity.getWebUsername());
-            databaseUserDto.setTutorPhone(userEntity.getTutorPhone());
+            databaseUserDto.setPhonenumber(userEntity.getPhonenumber());
             databaseUserDto.setDeptName(userEntity.getDeptName());
         }
         return databaseUserDto;
