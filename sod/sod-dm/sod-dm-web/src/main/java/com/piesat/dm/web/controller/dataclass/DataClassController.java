@@ -212,7 +212,9 @@ public class DataClassController {
             JSONArray all = null;
             if (DatabseType.type.toLowerCase().equals("mysql")) {
                 all = this.dataClassService.getDatabaseClassMysql();
-            } else {
+            } else if(DatabseType.type.toLowerCase().equals("postgresql")) {
+                all = this.dataClassService.getDatabaseClassPostgresql();
+            }else {
                 all = this.dataClassService.getDatabaseClass();
             }
 

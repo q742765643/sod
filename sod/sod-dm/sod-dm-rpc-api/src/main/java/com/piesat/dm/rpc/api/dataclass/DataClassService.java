@@ -38,6 +38,8 @@ public interface DataClassService {
 
     JSONArray getDatabaseClass();
 
+    JSONArray getDatabaseClassPostgresql();
+
     JSONArray getDatabaseClassMysql();
 
     JSONArray getTree();
