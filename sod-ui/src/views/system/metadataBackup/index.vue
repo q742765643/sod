@@ -63,7 +63,7 @@
             <template slot-scope="scope">
               <span v-if="scope.row.isStructure==0">结构</span>
               <span v-if="scope.row.isStructure==1">数据</span>
-              <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
+              <span v-if="scope.row.isStructure=='0,1'||scope.row.isStructure=='1,0'">数据，结构</span>
             </template>
           </el-table-column>
           <el-table-column prop="triggerStatus" label="状态" width="80">
@@ -189,7 +189,7 @@
             <template slot-scope="scope">
               <span v-if="scope.row.isStructure==0">结构</span>
               <span v-if="scope.row.isStructure==1">数据</span>
-              <span v-if="scope.row.isStructure=='0,1'">数据，结构</span>
+              <span v-if="scope.row.isStructure=='0,1'||scope.row.isStructure=='1,0'">数据，结构</span>
             </template>
           </el-table-column>
           <el-table-column label="状态" prop="handleCode" :formatter="statusFormat" width="80"></el-table-column>
