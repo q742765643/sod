@@ -136,7 +136,7 @@ export default {
   },
   data() {
     return {
-      stepNum: 2,
+      stepNum: 0,
       formPage: "数据注册审核",
       isSourceTree: false, //资料
       rowData: {},

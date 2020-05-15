@@ -761,7 +761,7 @@
                 and c_element_namech like '%${c_datum_level}%'
             </if>
             <if test="c_datumtype != null and c_datumtype != ''">
-                and upper(c_short_name) like '%${c_datumtype}%'
+                and (c_short_name) like '%${c_datumtype}%'
             </if>
         </where>
     </select>

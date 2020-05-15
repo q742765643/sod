@@ -110,7 +110,15 @@ export default {
         Cookies.set("password", encrypt(response.data.pwd), {
           expires: 30
         });
-        this.$router.push({ path: "/" });
+        this.$store
+          .dispatch("ThirdLogin", token)
+          .then(() => {
+            this.loading = false;
+            this.$router.push({ path: "/" });
+          })
+          .catch(() => {
+            this.loading = false;
+          });
       });
     }
     this.getCode();
