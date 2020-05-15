@@ -39,7 +39,7 @@ public class CommonController {
 	 * @param response
 	 */
 	@ApiOperation(value="根据文件路径下载文件",notes="根据文件路径下载文件")
-    @RequiresPermissions("api:com:downloadByPath")
+    //@RequiresPermissions("api:com:downloadByPath")
 	@GetMapping(value="/api/com/downloadByPath")
 	public void downloadByPath(HttpServletRequest request, HttpServletResponse response) {
 		String fullPath = request.getParameter("filePath");
