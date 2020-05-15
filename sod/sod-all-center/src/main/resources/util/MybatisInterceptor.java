@@ -1,3 +1,4 @@
+/*
 package com.piesat.common.interceptor;
 
 import com.alibaba.fastjson.JSON;
@@ -34,12 +35,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+*/
 /**
  * @program: sod
  * @description:
  * @author: zzj
  * @create: 2020-03-10 13:12
- **/
+ **//*
+
 
 @Intercepts({@Signature(
         type = Executor.class,
@@ -269,3 +272,4 @@ public class MybatisInterceptor implements Interceptor {
     }
 
 }
+*/

@@ -1,5 +1,6 @@
 package com.piesat.common.interceptor;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.JsonSerializable;
 import com.piesat.common.annotation.MybatisAnnotation;
@@ -25,10 +26,12 @@ import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -57,13 +60,22 @@ import java.util.Properties;
 public class MybatisInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        if("mysql".equals(DatabseType.type)){
+        String type= null;
+        try {
+            final MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
+            Configuration configuration = mappedStatement.getConfiguration();
+            DruidDataSource dataSource= (DruidDataSource) configuration.getEnvironment().getDataSource();
+            type = DatabseType.getType(dataSource.getUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if("mysql".equals(type)){
             MysqlResetSql.intercept(invocation);
         }
-        if("xugu".equals(DatabseType.type)){
+        if("xugu".equals(type)){
             XuguResetSql.intercept(invocation);
         }
-        if("postgresql".equals(DatabseType.type)){
+        if("postgresql".equals(type)){
             PgResetSql.intercept(invocation);
         }
         return invocation.proceed();
