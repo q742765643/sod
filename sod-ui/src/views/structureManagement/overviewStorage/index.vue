@@ -154,41 +154,16 @@
       v-dialogDrag
       title="选择需要配置的选项"
       :visible.sync="dialogSetting"
-      width="600px"
+      width="650px"
       :before-close="handleClose"
     >
-      <el-checkbox
-        @change="changeSetting"
-        v-model="checked2"
-        false-label="move_identifier*"
-        true-label="move_identifier"
-        label="迁移"
-        border
-      ></el-checkbox>
-      <el-checkbox
-        @change="changeSetting"
-        v-model="checked3"
-        false-label="clean_identifier*"
-        true-label="clean_identifier"
-        label="清除"
-        border
-      ></el-checkbox>
-      <el-checkbox
-        @change="changeSetting"
-        v-model="checked4"
-        false-label="backup_identifier*"
-        true-label="backup_identifier"
-        label="备份"
-        border
-      ></el-checkbox>
-      <el-checkbox
-        @change="changeSetting"
-        v-model="checked5"
-        false-label="archiving_identifier*"
-        true-label="archiving_identifier"
-        label="恢复"
-        border
-      ></el-checkbox>
+      <el-checkbox-group v-model="checkSetList">
+        <el-checkbox label="同步" border @change="changeSetting($event,'syncIdentifier')"></el-checkbox>
+        <el-checkbox label="迁移" border @change="changeSetting($event,'moveIdentifier')"></el-checkbox>
+        <el-checkbox label="清除" border @change="changeSetting($event,'cleanIdentifier')"></el-checkbox>
+        <el-checkbox label="备份" border @change="changeSetting($event,'backupIdentifier')"></el-checkbox>
+        <el-checkbox label="恢复" border @change="changeSetting($event,'archivingIdentifier')"></el-checkbox>
+      </el-checkbox-group>
     </el-dialog>
 
     <!-- 数据恢复 -->
@@ -314,6 +289,7 @@ export default {
   },
   data() {
     return {
+      checkSetList: [],
       // 遮罩层
       loading: true,
       queryParams: {
@@ -346,10 +322,7 @@ export default {
 
       // 设置
       dialogSetting: false,
-      checked2: "",
-      checked3: "",
-      checked4: "",
-      checked5: "",
+
       rowId: "",
       // 数据恢复
       handleDataRecoveryDialog: false,
@@ -495,7 +468,36 @@ export default {
       this.handleDataRecoveryDialog = true;
     },
     settingCell(row) {
+      let setArry = [
+        {
+          label: "同步",
+          value: "SYNC_IDENTIFIER"
+        },
+        {
+          label: "迁移",
+          value: "MOVE_IDENTIFIER"
+        },
+        {
+          label: "清除",
+          value: "CLEAN_IDENTIFIER"
+        },
+        {
+          label: "备份",
+          value: "BACKUP_IDENTIFIER"
+        },
+        {
+          label: "恢复",
+          value: "ARCHIVING_IDENTIFIER"
+        }
+      ];
       this.rowId = row.ID;
+      this.checkSetList = [];
+      setArry.forEach(element => {
+        if (row[element.value] == 1 || row[element.value] == 2) {
+          this.checkSetList.push(element.label);
+        }
+      });
+      console.log(this.checkSetList);
       this.dialogSetting = true;
     },
     deleteCell(row) {
@@ -539,32 +541,55 @@ export default {
       this.handleSyncDialog = false;
       this.getList();
     },
-    changeSetting(event) {
+    changeSetting(checked, column) {
       let settingObj = {};
       settingObj.id = this.rowId;
-      console.log(settingObj);
-      if (event.indexOf("*") == -1) {
-        // 可用
-        settingObj.value = 2;
-        settingObj.column = event;
+      settingObj.column = column;
+      if (checked === false) {
+        this.$confirm(
+          "取消该配置将会同步删除已配置的任务，是否确认删除?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
+            settingObj.value = 3;
+            updateColumnValue(settingObj).then(response => {
+              if (response.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "配置成功"
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  type: "error",
+                  message: response.msg
+                });
+              }
+            });
+          })
+          .catch(() => {});
       } else {
-        // 不可用
-        settingObj.value = 3;
-        settingObj.column = event.split("*")[0];
+        settingObj.value = 2;
+        updateColumnValue(settingObj).then(response => {
+          if (response.code == 200) {
+            this.$message({
+              type: "success",
+              message: "配置成功"
+            });
+            this.getList();
+          } else {
+            this.$message({
+              type: "error",
+              message: response.msg
+            });
+          }
+        });
       }
-      updateColumnValue(settingObj).then(response => {
-        if (response.code == 200) {
-          this.$message({
-            type: "success",
-            message: "配置成功"
-          });
-        } else {
-          this.$message({
-            type: "error",
-            message: response.msg
-          });
-        }
-      });
     }
   }
 };

@@ -20,17 +20,17 @@
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column prop="statisticDate" label="统计日期">
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.statisticDate) }}</span>
+            <span v-if="scope.row.statisticDate">{{ parseTime(scope.row.statisticDate) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="beginTime" label="开始时间">
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.beginTime) }}</span>
+            <span v-if="scope.row.beginTime">{{ parseTime(scope.row.beginTime) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="endTime" label="结束时间">
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.endTime) }}</span>
+            <span v-if="scope.row.endTime">{{ parseTime(scope.row.endTime) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="recordCount" label="总量"></el-table-column>

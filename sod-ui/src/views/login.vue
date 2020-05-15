@@ -111,7 +111,7 @@ export default {
           expires: 30
         });
         this.$store
-          .dispatch("ThirdLogin", token)
+          .dispatch("ThirdLogin", response.data.token)
           .then(() => {
             this.loading = false;
             this.$router.push({ path: "/" });
