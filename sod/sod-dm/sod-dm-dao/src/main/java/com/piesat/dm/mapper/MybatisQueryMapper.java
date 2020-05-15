@@ -203,4 +203,8 @@ public interface MybatisQueryMapper {
     List<Map<String,Object>> getSpecialDBData(@Param("sdbId") String sdbId);
 
     List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
+
+    List<Map<String,Object>> getDatabaseName();
+
+    List<Map<String,Object>>  getByDatabaseDefineId(@Param("id")String id);
 }

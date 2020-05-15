@@ -241,7 +241,7 @@ export default {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: "拒绝成功:" + res.msg
+              message: res.msg
             });
             this.getList();
           } else {

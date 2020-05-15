@@ -190,4 +190,6 @@ public class UserDto extends BaseDto {
     @ApiModelProperty("是否创建专题库")
     private String dbCreate;
 
+    @ApiModelProperty("拒绝原因")
+    private String reason;
 }

@@ -8,6 +8,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.Doc2PDF;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
@@ -192,7 +193,7 @@ public class UserController {
         try {
             Map<String, String[]> parameterMap = request.getParameterMap();
             File newFile = null;
-            if (applyPaper != null) {
+            if (applyPaper != null&& StringUtils.isNotEmpty(applyPaper.getOriginalFilename())) {
                 String originalFileName1 = applyPaper.getOriginalFilename();//旧的文件名(用户上传的文件名称)
                 //新的文件名
                 //String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
@@ -291,7 +292,7 @@ public class UserController {
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理--业务用户审核", businessType = BusinessType.UPDATE)
     @GetMapping("/editBaseSod")
-    public ResultT<String> editBaseSod(String bizUserid, String checked) {
+    public ResultT<String> editBaseSod(String bizUserid, String checked,String reason) {
 //        String body = null;
 //        try {
 //            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
@@ -304,6 +305,7 @@ public class UserController {
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);
+        user.setReason(reason);
         ResultT<String> resultT = new ResultT<>();
         return userService.editBase(user);
     }
