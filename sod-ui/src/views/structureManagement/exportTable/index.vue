@@ -349,7 +349,7 @@ export default {
         })
           .then(() => {
             let obj = {};
-            obj.data_class_ids = ids.join(",");
+            obj.data_class_ids = this.toIds.join(",");
             obj.database_id = this.queryParams.database_id;
             obj.exportType = this.exportTyoe;
             exportSQL(obj).then(response => {
