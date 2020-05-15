@@ -278,17 +278,41 @@ export default {
       let status;
       if (this.stepNum == 0) {
         status = 2;
+        this.$prompt("请输入拒绝原因", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          inputValidator: value => {
+            if (value.trim().length < 1 || value.trim().length > 50) {
+              return "拒绝原因长度限制1-50个字符";
+            }
+          }
+        })
+          .then(({ value }) => {
+            editBase({
+              bizUserid: this.forId,
+              checked: status,
+              reason: value
+            }).then(res => {
+              if (res.code == 200) {
+                this.msgSuccess("操作成功");
+                this.$emit("closeStep");
+              } else {
+                this.msgError(res.msg);
+              }
+            });
+          })
+          .catch(() => {});
       } else {
         status = 1;
+        editBase({ bizUserid: this.forId, checked: status }).then(res => {
+          if (res.code == 200) {
+            this.msgSuccess("操作成功");
+            this.$emit("closeStep");
+          } else {
+            this.msgError(res.msg);
+          }
+        });
       }
-      editBase({ bizUserid: this.forId, checked: status }).then(res => {
-        if (res.code == 200) {
-          this.msgSuccess("操作成功");
-          this.$emit("closeStep");
-        } else {
-          this.msgError(res.msg);
-        }
-      });
     }
   }
 };

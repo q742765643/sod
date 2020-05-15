@@ -181,7 +181,7 @@
               >
                 <el-radio label="02" :disabled="exeFlag">允许</el-radio>
                 <el-radio label="03" :disabled="exeFlag">拒绝</el-radio>
-                <el-radio label="05">释放</el-radio>
+                <el-radio label="05" v-if="exeFlag">释放</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -615,7 +615,6 @@ export default {
     // 获取服务器详情
     initServerDetail() {
       if (this.handleObj.id) {
-        debugger;
         // 修改
         this.msgFormDialog = this.handleObj;
         this.msgFormDialog.userId = this.handleObj.application_user;

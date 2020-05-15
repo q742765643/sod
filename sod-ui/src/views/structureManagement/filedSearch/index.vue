@@ -152,7 +152,7 @@ export default {
   methods: {
     /** 搜索按钮操作 */
     handleQuery() {
-      this.supeMsg = {};
+      this.superMsg = {};
       this.queryParams.pageNum = 1;
       this.getList("");
     },
@@ -164,7 +164,7 @@ export default {
         (superMsg && superMsg.domains) ||
         (this.superMsg && this.superMsg.domains)
       ) {
-        if (superMsg.domains) {
+        if (superMsg && superMsg.domains) {
           this.queryParams.pageNum = 1;
           this.superMsg = superMsg;
         }

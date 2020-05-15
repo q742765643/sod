@@ -1,7 +1,7 @@
 <template>
   <div class="app-container tableStructureManageBox">
     <!-- 表结构管理 -->
-    <el-container>
+    <el-container id="box">
       <!-- 左侧树 -->
       <StructureClassify
         ref="classifyTree"
@@ -10,8 +10,9 @@
         @getTreeUrlOfTab="getTreeUrlOfTab"
         @searchFun="searchFun"
       />
+      <div id="resize"></div>
       <!-- 表格 -->
-      <el-main class="elMain" v-show="otherMain">
+      <el-main class="elMain" id="right" v-show="otherMain">
         <div class="treeTitle">
           <i class="el-icon-s-home"></i>
           {{tableName+'数据集信息'}}
@@ -119,7 +120,7 @@
         </div>
       </el-main>
       <!-- 公共元数据 -->
-      <el-main class="elMain" v-show="publicMain">
+      <el-main class="elMain" id="right" v-show="publicMain">
         <PublicDatumPage
           ref="PublicDatumTable"
           @showMaterialSingle="showMaterialSingle"
@@ -266,6 +267,35 @@ export default {
         this.tableStructureManageContral = false;
       }
     });
+  },
+  mounted() {
+    var resize = document.getElementById("resize");
+    var left = document.getElementById("left");
+    var right = document.getElementById("right");
+    var box = document.getElementById("box");
+    resize.onmousedown = function(e) {
+      var startX = e.clientX;
+      resize.left = resize.offsetLeft;
+      document.onmousemove = function(e) {
+        var endX = e.clientX;
+
+        var moveLen = resize.left + (endX - startX);
+        var maxT = box.clientWidth - resize.offsetWidth;
+        if (moveLen < 150) moveLen = 150;
+        if (moveLen > maxT - 150) moveLen = maxT - 150;
+
+        resize.style.left = moveLen;
+        left.style.width = moveLen + "px";
+        right.style.width = box.clientWidth - moveLen - 5 + "px";
+      };
+      document.onmouseup = function(evt) {
+        document.onmousemove = null;
+        document.onmouseup = null;
+        resize.releaseCapture && resize.releaseCapture();
+      };
+      resize.setCapture && resize.setCapture();
+      return false;
+    };
   },
   methods: {
     //新增，编辑资料树  或者  资料
@@ -562,6 +592,7 @@ export default {
 .tableStructureManageBox {
   padding: 20px 5px;
   .elMain {
+    float: left;
     border: 1px solid #ebeef5;
     background-color: #fff;
     margin-right: 10px;
@@ -653,6 +684,12 @@ export default {
     .orangRound {
       background: #ff5722;
     }
+  }
+  #resize {
+    width: 10px;
+    height: calc(100vh - 170px);
+    cursor: w-resize;
+    float: left;
   }
 }
 .scrollDialog {
