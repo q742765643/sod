@@ -1023,7 +1023,7 @@
             and t1.apply_authority = #{applyAuthority}
         </if>
         <if test="logicId != null and logicId != ''">
-            and t1.database_id = #{logicId}
+            and t5.id = #{logicId}
         </if>
         <if test="dataName != null and dataName != ''">
             and t3.class_name like CONCAT('%',#{dataName},'%')
@@ -1032,7 +1032,7 @@
             and substr(t1.data_class_id,0,1) = #{category}
         </if>
         <if test="schemaId != null and schemaId != ''">
-            and t4.schema_name = #{schemaId}
+            and t4.id = #{schemaId}
         </if>
         group by
         t1.database_id,t6.class_name,t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
