@@ -84,14 +84,18 @@
           </el-button>
           <!-- 迁移 -->
 
-          <el-button v-if="scope.row.MOVE_ST==1" size="mini" @click="handlMoveMethods(scope.row)">
+          <el-button v-if="scope.row.MOVE_ST===1" size="mini" @click="handlMoveMethods(scope.row)">
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
           </el-button>
 
           <!-- 清除 -->
-          <el-button v-if="scope.row.CLEAR_ST==1" size="mini" @click="handlClearMethods(scope.row)">
+          <el-button
+            v-if="scope.row.CLEAR_ST===1"
+            size="mini"
+            @click="handlClearMethods(scope.row)"
+          >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
             <i class="btnRound orangRound" v-else></i>清除
@@ -99,7 +103,7 @@
 
           <!-- 备份 -->
           <el-button
-            v-if="scope.row.BACKUP_ST==1"
+            v-if="scope.row.BACKUP_ST===1"
             size="mini"
             @click="handleBackUpMethods(scope.row)"
           >
@@ -157,12 +161,15 @@
       width="650px"
       :before-close="handleClose"
     >
+      <el-alert title="取消配置将会同步删除已配置的任务，请谨慎选择" type="error" :closable="false"></el-alert>
       <el-checkbox-group v-model="checkSetList">
-        <el-checkbox label="同步" border @change="changeSetting($event,'syncIdentifier')"></el-checkbox>
-        <el-checkbox label="迁移" border @change="changeSetting($event,'moveIdentifier')"></el-checkbox>
-        <el-checkbox label="清除" border @change="changeSetting($event,'cleanIdentifier')"></el-checkbox>
-        <el-checkbox label="备份" border @change="changeSetting($event,'backupIdentifier')"></el-checkbox>
-        <el-checkbox label="恢复" border @change="changeSetting($event,'archivingIdentifier')"></el-checkbox>
+        <el-checkbox
+          v-for="(item,index) in checkBoxList"
+          :key="index"
+          :label="item.label"
+          border
+          @change="changeSetting($event,item.value)"
+        ></el-checkbox>
       </el-checkbox-group>
     </el-dialog>
 
@@ -289,6 +296,7 @@ export default {
   },
   data() {
     return {
+      checkBoxList: [],
       checkSetList: [],
       // 遮罩层
       loading: true,
@@ -470,33 +478,73 @@ export default {
     settingCell(row) {
       let setArry = [
         {
-          label: "同步",
+          label: "数据同步",
           value: "SYNC_IDENTIFIER"
-        },
-        {
-          label: "迁移",
-          value: "MOVE_IDENTIFIER"
-        },
-        {
-          label: "清除",
-          value: "CLEAN_IDENTIFIER"
-        },
-        {
-          label: "备份",
-          value: "BACKUP_IDENTIFIER"
         },
         {
           label: "恢复",
           value: "ARCHIVING_IDENTIFIER"
         }
       ];
+      let setArry2 = [
+        {
+          label: "迁移",
+          value: "MOVE_ST"
+        },
+        {
+          label: "清除",
+          value: "CLEAR_ST"
+        },
+        {
+          label: "备份",
+          value: "BACKUP_ID"
+        }
+      ];
+
+      let checkedBoxArry = [
+        {
+          label: "数据同步",
+          value: "syncIdentifier"
+        },
+        {
+          label: "迁移",
+          value: "moveIdentifier"
+        },
+        {
+          label: "清除",
+          value: "cleanIdentifier"
+        },
+        {
+          label: "备份",
+          value: "backupIdentifier"
+        },
+        {
+          label: "恢复",
+          value: "archivingIdentifier"
+        }
+      ];
       this.rowId = row.ID;
       this.checkSetList = [];
+      this.checkBoxList = [];
       setArry.forEach(element => {
-        if (row[element.value] == 1 || row[element.value] == 2) {
+        if (row[element.value] === 1 || row[element.value] === 2) {
           this.checkSetList.push(element.label);
         }
       });
+      setArry2.forEach(element => {
+        if (row[element.value] == 1) {
+          this.checkSetList.push(element.label);
+        }
+      });
+
+      this.checkSetList.forEach(element => {
+        checkedBoxArry.forEach(item => {
+          if (element == item.label) {
+            this.checkBoxList.push(item);
+          }
+        });
+      });
+      console.log(this.checkBoxList);
       console.log(this.checkSetList);
       this.dialogSetting = true;
     },
@@ -546,50 +594,24 @@ export default {
       settingObj.id = this.rowId;
       settingObj.column = column;
       if (checked === false) {
-        this.$confirm(
-          "取消该配置将会同步删除已配置的任务，是否确认删除?",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-          }
-        )
-          .then(() => {
-            settingObj.value = 3;
-            updateColumnValue(settingObj).then(response => {
-              if (response.code == 200) {
-                this.$message({
-                  type: "success",
-                  message: "配置成功"
-                });
-                this.getList();
-              } else {
-                this.$message({
-                  type: "error",
-                  message: response.msg
-                });
-              }
-            });
-          })
-          .catch(() => {});
+        settingObj.value = 3;
       } else {
         settingObj.value = 2;
-        updateColumnValue(settingObj).then(response => {
-          if (response.code == 200) {
-            this.$message({
-              type: "success",
-              message: "配置成功"
-            });
-            this.getList();
-          } else {
-            this.$message({
-              type: "error",
-              message: response.msg
-            });
-          }
-        });
       }
+      updateColumnValue(settingObj).then(response => {
+        if (response.code == 200) {
+          this.$message({
+            type: "success",
+            message: "配置成功"
+          });
+          this.getList();
+        } else {
+          this.$message({
+            type: "error",
+            message: response.msg
+          });
+        }
+      });
     }
   }
 };
