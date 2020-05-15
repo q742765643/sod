@@ -146,7 +146,7 @@
       :title="dialogTitle"
       :visible.sync="handleDialog"
       width="80%"
-      v-dialogDrag
+      top="5vh"
     >
       <handleSync
         v-if="handleDialog"

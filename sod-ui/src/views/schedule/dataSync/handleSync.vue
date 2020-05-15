@@ -600,7 +600,14 @@ export default {
       }
     }
   },
-
+  /* mounted() {
+    return (this.targetChangeFlag = 1);
+  }, */
+  watch: {
+    editableTabs: function() {
+      this.targetChangeFlag = 1;
+    }
+  },
   methods: {
     async initDetail() {
       this.msgFormDialog = this.handleObj;
@@ -765,19 +772,23 @@ export default {
     },
     //目标表事件
     targetTableChange(selectTargetTableID) {
-      this.targetChangeFlag = this.targetChangeFlag + 1;
+      debugger;
+      if (this.targetChangeFlag !== 0) {
+        this.targetChangeFlag = this.targetChangeFlag + 1;
+      }
+
       //查找目标表字段
       this.queryTargetColumn(selectTargetTableID, "");
     },
     targetTableChange2(selectTargetTableID) {
-      this.targetChangeFlag = this.targetChangeFlag + 1;
+      if (this.targetChangeFlag !== 0) {
+        this.targetChangeFlag = this.targetChangeFlag + 1;
+      }
       //查找目标表字段2
       this.queryTargetColumn(selectTargetTableID, "2");
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
-      // debugger;
-      // this.editableTabs = [];
       if (!selectTargetTableID) {
         return;
       }
@@ -872,7 +883,7 @@ export default {
           if (
             this.handleObj.targetRelation &&
             this.handleObj.targetRelation.length > 0 &&
-            this.targetChangeFlag === 1
+            this.targetChangeFlag === 0
           ) {
             this.handleObj.targetRelation.forEach((te, ti) => {
               if (table_id == te.targetTableId) {
@@ -946,7 +957,7 @@ export default {
           }
         }
 
-        if (!this.handleObj.slaveRelation && this.targetChangeFlag !== 1) {
+        if (!this.handleObj.slaveRelation && this.targetChangeFlag !== 0) {
           var obj = {};
           obj.index = i;
           obj.isdelete = false;
@@ -955,7 +966,7 @@ export default {
           dataList.push(obj);
         }
       }
-      if (this.handleObj.slaveRelation && this.targetChangeFlag === 1) {
+      if (this.handleObj.slaveRelation && this.targetChangeFlag === 0) {
         this.handleObj.slaveRelation.mapping.forEach((mItem, i) => {
           var obj = {};
           obj.index = i;
