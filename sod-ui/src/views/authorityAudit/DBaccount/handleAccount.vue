@@ -375,8 +375,14 @@ export default {
     },
     // 预览
     previewDocx() {
-      debugger;
-      window.open(baseUrl + this.msgFormDialog.pdfPath);
+      if (this.msgFormDialog.pdfPath) {
+        window.open(baseUrl + this.msgFormDialog.pdfPath);
+      } else {
+        this.$message({
+          type: "error",
+          message: "当前没有可预览文件"
+        });
+      }
     },
     // 申请绑定IP
     removeDomain(item) {

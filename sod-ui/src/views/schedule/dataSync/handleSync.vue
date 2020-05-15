@@ -435,6 +435,7 @@ export default {
       }
     };
     return {
+      targetChangeFlag: 0,
       stableFilterForm: {
         domains: [
           {
@@ -764,10 +765,12 @@ export default {
     },
     //目标表事件
     targetTableChange(selectTargetTableID) {
+      this.targetChangeFlag = this.targetChangeFlag + 1;
       //查找目标表字段
       this.queryTargetColumn(selectTargetTableID, "");
     },
     targetTableChange2(selectTargetTableID) {
+      this.targetChangeFlag = this.targetChangeFlag + 1;
       //查找目标表字段2
       this.queryTargetColumn(selectTargetTableID, "2");
     },
@@ -847,6 +850,7 @@ export default {
     // tab
     //键表或普通的要素表映射
     KTableMapping(table_id, table_name, data_class_id, ttid) {
+      console.log(this.targetChangeFlag);
       if (this.targetColumnDetail.length > 0) {
         var sourceLength = this.sourceColumnDetail.length;
         var targetLength = this.targetColumnDetail.length;
@@ -867,7 +871,8 @@ export default {
 
           if (
             this.handleObj.targetRelation &&
-            this.handleObj.targetRelation.length > 0
+            this.handleObj.targetRelation.length > 0 &&
+            this.targetChangeFlag === 1
           ) {
             this.handleObj.targetRelation.forEach((te, ti) => {
               if (table_id == te.targetTableId) {
@@ -899,7 +904,9 @@ export default {
         let seleteobj = this.targetTableArray.find(item => {
           return item.id == ttid;
         });
-
+        if (this.addnewtargettable != 1) {
+          this.editableTabs = [];
+        }
         this.editableTabs.push({
           title: table_name,
           name: table_name,
@@ -939,7 +946,7 @@ export default {
           }
         }
 
-        if (!this.handleObj.slaveRelation) {
+        if (!this.handleObj.slaveRelation && this.targetChangeFlag !== 1) {
           var obj = {};
           obj.index = i;
           obj.isdelete = false;
@@ -948,7 +955,7 @@ export default {
           dataList.push(obj);
         }
       }
-      if (this.handleObj.slaveRelation) {
+      if (this.handleObj.slaveRelation && this.targetChangeFlag === 1) {
         this.handleObj.slaveRelation.mapping.forEach((mItem, i) => {
           var obj = {};
           obj.index = i;
@@ -958,7 +965,9 @@ export default {
           dataList.push(obj);
         });
       }
-
+      if (this.addnewtargettable != 1) {
+        this.editableTabs = [];
+      }
       this.editableTabs.push({
         title: element_obj.table_name,
         name: element_obj.table_name,

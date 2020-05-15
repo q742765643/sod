@@ -37,7 +37,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间">
+      <el-form-item label="创建时间" prop="dateRange">
         <el-date-picker
           v-model="queryParams.dateRange"
           size="small"

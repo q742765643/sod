@@ -349,7 +349,7 @@ export default {
         if (value[1] == "") {
           result = "停止中";
         } else {
-          result = "<span>运行出错</span>";
+          result = "运行出错";
           value[1] = value[1].replace(/[\r\n]/g, ""); //去掉回车换行
         }
       } else if (value[0] == "error") {

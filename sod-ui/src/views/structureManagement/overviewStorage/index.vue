@@ -161,15 +161,16 @@
       width="650px"
       :before-close="handleClose"
     >
-      <el-alert title="取消配置将会同步删除已配置的任务，请谨慎选择" type="error" :closable="false"></el-alert>
       <el-checkbox-group v-model="checkSetList">
+        <el-checkbox label="数据同步" border @change="changeSetting($event,'SYNC_IDENTIFIER','数据同步')"></el-checkbox>
         <el-checkbox
           v-for="(item,index) in checkBoxList"
           :key="index"
           :label="item.label"
           border
-          @change="changeSetting($event,item.value)"
+          @change="changeSetting($event,item.value,item.label)"
         ></el-checkbox>
+        <el-checkbox label="恢复" border @change="changeSetting($event,'ARCHIVING_IDENTIFIER','恢复')"></el-checkbox>
       </el-checkbox-group>
     </el-dialog>
 
@@ -502,26 +503,26 @@ export default {
       ];
 
       let checkedBoxArry = [
-        {
+        /* {
           label: "数据同步",
-          value: "syncIdentifier"
-        },
+          value: "SYNC_IDENTIFIER"
+        }, */
         {
           label: "迁移",
-          value: "moveIdentifier"
+          value: "MOVE_IDENTIFIER"
         },
         {
           label: "清除",
-          value: "cleanIdentifier"
+          value: "CLEAN_IDENTIFIER"
         },
         {
           label: "备份",
-          value: "backupIdentifier"
-        },
-        {
-          label: "恢复",
-          value: "archivingIdentifier"
+          value: "BACKUP_IDENTIFIER"
         }
+        /* {
+          label: "恢复",
+          value: "ARCHIVING_IDENTIFIER"
+        } */
       ];
       this.rowId = row.ID;
       this.checkSetList = [];
@@ -589,29 +590,43 @@ export default {
       this.handleSyncDialog = false;
       this.getList();
     },
-    changeSetting(checked, column) {
+    changeSetting(checked, column, label) {
       let settingObj = {};
       settingObj.id = this.rowId;
       settingObj.column = column;
       if (checked === false) {
         settingObj.value = 3;
+        this.$confirm(
+          "取消该配置将会同步删除已配置的任务，是否确认删除?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
+            updateColumnValue(settingObj).then(response => {
+              this.$message({
+                type: "success",
+                message: "配置成功"
+              });
+              this.getList();
+            });
+          })
+          .catch(() => {
+            this.checkSetList.push(label);
+          });
       } else {
         settingObj.value = 2;
-      }
-      updateColumnValue(settingObj).then(response => {
-        if (response.code == 200) {
+        updateColumnValue(settingObj).then(response => {
           this.$message({
             type: "success",
             message: "配置成功"
           });
           this.getList();
-        } else {
-          this.$message({
-            type: "error",
-            message: response.msg
-          });
-        }
-      });
+        });
+      }
     }
   }
 };
