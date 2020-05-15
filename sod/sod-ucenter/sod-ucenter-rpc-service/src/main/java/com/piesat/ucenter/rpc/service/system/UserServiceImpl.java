@@ -377,19 +377,21 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
             daa.setUserId(bizUserid);
             daa.setCreateTime(new Date());
-            List<DataAuthorityRecordDto> list = new ArrayList<>();
-            for (int i = 0; i < applyData.size(); i++) {
-                DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
-                JSONObject jsonObject1 = applyData.getJSONObject(i);
-                String databaseId = jsonObject1.getString("databaseId");
-                String dataClassId = jsonObject1.getString("dataClassId");
-                dar.setDatabaseId(databaseId);
-                dar.setDataClassId(dataClassId);
-                dar.setApplyAuthority(1);
-                dar.setCreateTime(new Date());
-                list.add(dar);
+            if (applyData!=null){
+                List<DataAuthorityRecordDto> list = new ArrayList<>();
+                for (int i = 0; i < applyData.size(); i++) {
+                    DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
+                    JSONObject jsonObject1 = applyData.getJSONObject(i);
+                    String databaseId = jsonObject1.getString("databaseId");
+                    String dataClassId = jsonObject1.getString("dataClassId");
+                    dar.setDatabaseId(databaseId);
+                    dar.setDataClassId(dataClassId);
+                    dar.setApplyAuthority(1);
+                    dar.setCreateTime(new Date());
+                    list.add(dar);
+                }
+                daa.setDataAuthorityRecordList(list);
             }
-            daa.setDataAuthorityRecordList(list);
             this.dataAuthorityApplyService.saveDto(daa);
         }
         return ResultT.success(userEntity);
