@@ -44,6 +44,19 @@ public class DatabseType {
 
     }
 
+    public static String getType(String url){
+        if(url.indexOf("mysql")!=-1){
+            return "mysql";
+        }
+        if(url.indexOf("xugu")!=-1){
+            return "xugu";
+        }
+        if(url.indexOf("postgresql")!=-1){
+            return "postgresql";
+        }
+        return null;
+    }
+
 
 }
 
