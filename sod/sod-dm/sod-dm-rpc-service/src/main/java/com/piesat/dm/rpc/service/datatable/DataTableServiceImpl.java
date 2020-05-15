@@ -2,12 +2,12 @@ package com.piesat.dm.rpc.service.datatable;
 
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.MapUtil;
+import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
@@ -144,7 +144,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Override
     public List<Map<String, Object>> findByUserId(String userId) {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-        if (DatabaseType.databaseType.toLowerCase().equals("mysql")) {
+        if (DatabseType.type.toLowerCase().equals("mysql")) {
             resultList = mybatisQueryMapper.getInfoByUserIdMysql(userId);
         } else {
             resultList = mybatisQueryMapper.getInfoByUserId(userId);

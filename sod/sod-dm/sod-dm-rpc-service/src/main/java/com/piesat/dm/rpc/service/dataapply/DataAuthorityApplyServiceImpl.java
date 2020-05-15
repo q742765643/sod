@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.dataapply;
 
+import com.piesat.common.config.DatabseType;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -10,7 +11,6 @@ import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.dao.ReadAuthorityDao;
 import com.piesat.dm.dao.dataapply.DataAuthorityApplyDao;
 import com.piesat.dm.dao.dataapply.DataAuthorityRecordDao;
@@ -223,7 +223,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public List<Map<String,Object>> getRecordByApplyId(Map<String,String> map) {
-        if(DatabaseType.databaseType.toLowerCase().equals("mysql")){
+        if(DatabseType.type.toLowerCase().equals("mysql")){
             return mybatisQueryMapper.getRecordByApplyIdMysql(map);
         }else{
             return mybatisQueryMapper.getRecordByApplyId(map);
@@ -417,7 +417,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public List<Map<String,Object>> getRecordListByUserId(String userId) {
-        if(DatabaseType.databaseType.toLowerCase().equals("mysql")){
+        if(DatabseType.type.toLowerCase().equals("mysql")){
             return mybatisQueryMapper.getRecordListByUserIdMysql(userId);
         }else{
             return mybatisQueryMapper.getRecordListByUserId(userId);

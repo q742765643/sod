@@ -16,6 +16,7 @@ import java.sql.DatabaseMetaData;
  * @author cwh
  * @date 2020年 02月17日 11:34:14
  */
+/*
 @Order(1) // @Order注解可以改变执行顺序，越小越先执行
 @Component
 public class AppRunner implements ApplicationRunner {
@@ -29,3 +30,4 @@ public class AppRunner implements ApplicationRunner {
         DatabaseType.databaseType = connection.getMetaData().getDatabaseProductName();
     }
 }
+*/

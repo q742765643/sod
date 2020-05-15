@@ -1,8 +1,8 @@
 package com.piesat.dm.web.controller.dataclass;
 
 import com.alibaba.fastjson.JSONArray;
+import com.piesat.common.config.DatabseType;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.core.parser.DatabaseType;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -210,7 +210,7 @@ public class DataClassController {
     public ResultT getDatabaseClass() {
         try {
             JSONArray all = null;
-            if (DatabaseType.databaseType.toLowerCase().equals("mysql")) {
+            if (DatabseType.type.toLowerCase().equals("mysql")) {
                 all = this.dataClassService.getDatabaseClassMysql();
             } else {
                 all = this.dataClassService.getDatabaseClass();
