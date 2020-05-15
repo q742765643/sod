@@ -61,7 +61,12 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getLogicClassTree();
 
+    List<Map<String, Object>> getLogicClassTreePostgresql();
+
+
     List<Map<String, Object>> getDatabaseTree();
+
+    List<Map<String, Object>> getDatabaseTreePostgresql();
 
     List<Map<String, Object>> getDatabaseClassTree(@Param("id") String id);
 
@@ -73,6 +78,8 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getArchive(@Param("ddataid") String ddataid);
 
     List<Map<String, Object>> getDatabaseClassTreeMysql(@Param("id") String id);
+
+    List<Map<String, Object>> getDatabaseClassTreePostgresql(@Param("id") String id);
 
     List<Map<String, Object>> getDatabaseClassTreePMysql(@Param("classIds") List<String> classIds, @Param("id") String id);
 
@@ -203,6 +210,9 @@ public interface MybatisQueryMapper {
     List<Map<String,Object>> getSpecialDBData(@Param("sdbId") String sdbId);
 
     List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
+
+    List<DataClassEntity> getDataClassTreePostgresql(@Param("databaseId")String databaseId);
+
 
     List<Map<String,Object>> getDatabaseName();
 

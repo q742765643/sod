@@ -1,6 +1,7 @@
 package com.piesat.dm.rpc.service.dataclass;
 
 import com.alibaba.fastjson.JSONArray;
+import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -133,7 +134,13 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getLogicClass() {
-        List<Map<String, Object>> maps = this.mybatisQueryMapper.getLogicClassTree();
+        List<Map<String, Object>> maps=new ArrayList<>();
+        if(DatabseType.type.equals("postgresql")){
+            maps=this.mybatisQueryMapper.getLogicClassTreePostgresql();
+        }else{
+            maps = this.mybatisQueryMapper.getLogicClassTree();
+        }
+
         List l = new ArrayList();
         for (Map<String, Object> m : maps) {
             TreeLevel tl = new TreeLevel();
@@ -208,6 +215,28 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         }
         return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
     }
+    @Override
+    public JSONArray getDatabaseClassPostgresql() {
+        List<DatabaseEntity> databaseList = this.databaseDao.findByDatabaseDefine_UserDisplayControl(1);
+        List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTreePostgresql();
+        for (DatabaseEntity db : databaseList) {
+            if (!db.getStopUse()) {
+                List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTreePostgresql(db.getId());
+                list.addAll(dataList);
+            }
+        }
+        List l = new ArrayList();
+        for (Map<String, Object> m : list) {
+            TreeLevel tl = new TreeLevel();
+            tl.setId(m.get("ID").toString());
+            tl.setParentId(m.get("PID").toString());
+            tl.setName(m.get("NAME").toString());
+            tl.setType(m.get("TYPE").toString());
+            l.add(tl);
+        }
+        return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
+    }
+
 
     public void getParents(List<Map<String, Object>> list, List<String> classIds, String id) {
         List<Map<String, Object>> databaseClassTreePMysql = this.mybatisQueryMapper.getDatabaseClassTreePMysql(classIds, id);
@@ -240,7 +269,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getSimpleTree(String databaseId) {
-        List<DataClassEntity> dataClassList = mybatisQueryMapper.getDataClassTree(databaseId);
+        List<DataClassEntity> dataClassList=new ArrayList<>();
+        if(DatabseType.type.equals("postgresql")){
+            dataClassList = mybatisQueryMapper.getDataClassTreePostgresql(databaseId);
+        }else{
+            dataClassList = mybatisQueryMapper.getDataClassTree(databaseId);
+        }
         List l = new ArrayList();
         for (DataClassEntity d : dataClassList) {
             TreeLevel tl = new TreeLevel();
