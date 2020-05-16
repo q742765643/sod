@@ -61,7 +61,7 @@ public class RedisLock {
         boolean result=false;
         //while (!result){
             //try {
-                result = this.lock(key);
+                //result = this.lock(key);
                 //Thread.sleep(1000);
             //} catch (Exception e) {
                //log.error(OwnException.get(e));
