@@ -97,6 +97,15 @@ public class  ScheduleThread {
                     /********=======2.reis分布式锁========*******/
 
                     long nowTime = System.currentTimeMillis();
+                    TimeZone timeZone=null;
+                    try {
+                         timeZone=TimeZone.getDefault();
+                         if(timeZone.getID().toUpperCase().indexOf("GMT")!=-1){
+                             nowTime=nowTime+3600000*8;
+                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     Set<DefaultTypedTuple> scheduleList = redisUtil.rangeByScoreWithScores(QUARTZ_HTHT_JOB, nowTime + PRE_READ_MS, preReadCount);
                     if (scheduleList != null && !scheduleList.isEmpty() ) {

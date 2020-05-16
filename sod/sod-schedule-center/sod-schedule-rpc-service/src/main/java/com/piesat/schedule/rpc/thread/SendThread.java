@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: sod
@@ -46,8 +47,20 @@ public class SendThread {
     public void start(){
         while (!sendThreadToStop) {
             try {
+                long start = System.currentTimeMillis();
                 this.send();
-                Thread.sleep(1000);
+                long cost = System.currentTimeMillis() - start;
+                if (cost < 1000) {  // scan-overtime, not wait
+                    try {
+                        /**
+                         *  pre-read period: success > scan each second; fail > skip this period;
+                         *  */
+                        TimeUnit.MILLISECONDS.sleep(1000- System.currentTimeMillis() % 1000);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage(), e);
+                        //Thread.currentThread().interrupt();
+                    }
+                }
             } catch (Exception e) {
                 log.error("线程消费第一个WHILE:{}", OwnException.get(e));
             }
@@ -55,7 +68,7 @@ public class SendThread {
     }
     public void send() {
             boolean flag=redisLock.tryLock("custom");
-            if(flag){
+            if(!flag){
                 return;
             }
             try {

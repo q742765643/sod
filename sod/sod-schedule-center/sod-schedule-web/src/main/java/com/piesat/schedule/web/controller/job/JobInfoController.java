@@ -44,10 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -230,6 +227,15 @@ public class JobInfoController {
                 .nameResolverFactory(new DnsNameResolverProvider())
                 .usePlaintext().build();
         resultT.setData(list);
+        return resultT;
+    }
+    @GetMapping(value = "/findTimeZone")
+    @ApiOperation(value = "获取时区", notes = "获取时区")
+    public ResultT<String> findTimeZone(){
+
+        ResultT<String> resultT=new ResultT<>();
+
+        resultT.setData(TimeZone.getDefault().getID()+":"+System.currentTimeMillis());
         return resultT;
     }
     @GetMapping(value = "/sendDI")

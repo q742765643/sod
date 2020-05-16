@@ -44,6 +44,8 @@
 
     </dependencies>
     <build>
+        <finalName>cmadaas_sod_webadmin</finalName>
+
         <!--解决idea打包没有xml-->
         <resources>
             <resource>
