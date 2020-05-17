@@ -25,6 +25,7 @@ import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import io.grpc.Channel;
+import io.grpc.ManagedChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.proxy.InvocationHandler;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @program: sod
@@ -43,6 +45,8 @@ import java.util.*;
 @Slf4j
 @Service("executeBaseService")
 public abstract class ExecuteBaseService {
+      private  ConcurrentHashMap<String, ExecutorBiz> biz=new ConcurrentHashMap<>();
+
       protected static final String QUARTZ_HTHT_PERFORM="QUARTZ:HTHT:PERFORM";
       protected static final String QUARTZ_HTHT_TASK_SERIAL="QUARTZ:HTHT:SINGLE:SERIAL";
       protected static final String QUARTZ_HTHT_CLUSTER_SERIAL="QUARTZ:HTHT:CLUSTER:SERIAL";
@@ -172,10 +176,16 @@ public abstract class ExecuteBaseService {
                         redisUtil.set(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfoEntity.getId(),jobInfoEntity.getId(),86400);
                   }
                   jobInfoEntity.setExecutorAddress(server.getHost()+":"+server.getGrpcPort());
-                  Class<?> target = ExecutorBiz.class;
-                  Object invoker = new Object();
-                  InvocationHandler invocationHandler = new GrpcServiceProxy<>(target, invoker,server);
-                  ExecutorBiz executorBiz = (ExecutorBiz) Proxy.newProxyInstance(GrpcHthtService.class.getClassLoader(), new Class[]{target}, invocationHandler);
+                  String serviceName=server.getHost()+":"+server.getGrpcPort();
+                  ExecutorBiz executorBiz=biz.get(serviceName);
+                  if(executorBiz==null){
+                        Class<?> target = ExecutorBiz.class;
+                        Object invoker = new Object();
+                        InvocationHandler invocationHandler = new GrpcServiceProxy<>(target, invoker,server);
+                        executorBiz = (ExecutorBiz) Proxy.newProxyInstance(GrpcHthtService.class.getClassLoader(), new Class[]{target}, invocationHandler);
+                        biz.put(serviceName,executorBiz);
+                  }
+
                   executorBiz.execute(jobInfoEntity);
             } catch (Exception e) {
                   resultT.setCode(302);

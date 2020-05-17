@@ -208,11 +208,9 @@ public class JobInfoController {
     @ApiOperation(value = "获取所有通道", notes = "获取所有通道")
     public ResultT<List<String>> channel(){
         ConcurrentHashMap<String, Channel> grpcChannel= GrpcAutoConfiguration.ProxyUtil.grpcChannel;
-        ConcurrentHashMap<String, ManagedChannel> grpcChannel1= GrpcServiceProxy.grpcChannel;
         ResultT<List<String>> resultT=new ResultT<>();
         List<String> list=new ArrayList<>();
         grpcChannel.forEach((k,v)->list.add("Channel:"+k));
-        grpcChannel1.forEach((k,v)->list.add("ManagedChannel:"+k));
         resultT.setData(list);
         return resultT;
     }
