@@ -38,7 +38,7 @@ public class  ScheduleThread {
     private static final String QUARTZ_HTHT_CRON = "QUARTZ:HTHT:CRON:";
     private static final String QUARTZ_HTHT_WAIT = "QUARTZ:HTHT:WAIT";
     private static final String QUARTZ_HTHT_JOBDTEAIL = "QUARTZ:HTHT:JOBDTEAIL:";
-    public static final ExecutorService threadPool = new ThreadPoolExecutor(1, 30,
+    public static final ExecutorService threadPool = new ThreadPoolExecutor(30, 30,
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(20000), new ThreadFactoryBuilder().setNameFormat("do-something-pool-%d").build(), new ThreadPoolExecutor.AbortPolicy());
     private volatile  Map<Integer, List<JobInfoEntity>> ringData = new ConcurrentHashMap<>();
