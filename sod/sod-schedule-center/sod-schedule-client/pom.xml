@@ -107,6 +107,7 @@
         </dependency>
     </dependencies>
     <build>
+        <finalName>cmadaas-sod-backup</finalName>
         <!--解决idea打包没有xml-->
         <resources>
             <resource>
