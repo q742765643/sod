@@ -353,6 +353,7 @@ export default {
       this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
       this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds.split(",");
       this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
+      this.msgFormDialog.databaseUpPassword = this.handleObj.password;
 
       this.isHideAdd = false;
       this.isHide = true;
