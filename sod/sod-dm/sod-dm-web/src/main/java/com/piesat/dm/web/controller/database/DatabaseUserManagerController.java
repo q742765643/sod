@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller.database;
 
+import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.Doc2PDF;
 import com.piesat.common.utils.StringUtils;
@@ -280,15 +281,18 @@ public class DatabaseUserManagerController {
             //默认待审核
             databaseUserDto.setExamineStatus("0");
             DatabaseUserDto save = null;
-            DatabaseUserDto byUserId = this.databaseUserService.findByUserIdAndDatabaseUpId(databaseUserDto.getUserId(),databaseUserDto.getDatabaseUpId());
-            if (byUserId!=null){
+            String pwd = AESUtil.aesDecrypt(databaseUserDto.getDatabaseUpPassword()).trim();
+            databaseUserDto.setDatabaseUpPassword(pwd);
+            DatabaseUserDto byUserId = this.databaseUserService.findByUserIdAndDatabaseUpId(databaseUserDto.getUserId(), databaseUserDto.getDatabaseUpId());
+            if (byUserId != null) {
                 byUserId.setApplyDatabaseId(databaseUserDto.getApplyDatabaseId());
+
                 byUserId.setDatabaseUpPassword(databaseUserDto.getDatabaseUpPassword());
                 byUserId.setRemarks(databaseUserDto.getRemarks());
                 byUserId.setDatabaseUpIp(databaseUserDto.getDatabaseUpId());
                 byUserId.setExamineStatus("0");
                 save = this.databaseUserService.saveDto(byUserId);
-            }else {
+            } else {
                 save = this.databaseUserService.saveDto(databaseUserDto);
             }
             //数据库授权
@@ -312,7 +316,7 @@ public class DatabaseUserManagerController {
     @RequiresPermissions("dm:databaseUser:update")
     @PostMapping(value = "/update")
     public ResultT update(@RequestBody DatabaseUserDto databaseUserDto) {
-        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         try {
             //审核通过，给数据库授权
             if (databaseUserDto.getExamineStatus().equals("1")) {

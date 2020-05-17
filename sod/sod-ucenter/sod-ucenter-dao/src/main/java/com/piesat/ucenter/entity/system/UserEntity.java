@@ -234,6 +234,6 @@ public class UserEntity extends BaseEntity {
     private String dbCreate;
 
 
-    @Column(name="REASON", length = 1)
+    @Column(name="REASON", length = 500)
     private String reason;
 }

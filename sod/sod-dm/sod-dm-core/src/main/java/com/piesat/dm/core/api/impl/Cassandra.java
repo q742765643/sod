@@ -231,6 +231,7 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public ResultT updateAccount(String dataBaseUser, String newPassword) {
+        dataBaseUser = dataBaseUser.toLowerCase();
         String cql = "ALTER USER " + dataBaseUser + " WITH PASSWORD '" + newPassword + "'";
         try {
             instance.execute(cql);
