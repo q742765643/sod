@@ -98,6 +98,11 @@ public class LoginController {
                 resultT.setErrorMessage("验证码错误");
                 return resultT;
             }
+            UserDto userDto = userService.selectUserByUserName(username);
+            if(userDto != null && "11".equals(userDto.getUserType()) && !"3".equals(userDto.getChecked())){
+                resultT.setErrorMessage("业务账户未激活");
+                return resultT;
+            }
             Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             token.setLoginType("0");

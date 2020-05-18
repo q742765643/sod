@@ -149,7 +149,7 @@ public class DataAuthorityApplyController {
     }
 
 
-    @PutMapping(value = "/updateRecordByApplyIdAndClassId")
+    @GetMapping(value = "/updateRecordByApplyIdAndClassId")
     @ApiOperation(value = "根据申请id和存储编码修改数据授权资料信息(授权/拒绝)", notes = "根据申请id和存储编码修改数据授权资料信息(授权/拒绝)")
     public ResultT<String> updateRecordByApplyIdAndClassId(String apply_id,String data_class_id,Integer authorize, String cause){
         try {
