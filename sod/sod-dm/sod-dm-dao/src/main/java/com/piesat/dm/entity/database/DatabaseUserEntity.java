@@ -89,6 +89,7 @@ public class DatabaseUserEntity extends BaseEntity {
 
     /**
      * 审核状态
+     * 0待审  1已审  2拒绝
      */
     @Column(name = "examine_status")
     private String examineStatus;
