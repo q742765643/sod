@@ -72,11 +72,12 @@ public class TableCollectHandler  implements BaseHandler {
         StringBuffer msg = new StringBuffer();
         List<DatabaseEntity> databaseEntities = databaseDao.findAll();
         if(databaseEntities != null && databaseEntities.size()>0){
-            for(DatabaseEntity databaseEntity : databaseEntities)
+            for(DatabaseEntity databaseEntity : databaseEntities) {
+                DatabaseDcl databaseDcl = null;
                 try {
-                    if (databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
+                    /*if (databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
                         continue;
-                    }
+                    }*/
                     String databaseType = databaseEntity.getDatabaseDefine().getDatabaseType();
                     String driverClassName = databaseEntity.getDatabaseDefine().getDriverClassName();
                     String databaseUrl = databaseEntity.getDatabaseDefine().getDatabaseUrl();
@@ -100,7 +101,6 @@ public class TableCollectHandler  implements BaseHandler {
                     }
 
                     //获取链接
-                    DatabaseDcl databaseDcl = null;
                     if ("xugu".equalsIgnoreCase(databaseType)) {
                         Xugu xugu = new Xugu(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = xugu;
@@ -163,10 +163,6 @@ public class TableCollectHandler  implements BaseHandler {
 
                             } catch (Exception e) {
                                 e.printStackTrace();
-                            }finally {
-                                if (databaseDcl!=null){
-                                    databaseDcl.closeConnect();
-                                }
                             }
 
                         }
@@ -196,7 +192,12 @@ public class TableCollectHandler  implements BaseHandler {
 
                 } catch (Exception e) {
                     e.printStackTrace();
+                }finally {
+                    if (databaseDcl != null) {
+                        databaseDcl.closeConnect();
+                    }
                 }
+            }
         }
 
     }
