@@ -364,6 +364,13 @@
           </el-col>
         </el-row>
       </el-card>
+      <el-button
+        type="primary"
+        :icon="conIcon"
+        @click="handHideOr"
+        size="small"
+        style="position: absolute;right: 16px;z-index:9999"
+      ></el-button>
       <el-tabs v-model="editableTabsValue" closable type="card" @tab-remove="removeTab">
         <el-tab-pane
           :key="index"
@@ -435,6 +442,7 @@ export default {
       }
     };
     return {
+      conIcon: "el-icon-arrow-up",
       targetChangeFlag: 0,
       stableFilterForm: {
         domains: [
@@ -1124,7 +1132,18 @@ export default {
     //取消
     cancelDialog(formName) {
       this.$refs[formName].resetFields();
-      this.$emit("resetQuery");
+      this.$emit("closeDialog");
+    },
+    handHideOr() {
+      if (this.conIcon == "el-icon-arrow-up") {
+        this.conIcon = "el-icon-arrow-down";
+        document.getElementsByClassName("el-tabs__content")[0].style.display =
+          "none";
+      } else {
+        this.conIcon = "el-icon-arrow-up";
+        document.getElementsByClassName("el-tabs__content")[0].style.display =
+          "block";
+      }
     }
   } //method end
 };
@@ -1166,6 +1185,7 @@ export default {
     display: flex;
     justify-content: flex-end;
     padding: 10px 0;
+    margin-top: 20px;
   }
   .el-input-number {
     width: 100%;

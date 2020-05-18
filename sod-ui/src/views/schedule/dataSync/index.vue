@@ -333,6 +333,9 @@ export default {
       this.dailyDataDialog = false;
       this.getList();
     },
+    closeDialog() {
+      this.handleDialog = false;
+    },
     // 高级搜索
     superClick() {
       this.superObj = {};

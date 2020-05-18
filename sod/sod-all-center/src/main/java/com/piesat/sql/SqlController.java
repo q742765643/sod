@@ -44,7 +44,7 @@ public class SqlController {
             List<String> ll=new ArrayList<>();
             while (ts.next()) {
                 String tableName=ts.getString("TABLE_NAME");
-                sm.executeUpdate("DELETE FROM "+tableName);
+               // sm.executeUpdate("DELETE FROM "+tableName);
 
             }
         } catch (SQLException e) {
@@ -101,6 +101,7 @@ public class SqlController {
             System.out.println(ts.getString("TABLE_NAME") + "  "
                     + ts.getString("TABLE_TYPE"));
         }
+        //ll.add("T_SOD_DATA_TABLE_SQL");
         table=ll.toArray(new String[ll.size()]);
         listSQL = createSQL();//创建查询语句
             executeSQL(conn, sm, listSQL);//执行sql并拼装
@@ -340,7 +341,7 @@ public class SqlController {
     private static void insertSQL(StringBuffer ColumnName, StringBuffer ColumnValue,String tableName) {
         StringBuffer insertSQL = new StringBuffer();
         insertSQL.append(insert).append(" ")
-                .append(tableName).append("(").append(ColumnName.toString()).append(")").append(values).append("(").append(ColumnValue.toString().replaceAll("'hthtnull'","null")).append(");");
+                .append(tableName).append("(").append(ColumnName.toString()).append(")").append(values).append("(").append(ColumnValue.toString().replaceAll("'hthtnull'","null")).append(")/n#htht#");
         insertList.add(insertSQL.toString().replaceAll("hthtnull","null"));
 
 

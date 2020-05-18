@@ -14,7 +14,7 @@ import java.util.Date;
  **/
 @Entity
 @Data
-@Table(name="tab_omin_cm_cc_ddddocauthinfo")
+@Table(name="TAB_OMIN_CM_CC_DDDDOCAUTHINFO")
 public class TabOminCmCcDdddocauthinfo implements Serializable {
 
     private static final long serialVersionUID = 1L;

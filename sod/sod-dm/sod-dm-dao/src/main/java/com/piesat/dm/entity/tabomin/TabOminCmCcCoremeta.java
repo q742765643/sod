@@ -14,7 +14,7 @@ import java.util.Date;
  **/
 @Entity
 @Data
-@Table(name="tab_omin_cm_cc_coremeta")
+@Table(name="TAB_OMIN_CM_CC_COREMETA")
 public class TabOminCmCcCoremeta implements Serializable {
 
     private static final long serialVersionUID = 1L;
