@@ -40,10 +40,10 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="数据库选择" prop="applyDatabaseId">
+          <el-form-item label="数据库选择" prop="applyDatabaseIdList">
             <el-transfer
               :titles="['未选择数据库列表', '已选择数据库列表']"
-              v-model="msgFormDialog.applyDatabaseId"
+              v-model="msgFormDialog.applyDatabaseIdList"
               :data="dataBaseBox"
             ></el-transfer>
           </el-form-item>
@@ -295,7 +295,8 @@ export default {
         databaseUpId: "USR_", //UP账户ID
         databaseUpIp: "", //UP账户IP
         databaseUpIpSegment: "1", //UP账户IP可选区间
-        applyDatabaseId: [], //物理库ID
+        applyDatabaseIdList: [], //物理库ID
+        applyDatabaseId: "",
         userId: "", //用户ID
         databaseUpDesc: "", //UP账户描述
         applyMaterial: "",
@@ -319,7 +320,7 @@ export default {
         databaseUpIp: [
           { required: true, message: "请输入IP地址", trigger: "blur" }
         ],
-        applyDatabaseId: [
+        applyDatabaseIdList: [
           { required: true, message: "请选择数据库", trigger: "change" }
         ],
         databaseUpDesc: [
@@ -351,7 +352,8 @@ export default {
       this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
       this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
       this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
-      this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds.split(",");
+      this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(",");
+      this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
       this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
       this.msgFormDialog.databaseUpPassword = this.handleObj.password;
 
@@ -524,8 +526,7 @@ export default {
         await getById({ id: this.handleObj.id }).then(res => {
           if (res.code == 200) {
             let data = res.data;
-            data.applyDatabaseId = data.applyDatabaseId.split(",");
-            console.log(data.applyDatabaseId);
+            data.applyDatabaseIdList = data.applyDatabaseId.split(",");
             this.msgFormDialog = data;
             this.handleExportObj = {};
             this.handleExportObj.filePath = this.msgFormDialog.applyMaterial;
@@ -575,12 +576,12 @@ export default {
       }
     },
     trueAdd() {
-      let obj = this.msgFormDialog;
-      obj.applyDatabaseId = obj.applyDatabaseId.join(",");
-      console.log(obj);
+      this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
+        ","
+      );
       // 新增
       if (this.handleObj.pageName) {
-        addBzi(obj).then(res => {
+        addBzi(this.msgFormDialog).then(res => {
           if (res.code == 200) {
             this.$message({
               type: "success",
@@ -595,7 +596,7 @@ export default {
           }
         });
       } else {
-        addTable(obj).then(res => {
+        addTable(this.msgFormDialog).then(res => {
           if (res.code == 200) {
             this.$message({
               type: "success",
@@ -646,9 +647,9 @@ export default {
         this.msgFormDialog.examineStatus = 1;
       }
       this.msgFormDialog.failureReason = value;
-      let obj = this.msgFormDialog;
-      obj.applyDatabaseId = obj.applyDatabaseId.join(",");
-      console.log(obj);
+      this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
+        ","
+      );
       // 审核
       update(obj).then(res => {
         if (res.code == 200) {
