@@ -162,5 +162,9 @@ fidbDownloadUrl: http://10.40.17.34:8028/fileApi
 product:
   enable: true
 
+#单位为秒
+session:
+  timeout: 1800
+
 
 

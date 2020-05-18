@@ -14,7 +14,7 @@ import java.util.Date;
  **/
 @Entity
 @Data
-@Table(name="tab_omin_cm_cc_datumtypehyp")
+@Table(name="TAB_OMIN_CM_CC_DATUMTYPEHYP")
 public class TabOminCmCcDatumtypehyp implements Serializable {
 
     private static final long serialVersionUID = 1L;

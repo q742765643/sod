@@ -14,7 +14,7 @@ import java.util.Date;
  **/
 @Entity
 @Data
-@Table(name="tab_omin_cm_cc_dddidpocinfo")
+@Table(name="TAB_OMIN_CM_CC_DDDIDPOCINFO")
 public class TabOminCmCcDddidpocinfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,31 +24,31 @@ public class TabOminCmCcDddidpocinfo implements Serializable {
     /**
      * c_idpoc_id
      */
-    @Column(name = "c_idpoc_id")
+    @Column(name = "c_idpoc_id",length = 36)
     private String cIdpocId;
 
     /**
      * c_rpindname
      */
-    @Column(name = "c_rpindname")
+    @Column(name = "c_rpindname",length = 300)
     private String cRpindname;
 
     /**
      * c_rporgname
      */
-    @Column(name = "c_rporgname")
+    @Column(name = "c_rporgname",length = 600)
     private String cRporgname;
 
     /**
      * c_cntphone
      */
-    @Column(name = "c_cntphone")
+    @Column(name = "c_cntphone",length = 50)
     private String cCntphone;
 
     /**
      * c_coremeta_id
      */
-    @Column(name = "c_coremeta_id")
+    @Column(name = "c_coremeta_id",length = 36)
     private String cCoremetaId;
 
     /**
@@ -72,7 +72,7 @@ public class TabOminCmCcDddidpocinfo implements Serializable {
     /**
      * c_opt_type
      */
-    @Column(name = "c_opt_type")
+    @Column(name = "c_opt_type",length = 128)
     private String cOptType;
 
     public TabOminCmCcDddidpocinfo() {

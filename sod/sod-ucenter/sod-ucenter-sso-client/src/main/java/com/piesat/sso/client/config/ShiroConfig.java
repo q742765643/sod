@@ -15,9 +15,14 @@ import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
@@ -31,7 +36,7 @@ import java.util.Map;
  */
 @Order(0)
 @Configuration
-public class ShiroConfig {
+public class ShiroConfig  {
     @Value("${spring.redis.host}")
     private String host;
     @Value("${spring.redis.port}")
@@ -41,6 +46,8 @@ public class ShiroConfig {
     @Value("${spring.redis.password}")
     private String password;
 
+    @Value("${session.timeout}")
+    private int sessionTimeout;
 
 
     @Bean
@@ -119,7 +126,7 @@ public class ShiroConfig {
     public HtRedisCacheManager cacheManager() {
         HtRedisCacheManager redisCacheManager = new HtRedisCacheManager();
         redisCacheManager.setHtRedisManager(redisManager());
-        redisCacheManager.setExpire(1800000);
+        redisCacheManager.setExpire(sessionTimeout*1000);
         return redisCacheManager;
     }
 
@@ -143,7 +150,7 @@ public class ShiroConfig {
 
         htSessionManager.setSessionIdCookie(cookie());            // 设置JSESSIONID
         //全局会话超时时间（单位毫秒），默认30分钟  暂时设置为10秒钟 用来测试
-        htSessionManager.setGlobalSessionTimeout(1800000);
+        htSessionManager.setGlobalSessionTimeout(sessionTimeout*1000);
         //是否开启删除无效的session对象  默认为true
         htSessionManager.setDeleteInvalidSessions(true);
         //是否开启定时调度器进行检测过期session 默认为true
@@ -151,7 +158,7 @@ public class ShiroConfig {
         //设置session失效的扫描时间, 清理用户直接关闭浏览器造成的孤立会话 默认为 1个小时
         //设置该属性 就不需要设置 ExecutorServiceSessionValidationScheduler 底层也是默认自动调用ExecutorServiceSessionValidationScheduler
         //暂时设置为 5秒 用来测试
-        htSessionManager.setSessionValidationInterval(3600000);
+        htSessionManager.setSessionValidationInterval(sessionTimeout*1000*2);
         //取消url 后面的 JSESSIONID
         htSessionManager.setSessionIdUrlRewritingEnabled(false);
         return  htSessionManager;
@@ -167,7 +174,7 @@ public class ShiroConfig {
     public HtRedisSessionDAO redisSessionDAO() {
         HtRedisSessionDAO redisSessionDAO = new HtRedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
-        redisSessionDAO.setExpire(1800000);
+        redisSessionDAO.setExpire(sessionTimeout*1000);
         return redisSessionDAO;
     }
 
@@ -224,14 +231,16 @@ public class ShiroConfig {
         return authorizationAttributeSourceAdvisor;
     }
 
-    @Bean
+    /*@Bean
     public  LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
-    }
+    }*/
 
     @Bean(name = "exceptionHandler")
     public HtExceptionHandler handlerExceptionResolver(){
         return new HtExceptionHandler();
     }
+
+
 
 }
