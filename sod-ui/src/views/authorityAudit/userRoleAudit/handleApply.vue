@@ -132,29 +132,37 @@ export default {
   methods: {
     async initDatail() {
       await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
-        this.handleObj = res.data[0];
+        if (res.data && res.data.length > 0) {
+          this.handleObj = res.data[0];
+        } else {
+          this.handleObj = {};
+        }
+
         this.handleObj.pageName = "业务用户审核";
         this.stepNum = 1;
       });
     },
-    handleClose() {},
+    handleClose() {
+      if (this.handleMsgObj.dbCreate == "1") {
+        // 到专题库
+        this.initDatail();
+        return;
+      } else if (this.handleMsgObj.sodData == "1") {
+        this.getList();
+        return;
+      }
+    },
     nextStep() {
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
         this.$refs.AccountRef.trueAdd();
-
-        if (this.handleMsgObj.dbCreate == "1") {
-          // 到专题库
-          this.initDatail();
-          return;
-        } else if (this.handleMsgObj.sodData == "1") {
-          this.getList();
-          return;
-        } else {
+        if (
+          this.handleMsgObj.dbCreate != "1" &&
+          this.handleMsgObj.sodData != "1"
+        ) {
           this.stepNum = 3;
           return;
         }
-
         return;
       }
       if (this.stepNum == 1) {

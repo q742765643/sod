@@ -21,7 +21,8 @@ export function parseTime(time, pattern) {
     if ((typeof time === 'number') && (time.toString().length === 10)) {
       time = time * 1000
     }
-    date = new Date(time)
+    date = new Date(time);
+    date.setHours(date.getHours() - 8);
   }
   const formatObj = {
     y: date.getFullYear(),
