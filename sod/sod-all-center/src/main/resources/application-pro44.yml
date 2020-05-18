@@ -79,7 +79,7 @@ spring:
     host: 10.40.17.44
     port: 6379
     timeout: 50000
-#    password:
+    password: qwe123
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
