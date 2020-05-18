@@ -102,21 +102,20 @@ export default {
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
-      updateStatus(checkobj).then(response => {
-        if (response.code == 200) {
+      if (type == 2) {
+        this.$emit("cancelHandle", this.registerForm);
+      } else {
+        // 拒绝
+        updateStatus(checkobj).then(response => {
           this.$message({
             showClose: true,
             message: "操作成功",
             type: "success"
           });
-          if (type == 2) {
-            this.$emit("cancelHandle", this.registerForm);
-          } else {
-            // 拒绝
-            this.$emit("cancelHandle");
-          }
-        }
-      });
+          this.$emit("cancelHandle");
+        });
+        this.$emit("cancelHandle");
+      }
     },
     closeFuc() {
       this.$emit("cancelHandle");
