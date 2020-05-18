@@ -326,6 +326,7 @@
       <reviewDataRegister
         v-if="handleReDialog"
         :handleObj="handleMsgObj"
+        :registerForm="registerForm"
         @cancelHandle="handleDataReg"
       />
     </el-dialog>
@@ -378,6 +379,7 @@ export default {
   },
   data() {
     return {
+      registerForm: null,
       reviewStep: false,
       loading: true,
       queryParams: {
@@ -575,6 +577,8 @@ export default {
       if (info) {
         // 传到资料弹窗的数据
         this.handleMsgObj = {};
+        this.registerForm = null;
+        this.registerForm = info;
         this.handleMsgObj = info;
         this.handleMsgObj.applyId = this.currentRow.ID;
         // 根据专题库id查寻

@@ -82,7 +82,7 @@
     </div>
     <div class="dialog-footer">
       <el-button type="primary" v-if="stepNum!=5" @click="nextStep">下一步</el-button>
-      <el-button type="primary" v-if="stepNum==5" @click="$emit('closeStep')">审核通过</el-button>
+      <el-button type="primary" v-if="stepNum==5" @click="trueStep">审核通过</el-button>
     </div>
     <el-dialog
       :close-on-click-modal="false"
@@ -121,6 +121,7 @@ import {
   addApply
 } from "@/api/authorityAudit/DRegistration/review/index";
 import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { updateStatus } from "@/api/authorityAudit/DRegistration/reviewdataRegister";
 export default {
   components: {
     StructureMaterialSingle,
@@ -131,6 +132,9 @@ export default {
   },
   props: {
     handleObj: {
+      type: Object
+    },
+    registerForm: {
       type: Object
     }
   },
@@ -255,6 +259,22 @@ export default {
       });
     },
     handleClose() {},
+    trueStep() {
+      const checkobj = {
+        id: this.registerForm.ID,
+        ddataId: this.registerForm.D_DATA_ID,
+        examineStatus: 2,
+        remark: this.registerForm.DATA_PROP
+      };
+      updateStatus(checkobj).then(response => {
+        this.$message({
+          showClose: true,
+          message: "操作成功",
+          type: "success"
+        });
+        this.$emit("closeStep");
+      });
+    },
     closeStructureManage() {
       this.structureManageVisible = false;
       getListBYIn({ stringList: this.returnMaterialInfo.dataClassId }).then(
