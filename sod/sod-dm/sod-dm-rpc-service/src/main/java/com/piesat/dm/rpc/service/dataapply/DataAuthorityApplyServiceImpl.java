@@ -390,6 +390,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                     if (e.getMessage().contains("用户不存在")){
                         buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"没有管理员账户" + "<br/>");
                         flag = false;
+                        databaseDcl.closeConnect();
                         continue;
                     }
                 }
@@ -402,8 +403,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }catch (Exception e){
                     buffer.append("表"+dataAuthorityRecordDto.getTableName()+"授权失败"+e.getMessage()+"<br/>");
                     flag = false;
+                    databaseDcl.closeConnect();
                     continue;
                 }
+                databaseDcl.closeConnect();
             }
 
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(),dataAuthorityRecordDto.getAuthorize(),dataAuthorityRecordDto.getCause());
