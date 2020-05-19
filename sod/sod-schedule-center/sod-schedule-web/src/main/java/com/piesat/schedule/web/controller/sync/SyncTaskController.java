@@ -82,9 +82,9 @@ public class SyncTaskController {
      * @return
      */
     @RequiresPermissions("schedule:sync:restart")
-    @GetMapping("/restart")
+    @GetMapping("/restart/{taskId}")
     @ApiOperation(value = "启动", notes = "启动")
-    public ResultT restart(String taskId) {
+    public ResultT restart(@PathVariable String taskId) {
      this.syncTaskService.restart(taskId);
         return ResultT.success();
     }
@@ -95,9 +95,9 @@ public class SyncTaskController {
      * @return
      */
     @RequiresPermissions("schedule:sync:stop")
-    @GetMapping("/stop")
+    @GetMapping("/stop/{taskId}")
     @ApiOperation(value = "停止", notes = "停止")
-    public ResultT stop(String taskId) {
+    public ResultT stop(@PathVariable String taskId) {
         this.syncTaskService.stop(taskId);
         return ResultT.success();
     }
