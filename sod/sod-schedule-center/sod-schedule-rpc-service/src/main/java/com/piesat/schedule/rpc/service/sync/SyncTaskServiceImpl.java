@@ -42,8 +42,10 @@ import com.piesat.schedule.rpc.mapstruct.sync.SyncTaskLogMapstruct;
 import com.piesat.schedule.rpc.mapstruct.sync.SyncTaskMapstruct;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -262,7 +264,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         if(syncTaskDto.getBeginTime() != null){
             syncTaskDto.setLastSuccessTime(syncTaskDto.getBeginTime());
         }
+        syncTaskDto.setHasModify("0");
 
+        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        syncTaskDto.setCreateBy(loginUser.getUserName());
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
 

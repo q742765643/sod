@@ -538,7 +538,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //删除前查询是否存在
         try {
             mybatisQueryMapper.delDataAuthorityByApplyId(paraMap);
-//            mybatisQueryMapper.clearUselessApply();
+            mybatisQueryMapper.clearUselessApply();
             result.put("returnCode", "0");
             result.put("returnMessage", "删除成功。");
         } catch (Exception e) {
