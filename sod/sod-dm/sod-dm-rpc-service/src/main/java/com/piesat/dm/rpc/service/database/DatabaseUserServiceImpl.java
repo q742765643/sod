@@ -31,8 +31,10 @@ import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
+import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
@@ -85,6 +87,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
+    @Autowired
+    private DatabaseMapper databaseMapper;
     @GrpcHthtClient
     private UserDao userDao;
     @Autowired
@@ -536,7 +540,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         DatabaseUserDto dbaccount = databaseUserService.findByUserIdAndExamineStatus(user_id, "1");
         DataAuthorityApplyDto dataAuthorityApplyDto = new DataAuthorityApplyDto();
         dataAuthorityApplyDto.setUserId(user_id);
-        List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
+
         if (dbaccount != null) {
             //判断用户申请绑定的ip类型,并取得对应IP地址或IP地址段。
             if (!StringUtils.isEmpty(dbaccount.getDatabaseUpIp())) {
@@ -554,6 +558,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 Boolean Flag = false;
                 //下面取得database_id对应的父物理库ID。
                 DatabaseEntity databaseEntity = databaseDao.findById(database_id).get();
+                DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
                 String parentDatabase_id = databaseEntity.getDatabaseDefine().getId();
                 //下面判断已授权的物理库对应父物理库是否是南大或虚谷数据，并判断是否是用户可用的物理库。
                 if (parentDatabase_id.equals("HADB") || parentDatabase_id.equals("STDB") || parentDatabase_id.equals("BFDB") || parentDatabase_id.equals("FIDB")) {
@@ -584,43 +589,27 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     for (DataTableEntity dataTableEntity : dataTableList) {
                         //下面取得表名。
                         String table_name = dataTableEntity.getTableName();
-                        //下面通过表名取得对应资料存储编码。
-                        //List<DminDataIdTable> lis = dminDataIdTableDao.getDataclassIdByTableName(table_name);
-                        if (databaseEntity.getDatabaseDefine().getDatabaseType().toLowerCase().equalsIgnoreCase("xugu")) {//xugu
-                            //进行权限撤销
-                            if (databaseAdministratorEntity == null) {
+                        DatabaseDcl databaseDcl = null;
+                        try {
+                            databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+                        }catch (Exception e){
+                            if (e.getMessage().contains("用户不存在")){
                                 map.put("returnCode", 1);
-                                map.put("returnMessage", "没有xugu管理员账户！");
+                                map.put("returnMessage", databaseDto.getDatabaseDefine().getDatabaseName()+"用户不存在！");
+                                databaseDcl.closeConnect();
                                 continue;
                             }
-                            try {
-                                Xugu xugu = new Xugu(databaseEntity.getDatabaseDefine().getDatabaseUrl(), databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
-                                xugu.deletePermissions(permission, databaseEntity.getSchemaName(), table_name, dbaccount.getDatabaseUpId(), "", null);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                map.put("returnCode", 2);
-                                map.put("returnMessage", "撤销权限失败");
-                            }
-
-                        } else if (databaseEntity.getDatabaseDefine().getDatabaseType().equalsIgnoreCase("Gbase8a")) {//gbase8a
-                            if (databaseAdministratorEntity == null) {
-                                map.put("returnCode", 1);
-                                map.put("returnMessage", "没有Gbase8a管理员账户！");
-                                continue;
-                            }
-                            try {
-                                Gbase8a gbase8a = new Gbase8a(databaseEntity.getDatabaseDefine().getDatabaseUrl(), databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
-                                List<String> ips = new ArrayList<String>();
-                                ips.add(ip);
-                                gbase8a.deletePermissions(permission, databaseEntity.getSchemaName(), table_name, dbaccount.getDatabaseUpId(), dbaccount.getDatabaseUpPassword(), ips);
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                map.put("returnCode", 2);
-                                map.put("returnMessage", "撤销权限失败");
-                            }
-
                         }
+                        try {
+                            databaseDcl.deletePermissions(permission,databaseEntity.getSchemaName(),table_name,dbaccount.getDatabaseUpId(),null,null);
+                            databaseDcl.closeConnect();
+                        }catch (Exception e){
+                            map.put("returnCode", 2);
+                            map.put("returnMessage", "撤销权限失败！");
+                            continue;
+                        }
+
+
                         //下面根据数据库类型删除表的读写权限。
                         //下面修改资料权限状态。
                         if (mark.equals("1"))//这里是针对专题库权限的撤销。
@@ -776,6 +765,20 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String[] databaseIds = databaseUserDto.getExamineDatabaseId().split(",");
         for (String databaseId : databaseIds) {
             DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(databaseId);
+
+            DatabaseDcl databaseDefine = null;
+            try {
+                databaseDefine = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+            }catch (Exception e){
+                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
+                continue;
+            }
+            try {
+                databaseDefine.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
+            }catch (Exception e){
+                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",密码修改失败" + "<br/>");
+            }
+            databaseDefine.closeConnect();
             //获取数据库管理账户
             DatabaseAdministratorDto databaseAdministratorDto = null;
             Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDefineDto.getDatabaseAdministratorList();
@@ -788,24 +791,6 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (databaseAdministratorDto == null) {
                 buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
-            }
-
-            if (databaseDefineDto.getDatabaseType().toLowerCase().equalsIgnoreCase("xugu")) {
-                try {
-                    Xugu xugu = new Xugu(databaseDefineDto.getDatabaseUrl(), databaseAdministratorDto.getUserName(), databaseAdministratorDto.getPassWord());
-                    xugu.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
-                } catch (Exception e) {
-
-                }
-
-            } else if (databaseDefineDto.getDatabaseType().equalsIgnoreCase("Gbase8a")) {
-                try {
-                    Gbase8a gbase8a = new Gbase8a(databaseDefineDto.getDatabaseUrl(), databaseAdministratorDto.getUserName(), databaseAdministratorDto.getPassWord());
-                    gbase8a.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
-                } catch (Exception e) {
-
-                }
-
             }
 
         }

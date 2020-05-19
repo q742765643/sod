@@ -148,14 +148,14 @@ public class Gbase8a extends DatabaseDclAbs {
             String[] permissions = {"SELECT,UPDATE,INSERT,DELETE", "CREATE,ALTER", "DROP"};
 
             stmt = connection.createStatement();
-            for (int i = 0; i < ips.size(); i++) {
-                for (int j = 0; j < permissions.length; j++) {
-                    sql = "GRANT " + permissions[j] + " ON " + schemaName + ".* to '" + dataBaseUser + "'@'" + ips.get(i) + "' IDENTIFIED BY '" + password + "'";
-                    if ((dataAuthor && j == 0) || (creatAuthor && j == 1) || (dropAuthor && j == 2)) {
-                        stmt.execute(sql);
-                    }
+
+            for (int j = 0; j < permissions.length; j++) {
+                sql = "GRANT " + permissions[j] + " ON " + schemaName + ".* to '" + dataBaseUser;
+                if ((dataAuthor && j == 0) || (creatAuthor && j == 1) || (dropAuthor && j == 2)) {
+                    stmt.execute(sql);
                 }
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
@@ -300,7 +300,7 @@ public class Gbase8a extends DatabaseDclAbs {
     public void bindIp(String identifier, String[] ips) throws Exception {
 //        alter user zwtest hosts'10.20.64.29 10.20.64.30';
         String ipStr = StringUtils.join(ips, " ");
-        String sql = "ALTER USER  " + identifier +" HOSTS '" + ipStr + "'";
+        String sql = "ALTER USER  " + identifier + " HOSTS '" + ipStr + "'";
         stmt = connection.createStatement();
         stmt.execute(sql);
     }
@@ -308,7 +308,7 @@ public class Gbase8a extends DatabaseDclAbs {
     @Override
     public String queryRecordNum(String schema, String tableName) throws Exception {
         String num = "";
-        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;
+        String sql = "SELECT COUNT(*) as COUNT FROM " + schema + "." + tableName;
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -319,13 +319,13 @@ public class Gbase8a extends DatabaseDclAbs {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
         }
-        return  num;
+        return num;
     }
 
     @Override
     public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
         String minTime = "";
-        String sql = "SELECT MIN("+timeColumnName+") FROM "+schema+"."+tableName;
+        String sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -342,7 +342,7 @@ public class Gbase8a extends DatabaseDclAbs {
     @Override
     public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
         String maxTime = "";
-        String sql = "SELECT MAX("+timeColumnName+") FROM "+schema+"."+tableName;
+        String sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -359,7 +359,7 @@ public class Gbase8a extends DatabaseDclAbs {
     @Override
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         String num = "";
-        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + " WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        String sql = "SELECT COUNT(*) as COUNT FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">='" + beginTime + "' AND " + timeColumnName + "<'" + endTime + "'";
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -370,6 +370,6 @@ public class Gbase8a extends DatabaseDclAbs {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
         }
-        return  num;
+        return num;
     }
 }

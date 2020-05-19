@@ -40,11 +40,13 @@ import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
+import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAccessMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAuthorityMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.GetAllUserInfo;
@@ -96,6 +98,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DatabaseInfo databaseInfo;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseDefineMapper databaseDefineMapper;
     @Autowired
     private DatabaseSpecialTreeDao databaseSpecialTreeDao;
     @Autowired
@@ -373,7 +377,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
                     String databaseId = databaseSpecialAuthorityDto.getDatabaseId();
                     DatabaseDefineEntity databaseDefineEntity = databaseDefineDao.findById(databaseId).get();
-                    DatabaseDcl databaseVO = null;
+                    DatabaseDefineDto databaseDefineDto = this.databaseDefineMapper.toDto(databaseDefineEntity);
+                    DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
                     try {
                         //申请创建模式
                         Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseDefineEntity.getDatabaseAdministratorList();
@@ -381,48 +386,21 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         String url = databaseDefineEntity.getDatabaseUrl();
                         if (databaseAdministratorSet != null) {
                             //获取任意登录账号
-                            DatabaseAdministratorEntity databaseAdministratorEntity = databaseAdministratorSet.iterator().next();
-                            String username = databaseAdministratorEntity.getUserName();
-                            String password = databaseAdministratorEntity.getPassWord();
-                            //
                             String schemaName = databaseDto.getSchemaName();
                             DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
-                            String databaseUpPassword = databaseUserEntity.getDatabaseUpPassword();
                             String databaseUpId = databaseUserEntity.getDatabaseUpId();
-                            String[] upIpArr = databaseUserEntity.getDatabaseUpIp().split(";");
-                            List<String> databaseUpIpList = Arrays.asList(upIpArr);
+
                             //表数据增删改查权限
                             boolean dataAuthor = databaseSpecialAuthorityDto.getTableDataAccess() == 2;
                             //创建表权限
                             boolean creatAuthor = databaseSpecialAuthorityDto.getCreateTable() == 2;
                             //删除表权限
                             boolean dropAuthor = databaseSpecialAuthorityDto.getDeleteTable() == 2;
-                            //判断是什么数据库
-                            if (databaseDefineEntity.getDatabaseType().equals(databaseInfo.getXugu())) {
-                                databaseVO = new Xugu(url, username, password);
-                                try {
-                                    databaseVO.createSchemas(schemaName, databaseUpId, null, dataAuthor, creatAuthor, dropAuthor, null);
-                                } catch (Exception e) {
-                                    logger.error("[E4006] 同名用户或模式已存在 ");
-                                }
-                            } else if (databaseDefineEntity.getDatabaseType().equals(databaseInfo.getGbase8a())) {
-                                databaseVO = new Gbase8a(url, username, password);
-                                try {
-                                    databaseVO.createSchemas(schemaName, databaseUpId, databaseUpPassword, dataAuthor, creatAuthor, dropAuthor, databaseUpIpList);
-                                } catch (Exception e) {
-                                    logger.error("[E4006] 同名用户或模式已存在 ");
-                                }
-                            } else if (databaseDefineEntity.getDatabaseType().equals(databaseInfo.getCassandra())) {
-                                databaseVO = new Cassandra(databaseDefineEntity.getDatabaseIp(),
-                                        Integer.parseInt(databaseDefineEntity.getDatabasePort()),
-                                        username, password, databaseDto.getSchemaName());
-                                try {
-                                    databaseVO.createSchemas(schemaName, databaseUpId, databaseUpPassword, dataAuthor, creatAuthor, dropAuthor, databaseUpIpList);
-                                } catch (Exception e) {
-                                    logger.error("[E4006] 同名用户或模式已存在 ");
-                                }
-                            } else {
-                                return;
+
+                            try {
+                                databaseVO.createSchemas(schemaName, databaseUpId, null, dataAuthor, creatAuthor, dropAuthor, null);
+                            } catch (Exception e) {
+                                logger.error("[E4006] 同名用户或模式已存在 ");
                             }
                             if (databaseVO != null) {
                                 databaseVO.closeConnect();
@@ -715,6 +693,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                             databaseVO.addPermissions(select, databaseEntity.getSchemaName(),
                                     tableName, databaseUserEntity.getDatabaseUpId(), null, null);
                         }
+                        databaseVO.closeConnect();
                     }
                 }
             }
@@ -776,8 +755,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         for (DataTableEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();
                             databaseVO.deletePermissions(permissions, databaseEntity.getSchemaName(),
-                                    dataTableEntity.getTableName(), databaseUserEntity.getDatabaseUpId(), null, null);
+                                    tableName, databaseUserEntity.getDatabaseUpId(), null, null);
                         }
+                        databaseVO.closeConnect();
                     }
                 }
             }

@@ -370,6 +370,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             database.closeConnect();
             return resultT;
         } catch (Exception e) {
+            database.closeConnect();
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         } finally {
