@@ -80,26 +80,16 @@ export function exportTable(query) {
 }
 
 
-export function syncStart(execIp, execPort, id) {
+export function syncStart(id) {
   return request({
-    url: "http://" +
-      execIp +
-      ":" +
-      execPort +
-      "/sod_sync/rest/restart/" +
-      id,
+    url: baseUrl + '/schedule/sync/restart/' + id,
     method: 'get'
   })
 }
 
-export function syncStop(execIp, execPort, id) {
+export function syncStop(id) {
   return request({
-    url: "http://" +
-      execIp +
-      ":" +
-      execPort +
-      "/sod_sync/rest/stop/" +
-      id,
+    url: baseUrl + '/schedule/sync/stop/' + id,
     method: 'get'
   })
 }

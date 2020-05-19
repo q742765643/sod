@@ -441,7 +441,7 @@ export default {
               "/sod_sync/rest/restart/" +
               row.id;
             this.axios.get(url).then(res => {}); */
-            syncStart(row.execIp, row.execPort, row.id).then(response => {});
+            syncStart(row.id).then(response => {});
           } else {
             //停止
             /*  const url =
@@ -452,7 +452,7 @@ export default {
               "/sod_sync/rest/stop/" +
               row.id;
             this.axios.get(url).then(res => {}); */
-            syncStop(row.execIp, row.execPort, row.id).then(response => {});
+            syncStop(row.id).then(response => {});
           }
         })
         .then(() => {
