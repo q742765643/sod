@@ -36,4 +36,8 @@ public interface SyncTaskService {
     public JSONObject getSyncJsonById(String taskId);
 
     void exportExcel(SyncTaskDto syncTaskDto);
+
+    void restart(String taskId);
+
+    void stop(String taskId);
 }
