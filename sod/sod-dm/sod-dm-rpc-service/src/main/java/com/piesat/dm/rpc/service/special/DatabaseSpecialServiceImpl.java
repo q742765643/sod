@@ -149,6 +149,15 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             }
             specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
         }
+        List<String> userId = new ArrayList<String>();
+        userId.add("noUseId");
+        List<UserEntity> users = userDao.findByCheckedNot("0");
+        if (users != null && users.size() > 0) {
+            for (UserEntity userEntity : users) {
+                userId.add(userEntity.getUserName());
+            }
+        }
+        specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
         Sort sort = Sort.by(Sort.Direction.ASC, "examineStatus").and(Sort.by(Sort.Direction.DESC, "createTime"));
         PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<DatabaseSpecialEntity> databaseSpecialEntities = (List<DatabaseSpecialEntity>) pageBean.getPageData();

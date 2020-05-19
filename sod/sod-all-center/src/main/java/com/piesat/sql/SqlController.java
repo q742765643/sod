@@ -6,10 +6,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.SQLExec;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +41,7 @@ public class SqlController {
             List<String> ll=new ArrayList<>();
             while (ts.next()) {
                 String tableName=ts.getString("TABLE_NAME");
-               // sm.executeUpdate("DELETE FROM "+tableName);
+                sm.executeUpdate("DELETE FROM "+tableName);
 
             }
         } catch (SQLException e) {
@@ -67,7 +64,16 @@ public class SqlController {
                 sqlExec.setProject(new Project()); // 要指定这个属性，不然会出错
                 sqlExec.execute();
             } catch (Exception e) {
+
                 e.printStackTrace();
+                try {
+                    if(e.getMessage().indexOf("不存在")==-1){
+                        readFileByLines(file.getPath());
+                    }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+
             }
         }
         System.out.println("结束");
@@ -93,15 +99,16 @@ public class SqlController {
         //List<Map<String, Object>> map=queryMapList(sql,null);
         ResultSet ts=conn.getMetaData().getTables(null,"USR_SOD",null,new String[]{"TABLE"});
         List<String> ll=new ArrayList<>();
-        while (ts.next()) {
+     /*   while (ts.next()) {
             String tableName=ts.getString("TABLE_NAME");
             if(!tableName.endsWith("LOG")){
                 ll.add(tableName);
             }
             System.out.println(ts.getString("TABLE_NAME") + "  "
                     + ts.getString("TABLE_TYPE"));
-        }
-        //ll.add("T_SOD_DATA_TABLE_SQL");
+        }*/
+        ll.add("T_SOD_DATA_TABLE_SQL");
+        ll.add("T_SOD_SQL_TEMPLATE");
         table=ll.toArray(new String[ll.size()]);
         listSQL = createSQL();//创建查询语句
             executeSQL(conn, sm, listSQL);//执行sql并拼装
@@ -347,6 +354,48 @@ public class SqlController {
 
 
     }
+    /**
+     * 以行为单位读取文件，常用于读面向行的格式化文件
+     */
+    private static String readFileByLines(String filePath) throws Exception {
+        StringBuffer str = new StringBuffer();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(filePath), "UTF-8"));
+            String tempString = null;
+            int line = 1;
+            // 一次读入一行，直到读入null为文件结束
+            while ((tempString = reader.readLine()) != null) {
+                // 显示行号
+                // System.out.println("line " + line + ": " + tempString);
+                if(line>1&&tempString.startsWith("INSERT")&&str.length()>0){
+                    try {
+                        sm.execute(str.toString());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    str=new StringBuffer();
+                }
+                str = str.append(" " + tempString);
 
+                line++;
+
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                }
+            }
+        }
+
+        return str.toString();
+    }
 }
 

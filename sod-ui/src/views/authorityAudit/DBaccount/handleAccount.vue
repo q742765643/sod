@@ -651,7 +651,7 @@ export default {
         ","
       );
       // 审核
-      update(obj).then(res => {
+      update(this.msgFormDialog).then(res => {
         if (res.code == 200) {
           this.$message({
             type: "success",

@@ -22,8 +22,14 @@ import java.util.Properties;
  **/
 public class DatabseType {
     public static String type="";
+
+
+    public static void setType(String url) {
+        DatabseType.type = getType(url);
+    }
+
     static {
-        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+      /*  YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
         yaml.setResources(new ClassPathResource("application.yml"));
         Properties properties = yaml.getObject();
         String active = properties.getProperty("spring.profiles.active");
@@ -40,7 +46,7 @@ public class DatabseType {
         }
         if(url.indexOf("postgresql")!=-1){
             type="postgresql";
-        }
+        }*/
 
     }
 

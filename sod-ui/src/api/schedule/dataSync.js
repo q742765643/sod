@@ -78,3 +78,18 @@ export function exportTable(query) {
     responseType: "arraybuffer"
   })
 }
+
+
+export function syncStart(id) {
+  return request({
+    url: baseUrl + '/schedule/sync/restart/' + id,
+    method: 'get'
+  })
+}
+
+export function syncStop(id) {
+  return request({
+    url: baseUrl + '/schedule/sync/stop/' + id,
+    method: 'get'
+  })
+}
