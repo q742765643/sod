@@ -20,6 +20,8 @@ public interface UserDao extends BaseDao<UserEntity> {
 
     UserEntity findByUserNameAndUserType(String userName,String type);
 
+    List<UserEntity> findByCheckedNot(String checked);
+
     List<UserEntity> findByWebUsernameLike(String webUsername);
 
     List<UserEntity> findByUserType(String userType);
