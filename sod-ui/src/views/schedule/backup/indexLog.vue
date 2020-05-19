@@ -145,7 +145,7 @@
       :close-on-click-modal="false"
       :title="title"
       :visible.sync="open"
-      width="800px"
+      width="820px"
       v-dialogDrag
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" class="logDetailBox">
@@ -186,8 +186,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="执行耗时" prop="elapsedTime">
-              <el-input v-model="form.elapsedTime" />
+            <el-form-item label="执行耗时" prop="elapsedTime" class="unitInput">
+              <el-input v-model="form.elapsedTime" />s
             </el-form-item>
           </el-col>
           <el-col :span="12">

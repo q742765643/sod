@@ -54,6 +54,7 @@ public class ClearHandler implements BaseHandler {
     public void preParam( ClearEntity clearEntity, ResultT<String> resultT) {
         DiSendVo diSendVo = new DiSendVo();
         ClearVo clearVo=new ClearVo();
+        clearVo.setStartTime(System.currentTimeMillis());
         long occurTime = System.currentTimeMillis();
         diSendVo.setStartTimeS(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(clearEntity.getTriggerLastTime()));
         diSendVo.setSendPhys(clearEntity.getParentId());
@@ -211,6 +212,9 @@ public class ClearHandler implements BaseHandler {
             clearLogEntity.setElapsedTime((clearVo.getEndTime()-clearVo.getStartTime())/1000);
             if(!resultT.isSuccess()){
                 clearLogEntity.setHandleCode("2");
+            }
+            if(null==clearLogEntity.getHandleTime()){
+                clearLogEntity.setHandleTime(new Date());
             }
             clearLogEntity.setHandleMsg(resultT.getProcessMsg().toString());
             clearLogService.saveNotNull(clearLogEntity);

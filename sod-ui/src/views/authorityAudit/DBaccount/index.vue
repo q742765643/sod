@@ -211,10 +211,14 @@ export default {
         this.downloadfileCommon(res);
       });
     },
-    handleDialogClose() {
+    handleDialogClose(value) {
       this.handleDialog = false;
       this.handleObj = {};
-      this.handleQuery();
+      if (this.dialogTitle.indexOf("新增") != -1) {
+        this.handleQuery();
+      } else {
+        this.getList();
+      }
     }
   }
 };

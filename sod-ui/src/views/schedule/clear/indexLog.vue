@@ -183,8 +183,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="执行耗时" prop="elapsedTime">
-              <el-input v-model="form.elapsedTime" />
+            <el-form-item label="执行耗时" prop="elapsedTime" class="unitInput">
+              <el-input v-model="form.elapsedTime" />s
             </el-form-item>
           </el-col>
           <el-col :span="12">

@@ -58,7 +58,7 @@
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 4}"
-                placeholder="请输入内容"
+                placeholder="请输入内容，不能超过500个字符"
                 v-model="registerForm.DATA_PROP"
               ></el-input>
             </el-form-item>
@@ -102,6 +102,14 @@ export default {
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
+      if(checkobj.remark.trim().length > 500){
+        this.$message({
+          message: "内容不能超过500个字符",
+          type: "error",
+          offset: 100
+        });
+        return
+      }
       if (type == 2) {
         this.$emit("cancelHandle", this.registerForm);
       } else {

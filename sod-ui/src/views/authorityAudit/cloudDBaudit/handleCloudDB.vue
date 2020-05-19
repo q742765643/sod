@@ -726,7 +726,7 @@ export default {
     },
     cancelDialog(formName) {
       this.$refs[formName].resetFields();
-      this.$emit("handleDialogClose");
+      this.$emit("handleDialogClose", false);
     }
   }
 };

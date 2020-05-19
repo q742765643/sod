@@ -123,14 +123,7 @@ export default {
     },
     resetQuery() {
       this.handleDialog = false;
-      this.queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-        examine_status: "",
-        nameUser: "",
-        nameSourceDB: "",
-        time: ["", ""]
-      };
+
       this.getList();
     },
 
