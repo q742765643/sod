@@ -299,8 +299,12 @@ export default {
     },
     // 取消按钮
     cancelHandle() {
+      if (this.title.indexOf("添加") != -1) {
+        this.handleQuery();
+      } else {
+        this.getList();
+      }
       this.openDialog = false;
-      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {

@@ -204,7 +204,7 @@ export default {
       this.structureManageVisible = true;
     },
     closeStructureManage() {
-      this.handleQuery();
+      this.getList("");
       this.structureManageVisible = false;
     }
   }

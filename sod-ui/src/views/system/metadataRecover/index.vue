@@ -399,7 +399,16 @@ export default {
       this.handleObj = {};
       this.currentRow = [];
       this.handeleRecoverDialog = false;
-      this.handleClick();
+      if (this.activeName == "first") {
+        this.queryParams = {
+          taskName: "",
+          databaseId: "",
+          storageDirectory: ""
+        };
+        this.treedata = [];
+      } else {
+        this.queryListLog();
+      }
     },
     //选中行
     handleHistorySelectionChange() {

@@ -175,7 +175,7 @@
     </el-form>
 
     <!-- 确定取消 -->
-    <div slot="footer" class="dialog-footer" v-show="isHideAdd">
+    <div slot="footer" class="dialog-footer" v-show="isHideAdd" v-if="!handleObj.pageName">
       <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
@@ -615,7 +615,7 @@ export default {
     cancelDialog(formName) {
       if (!this.handleObj.id) {
         this.$refs[formName].resetFields();
-        this.$emit("handleDialogClose");
+        this.$emit("handleDialogClose", false);
       } else {
         // 审核不通过
         this.$refs[formName].validate(valid => {

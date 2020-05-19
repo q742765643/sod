@@ -228,7 +228,7 @@ export default {
       return result;
     },
     cancelHandle() {
-      this.handleQuery();
+      this.getList();
       this.handlepowerDialog = false;
       this.handleDialog = false;
     }

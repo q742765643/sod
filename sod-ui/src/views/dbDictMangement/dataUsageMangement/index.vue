@@ -15,7 +15,7 @@
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
+        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
@@ -169,7 +169,7 @@ export default {
     },
     showDialog(type) {
       if (type == "add") {
-        this.dialogTitle = "添加";
+        this.dialogTitle = "新增";
         this.handleObj = {};
         this.msgFormDialog = true;
       } else {
@@ -238,7 +238,11 @@ export default {
     },
     cancelDialog() {
       this.msgFormDialog = false;
-      this.handleQuery();
+      if (this.dialogTitle.indexOf("新增") != -1) {
+        this.handleQuery();
+      } else {
+        this.getList();
+      }
     }
   }
 };

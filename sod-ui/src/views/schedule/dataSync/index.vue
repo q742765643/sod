@@ -323,13 +323,15 @@ export default {
       });
     },
     resetQuery() {
-      this.queryParams = {
-        pageNum: 1,
-        pageSize: 10,
-        selectInfo: "taskName",
-        searchValue: "",
-        runState: ""
-      };
+      if (this.dialogTitle == "新增") {
+        this.queryParams = {
+          pageNum: 1,
+          pageSize: 10,
+          selectInfo: "taskName",
+          searchValue: "",
+          runState: ""
+        };
+      }
       this.superMsg = {};
       this.handleDialog = false;
       this.dailyDataDialog = false;
@@ -432,26 +434,9 @@ export default {
       })
         .then(function() {
           if (type == 1) {
-            /* //启动
-            const url =
-              "http://" +
-              row.execIp +
-              ":" +
-              row.execPort +
-              "/sod_sync/rest/restart/" +
-              row.id;
-            this.axios.get(url).then(res => {}); */
             syncStart(row.id).then(response => {});
           } else {
             //停止
-            /*  const url =
-              "http://" +
-              row.execIp +
-              ":" +
-              row.execPort +
-              "/sod_sync/rest/stop/" +
-              row.id;
-            this.axios.get(url).then(res => {}); */
             syncStop(row.id).then(response => {});
           }
         })

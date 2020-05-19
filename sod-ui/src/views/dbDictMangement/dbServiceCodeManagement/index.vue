@@ -17,7 +17,7 @@
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showAddDialog()" icon="el-icon-plus">添加</el-button>
+        <el-button size="small" type="primary" @click="showAddDialog()" icon="el-icon-plus">新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="danger" @click="deleteAlert()" icon="el-icon-delete">删除</el-button>
@@ -63,10 +63,10 @@
       :limit.sync="queryParams.pageSize"
       @pagination="handleQuery"
     />
-    <!-- 添加-->
+    <!-- 新增-->
     <el-dialog
       :close-on-click-modal="false"
-      title="添加"
+      title="新增"
       :visible.sync="DataDialog"
       width="45%"
       class="calculate"
@@ -132,7 +132,7 @@ export default {
         eleName: ""
       },
       editdataObj: {},
-      //添加
+      //新增
       handleObj: {
         userEleCode: "",
         dbEleCode: "",
@@ -191,7 +191,7 @@ export default {
       });
     },
 
-    //添加
+    //新增
     showAddDialog() {
       this.handleObj = {};
       this.DataDialog = true;

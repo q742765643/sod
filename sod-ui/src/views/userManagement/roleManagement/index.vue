@@ -222,7 +222,7 @@ export default {
       this.handleObj = {};
       this.handleRoleDialog = false;
       this.handlePowerDialog = false;
-      this.searchFun("1");
+      this.searchFun();
     }
   }
 };

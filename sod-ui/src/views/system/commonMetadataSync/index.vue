@@ -428,7 +428,7 @@ export default {
       this.syncDescList = [];
       this.syncDescDialogVisible = false;
       this.handleDialog = false;
-      this.handleQuery();
+      this.getList();
     },
     //
     resetQuery() {

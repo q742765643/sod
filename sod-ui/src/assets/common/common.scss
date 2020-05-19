@@ -1,9 +1,12 @@
 /* 主色调 */
-// $themeColor: #409eff;
-// $boderColor: #ebebeb;
+
 $backColor:#f1f4f7;
 $boderColor: #e5e8ec;
 $TableActive:#dfeffd;
+
+// 菜单
+$menuBkAc:#3aa9ff;
+
 
 html,
 body {
@@ -20,7 +23,9 @@ p {
   word-break: break-all;
 }
 
-
+.unitInput .el-input {
+  width: 90%;
+}
 
 
 // 弹框
@@ -248,7 +253,7 @@ ul {
       background-size: 82% 100%;
       position: relative;
       color: #333; */
-      background:rgba(58, 169, 255, 1)
+      background:$menuBkAc
       /*  &:after {
         content: '';
         position: absolute;
@@ -349,7 +354,7 @@ ul {
   background-size: 100% 100%;
 
   .router-link-exact-active {
-    background: rgba(58, 169, 255, 1)
+    background: $menuBkAc
       /* display: block;
     width: 100%;
     height: 80px;

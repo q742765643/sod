@@ -97,7 +97,7 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
-      <el-table-column label="运行地址" prop="executorAddress" width="140" />
+      <el-table-column label="运行地址" prop="executorAddress" width="160" />
       <el-table-column label="状态" prop="handleCode" :formatter="statusFormat" width="60" />
       <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
         <template slot-scope="scope">
@@ -139,10 +139,10 @@
       :close-on-click-modal="false"
       :title="title"
       :visible.sync="open"
-      width="800px"
+      width="820px"
       v-dialogDrag
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="140px" class="logDetailBox">
         <el-row>
           <el-col :span="24">
             <el-form-item label="资料名称" prop="profileName">
@@ -155,15 +155,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="二级nas清除条件" prop="clearConditions">
+            <el-form-item label="二级nas清除条件" prop="clearConditions" v-if="form.clearConditions">
               <el-input v-model="form.clearConditions" />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
-            <el-form-item label="归档清除条件" prop="archiveConditions">
-              <el-input v-model="form.archiveConditions" />
-            </el-form-item>
-          </el-col>
+
           <el-col :span="12">
             <el-form-item label="迁移源目录" prop="sourceDirectory">
               <el-input v-model="form.sourceDirectory" />
@@ -175,7 +171,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="迁移条数限制" prop="moveLimit">
+            <el-form-item label="迁移限制频率" prop="moveLimit">
               <el-input v-model="form.moveLimit" />
             </el-form-item>
           </el-col>
@@ -200,8 +196,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="执行耗时" prop="elapsedTime">
-              <el-input v-model="form.elapsedTime" />
+            <el-form-item label="执行耗时" prop="elapsedTime" class="unitInput">
+              <el-input v-model="form.elapsedTime" />s
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -217,6 +213,7 @@
           <el-col :span="24">
             <el-form-item label="执行过程">
               <el-input v-model="form.handleMsg" type="textarea"></el-input>
+              <el-button type="primary" size="small" @click="showAllDetail('所有执行过程')">显示全部</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -224,6 +221,20 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+    <el-dialog
+      :close-on-click-modal="false"
+      title="执行过程"
+      :visible.sync="allDetailDialog"
+      v-if="allDetailDialog"
+      width="1000px"
+      append-to-body
+      v-dialogDrag
+    >
+      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="allDetailDialog = false">取 消</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -279,7 +290,9 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      allDetailMsg: "",
+      allDetailDialog: false
     };
   },
   created() {
@@ -289,6 +302,10 @@ export default {
     });
   },
   methods: {
+    showAllDetail(title) {
+      this.allDetailMsg = this.form.handleMsg;
+      this.allDetailDialog = true;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -390,3 +407,15 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.logDetailBox {
+  .el-textarea {
+    width: 80%;
+  }
+}
+.allDetailMsg {
+  .el-textarea__inner {
+    min-height: 300px !important;
+  }
+}
+</style>

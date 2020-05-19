@@ -103,7 +103,7 @@
       <af-table-column
         prop="SYNC_IDENTIFIER"
         label="数据同步"
-        width="120"
+        width="140"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -118,7 +118,7 @@
       </af-table-column>
 
       <!-- 迁移 -->
-      <af-table-column prop="MOVE_ST" label="迁移" width="100" v-if="queryParams.examineStatus===2">
+      <af-table-column prop="MOVE_ST" label="迁移" width="120" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <!-- 迁移 -->
 
@@ -137,7 +137,7 @@
       <af-table-column
         prop="CLEAR_ST"
         label="清除"
-        min-width="100"
+        min-width="120"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -158,7 +158,7 @@
       </af-table-column>
 
       <!-- 备份 -->
-      <af-table-column prop="BACKUP_ST" label="备份" width="100" v-if="queryParams.examineStatus===2">
+      <af-table-column prop="BACKUP_ST" label="备份" width="120" v-if="queryParams.examineStatus===2">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.BACKUP_ST==1"
@@ -179,7 +179,7 @@
       <af-table-column
         prop="ARCHIVING_IDENTIFIER"
         label="恢复"
-        width="100"
+        width="120"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
