@@ -266,7 +266,6 @@ export default {
     powerMethods(value) {
       this.loading = true;
       let obj = {};
-      // obj.userId = localStorage.getItem("loginUserId");
       obj.userId = this.formBaseInfo.USER_ID;
       obj.dataAuthorityRecordList = [];
       this.multipleSelection.forEach(element => {
@@ -297,6 +296,7 @@ export default {
             });
             this.handleQuery();
           } else {
+            debugger;
             this.loading = false;
             this.$alert(res.msg, "提示", {
               dangerouslyUseHTMLString: true
@@ -330,6 +330,9 @@ export default {
 .handleMaterialDialog {
   .el-alert {
     margin-bottom: 12px;
+  }
+  .el-loading-spinner {
+    top: 120px !important;
   }
 }
 </style>
