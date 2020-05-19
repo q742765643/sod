@@ -647,4 +647,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         ExcelUtil<SyncTaskEntity> util=new ExcelUtil(SyncTaskEntity.class);
         util.exportExcel(syncTaskEntitiesList,"数据同步");
     }
+
+    @Override
+    public void restart(String taskId) {
+        SyncTaskEntity byId = this.getById(taskId);
+        getStatusById(byId,"restart");
+    }
+
+    @Override
+    public void stop(String taskId) {
+        SyncTaskEntity byId = this.getById(taskId);
+        getStatusById(byId,"stop");
+    }
 }
