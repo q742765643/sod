@@ -437,7 +437,6 @@ public class Ejb3Column {
                         sqlType = null;
                     } else {
                         String columnDefinition=col.columnDefinition();
-                        //System.out.println(DatabseType.type);
                         if(columnDefinition.indexOf("TEXT")!=-1&&"xugu".equals(DatabseType.type)){
                             columnDefinition=columnDefinition.replace("TEXT","CLOB");
                         }
