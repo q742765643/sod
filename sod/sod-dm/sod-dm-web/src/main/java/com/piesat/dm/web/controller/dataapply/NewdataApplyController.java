@@ -152,7 +152,7 @@ public class NewdataApplyController {
     @ApiOperation(value = "根据申请id删除申请表和表结构数据(portal调用)", notes = "根据申请id删除申请表和表结构数据(portal调用)")
     public ResultT deleteByIdPortal(@RequestBody NewdataApplyDto newdataApplyDto){
         this.newdataApplyService.deleteById(newdataApplyDto.getId());
-        return ResultT.success();
+        return ResultT.success("删除成功");
     }
 
    @GetMapping("/getDataTypeList")

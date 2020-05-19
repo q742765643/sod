@@ -1274,7 +1274,7 @@
         t_sod_data_class t1
         inner join t_sod_data_logic t2 on t1. data_class_id = t2.data_class_id
         inner join t_sod_database t3 on t2.database_id = t3.id
-        inner join t_sod_database_define t4 on t3.database_define_id = t4.id
+        inner join t_sod_database_define t4 on t3.database_define_id = t4.id and t4.user_display_control !=2
         <if test="userId != null and userId != ''">
             where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
         </if>

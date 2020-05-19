@@ -98,6 +98,7 @@ public class DatabaseDefineEntity extends BaseEntity {
     /**
      * portal显示控制
      * user_display_control
+     * 1 显示   2 不显示   3 前端不显示
      */
     @Excel(name = "portal显示控制")
     @Column(name = "user_display_control")
