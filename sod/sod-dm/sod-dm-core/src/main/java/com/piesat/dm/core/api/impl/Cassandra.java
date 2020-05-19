@@ -137,14 +137,19 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
-    public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) {
+    public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         identifier = identifier.toLowerCase();
         String permission = select ? "SELECT" : "MODIFY,SELECT";
         String[] split = permission.split(",");
-        for (String s:split ) {
-            String cql = "GRANT " + s + " ON TABLE " + resource + "." + tableName + " To " + identifier;
-            instance.execute(cql);
+        try {
+            for (String s:split ) {
+                String cql = "GRANT " + s + " ON TABLE " + resource + "." + tableName + " To " + identifier;
+                instance.execute(cql);
+            }
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
         }
+
 
     }
 
