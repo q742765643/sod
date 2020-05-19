@@ -178,7 +178,9 @@ import {
   syncList,
   delSync,
   getSyncInfo,
-  exportTable
+  exportTable,
+  syncStart,
+  syncStop
 } from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
@@ -430,7 +432,7 @@ export default {
       })
         .then(function() {
           if (type == 1) {
-            //启动
+            /* //启动
             const url =
               "http://" +
               row.execIp +
@@ -438,17 +440,19 @@ export default {
               row.execPort +
               "/sod_sync/rest/restart/" +
               row.id;
-            this.axios.get(url).then(res => {});
+            this.axios.get(url).then(res => {}); */
+            syncStart(row.execIp, row.execPort, row.id).then(response => {});
           } else {
             //停止
-            const url =
+            /*  const url =
               "http://" +
               row.execIp +
               ":" +
               row.execPort +
               "/sod_sync/rest/stop/" +
               row.id;
-            this.axios.get(url).then(res => {});
+            this.axios.get(url).then(res => {}); */
+            syncStop(row.execIp, row.execPort, row.id).then(response => {});
           }
         })
         .then(() => {

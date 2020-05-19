@@ -78,3 +78,28 @@ export function exportTable(query) {
     responseType: "arraybuffer"
   })
 }
+
+
+export function syncStart(execIp, execPort, id) {
+  return request({
+    url: "http://" +
+      execIp +
+      ":" +
+      execPort +
+      "/sod_sync/rest/restart/" +
+      id,
+    method: 'get'
+  })
+}
+
+export function syncStop(execIp, execPort, id) {
+  return request({
+    url: "http://" +
+      execIp +
+      ":" +
+      execPort +
+      "/sod_sync/rest/stop/" +
+      id,
+    method: 'get'
+  })
+}
