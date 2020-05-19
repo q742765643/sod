@@ -48,6 +48,7 @@ public class Cassandra implements DatabaseDcl {
                     // instance = cluster.connect("mycas");
                 }
             } catch (Exception e) {
+                closeConnect();
                 e.printStackTrace();
                 throw new Exception("Cassandra数据库连接失败！");
             } finally {
@@ -58,18 +59,8 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void closeConnect() {
-        cluster.close();
         instance.close();
-        if (null == cluster) {
-            try {
-                lock.lock();
-                if (null == cluster) {
-                    cluster.close();
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
+        cluster.close();
     }
 
     @Override
