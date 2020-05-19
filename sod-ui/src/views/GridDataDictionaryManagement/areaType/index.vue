@@ -11,7 +11,7 @@
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
+        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
@@ -201,7 +201,7 @@ export default {
     showDialog(type) {
       if (type == "add") {
         this.ruleForm = {};
-        this.dialogTitle = "添加";
+        this.dialogTitle = "新增";
       } else {
         if (this.choserow.length != 1) {
           this.$message({
@@ -221,7 +221,7 @@ export default {
     handleTrue(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          if (this.dialogTitle == "添加") {
+          if (this.dialogTitle == "新增") {
             defineSave(this.ruleForm).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");

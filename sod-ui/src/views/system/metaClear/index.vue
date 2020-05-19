@@ -233,8 +233,8 @@
         <el-form-item label="执行地址">
           <el-input size="small" v-model="logFormDialog.executorAddress"></el-input>
         </el-form-item>
-        <el-form-item label="执行耗时">
-          <el-input size="small" v-model="logFormDialog.elapsedTime"></el-input>
+        <el-form-item label="执行耗时" class="unitInput">
+          <el-input size="small" v-model="logFormDialog.elapsedTime"></el-input>s
         </el-form-item>
         <el-form-item label="应触发时间">
           <el-input size="small" v-model="logFormDialog.triggerTime"></el-input>
@@ -471,7 +471,7 @@ export default {
       this.handleObj = {};
       this.currentRow = [];
       this.handleDialog = false;
-      this.handleQuery();
+      this.getMetaBackupList();
     },
     //日志列表
     getListLog() {

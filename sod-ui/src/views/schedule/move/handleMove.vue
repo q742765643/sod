@@ -146,7 +146,7 @@
         </el-col>
         <el-col :span="24">
           <el-form-item
-            v-if="msgFormDialog.isClear != '0'"
+            v-if="msgFormDialog.isClear != '0' && msgFormDialog.clearConditions"
             label="二级nas清除条件"
             prop="clearConditions"
           >
@@ -165,11 +165,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <!-- <el-col :span="24">
-             <el-form-item v-if="msgFormDialog.isClear != '0'" label="归档清除条件"  prop="archiveConditions">
-               <el-input v-model="msgFormDialog.archiveConditions" placeholder="请输入归档清除条件" />
-             </el-form-item>
-        </el-col>-->
+
         <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>

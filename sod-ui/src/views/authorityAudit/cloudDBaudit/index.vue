@@ -310,7 +310,11 @@ export default {
     handleDialogClose() {
       this.handleDialog = false;
       this.handleObj = {};
-      this.handleQuery();
+      if (this.dialogTitle.indexOf("新增") != -1) {
+        this.handleQuery();
+      } else {
+        this.getList();
+      }
     }
   }
 };

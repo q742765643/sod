@@ -224,7 +224,7 @@ export default {
       this.handleObj = {};
       this.handleDialog = false;
       this.applyTopicDialog = false;
-      this.handleQuery();
+      this.getList();
     }
   }
 };
