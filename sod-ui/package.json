@@ -63,6 +63,7 @@
     "semver": "^6.3.0",
     "vue": "2.6.10",
     "vue-count-to": "1.0.13",
+    "vue-cron": "^1.0.9",
     "vue-cropper": "0.4.9",
     "vue-pdf": "^4.0.8",
     "vue-quill-editor": "3.0.6",

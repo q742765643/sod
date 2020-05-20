@@ -186,7 +186,7 @@
       :title="title"
       :visible.sync="openDialog"
       width="800px"
-      v-dialogDrag
+      top="5vh"
     >
       <handleBackUp @cancelHandle="cancelHandle" v-if="openDialog" :handleObj="handleObj"></handleBackUp>
     </el-dialog>

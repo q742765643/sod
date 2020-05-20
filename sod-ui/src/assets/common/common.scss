@@ -1,12 +1,9 @@
 /* 主色调 */
-
+// $themeColor: #409eff;
+// $boderColor: #ebebeb;
 $backColor:#f1f4f7;
 $boderColor: #e5e8ec;
 $TableActive:#dfeffd;
-
-// 菜单
-$menuBkAc:#3aa9ff;
-
 
 html,
 body {
@@ -27,6 +24,10 @@ p {
   width: 90%;
 }
 
+// cron
+#changeContab .bottom .value {
+  margin-right: 12px;
+}
 
 // 弹框
 .el-dialog__header {
@@ -234,6 +235,28 @@ ul {
   color: #333 !important;
 }
 
+// 面包屑
+.tags-view-container {
+  .tags-view-wrapper {
+    .tags-view-item {
+      border: 1px solid #d8dce5;
+      color: #495060;
+      background: #fff;
+
+      &.active {
+        background-color: #46a6ff;
+        color: #fff;
+        border-color: #46a6ff;
+
+        &::before {
+          content: "";
+          background: #fff;
+        }
+      }
+    }
+  }
+}
+
 /* 菜单 */
 #app {
 
@@ -253,7 +276,7 @@ ul {
       background-size: 82% 100%;
       position: relative;
       color: #333; */
-      background:$menuBkAc
+      background:#3aa9ff
       /*  &:after {
         content: '';
         position: absolute;
@@ -354,7 +377,7 @@ ul {
   background-size: 100% 100%;
 
   .router-link-exact-active {
-    background: $menuBkAc
+    background: #3aa9ff
       /* display: block;
     width: 100%;
     height: 80px;

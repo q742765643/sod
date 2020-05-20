@@ -21,6 +21,7 @@ public enum ReturnCodeEnum {
     ReturnCodeEnum_404_ERROR(403, "用户不存在"),
     ReturnCodeEnum_405_ERROR(403, "账户密码错误"),
 
+    ReturnCodeEnum_501_ERROR(501, "GRPC调用无服务异常"),
 
 
     ReturnCodeEnum_13_ERROR(13, "执行sql异常"),
