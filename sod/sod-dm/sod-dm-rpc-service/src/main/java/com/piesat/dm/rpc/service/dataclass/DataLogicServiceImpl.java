@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
@@ -43,6 +44,8 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     private DataTableService dataTableService;
     @Autowired
     private DatabaseDao databaseDao;
+    @Autowired
+    private DataClassDao dataClassDao;
 
     @Autowired
     private DatabaseSpecialReadWriteDao databaseSpecialReadWriteDao;
@@ -161,6 +164,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
         DataLogicDto dotById = this.getDotById(id);
         dataTableService.deleteByClassLogicId(dotById.getId());
         this.delete(id);
+        String dataClassId = dotById.getDataClassId();
+        List<DataLogicDto> byDataClassId = this.findByDataClassId(dataClassId);
+        if (byDataClassId==null||byDataClassId.size()==0){
+            this.dataClassDao.deleteByDataClassId(dataClassId);
+        }
     }
     @Override
     public Map<String, Object> getTableByDBLogics(String tdbId, String logics) {
