@@ -44,11 +44,7 @@
           <span>{{scope.row.DATA_CLASS_ID}}</span>
         </template>
       </af-table-column>
-      <af-table-column prop="D_DATA_ID" label="四级编码">
-        <template slot-scope="scope">
-          <span>{{scope.row.D_DATA_ID}}</span>
-        </template>
-      </af-table-column>
+
       <af-table-column prop="LOGIC_NAME" label="数据用途">
         <template slot-scope="scope">
           <span>{{scope.row.LOGIC_NAME}}</span>
@@ -74,57 +70,10 @@
             <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
-          <!-- 数据同步 -->
-          <el-button disabled v-if="scope.row.SYNC_IDENTIFIER == 3" size="mini">
-            <i class="btnRound orangRound"></i>数据同步
-          </el-button>
-          <el-button v-else size="mini" @click="handlSyncMethods(scope.row)">
-            <i class="btnRound blueRound" v-if="scope.row.SYNC_ID"></i>
-            <i class="btnRound orangRound" v-else></i>数据同步
-          </el-button>
-          <!-- 迁移 -->
-
-          <el-button v-if="scope.row.MOVE_ST===1" size="mini" @click="handlMoveMethods(scope.row)">
-            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
-            <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
-            <i class="btnRound orangRound" v-else></i>迁移
-          </el-button>
-
-          <!-- 清除 -->
-          <el-button
-            v-if="scope.row.CLEAR_ST===1"
-            size="mini"
-            @click="handlClearMethods(scope.row)"
-          >
-            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
-            <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
-            <i class="btnRound orangRound" v-else></i>清除
-          </el-button>
-
-          <!-- 备份 -->
-          <el-button
-            v-if="scope.row.BACKUP_ST===1"
-            size="mini"
-            @click="handleBackUpMethods(scope.row)"
-          >
-            <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
-            <i class="btnRound blueRound" v-if="scope.row.BACKUP_ID"></i>
-            <i class="btnRound orangRound" v-else></i>备份
-          </el-button>
-
-          <!-- 恢复 -->
-          <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
-          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
         </template>
       </af-table-column>
-      <af-table-column label="操作" width="140px">
+      <af-table-column label="操作" width="80px">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="mini"
-            icon="el-icon-setting"
-            @click="settingCell(scope.row)"
-          >配置</el-button>
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
         </template>
       </af-table-column>

@@ -4,7 +4,7 @@
       <el-tab-pane label="资料分类树"></el-tab-pane>
       <el-tab-pane label="数据用途分类树" v-if="tableStructureManageContral"></el-tab-pane>
       <el-tab-pane label="数据库分类树" v-if="tableStructureManageContral"></el-tab-pane>
-      <el-tab-pane label="公共元数据结构树" v-if="tableStructureManageContral"></el-tab-pane>
+      <!-- <el-tab-pane label="公共元数据结构树" v-if="tableStructureManageContral"></el-tab-pane> -->
     </el-tabs>
     <div class="classifyTree">
       <!-- 资料分类树操作 -->

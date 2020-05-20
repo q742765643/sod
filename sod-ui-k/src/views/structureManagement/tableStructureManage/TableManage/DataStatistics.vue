@@ -6,7 +6,6 @@
         <el-form-item>
           <el-radio-group v-model="searchParams.isAllLine" @change="handleQuery">
             <el-radio :label="1">全部在线</el-radio>
-            <el-radio :label="2">近线服务</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="归档开始时间" v-show="searchParams.isAllLine==2">

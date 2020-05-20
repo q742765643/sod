@@ -1,37 +1,16 @@
 <template>
   <el-main class="columnTemplate">
     <el-button-group style="padding: 8px;">
-      <el-button
-        type="primary"
-        size="small"
-        icon="el-icon-c-scale-to-original"
-        @click="getColumnTables"
-        v-if="tableStructureManageContral"
-      >复用字段</el-button>
       <el-button type="primary" size="small" icon="el-icon-plus" @click="columnAdd">新增</el-button>
       <el-button type="primary" size="small" icon="el-icon-edit" @click="columnEdit">编辑</el-button>
       <el-button type="primary" size="small" icon="el-icon-delete" @click="columnDelete">删除</el-button>
       <el-button type="primary" size="small" icon="el-icon-document-copy" @click="columnCopy">复制</el-button>
       <el-button type="primary" size="small" icon="el-icon-document-add" @click="columnPaste">粘贴</el-button>
-      <el-button
-        type="primary"
-        size="small"
-        icon="el-icon-s-order"
-        @click="columnControl"
-        v-if="tableStructureManageContral"
-      >质控字段</el-button>
     </el-button-group>
     <el-button-group style="float: right;padding: 8px;">
       <el-button type="primary" size="small" icon="el-icon-sort" @click="handleSort">排序</el-button>
       <el-button type="primary" size="small" icon="el-icon-download" @click="exportCode('code')">导出</el-button>
       <el-button type="primary" size="small" icon="el-icon-upload2" @click="importTelplate">导入</el-button>
-      <el-button
-        type="primary"
-        size="small"
-        icon="el-icon-s-operation"
-        @click="syncServe"
-        v-if="tableStructureManageContral"
-      >同步服务名称</el-button>
     </el-button-group>
     <!-- <el-scrollbar wrap-class="scrollbar-wrapper"> -->
     <el-table
@@ -44,21 +23,7 @@
     >
       <el-table-column type="index" label="序号" width="70"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column
-        label="公共元数据字段"
-        prop="dbEleCode"
-        width="200px"
-        v-if="tableStructureManageContral"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
       <el-table-column label="字段编码" prop="celementCode" width="200px" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column
-        label="服务代码"
-        prop="userEleCode"
-        width="200px"
-        v-if="tableStructureManageContral"
-        :show-overflow-tooltip="true"
-      ></el-table-column>
       <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
@@ -262,18 +227,8 @@
         label-width="140px"
       >
         <el-col :span="12">
-          <el-form-item label="公共元数据字段" prop="dbEleCode">
-            <el-input placeholder="公共元数据字段" v-model="columnEditData.dbEleCode" size="small"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
           <el-form-item label="字段编码" prop="celementCode">
             <el-input placeholder="字段编码" v-model="columnEditData.celementCode" size="small"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="服务代码" prop="userEleCode">
-            <el-input placeholder="服务代码" v-model="columnEditData.userEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -730,6 +685,8 @@ export default {
     },
     // 字段新增编辑
     trueCode(formName) {
+      this.columnEditData.dbEleCode = this.columnEditData.celementCode;
+      this.columnEditData.userEleCode = this.columnEditData.celementCode;
       //校验表单
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -834,7 +791,7 @@ export default {
         ];
         let newArry = [];
         this.columnData.forEach(element => {
-          debugger
+          debugger;
           tableProp.forEach(item => {
             if (element[item] == false) {
               element[item] = "否";

@@ -41,13 +41,6 @@
               <el-button
                 type="primary"
                 size="small"
-                icon="el-icon-tickets"
-                @click="showMaterialList"
-                v-if="tableStructureManageContral"
-              >资料概览</el-button>
-              <el-button
-                type="primary"
-                size="small"
                 icon="el-icon-plus"
                 @click="showMaterialSingle('新增资料')"
               >新增资料</el-button>
@@ -77,7 +70,7 @@
             >
               <el-table-column label="资料名称" prop="CLASS_NAME" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column
-                label="四级编码"
+                label="存储编码"
                 prop="D_DATA_ID"
                 v-if="tableStructureManageContral"
                 :show-overflow-tooltip="true"
@@ -85,7 +78,6 @@
               <el-table-column label="数据用途类型" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column label="存储类型" prop="DICT_LABEL" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column label="数据库" prop="DATABASE_NAME_F" :show-overflow-tooltip="true"></el-table-column>
-              <el-table-column label="专题名" prop="DATABASE_NAME" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column
                 label="描述代码"
                 prop="TABLE_DESC"

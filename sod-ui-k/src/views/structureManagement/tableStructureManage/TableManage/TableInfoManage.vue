@@ -79,16 +79,6 @@
             <el-input :disabled="!isEdit" placeholder="备注" size="small" v-model="Info.tableDesc"></el-input>
           </el-form-item>
         </div>
-        <div class="el-col el-col-4">
-          <el-form-item class="buttonCon">
-            <el-button
-              type="primary"
-              size="small"
-              @click="baseMsgEdit"
-              v-if="tableStructureManageContral"
-            >基础信息编辑</el-button>
-          </el-form-item>
-        </div>
       </div>
     </el-form>
     <el-dialog

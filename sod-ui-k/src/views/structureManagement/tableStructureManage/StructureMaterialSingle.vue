@@ -57,21 +57,9 @@
             <el-form-item label="类型" v-if="isSourceTree">
               <el-input v-model="materialData.typeText" :readonly="true"></el-input>
             </el-form-item>
-            <el-form-item label="访问控制">
-              <el-select v-model="materialData.isAccess">
-                <el-option :value="1" label="公开"></el-option>
-                <el-option :value="2" label="限制"></el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="排序" prop="serialNo">
               <el-input-number v-model="materialData.serialNo" :min="1"></el-input-number>
               <!-- <el-input type="number" v-model="materialData.serialNo" :min="0"></el-input> -->
-            </el-form-item>
-            <el-form-item label="是否发布" v-if="tableStructureManageContral">
-              <el-select v-model="materialData.ifStopUse">
-                <el-option :value="true" label="启用"></el-option>
-                <el-option :value="false" label="停用"></el-option>
-              </el-select>
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
               <el-select v-model="materialData.useBaseInfo">
@@ -410,6 +398,8 @@ export default {
     },
     // 保存数据
     makeSureSave(resForm) {
+      this.materialData.metaDataName = this.materialData.className;
+      this.materialData.ddataId = this.materialData.dataClassId;
       this.$refs["materialForm"].validate(valid => {
         if (valid) {
           // 1为目录   2为资料
