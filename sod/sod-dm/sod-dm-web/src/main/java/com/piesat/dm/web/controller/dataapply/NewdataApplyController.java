@@ -68,6 +68,7 @@ public class NewdataApplyController {
     private NewdataTableColumnService newdataTableColumnService;
 
     @GetMapping("/list")
+    @RequiresPermissions("dm:newdataApply:list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     public ResultT<PageBean> list(NewdataApplyDto newdataApplyDto,
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
