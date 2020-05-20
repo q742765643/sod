@@ -85,7 +85,7 @@
             size="mini"
             icon="el-icon-video-play"
             @click="updateStatus(scope.row,1)"
-            v-if="scope.row.runState=='error'"
+            v-if="scope.row.runState!='true'"
           >启动</el-button>
           <el-button
             type="text"
@@ -433,6 +433,7 @@ export default {
         type: "warning"
       })
         .then(function() {
+          debugger
           if (type == 1) {
             syncStart(row.id).then(response => {});
           } else {
