@@ -99,18 +99,18 @@
             <el-input v-model="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
-        <el-col :span="20">
+        <el-col :span="24">
           <el-form-item label="执行策略" prop="jobCron">
-            <el-input v-model="msgFormDialog.jobCron" placeholder="请输入执行策略" />
+            <el-popover v-model="cronPopover">
+              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+              <el-input
+                slot="reference"
+                @click="cronPopover=true"
+                v-model="msgFormDialog.jobCron"
+                placeholder="请输入定时策略"
+              ></el-input>
+            </el-popover>
           </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-button
-            size="small"
-            type="primary"
-            @click="cronDialogVisible = true"
-            style="margin-left:10px;"
-          >执行策略</el-button>
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
@@ -149,18 +149,10 @@
       <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
-    <Cron
-      append-to-body
-      v-if="cronDialogVisible"
-      :cronDialogVisible="cronDialogVisible"
-      @closeCron="closeCron"
-      @setCron="setCron"
-    />
   </section>
 </template>
 
 <script>
-import Cron from "@/components/cron/Cron";
 import {
   getBackup,
   addBackup,
@@ -176,11 +168,24 @@ export default {
       type: Object
     }
   },
-  components: {
-    Cron
-  },
   data() {
+    //校验是否为cron表达式
+    var handleCronValidate = (rule, value, callback) => {
+      if (!!value) {
+        let parser = require("cron-parser");
+        try {
+          let interval = parser.parseExpression(value);
+          console.log("cronDate:", interval.next().toDate());
+        } catch (e) {
+          callback("执行策略非Cron表达式格式，请检查！");
+        }
+      } else {
+        callback("请输入执行策略!");
+      }
+      callback();
+    };
     return {
+      cronPopover: false,
       alarmOptions: [],
       databaseOptions: [],
       dataClassIdOptions: [],
@@ -214,7 +219,7 @@ export default {
           { required: true, message: "存储目录不能为空", trigger: "change" }
         ],
         jobCron: [
-          { required: true, message: "执行策略不能为空", trigger: "blur" }
+          { required: true, message: "请输入执行策略", trigger: "blur" }
         ],
         executorTimeout: [
           { required: true, message: "超时时间不能为空", trigger: "blur" }
@@ -225,9 +230,7 @@ export default {
         retryInterval: [
           { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
         ]
-      },
-      // cron表达式
-      cronDialogVisible: false
+      }
     };
   },
 
@@ -273,6 +276,9 @@ export default {
     }
   },
   methods: {
+    changeCron(val) {
+      this.msgFormDialog.jobCron = val;
+    },
     selectTable(dataClassId) {
       this.msgFormDialog.tableName = "";
       this.findTable(
@@ -334,14 +340,6 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    },
-    //设置cron表达式
-    setCron(cronExpression) {
-      this.msgFormDialog.jobCron = cronExpression;
-      this.cronDialogVisible = false;
-    },
-    closeCron() {
-      this.cronDialogVisible = false;
     }
   }
 };

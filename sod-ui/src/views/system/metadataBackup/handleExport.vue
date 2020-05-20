@@ -27,23 +27,17 @@
               <el-checkbox label="数据">数据</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-row>
-            <el-col :span="20">
-              <el-form-item label="执行策略" prop="jobCron">
-                <el-input size="small" v-model="msgFormDialog.jobCron"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item class="unitFormItem">
-                <el-button
-                  size="small"
-                  type="primary"
-                  @click="cronDialogVisible=true"
-                  style="padding:9px 0;width: 100%;"
-                >配置策略</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-popover v-model="cronPopover">
+              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+              <el-input
+                slot="reference"
+                @click="cronPopover=true"
+                v-model="msgFormDialog.jobCron"
+                placeholder="请输入定时策略"
+              ></el-input>
+            </el-popover>
+          </el-form-item>
           <el-form-item label="存储目录">
             <el-select size="small" filterable v-model="msgFormDialog.storageDirectory">
               <el-option
@@ -79,18 +73,10 @@
       <el-button type="primary" @click="trueDialog('ruleForm','handtrue')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
-    <Cron
-      append-to-body
-      v-if="cronDialogVisible"
-      :cronDialogVisible="cronDialogVisible"
-      @closeCron="closeCron"
-      @setCron="setCron"
-    />
   </section>
 </template>
 
 <script>
-import Cron from "@/components/cron/Cron";
 import { newTeam } from "@/components/commonVaildate";
 import {
   findDataBase,
@@ -106,14 +92,26 @@ export default {
       type: Object
     }
   },
-  components: {
-    Cron
-  },
   data() {
+    //校验是否为cron表达式
+    var handleCronValidate = (rule, value, callback) => {
+      if (!!value) {
+        let parser = require("cron-parser");
+        try {
+          let interval = parser.parseExpression(value);
+          console.log("cronDate:", interval.next().toDate());
+        } catch (e) {
+          callback("执行策略非Cron表达式格式，请检查！");
+        }
+      } else {
+        callback("请输入执行策略!");
+      }
+      callback();
+    };
     return {
       treeJson: [],
       storageDirectoryOptions: [],
-      cronDialogVisible: false,
+      cronPopover: false,
       defaultChecked: [],
       msgFormDialog: {
         taskName: "",
@@ -171,7 +169,7 @@ export default {
       this.defaultChecked = [];
       checkedTree.forEach(element => {
         this.treeJson.forEach(t => {
-          if (element.nodeKey == t.nodeKey&&element.isParent==false) {
+          if (element.nodeKey == t.nodeKey && element.isParent == false) {
             this.defaultChecked.push(element.nodeKey);
           }
         });
@@ -180,6 +178,9 @@ export default {
     }
   },
   methods: {
+    changeCron(val) {
+      this.msgFormDialog.jobCron = val;
+    },
     // 获取数据库对象
     async findTree(val) {
       await findMeta({ databaseId: val }).then(res => {
@@ -282,14 +283,6 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    },
-    //设置cron表达式
-    setCron(cronExpression) {
-      this.msgFormDialog.jobCron = cronExpression;
-      this.cronDialogVisible = false;
-    },
-    closeCron() {
-      this.cronDialogVisible = false;
     }
   }
 };

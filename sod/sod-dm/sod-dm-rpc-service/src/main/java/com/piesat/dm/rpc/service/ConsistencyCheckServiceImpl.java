@@ -5,8 +5,10 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.ConsistencyCheckDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.entity.ConsistencyCheckEntity;
@@ -21,6 +23,7 @@ import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.mapper.ConsistencyCheckMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.collections.IteratorUtils;
@@ -49,7 +52,8 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     private DataTableService dataTableService;
     @Autowired
     private ShardingDao shardingDao;
-
+    @Autowired
+    private DatabaseInfo databaseInfo;
 
     @Override
     public BaseDao<ConsistencyCheckEntity> getBaseDao() {
@@ -100,57 +104,33 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     public Map<String, List<List<String>>> downloadDfcheckFile(String databaseId) {
         //获取数据库详细信息
         DatabaseDto databaseDto = databaseService.getDotById(databaseId);
-        String driver = databaseDto.getDatabaseDefine().getDriverClassName();
-        String url = databaseDto.getDatabaseDefine().getDatabaseUrl();
-        String username = "";
-        String password = "";
-        Iterator<DatabaseAdministratorDto> databaseAdministrators = databaseDto.getDatabaseDefine().getDatabaseAdministratorList().iterator();
-        while(databaseAdministrators.hasNext()){
-            DatabaseAdministratorDto databaseAdministrator = databaseAdministrators.next();
-            username = databaseAdministrator.getUserName();
-            password = databaseAdministrator.getPassWord();
-            break;
-        }
         List<String> tableList = null;
         Map<String,List<List<String>>> compileResult = new HashMap<String,List<List<String>>>();
         compileResult.put("columnResult",new ArrayList<List<String>>());
         compileResult.put("indexResult",new ArrayList<List<String>>());
         compileResult.put("shardingResult",new ArrayList<List<String>>());
-        try{
-            if("Gbase8a".equalsIgnoreCase(databaseDto.getDatabaseDefine().getDatabaseType())){
-                Gbase8a gbase8a = new Gbase8a(url, username, password);
-                //获取数据库中所有的表名
-                tableList = (List<String>)gbase8a.queryAllTableName(databaseDto.getSchemaName()).getData();
 
-                for(String tableName:tableList){
-                    //物理库表字段信息
-                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)gbase8a.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
-                    //物理库表索引和分库分表信息
-                    Map<String,Map<String,String>> indexAndShardings = (Map<String,Map<String,String>>)gbase8a.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
-                    compareDifferences(databaseId,tableName.toUpperCase(),columnInfos,indexAndShardings,compileResult);
-
-                }
-            }else{
-                Xugu xugu = new Xugu(url, username, password);
-                //获取数据库中所有的表名
-                tableList = (List<String>)xugu.queryAllTableName(databaseDto.getSchemaName()).getData();
-
-                for(String tableName:tableList){
-
-                    //表字段信息
-                    Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)xugu.queryAllColumnInfo(databaseDto.getSchemaName(),tableName.toUpperCase()).getData();
-                    //表索引和分开分表信息
-                    Map<String,Map<String,String>> indexAndShardings = ( Map<String,Map<String,String>>)xugu.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
-                    compareDifferences(databaseId,tableName,columnInfos,indexAndShardings,compileResult);
-                }
-            }
-
-
-        }catch(Exception e){
+        DatabaseDcl database = null;
+        try {
+            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
         }
-
+        try {
+            tableList = (List<String>)database.queryAllTableName(databaseDto.getSchemaName()).getData();
+            for(String tableName:tableList){
+                //物理库表字段信息
+                Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)database.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
+                //物理库表索引和分库分表信息
+                Map<String,Map<String,String>> indexAndShardings = (Map<String,Map<String,String>>)database.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
+                compareDifferences(databaseId,tableName.toUpperCase(),columnInfos,indexAndShardings,compileResult);
+            }
+        }catch (Exception e){
+            database.closeConnect();
+            e.printStackTrace();
+        }finally {
+            database.closeConnect();
+        }
         return compileResult;
     }
 

@@ -94,13 +94,13 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
             }else{
                 score=redisUtil.zScore(QUARTZ_HTHT_JOB,jobInfoDto.getId());
             }
-            if(score<=0){
-                try {
-                    Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
+            try {
+                Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
+                if(nextValidTime.getTime()<score){
                     redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -121,14 +121,15 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
             }else{
                 score=redisUtil.zScore(QUARTZ_HTHT_JOB,jobInfoDto.getId());
             }
-            if(score<=0){
-                try {
-                    Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
+            try {
+                Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
+                if(nextValidTime.getTime()<score){
                     redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+
         }else{
             this.stop(jobInfoDto.getId());
         }
