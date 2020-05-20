@@ -28,9 +28,9 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        <el-button size="small" type="text" @click="superClick">
+        <!-- <el-button size="small" type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
-        </el-button>
+        </el-button>-->
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>

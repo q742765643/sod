@@ -228,7 +228,7 @@ export default {
           searchValue = "1";
         } else if (searchValue == "读写申请" || searchValue == "拒绝") {
           searchValue = "2";
-        }else if(searchValue != ""){
+        } else if (searchValue != "") {
           searchValue = "0";
         }
       }

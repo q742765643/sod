@@ -49,7 +49,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['cloudDBaudit:role:add']"
-        >添加云数据库申请</el-button>
+        >申请云数据库</el-button>
       </el-col>
     </el-row>
 
@@ -97,7 +97,7 @@
             type="text"
             size="mini"
             icon="el-icon-view"
-            @click="viewCell(scope.row)"
+            @click="viewCell(scope.row,'view')"
           >查看</el-button>
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
           <el-button
@@ -284,9 +284,14 @@ export default {
         message: "资源分析暂无数据"
       });
     },
-    viewCell(row) {
+    viewCell(row, type) {
       getById({ id: row.id }).then(response => {
-        this.dialogTitle = "云数据库申请";
+        if (type == "view") {
+          this.dialogTitle = "云数据库详情";
+        } else {
+          this.dialogTitle = "云数据库审核";
+        }
+
         this.handleObj = response.data;
         this.handleDialog = true;
       });

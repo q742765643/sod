@@ -108,6 +108,9 @@
       <el-row>
         <el-col :span="21">
           <el-form-item label="申请材料" class="fileInput">
+            <label slot="label">
+              <i style="color:red;">*</i>&nbsp;申请材料
+            </label>
             <el-upload
               v-show="isHideAdd"
               class="upload-demo"
@@ -187,7 +190,7 @@
     <el-dialog
       :close-on-click-modal="false"
       width="30%"
-      title="信息"
+      title="IP地址"
       :visible.sync="innerVisible"
       append-to-body
       v-dialogDrag

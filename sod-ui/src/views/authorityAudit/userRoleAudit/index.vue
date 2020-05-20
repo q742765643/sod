@@ -5,8 +5,12 @@
       <el-form-item label="用户名称">
         <el-input size="small" v-model="queryParams.userName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
+      <el-form-item label="用户名">
+        <el-input size="small" v-model="queryParams.nickName" placeholder="请输入用户名"></el-input>
+      </el-form-item>
+
       <el-form-item label="机构">
-        <el-input size="small" v-model="queryParams.deptName" placeholder="请输入用户名称"></el-input>
+        <el-input size="small" v-model="queryParams.deptName" placeholder="请输入机构名称"></el-input>
       </el-form-item>
       <el-form-item label="用户状态">
         <el-select v-model="queryParams.checked" clearable size="small" style="width: 140px">
@@ -35,6 +39,7 @@
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名称"></el-table-column>
+      <el-table-column prop="nickName" label="用户名"></el-table-column>
       <el-table-column prop="deptName" label="机构"></el-table-column>
       <el-table-column prop="phonenumber" label="联系方式" width="120"></el-table-column>
       <el-table-column prop="updateTime" label="创建时间" sortable="custom" width="160">
