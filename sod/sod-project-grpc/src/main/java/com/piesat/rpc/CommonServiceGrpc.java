@@ -21,7 +21,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.24.2)",
+    value = "by gRPC proto compiler (version 1.27.1)",
     comments = "Source: service.proto")
 public final class CommonServiceGrpc {
 
@@ -65,7 +65,14 @@ public final class CommonServiceGrpc {
    * Creates a new async stub that supports all call types for the service
    */
   public static CommonServiceStub newStub(io.grpc.Channel channel) {
-    return new CommonServiceStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<CommonServiceStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<CommonServiceStub>() {
+        @java.lang.Override
+        public CommonServiceStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new CommonServiceStub(channel, callOptions);
+        }
+      };
+    return CommonServiceStub.newStub(factory, channel);
   }
 
   /**
@@ -73,7 +80,14 @@ public final class CommonServiceGrpc {
    */
   public static CommonServiceBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    return new CommonServiceBlockingStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<CommonServiceBlockingStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<CommonServiceBlockingStub>() {
+        @java.lang.Override
+        public CommonServiceBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new CommonServiceBlockingStub(channel, callOptions);
+        }
+      };
+    return CommonServiceBlockingStub.newStub(factory, channel);
   }
 
   /**
@@ -81,7 +95,14 @@ public final class CommonServiceGrpc {
    */
   public static CommonServiceFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    return new CommonServiceFutureStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<CommonServiceFutureStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<CommonServiceFutureStub>() {
+        @java.lang.Override
+        public CommonServiceFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new CommonServiceFutureStub(channel, callOptions);
+        }
+      };
+    return CommonServiceFutureStub.newStub(factory, channel);
   }
 
   /**
@@ -119,19 +140,15 @@ public final class CommonServiceGrpc {
    * 定义通用的 Grpc 服务
    * </pre>
    */
-  public static final class CommonServiceStub extends io.grpc.stub.AbstractStub<CommonServiceStub> {
-    private CommonServiceStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private CommonServiceStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class CommonServiceStub extends io.grpc.stub.AbstractAsyncStub<CommonServiceStub> {
+    private CommonServiceStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CommonServiceStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected CommonServiceStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new CommonServiceStub(channel, callOptions);
     }
 
@@ -152,19 +169,15 @@ public final class CommonServiceGrpc {
    * 定义通用的 Grpc 服务
    * </pre>
    */
-  public static final class CommonServiceBlockingStub extends io.grpc.stub.AbstractStub<CommonServiceBlockingStub> {
-    private CommonServiceBlockingStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private CommonServiceBlockingStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class CommonServiceBlockingStub extends io.grpc.stub.AbstractBlockingStub<CommonServiceBlockingStub> {
+    private CommonServiceBlockingStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CommonServiceBlockingStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected CommonServiceBlockingStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new CommonServiceBlockingStub(channel, callOptions);
     }
 
@@ -184,19 +197,15 @@ public final class CommonServiceGrpc {
    * 定义通用的 Grpc 服务
    * </pre>
    */
-  public static final class CommonServiceFutureStub extends io.grpc.stub.AbstractStub<CommonServiceFutureStub> {
-    private CommonServiceFutureStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private CommonServiceFutureStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class CommonServiceFutureStub extends io.grpc.stub.AbstractFutureStub<CommonServiceFutureStub> {
+    private CommonServiceFutureStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CommonServiceFutureStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected CommonServiceFutureStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new CommonServiceFutureStub(channel, callOptions);
     }
 

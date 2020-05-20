@@ -11,7 +11,7 @@
 
     <artifactId>sod-project-grpc</artifactId>
     <properties>
-        <net.grpc.version>2.6.0.RELEASE</net.grpc.version>
+        <net.grpc.version>2.7.0.RELEASE</net.grpc.version>
         <lombok.version>1.18.8</lombok.version>
     </properties>
     <dependencies>
@@ -99,7 +99,7 @@
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:3.10.0:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.24.2:exe:${os.detected.classifier}</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.27.1:exe:${os.detected.classifier}</pluginArtifact>
                     <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
                     <!-- <outputDirectory>${project.basedir}/src/main/proto/build</outputDirectory> -->
                     <!--设置是否在生成java文件之前清空outputDirectory的文件，默认值为true，设置为false时也会覆盖同名文件-->
