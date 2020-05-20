@@ -272,6 +272,14 @@ public class DatabaseUserManagerController {
         }
     }
 
+    @ApiOperation(value = "获取业务注册数据库用户")
+    @RequiresPermissions("dm:databaseUser:getBizDatabaseUser")
+    @GetMapping(value = "/getBizDatabaseUser")
+    public ResultT getBizDatabaseUser(String userId,String databaseUpId) {
+        DatabaseUserDto byUserId = this.databaseUserService.findByUserIdAndDatabaseUpId(userId, databaseUpId);
+        return ResultT.success(byUserId);
+    }
+
 
     @ApiOperation(value = "新增Bzi")
     @RequiresPermissions("dm:databaseUser:addBzi")

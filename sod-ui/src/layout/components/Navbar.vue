@@ -52,7 +52,7 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/user/profile">
+          <router-link to="/user/profile" v-if="portalFlag === false">
             <el-dropdown-item>个人中心</el-dropdown-item>
           </router-link>
           <el-dropdown-item>
@@ -88,6 +88,7 @@ export default {
   },
   data() {
     return {
+      portalFlag: false,
       uncheckNum: 0,
       infoList: []
     };
@@ -95,6 +96,10 @@ export default {
   created() {
     this.getEventList();
     this.getChangeEditList();
+    let winHref = window.location.href;
+    if (winHref.indexOf("interfaceId") > -1) {
+      this.portalFlag = true;
+    }
   },
   computed: {
     ...mapGetters(["sidebar", "avatar", "device"]),

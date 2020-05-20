@@ -105,3 +105,14 @@ export function demoDownload() {
     responseType: "arraybuffer"
   })
 }
+
+
+// 根据ID查询 从业务用户审核来的
+export function getBizDatabaseUser(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/getBizDatabaseUser',
+    async: true,
+    method: 'get',
+    params: query
+  })
+}

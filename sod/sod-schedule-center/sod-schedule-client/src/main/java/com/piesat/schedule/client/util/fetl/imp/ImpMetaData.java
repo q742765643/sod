@@ -325,7 +325,9 @@ public class ImpMetaData{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			sb.append(ex).append("\n");;
+			if(!"".equals(ex)){
+				sb.append(ex).append("\n");
+			}
 		}
 	}
 	

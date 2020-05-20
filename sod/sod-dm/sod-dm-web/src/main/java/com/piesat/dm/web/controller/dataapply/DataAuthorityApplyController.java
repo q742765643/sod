@@ -36,7 +36,7 @@ public class DataAuthorityApplyController {
 
 
     @GetMapping("/list")
-    //@RequiresPermissions("dm:dataAuthorityApply:list")
+    @RequiresPermissions("dm:dataAuthorityApply:list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
     public ResultT<PageBean> list(DataAuthorityApplyDto dataAuthorityApplyDto, int pageNum, int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();

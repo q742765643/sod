@@ -68,7 +68,7 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
                     if(resultT.isSuccess()){
                         flag=true;
                     }else {
-                        Thread.sleep(60000);
+                        Thread.sleep(6000);
                     }
                     if(i>=1){
                         log.info("id:{},重试第{}次",jobInfo.getId(),i);
