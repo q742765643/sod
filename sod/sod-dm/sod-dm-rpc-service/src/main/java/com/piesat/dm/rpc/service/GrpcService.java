@@ -187,18 +187,18 @@ public class GrpcService {
         if (storage == null) {
             return ResultT.failed("概览信息未配置");
         }
-        //删除存储结构
-        if (StringUtils.isNotEmpty(storage.getClassLogicId())) {
-            DataLogicDto dotById = dataLogicService.getDotById(storage.getClassLogicId());
-            if (dotById != null) {
-                dataLogicService.deleteById(storage.getClassLogicId());
-            }
-        }
         //删除同步配置
         if (StringUtils.isNotNullString(storage.getSyncId())) {
             SyncTaskDto syncTaskDto = syncTaskService.getDtoById(storage.getSyncId());
             if (syncTaskDto != null) {
                 syncTaskService.deleteSync(storage.getSyncId());
+            }
+        }
+        //删除存储结构
+        if (StringUtils.isNotEmpty(storage.getClassLogicId())) {
+            DataLogicDto dotById = dataLogicService.getDotById(storage.getClassLogicId());
+            if (dotById != null) {
+                dataLogicService.deleteById(storage.getClassLogicId());
             }
         }
         //删除迁移清楚
