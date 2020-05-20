@@ -155,8 +155,9 @@ export default {
   },
   created() {
     this.handleMsgObj = this.handleObj;
-    console.log(this.handleMsgObj);
+    console.log(this.registerForm);
   },
+
   methods: {
     nextStep() {
       // 储存元数据注册
@@ -202,6 +203,9 @@ export default {
     getStepFlag(stepFlag) {
       if (stepFlag) {
         this.stepNum = this.stepNum + 1;
+        if (this.stepNum === 5) {
+          this.trueStep();
+        }
         return;
       }
     },

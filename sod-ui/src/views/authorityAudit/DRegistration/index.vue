@@ -336,6 +336,7 @@
       <revieStepRegister
         v-if="reviewStep"
         :handleObj="handleMsgObj"
+        :registerForm="registerForm"
         @closeStep="closeStep"
         :before-close="closeStep"
       />
