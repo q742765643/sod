@@ -228,7 +228,8 @@ import {
   getById,
   update,
   demoDownload,
-  exportData
+  exportData,
+  getBizDatabaseUser
 } from "@/api/authorityAudit/DBaccount";
 import { getUserByType } from "@/api/authorityAudit/cloudDBaudit";
 import {
@@ -348,18 +349,28 @@ export default {
     await this.getUserAll();
     this.getDBlist();
     if (this.handleObj.pageName == "业务用户审核") {
+      getBizDatabaseUser({
+        userId: this.handleObj.userName,
+        databaseUpId: this.handleObj.userName
+      }).then(res => {
+        if (res.data) {
+          this.msgFormDialog = res.data;
+        } else {
+          this.msgFormDialog.userName = this.handleObj.userName;
+          this.msgFormDialog.userId = this.handleObj.userName;
+          this.msgFormDialog.databaseUpId = this.handleObj.userName;
+          this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
+          this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
+          this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
+          this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(
+            ","
+          );
+          this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
+          this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
+          this.msgFormDialog.databaseUpPassword = this.handleObj.password;
+        }
+      });
       this.userDiasbled = true;
-      this.msgFormDialog.userName = this.handleObj.userName;
-      this.msgFormDialog.userId = this.handleObj.userName;
-      this.msgFormDialog.databaseUpId = this.handleObj.userName;
-      this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
-      this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
-      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
-      this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(",");
-      this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
-      this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
-      this.msgFormDialog.databaseUpPassword = this.handleObj.password;
-
       this.isHideAdd = false;
       this.isHide = true;
     } else {
@@ -579,41 +590,48 @@ export default {
       }
     },
     trueAdd() {
-      this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
-        ","
-      );
-      // 新增
-      if (this.handleObj.pageName) {
-        addBzi(this.msgFormDialog).then(res => {
-          if (res.code == 200) {
-            this.$message({
-              type: "success",
-              message: "增加成功"
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
+            ","
+          );
+          // 新增
+          if (this.handleObj.pageName) {
+            addBzi(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "增加成功"
+                });
+                this.$emit("handleDialogClose");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
             });
-            this.$emit("handleDialogClose");
           } else {
-            this.$message({
-              type: "error",
-              message: res.msg
+            addTable(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "增加成功"
+                });
+                this.$emit("handleDialogClose");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
             });
           }
-        });
-      } else {
-        addTable(this.msgFormDialog).then(res => {
-          if (res.code == 200) {
-            this.$message({
-              type: "success",
-              message: "增加成功"
-            });
-            this.$emit("handleDialogClose");
-          } else {
-            this.$message({
-              type: "error",
-              message: res.msg
-            });
-          }
-        });
-      }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     cancelDialog(formName) {
       if (!this.handleObj.id) {
