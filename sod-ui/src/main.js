@@ -36,6 +36,11 @@ import './utils/directives.js'
 
 import AFTableColumn from 'af-table-column' //https://github.com/legendJaden/AFTableColumn 列宽自适应
 
+
+//全局引入 cron表达式
+import VueCron from 'vue-cron'
+Vue.use(VueCron);//使用方式：<vueCron></vueCron>
+
 Vue.use(AFTableColumn)
 const uuid = require('uuid/v4')
 // 全局方法挂载

@@ -30,27 +30,21 @@
         <el-input size="small" v-model="msgFormDialog.primaryKey" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="jobCron" label="执行策略:">
-        <el-row>
-          <el-col :span="18">
-            <el-input size="small" v-model="msgFormDialog.jobCron" placeholder="请输入" />
-          </el-col>
-          <el-col :span="4">
-            <el-button type="primary" size="small" @click="showStrategyDialog()">配置策略</el-button>
-          </el-col>
-        </el-row>
+        <el-popover v-model="cronPopover">
+          <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+          <el-input
+            slot="reference"
+            @click="cronPopover=true"
+            v-model="msgFormDialog.jobCron"
+            placeholder="请输入定时策略"
+          ></el-input>
+        </el-popover>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
       <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
-    <Cron
-      append-to-body
-      v-if="cronDialogVisible"
-      :cronDialogVisible="cronDialogVisible"
-      @closeCron="closeCron"
-      @setCron="setCron"
-    />
   </section>
 </template>
 
@@ -62,22 +56,32 @@ import {
 } from "@/api/system/commonMetadataSync/index";
 import { getDictList } from "@/api/system/commonMetadataSync/select";
 
-// cron表达式
-import Cron from "@/components/cron/Cron";
 export default {
   name: "handleTaskCommonDialog",
-  components: {
-    Cron
-  },
+
   props: {
     handleObj: {
       type: Object
     }
   },
   data() {
+    //校验是否为cron表达式
+    var handleCronValidate = (rule, value, callback) => {
+      if (!!value) {
+        let parser = require("cron-parser");
+        try {
+          let interval = parser.parseExpression(value);
+          console.log("cronDate:", interval.next().toDate());
+        } catch (e) {
+          callback("执行策略非Cron表达式格式，请检查！");
+        }
+      } else {
+        callback("请输入执行策略!");
+      }
+      callback();
+    };
     return {
-      cronDialogVisible: false,
-
+      cronPopover: false,
       msgFormDialog: {
         // 这里定义弹框内的参数
         taskName: "",
@@ -125,6 +129,9 @@ export default {
     }
   },
   methods: {
+    changeCron(val) {
+      this.msgFormDialog.jobCron = val;
+    },
     trueDialog(formName) {
       console.log(this.msgFormDialog);
       this.$refs[formName].validate(valid => {
@@ -175,19 +182,6 @@ export default {
           this.tableNames = res.data;
         }
       });
-    },
-    //配置策略按钮点击事件
-    showStrategyDialog() {
-      this.cronDialogVisible = true;
-    },
-    //设置cron表达式
-    setCron(cronExpression) {
-      this.msgFormDialog.jobCron = cronExpression;
-      this.cronDialogVisible = false;
-    },
-    // 关闭cron表达式
-    closeCron() {
-      this.cronDialogVisible = false;
     }
   }
 };
