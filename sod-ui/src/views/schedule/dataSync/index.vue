@@ -91,6 +91,7 @@
             type="text"
             size="mini"
             icon="el-icon-video-pause"
+            v-if="scope.row.runState=='true'"
             @click="updateStatus(scope.row,2)"
           >停止</el-button>
           <el-button
