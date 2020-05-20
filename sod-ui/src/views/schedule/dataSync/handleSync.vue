@@ -613,6 +613,7 @@ export default {
   }, */
   watch: {
     editableTabs: function() {
+      this.handHideOr();
       this.targetChangeFlag = 1;
     }
   },
