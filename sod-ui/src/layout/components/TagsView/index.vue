@@ -207,8 +207,6 @@ export default {
   height: 54px;
   width: 100%;
   background: none;
-  // border-bottom: 1px solid #d8dce5;
-  // box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
   .tags-view-wrapper {
     .tags-view-item {
       display: inline-block;
@@ -216,9 +214,6 @@ export default {
       cursor: pointer;
       height: 26px;
       line-height: 26px;
-      border: 1px solid #d8dce5;
-      color: #495060;
-      background: #fff;
       padding: 0 8px;
       font-size: 12px;
       margin: 15px 0 15px 15px;
@@ -229,12 +224,8 @@ export default {
         margin-right: 15px;
       }
       &.active {
-        background-color: #46a6ff;
-        color: #fff;
-        border-color: #46a6ff;
         &::before {
           content: "";
-          background: #fff;
           display: inline-block;
           width: 8px;
           height: 8px;
