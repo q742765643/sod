@@ -54,7 +54,15 @@ public class GrpcServiceProxy<T> implements InvocationHandler {
         GrpcClientService grpcClientService= SpringUtil.getBean(GrpcClientService.class);
         String serverName=GrpcAutoConfiguration.ProxyUtil.grpcServerName.get(className);
         Channel channel= GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(serverName);
-        GrpcResponse response = grpcClientService.handle(serializeType, request,channel);
+        GrpcResponse response = null;
+        try {
+            response = grpcClientService.handle(serializeType, request,channel);
+        } catch (Exception e) {
+            response=new GrpcResponse();
+            response.setException(e);
+            response.setStatus(-1);
+            //e.printStackTrace();
+        }
         log.info("grpc{}.{},返回码{}",request.getClazz(),request.getMethod(),response.getStatus());
 
         if (GrpcResponseStatus.ERROR.getCode() == response.getStatus()) {
@@ -65,7 +73,13 @@ public class GrpcServiceProxy<T> implements InvocationHandler {
             StackTraceElement[] allStackTrace = Arrays.copyOf(exceptionStackTrace, exceptionStackTrace.length + responseStackTrace.length);
             System.arraycopy(responseStackTrace, 0, allStackTrace, exceptionStackTrace.length, responseStackTrace.length);
             exception.setStackTrace(allStackTrace);
-            response = grpcClientService.handle(serializeType, request, channel);
+            try {
+                response = grpcClientService.handle(serializeType, request, channel);
+            } catch (Exception e) {
+                response=new GrpcResponse();
+                response.setException(e);
+                response.setStatus(-1);
+            }
             if (GrpcResponseStatus.ERROR.getCode() == response.getStatus()){
                 throw exception;
             }
