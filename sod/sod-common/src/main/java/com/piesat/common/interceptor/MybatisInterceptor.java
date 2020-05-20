@@ -67,7 +67,7 @@ public class MybatisInterceptor implements Interceptor {
             DruidDataSource dataSource= (DruidDataSource) configuration.getEnvironment().getDataSource();
             type = DatabseType.getType(dataSource.getUrl());
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         if("mysql".equals(type)){
             MysqlResetSql.intercept(invocation);

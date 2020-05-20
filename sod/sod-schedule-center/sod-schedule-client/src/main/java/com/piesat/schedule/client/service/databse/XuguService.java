@@ -217,7 +217,7 @@ public class XuguService {
         log.info("恢复JSON{}", JSON.toJSONString(impInfo));
         log.info("路径:{}", recoverMetaVo.getIndexPath());
         String detail = imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
-        if (detail.length()>0) {
+        if (detail.length()>0&&!"".equals(detail)) {
             resultT.setErrorMessage(detail);
         }
     }
@@ -235,7 +235,7 @@ public class XuguService {
         });
         impInfo.put(Type.DATA,datas);
         String detail = imp.impMetaData(recoverLogEntity.getParentId(), impInfo, recoverMetaVo.getIndexPath());
-        if (detail.length()>0) {
+        if (detail.length()>0&&!"".equals(detail)) {
             resultT.setErrorMessage(detail);
         }
     }

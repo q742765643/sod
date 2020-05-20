@@ -18,9 +18,7 @@ import com.piesat.schedule.rpc.vo.Server;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.internal.DnsNameResolverProvider;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.proxy.InvocationHandler;
 
