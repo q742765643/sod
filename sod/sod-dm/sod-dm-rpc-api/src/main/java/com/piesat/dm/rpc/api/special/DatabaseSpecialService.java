@@ -111,4 +111,8 @@ public interface DatabaseSpecialService {
 
     Map<String, Object> saveOneRecord(HttpServletRequest request);
 
+    void exportExcel(DatabaseSpecialDto databaseSpecialDto);
+
+    List<DatabaseSpecialDto> findByParam(DatabaseSpecialDto databaseSpecialDto);
+
 }
