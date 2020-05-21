@@ -99,3 +99,12 @@ export function updateExamineStatus(query) {
     params: query,
   })
 }
+
+export function exportTables(query) {
+  return request({
+    url: baseUrl + '/dm/databaseSpecial/exportTable',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
+  })
+}

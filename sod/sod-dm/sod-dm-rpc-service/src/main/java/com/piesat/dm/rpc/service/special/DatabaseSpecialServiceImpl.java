@@ -9,6 +9,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
@@ -1124,6 +1125,25 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         }
         //下面返回值。
         return map;
+    }
+
+    @Override
+    public void exportExcel(DatabaseSpecialDto databaseSpecialDto) {
+        List<DatabaseSpecialDto> databaseSpecialDtos = this.findByParam(databaseSpecialDto);
+        List<DatabaseSpecialEntity> entities=databaseSpecialMapper.toEntity(databaseSpecialDtos);
+        ExcelUtil<DatabaseSpecialEntity> util=new ExcelUtil(DatabaseSpecialEntity.class);
+        util.exportExcel(entities,"专题库审核");
+    }
+
+    @Override
+    public List<DatabaseSpecialDto> findByParam(DatabaseSpecialDto databaseSpecialDto) {
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(databaseSpecialDto.getSdbName())){
+            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialDto.getSdbName());
+        }
+        List<DatabaseSpecialEntity> databaseSpecialEntities = this.getAll(specificationBuilder.generateSpecification());
+        List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialMapper.toDto(databaseSpecialEntities);
+        return databaseSpecialDtos;
     }
 
     /**

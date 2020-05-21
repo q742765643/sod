@@ -22,6 +22,7 @@
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
@@ -100,7 +101,7 @@
 </template>
 
 <script>
-import { pageList, deleteList } from "@/api/authorityAudit/topicLibraryAudit";
+import { pageList, deleteList, exportTables } from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 创建专题库
@@ -225,7 +226,13 @@ export default {
       this.handleDialog = false;
       this.applyTopicDialog = false;
       this.getList();
-    }
+    },
+    // 导出
+    handleExport() {
+      exportTables(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
+    },
   }
 };
 </script>

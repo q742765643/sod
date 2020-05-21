@@ -594,4 +594,11 @@ public class DatabaseSpecialController {
         }
     }
 
+    @ApiOperation(value = "专题库导出")
+    @RequiresPermissions("dm:databaseSpecial:exportTable")
+    @GetMapping("/exportTable")
+    public void exportExcel(DatabaseSpecialDto databaseSpecialDto){
+        databaseSpecialService.exportExcel(databaseSpecialDto);
+    }
+
 }
