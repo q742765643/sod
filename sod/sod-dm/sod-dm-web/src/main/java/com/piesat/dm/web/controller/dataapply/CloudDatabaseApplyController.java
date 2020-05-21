@@ -157,6 +157,7 @@ public class CloudDatabaseApplyController {
     public ResultT<CloudDatabaseApplyDto> edit(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
     {
         ResultT<CloudDatabaseApplyDto> resultT=new ResultT<>();
+        cloudDatabaseApplyDto.setExamineTime(new Date());
         cloudDatabaseApplyDto= this.cloudDatabaseApplyService.updateDto(cloudDatabaseApplyDto);
         resultT.setData(cloudDatabaseApplyDto);
         return resultT;
