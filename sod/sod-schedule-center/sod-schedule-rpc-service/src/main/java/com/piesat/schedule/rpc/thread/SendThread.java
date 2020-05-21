@@ -31,6 +31,7 @@ public class SendThread {
 
     private static final String QUARTZ_HTHT_WAIT="QUARTZ:HTHT:WAIT";
     private static final String QUARTZ_HTHT_JOBDTEAIL="QUARTZ:HTHT:JOBDTEAIL:";
+    private static final String QUARTZ_HTHT_BLOCK="QUARTZ:HTHT:BLOCK";
 
 
     @Autowired
@@ -39,10 +40,14 @@ public class SendThread {
     private RedisLock redisLock;
     public void init(){
 
-        Thread scheduleThread = new Thread(this::start);
-        scheduleThread.setDaemon(true);
-        scheduleThread.setName("job -send");
-        scheduleThread.start();
+        Thread sendThread = new Thread(this::start);
+        sendThread.setDaemon(true);
+        sendThread.setName("job -send");
+        sendThread.start();
+        Thread blockThread = new Thread(this::startBlock);
+        blockThread.setDaemon(true);
+        blockThread.setName("job -block");
+        blockThread.start();
     }
     public void start(){
         while (!sendThreadToStop) {
@@ -66,8 +71,30 @@ public class SendThread {
             }
         }
     }
+    public void startBlock(){
+        while (!sendThreadToStop) {
+            try {
+                long start = System.currentTimeMillis();
+                this.sendBlock();
+                long cost = System.currentTimeMillis() - start;
+                if (cost < 1000) {  // scan-overtime, not wait
+                    try {
+                        /**
+                         *  pre-read period: success > scan each second; fail > skip this period;
+                         *  */
+                        TimeUnit.MILLISECONDS.sleep(1000- System.currentTimeMillis() % 1000);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage(), e);
+                        //Thread.currentThread().interrupt();
+                    }
+                }
+            } catch (Exception e) {
+                log.error("线程消费第一个WHILE:{}", OwnException.get(e));
+            }
+        }
+    }
     public void send() {
-            boolean flag=redisLock.tryLock("custom");
+            boolean flag=redisLock.trySendLock("custom");
             if(!flag){
                 return;
             }
@@ -77,7 +104,7 @@ public class SendThread {
                 int j=0;
 
                 long startTime=System.currentTimeMillis();
-                while (System.currentTimeMillis()-startTime<50000) {
+                while (System.currentTimeMillis()-startTime<60*1000*3) {
                     try {
                         Set<Object> objects = redisUtil.reverseRange(QUARTZ_HTHT_WAIT, i, j);
                         if(objects.isEmpty()){//||count>1000
@@ -85,6 +112,7 @@ public class SendThread {
                         }
                         if (!objects.isEmpty()) {
                             for (Object object : objects) {
+                                long startTime1=System.currentTimeMillis();
 
                                 String key = (String) object;
                                 JobInfoEntity jobInfo = (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL + key);
@@ -98,13 +126,24 @@ public class SendThread {
                                 if (resultT.isSuccess()) {
                                     count++;
                                     redisUtil.del(QUARTZ_HTHT_JOBDTEAIL + key);
-                                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, objects);
+                                    redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, key);
                                 }
                                 if(!resultT.isSuccess()){
-                                    i++;
-                                    j++;
+                                    if(resultT.getCode()!=309){
+                                        redisUtil.zsetRemove(QUARTZ_HTHT_WAIT, key);
+                                        long bcount = redisUtil.zsetCount(QUARTZ_HTHT_BLOCK);
+                                        if (bcount < 20000) {
+                                            redisUtil.zsetAdd(QUARTZ_HTHT_BLOCK, key, 2);
+                                        }
+
+                                    }else{
+                                        i++;
+                                        j++;
+                                    }
                                     //Thread.sleep(6000);
                                 }
+                                long endTime=System.currentTimeMillis();
+                                log.info("调度耗时:{}ms", endTime-startTime1);
 
                             }
                         }
@@ -122,6 +161,67 @@ public class SendThread {
                 redisLock.delete("custom");
 
             }
+
+
+
+
+    }
+    public void sendBlock() {
+        boolean flag=redisLock.trySendLock("block");
+        if(!flag){
+            return;
+        }
+        try {
+            int count=0;
+            int i=0;
+            int j=0;
+
+            long startTime=System.currentTimeMillis();
+            while (System.currentTimeMillis()-startTime<60*1000*3) {
+                try {
+                    Set<Object> objects = redisUtil.reverseRange(QUARTZ_HTHT_BLOCK, i, j);
+                    if(objects.isEmpty()){//||count>1000
+                        break;
+                    }
+                    if (!objects.isEmpty()) {
+                        for (Object object : objects) {
+
+                            String key = (String) object;
+                            JobInfoEntity jobInfo = (JobInfoEntity) redisUtil.get(QUARTZ_HTHT_JOBDTEAIL + key);
+                            if (jobInfo == null) {
+                                redisUtil.zsetRemove(QUARTZ_HTHT_BLOCK, key);
+                                continue;
+                            }
+
+
+                            ResultT<String> resultT = this.execute(jobInfo);
+                            if (resultT.isSuccess()) {
+                                count++;
+                                redisUtil.del(QUARTZ_HTHT_JOBDTEAIL + key);
+                                redisUtil.zsetRemove(QUARTZ_HTHT_BLOCK, key);
+                            }
+                            if(!resultT.isSuccess()){
+                                i++;
+                                j++;
+
+                            }
+
+                        }
+                    }
+                } catch (Exception e) {
+                    i++;
+                    j++;
+                    log.error("线程消费第二个WHILE异常:{}", OwnException.get(e));
+                    //break;
+                }
+
+            }
+
+
+        } finally {
+            redisLock.delete("block");
+
+        }
 
 
 

@@ -2,6 +2,7 @@ package com.piesat.schedule.web.controller.job;
 
 import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.grpc.config.ChannelUtil;
 import com.piesat.common.grpc.config.GrpcAutoConfiguration;
 import com.piesat.common.utils.OwnException;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -32,6 +33,7 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.internal.DnsNameResolverProvider;
+import io.grpc.netty.shaded.io.netty.util.NettyRuntime;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -179,7 +181,9 @@ public class JobInfoController {
         try {
             List<JobInfoDto> jobInfoDtos=jobInfoService.findJobList();
             for(JobInfoDto jobInfoDto:jobInfoDtos){
-                jobInfoService.executeB(jobInfoDto.getId(),time);
+                if(!"MMD".equals(jobInfoDto.getType())&&!"JOB".equals(jobInfoDto.getType())){
+                    jobInfoService.executeB(jobInfoDto.getId(),time);
+                }
             }
         } catch (Exception e) {
 
@@ -207,10 +211,12 @@ public class JobInfoController {
     @GetMapping(value = "/channel")
     @ApiOperation(value = "获取所有通道", notes = "获取所有通道")
     public ResultT<List<String>> channel(){
-        ConcurrentHashMap<String, Channel> grpcChannel= GrpcAutoConfiguration.ProxyUtil.grpcChannel;
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
+        ConcurrentHashMap<String, Channel> grpcChannel= channelUtil.getGrpcChannel();
         ResultT<List<String>> resultT=new ResultT<>();
         List<String> list=new ArrayList<>();
         grpcChannel.forEach((k,v)->list.add("Channel:"+k));
+        list.add(String.valueOf(NettyRuntime.availableProcessors()));
         resultT.setData(list);
         return resultT;
     }

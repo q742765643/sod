@@ -1,6 +1,7 @@
 package com.piesat.schedule.rpc.service.execute.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.shared.Application;
@@ -13,6 +14,7 @@ import com.piesat.common.grpc.exception.GrpcException;
 import com.piesat.common.grpc.service.GrpcClientService;
 import com.piesat.common.grpc.service.GrpcRequest;
 import com.piesat.common.grpc.service.GrpcResponse;
+import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.client.api.client.handler.base.BaseHandler;
@@ -34,7 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 /**
  * @program: sod
@@ -46,7 +48,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service("executeBaseService")
 public abstract class ExecuteBaseService {
       private  ConcurrentHashMap<String, ExecutorBiz> biz=new ConcurrentHashMap<>();
-
+      public static final ExecutorService sendLocalPool = new ThreadPoolExecutor(30, 30,
+              0L, TimeUnit.MILLISECONDS,
+              new LinkedBlockingQueue<Runnable>(20000), new ThreadFactoryBuilder().setNameFormat("do-send-local-pool-%d").build(), new ThreadPoolExecutor.AbortPolicy());
       protected static final String QUARTZ_HTHT_PERFORM="QUARTZ:HTHT:PERFORM";
       protected static final String QUARTZ_HTHT_TASK_SERIAL="QUARTZ:HTHT:SINGLE:SERIAL";
       protected static final String QUARTZ_HTHT_CLUSTER_SERIAL="QUARTZ:HTHT:CLUSTER:SERIAL";
@@ -64,16 +68,24 @@ public abstract class ExecuteBaseService {
             BaseHandler baseHandler= (BaseHandler) SpringUtil.getBeanOrNull(jobInfoEntity.getExecutorHandler());
 
             if(null==baseHandler){
-                  List<Server> servers=this.findServer(jobInfoEntity);
-
-                  Server server=this.operationalControl(jobInfoEntity,servers,resultT);
-                  if(server==null){
+                  List<Server> servers=this.findServer(jobInfoEntity,resultT);
+                  if(!resultT.isSuccess()){
+                        return;
+                  }
+                  Server server=null;
+                  if(servers.size()==1){
+                        server=servers.get(0);
+                  }else {
+                        server=this.operationalControl(jobInfoEntity,servers,resultT);
+                  }
+                  if(null==server){
                         resultT.setCode(301);
                         return;
                   }
+                  log.info("{}当前任务条数{}",server.getHost(),server.getUse());
                   this.remote(jobInfoEntity,server,resultT);
             }else{
-                  ScheduleThread.threadPool.execute(
+                  sendLocalPool.execute(
                           ()->{
                                 baseHandler.execute(jobInfoEntity,resultT);
                           }
@@ -85,12 +97,6 @@ public abstract class ExecuteBaseService {
       }
       public  Server operationalControl(JobInfoEntity jobInfoEntity,List<Server> servers,ResultT<String> resultT){
             if(servers.size()==0){
-                  try {
-                        Thread.sleep(6000);
-                  } catch (InterruptedException e) {
-                        e.printStackTrace();
-                  }
-                  resultT.setCode(301);
                   return null;
             }
             Collections.sort(servers, new Comparator<Server>() {
@@ -114,7 +120,7 @@ public abstract class ExecuteBaseService {
       }
 
 
-      public List<Server> findServer(JobInfoEntity jobInfoEntity){
+      public List<Server> findServer(JobInfoEntity jobInfoEntity,ResultT<String> resultT){
             List<Server> servers=new ArrayList<>();
             DiscoveryClient discoveryClient= SpringUtil.getBean(DiscoveryClient.class);
             Application application=discoveryClient.getApplication(GrpcConstant.SCHEDULE_CLIENT_SERVER);
@@ -122,9 +128,16 @@ public abstract class ExecuteBaseService {
             try {
                   instanceInfos = application.getInstances();
             } catch (Exception e) {
+                  resultT.setCode(309);
                   log.error("调度未发现可用服务");
             }
             if(instanceInfos==null||instanceInfos.size()==0){
+                  try {
+                        Thread.sleep(60000);
+                  } catch (InterruptedException e) {
+                        e.printStackTrace();
+                  }
+                  resultT.setCode(309);
                   return servers;
             }
             for(InstanceInfo instanceInfo:instanceInfos){
@@ -135,7 +148,6 @@ public abstract class ExecuteBaseService {
                        server.setGrpcPort(Integer.valueOf(instanceInfo.getMetadata().get("gRPC.port")));
                        long count=redisUtil.scanSize(QUARTZ_HTHT_PERFORM+":"+server.getHost()+":"+server.getGrpcPort());
                        if(count<server.getLimit()){
-                             log.info("{}当前任务条数{}",server.getHost(),count);
                              server.setUse(Integer.parseInt(String.valueOf(count)));
                              servers.add(server);
                        }
@@ -153,7 +165,7 @@ public abstract class ExecuteBaseService {
                         }
                   }
                   if((ExecutorBlockStrategyEnum.CLUSTER_SERIAL.name()).equals(jobInfoEntity.getExecutorBlockStrategy())){
-                        long count=redisUtil.scanSize(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfoEntity.getId());
+                        long count=redisUtil.scanSize(QUARTZ_HTHT_CLUSTER_SERIAL);
                         if(count==0){
                               enabledServers.add(server);
                         }
@@ -187,13 +199,14 @@ public abstract class ExecuteBaseService {
                   }
 
                   executorBiz.execute(jobInfoEntity);
+
             } catch (Exception e) {
+                  log.error("调度出错:{}", OwnException.get(e));
                   resultT.setCode(302);
                   redisUtil.del(QUARTZ_HTHT_PERFORM+":"+server.getHost()+":"+server.getGrpcPort()+":"+jobInfoEntity.getId());
                   redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfoEntity.getId());
                   redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfoEntity.getId());
                   //this.insertLog(jobInfoEntity,server,"2",logId);
-                  e.printStackTrace();
             }
       }
 

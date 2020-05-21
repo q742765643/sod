@@ -96,7 +96,8 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
             }
             try {
                 Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
-                if(nextValidTime.getTime()<score||score==0){
+                long x=new Double(score).longValue()- nextValidTime.getTime();
+                if((x!=28800000&&x>0)||score==0){
                     redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
                 }
             } catch (ParseException e) {
@@ -123,7 +124,8 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
             }
             try {
                 Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
-                if(nextValidTime.getTime()<score||score==0){
+                long x=new Double(score).longValue()- nextValidTime.getTime();
+                if((x!=28800000&&x>0)||score==0){
                     redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
                 }
             } catch (ParseException e) {

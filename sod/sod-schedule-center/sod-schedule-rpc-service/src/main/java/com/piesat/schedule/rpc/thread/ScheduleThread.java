@@ -40,7 +40,7 @@ public class  ScheduleThread {
     private static final String QUARTZ_HTHT_JOBDTEAIL = "QUARTZ:HTHT:JOBDTEAIL:";
     public static final ExecutorService threadPool = new ThreadPoolExecutor(30, 30,
             0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(20000), new ThreadFactoryBuilder().setNameFormat("do-something-pool-%d").build(), new ThreadPoolExecutor.AbortPolicy());
+            new LinkedBlockingQueue<Runnable>(20000), new ThreadFactoryBuilder().setNameFormat("do-schedule-pool-%d").build(), new ThreadPoolExecutor.AbortPolicy());
     private volatile  Map<Integer, List<JobInfoEntity>> ringData = new ConcurrentHashMap<>();
     private volatile boolean scheduleThreadToStop = false;
     private volatile boolean ringThreadToStop = false;

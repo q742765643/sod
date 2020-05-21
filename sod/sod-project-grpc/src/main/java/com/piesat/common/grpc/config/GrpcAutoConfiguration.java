@@ -143,9 +143,7 @@ public class GrpcAutoConfiguration {
 
     public static class ProxyUtil {
         public static  ApplicationContext applicationContext=null;
-        public static ConcurrentHashMap<String,Object> grpcServices=new ConcurrentHashMap<>();
-        public static ConcurrentHashMap<String, Channel> grpcChannel=new ConcurrentHashMap<>();
-        public static ConcurrentHashMap<String, String> grpcServerName=new ConcurrentHashMap<>();
+
 
         static void registerMap(BeanFactory beanFactory, Set<BeanDefinition> beanDefinitions) {
             for (BeanDefinition beanDefinition : beanDefinitions) {
@@ -154,6 +152,7 @@ public class GrpcAutoConfiguration {
                     continue;
                 }
                 try {
+                    ChannelUtil channelUtil=ChannelUtil.getInstance();
                     // 创建代理类
                     Class<?> target = Class.forName(className);
                     Object invoker = new Object();
@@ -161,7 +160,7 @@ public class GrpcAutoConfiguration {
                     Object proxy = Proxy.newProxyInstance(GrpcHthtService.class.getClassLoader(), new Class[]{target}, invocationHandler);
 
                     // 注册到 Spring 容器
-                    grpcServices.put(className,proxy);
+                    channelUtil.getGrpcServices().put(className,proxy);
                 } catch (ClassNotFoundException e) {
                     log.warn("class not found : " + className);
                 }
@@ -169,7 +168,8 @@ public class GrpcAutoConfiguration {
         }
 
         static void registerBeans(BeanFactory beanFactory,ApplicationContext applicationContext) {
-            for(Map.Entry<String, Object> map:grpcServices.entrySet()){
+            ChannelUtil channelUtil=ChannelUtil.getInstance();
+            for(Map.Entry<String, Object> map:channelUtil.getGrpcServices().entrySet()){
                 String className=map.getKey();
                 if (StringUtils.isEmpty(className)) {
                     continue;

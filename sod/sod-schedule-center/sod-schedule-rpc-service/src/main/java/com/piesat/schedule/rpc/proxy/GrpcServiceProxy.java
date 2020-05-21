@@ -2,6 +2,7 @@ package com.piesat.schedule.rpc.proxy;
 
 import com.google.protobuf.ByteString;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
+import com.piesat.common.grpc.config.ChannelUtil;
 import com.piesat.common.grpc.config.GrpcAutoConfiguration;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.grpc.constant.GrpcResponseStatus;
@@ -73,8 +74,11 @@ public class GrpcServiceProxy<T>  implements InvocationHandler {
 
         GrpcClientService grpcClientService= SpringUtil.getBean(GrpcClientService.class);
         String serviceName=grpcServer.getHost()+":"+grpcServer.getGrpcPort();
-        ManagedChannel channel=ChannelUtil.getChannel(serviceName,grpcServer);
-        GrpcResponse response = grpcClientService.handle(serializeType, request,channel);
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
+        if(null==channelUtil.getGrpcChannel().get(serviceName)){
+            channelUtil.getgrpcChannel(serviceName,grpcServer.getHost(),grpcServer.getGrpcPort());
+        }
+        GrpcResponse response = grpcClientService.handle(serializeType, request,serviceName);
         log.info("grpc{}.{},返回码{}",request.getClazz(),request.getMethod(),response.getStatus());
 
         if (GrpcResponseStatus.ERROR.getCode() == response.getStatus()) {
@@ -85,7 +89,7 @@ public class GrpcServiceProxy<T>  implements InvocationHandler {
             StackTraceElement[] allStackTrace = Arrays.copyOf(exceptionStackTrace, exceptionStackTrace.length + responseStackTrace.length);
             System.arraycopy(responseStackTrace, 0, allStackTrace, exceptionStackTrace.length, responseStackTrace.length);
             exception.setStackTrace(allStackTrace);
-            response = grpcClientService.handle(serializeType, request, channel);
+            response = grpcClientService.handle(serializeType, request, serviceName);
             if (GrpcResponseStatus.ERROR.getCode() == response.getStatus()){
                 throw exception;
             }

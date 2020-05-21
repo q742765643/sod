@@ -1,8 +1,11 @@
 package com.piesat.common.grpc.config;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
+import com.piesat.rpc.CommonServiceGrpc;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.internal.DnsNameResolverProvider;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.channelfactory.GrpcChannelFactory;
 import org.springframework.beans.BeansException;
@@ -11,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @program: sod
@@ -20,29 +24,68 @@ import java.util.List;
  */
 @Slf4j
 public class ChannelUtil {
-    private static final ChannelUtil instance=new ChannelUtil();
+    private ConcurrentHashMap<String,Object> grpcServices=new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Channel> grpcChannel=new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> grpcServerName=new ConcurrentHashMap<>();
+    //private ConcurrentHashMap<String,CommonServiceGrpc.CommonServiceBlockingStub> blockingStub=new ConcurrentHashMap<>();
+    private volatile static  ChannelUtil instance=null;
+
+    public synchronized ConcurrentHashMap<String, Object> getGrpcServices() {
+        return grpcServices;
+    }
+
+    public synchronized ConcurrentHashMap<String, Channel> getGrpcChannel() {
+        return grpcChannel;
+    }
+
+    public synchronized ConcurrentHashMap<String, String> getGrpcServerName() {
+        return grpcServerName;
+    }
+
+
+
     //私有的默认构造函数
     public ChannelUtil(){}
-    //静态工厂方法
-    public static ChannelUtil getInstance(){
+    public static ChannelUtil getInstance() {
+        if (instance == null) {
+            synchronized (ChannelUtil.class) {
+                if (instance == null) {
+                    instance = new ChannelUtil();
+                }
+            }
+        }
         return instance;
     }
+
     private GrpcChannelFactory channelFactory = null;
 
-    public void getgrpcChannel(String className, GrpcHthtService annotation,ApplicationContext applicationContext){
+    public synchronized void getgrpcChannel(String className, GrpcHthtService annotation,ApplicationContext applicationContext){
         String name=annotation.server();
         if("".equals(name)||null==name){
             return;
         }
-        GrpcAutoConfiguration.ProxyUtil.grpcServerName.put(className,name);
-        if(null==GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(name)){
+        grpcServerName.put(className,name);
+        if(null==grpcChannel.get(name)){
             Channel channel= processInjectionPoint(null, Channel.class, annotation,applicationContext);
             if(null!=channel){
-                GrpcAutoConfiguration.ProxyUtil.grpcChannel.put(name,channel);
+                grpcChannel.put(name,channel);
+                //blockingStub.put(name,CommonServiceGrpc.newBlockingStub(channel));
             }else {
                 log.error("通道初始化失败{}",name);
             }
         }
+    }
+    public  synchronized  void getgrpcChannel(String serviceName, String host,int port){
+        Channel channel=null;
+        if(null==grpcChannel.get(serviceName)){
+            channel = ManagedChannelBuilder.forAddress(host, port)
+                    .defaultLoadBalancingPolicy("round_robin")
+                    .nameResolverFactory(new DnsNameResolverProvider())
+                    .usePlaintext().build();
+            grpcChannel.put(serviceName,channel);
+            //blockingStub.put(serviceName,CommonServiceGrpc.newBlockingStub(channel));
+        }
+
     }
     protected <T> T processInjectionPoint(final Member injectionTarget, final Class<T> injectionType,
                                           final GrpcHthtService annotation,ApplicationContext applicationContext) {

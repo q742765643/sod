@@ -1,6 +1,7 @@
 package com.piesat.common.grpc.binding;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
+import com.piesat.common.grpc.config.ChannelUtil;
 import com.piesat.common.grpc.config.GrpcAutoConfiguration;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.grpc.constant.GrpcResponseStatus;
@@ -52,11 +53,11 @@ public class GrpcServiceProxy<T> implements InvocationHandler {
         }
 
         GrpcClientService grpcClientService= SpringUtil.getBean(GrpcClientService.class);
-        String serverName=GrpcAutoConfiguration.ProxyUtil.grpcServerName.get(className);
-        Channel channel= GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(serverName);
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
+        String serverName=channelUtil.getGrpcServerName().get(className);
         GrpcResponse response = null;
         try {
-            response = grpcClientService.handle(serializeType, request,channel);
+            response = grpcClientService.handle(serializeType, request,serverName);
         } catch (Exception e) {
             response=new GrpcResponse();
             response.setException(e);
@@ -74,7 +75,7 @@ public class GrpcServiceProxy<T> implements InvocationHandler {
             System.arraycopy(responseStackTrace, 0, allStackTrace, exceptionStackTrace.length, responseStackTrace.length);
             exception.setStackTrace(allStackTrace);
             try {
-                response = grpcClientService.handle(serializeType, request, channel);
+                response = grpcClientService.handle(serializeType, request, serverName);
             } catch (Exception e) {
                 response=new GrpcResponse();
                 response.setException(e);

@@ -3,6 +3,7 @@ package com.piesat.common.grpc.config;
 
 import com.google.common.collect.Lists;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.rpc.CommonServiceGrpc;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
 import io.grpc.stub.AbstractStub;
@@ -234,13 +235,14 @@ public class ServiceInjectProcessor implements BeanPostProcessor {
         //获取所有该属性接口的实例bean
         Object o=null;
         Object springObj=null;
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
         try {
             springObj=applicationContext.getBean(field.getType());
         } catch (BeansException e) {
             //e.printStackTrace();
         }
         if(null==springObj){
-             o= GrpcAutoConfiguration.ProxyUtil.grpcServices.get(field.getType().getName());
+             o= channelUtil.getGrpcServices().get(field.getType().getName());
         }else{
              o=springObj;
         }
@@ -251,13 +253,15 @@ public class ServiceInjectProcessor implements BeanPostProcessor {
         //将找到的实例赋值给属性域
         field.set(bean,o);
     }
-    private void getgrpcChannel(String className,GrpcHthtClient annotation){
+    private synchronized void getgrpcChannel(String className,GrpcHthtClient annotation){
         String name=annotation.value();
-        GrpcAutoConfiguration.ProxyUtil.grpcServerName.put(className,name);
-        if(null==GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(name)){
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
+        channelUtil.getGrpcServerName().put(className,name);
+        if(null==channelUtil.getGrpcChannel().get(name)){
             Channel channel= processInjectionPoint(null, Channel.class, annotation);
             if(null!=channel){
-                GrpcAutoConfiguration.ProxyUtil.grpcChannel.put(name,channel);
+                channelUtil.getGrpcChannel().put(name,channel);
+                //channelUtil.getBlockingStub().put(name, CommonServiceGrpc.newBlockingStub(channel));
             }else {
                 log.error("通道初始化失败{}",name);
             }

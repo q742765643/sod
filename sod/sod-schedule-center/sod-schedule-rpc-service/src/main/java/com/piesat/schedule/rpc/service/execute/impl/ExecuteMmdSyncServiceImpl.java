@@ -52,7 +52,7 @@ public class ExecuteMmdSyncServiceImpl extends ExecuteBaseService implements Exe
 	 */
 	public void executeBusiness(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
 		log.info(">>>>>>>>>>执行公共元数据自动同步");
-		ScheduleThread.threadPool.execute(
+		sendLocalPool.execute(
 				()->{
 					try {
 						String id = jobInfoEntity.getId();

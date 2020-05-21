@@ -29,7 +29,9 @@ import java.util.Collection;
 import java.util.List;
 
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.common.grpc.config.ChannelUtil;
 import com.piesat.common.grpc.config.GrpcAutoConfiguration;
+import com.piesat.rpc.CommonServiceGrpc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeansException;
@@ -234,7 +236,8 @@ public class GrpcClientBeanPostProcessor implements BeanPostProcessor {
     }
     private void hanldGrpcHthtClient(Field field, Object bean, Class type) throws IllegalAccessException {
         //获取所有该属性接口的实例bean
-        Object o= GrpcAutoConfiguration.ProxyUtil.grpcServices.get(field.getType().getName());
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
+        Object o= channelUtil.getGrpcServices().get(field.getType().getName());
         //设置该域可设置修改
         field.setAccessible(true);
         //获取注解@MyAnnotation中配置的value值
@@ -242,13 +245,16 @@ public class GrpcClientBeanPostProcessor implements BeanPostProcessor {
         //将找到的实例赋值给属性域
         field.set(bean,o);
     }
-    private void getgrpcChannel(String className,GrpcClient annotation){
+    private synchronized void getgrpcChannel(String className,GrpcClient annotation){
+        ChannelUtil channelUtil=ChannelUtil.getInstance();
         String name=annotation.value();
-        GrpcAutoConfiguration.ProxyUtil.grpcServerName.put(className,name);
-        if(null==GrpcAutoConfiguration.ProxyUtil.grpcChannel.get(name)){
+        channelUtil.getGrpcServerName().put(className,name);
+        if(null==channelUtil.getGrpcChannel().get(name)){
             Channel channel= processInjectionPoint(null, Channel.class, annotation);
             if(null!=channel){
-                GrpcAutoConfiguration.ProxyUtil.grpcChannel.put(name,channel);
+                channelUtil.getGrpcChannel().put(name,channel);
+                //channelUtil.getBlockingStub().put(name, CommonServiceGrpc.newBlockingStub(channel));
+
             }else {
                 log.error("通道初始化失败{}",name);
             }
