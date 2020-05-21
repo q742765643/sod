@@ -209,8 +209,24 @@ public class DataBaseRecoverService {
     }
     public  void getFileFistChidren(String childrenPath,List<TreeVo> list){
         File childrenFile=new File(childrenPath);
-        File [] children = childrenFile.listFiles();
-        Arrays.sort(children, new Comparator<File>() {
+        File [] fileList= childrenFile.listFiles();
+        if(fileList.length==0){
+            return ;
+        }
+        List<File> children = Arrays.asList(fileList);
+        Collections.sort(children, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                if (o1.isDirectory() && o2.isFile()){
+                    return -1;
+                }
+                if (o1.isFile() && o2.isDirectory()){
+                    return 1;
+                }
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        /*Arrays.sort(children, new Comparator<File>() {
             @Override
             public int compare(File f1, File f2) {
                 long diff = f1.lastModified() - f2.lastModified();
@@ -232,12 +248,13 @@ public class DataBaseRecoverService {
                 return true;
             }
 
-        });
-        if(children.length==0){
-            return ;
-        }
+        });*/
+
         int i=0;
         for(File file:children){
+            if(file.isHidden()){
+                continue;
+            }
             TreeVo treeVo=new TreeVo();
             treeVo.setId(file.getPath().replace("\\","/"));
             treeVo.setName(file.getName());
@@ -263,11 +280,27 @@ public class DataBaseRecoverService {
         List<TreeVo> list=new ArrayList<>();
         try {
             File childrenFile=new File(childrenPath);
-            File [] children = childrenFile.listFiles();
-            if(children.length==0){
+            File [] fileList = childrenFile.listFiles();
+            if(fileList.length==0){
                 return list;
             }
+            List<File> children = Arrays.asList(fileList);
+            Collections.sort(children, new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    if (o1.isDirectory() && o2.isFile()){
+                        return -1;
+                    }
+                    if (o1.isFile() && o2.isDirectory()){
+                        return 1;
+                    }
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
             for(File file:children){
+                if(file.isHidden()){
+                    continue;
+                }
                 TreeVo treeVo=new TreeVo();
                 treeVo.setId(file.getPath().replace("\\","/"));
                 treeVo.setName(file.getName());

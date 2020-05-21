@@ -23,7 +23,12 @@ public class FetlUtil
 			Class.forName("com.xugu.cloudjdbc.Driver");
 			DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
 			ConnectVo connectVo=dynamicDataSource.getConnectVo(parentId);
-			conn = DriverManager.getConnection(connectVo.getUrl()+"&char_set=utf8",connectVo.getUserName(),connectVo.getPassWord());
+			if(connectVo.getUrl().indexOf("?")!=-1){
+				conn = DriverManager.getConnection(connectVo.getUrl()+"&char_set=utf8",connectVo.getUserName(),connectVo.getPassWord());
+			}else{
+				conn = DriverManager.getConnection(connectVo.getUrl()+"?char_set=utf8",connectVo.getUserName(),connectVo.getPassWord());
+			}
+
 			return conn;
 		} catch (Exception e) {
 			e.printStackTrace();

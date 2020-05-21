@@ -34,15 +34,18 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     }
     public void selectDataSource(String dataSourceName) {
         Object obj = _targetDataSources.get(dataSourceName);
-        if (obj != null) {
+       /* if (obj != null) {
             return;
-        }
+        }*/
 
-        DataSource dataSource = this.getDataSource(dataSourceName);
-        if (null != dataSource) {
-            this.setDataSource(dataSourceName, dataSource);
+        try {
+            DataSource dataSource = this.getDataSource(dataSourceName);
+            if (null != dataSource) {
+                this.setDataSource(dataSourceName, dataSource);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
 
 
     }
@@ -128,13 +131,24 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
                    connectVo.setUrl(databaseDto.getDatabaseDefine().getDatabaseUrl());
+                   if(null!=connectVoMap.get(parentId)){
+                     ConnectVo yConnectVo=connectVoMap.get(parentId);
+                     if(connectVo.getUrl().equals(yConnectVo.getUrl())
+                             &&connectVo.getUserName().equals(yConnectVo.getUserName())
+                             &&connectVo.getPassWord().equals(yConnectVo.getPassWord())
+                             &&connectVo.getIp().equals(yConnectVo.getIp())){
+                         return null;
+                     }
+                   }
                    connectVoMap.put(parentId, connectVo);
                    if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
+                       if(!"".equals(userName)&&!"".equals(password)){
+                           String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
+                           String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();
+                           dataSource = this.createDataSource(
+                                   driverClassName, url, userName, password);
+                       }
 
-                       String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
-                       String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();
-                       dataSource = this.createDataSource(
-                               driverClassName, url, userName, password);
                    }
                }
 

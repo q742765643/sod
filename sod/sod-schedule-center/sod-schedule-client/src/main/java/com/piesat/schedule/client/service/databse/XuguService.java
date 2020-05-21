@@ -3,6 +3,7 @@ package com.piesat.schedule.client.service.databse;
 import com.alibaba.fastjson.JSON;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
+import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
 import com.piesat.schedule.client.util.fetl.imp.ImpMetaData;
@@ -205,7 +206,15 @@ public class XuguService {
     public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
         ImpMetaData imp = new ImpMetaData();
         Set<String> schemas=impInfo.get(Type.SCHEMA);
-        List<String> instances = xuguOperationMapper.findXuguInstance();
+        DataSourceContextHolder.setDataSource(recoverLogEntity.getParentId());
+        List<String> instances = null;
+        try {
+            instances = xuguOperationMapper.findXuguInstance();
+        } catch (Exception e) {
+
+        }finally {
+            DataSourceContextHolder.clearDataSource();
+        }
         if(null!=schemas&&null!=instances){
             for(String schema:schemas){
                 if(instances.contains(schema)){
