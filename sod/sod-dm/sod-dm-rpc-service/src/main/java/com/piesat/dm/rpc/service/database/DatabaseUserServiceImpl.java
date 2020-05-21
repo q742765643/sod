@@ -294,9 +294,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         /**为申请的IP授权**/
         //待授权IP
         String databaseUpIp = databaseUserDto.getDatabaseUpIp();
-        if (StringUtils.isNotBlank(databaseUpIp)) databaseUpIp += ";" + mngIp;
+        if (StringUtils.isNotBlank(databaseUpIp)) databaseUpIp += "," + mngIp;
 
-        String[] needEmpowerIpArr = databaseUpIp.split(";");
+        String[] needEmpowerIpArr = databaseUpIp.split(",");
         for (String databaseId : needEmpowerIdist) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
             DatabaseDcl databaseVO = null;
