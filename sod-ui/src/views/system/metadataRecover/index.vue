@@ -349,9 +349,15 @@ export default {
         this.msgError("请输入任务名称");
         return;
       }
-      let checkedArry = this.$refs.eltreeS.getCheckedKeys();
-      if (checkedArry.length != 1) {
-        this.msgError("请选择一条数据");
+      let checkedArry = this.$refs.eltreseS.getCheckedNodes();
+      let childArry = [];
+      checkedArry.forEach(element => {
+        if (element.parent == false) {
+          childArry.push(element.id);
+        }
+      });
+      if (checkedArry.length == 0) {
+        this.msgError("请选择一条子节点的数据");
         return;
       }
       this.dialogTitle = "恢复";
