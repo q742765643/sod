@@ -1065,7 +1065,7 @@
     <!-- 删除申请表中数据 -->
     <delete id="clearUselessApply">
     		delete from T_SOD_DATA_AUTHORITY_APPLY a
-    			where not exists (select 1 from  T_SOD_DATA_AUTHORITY_RECORD b where a.user_id = b.apply_id)
+    			where not exists (select 1 from  T_SOD_DATA_AUTHORITY_RECORD b where a.id = b.apply_id)
     </delete>
     <!-- 查询资料分类 -->
     <select id="getDataCategory" resultType="java.util.Map">
