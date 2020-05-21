@@ -318,7 +318,7 @@ export default {
       saveObj.version = this.Info.version;
       saveObj.id = this.Info.id;
       saveObj.createTime = this.Info.createTime;
-      if (this.tableType == "E-show") {
+      if (this.tableType == "E-Kshow") {
         saveObj.dbTableType = this.childTableType;
       } else {
         saveObj.dbTableType = this.tableType;
@@ -360,7 +360,7 @@ export default {
     tableInfo(val) {
       this.Info = JSON.parse(JSON.stringify(val));
       console.log(this.Info);
-      if (this.tableType == "E-show") {
+      if (this.tableType == "E-Kshow") {
         this.childTableType = "E";
         this.namehelp = "show";
       }

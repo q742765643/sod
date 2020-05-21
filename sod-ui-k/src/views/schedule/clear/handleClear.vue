@@ -178,7 +178,7 @@ export default {
           { required: true, message: "超时时间不能为空", trigger: "blur" }
         ],
         clearLimit: [
-          { required: true, message: "限制条数不能为空", trigger: "blur" }
+          { required: true, message: "清除限制频率不能为空", trigger: "blur" }
         ]
       }
     };

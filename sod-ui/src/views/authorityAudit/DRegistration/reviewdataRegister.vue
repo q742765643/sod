@@ -102,13 +102,13 @@ export default {
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
-      if(checkobj.remark.trim().length > 500){
+      if (checkobj.remark || checkobj.remark.trim().length > 500) {
         this.$message({
-          message: "内容不能超过500个字符",
+          message: "请输入内容并且内容不能超过500个字符",
           type: "error",
           offset: 100
         });
-        return
+        return;
       }
       if (type == 2) {
         this.$emit("cancelHandle", this.registerForm);

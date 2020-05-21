@@ -62,7 +62,6 @@
             <el-table
               :data="tableData"
               border
-              stripe
               highlight-current-row
               @current-change="handleCurrentChange"
               :span-method="objectSpanMethod"
@@ -565,12 +564,12 @@ export default {
     //新增、编辑后刷新数据
     addOrEditSuccess(operateType) {
       this.currentRow = [];
-      /*  if (operateType == "handleTree") {
+      if (operateType == "handleTree") {
         this.$refs.classifyTree.initMethodsTree(this.whichTree);
       } else {
         this.searchFun("search");
-      } */
-      this.$refs.classifyTree.initMethodsTree(this.whichTree);
+      }
+      // this.$refs.classifyTree.initMethodsTree(this.whichTree);
       this.materialSingleVisible = false;
     },
     //关闭新增或编辑资料弹出层

@@ -312,7 +312,7 @@ export default {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: "授权成功:" + res.msg
+              message: + res.msg
             });
             this.handleQuery();
           } else {

@@ -11,7 +11,7 @@
         />
       </el-form-item>
       <el-form-item label="状态">
-        <el-select v-model="queryParams.visible" placeholder="菜单状态" clearable size="small">
+        <el-select v-model="queryParams.visible" placeholder="请选择菜单状态" clearable size="small">
           <el-option
             v-for="dict in visibleOptions"
             :key="dict.dictValue"
@@ -219,7 +219,7 @@ export default {
       // 查询参数
       queryParams: {
         menuName: undefined,
-        visible: undefined
+        visible: ""
       },
       // 表单参数
       form: {},
@@ -300,7 +300,7 @@ export default {
         menuType: "M",
         orderNum: undefined,
         isFrame: 1,
-        visible: "0"
+        visible: ""
       };
       this.resetForm("form");
     },

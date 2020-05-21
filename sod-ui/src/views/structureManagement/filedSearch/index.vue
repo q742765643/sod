@@ -173,7 +173,7 @@ export default {
         for (let i = 0; i < superList.length; i++) {
           newSuperForm[superList[i].select] = superList[i].value;
         }
-        queryObj = Object.assign(this.queryParams, newSuperForm);
+        Object.assign(queryObj, this.queryParams, newSuperForm);
       } else {
         queryObj = this.queryParams;
       }

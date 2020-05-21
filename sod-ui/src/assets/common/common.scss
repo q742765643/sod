@@ -82,11 +82,18 @@ p {
 }
 
 // 表格
+.el-table__body tr.current-row>td {
+  border-top: 1px solid #7abfff;
+  border-bottom: 1px solid #7abfff;
+}
+
 .el-table {
   font-size: 14px;
 
   tr:hover td {
     background-color: $TableActive !important;
+    border-top: 1px solid #7abfff;
+    border-bottom: 1px solid #7abfff;
   }
 
   th,
@@ -126,9 +133,6 @@ p {
 
 }
 
-.el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: $TableActive;
-}
 
 
 .blueRound {

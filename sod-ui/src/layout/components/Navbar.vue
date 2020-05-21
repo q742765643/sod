@@ -163,6 +163,7 @@ export default {
       }).then(() => {
         this.$store.dispatch("LogOut").then(() => {
           //location.reload();
+          this.$store.state.tagsView.visitedViews = [];
           this.$router.push("/login");
         });
       });

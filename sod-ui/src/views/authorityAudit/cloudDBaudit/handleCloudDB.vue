@@ -217,7 +217,7 @@
           </el-col>
         </el-row>
       </el-card>
-      <el-card class="box-card" v-if="msgFormDialog.storageLogic !='database'">
+      <el-card class="box-card" v-if="msgFormDialog.storageLogic !='database' && !isReason">
         <div slot="header" class="clearfix">
           <span>分配信息</span>
         </div>

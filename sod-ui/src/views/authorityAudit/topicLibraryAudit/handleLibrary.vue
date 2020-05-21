@@ -31,7 +31,7 @@
             >下载</el-button>
           </el-form-item>
           <el-form-item label="排序">
-            <el-input size="small" v-model="msgFormDialog.sortNo"></el-input>
+            <el-input-number v-model="msgFormDialog.sortNo" :min="0"></el-input-number>
           </el-form-item>
           <div class="dialog-footer">
             <el-button type="primary" @click="trueDialog('ruleForm')">保 存</el-button>

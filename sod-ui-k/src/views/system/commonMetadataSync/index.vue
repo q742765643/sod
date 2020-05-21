@@ -75,8 +75,8 @@
         />
       </el-tab-pane>
       <el-tab-pane label="同步记录查询" name="second">
-        <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
-          <el-form-item label="同步表名">
+        <el-form :model="rowlogForm" ref="rowlogFormRef" :inline="true" class="searchBox">
+          <el-form-item label="同步表名" prop="syncTableName">
             <el-select size="small" filterable v-model="rowlogForm.syncTableName">
               <el-option
                 v-for="(item,index) in tableNames"
@@ -86,13 +86,13 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="运行状态">
+          <el-form-item label="运行状态" prop="runState">
             <el-select filterable style="width:150px" v-model="rowlogForm.runState">
               <el-option value="同步成功" label="同步成功"></el-option>
               <el-option value="同步失败" label="同步失败"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="时间范围">
+          <el-form-item label="时间范围" prop="dateRange">
             <el-date-picker
               style="width:300px"
               v-model="rowlogForm.dateRange"
@@ -434,6 +434,7 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.rowlogForm.pageNum = 1;
+      this.$refs["rowlogFormRef"].resetFields();
       this.dataBaseExpandForm();
     },
     dataBaseExpandForm() {

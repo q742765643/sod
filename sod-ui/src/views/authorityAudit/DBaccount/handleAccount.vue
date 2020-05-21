@@ -347,7 +347,7 @@ export default {
   },
   async created() {
     await this.getUserAll();
-    this.getDBlist();
+    await this.getDBlist();
     if (this.handleObj.pageName == "业务用户审核") {
       getBizDatabaseUser({
         userId: this.handleObj.userName,
@@ -355,6 +355,15 @@ export default {
       }).then(res => {
         if (res.data) {
           this.msgFormDialog = res.data;
+          if (res.data.examineDatabaseId) {
+            this.msgFormDialog.applyDatabaseIdList = res.data.examineDatabaseId.split(
+              ","
+            );
+            this.msgFormDialog.applyDatabaseId = res.data.examineDatabaseId;
+          }
+          if (res.data.databaseUpId) {
+            this.msgFormDialog.userName = res.data.databaseUpId;
+          }
         } else {
           this.msgFormDialog.userName = this.handleObj.userName;
           this.msgFormDialog.userId = this.handleObj.userName;
@@ -362,9 +371,12 @@ export default {
           this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
           this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
           this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
-          this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(
-            ","
-          );
+          if (this.handleObj.dbIds) {
+            this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(
+              ","
+            );
+          }
+
           this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
           this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
           this.msgFormDialog.databaseUpPassword = this.handleObj.password;
@@ -628,6 +640,7 @@ export default {
             });
           }
         } else {
+          this.$emit("handleDialogClose", false);
           console.log("error submit!!");
           return false;
         }

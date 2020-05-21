@@ -175,7 +175,8 @@ export default {
       total: 0,
       tableData: [],
       dialogTitle: "",
-      currentRow: {}
+      currentRow: {},
+      currentId: ""
     };
   },
   created() {
@@ -246,6 +247,7 @@ export default {
     // 角色授权
     handleRole(row) {
       this.dialogTitle = "角色授权";
+      this.currentId = row.id;
       getUser(row.id).then(response => {
         this.roleIds = response.data.roleIds;
         this.dialogRole = true;
@@ -254,7 +256,7 @@ export default {
     // 确认授权
     trueRole() {
       let obj = {};
-      obj.id = this.currentRow.id;
+      obj.id = this.currentId;
       obj.roleIds = this.roleIds;
       updateUser(obj).then(response => {
         if (response.code === 200) {

@@ -193,7 +193,6 @@
                   v-if="tabs.table.ka"
                   :tableInfo="elObj.tableInfo"
                   :rowData="rowData"
-                  tableType="E-show"
                   v-on:reloadTableInfo="getTableInfo"
                 ></table-info>
                 <el-collapse class="collapseCon el-col el-col-24">
@@ -203,11 +202,11 @@
                     </template>
                     <div>
                       <v-column
+                        tableType="E-Kshow"
                         v-on:reloadTableInfo="getTableInfo"
                         v-if="tabs.table.ka"
-                        tableType="E-show"
-                        :tableInfo="elObj.tableInfo"
                         :rowData="rowData"
+                        :tableInfo="keyObj.tableInfo"
                       ></v-column>
                     </div>
                   </el-collapse-item>
@@ -217,10 +216,11 @@
                     </template>
                     <div>
                       <v-column
+                        tableType="E-Eshow"
                         v-on:reloadTableInfo="getTableInfo"
                         v-if="tabs.table.ka"
-                        :tableInfo="elObj.tableInfo"
                         :rowData="rowData"
+                        :tableInfo="elObj.tableInfo"
                       ></v-column>
                     </div>
                   </el-collapse-item>
@@ -462,10 +462,67 @@ export default {
           let data = response.data;
           for (let i = 0; i < data.length; i++) {
             let row = data[i];
-            if (row.dbTableType && "E" === row.dbTableType) {
-              this.elObj.tableInfo = row;
-            } else if (row.dbTableType && "K" === row.dbTableType) {
-              this.keyObj.tableInfo = row;
+            // 是否是表格系统
+            if (this.tabs.table.ka) {
+              // isKvK为true的时候，是主键字段，false的时候是属性字段
+              let columnArry = row.columns;
+              let newarryK = [];
+              let newarryE = [];
+              columnArry.forEach((element, index) => {
+                if (element.isKvK === true) {
+                  newarryK.push(element);
+                } else if (element.isKvK === false) {
+                  newarryE.push(element);
+                }
+              });
+              this.keyObj = {
+                tableInfo: {
+                  classLogic: row.classLogic,
+                  columns: newarryK,
+                  createTime: row.createTime,
+                  creator: row.creator,
+                  dataServiceId: row.dataServiceId,
+                  dataServiceName: row.dataServiceName,
+                  dbTableType: row.dbTableType,
+                  delFlag: row.delFlag,
+                  id: row.id,
+                  nameCn: row.nameCn,
+                  tableDesc: row.tableDesc,
+                  tableName: row.tableName,
+                  updateTime: row.updateTime,
+                  userId: row.userId,
+                  version: row.version,
+                  tableIndexList: row.tableIndexList
+                },
+                keyColumnData: []
+              };
+              this.elObj = {
+                tableInfo: {
+                  classLogic: row.classLogic,
+                  columns: newarryE,
+                  createTime: row.createTime,
+                  creator: row.creator,
+                  dataServiceId: row.dataServiceId,
+                  dataServiceName: row.dataServiceName,
+                  dbTableType: row.dbTableType,
+                  delFlag: row.delFlag,
+                  id: row.id,
+                  nameCn: row.nameCn,
+                  tableDesc: row.tableDesc,
+                  tableName: row.tableName,
+                  updateTime: row.updateTime,
+                  userId: row.userId,
+                  version: row.version,
+                  tableIndexList: row.tableIndexList
+                },
+                elColumnData: []
+              };
+            } else {
+              if (row.dbTableType && "E" === row.dbTableType) {
+                this.elObj.tableInfo = row;
+              } else if (row.dbTableType && "K" === row.dbTableType) {
+                this.keyObj.tableInfo = row;
+              }
             }
           }
           let tableInfoObj = {

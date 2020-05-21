@@ -62,7 +62,7 @@
       <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
-      <el-table-column label="要素单位" prop="unitCn" width="100px"></el-table-column>
+      <el-table-column label="要素单位" prop="unit" width="100px"></el-table-column>
       <el-table-column label="是否可空" prop="isNull" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.isNull">是</span>
@@ -294,8 +294,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="要素单位" prop="unitCn">
-            <el-input placeholder="要素单位" v-model="columnEditData.unitCn" size="small"></el-input>
+          <el-form-item label="要素单位" prop="unit">
+            <el-input placeholder="要素单位" v-model="columnEditData.unit" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -499,7 +499,7 @@ export default {
       exportInnerVisible: false,
       filepath: "",
       columnEditData: {
-        unitCn: "N",
+        unit: "N",
         isManager: false,
         isPrimaryKey: false,
         isShow: false,
@@ -542,9 +542,7 @@ export default {
         type: [
           { required: true, message: "请选择数据类型", trigger: "change" }
         ],
-        unitCn: [
-          { required: true, message: "请输入要素单位", trigger: "blur" }
-        ],
+        unit: [{ required: true, message: "请输入要素单位", trigger: "blur" }],
         serialNumber: [
           { required: true, message: "请输入序号", trigger: "blur" }
         ]
@@ -618,7 +616,7 @@ export default {
 
     async getCodeTable() {
       let flag = undefined;
-      if (this.tableType == "E-show") {
+      if (this.tableType == "E-Kshow") {
         flag = "true";
       }
       await findByTableId({ tableId: this.tableInfo.id }).then(response => {
@@ -637,7 +635,7 @@ export default {
         return;
       }
       this.columnEditData = {
-        unitCn: "N",
+        unit: "N",
         isManager: false,
         isPrimaryKey: false,
         isShow: false,
@@ -734,8 +732,10 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.columnEditData.tableId = this.tableInfo.id;
-          if (this.tableType == "E-show") {
-            this.columnEditData.isKvK = "true";
+          if (this.tableType == "E-Kshow") {
+            this.columnEditData.isKvK = true;
+          } else if (this.tableType == "E-Eshow") {
+            this.columnEditData.isKvK = false;
           }
           console.log(this.columnEditData);
           tableColumnSave(this.columnEditData).then(response => {
@@ -820,7 +820,7 @@ export default {
           "userEleCode",
           "eleName",
           "accuracy",
-          "unitCn",
+          "unit",
           "isNull",
           "isUpdate",
           "isShow",
@@ -834,11 +834,10 @@ export default {
         ];
         let newArry = [];
         this.columnData.forEach(element => {
-          debugger
           tableProp.forEach(item => {
-            if (element[item] == false) {
+            if (element[item] === false) {
               element[item] = "否";
-            } else if (element[item] == true) {
+            } else if (element[item] === true) {
               element[item] = "是";
             }
           });
@@ -902,9 +901,16 @@ export default {
           type: "info"
         });
       } else {
-        this.$alert("是否插入" + pasteArry.length + "条复制字段", "温馨提示", {
-          confirmButtonText: "确定",
-          callback: action => {
+        this.$confirm(
+          "是否插入" + pasteArry.length + "条复制字段",
+          "温馨提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
+          .then(() => {
             pasteArry.forEach(element => {
               element.id = "";
               element.tableId = this.tableInfo.id;
@@ -923,8 +929,8 @@ export default {
                 });
               }
             });
-          }
-        });
+          })
+          .catch(() => {});
       }
     },
     // 公共元数据字段选择
@@ -981,9 +987,15 @@ export default {
       let msg = "";
       if (this.repeatIndex > 0) msg = "去重(" + this.repeatIndex + ")条,";
       if (publicRows.length > 0) {
-        if (this.tableType == "E-show") {
+        if (this.tableType == "E-Kshow") {
           publicRows.forEach(element => {
-            element.isKvK = "true";
+            element.isKvK = true;
+            element.id = "";
+            element.tableId = this.tableInfo.id;
+          });
+        } else if (this.tableType == "E-Eshow") {
+          publicRows.forEach(element => {
+            element.isKvK = false;
             element.id = "";
             element.tableId = this.tableInfo.id;
           });
@@ -1020,6 +1032,30 @@ export default {
           type: "error"
         });
       } else {
+        let flag = false;
+        let publicRows = this.selColumnData;
+        publicRows.forEach(element => {
+          var switchObj = Object.assign({}, element);
+          var firstChar = element.celementCode.substr(0, 1);
+          let newCode = element.celementCode.replace(firstChar, "Q");
+          switchObj.eleName = element.eleName + "质量标志";
+          switchObj.celementCode = newCode;
+          switchObj.dbEleCode = newCode;
+          switchObj.id = "";
+          publicRows.push(switchObj);
+          this.columnData.forEach(c => {
+            if (c.celementCode == switchObj.celementCode) {
+              flag = true;
+            }
+          });
+        });
+        if (flag) {
+          this.$message({
+            message: "不能重复插入质控字段",
+            type: "error"
+          });
+          return;
+        }
         this.$confirm(
           "是否插入" + this.selColumnData.length + "条质控字段",
           "提示",
@@ -1030,18 +1066,6 @@ export default {
           }
         )
           .then(() => {
-            let publicRows = this.selColumnData;
-            publicRows.forEach(element => {
-              var switchObj = Object.assign({}, element);
-              var firstChar = element.celementCode.substr(0, 1);
-              let newCode = element.celementCode.replace(firstChar, "Q");
-              switchObj.eleName = element.eleName + "质量标志";
-              switchObj.celementCode = newCode;
-              switchObj.dbEleCode = newCode;
-              switchObj.id = "";
-              publicRows.push(switchObj);
-            });
-
             tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
               if (res.code == 200) {
                 this.$message({
@@ -1093,7 +1117,7 @@ export default {
         { name: "服务代码", value: "userEleCode" },
         { name: "中文简称", value: "eleName" },
         { name: "数据精度", value: "accuracy" },
-        { name: "要素单位", value: "unitCn" },
+        { name: "要素单位", value: "unit" },
         { name: "是否可空", value: "isNull" },
         { name: "是否可改", value: "isUpdate" },
         { name: "是否显示", value: "isShow" },
@@ -1137,7 +1161,7 @@ export default {
           !element.userEleCode ||
           !element.eleName ||
           !element.type ||
-          !element.unitCn ||
+          !element.unit ||
           (!element.serialNumber && element.serialNumber != 0)
         ) {
           flag = true;
@@ -1203,7 +1227,7 @@ export default {
             obj.isUpdate = false;
             obj.nameCn = element.c_notes;
             obj.unit = element.c_element_unit;
-            obj.unitCn = element.c_element_unit;
+            obj.unit = element.c_element_unit;
             obj.userEleCode = element.c_short_name;
           } else if (tabActive == "second") {
             obj.eleName = element.dbEleName;
@@ -1215,7 +1239,7 @@ export default {
             obj.accuracy = element.data_precision;
             obj.nameCn = element.c_notes;
             obj.unit = element.c_element_unit;
-            obj.unitCn = element.c_element_unit;
+            obj.unit = element.c_element_unit;
             obj.userEleCode = element.c_short_name;
           }
           obj.switch = element.switch;
@@ -1254,7 +1278,7 @@ export default {
   watch: {
     tableInfo(val) {
       let flag = undefined;
-      if (this.tableType == "E-show") {
+      if (this.tableType == "E-Kshow") {
         flag = "true";
       }
       this.columnData = this.tableInfo.columns;

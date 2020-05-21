@@ -142,7 +142,10 @@ export default {
         this.stepNum = 1;
       });
     },
-    handleClose() {
+    handleClose(flag) {
+      if (flag === false) {
+        return;
+      }
       if (this.handleMsgObj.dbCreate == "1") {
         // 到专题库
         this.initDatail();
@@ -150,19 +153,15 @@ export default {
       } else if (this.handleMsgObj.sodData == "1") {
         this.getList();
         return;
+      } else {
+        this.stepNum = 3;
+        return;
       }
     },
     nextStep() {
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
         this.$refs.AccountRef.trueAdd();
-        if (
-          this.handleMsgObj.dbCreate != "1" &&
-          this.handleMsgObj.sodData != "1"
-        ) {
-          this.stepNum = 3;
-          return;
-        }
         return;
       }
       if (this.stepNum == 1) {
@@ -266,7 +265,7 @@ export default {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: "授权成功:" + res.msg
+              message: res.msg
             });
             this.getList();
           } else {

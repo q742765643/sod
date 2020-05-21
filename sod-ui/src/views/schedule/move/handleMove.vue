@@ -251,7 +251,7 @@ export default {
           { required: true, message: "超时时间不能为空", trigger: "blur" }
         ],
         moveLimit: [
-          { required: true, message: "限制条数不能为空", trigger: "blur" }
+          { required: true, message: "迁移限制频率不能为空", trigger: "blur" }
         ],
         sourceDirectory: [
           { required: true, message: "迁移源目录不能为空", trigger: "blur" }

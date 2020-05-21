@@ -58,7 +58,7 @@
               <el-input v-model="materialData.typeText" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="排序" prop="serialNo">
-              <el-input-number v-model="materialData.serialNo" :min="1"></el-input-number>
+              <el-input-number v-model="materialData.serialNo" :min="0"></el-input-number>
               <!-- <el-input type="number" v-model="materialData.serialNo" :min="0"></el-input> -->
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
