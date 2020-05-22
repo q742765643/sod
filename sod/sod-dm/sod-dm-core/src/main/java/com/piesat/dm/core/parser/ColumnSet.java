@@ -21,4 +21,5 @@ public class ColumnSet {
     private Map<String, String> xugu;
     private Map<String, String> gbase8a;
     private Map<String, String> cassandra;
+    private Map<String, String> postgresql;
 }
