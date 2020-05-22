@@ -19,4 +19,5 @@ public class DatabaseInfo {
     private String xugu;
     private String gbase8a;
     private String cassandra;
+    private String postgresql;
 }

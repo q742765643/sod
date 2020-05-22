@@ -355,7 +355,7 @@ public class MoveHandler implements BaseHandler {
         String ddateTime=format.format(ddateTimed);
         String storageSite = (String) mapK.get("D_STORAGE_SITE");
         if(!storageSite.startsWith(moveLogEntity.getSourceDirectory())){
-            resultT.setErrorMessage("{}源目录错误",moveLogEntity.getSourceDirectory());
+            resultT.setErrorMessage("源目录错误{}",moveLogEntity.getSourceDirectory());
             log.error("{}源目录错误",moveLogEntity.getSourceDirectory());
             return;
         }

@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.util;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
+import com.piesat.dm.core.api.impl.PostgreSql;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
@@ -69,6 +70,8 @@ public class DatabaseUtil {
             db = new Gbase8a(databaseUrl, dad.getUserName(), dad.getPassWord());
         } else if (databaseInfo.getCassandra().equals(databaseType)) {
             db = new Cassandra(databaseIp, port, dad.getUserName(), dad.getPassWord(), database.getSchemaName());
+        } else if (databaseInfo.getPostgresql().equals(databaseType.toLowerCase())) {
+            db = new PostgreSql(databaseUrl, dad.getUserName(), dad.getPassWord());
         }
         return db;
     }

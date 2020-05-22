@@ -91,6 +91,9 @@ public class ResultT<T> implements Serializable {
 
                 }
             }
+            if(cnt==1){
+                sb.append(msg);
+            }
         } else {//param为空时
             sb.append(msg);
         }

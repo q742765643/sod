@@ -79,6 +79,29 @@ column:
     map: map
     set: set
     list: list
+  postgresql:
+    smallint: smallint
+    integer: integer
+    bigint: bigint
+    decimal: decimal
+    numeric: numeric
+    real: real
+    double precision: double precision
+    smallserial: smallserial
+    serial: serial
+    bigserial: bigserial
+    money : money
+    character varying: character varying
+    varchar: varchar
+    character: character
+    char: char
+    text: text
+    timestamp: timestamp
+    date: date
+    time: time
+    array_to_json: array_to_json
+    row_to_json: row_to_json
+    bytea: bytea
 dclsql:
   xugu:
     createuser: "CREATE USER % IDENTIFIED BY '%'"
@@ -109,3 +132,4 @@ databasename:
   xugu: xugu
   gbase8a: gbase8a
   cassandra: cassandra
+  postgresql: postgresql

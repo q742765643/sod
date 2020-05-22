@@ -1,6 +1,7 @@
 package com.piesat.sql;
 
 import com.alibaba.fastjson.JSON;
+import com.piesat.util.ResultT;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.SQLExec;
@@ -84,7 +85,10 @@ public class SqlController {
         String aa="'aaa'";
         aa=aa.replaceAll("'","''");
         System.out.println(aa);
-         initSql();
+        ResultT<String> resultT=new ResultT<>();
+        resultT.setErrorMessage("源目录错误{}","111");
+        System.out.println(resultT.getProcessMsg());
+         //initSql();
     }
 
 
