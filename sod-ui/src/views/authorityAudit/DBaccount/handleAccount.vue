@@ -38,7 +38,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row v-if="dbFalg">
         <el-col :span="24">
           <el-form-item label="数据库选择" prop="applyDatabaseIdList">
             <el-transfer
@@ -342,7 +342,8 @@ export default {
         applyMaterial: [
           { required: true, message: "请选择申请材料", trigger: "blur" }
         ]
-      }
+      },
+      dbFalg: true //是否显示穿梭框
     };
   },
   async created() {
@@ -375,6 +376,10 @@ export default {
             this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(
               ","
             );
+            // /dm/databaseUser/databaseUserExi
+            // get接口查询，如果返回true,不能进行下一步操作，只能拒绝
+          } else {
+            this.dbFalg = false;
           }
 
           this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
