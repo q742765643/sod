@@ -8,7 +8,13 @@
         <el-input size="small" v-model="ruleForm.description"></el-input>
       </el-form-item>
       <el-form-item prop="serialNumber" label="显示序号:">
-        <el-input size="small" v-model="ruleForm.serialNumber"></el-input>
+        <el-input-number
+          :min="0"
+          class="number"
+          size="small"
+          v-model="ruleForm.serialNumber"
+          placeholder="请输入显示序号"
+        />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

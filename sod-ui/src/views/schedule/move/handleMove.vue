@@ -146,7 +146,7 @@
         </el-col>
         <el-col :span="24">
           <el-form-item
-            v-if="msgFormDialog.isClear != '0' && msgFormDialog.clearConditions"
+            v-if="msgFormDialog.isClear != '0' ||  msgFormDialog.clearConditions"
             label="二级nas清除条件"
             prop="clearConditions"
           >

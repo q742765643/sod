@@ -45,7 +45,13 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="serialNumber" label="显示序号:">
-        <el-input size="small" v-model="msgFormDialog.serialNumber" placeholder="请输入" />
+        <el-input-number
+          :min="0"
+          class="number"
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          placeholder="请输入显示序号"
+        />
       </el-form-item>
       <el-form-item prop="logicDesc" label="用途说明:">
         <el-input
