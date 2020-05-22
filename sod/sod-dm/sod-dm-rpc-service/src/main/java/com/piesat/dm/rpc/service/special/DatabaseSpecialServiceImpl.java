@@ -634,8 +634,23 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public List<DatabaseSpecialDto> getByUseStatus(String useStatus) {
         List<DatabaseSpecialEntity> databaseSpecialEntities = databaseSpecialDao.findByUseStatus(useStatus);
-        //根据用户id查用户名
-        return databaseSpecialMapper.toDto(databaseSpecialEntities);
+        List<DatabaseSpecialDto> databaseSpecialDtos = databaseSpecialMapper.toDto(databaseSpecialEntities);
+        //调用接口获取所有的用户信息
+        List<UserEntity> userEntities = userDao.findByUserType("11");
+        if(databaseSpecialDtos != null && databaseSpecialDtos.size()>0){
+            for(DatabaseSpecialDto databaseSpecialDto:databaseSpecialDtos){
+                //遍历所有用户信息找到每条记录对应的用户信息
+                for(UserEntity userEntity:userEntities){
+                    if(userEntity.getUserName().equals(databaseSpecialDto.getUserId())){
+                        databaseSpecialDto.setUserName(userEntity.getWebUsername());
+                        databaseSpecialDto.setUserPhone(userEntity.getPhonenumber());
+                        databaseSpecialDto.setDepartment(userEntity.getDeptName());
+                    }
+                }
+            }
+        }
+
+        return databaseSpecialDtos;
     }
 
 
