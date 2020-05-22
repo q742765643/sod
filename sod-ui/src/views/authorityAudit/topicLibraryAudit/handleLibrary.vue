@@ -47,6 +47,7 @@
         <el-form>
           <el-row class="center">
             <el-col :span="24">
+              <span>专题库名称:</span>
               <span style="font-weight: bold">{{this.msgFormDialog.sdbName}}</span>
             </el-col>
           </el-row>
@@ -344,7 +345,7 @@ export default {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
           if (!this.msgFormDialog.applyMaterial && !this.handleObj.pageName) {
-            this.$message({ type: "danger", message: "文件不存在" });
+            this.$message({ type: "error", message: "文件不存在" });
           }
         }
       });

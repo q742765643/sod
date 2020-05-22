@@ -226,10 +226,24 @@ export default {
       // 表单校验
       rules: {
         menuName: [
-          { required: true, message: "菜单名称不能为空", trigger: "blur" }
+          { required: true, message: "菜单名称不能为空", trigger: "blur" },
+          {
+            min: 1,
+            max: 50,
+            message: "菜单名称长度不能大于50个字符",
+            trigger: "blur"
+          }
         ],
         orderNum: [
           { required: true, message: "菜单顺序不能为空", trigger: "blur" }
+        ],
+        path: [
+          {
+            min: 0,
+            max: 50,
+            message: "路由地址长度不能大于50个字符",
+            trigger: "blur"
+          }
         ]
       }
     };
