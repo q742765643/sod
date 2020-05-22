@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller.database;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.Doc2PDF;
@@ -11,6 +12,7 @@ import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
+import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -51,6 +53,8 @@ public class DatabaseUserManagerController {
     private DatabaseService databaseService;
     @Autowired
     private DatabaseUserService databaseUserService;
+    @GrpcHthtClient
+    private UserService userService;
     @Value("${serverfile.user}")
     private String fileAddress;
     @Value("${fileUpload.httpPath}")
@@ -281,6 +285,13 @@ public class DatabaseUserManagerController {
     }
 
 
+    @ApiOperation(value = "新增用户是否在数据库已经存在")
+    @RequiresPermissions("dm:databaseUser:databaseUserExi")
+    @GetMapping(value = "/databaseUserExi")
+    public Boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
+        return this.databaseUserService.databaseUserExi(databaseUserDto);
+    }
+
     @ApiOperation(value = "新增Bzi")
     @RequiresPermissions("dm:databaseUser:addBzi")
     @PostMapping(value = "/addBzi")
@@ -289,12 +300,12 @@ public class DatabaseUserManagerController {
             //默认待审核
             databaseUserDto.setExamineStatus("0");
             DatabaseUserDto save = null;
-            String pwd = AESUtil.aesDecrypt(databaseUserDto.getDatabaseUpPassword()).trim();
+            UserDto userDto = this.userService.selectUserByUserName(databaseUserDto.getUserId());
+            String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
             databaseUserDto.setDatabaseUpPassword(pwd);
             DatabaseUserDto byUserId = this.databaseUserService.findByUserIdAndDatabaseUpId(databaseUserDto.getUserId(), databaseUserDto.getDatabaseUpId());
             if (byUserId != null) {
                 byUserId.setApplyDatabaseId(databaseUserDto.getApplyDatabaseId());
-
                 byUserId.setDatabaseUpPassword(databaseUserDto.getDatabaseUpPassword());
                 byUserId.setRemarks(databaseUserDto.getRemarks());
                 byUserId.setDatabaseUpIp(databaseUserDto.getDatabaseUpId());

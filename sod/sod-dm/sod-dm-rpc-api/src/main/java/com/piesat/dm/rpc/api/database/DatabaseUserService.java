@@ -70,10 +70,12 @@ public interface DatabaseUserService {
     /**
      * 新增
      *
-     * @param atabaseUserDto
+     * @param databaseUserDto
      * @return
      */
-    DatabaseUserDto saveDto(DatabaseUserDto atabaseUserDto);
+    DatabaseUserDto saveDto(DatabaseUserDto databaseUserDto);
+
+    boolean databaseUserExi(DatabaseUserDto databaseUserDto);
 
     DatabaseUserDto addOrUpdate(Map<String, String[]> parameterMap, String filePath);
 

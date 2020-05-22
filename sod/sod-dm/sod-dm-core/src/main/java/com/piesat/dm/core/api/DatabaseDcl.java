@@ -34,6 +34,8 @@ public interface DatabaseDcl {
      */
     void rollback();
 
+
+    public int getUserNum(String user) throws Exception;
     /**
      * 新增用户
      *

@@ -227,6 +227,31 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
     @Override
+    public boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
+        String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
+        for (String id:needEmpowerIdArr ) {
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
+            DatabaseDcl databaseVO = null;
+            try {
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                if (databaseVO != null) {
+                    int userNum = databaseVO.getUserNum(databaseUserDto.getDatabaseUpId());
+                    databaseVO.closeConnect();
+                    if (userNum>0){
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                databaseVO.closeConnect();
+            }finally {
+                databaseVO.closeConnect();
+            }
+        }
+        return true;
+    }
+
+    @Override
     public DatabaseUserDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
         Map<String, String> map = new LinkedHashMap<>();
         for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
@@ -324,33 +349,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
         }
 
-
-
-
-
-        /**为已有账号修改密码**/
-        if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
-            needEmpowerIdist.addAll(haveEmpowerIdist);
-        }
-        for (String databaseId : needEmpowerIdist) {
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-                if (databaseVO != null) {
-                    databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
-                    databaseVO.closeConnect();
-                }
-            } catch (Exception e) {
-                sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
-            }finally {
-                if (databaseVO!=null){
-                    databaseVO.closeConnect();
-                }
-            }
-        }
-
         /**删除被撤销的数据库**/
+        haveEmpowerIdist = new ArrayList<>(Arrays.asList(haveEmpowerIdArr));
+        needEmpowerIdist = new ArrayList<>(Arrays.asList(needEmpowerIdArr));
         haveEmpowerIdist.removeAll(needEmpowerIdist);
         for (String databaseId : haveEmpowerIdist) {
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
@@ -370,6 +371,33 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 }
             }
         }
+
+
+        haveEmpowerIdist = new ArrayList<>(Arrays.asList(haveEmpowerIdArr));
+        needEmpowerIdist = new ArrayList<>(Arrays.asList(needEmpowerIdArr));
+        /**为已有账号修改密码**/
+//        if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
+//            needEmpowerIdist.addAll(haveEmpowerIdist);
+//        }
+        for (String databaseId : needEmpowerIdist) {
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
+            DatabaseDcl databaseVO = null;
+            try {
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                if (databaseVO != null) {
+                    databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
+                    databaseVO.closeConnect();
+                }
+            } catch (Exception e) {
+                sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
+            }finally {
+                if (databaseVO!=null){
+                    databaseVO.closeConnect();
+                }
+            }
+        }
+
+
         databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds, ","));
 
 //修改绑定ip
