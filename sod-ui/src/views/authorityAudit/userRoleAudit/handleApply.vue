@@ -83,7 +83,7 @@
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
       <el-button type="danger" v-if="stepNum==0" @click="finishStep">拒绝</el-button>
-      <el-button type="primary" v-if="stepNum!=3" @click="nextStep">下一步</el-button>
+      <el-button type="primary" v-if="stepNum!=3" @click="nextStep" :disabled="nextFlag">下一步</el-button>
       <el-button type="primary" v-if="stepNum==3" @click="finishStep">完成</el-button>
     </div>
   </section>
@@ -100,7 +100,8 @@ import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 import { getRecordByApplyId } from "@/api/authorityAudit/materialPower/index";
 import {
   getRecordByByUserId,
-  editBase
+  editBase,
+  databaseUserExiget
 } from "@/api/authorityAudit/userRoleAudit";
 import {
   updateRecordCheck,
@@ -122,11 +123,22 @@ export default {
       multipleSelection: [],
       stepNum: 0,
       msgFormDialog: {},
-      handleObj: { pageName: "业务用户审核" }
+      handleObj: { pageName: "业务用户审核" },
+      nextFlag: false
     };
   },
   async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
+    if (this.handleObj.dbIds) {
+      databaseUserExiget({
+        databaseUpId: this.handleObj.userName,
+        applyDatabaseId: this.handleObj.dbIds
+      }).then(response => {
+        this.nextFlag = response.data;
+      });
+    } else {
+      this.nextFlag = true;
+    }
   },
 
   methods: {

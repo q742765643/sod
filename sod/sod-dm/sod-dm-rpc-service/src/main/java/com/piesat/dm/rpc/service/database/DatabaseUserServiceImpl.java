@@ -230,6 +230,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
         String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
         for (String id:needEmpowerIdArr ) {
+            if (StringUtils.isEmpty(id)){
+                continue;
+            }
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
             DatabaseDcl databaseVO = null;
             try {
