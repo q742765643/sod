@@ -150,7 +150,7 @@ public class XuguBusiness extends BaseBusiness{
         DatabaseOperationService databaseOperationService= SpringUtil.getBean(DatabaseOperationService.class);
         List<Map<String,Object>> partList=databaseOperationService.selectXuguPartition(schemaName,table);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+        int m=0;
         if(partList!=null&&!partList.isEmpty()){
             for(Map<String,Object> map:partList){
                 String partiName= (String) map.get("PARTI_NAME");
@@ -166,6 +166,7 @@ public class XuguBusiness extends BaseBusiness{
                         databaseOperationService.deletePartition(tableName,partiName,resultT);
                         resultT.setSuccessMessage("删除表{},分区{}成功",tableName,partiName);
                         log.info("删除表{},分区{}成功",tableName,partiName);
+                        m++;
                         break;
                     } catch (Exception e) {
                         if(loopNum>3){
@@ -180,6 +181,9 @@ public class XuguBusiness extends BaseBusiness{
                 }
 
             }
+        }
+        if(m>0){
+            clearVo.setCount(m);
         }
 
     }

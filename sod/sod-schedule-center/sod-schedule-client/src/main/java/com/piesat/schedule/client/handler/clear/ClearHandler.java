@@ -128,6 +128,7 @@ public class ClearHandler implements BaseHandler {
             log.info("插入日志成功");
 
             baseBusiness.deleteKtable(clearLogEntity,clearVo,resultT);
+            clearLogEntity.setClearCount(clearVo.getCount());
         } catch (BeansException e) {
             resultT.setErrorMessage("清除异常:{}",OwnException.get(e));
             log.error("清除异常:{}",OwnException.get(e));
