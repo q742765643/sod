@@ -271,6 +271,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String databaseup_password = map.get("databaseup_password");
         String data = map.get("data");
         String picurl2 = map.get("picurl2");//修改前的申请材料，是否删除
+        String pdfPath = map.get("pdfPath");
 
         DatabaseUserEntity databaseUserEntity = new DatabaseUserEntity();
         if (StringUtils.isNotEmpty(id)) {
@@ -279,6 +280,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         databaseUserEntity.setApplyDatabaseId(database_ids);
         if (StringUtils.isNotEmpty(filePath)) {
             databaseUserEntity.setApplyMaterial(filePath);
+        }
+        if (StringUtils.isNotEmpty(pdfPath)) {
+            databaseUserEntity.setPdfPath(pdfPath);
         }
         if (StringUtils.isNotEmpty(data)) {
             JSONObject object = JSONObject.parseObject(data);

@@ -409,12 +409,19 @@ public class DatabaseUserManagerController {
                 if (StringUtils.isNotNullString(originalFileName1)) {
                     //新的文件名
                     String newFileName1 = originalFileName1.substring(0, originalFileName1.lastIndexOf(".")) + "_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS", new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
-                    newFile = new File(fileAddress + File.separator + newFileName1);
+                    String filePath = fileAddress + File.separator + newFileName1;
+                    newFile = new File(filePath);
                     if (!newFile.getParentFile().exists()) {
                         newFile.getParentFile().mkdirs();
                     }
                     //存入
                     applyMaterial.transferTo(newFile);
+
+                    //转换PDF
+                    String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
+                    String pdfPath = fileAddress + "/" + pdfName;
+                    Doc2PDF.doc2pdf(filePath, pdfPath);
+                    parameterMap.put("pdfPath", new String[]{httpPath + "/user/" + pdfName});
                 }
             }
             DatabaseUserDto databaseUserDto = databaseUserService.addOrUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
