@@ -1045,10 +1045,11 @@
         t1.create_time desc
     </select>
     <select id="querySpecialByUserIdAndUseStatus" resultType="java.util.Map">
-        select * from T_SOD_DATABASE_SPECIAL
+        select *, '' as cause from T_SOD_DATABASE_SPECIAL
           where USER_ID = #{userId} and USE_STATUS =#{useStatus}
-            or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
-            or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
+          or id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
+        union
+        select *, 'WAITCHECK' as cause from T_SOD_DATABASE_SPECIAL where id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
     </select>
 
     <!-- 根据id删除资料申请记录 -->
