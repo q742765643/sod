@@ -102,7 +102,11 @@ export default {
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
-      if (checkobj.remark || checkobj.remark.trim().length > 500) {
+      if (
+        checkobj.remark &&
+        (checkobj.remark.trim().length == 0 ||
+          checkobj.remark.trim().length > 500)
+      ) {
         this.$message({
           message: "请输入内容并且内容不能超过500个字符",
           type: "error",

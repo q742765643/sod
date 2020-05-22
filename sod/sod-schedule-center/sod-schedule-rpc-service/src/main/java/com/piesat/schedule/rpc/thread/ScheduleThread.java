@@ -138,39 +138,43 @@ public class  ScheduleThread {
     public void checkSchedule(Set<DefaultTypedTuple> scheduleList, long nowTime) throws ParseException {
         List<JobInfoEntity> jobInfos = new ArrayList<>();
         for (DefaultTypedTuple typedTuple : scheduleList) {
-            JobInfoEntity jobInfo = new JobInfoEntity();
-            jobInfo.setId((String) typedTuple.getValue());
-            jobInfo.setTriggerNextTime(typedTuple.getScore().longValue());
-            String cron = (String) redisUtil.hget(QUARTZ_HTHT_CRON + jobInfo.getId(), "cron");
-            if (cron == null) {
-                redisUtil.zsetRemove(QUARTZ_HTHT_JOB, jobInfo.getId());
-                continue;
-            }
-            jobInfo.setJobCron(cron);
-            if (nowTime > jobInfo.getTriggerNextTime() + 3600000*12) {//PRE_READ_MS
-                log.info(">>>>>>>>>>> job, schedule misfire, jobId = {}" , typedTuple.getValue());
-                refreshNextValidTime(jobInfo, new Date());
-            } else if (nowTime >=jobInfo.getTriggerNextTime()) {
-                log.info(">>>>>>>>>>> job, schedule push, jobId {}" ,typedTuple.getValue());
-                this.trigger(jobInfo);
-                refreshNextValidTime(jobInfo, new Date());
-                if (nowTime + PRE_READ_MS > jobInfo.getTriggerNextTime()) {
+            try {
+                JobInfoEntity jobInfo = new JobInfoEntity();
+                jobInfo.setId((String) typedTuple.getValue());
+                jobInfo.setTriggerNextTime(typedTuple.getScore().longValue());
+                String cron = (String) redisUtil.hget(QUARTZ_HTHT_CRON + jobInfo.getId(), "cron");
+                if (cron == null) {
+                    redisUtil.zsetRemove(QUARTZ_HTHT_JOB, jobInfo.getId());
+                    continue;
+                }
+                jobInfo.setJobCron(cron);
+                if (nowTime > jobInfo.getTriggerNextTime() + 3600000*12) {//PRE_READ_MS
+                    log.info(">>>>>>>>>>> job, schedule misfire, jobId = {}" , typedTuple.getValue());
+                    refreshNextValidTime(jobInfo, new Date());
+                } else if (nowTime >=jobInfo.getTriggerNextTime()) {
+                    log.info(">>>>>>>>>>> job, schedule push, jobId {}" ,typedTuple.getValue());
+                    this.trigger(jobInfo);
+                    refreshNextValidTime(jobInfo, new Date());
+                    if (nowTime + PRE_READ_MS > jobInfo.getTriggerNextTime()) {
+                        int ringSecond = (int) ((jobInfo.getTriggerNextTime() / 1000) % 60);
+
+                        pushTimeRing(ringSecond, jobInfo);
+
+                        refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
+                    }
+                } else if(nowTime + PRE_READ_MS > jobInfo.getTriggerNextTime()){
                     int ringSecond = (int) ((jobInfo.getTriggerNextTime() / 1000) % 60);
 
                     pushTimeRing(ringSecond, jobInfo);
 
                     refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
+
+
                 }
-            } else if(nowTime + PRE_READ_MS > jobInfo.getTriggerNextTime()){
-                int ringSecond = (int) ((jobInfo.getTriggerNextTime() / 1000) % 60);
-
-                pushTimeRing(ringSecond, jobInfo);
-
-                refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
-
-
+                jobInfos.add(jobInfo);
+            } catch (Exception e) {
+                log.error("调度发生异常{}",OwnException.get(e));
             }
-            jobInfos.add(jobInfo);
 
         }
         for (JobInfoEntity jobInfo : jobInfos) {

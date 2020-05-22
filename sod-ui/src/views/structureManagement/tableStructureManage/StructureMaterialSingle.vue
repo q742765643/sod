@@ -349,22 +349,27 @@ export default {
     getChildCheckNode(checkNode) {
       console.log(checkNode);
       if (!this.isDisabledEdit) {
-        // this.materialData.dataClassId = checkNode.id;
-        getNewDataClassId({ parentId: checkNode.id }).then(res => {
-          if (res.code == 200) {
-            this.materialData.dataClassId = res.data;
-            if (res.data == "") {
-              let code = checkNode.id.split(".");
-              if (code.length == 4) {
-                let fCode = code[3].substring(0, 1);
-                code[3] = code[3].replace(fCode, "M");
-                this.materialData.dataClassId = code.join(".");
-              } else {
-                this.materialData.dataClassId = checkNode.id;
+        //
+        if (this.materialData.typeText == "目录") {
+          this.materialData.dataClassId = checkNode.id;
+        } else if (this.materialData.typeText == "资料") {
+          getNewDataClassId({ parentId: checkNode.id }).then(res => {
+            if (res.code == 200) {
+              this.materialData.dataClassId = res.data;
+              if (res.data == "") {
+                let code = checkNode.id.split(".");
+                if (code.length == 4) {
+                  let fCode = code[3].substring(0, 1);
+                  code[3] = code[3].replace(fCode, "M");
+                  this.materialData.dataClassId = code.join(".");
+                } else {
+                  this.materialData.dataClassId = checkNode.id;
+                }
               }
             }
-          }
-        });
+          });
+        }
+
         this.materialData.className = checkNode.name;
       }
 

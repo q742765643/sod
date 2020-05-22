@@ -27,7 +27,13 @@
         </el-select>
       </el-form-item>
       <el-form-item label="显示序号:" prop="serialNumber">
-        <el-input v-model="ruleForm.serialNumber" placeholder="请输入字典描述"></el-input>
+        <el-input-number
+          :min="0"
+          class="number"
+          size="small"
+          v-model="ruleForm.serialNumber"
+          placeholder="请输入显示序号"
+        />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
