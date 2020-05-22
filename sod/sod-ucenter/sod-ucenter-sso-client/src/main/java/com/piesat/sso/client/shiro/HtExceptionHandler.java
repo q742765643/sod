@@ -37,7 +37,7 @@ public class HtExceptionHandler implements HandlerExceptionResolver  {
             return outJson(request, response, resultT);
         }
         if(e instanceof GrpcException){
-            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_403_ERROR);
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_501_ERROR);
             return outJson(request, response, resultT);
         }
         if (e instanceof SignException) {

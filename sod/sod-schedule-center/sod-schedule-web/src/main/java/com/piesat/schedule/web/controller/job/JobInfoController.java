@@ -29,6 +29,7 @@ import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.schedule.util.CronExpression;
 import com.piesat.util.ResultT;
+import com.piesat.util.ReturnCodeEnum;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -112,8 +113,12 @@ public class JobInfoController {
     @ApiOperation(value = "查询资料详情接口", notes = "查询资料详情接口")
     public ResultT getByDatabaseIdAndClassId(String databaseId,String dataClassId){
         ResultT resultT=new ResultT();
-        DataRetrieval dataRetrieval =dataBaseService.getByDatabaseIdAndClassId(databaseId,dataClassId);
-        resultT.setData(dataRetrieval);
+        try {
+            DataRetrieval dataRetrieval =dataBaseService.getByDatabaseIdAndClassId(databaseId,dataClassId);
+            resultT.setData(dataRetrieval);
+        } catch (Exception e) {
+            resultT.setErrorMessage(ReturnCodeEnum.ReturnCodeEnum_601_ERROR);
+        }
         return resultT;
     }
     @GetMapping(value = "/startById")

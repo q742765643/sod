@@ -37,8 +37,9 @@ public enum ReturnCodeEnum {
     ReturnCodeEnum_11_ERROR(11, "迁移根目录错误"),
     ReturnCodeEnum_12_ERROR(12, "删除分区异常"),
     ReturnCodeEnum_14_ERROR(14, "执行虚谷备份异常"),
-    ReturnCodeEnum_15_ERROR(15, "执行GBASE备份异常");
+    ReturnCodeEnum_15_ERROR(15, "执行GBASE备份异常"),
 
+    ReturnCodeEnum_601_ERROR(601, "表结构管理存在异常,查询失败");
 
 
 
