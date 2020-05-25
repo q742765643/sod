@@ -210,10 +210,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
     @Override
-    public DatabaseUserDto findByUserIdAndDatabaseUpId(String userId,String upId) {
-        List<DatabaseUserEntity> byUserId = this.databaseUserDao.findByUserIdAndDatabaseUpId(userId,upId);
+    public DatabaseUserDto findByUserIdAndDatabaseUpId(String userId, String upId) {
+        List<DatabaseUserEntity> byUserId = this.databaseUserDao.findByUserIdAndDatabaseUpId(userId, upId);
         DatabaseUserEntity d = null;
-        if (byUserId!=null&&byUserId.size()>0){
+        if (byUserId != null && byUserId.size() > 0) {
             d = byUserId.get(0);
         }
         return this.databaseUserMapper.toDto(d);
@@ -229,8 +229,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
         String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
-        for (String id:needEmpowerIdArr ) {
-            if (StringUtils.isEmpty(id)){
+        for (String id : needEmpowerIdArr) {
+            if (StringUtils.isEmpty(id)) {
                 continue;
             }
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
@@ -240,15 +240,19 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (databaseVO != null) {
                     int userNum = databaseVO.getUserNum(databaseUserDto.getDatabaseUpId());
                     databaseVO.closeConnect();
-                    if (userNum>0){
+                    if (userNum > 0) {
                         return false;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                databaseVO.closeConnect();
-            }finally {
-                databaseVO.closeConnect();
+                if (databaseVO != null) {
+                    databaseVO.closeConnect();
+                }
+            } finally {
+                if (databaseVO != null) {
+                    databaseVO.closeConnect();
+                }
             }
         }
         return true;
@@ -337,20 +341,20 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
-                   if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
+                    if (!thisHaveIds.contains(databaseId)) thisHaveIds.add(databaseId);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
-                if(StringUtils.isNotBlank(message)){
+                if (StringUtils.isNotBlank(message)) {
                     if (message.contains("用户已经存在")) {
-                        if (!thisHaveIds.contains(databaseId))thisHaveIds.add(databaseId);
+                        if (!thisHaveIds.contains(databaseId)) thisHaveIds.add(databaseId);
                     } else {
                         sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                     }
                 }
-            }finally {
-                if (databaseVO!=null){
+            } finally {
+                if (databaseVO != null) {
                     databaseVO.closeConnect();
                 }
             }
@@ -372,8 +376,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "修改绑定IP失败，msg:" + e.getMessage() + "\n");
-            }finally {
-                if (databaseVO!=null){
+            } finally {
+                if (databaseVO != null) {
                     databaseVO.closeConnect();
                 }
             }
@@ -397,8 +401,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
-            }finally {
-                if (databaseVO!=null){
+            } finally {
+                if (databaseVO != null) {
                     databaseVO.closeConnect();
                 }
             }
@@ -414,18 +418,17 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
                 if (databaseVO != null) {
-                    databaseVO.bindIp(databaseUserDto.getDatabaseUpId(),needEmpowerIpArr);
+                    databaseVO.bindIp(databaseUserDto.getDatabaseUpId(), needEmpowerIpArr);
                     databaseVO.closeConnect();
                 }
             } catch (Exception e) {
                 sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
-            }finally {
-                if (databaseVO!=null){
+            } finally {
+                if (databaseVO != null) {
                     databaseVO.closeConnect();
                 }
             }
         }
-
 
 
         String msg = sbff.toString();
@@ -472,8 +475,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if (databaseVO!=null){
+        } finally {
+            if (databaseVO != null) {
                 databaseVO.closeConnect();
             }
         }
@@ -627,18 +630,18 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                         DatabaseDcl databaseDcl = null;
                         try {
                             databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-                        }catch (Exception e){
-                            if (e.getMessage().contains("用户不存在")){
+                        } catch (Exception e) {
+                            if (e.getMessage().contains("用户不存在")) {
                                 map.put("returnCode", 1);
-                                map.put("returnMessage", databaseDto.getDatabaseDefine().getDatabaseName()+"用户不存在！");
+                                map.put("returnMessage", databaseDto.getDatabaseDefine().getDatabaseName() + "用户不存在！");
                                 databaseDcl.closeConnect();
                                 continue;
                             }
                         }
                         try {
-                            databaseDcl.deletePermissions(permission,databaseEntity.getSchemaName(),table_name,dbaccount.getDatabaseUpId(),null,null);
+                            databaseDcl.deletePermissions(permission, databaseEntity.getSchemaName(), table_name, dbaccount.getDatabaseUpId(), null, null);
                             databaseDcl.closeConnect();
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             map.put("returnCode", 2);
                             map.put("returnMessage", "撤销权限失败！");
                             continue;
@@ -804,13 +807,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             DatabaseDcl databaseDefine = null;
             try {
                 databaseDefine = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
-            }catch (Exception e){
+            } catch (Exception e) {
                 buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
             }
             try {
                 databaseDefine.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
-            }catch (Exception e){
+            } catch (Exception e) {
                 buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",密码修改失败" + "<br/>");
             }
             databaseDefine.closeConnect();
@@ -847,8 +850,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 databaseDcl.closeConnect();
             } catch (Exception e) {
                 e.printStackTrace();
-            }finally {
-                if (databaseDcl!=null){
+            } finally {
+                if (databaseDcl != null) {
                     databaseDcl.closeConnect();
                 }
             }

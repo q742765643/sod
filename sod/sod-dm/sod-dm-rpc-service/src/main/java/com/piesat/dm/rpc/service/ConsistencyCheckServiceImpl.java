@@ -126,10 +126,14 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                 compareDifferences(databaseId,tableName.toUpperCase(),columnInfos,indexAndShardings,compileResult);
             }
         }catch (Exception e){
-            database.closeConnect();
+            if (database!=null){
+                database.closeConnect();
+            }
             e.printStackTrace();
         }finally {
-            database.closeConnect();
+            if (database!=null){
+                database.closeConnect();
+            }
         }
         return compileResult;
     }
