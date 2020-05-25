@@ -177,7 +177,8 @@ export default {
           this.handleMsgObj = {};
           this.handleMsgObj.pageName = "数据注册审核";
           this.handleMsgObj.databaseId = this.tableData[0].DATABASE_ID; //目标库
-          this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID;
+          this.handleMsgObj.targetTable = this.tableDetail[0].id; //目标表
+          this.handleMsgObj.dataClassId = this.tableData[0].DATA_CLASS_ID; //资料
         } else {
           this.$message({
             message: "表结构信息不完整",

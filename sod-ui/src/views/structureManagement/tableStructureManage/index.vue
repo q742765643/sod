@@ -575,7 +575,12 @@ export default {
       if (operateType == "handleTree") {
         this.$refs.classifyTree.initMethodsTree(this.whichTree);
       } else {
-        this.searchFun("search");
+        if (this.materialSingleTitle == "编辑资料") {
+          this.searchFun("search");
+        } else {
+          this.$refs.classifyTree.initMethodsTree(this.whichTree);
+        }
+        // this.searchFun("search");
       }
       // this.$refs.classifyTree.initMethodsTree(this.whichTree);
       this.materialSingleVisible = false;

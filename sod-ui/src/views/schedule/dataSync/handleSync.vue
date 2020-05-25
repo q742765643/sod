@@ -598,7 +598,12 @@ export default {
     ) {
       console.log(this.handleObj);
       this.msgFormDialog.targetDatabaseId = this.handleObj.databaseId; //目标库
-      this.msgFormDialog.targetTable = this.handleObj.dataClassId; //目标表
+      if (this.handleObj.pageName == "数据注册审核") {
+        this.msgFormDialog.targetTable = this.handleObj.targetTable; //目标表
+      } else {
+        this.msgFormDialog.targetTable = this.handleObj.dataClassId; //目标表
+      }
+
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
@@ -667,6 +672,9 @@ export default {
       //显示源表名
       this.findColumnByValue(selectSourceTableID);
       await this.querySourceColumn(selectSourceTableID);
+      if (this.handleObj.pageName == "数据注册审核") {
+        await this.targetTableChange(this.msgFormDialog.targetTable, "");
+      }
     },
     //显示源表名
     findColumnByValue(selectSourceTableID) {

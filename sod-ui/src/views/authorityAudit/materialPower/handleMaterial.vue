@@ -312,7 +312,7 @@ export default {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: + res.msg
+              message: res.msg
             });
             this.handleQuery();
           } else {

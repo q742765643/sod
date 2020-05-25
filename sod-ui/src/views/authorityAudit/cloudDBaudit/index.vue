@@ -70,6 +70,7 @@
       <el-table-column prop="storageLogic" label="数据库类型" width="120">
         <template slot-scope="scope">
           <span v-if="scope.row.storageLogic == 'file'">网络共享存储</span>
+          <span v-else-if="scope.row.storageLogic == 'database'">XUGU</span>
           <span v-else>{{ scope.row.storageLogic }}</span>
         </template>
       </el-table-column>

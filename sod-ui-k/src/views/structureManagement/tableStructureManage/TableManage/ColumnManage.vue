@@ -990,6 +990,7 @@ export default {
         });
       } else {
         let flag = false;
+        let length = this.selColumnData.length;
         let publicRows = this.selColumnData;
         publicRows.forEach(element => {
           var switchObj = Object.assign({}, element);
@@ -1013,15 +1014,11 @@ export default {
           });
           return;
         }
-        this.$confirm(
-          "是否插入" + this.selColumnData.length + "条质控字段",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-          }
-        )
+        this.$confirm("是否插入" + length + "条质控字段", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
           .then(() => {
             tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
               if (res.code == 200) {
