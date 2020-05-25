@@ -29,6 +29,11 @@ public class PostgreSql extends DatabaseDclAbs {
     }
 
     @Override
+    public int getUserNum(String user) throws Exception {
+        return 0;
+    }
+
+    @Override
     public void addUser(String identifier, String password, String[] ips) throws Exception {
 
     }

@@ -2,3 +2,5 @@ sod-ui/node_modules/
 sod-ui/src/assets/file/
 target
 sod-ui-k/node_modules/
+*.iml
+sod/
