@@ -111,3 +111,6 @@ TRANSFERURL: http://127.0.0.1:29999/transfer
 log:
   path: E:/log
   level: INFO
+jasypt:
+  encryptor:
+    password: HT95279527

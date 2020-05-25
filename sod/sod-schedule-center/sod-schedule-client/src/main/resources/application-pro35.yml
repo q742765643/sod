@@ -39,7 +39,7 @@ spring:
       driver-class-name: com.xugu.cloudjdbc.Driver
       url: jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8
       username: USR_SOD
-      password: Pnmic_qwe123
+      password: ENC(zNhD62iMk8LDM+YXUWiz5cBtWMs/Lemd)
       type: com.alibaba.druid.pool.DruidDataSource
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
@@ -70,7 +70,7 @@ spring:
      host: 10.40.17.44
      port: 6379
      timeout: 5000
-     password: qwe123
+     password: ENC(VAYNEyA+Ffd2tHqJn95mZA==)
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath:mapper/*.xml
@@ -98,7 +98,7 @@ eureka:
 gbaseserver:
   ip: 10.40.17.35
   user: sod
-  pass: sod2019
+  pass: ENC(yzPRYcBqwhCLAk5Uf9d/Bg==)
 EIDI:
   URL: http://10.20.67.139/store/openapi/v2/logs/push_batch?apikey=e10adc3949ba59abbe56e057f2gg88dd
 TRANSFER:
@@ -108,3 +108,6 @@ log:
   level: INFO
 backup:
   temp-path: /space/app/sod/backup/testTempPath
+jasypt:
+  encryptor:
+    password: HT95279527

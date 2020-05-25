@@ -18,5 +18,14 @@ public class Test {
         String password = textEncryptor.encrypt("Pnmic_qwe123");
         System.out.println("username:"+username);
         System.out.println("password:"+password);
+        String s1 = textEncryptor.encrypt("Pnmic_qwe123");
+        System.out.println("s1:"+s1);
+        String s2 = textEncryptor.encrypt("qwe123");
+        System.out.println("s2:"+s2);
+        String s3 = textEncryptor.encrypt("sod2019");
+        System.out.println("s3:"+s3);
+
+
+
     }
 }
