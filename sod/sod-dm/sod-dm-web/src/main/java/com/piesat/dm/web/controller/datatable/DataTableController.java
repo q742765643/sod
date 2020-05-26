@@ -285,6 +285,10 @@ public class DataTableController {
     @PostMapping(value = "/createTable")
     public ResultT createTable(@RequestBody TableSqlDto tableSqlDto) {
         try {
+            ResultT resultT = this.dataTableService.existTable(tableSqlDto);
+            if (resultT.getCode()==1||resultT.getData().equals(true)){
+                return ResultT.failed("数据库已经存在表结构!");
+            }
             return this.dataTableService.createTable(tableSqlDto);
         } catch (Exception e) {
             e.printStackTrace();

@@ -244,7 +244,8 @@ import {
   databaseDefineGet,
   findByDatabaseDefineId,
   conStatus,
-  findBaseByPId
+  findBaseByPId,
+  connStatus
 } from "@/api/dbDictMangement/dbManagement";
 import { getDicts } from "@/api/system/dict/data";
 import {
@@ -488,7 +489,7 @@ export default {
     },
     //测试数据库连接
     checkParam() {
-      if (this.msgFormDialog.id) {
+      if (this.isDbIdDisable) {
         conStatus({ id: this.msgFormDialog.id }).then(res => {
           if (res.data.checkConn == 1) {
             this.$message({ message: "连接正常", type: "success" });
@@ -497,7 +498,58 @@ export default {
           }
         });
       } else {
-        this.$message({ message: "数据库ID不能为空", type: "error" });
+        if (!this.msgFormDialog.id) {
+          this.$message({ message: "数据库ID不能为空", type: "error" });
+          return;
+        }
+        // 如果新增
+        //验证数据库是否已存在
+        this.formDetail(this.msgFormDialog.id, "repeat");
+        if (!this.msgFormDialog.databaseType) {
+          this.$message({ message: "数据库类型不能为空", type: "error" });
+          return;
+        }
+        if (!this.msgFormDialog.databaseUrl) {
+          this.$message({ message: "数据库访问地址不能为空", type: "error" });
+          return;
+        }
+        if (this.msgFormDialog.databaseAdministratorList.length == 0) {
+          this.$message.error("账户信息列表不能为空");
+          return;
+        }
+        let flagInfo = false;
+        //验证账户信息列表的必填项是否输入
+        this.msgFormDialog.databaseAdministratorList.forEach(element => {
+          if (!element.userName || !element.passWord) {
+            this.$message.error("请正确填写账户信息列表");
+            flagInfo = true;
+            return;
+          }
+        });
+        //验证账户名称是否重复
+        let names = [];
+        this.msgFormDialog.databaseAdministratorList.some((item, i) => {
+          names.push(item.userName);
+        });
+        names.sort();
+        for (var i = 1; i < names.length; i++) {
+          if (names[i - 1] === names[i]) {
+            flagInfo = true;
+            this.$message.error("用户名重复！");
+            return;
+          }
+        }
+        if (flagInfo) {
+          return;
+        }
+
+        if (this.flag) {
+          this.$message({ message: "数据库ID重复", type: "error" });
+          return;
+        }
+        connStatus(this.msgFormDialog).then(response => {
+          this.$message({ message: "连接正常", type: "success" });
+        });
       }
     },
     //存储信息

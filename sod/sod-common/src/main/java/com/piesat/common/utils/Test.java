@@ -24,6 +24,10 @@ public class Test {
         System.out.println("s2:"+s2);
         String s3 = textEncryptor.encrypt("sod2019");
         System.out.println("s3:"+s3);
+        String mmd = textEncryptor.encrypt("nmic@100200");
+        System.out.println("mmd:"+mmd);
+        String are = textEncryptor.encrypt("music#2020");
+        System.out.println("are:"+are);
 
 
 

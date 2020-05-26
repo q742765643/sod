@@ -43,10 +43,10 @@ spring:
     driver-class-name: com.xugu.cloudjdbc.Driver
     #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
     #username: ENC(YxpGRv4xpm1043WVImWDSw==)
-    #password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
+    #password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
     url: jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8
     username: USR_SOD
-    password: Pnmic_qwe123
+    password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
     type: com.alibaba.druid.pool.DruidDataSource
     # 下面为连接池的补充设置，应用到上面所有数据源中
     # 初始化大小，最小，最大
@@ -79,7 +79,7 @@ spring:
     host: 10.40.17.44
     port: 6379
     timeout: 50000
-    password: qwe123
+    password: ENC(grW2MQSkSU2A4Uhp0jvnUg==)
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
@@ -116,12 +116,12 @@ mng:
 #公共元数据接口
 mmd:
   userName: dsmsys
-  password: nmic@100200
+  password: ENC(AlDOo637OgQ1iDRNQUoJCDTum0rjjw33)
 
 #归档系统接口
 are:
   userName: usr_music
-  password: music#2020
+  password: ENC(odKCJcYCq5dm43Fm2r6ikLKBI7ILGegx)
 
 serverfile:
   dbfile: /space/cmadaas/sod/src/sod/file/upload/dbfile

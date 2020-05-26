@@ -19,6 +19,7 @@ import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.lang3.StringUtils;
@@ -142,6 +143,27 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         }
         this.saveDto(dotById);
         return dotById;
+    }
+
+    @Override
+    public ResultT connStatus(DatabaseDefineDto databaseDefineDto) {
+        DatabaseDcl db = null;
+        try {
+            db = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+            if (db!=null){
+                db.closeConnect();
+                return ResultT.success();
+            }else {
+                return ResultT.failed();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }finally {
+            if (db!=null){
+                db.closeConnect();
+            }
+        }
     }
 
     @Override

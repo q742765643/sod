@@ -30,32 +30,32 @@
       <el-table-column label="要素单位" prop="unit" width="100px"></el-table-column>
       <el-table-column label="是否可空" prop="isNull" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isNull">是</span>
+          <span v-if="scope.row.isNull == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="是否可改" prop="isUpdate" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isUpdate">是</span>
+          <span v-if="scope.row.isUpdate == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="是否显示" prop="isShow" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isShow">是</span>
+          <span v-if="scope.row.isShow == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="是否主键" prop="isPrimaryKey" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isPrimaryKey">是</span>
+          <span v-if="scope.row.isPrimaryKey == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
       <el-table-column label="是否管理字段" prop="isManager" width="120px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isManager">是</span>
+          <span v-if="scope.row.isManager == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
@@ -527,13 +527,14 @@ export default {
         });
         return;
       }
-      this.getmatedata();
-      this.getmmdata();
+
       this.matedataSelection = [];
       this.mmdataSelection = [];
       this.searchMatedata = {};
       this.searchMmdata = {};
       this.activePublicName = "first";
+      this.getmatedata();
+      this.getmmdata();
       this.dialogStatus.publicMatedataDialog = true;
     },
     // 公共元数据
@@ -744,7 +745,7 @@ export default {
       this.dialogStatus.codeSortDialog = false;
     },
     exportCode(type) {
-      if (!this.tableInfo.id) {
+      if (!this.tableInfo.id || this.columnData.lenght == 0) {
         this.$message({
           type: "error",
           message: "表不存在"

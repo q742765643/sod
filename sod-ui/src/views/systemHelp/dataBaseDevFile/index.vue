@@ -92,6 +92,7 @@ var baseUrl = process.env.VUE_APP_DM;
 import { getToken, createSign } from "@/utils/auth";
 import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
 var token = getToken();
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   data() {
     return {
@@ -239,7 +240,10 @@ export default {
       this.$refs.uploadRef.clearFiles();
     },
     downloadFile(row) {
-      this.download(row.fileStorPath);
+      // this.download(row.fileStorPath);
+      downloadTable({ filePath: row.fileStorPath }).then(res => {
+        this.downloadfileCommon(res);
+      });
     }
   }
 };

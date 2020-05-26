@@ -380,6 +380,7 @@ import {
   exprotFile,
   getUserByType
 } from "@/api/authorityAudit/cloudDBaudit";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 import {
   chineseLengthTenValidation,
   telphoneNumValidation,
@@ -596,7 +597,11 @@ export default {
     // 文件下载
     handleExport() {
       if (this.msgFormDialog.examineMaterial) {
-        this.download(this.msgFormDialog.examineMaterial);
+        downloadTable({ filePath: this.msgFormDialog.examineMaterial }).then(
+          res => {
+            this.downloadfileCommon(res);
+          }
+        );
       } else {
         this.$message({
           type: "error",

@@ -18,7 +18,7 @@ const user = {
     name: '',
     avatar: '',
     roles: [],
-    permissions: []
+    permissions: [],
   },
 
   mutations: {
@@ -36,7 +36,7 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
-    }
+    },
   },
 
   actions: {
@@ -93,6 +93,7 @@ const user = {
           }
           commit('SET_NAME', user.nickName)
           commit('SET_AVATAR', avatar)
+          localStorage.setItem('userType', user.userType)
           resolve(res)
         }).catch(error => {
           reject(error)

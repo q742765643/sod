@@ -87,6 +87,13 @@ export function conStatus(query) {
     params: query
   });
 }
+export function connStatus(data) {
+  return request({
+    url: baseUrl + "/dm/databaseDefine/connStatus",
+    method: "post",
+    data: data
+  });
+}
 
 // 导出
 export function exportTable(query) {

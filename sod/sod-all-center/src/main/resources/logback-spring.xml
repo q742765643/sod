@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration debug="true">
-    <springProperty scope="context" name="logPath" source="log.path" defaultValue="../logs"/>
+    <springProperty scope="context" name="logPath" source="log.path" defaultValue="../../logs"/>
     <springProperty scope="context" name="logLevel" source="log.level" />
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
@@ -28,7 +28,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${logPath}/sod_webadmin_info_%d{yyyyMMdd}_%i.log</FileNamePattern>
+            <FileNamePattern>${logPath}/sod_server_info_%d{yyyyMMdd}_%i.log</FileNamePattern>
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
@@ -50,7 +50,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${logPath}/sod_webadmin_error_%d{yyyyMMdd}_%i.log</FileNamePattern>
+            <FileNamePattern>${logPath}/sod_server_error_%d{yyyyMMdd}_%i.log</FileNamePattern>
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
@@ -72,7 +72,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${logPath}/sod_webadmin_warn_%d{yyyyMMdd}_%i.log</FileNamePattern>
+            <FileNamePattern>${logPath}/sod_server_warn_%d{yyyyMMdd}_%i.log</FileNamePattern>
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
@@ -94,7 +94,7 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${logPath}/sod_webadmin_debug_%d{yyyyMMdd}_%i.log</FileNamePattern>
+            <FileNamePattern>${logPath}/sod_server_debug_%d{yyyyMMdd}_%i.log</FileNamePattern>
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
@@ -126,5 +126,4 @@
         <appender-ref ref="SYSTEM_FILE"/>
         <appender-ref ref="DEBUG_FILE"/>
     </root>
-
 </configuration>

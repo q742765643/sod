@@ -18,8 +18,8 @@ public enum ReturnCodeEnum {
     ReturnCodeEnum_401_ERROR(401, "未登陆或者未授权"),
     ReturnCodeEnum_402_ERROR(402, "账户被冻结"),
     ReturnCodeEnum_403_ERROR(403, "无访问权限"),
-    ReturnCodeEnum_404_ERROR(403, "用户不存在"),
-    ReturnCodeEnum_405_ERROR(403, "账户密码错误"),
+    ReturnCodeEnum_404_ERROR(404, "用户不存在"),
+    ReturnCodeEnum_405_ERROR(405, "账户密码错误"),
 
     ReturnCodeEnum_501_ERROR(501, "GRPC调用无服务异常"),
 
