@@ -1152,10 +1152,35 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Override
     public List<DatabaseSpecialDto> findByParam(DatabaseSpecialDto databaseSpecialDto) {
-        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotNullString(databaseSpecialDto.getSdbName())){
-            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(),databaseSpecialDto.getSdbName());
+        DatabaseSpecialEntity databaseSpecialEntity=databaseSpecialMapper.toEntity(databaseSpecialDto);
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotNullString(databaseSpecialEntity.getExamineStatus())) {
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(), databaseSpecialEntity.getExamineStatus());
         }
+        if (StringUtils.isNotNullString(databaseSpecialEntity.getSdbName())) {
+            specificationBuilder.add("sdbName", SpecificationOperator.Operator.likeAll.name(), databaseSpecialEntity.getSdbName());
+        }
+        if (StringUtils.isNotNullString(databaseSpecialDto.getUserName())) {
+            //调用接口 根据用户名查询用户id
+            List<String> userId = new ArrayList<String>();
+            userId.add("noUseId");
+            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%" + databaseSpecialDto.getUserName() + "%");
+            if (userEntities != null && userEntities.size() > 0) {
+                for (UserEntity userEntity : userEntities) {
+                    userId.add(userEntity.getUserName());
+                }
+            }
+            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
+        }
+        List<String> userId = new ArrayList<String>();
+        userId.add("noUseId");
+        List<UserEntity> users = userDao.findByCheckedNot("0");
+        if (users != null && users.size() > 0) {
+            for (UserEntity userEntity : users) {
+                userId.add(userEntity.getUserName());
+            }
+        }
+        specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
         List<DatabaseSpecialEntity> databaseSpecialEntities = this.getAll(specificationBuilder.generateSpecification());
         List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialMapper.toDto(databaseSpecialEntities);
         return databaseSpecialDtos;

@@ -9,7 +9,7 @@
         <result column="FILE_STOR_PATH" jdbcType="VARCHAR" property="fileStorPath" />
         <result column="FILE_PICTURE" jdbcType="VARCHAR" property="filePictrue" />
         <result column="FILE_SUFFIX" jdbcType="VARCHAR" property="fileSuffix" />
-        <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+        <result column="UPDATE_TIME"  property="updateTime" />
     </resultMap>
     <!-- 条件查询 -->
     <select id="selectList" parameterType="com.piesat.sod.system.entity.DbFileEntity" resultMap="baseResult">

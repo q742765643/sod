@@ -78,6 +78,9 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         if(StringUtils.isNotNullString((String) metaBackupEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaBackupEntity.getParamt().get("endTime"));
         }
+        if(StringUtils.isNotNullString(metaBackupEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId",SpecificationOperator.Operator.eq.name(),metaBackupEntity.getDatabaseId());
+        }
         Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<MetaBackupEntity> metaBackupEntities= (List<MetaBackupEntity>) pageBean.getPageData();
@@ -181,6 +184,9 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         }
         if(StringUtils.isNotNullString((String) metaBackupEntity.getParamt().get("endTime"))){
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) metaBackupEntity.getParamt().get("endTime"));
+        }
+        if(StringUtils.isNotNullString(metaBackupEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId",SpecificationOperator.Operator.eq.name(),metaBackupEntity.getDatabaseId());
         }
         Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
         List<MetaBackupEntity> metaBackupEntities=this.getAll(specificationBuilder.generateSpecification(),sort);
