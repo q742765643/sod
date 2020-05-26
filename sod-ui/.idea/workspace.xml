@@ -2,16 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7cdccf2f-582b-4303-a525-f8af74a9cb9d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-common/sod-dm-common.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-common/sod-dm-common.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-core/sod-dm-core.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-core/sod-dm-core.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/structureManagement/consistencyCheck/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/structureManagement/consistencyCheck/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-all-center/src/main/resources/application-pro44.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-all-center/src/main/resources/application-pro44.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-all-center/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-all-center/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-core/src/main/java/com/piesat/dm/core/api/impl/PostgreSql.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-core/src/main/java/com/piesat/dm/core/api/impl/PostgreSql.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-core/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-core/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-api/src/main/java/com/piesat/dm/rpc/util/DatabaseUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-api/src/main/java/com/piesat/dm/rpc/util/DatabaseUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/GrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/GrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/datatable/DatabaseSqlService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/datatable/DatabaseSqlService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/src/main/resources/application-pro35.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/src/main/resources/application-pro35.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/src/main/resources/application-pro36.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/src/main/resources/application-pro36.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-client/src/main/resources/logback.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-web/src/main/resources/application-pro44.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-web/src/main/resources/application-pro44.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-web/src/main/resources/logback.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,11 +47,27 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="dev" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -58,6 +81,9 @@
       <updated>1590293747590</updated>
       <workItem from="1590293750261" duration="40000" />
       <workItem from="1590293865371" duration="80000" />
+      <workItem from="1590370707707" duration="2234000" />
+      <workItem from="1590374177620" duration="4741000" />
+      <workItem from="1590456450574" duration="607000" />
     </task>
     <servers />
   </component>
@@ -65,9 +91,42 @@
     <option name="version" value="2" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="65" y="15" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590376499106">
+      <screen x="0" y="0" width="1218" height="720" />
+    </state>
+    <state x="65" y="15" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1218.720@0.0.1218.720" timestamp="1590376499106" />
+    <state x="390" y="115" key="FileChooserDialogImpl" timestamp="1590376483362">
+      <screen x="0" y="0" width="1218" height="720" />
+    </state>
+    <state x="390" y="115" key="FileChooserDialogImpl/0.0.1218.720@0.0.1218.720" timestamp="1590376483362" />
+    <state width="1237" height="232" key="GridCell.Tab.0.bottom" timestamp="1590405482419">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1175" height="232" key="GridCell.Tab.0.bottom/0.0.1218.720@0.0.1218.720" timestamp="1590376692165" />
+    <state width="1237" height="232" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1590405482419" />
+    <state width="1237" height="232" key="GridCell.Tab.0.center" timestamp="1590405482419">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1175" height="232" key="GridCell.Tab.0.center/0.0.1218.720@0.0.1218.720" timestamp="1590376692164" />
+    <state width="1237" height="232" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1590405482419" />
+    <state width="1237" height="232" key="GridCell.Tab.0.left" timestamp="1590405482419">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1175" height="232" key="GridCell.Tab.0.left/0.0.1218.720@0.0.1218.720" timestamp="1590376692164" />
+    <state width="1237" height="232" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1590405482419" />
+    <state width="1237" height="232" key="GridCell.Tab.0.right" timestamp="1590405482419">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state width="1175" height="232" key="GridCell.Tab.0.right/0.0.1218.720@0.0.1218.720" timestamp="1590376692164" />
+    <state width="1237" height="232" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1590405482419" />
     <state x="111" y="0" key="SettingsEditor" timestamp="1590293772246">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="111" y="0" key="SettingsEditor/0.0.1280.680@0.0.1280.680" timestamp="1590293772246" />
+    <state x="644" y="0" width="636" height="680" key="find.popup" timestamp="1590396267805">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="613" y="0" width="605" height="720" key="find.popup/0.0.1218.720@0.0.1218.720" timestamp="1590375754753" />
+    <state x="644" y="0" width="636" height="680" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1590396267805" />
   </component>
 </project>

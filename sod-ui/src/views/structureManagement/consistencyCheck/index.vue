@@ -79,6 +79,7 @@
             style="width:80%;"
             v-model="msgFormDialog.databaseId"
             placeholder="请选择添加数据库"
+            filterable
             @change="databaseChange"
           >
             <el-option
@@ -270,12 +271,12 @@ export default {
       getDatabaseName().then(response => {
         var resdata = response.data;
         resdata.forEach(element => {
-          if (
-            element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
-            element.DATABASE_TYPE.indexOf("xugu") != -1
-          ) {
+         // if (
+            //element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
+           // element.DATABASE_TYPE.indexOf("xugu") != -1
+         // ) {
             this.databaseNameOptions.push(element);
-          }
+          //}
         });
       });
     },

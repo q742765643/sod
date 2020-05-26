@@ -46,6 +46,8 @@ public class DatabaseUtil {
             db = new Gbase8a(databaseUrl, dad.getUserName(), dad.getPassWord());
         } else if (databaseInfo.getCassandra().equals(databaseType)) {
             db = new Cassandra(databaseIp, port, dad.getUserName(), dad.getPassWord(), database.getSchemaName());
+        } else if (databaseInfo.getPostgresql().equals(databaseType)) {
+            db = new PostgreSql(databaseUrl, dad.getUserName(), dad.getPassWord());
         }
         return db;
     }

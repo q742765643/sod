@@ -103,7 +103,7 @@ EIDI:
 TRANSFER:
   URL: http://127.0.0.1:29999/transfer
 log:
-  path: ./log
+  path: ../logs
   level: INFO
 backup:
   temp-path: /space/app/sod/backup/testTempPath

@@ -365,6 +365,10 @@ public class GrpcService {
                     createSql = this.databaseSqlService.getCassandraCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
                     insertSql = this.databaseSqlService.getCassandraInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
                     querySql = this.databaseSqlService.getCassandraQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                } else if (this.databaseInfo.getPostgresql().equals(databaseType.toLowerCase())) {
+                    createSql = this.databaseSqlService.getPostgreSqlCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
+                    insertSql = this.databaseSqlService.getPostgreSqlInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
+                    querySql = this.databaseSqlService.getPostgreSqlQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
                 }
                 map.put("createSql", createSql);
                 map.put("insertSql", insertSql);
