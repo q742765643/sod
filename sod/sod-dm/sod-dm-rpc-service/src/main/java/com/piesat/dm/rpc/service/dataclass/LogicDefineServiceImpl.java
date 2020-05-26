@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.dataclass;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -18,6 +19,8 @@ import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
+import com.piesat.ucenter.rpc.api.system.DictDataService;
+import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,10 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     private DatabaseDefineService databaseDefineService;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @GrpcHthtClient
+    private DictDataService dictDataService;
+    @Autowired
+    private LogicDefineService logicDefineService;
 
 
     @Override
@@ -142,6 +149,8 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
 
     @Override
     public void exportExcel(LogicDefineDto logicDefineDto) {
+        List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType("sys_storage_type");
+        List<LogicDefineDto> allLogicDefine = logicDefineService.getAllLogicDefine();
         List<LogicDefineDto> dtoList = this.findByParam(logicDefineDto);
         List<LogicDefineEntity> entities=logicDefineMapper.toEntity(dtoList);
         ExcelUtil<LogicDefineEntity> util=new ExcelUtil(LogicDefineEntity.class);

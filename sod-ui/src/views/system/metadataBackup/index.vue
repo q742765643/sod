@@ -131,7 +131,7 @@
       <el-tab-pane label="元数据备份监控" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="数据库IP">
-            <el-select style="width:200px" filterable v-model="rowlogForm.name">
+            <el-select style="width:200px" filterable v-model="rowlogForm.databaseId">
               <el-option
                 v-for="(item,index) in ipList"
                 :key="index"

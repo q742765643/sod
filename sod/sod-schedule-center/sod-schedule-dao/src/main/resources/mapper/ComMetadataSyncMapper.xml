@@ -35,11 +35,11 @@
 			t_sod_sync_commetadata_record
 		where
 			1=1
-		<if test="startTime != null">
-			and start_time &gt; #{startTime}
+       <if test="paramt.beginTime != null and paramt.beginTime != ''"><!-- 开始时间检索 -->
+			and start_time &gt; #{paramt.beginTime}
 		</if>
-		<if test="stopTime != null">
-			and stop_time &lt; #{stopTime}
+       <if test="paramt.endTime != null and paramt.endTime != ''"><!-- 开始时间检索 -->
+			and stop_time &lt; #{paramt.endTime}
 		</if>
 		<if test="syncTableName != '' and syncTableName != null">
 			and sync_table_name = #{syncTableName}
