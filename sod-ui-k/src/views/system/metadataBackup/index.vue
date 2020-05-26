@@ -541,7 +541,7 @@ export default {
       this.handleObj = {};
       this.currentRow = [];
       this.handleDialog = false;
-      if (this.title.indexOf("添加") != -1) {
+      if (this.dialogTitle.indexOf("添加") != -1) {
         this.handleQuery();
       } else {
         this.getMetaBackupList();

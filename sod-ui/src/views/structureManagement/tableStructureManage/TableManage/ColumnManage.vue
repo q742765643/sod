@@ -65,32 +65,32 @@
       <el-table-column label="要素单位" prop="unit" width="100px"></el-table-column>
       <el-table-column label="是否可空" prop="isNull" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isNull">是</span>
+          <span v-if="scope.row.isNull == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="是否可改" prop="isUpdate" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isUpdate">是</span>
+          <span v-if="scope.row.isUpdate == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="是否显示" prop="isShow" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isShow">是</span>
+          <span v-if="scope.row.isShow == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="是否主键" prop="isPrimaryKey" width="100px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isPrimaryKey">是</span>
+          <span v-if="scope.row.isPrimaryKey == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
       <el-table-column label="是否管理字段" prop="isManager" width="120px">
         <template slot-scope="scope">
-          <span v-if="scope.row.isManager">是</span>
+          <span v-if="scope.row.isManager == true">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
@@ -792,6 +792,13 @@ export default {
         this.$message({
           type: "error",
           message: "表不存在"
+        });
+        return;
+      }
+      if (this.columnData.length == 0) {
+        this.$message({
+          type: "error",
+          message: "不能导出空表"
         });
         return;
       }

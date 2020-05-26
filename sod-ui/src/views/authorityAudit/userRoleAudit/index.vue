@@ -262,7 +262,7 @@ export default {
         if (response.code === 200) {
           this.msgSuccess("修改成功");
           this.dialogRole = false;
-          this.handleQuery();
+          this.getList();
         } else {
           this.msgError(response.msg);
         }

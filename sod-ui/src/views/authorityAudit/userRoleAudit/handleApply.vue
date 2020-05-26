@@ -220,8 +220,8 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           inputValidator: value => {
-            if (value.trim().length < 1 || value.trim().length > 50) {
-              return "拒绝原因长度限制1-50个字符";
+            if (value.trim().length < 1 || value.trim().length > 500) {
+              return "拒绝原因长度限制1-500个字符";
             }
           }
         })
@@ -301,8 +301,8 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           inputValidator: value => {
-            if (value.trim().length < 1 || value.trim().length > 50) {
-              return "拒绝原因长度限制1-50个字符";
+            if (value.trim().length < 1 || value.trim().length > 500) {
+              return "拒绝原因长度限制1-500个字符";
             }
           }
         })
