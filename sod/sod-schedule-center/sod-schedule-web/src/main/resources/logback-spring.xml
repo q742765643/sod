@@ -18,7 +18,6 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-
     <!-- 系统INFO日志文件 -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 过滤器，只打印ERROR级别的日志 -->
@@ -29,23 +28,18 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${logPath}/info.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${logPath}/sod_webadmin_info_%d{yyyyMMdd}_%i.log</FileNamePattern>
             <!--日志文件保留天数-->
-            <!--<MaxHistory>15</MaxHistory>-->
+            <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
-            <MaxFileSize>10MB</MaxFileSize>
+            <MaxFileSize>50MB</MaxFileSize>
         </rollingPolicy>
-
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%-5level] %logger{50} - %msg%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    <logger name="info_error" additivity="true">
-        <appender-ref ref="INFO_FILE"/>
-    </logger>
-
     <!-- 系统错误日志文件 -->
     <appender name="SYSTEM_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 过滤器，只打印ERROR级别的日志 -->
@@ -56,27 +50,81 @@
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${logPath}/error.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${logPath}/sod_webadmin_error_%d{yyyyMMdd}_%i.log</FileNamePattern>
             <!--日志文件保留天数-->
-            <MaxHistory>15</MaxHistory>
+            <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
-            <MaxFileSize>10MB</MaxFileSize>
+            <MaxFileSize>50MB</MaxFileSize>
         </rollingPolicy>
-
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%-5level] %logger{50} - %msg%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
+    <!-- 系统错误日志文件 -->
+    <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只打印ERROR级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${logPath}/sod_webadmin_warn_%d{yyyyMMdd}_%i.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+            <!--日志文件最大的大小-->
+            <MaxFileSize>50MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%-5level] %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器，只打印ERROR级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${logPath}/sod_webadmin_debug_%d{yyyyMMdd}_%i.log</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+            <!--日志文件最大的大小-->
+            <MaxFileSize>50MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%-5level] %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="info_error" additivity="true">
+        <appender-ref ref="INFO_FILE"/>
+    </logger>
     <logger name="system_error" additivity="true">
         <appender-ref ref="SYSTEM_FILE"/>
     </logger>
-
-
+    <logger name="warn_error" additivity="true">
+        <appender-ref ref="WARN_FILE"/>
+    </logger>
+    <logger name="debug_error" additivity="true">
+        <appender-ref ref="DEBUG_FILE"/>
+    </logger>
     <root level="${logLevel}">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="SYSTEM_FILE"/>
+        <appender-ref ref="WARN_FILE"/>
         <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="SYSTEM_FILE"/>
+        <appender-ref ref="DEBUG_FILE"/>
     </root>
+
 </configuration>
