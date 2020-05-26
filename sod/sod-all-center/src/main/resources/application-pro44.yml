@@ -106,7 +106,7 @@ DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=
 DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
 
 log:
-  path: ../log
+  path: ../logs
   level: INFO
 
 #数据库可视化部署节点
