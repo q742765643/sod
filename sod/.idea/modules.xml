@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/sod.iml" filepath="$PROJECT_DIR$/sod.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-all-center/sod-all-center.iml" filepath="$PROJECT_DIR$/sod-all-center/sod-all-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-common/sod-common.iml" filepath="$PROJECT_DIR$/sod-common/sod-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm-common/sod-dm-common.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm-common/sod-dm-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm-core/sod-dm-core.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm-core/sod-dm-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm-dao/sod-dm-dao.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm-dao/sod-dm-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm-rpc-api/sod-dm-rpc-api.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm-rpc-api/sod-dm-rpc-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm-rpc-service/sod-dm-rpc-service.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm-rpc-service/sod-dm-rpc-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-dm/sod-dm-web/sod-dm-web.iml" filepath="$PROJECT_DIR$/sod-dm/sod-dm-web/sod-dm-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-project-eureka/sod-project-eureka.iml" filepath="$PROJECT_DIR$/sod-project-eureka/sod-project-eureka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-project-grpc/sod-project-grpc.iml" filepath="$PROJECT_DIR$/sod-project-grpc/sod-project-grpc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-center.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-center.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-client/sod-schedule-client.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-client/sod-schedule-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-common/sod-schedule-common.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-common/sod-schedule-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-dao/sod-schedule-dao.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-dao/sod-schedule-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-rpc-api/sod-schedule-rpc-api.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-rpc-api/sod-schedule-rpc-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-rpc-service/sod-schedule-rpc-service.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-rpc-service/sod-schedule-rpc-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-schedule-center/sod-schedule-web/sod-schedule-web.iml" filepath="$PROJECT_DIR$/sod-schedule-center/sod-schedule-web/sod-schedule-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-system/sod-system.iml" filepath="$PROJECT_DIR$/sod-system/sod-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-system/sod-system-common/sod-system-common.iml" filepath="$PROJECT_DIR$/sod-system/sod-system-common/sod-system-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-system/sod-system-dao/sod-system-dao.iml" filepath="$PROJECT_DIR$/sod-system/sod-system-dao/sod-system-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-system/sod-system-rpc-api/sod-system-rpc-api.iml" filepath="$PROJECT_DIR$/sod-system/sod-system-rpc-api/sod-system-rpc-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-system/sod-system-rpc-service/sod-system-rpc-service.iml" filepath="$PROJECT_DIR$/sod-system/sod-system-rpc-service/sod-system-rpc-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-system/sod-system-web/sod-system-web.iml" filepath="$PROJECT_DIR$/sod-system/sod-system-web/sod-system-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter-common/sod-ucenter-common.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter-common/sod-ucenter-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter-dao/sod-ucenter-dao.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter-dao/sod-ucenter-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter-rpc-api/sod-ucenter-rpc-api.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter-rpc-api/sod-ucenter-rpc-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter-rpc-service/sod-ucenter-rpc-service.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter-rpc-service/sod-ucenter-rpc-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter-sso-client/sod-ucenter-sso-client.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter-sso-client/sod-ucenter-sso-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-ucenter/sod-ucenter-web/sod-ucenter-web.iml" filepath="$PROJECT_DIR$/sod-ucenter/sod-ucenter-web/sod-ucenter-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sod-util/sod-util.iml" filepath="$PROJECT_DIR$/sod-util/sod-util.iml" />
+    </modules>
+  </component>
+</project>

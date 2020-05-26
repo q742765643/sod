@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.gbass:connector-java:bin:8.3.81.53">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/gbass/connector-java/8.3.81.53/connector-java-8.3.81.53-bin.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/gbass/connector-java/8.3.81.53/connector-java-8.3.81.53-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/gbass/connector-java/8.3.81.53/connector-java-8.3.81.53-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
