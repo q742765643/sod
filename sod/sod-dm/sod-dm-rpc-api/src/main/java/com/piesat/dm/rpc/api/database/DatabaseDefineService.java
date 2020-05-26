@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.database;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 
@@ -33,6 +34,8 @@ public interface DatabaseDefineService {
     PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
 
     DatabaseDefineDto conStatus(String id);
+
+    ResultT connStatus(DatabaseDefineDto databaseDefineDto);
 
     List<DatabaseDefineDto> findByIdIn(List<String> ids);
 

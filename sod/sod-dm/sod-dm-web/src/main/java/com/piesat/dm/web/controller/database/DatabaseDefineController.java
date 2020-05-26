@@ -201,6 +201,18 @@ public class DatabaseDefineController {
         }
     }
 
+    @ApiOperation(value = "查询数据库连接(新增)")
+    @RequiresPermissions("dm:databaseDefine:connStatus")
+    @PostMapping(value = "/connStatus")
+    public ResultT connStatus(DatabaseDefineDto databaseDefineDto) {
+        try {
+            return this.databaseDefineService.connStatus(databaseDefineDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据用户ID和逻辑库ID查询物理库的信息")
     //@RequiresPermissions("dm:databaseDefine:findByUserIdAndLogicId")
     @GetMapping(value = "/findByUserIdAndLogicId")
