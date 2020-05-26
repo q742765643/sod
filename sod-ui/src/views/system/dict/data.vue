@@ -169,7 +169,7 @@ import {
   exportData
 } from "@/api/system/dict/data";
 import { listType, getType } from "@/api/system/dict/type";
-
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   data() {
     return {
@@ -246,7 +246,9 @@ export default {
           return exportBackup(queryParams);
         })
         .then(response => {
-          this.download(response.msg);
+          downloadTable({ filePath: response.msg }).then(res => {
+            this.downloadfileCommon(res);
+          });
         })
         .catch(function() {});
     },

@@ -527,13 +527,14 @@ export default {
         });
         return;
       }
-      this.getmatedata();
-      this.getmmdata();
+
       this.matedataSelection = [];
       this.mmdataSelection = [];
       this.searchMatedata = {};
       this.searchMmdata = {};
       this.activePublicName = "first";
+      this.getmatedata();
+      this.getmmdata();
       this.dialogStatus.publicMatedataDialog = true;
     },
     // 公共元数据

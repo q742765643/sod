@@ -23,7 +23,12 @@
         <el-col :span="8" id="unCheckBox">
           <div class="colBox">
             <span class="homeTitle">待办提醒</span>
-            <div class="eventBox">
+            <div
+              class="eventBox"
+              v-if="userType === '11'"
+              style="text-align: center;padding-top: 52px;"
+            >暂无待办提醒</div>
+            <div class="eventBox" v-else>
               <div :key="index" class="eventList" v-for="(item, index) in eventList">
                 <i class="el-icon-price-tag"></i>
                 <span class="name">{{ item.name }}</span>，待办
@@ -165,7 +170,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-// import { interfaceObj } from "@/urlConfig.js";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 import {
   findDataCount,
   findDataMonthCount,
@@ -181,6 +186,7 @@ export default {
   components: {},
   data() {
     return {
+      userType: "",
       pageFlag: this.$route.params.pageFlag,
       classType: "primary",
       DBType: "",
@@ -264,6 +270,8 @@ export default {
     this.getHelpDocument();
     this.getPieBox();
     this.queryCheckList();
+    this.userType = localStorage.getItem("userType");
+    console.log(this.userType);
   },
   watch: {
     pieBox: function() {
@@ -757,7 +765,9 @@ export default {
     },
     // 下载
     downloadWord(path) {
-      this.download(path);
+      downloadTable({ filePath: path }).then(res => {
+        this.downloadfileCommon(res);
+      });
     },
 
     //获取接口详细信息

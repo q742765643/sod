@@ -232,6 +232,7 @@ import {
   getBizDatabaseUser
 } from "@/api/authorityAudit/DBaccount";
 import { getUserByType } from "@/api/authorityAudit/cloudDBaudit";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 import {
   unstartnumValidation,
   englishAndNumValidation,
@@ -405,7 +406,11 @@ export default {
     },
     // 下载
     detailExport() {
-      this.download(this.msgFormDialog.applyMaterial);
+      downloadTable({ filePath: this.msgFormDialog.applyMaterial }).then(
+        res => {
+          this.downloadfileCommon(res);
+        }
+      );
     },
     // 预览
     previewDocx() {

@@ -158,6 +158,7 @@ import {
   exportTable,
   downHistoryDfcheckFile
 } from "@/api/structureManagement/consistencyCheck";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   data() {
     return {
@@ -271,11 +272,11 @@ export default {
       getDatabaseName().then(response => {
         var resdata = response.data;
         resdata.forEach(element => {
-         // if (
-            //element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
-           // element.DATABASE_TYPE.indexOf("xugu") != -1
-         // ) {
-            this.databaseNameOptions.push(element);
+          // if (
+          //element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
+          // element.DATABASE_TYPE.indexOf("xugu") != -1
+          // ) {
+          this.databaseNameOptions.push(element);
           //}
         });
       });
@@ -298,7 +299,11 @@ export default {
       /*downHistoryDfcheckFile(obj).then(res => {
         this.downloadfileCommon(res);
       });*/
-      this.download(row.fileDirectory + "/" + row.fileName);
+      downloadTable({ filePath: row.fileDirectory + "/" + row.fileName }).then(
+        res => {
+          this.downloadfileCommon(res);
+        }
+      );
     },
     addReportData() {
       this.addDataDialog = true;
