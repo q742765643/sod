@@ -23,7 +23,12 @@
         <el-col :span="8" id="unCheckBox">
           <div class="colBox">
             <span class="homeTitle">待办提醒</span>
-            <div class="eventBox">
+            <div
+              class="eventBox"
+              v-if="userType === '11'"
+              style="text-align: center;padding-top: 52px;"
+            >暂无待办提醒</div>
+            <div class="eventBox" v-else>
               <div :key="index" class="eventList" v-for="(item, index) in eventList">
                 <i class="el-icon-price-tag"></i>
                 <span class="name">{{ item.name }}</span>，待办
@@ -164,8 +169,8 @@
 </template>
 
 <script>
-// import { interfaceObj } from "@/urlConfig.js";
 import { mapGetters } from "vuex";
+// import { interfaceObj } from "@/urlConfig.js";
 import {
   findDataCount,
   findDataMonthCount,
@@ -181,6 +186,7 @@ export default {
   components: {},
   data() {
     return {
+      userType: "",
       pageFlag: this.$route.params.pageFlag,
       classType: "primary",
       DBType: "",
@@ -254,6 +260,7 @@ export default {
     if (this.pageFlag) {
       document.querySelector("#" + this.pageFlag).scrollIntoView(true);
     }
+    console.log(this.permission_routes);
   },
   computed: {
     ...mapGetters(["permission_routes", "sidebar"])
@@ -263,6 +270,8 @@ export default {
     this.getHelpDocument();
     this.getPieBox();
     this.queryCheckList();
+    this.userType = localStorage.getItem("userType");
+    console.log(this.userType);
   },
   watch: {
     pieBox: function() {
@@ -272,6 +281,7 @@ export default {
       });
     }
   },
+
   methods: {
     resetData(jsonObj, name) {
       // 循环所有键
@@ -316,37 +326,23 @@ export default {
     },
     // 代办跳页
     goPageUrl(name, value) {
-      if (name == "新增资料审核") {
-        this.$router.push({
-          name: "数据注册审核",
-          // path: "/authorityAudit/DRegistration",
-          params: { status: value }
-        });
-      } else if (name == "数据授权审核") {
-        this.$router.push({
-          name: "资料访问权限",
-          // path: "/authorityAudit/materialPower",
-          params: { status: "0" + value }
-        });
-      } else if (name == "数据库账户审核") {
-        this.$router.push({
-          name: "数据库访问账户",
-          // path: "/authorityAudit/DBaccount",
-          params: { status: String(value - 1) }
-        });
-      } else if (name == "业务专题库审核") {
-        this.$router.push({
-          name: "专题库审核",
-          // path: "/authorityAudit/topicLibraryAudit",
-          params: { status: String(value) }
-        });
-      } else if (name == "云数据库审核") {
-        this.$router.push({
-          name: "云数据库审核",
-          // path: "/authorityAudit/cloudDBaudit",
-          params: { status: "0" + value }
-        });
+      this.resetData(this.permission_routes, name);
+      let status = "";
+      if (this.menuName == "数据注册审核") {
+        status = value;
+      } else if (this.menuName == "资料访问权限") {
+        status = "0" + value;
+      } else if (this.menuName == "数据库访问账户") {
+        status = String(value - 1);
+      } else if (this.menuName == "专题库审核") {
+        status = String(value);
+      } else if (this.menuName == "云数据库审核") {
+        status = "0" + value;
       }
+      this.$router.push({
+        name: this.menuName,
+        params: { status: status }
+      });
     },
     // 按资料分类的chart
     drawBarChartClass() {
@@ -534,7 +530,6 @@ export default {
     getPieBox() {
       findLogicInfo().then(res => {
         this.pieBox = res.data;
-        console.log(this.pieBox);
       });
     },
     // 饼图

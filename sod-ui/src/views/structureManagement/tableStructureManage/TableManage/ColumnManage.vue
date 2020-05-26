@@ -572,12 +572,13 @@ export default {
         });
         return;
       }
-      this.getmatedata();
-      this.getmmdata();
+
       this.matedataSelection = [];
       this.mmdataSelection = [];
       this.searchMatedata = {};
       this.searchMmdata = {};
+      this.getmatedata();
+      this.getmmdata();
       this.activePublicName = "first";
       this.dialogStatus.publicMatedataDialog = true;
     },

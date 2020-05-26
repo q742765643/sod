@@ -52,7 +52,7 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/user/profile" v-if="portalFlag === false">
+          <router-link to="/user/profile" v-show="userType ==='00'">
             <el-dropdown-item>个人中心</el-dropdown-item>
           </router-link>
           <el-dropdown-item>
@@ -88,7 +88,7 @@ export default {
   },
   data() {
     return {
-      portalFlag: false,
+      userType: "00",
       uncheckNum: 0,
       infoList: []
     };
@@ -96,10 +96,7 @@ export default {
   created() {
     this.getEventList();
     this.getChangeEditList();
-    let winHref = window.location.href;
-    if (winHref.indexOf("interfaceId") > -1) {
-      this.portalFlag = true;
-    }
+    this.userType = localStorage.getItem("userType");
   },
   computed: {
     ...mapGetters(["sidebar", "avatar", "device"]),
@@ -145,15 +142,17 @@ export default {
       });
     },
     getEventList() {
-      findUndoCount().then(res => {
-        let data = res.data;
-        this.uncheckNum =
-          data.xzzl.uncheck +
-          data.sjsq.uncheck +
-          data.sjkzh.uncheck +
-          data.ywztk.uncheck +
-          data.ysjk.uncheck;
-      });
+      if (localStorage.getItem("userType") === "00") {
+        findUndoCount().then(res => {
+          let data = res.data;
+          this.uncheckNum =
+            data.xzzl.uncheck +
+            data.sjsq.uncheck +
+            data.sjkzh.uncheck +
+            data.ywztk.uncheck +
+            data.ysjk.uncheck;
+        });
+      }
     },
     async logout() {
       this.$confirm("确定注销并退出系统吗？", "提示", {
@@ -163,6 +162,7 @@ export default {
       }).then(() => {
         this.$store.dispatch("LogOut").then(() => {
           //location.reload();
+          localStorage.clear();
           this.$store.state.tagsView.visitedViews = [];
           this.$router.push("/login");
         });
@@ -184,6 +184,7 @@ export default {
   overflow: hidden;
   position: relative;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background: #fff;
   .hamburger-container {
     line-height: 46px;
     height: 100%;

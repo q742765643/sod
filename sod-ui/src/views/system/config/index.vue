@@ -184,7 +184,7 @@ import {
   updateConfig,
   exportConfig
 } from "@/api/system/config";
-
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   data() {
     return {
@@ -370,7 +370,9 @@ export default {
           return exportConfig(queryParams);
         })
         .then(response => {
-          this.download(response.msg);
+          downloadTable({ filePath: response.msg }).then(res => {
+            this.downloadfileCommon(res);
+          });
         })
         .catch(function() {});
     }
