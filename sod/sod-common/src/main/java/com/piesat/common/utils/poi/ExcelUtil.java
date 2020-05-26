@@ -11,6 +11,7 @@ import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
@@ -364,6 +365,8 @@ public class ExcelUtil<T>
     {
         int startNo = index * sheetSize;
         int endNo = Math.min(startNo + sheetSize, list.size());
+        Map<Integer,Integer> poi=new HashMap<>();
+        int indexT = 1;
         for (int i = startNo; i < endNo; i++)
         {
             row = sheet.createRow(i + 1 - startNo);
@@ -376,9 +379,33 @@ public class ExcelUtil<T>
                 Excel excel = (Excel) os[1];
                 // 设置实体类私有属性可访问
                 field.setAccessible(true);
-                this.addCell(excel, row, vo, field, column++);
+                if(indexT==1){
+                    poi.put(column,indexT);
+                }
+                if(indexT>1){
+                    try {
+                        Object oldv = getTargetValue(list.get(i-1), field, excel);
+                        Object oldn = getTargetValue(vo, field, excel);
+                        if(!String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            if(indexT-1!=poi.get(column)){
+                                CellRangeAddress cra=new CellRangeAddress(poi.get(column),indexT-1,column,column);
+                                sheet.addMergedRegion(cra);
+                            }
+                            poi.put(column,indexT);
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                this.addCell(excel, row, vo, field,column);
+                column++;
             }
+
+            indexT++;
         }
+
     }
 
     /**
