@@ -126,7 +126,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                         JSONObject jsonObject = JSONObject.parseObject(allStatus);
                         jsonThree.putAll(jsonObject);
                     }catch (Exception e){
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
 
                 }
@@ -251,7 +251,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }
         syncTaskDto.setSourceTable(sourceIds.toString());
         syncTaskDto.setSlaveTables(slaveIds.toString());
-        if(StringUtils.isNotNullString(syncTaskDto.getDiOff()) && "true".equals(syncTaskDto.getDiOff())){
+        /*if(StringUtils.isNotNullString(syncTaskDto.getDiOff()) && "true".equals(syncTaskDto.getDiOff())){
             syncTaskDto.setDiOff("1");
         }else{
             syncTaskDto.setDiOff("0");
@@ -260,7 +260,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             syncTaskDto.setDiscardOnDuplicate("1");
         }else{
             syncTaskDto.setDiscardOnDuplicate("0");
-        }
+        }*/
         if(syncTaskDto.getBeginTime() != null){
             syncTaskDto.setLastSuccessTime(syncTaskDto.getBeginTime());
         }
