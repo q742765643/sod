@@ -44,7 +44,7 @@ export function editBase(data) {
 //  从业务用户审核来的
 export function databaseUserExiget(query) {
   return request({
-    url: baseUrl + '/dm/databaseUser/databaseUserExiget',
+    url: baseUrl + '/dm/databaseUser/databaseUserExi',
     async: true,
     method: 'get',
     params: query
