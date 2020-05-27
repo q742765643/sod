@@ -15,6 +15,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.util.TimeZone;
+
 @EnableEurekaClient
 @EnableDiscoveryClient
 @SpringBootApplication
@@ -28,6 +30,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Slf4j
 public class ScheduleClientApplication {
 	public static void main(String[] args) {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
 		SpringApplication.run(ScheduleClientApplication.class,args);
 	}
 }
