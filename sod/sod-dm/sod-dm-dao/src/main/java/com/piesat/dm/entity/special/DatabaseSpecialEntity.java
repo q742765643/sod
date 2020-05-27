@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -21,7 +22,9 @@ import java.util.Date;
 //@Proxy(lazy = false)
 public class DatabaseSpecialEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
-
+    @Excel(name = "序号")
+    @Transient
+    private Integer num;
     /**
      * 专题库名称
      */
@@ -105,4 +108,8 @@ public class DatabaseSpecialEntity extends BaseEntity {
      */
     @Column(name = "sort_no")
     private String sortNo;
+
+    @Excel(name = "数据库授权情况")
+    @Transient
+    private String authorizationStatus;
 }
