@@ -102,18 +102,29 @@ export default {
         examineStatus: type,
         remark: this.registerForm.DATA_PROP
       };
-      if (
-        checkobj.remark &&
-        (checkobj.remark.trim().length == 0 ||
-          checkobj.remark.trim().length > 500)
-      ) {
+      let msg = "";
+      if (type == 3) {
+        msg = "拒绝原因";
+      } else {
+        msg = "备注信息";
+      }
+      if (!checkobj.remark) {
         this.$message({
-          message: "请输入内容并且内容不能超过500个字符",
+          message: "请输入" + msg + "并且" + msg + "不能超过500个字符",
           type: "error",
           offset: 100
         });
         return;
       }
+      if (checkobj.remark && checkobj.remark.trim().length > 500) {
+        this.$message({
+          message: "输入" + msg + "不能超过500个字符",
+          type: "error",
+          offset: 100
+        });
+        return;
+      }
+
       if (type == 2) {
         this.$emit("cancelHandle", this.registerForm);
       } else {

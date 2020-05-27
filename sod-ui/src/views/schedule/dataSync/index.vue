@@ -338,9 +338,7 @@ export default {
       this.dailyDataDialog = false;
       this.getList();
     },
-    closeDialog() {
-      this.handleDialog = false;
-    },
+
     // 高级搜索
     superClick() {
       this.superObj = {};
@@ -434,7 +432,7 @@ export default {
         type: "warning"
       })
         .then(function() {
-          debugger
+          debugger;
           if (type == 1) {
             syncStart(row.id).then(response => {});
           } else {
