@@ -22,7 +22,7 @@ export function parseTime(time, pattern) {
       time = time * 1000
     }
     date = new Date(time);
-    date.setHours(date.getHours() - 8);
+    // date.setHours(date.getHours() - 8);
   }
   const formatObj = {
     y: date.getFullYear(),
