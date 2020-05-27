@@ -3,6 +3,8 @@ package com.piesat.dm.entity.special;
 import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +24,7 @@ import java.util.Date;
 //@Proxy(lazy = false)
 public class DatabaseSpecialEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
-    @Excel(name = "序号")
+    @Excel(name = "序号",width = 10)
     @Transient
     private Integer num;
     /**
@@ -109,7 +111,7 @@ public class DatabaseSpecialEntity extends BaseEntity {
     @Column(name = "sort_no")
     private String sortNo;
 
-    @Excel(name = "数据库授权情况")
+    @Excel(name = "数据库授权情况",width = 100)
     @Transient
     private String authorizationStatus;
 }
