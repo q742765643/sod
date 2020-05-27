@@ -44,7 +44,7 @@ spring:
     #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
     #username: ENC(YxpGRv4xpm1043WVImWDSw==)
     #password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
-    url: jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8
+    url: jdbc:xugu://10.40.17.32:5138/BABJ_SMDB?ips=10.40.17.33,10.40.17.34&recv_mode=0&char_set=utf8
     username: USR_SOD
     password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
     type: com.alibaba.druid.pool.DruidDataSource
