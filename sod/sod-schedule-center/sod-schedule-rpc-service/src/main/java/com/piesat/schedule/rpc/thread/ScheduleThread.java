@@ -230,7 +230,12 @@ public class  ScheduleThread {
     public void trigger(JobInfoEntity jobInfo) {
         threadPool.execute(() -> {
             try {
-                long count = redisUtil.zsetCount(QUARTZ_HTHT_WAIT);
+               /* long count = redisUtil.zsetCount(QUARTZ_HTHT_WAIT);
+                if (count > 20000) {
+                    log.info("积压条数超过2万,放弃调度");
+                    return;
+                }*/
+                long count = redisUtil.scanSize(QUARTZ_HTHT_JOBDTEAIL);
                 if (count > 20000) {
                     log.info("积压条数超过2万,放弃调度");
                     return;
