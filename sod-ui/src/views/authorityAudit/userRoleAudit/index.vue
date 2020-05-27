@@ -67,14 +67,14 @@
           >角色授权</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="申请审核" width="120">
+      <el-table-column label="申请审核" width="100">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="mini"
             icon="el-icon-s-check"
             @click="handleApply(scope.row)"
-          >申请审核</el-button>
+          >审核</el-button>
         </template>
       </el-table-column>
     </el-table>
