@@ -1086,6 +1086,7 @@ export default {
       ];
       let dataJson = [];
       // data 为读取的excel数据，在这里进行处理该数据
+      debugger;
       data.forEach(element => {
         var obj = {};
         let itemKeys = Object.keys(element);
@@ -1107,20 +1108,90 @@ export default {
         return;
       }
       let flag = false;
+      let flagmsg = "";
       dataJson.forEach(element => {
         element.id = "";
         element.tableId = this.tableInfo.id;
+
+        if (!element.dbEleCode) {
+          flag = true;
+          flagmsg = "公共元数据字段不能为空";
+          return;
+        }
+        if (!codeVer(element.dbEleCode)) {
+          flag = true;
+          flagmsg =
+            "公共元数据字段不允许输入小写字母和中文，且需以大写字母开头";
+          return;
+        }
+        if (!element.celementCode) {
+          flag = true;
+          flagmsg = "字段编码不能为空";
+          return;
+        }
+        if (!codeVer(element.celementCode)) {
+          flag = true;
+          flagmsg = "字段编码不允许输入小写字母和中文，且需以大写字母开头";
+          return;
+        }
+        if (!element.userEleCode) {
+          flag = true;
+          flagmsg = "服务代码不能为空";
+          return;
+        }
+        if (!element.eleName) {
+          flag = true;
+          flagmsg = "中文简称不能为空";
+          return;
+        }
+        if (!element.type) {
+          flag = true;
+          flagmsg = "数据类型不能为空";
+          return;
+        }
+        if (!element.unit) {
+          flag = true;
+          flagmsg = "要素单位不能为空";
+          return;
+        }
         if (
-          !element.dbEleCode ||
-          !element.celementCode ||
-          !element.userEleCode ||
-          !element.eleName ||
-          !element.type ||
-          !element.unit ||
-          (!element.serialNumber && element.serialNumber != 0)
+          element.serialNumber === "" ||
+          element.serialNumber === null ||
+          element.serialNumber === undefined
         ) {
           flag = true;
-          // errorCode.push(element);
+          flagmsg = "序号不能为空";
+          return;
+        }
+        if (element.serialNumber < 0) {
+          flag = true;
+          flagmsg = "序号不能小于0";
+          return;
+        }
+        if (element.isNull === "是") {
+          element.isNull = "true";
+        } else if (element.isNull === "否") {
+          element.isNull = "false";
+        }
+        if (element.isUpdate === "是") {
+          element.isUpdate = "true";
+        } else if (element.isUpdate === "否") {
+          element.isUpdate = "false";
+        }
+        if (element.isShow === "是") {
+          element.isShow = "true";
+        } else if (element.isShow === "否") {
+          element.isShow = "false";
+        }
+        if (element.isManager === "是") {
+          element.isManager = "true";
+        } else if (element.isManager === "否") {
+          element.isManager = "false";
+        }
+        if (element.isPrimaryKey === "是") {
+          element.isPrimaryKey = "true";
+        } else if (element.isPrimaryKey === "否") {
+          element.isPrimaryKey = "false";
         }
         element.isNull = element.isNull.toLowerCase();
         element.isUpdate = element.isUpdate.toLowerCase();
@@ -1131,8 +1202,7 @@ export default {
       if (flag) {
         this.$message({
           type: "error",
-          message:
-            "公共元数据字段,字段编码,服务代码,中文简称,数据类型,要素单位,序号都不能为空"
+          message: flagmsg
         });
         return;
       }
