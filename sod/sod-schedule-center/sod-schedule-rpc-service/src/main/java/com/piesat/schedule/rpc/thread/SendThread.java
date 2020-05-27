@@ -134,6 +134,8 @@ public class SendThread {
                                         long bcount = redisUtil.zsetCount(QUARTZ_HTHT_BLOCK);
                                         if (bcount < 20000) {
                                             redisUtil.zsetAdd(QUARTZ_HTHT_BLOCK, key, 2);
+                                        }else {
+                                            redisUtil.del(QUARTZ_HTHT_JOBDTEAIL + key);
                                         }
 
                                     }else{
