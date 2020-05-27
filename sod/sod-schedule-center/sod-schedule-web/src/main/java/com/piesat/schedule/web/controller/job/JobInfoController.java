@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.grpc.config.ChannelUtil;
 import com.piesat.common.grpc.config.GrpcAutoConfiguration;
+import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.dao.backup.BackupDao;
@@ -28,6 +29,7 @@ import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.schedule.util.CronExpression;
+import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
 import io.grpc.Channel;
@@ -278,6 +280,14 @@ public class JobInfoController {
         }
         return new ResultT<>();
     }
-
+    @GetMapping(value = "/redisScan")
+    @ApiOperation(value = "redis扫描", notes = "redis扫描")
+    public ResultT<Long> redisScan(String key) {
+        ResultT<Long> resultT=new ResultT<>();
+        RedisUtil redisUtil= SpringUtil.getBean(RedisUtil.class);
+        long size=redisUtil.scanSize(key);
+        resultT.setData(size);
+        return resultT;
+    }
 }
 

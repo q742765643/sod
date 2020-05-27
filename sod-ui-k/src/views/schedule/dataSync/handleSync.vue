@@ -229,13 +229,21 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
             <el-form-item label="DI/EI发送" prop="diOff">
-              <el-switch v-model="msgFormDialog.diOff" active-color="#13ce66" inactive-color="#ccc"></el-switch>
+              <el-switch
+                v-model="msgFormDialog.diOff"
+                active-value="1"
+                inactive-value="0"
+                active-color="#13ce66"
+                inactive-color="#ccc"
+              ></el-switch>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="重复数据丢弃" prop="discardOnDuplicate">
               <el-switch
                 v-model="msgFormDialog.discardOnDuplicate"
+                active-value="1"
+                inactive-value="0"
                 active-color="#13ce66"
                 inactive-color="#ccc"
               ></el-switch>
@@ -1139,7 +1147,7 @@ export default {
     //取消
     cancelDialog(formName) {
       this.$refs[formName].resetFields();
-      this.$emit("closeDialog");
+      this.$emit("resetQuery");
     },
     handHideOr() {
       if (this.conIcon == "el-icon-arrow-up") {

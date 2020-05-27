@@ -229,13 +229,21 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
             <el-form-item label="DI/EI发送" prop="diOff">
-              <el-switch v-model="msgFormDialog.diOff" active-color="#13ce66" inactive-color="#ccc"></el-switch>
+              <el-switch
+                v-model="msgFormDialog.diOff"
+                active-value="1"
+                inactive-value="0"
+                active-color="#13ce66"
+                inactive-color="#ccc"
+              ></el-switch>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="重复数据丢弃" prop="discardOnDuplicate">
               <el-switch
                 v-model="msgFormDialog.discardOnDuplicate"
+                active-value="1"
+                inactive-value="0"
                 active-color="#13ce66"
                 inactive-color="#ccc"
               ></el-switch>
@@ -495,8 +503,8 @@ export default {
         primaryCom: "", //主键拼接规则
         ipAndPort: "", //同步任务执行节点
         batchAmount: "", //批处理条数
-        diOff: true, //DI/EI发送
-        discardOnDuplicate: "false", //重复数据丢弃
+        diOff: "0", //DI/EI发送
+        discardOnDuplicate: "0", //重复数据丢弃
         targetDatabaseId: "", //目标库
         targetTable: "", //目标表
         target_table_name: "", //目标表名
@@ -625,6 +633,7 @@ export default {
   methods: {
     async initDetail() {
       this.msgFormDialog = this.handleObj;
+
       // 源表源表名回显
       await this.sourceDBChange(this.handleObj.sourceDatabaseId);
       await this.sourceTableChange(this.handleObj.sourceTableId);
@@ -789,7 +798,6 @@ export default {
     },
     //目标表事件
     targetTableChange(selectTargetTableID) {
-      debugger;
       if (this.targetChangeFlag !== 0) {
         this.targetChangeFlag = this.targetChangeFlag + 1;
       }
@@ -1101,7 +1109,6 @@ export default {
         });
 
         this.$refs[formName].validate(valid => {
-          debugger;
           if (valid) {
             let msg = "";
             if (this.handleObj.id) {
@@ -1141,7 +1148,7 @@ export default {
     //取消
     cancelDialog(formName) {
       this.$refs[formName].resetFields();
-      this.$emit("closeDialog");
+      this.$emit("resetQuery");
     },
     handHideOr() {
       if (this.conIcon == "el-icon-arrow-up") {

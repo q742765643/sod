@@ -1,7 +1,7 @@
 <template>
   <section class="dailySyncDialog">
     <el-table border :data="tableData" highlight-current-row stripe>
-      <el-table-column type="index" label=" " min-width="15"></el-table-column>
+      <el-table-column type="index" label="序号" min-width="55"></el-table-column>
       <el-table-column prop="beginTime" label="开始时间" min-width="100"></el-table-column>
       <el-table-column prop="endTime" label="结束时间" min-width="100"></el-table-column>
       <el-table-column prop="spendTime" label="总耗时（毫秒）" min-width="80"></el-table-column>
@@ -12,7 +12,13 @@
       <el-table-column prop="error" label="日志信息" min-width="60"></el-table-column>
       <el-table-column prop="error" label="详情" min-width="60">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.error" placement="top">
+          <el-tooltip
+            v-if="scope.row.error"
+            class="item"
+            effect="dark"
+            :content="scope.row.error"
+            placement="top"
+          >
             <el-button size="small">错误信息</el-button>
           </el-tooltip>
         </template>

@@ -164,6 +164,9 @@ export default {
           if (single.logicFlag === row.logicFlag) {
             let chosekey = single.logicFlag;
             single.checkType = false;
+            single.typeIschecked = false;
+            single.physicsNameIschecked = false;
+            single.selectModel = "";
             delete this.choseRowsObj[chosekey];
           }
         });

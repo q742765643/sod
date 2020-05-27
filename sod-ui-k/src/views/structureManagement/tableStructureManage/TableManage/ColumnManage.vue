@@ -1134,6 +1134,13 @@ export default {
           flagmsg = "字段编码不允许输入小写字母和中文，且需以大写字母开头";
           return;
         }
+        this.columnData.forEach(c => {
+          if (c.celementCode == element.celementCode) {
+            flag = true;
+            flagmsg = "字段编码不能重复";
+            return;
+          }
+        });
         if (!element.userEleCode) {
           flag = true;
           flagmsg = "服务代码不能为空";
