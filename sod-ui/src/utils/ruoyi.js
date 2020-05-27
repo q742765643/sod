@@ -96,11 +96,19 @@ export function downloadfileCommon(res) {
     return;
   }
   // debugger
-  console.log(res.headers);
+
   console.log(res.headers['content-disposition']);
-  let filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]);
-  console.log(filename);
-  fileDownload(res.data, filename);
+  if (res.headers['content-disposition']) {
+    let filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]);
+    console.log(filename);
+    fileDownload(res.data, filename);
+  } else {
+    this.$message({
+      type: "error",
+      message: "没有文件，无需下载"
+    });
+  }
+
   /* console.log(222)
   let fileType = 'type: "application/octet-stream";charset=utf-8'
   if (Type == 'word') {

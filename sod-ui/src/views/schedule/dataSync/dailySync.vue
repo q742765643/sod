@@ -12,7 +12,13 @@
       <el-table-column prop="error" label="日志信息" min-width="60"></el-table-column>
       <el-table-column prop="error" label="详情" min-width="60">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.error" placement="top">
+          <el-tooltip
+            v-if="scope.row.error"
+            class="item"
+            effect="dark"
+            :content="scope.row.error"
+            placement="top"
+          >
             <el-button size="small">错误信息</el-button>
           </el-tooltip>
         </template>
