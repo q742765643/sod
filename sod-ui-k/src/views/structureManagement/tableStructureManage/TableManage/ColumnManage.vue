@@ -1,6 +1,13 @@
 <template>
   <el-main class="columnTemplate">
     <el-button-group style="padding: 8px;">
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-c-scale-to-original"
+        @click="getColumnTables"
+        v-if="tableStructureManageContral"
+      >复用字段</el-button>
       <el-button type="primary" size="small" icon="el-icon-plus" @click="columnAdd">新增</el-button>
       <el-button type="primary" size="small" icon="el-icon-edit" @click="columnEdit">编辑</el-button>
       <el-button type="primary" size="small" icon="el-icon-delete" @click="columnDelete">删除</el-button>
@@ -527,7 +534,6 @@ export default {
         });
         return;
       }
-
       this.matedataSelection = [];
       this.mmdataSelection = [];
       this.searchMatedata = {};

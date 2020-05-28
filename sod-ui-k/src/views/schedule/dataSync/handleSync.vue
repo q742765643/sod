@@ -938,9 +938,7 @@ export default {
         let seleteobj = this.targetTableArray.find(item => {
           return item.id == ttid;
         });
-        if (this.addnewtargettable != 1) {
-          this.editableTabs = [];
-        }
+
         this.editableTabs.push({
           title: table_name,
           name: table_name,
@@ -999,9 +997,7 @@ export default {
           dataList.push(obj);
         });
       }
-      if (this.addnewtargettable != 1) {
-        this.editableTabs = [];
-      }
+
       this.editableTabs.push({
         title: element_obj.table_name,
         name: element_obj.table_name,
