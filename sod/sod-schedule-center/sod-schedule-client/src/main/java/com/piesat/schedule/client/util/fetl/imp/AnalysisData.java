@@ -1,5 +1,6 @@
 package com.piesat.schedule.client.util.fetl.imp;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -148,13 +149,24 @@ public class AnalysisData implements Callable<Boolean> {
 				    if(datas.get(k)[i] == null){
 				    	ps.setString(i+1,null);
 				    }else{
-				    	ps.setObject(i+1, datas.get(k)[i], this.columnTypes.get(i));
+						if(columnTypes.get(i) == 16){
+							String s;
+							s = new String(datas.get(k)[i], "UTF-8");
+							if("T".equals(s)){
+								ps.setBoolean(i+1, true);
+							} else {
+								ps.setBoolean(i+1, false);
+							}
+						} else {
+							ps.setObject(i+1, datas.get(k)[i], this.columnTypes.get(i));
+						}
+				    	//ps.setObject(i+1, datas.get(k)[i], this.columnTypes.get(i));
 				    }
 				    rowData[i] = datas.get(k)[i];
 			    }
 			    ps.execute();
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | UnsupportedEncodingException e) {
 			log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
 		}
 	}
