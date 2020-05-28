@@ -39,24 +39,26 @@ public class SqlController {
     private static String filePath = "/zzj/data/sql/";//绝对路径导出数据的文件
 
     @GetMapping("/api/initSql")
-    public ResultT<String>  initSql(String filePath1,String url,String user,String pass,String model) {
+    public ResultT<String>  initSql(String filePath1,String url,String user,String pass,String model,String isDel) {
         filePath=filePath1;
-
         connectSQL("org.postgresql.Driver", url, user, pass);//连接数据库
+        if("1".equals(isDel)){
 
-        //List<Map<String, Object>> map=queryMapList(sql,null);
-        try {
-            ResultSet ts=conn.getMetaData().getTables(null,model,null,new String[]{"TABLE"});
-            List<String> ll=new ArrayList<>();
-            while (ts.next()) {
-                String tableName=ts.getString("TABLE_NAME");
-                sm.executeUpdate("DELETE FROM "+tableName);
+            //List<Map<String, Object>> map=queryMapList(sql,null);
+            try {
+                ResultSet ts=conn.getMetaData().getTables(null,model,null,new String[]{"TABLE"});
+                List<String> ll=new ArrayList<>();
+                while (ts.next()) {
+                    String tableName=ts.getString("TABLE_NAME");
+                    sm.executeUpdate("DELETE FROM "+tableName);
 
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
+
+        }
 
         File[] files=new File(filePath).listFiles();
 
