@@ -68,7 +68,17 @@ public class AnalysisData implements Callable<Boolean> {
 								columnData = new byte[length];
 								System.arraycopy(bytes, index, columnData, 0, length);
 								index += length;
-								ps.setObject(i, columnData, columnTypes.get(i-1));
+								//ps.setObject(i, columnData, columnTypes.get(i-1));
+								if(columnTypes.get(i-1) == 16){
+									String s = new String(columnData, con.getClientInfo("ClientCharSet"));
+									if("T".equals(s)){
+										ps.setBoolean(i, true);
+									} else {
+										ps.setBoolean(i, false);
+									}
+								} else {
+									ps.setObject(i, columnData, columnTypes.get(i - 1));
+								}
 								rowData[i-1] = columnData;
 								break;
 							case 1:

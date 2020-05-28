@@ -9,7 +9,9 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
+import com.piesat.dm.entity.dataclass.LogicDatabaseEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
+import com.piesat.dm.entity.dataclass.LogicStorageTypesEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
@@ -27,9 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 数据用途定义
@@ -149,10 +149,33 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
 
     @Override
     public void exportExcel(LogicDefineDto logicDefineDto) {
+        Map<String,String> dataMap=new HashMap<>();
+        Map<String,String> tableMap=new HashMap<>();
+
+        List<DatabaseDefineDto> all = this.databaseDefineService.all();
+        for(int i=0;i<all.size();i++){
+            dataMap.put(all.get(i).getId(),all.get(i).getDatabaseName());
+        }
         List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType("sys_storage_type");
-        List<LogicDefineDto> allLogicDefine = logicDefineService.getAllLogicDefine();
+        for(int i=0;i<dictDataDtos.size();i++){
+            tableMap.put(dictDataDtos.get(i).getDictValue(),dictDataDtos.get(i).getDictLabel());
+        }
         List<LogicDefineDto> dtoList = this.findByParam(logicDefineDto);
         List<LogicDefineEntity> entities=logicDefineMapper.toEntity(dtoList);
+        for(int i=0;i<entities.size();i++){
+            entities.get(i).setNum(i+1);
+            LogicDefineEntity logicDefineEntity=entities.get(i);
+            String xx="";
+            String yy="";
+            for(LogicStorageTypesEntity table:logicDefineEntity.getLogicStorageTypesEntityList()){
+                xx+=tableMap.get(table.getStorageType())+";";
+            }
+            for(LogicDatabaseEntity database:logicDefineEntity.getLogicDatabaseEntityList()){
+                yy+=dataMap.get(database.getDatabaseId())+";";
+            }
+            entities.get(i).setTableType(xx);
+            entities.get(i).setDatabaseType(yy);
+        }
         ExcelUtil<LogicDefineEntity> util=new ExcelUtil(LogicDefineEntity.class);
         util.exportExcel(entities,"数据库用途");
     }
