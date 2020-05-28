@@ -32,6 +32,7 @@ import com.piesat.dm.entity.special.*;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
@@ -57,6 +58,13 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -65,6 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -120,6 +129,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @GrpcHthtClient
     private UserDao userDao;
+
+    @Autowired
+    private DatabaseSpecialAuthorityService databaseSpecialAuthorityService;
 
     @Override
     public BaseDao<DatabaseSpecialEntity> getBaseDao() {
@@ -1146,8 +1158,46 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     public void exportExcel(DatabaseSpecialDto databaseSpecialDto) {
         List<DatabaseSpecialDto> databaseSpecialDtos = this.findByParam(databaseSpecialDto);
         List<DatabaseSpecialEntity> entities=databaseSpecialMapper.toEntity(databaseSpecialDtos);
-        ExcelUtil<DatabaseSpecialEntity> util=new ExcelUtil(DatabaseSpecialEntity.class);
-        util.exportExcel(entities,"专题库审核");
+        List<DatabaseSpecialEntity> newEn=new ArrayList<>();
+            for(int i=0;i<entities.size();i++){
+                DatabaseSpecialEntity databaseSpecialEntity=entities.get(i);
+                databaseSpecialEntity.setNum(i+1);
+                List<DatabaseSpecialAuthorityDto> authorityList = this.databaseSpecialAuthorityService.getAuthorityBySdbId(databaseSpecialEntity.getId());
+                if(authorityList.size()>0){
+                    String vv="☑";
+                    String xx="☒";
+                    for(int j=0;j<authorityList.size();j++){
+                        DatabaseSpecialEntity newD=new DatabaseSpecialEntity();
+                        BeanUtils.copyProperties(databaseSpecialEntity,newD);
+                        DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto=authorityList.get(j);
+                        String position15 = String.format("%-15s",databaseSpecialAuthorityDto.getDatabaseId());
+                        if(2==databaseSpecialAuthorityDto.getCreateTable()){
+                           position15+=vv+"创建   ";
+                        }else{
+                           position15+=xx+"创建   ";
+                        }
+                        if(2==databaseSpecialAuthorityDto.getDeleteTable()){
+                           position15+=vv+"删除   ";
+                        }else{
+                           position15+=xx+"删除   ";
+                        }
+                        if(2==databaseSpecialAuthorityDto.getTableDataAccess()){
+                           position15+=vv+"读写   ";
+                        }else{
+                           position15+=xx+"读写   ";
+                        }
+                        newD.setAuthorizationStatus(position15);
+                        newEn.add(newD);
+                    }
+                }else{
+                    DatabaseSpecialEntity newD=new DatabaseSpecialEntity();
+                    BeanUtils.copyProperties(databaseSpecialEntity,newD);
+                    newEn.add(newD);
+                }
+
+            }
+            ExcelUtil<DatabaseSpecialEntity> util=new ExcelUtil(DatabaseSpecialEntity.class,true);
+            util.exportExcel(newEn,"专题库审核");
     }
 
     @Override

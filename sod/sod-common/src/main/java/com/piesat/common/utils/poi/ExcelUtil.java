@@ -10,11 +10,13 @@ import com.piesat.common.utils.reflect.ReflectUtils;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -76,6 +78,7 @@ public class ExcelUtil<T>
      * 注解列表
      */
     private List<Object[]> fields;
+    private boolean isHb=false;
 
     /**
      * 实体对象
@@ -86,6 +89,13 @@ public class ExcelUtil<T>
     {
         this.clazz = clazz;
     }
+
+    public ExcelUtil(Class<T> clazz,boolean isHb)
+    {
+        this.isHb = isHb;
+        this.clazz = clazz;
+    }
+
 
     public void init(List<T> list, String sheetName, Excel.Type type)
     {
@@ -366,6 +376,8 @@ public class ExcelUtil<T>
         int startNo = index * sheetSize;
         int endNo = Math.min(startNo + sheetSize, list.size());
         Map<Integer,Integer> poi=new HashMap<>();
+        Map<Integer,Integer> oldPoi=new HashMap<>();
+        oldPoi.put(0,1);
         int indexT = 1;
         for (int i = startNo; i < endNo; i++)
         {
@@ -382,23 +394,98 @@ public class ExcelUtil<T>
                 if(indexT==1){
                     poi.put(column,indexT);
                 }
-                if(indexT>1){
+
+                if(indexT>1&& isHb){
                     try {
                         Object oldv = getTargetValue(list.get(i-1), field, excel);
                         Object oldn = getTargetValue(vo, field, excel);
-                        if(!String.valueOf(oldv).equals(String.valueOf(oldn))){
+                        if(column==0&&!String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            if(indexT-1>poi.get(column)){
+                                CellRangeAddress cra=new CellRangeAddress(poi.get(column),indexT-1,column,column);
+                                sheet.addMergedRegion(cra);
+                            }
+                            oldPoi.put(column,poi.get(column));
+                            poi.put(column,indexT);
+                        }
+                        if(column>0&&!String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            if(indexT-1>poi.get(column)&&poi.get(column)<poi.get(0)&&indexT<=poi.get(0)&& poi.get(0)-oldPoi.get(0)>1){
+                                int num=poi.get(column);
+                                if(num<=oldPoi.get(0)){
+                                    num=oldPoi.get(0);
+                                }
+                                CellRangeAddress cra=new CellRangeAddress(num,indexT-1,column,column);
+                                sheet.addMergedRegion(cra);
+                            }
+                            poi.put(column,indexT);
+                        }
+                        if(String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            if(indexT-1>poi.get(column)&&indexT==poi.get(0)&& poi.get(0)-oldPoi.get(0)>1&&i<endNo-1){
+                                int num=poi.get(column);
+                                if(num<=oldPoi.get(0)){
+                                    num=oldPoi.get(0);
+                                }
+                                CellRangeAddress cra=new CellRangeAddress(num,indexT-1,column,column);
+                                sheet.addMergedRegion(cra);
+                                poi.put(column,indexT);
+
+                            }
+                            if(i==endNo-1){
+                                int num=poi.get(column);
+                                if(num<=oldPoi.get(0)){
+                                    num=oldPoi.get(0);
+                                }
+                                CellRangeAddress cra=new CellRangeAddress(num,indexT,column,column);
+                                sheet.addMergedRegion(cra);
+                                poi.put(column,indexT);
+                            }
+
+                        }
+
+
+                      /*  if(column>0&&!String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            int num=poi.get(column);
+                            if(num<oldPoi.get(0)){
+                                num=oldPoi.get(0);
+                            }
+                            if(indexT-1!=poi.get(column)&&poi.get(0)-oldPoi.get(0)>1){
+                                CellRangeAddress cra=new CellRangeAddress(num,indexT-1,column,column);
+                                sheet.addMergedRegion(cra);
+                            }
+                            poi.put(column,indexT);
+                        }
+                        if(column>0&&String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            int num=poi.get(column);
+
+                        }*/
+                        /*if(column>0&&!String.valueOf(oldv).equals(String.valueOf(oldn))){
                             if(indexT-1!=poi.get(column)){
                                 CellRangeAddress cra=new CellRangeAddress(poi.get(column),indexT-1,column,column);
                                 sheet.addMergedRegion(cra);
                             }
+                            oldPoi.put(column,poi.get(column));
                             poi.put(column,indexT);
 
                         }
+                        if(column>0&&String.valueOf(oldv).equals(String.valueOf(oldn))){
+                            if(indexT-1!=poi.get(column)&&poi.get(0)-oldPoi.get(0)!=1&&indexT==poi.get(0)){
+                                int num=poi.get(column);
+                                if(poi.get(column)<=oldPoi.get(0)){
+                                    num=oldPoi.get(0);
+                                }
+                                CellRangeAddress cra=new CellRangeAddress(num,indexT-1,column,column);
+                                sheet.addMergedRegion(cra);
+                                oldPoi.put(column,num);
+                                poi.put(column,indexT);
+
+                            }
+                        }*/
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                 }
+
                 this.addCell(excel, row, vo, field,column);
                 column++;
             }
@@ -419,7 +506,7 @@ public class ExcelUtil<T>
         // 写入各条记录,每条记录对应excel表中的一行
         Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
         CellStyle style = wb.createCellStyle();
-        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setAlignment(HorizontalAlignment.LEFT);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setBorderRight(BorderStyle.THIN);
         style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
@@ -430,8 +517,8 @@ public class ExcelUtil<T>
         style.setBorderBottom(BorderStyle.THIN);
         style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
         Font dataFont = wb.createFont();
-        dataFont.setFontName("Arial");
-        dataFont.setFontHeightInPoints((short) 10);
+        dataFont.setFontName("宋体");
+        dataFont.setFontHeightInPoints((short) 15);
         style.setFont(dataFont);
         styles.put("data", style);
 
@@ -442,8 +529,8 @@ public class ExcelUtil<T>
         style.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Font headerFont = wb.createFont();
-        headerFont.setFontName("Arial");
-        headerFont.setFontHeightInPoints((short) 10);
+        headerFont.setFontName("宋体");
+        headerFont.setFontHeightInPoints((short) 20);
         headerFont.setBold(true);
         headerFont.setColor(IndexedColors.WHITE.getIndex());
         style.setFont(headerFont);
@@ -532,7 +619,6 @@ public class ExcelUtil<T>
                 // 创建cell
                 cell = row.createCell(column);
                 cell.setCellStyle(styles.get("data"));
-
                 // 用于读取对象中的属性
                 Object value = getTargetValue(vo, field, attr);
                 String dateFormat = attr.dateFormat();
@@ -679,7 +765,7 @@ public class ExcelUtil<T>
      */
     public String encodingFilename(String filename)
     {
-        filename = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" + filename + ".xls";
+        filename = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "_" + filename + ".xlsx";
         return filename;
     }
 
@@ -865,5 +951,6 @@ public class ExcelUtil<T>
         }
         return val;
     }
+
 }
 

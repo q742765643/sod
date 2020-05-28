@@ -321,6 +321,13 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
+        }finally {
+            if(ps != null){
+                ps.close();
+            }
+            if(rs != null){
+                rs.close();
+            }
         }
         return ResultT.success(columnInfos);
     }
