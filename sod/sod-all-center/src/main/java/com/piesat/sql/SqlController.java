@@ -38,7 +38,7 @@ public class SqlController {
     private static List<String> insertList = new ArrayList<String>();//全局存放insertsql文件的数据
     private static String filePath = "/zzj/data/sql/";//绝对路径导出数据的文件
 
-    @GetMapping("/initSql")
+    @GetMapping("/api/initSql")
     public ResultT<String>  initSql(String filePath1,String url,String user,String pass,String model) {
         filePath=filePath1;
 
@@ -395,6 +395,13 @@ public class SqlController {
 
                 line++;
 
+            }
+            if(str.length()>0){
+                try {
+                    sm.execute(str.toString());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             reader.close();
         } catch (IOException e) {
