@@ -486,7 +486,7 @@
 
     <select id="queryDataAuthorityApplyById" resultType="java.util.Map" parameterType="String">
         select a.*,b.database_up_id,b.database_up_password,b.examine_status
-        from t_sod_data_authority_apply a left join t_sod_database_user b on a.user_id = b.user_id and b.examine_status = 1
+        from t_sod_data_authority_apply a left join t_sod_database_user b on a.user_id = b.user_id and b.examine_status = '1'
 		where a.id = #{id}
     </select>
 
