@@ -755,9 +755,7 @@ export default {
 
       if (type == "code") {
         let theader = [
-          "公共元数据字段",
           "字段编码",
-          "服务代码",
           "中文简称",
           "数据精度",
           "要素单位",
@@ -773,9 +771,7 @@ export default {
           "序号"
         ];
         let tableProp = [
-          "dbEleCode",
           "celementCode",
-          "userEleCode",
           "eleName",
           "accuracy",
           "unit",
@@ -1113,17 +1109,6 @@ export default {
         element.id = "";
         element.tableId = this.tableInfo.id;
 
-        if (!element.dbEleCode) {
-          flag = true;
-          flagmsg = "公共元数据字段不能为空";
-          return;
-        }
-        if (!codeVer(element.dbEleCode)) {
-          flag = true;
-          flagmsg =
-            "公共元数据字段不允许输入小写字母和中文，且需以大写字母开头";
-          return;
-        }
         if (!element.celementCode) {
           flag = true;
           flagmsg = "字段编码不能为空";
@@ -1141,11 +1126,9 @@ export default {
             return;
           }
         });
-        if (!element.userEleCode) {
-          flag = true;
-          flagmsg = "服务代码不能为空";
-          return;
-        }
+        element.dbEleCode = element.celementCode;
+        element.userEleCode = element.celementCode;
+
         if (!element.eleName) {
           flag = true;
           flagmsg = "中文简称不能为空";

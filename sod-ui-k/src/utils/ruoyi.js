@@ -5,6 +5,9 @@
 
 const baseURL = process.env.VUE_APP_DM
 import fileDownload from 'js-file-download'
+import {
+  downloadTable
+} from "@/api/structureManagement/exportTable";
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0) {
@@ -85,7 +88,12 @@ export function selectDictLabel(datas, value) {
 
 // 通用下载方法
 export function download(filePath) {
-  window.location.href = baseURL + "/api/com/downloadByPath?filePath=" + filePath;
+  downloadTable({
+    filePath: filePath
+  }).then(res => {
+    this.downloadfileCommon(res);
+  });
+  // window.location.href = baseURL + "/api/com/downloadByPath?filePath=" + filePath;
 }
 export function downloadfileCommon(res) {
   if (!res) {
