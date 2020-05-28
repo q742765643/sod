@@ -10,7 +10,7 @@
         :label-width="labelWidth"
       >
         <!-- 公共元数据信息 -->
-        <div class="publicData" v-if="tableStructureManageContral">
+        <!--  <div class="publicData" v-if="tableStructureManageContral">
           <div class="publicDataTitle">
             <i class="el-icon-price-tag"></i>公共元数据信息
           </div>
@@ -28,7 +28,7 @@
               <el-input placeholder="请选择公共元数据" :readonly="true" v-model="materialData.ddataId"></el-input>
             </el-form-item>
           </div>
-        </div>
+        </div>-->
         <!-- 存储元数据信息 -->
         <div class="storageData">
           <div class="storageDataTitle">
@@ -61,12 +61,12 @@
               <el-input-number v-model="materialData.serialNo" :min="0"></el-input-number>
               <!-- <el-input type="number" v-model="materialData.serialNo" :min="0"></el-input> -->
             </el-form-item>
-            <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
+            <!-- <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
               <el-select v-model="materialData.useBaseInfo">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
               </el-select>
-            </el-form-item>
+            </el-form-item>-->
           </div>
         </div>
       </el-form>

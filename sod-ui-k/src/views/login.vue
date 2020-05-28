@@ -55,10 +55,10 @@
     </el-row>
 
     <!--  底部  -->
-    <div class="el-login-footer">
+    <!-- <div class="el-login-footer">
       <p>Copyright&nbsp;2018-2020&nbsp;&nbsp;国家气象信息中心</p>
       <p>地址：北京海淀区中关村南大街46号 | 邮编：100081 | 电话 : 86-10-68407499</p>
-    </div>
+    </div>-->
   </div>
 </template>
 

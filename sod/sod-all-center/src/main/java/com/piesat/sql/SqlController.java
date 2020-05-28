@@ -2,10 +2,13 @@ package com.piesat.sql;
 
 import com.alibaba.fastjson.JSON;
 import com.piesat.util.ResultT;
+import io.swagger.annotations.Api;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.SQLExec;
 import org.apache.tools.ant.types.EnumeratedAttribute;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
 import java.sql.*;
@@ -22,6 +25,8 @@ import static org.bouncycastle.cms.RecipientId.password;
  * @author: zzj
  * @create: 2020-05-13 17:05
  **/
+@RestController
+@Api(value="导入数据sql===========",tags = {"导入数据sql==========="})
 public class SqlController {
     private static Connection conn = null;
     private static Statement sm = null;
@@ -32,23 +37,28 @@ public class SqlController {
     private static String[] table = {""};//table数组
     private static List<String> insertList = new ArrayList<String>();//全局存放insertsql文件的数据
     private static String filePath = "/zzj/data/sql/";//绝对路径导出数据的文件
-    public static void  initSql() {
 
-        connectSQL("org.postgresql.Driver", "jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=usr_sod", "soder", "soder123");//连接数据库
+    @GetMapping("/api/initSql")
+    public ResultT<String>  initSql(String filePath1,String url,String user,String pass,String model,String isDel) {
+        filePath=filePath1;
+        connectSQL("org.postgresql.Driver", url, user, pass);//连接数据库
+        if("1".equals(isDel)){
 
-        //List<Map<String, Object>> map=queryMapList(sql,null);
-        try {
-            ResultSet ts=conn.getMetaData().getTables(null,"usr_sod",null,new String[]{"TABLE"});
-            List<String> ll=new ArrayList<>();
-            while (ts.next()) {
-                String tableName=ts.getString("TABLE_NAME");
-                sm.executeUpdate("DELETE FROM "+tableName);
+            //List<Map<String, Object>> map=queryMapList(sql,null);
+            try {
+                ResultSet ts=conn.getMetaData().getTables(null,model,null,new String[]{"TABLE"});
+                List<String> ll=new ArrayList<>();
+                while (ts.next()) {
+                    String tableName=ts.getString("TABLE_NAME");
+                    sm.executeUpdate("DELETE FROM "+tableName);
 
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
+
+        }
 
         File[] files=new File(filePath).listFiles();
 
@@ -56,9 +66,9 @@ public class SqlController {
             try {
                 SQLExec sqlExec = new SQLExec();
                 sqlExec.setDriver("org.postgresql.Driver");
-                sqlExec.setUrl("jdbc:postgresql://10.1.6.42:5432/soddb?currentSchema=usr_sod");
-                sqlExec.setUserid("soder");
-                sqlExec.setPassword("soder123");
+                sqlExec.setUrl(url);
+                sqlExec.setUserid(user);
+                sqlExec.setPassword(pass);
                 sqlExec.setEncoding("UTF8");
                 sqlExec.setSrc(file);
                 sqlExec.setOnerror((SQLExec.OnError) (EnumeratedAttribute.getInstance(SQLExec.OnError.class, "abort")));
@@ -78,10 +88,14 @@ public class SqlController {
             }
         }
         System.out.println("结束");
-
-
+        try {
+            conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ResultT<>();
     }
-    public static void main(String[] args)  {
+    public static void main2(String[] args)  {
         String aa="'aaa'";
         aa=aa.replaceAll("'","''");
         System.out.println(aa);
@@ -95,7 +109,7 @@ public class SqlController {
     /**
      * 导出数据库表*@paramargs *@throwsSQLException
      */
-    public static void main2(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException {
         List<String> listSQL = new ArrayList<String>();
         connectSQL("com.xugu.cloudjdbc.Driver", "jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8", "USR_SOD", "Pnmic_qwe123");//连接数据库
 
@@ -103,19 +117,17 @@ public class SqlController {
         //List<Map<String, Object>> map=queryMapList(sql,null);
         ResultSet ts=conn.getMetaData().getTables(null,"USR_SOD",null,new String[]{"TABLE"});
         List<String> ll=new ArrayList<>();
-     /*   while (ts.next()) {
+        while (ts.next()) {
             String tableName=ts.getString("TABLE_NAME");
             if(!tableName.endsWith("LOG")){
                 ll.add(tableName);
             }
             System.out.println(ts.getString("TABLE_NAME") + "  "
                     + ts.getString("TABLE_TYPE"));
-        }*/
-        ll.add("T_SOD_DATA_TABLE_SQL");
-        ll.add("T_SOD_SQL_TEMPLATE");
+        }
         table=ll.toArray(new String[ll.size()]);
         listSQL = createSQL();//创建查询语句
-            executeSQL(conn, sm, listSQL);//执行sql并拼装
+        executeSQL(conn, sm, listSQL);//执行sql并拼装
 
 
     }
@@ -385,6 +397,13 @@ public class SqlController {
 
                 line++;
 
+            }
+            if(str.length()>0){
+                try {
+                    sm.execute(str.toString());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             reader.close();
         } catch (IOException e) {
