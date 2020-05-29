@@ -323,22 +323,107 @@ public class PostgreSql extends DatabaseDclAbs {
 
     @Override
     public String queryRecordNum(String schema, String tableName) throws Exception {
-        return null;
+        if(schema.equals(schema.toUpperCase())){
+            schema="\""+schema+"\"";
+        }
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return  num;
     }
 
     @Override
     public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
-        return null;
+        if(schema.equals(schema.toUpperCase())){
+            schema="\""+schema+"\"";
+        }
+        String minTime = "";
+        String sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                minTime = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return minTime;
     }
 
     @Override
     public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
-        return null;
+        if(schema.equals(schema.toUpperCase())){
+            schema="\""+schema+"\"";
+        }
+        String maxTime = "";
+        String sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                maxTime = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return maxTime;
     }
 
     @Override
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
-        return null;
+        if(schema.equals(schema.toUpperCase())){
+            schema="\""+schema+"\"";
+        }
+        String num = "";
+        String sql = "SELECT COUNT(*) as COUNT FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">='" + beginTime + "' AND " + timeColumnName + "<'" + endTime + "'";
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                num = rs.getString("COUNT");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        }
+        return num;
     }
+    @Override
+    public ResultT queryData(String schema,String tableName, List<String> column,int row) throws Exception {
+        if(schema.equals(schema.toUpperCase())){
+            schema="\""+schema+"\"";
+        }
+        String columns = String.join(",", column);
+        String sql = "SELECT " + columns + " FROM "+schema+"."+tableName+" limit "+row;
+        List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                Map<String,Object> rowData = new HashMap<String,Object>();
+                for (int i = 1; i <= column.size(); i++) {
+                    rowData.put(column.get(i-1), rs.getObject(i)+"");
+                }
+                list.add(rowData);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+//            throw new Exception("数据查询异常：请在对应物理库内创建表结构"+tableName);
+        }
+        return ResultT.success(list);
+    }
+
 }
 

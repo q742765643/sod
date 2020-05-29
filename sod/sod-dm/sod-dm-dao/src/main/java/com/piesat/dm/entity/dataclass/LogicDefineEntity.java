@@ -20,7 +20,9 @@ import java.util.Set;
 //@Proxy(lazy = false)
 public class LogicDefineEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
-
+    @Excel(name = "序号")
+    @Transient
+    private int num;
     /**
      * logic_id
      */
@@ -38,9 +40,17 @@ public class LogicDefineEntity extends BaseEntity {
     /**
      * serial_number
      */
-    @Excel(name = "排序")
+    //@Excel(name = "排序")
     @Column(name = "serial_number")
     private Integer serialNumber;
+
+    @Excel(name = "表类型")
+    @Transient
+    private String tableType;
+
+    @Excel(name = "数据库类型")
+    @Transient
+    private String databaseType;
 
     /**
      * logic_desc

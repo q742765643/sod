@@ -152,7 +152,7 @@
       </el-row>
     </section>
 
-    <div class="footer">
+    <!--  <div class="footer">
       <p>
         <span style="font-weight: bold;">相关链接：</span>
         <a href="http://www.cma.gov.cn/" target="_blank">中国气象局政府网</a> |
@@ -163,7 +163,7 @@
         <a href="http://www.cmastd.cn/" target="_blank">中国气象标准化网</a>
       </p>
       <p>版权所有 © 2018-2020 国家气象局信息中心</p>
-    </div>
+    </div>-->
     <!-- <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop> -->
   </div>
 </template>

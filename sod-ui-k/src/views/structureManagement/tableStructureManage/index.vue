@@ -24,8 +24,8 @@
                 <el-form-item label="资料名称">
                   <el-input size="small" v-model="searchObj.className" placeholder="资料名称"></el-input>
                 </el-form-item>
-                <el-form-item label="四级编码">
-                  <el-input size="small" v-model="searchObj.dDataId" placeholder="四级编码"></el-input>
+                <el-form-item label="存储编码">
+                  <el-input size="small" v-model="searchObj.dDataId" placeholder="存储编码"></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button

@@ -1,5 +1,6 @@
 package com.piesat.schedule.client.util.fetl.imp;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -68,7 +69,17 @@ public class AnalysisData implements Callable<Boolean> {
 								columnData = new byte[length];
 								System.arraycopy(bytes, index, columnData, 0, length);
 								index += length;
-								ps.setObject(i, columnData, columnTypes.get(i-1));
+								//ps.setObject(i, columnData, columnTypes.get(i-1));
+								if(columnTypes.get(i-1) == 16){
+									String s = new String(columnData, con.getClientInfo("ClientCharSet"));
+									if("T".equals(s)){
+										ps.setBoolean(i, true);
+									} else {
+										ps.setBoolean(i, false);
+									}
+								} else {
+									ps.setObject(i, columnData, columnTypes.get(i - 1));
+								}
 								rowData[i-1] = columnData;
 								break;
 							case 1:
@@ -138,13 +149,24 @@ public class AnalysisData implements Callable<Boolean> {
 				    if(datas.get(k)[i] == null){
 				    	ps.setString(i+1,null);
 				    }else{
-				    	ps.setObject(i+1, datas.get(k)[i], this.columnTypes.get(i));
+						if(columnTypes.get(i) == 16){
+							String s;
+							s = new String(datas.get(k)[i], "UTF-8");
+							if("T".equals(s)){
+								ps.setBoolean(i+1, true);
+							} else {
+								ps.setBoolean(i+1, false);
+							}
+						} else {
+							ps.setObject(i+1, datas.get(k)[i], this.columnTypes.get(i));
+						}
+				    	//ps.setObject(i+1, datas.get(k)[i], this.columnTypes.get(i));
 				    }
 				    rowData[i] = datas.get(k)[i];
 			    }
 			    ps.execute();
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | UnsupportedEncodingException e) {
 			log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
 		}
 	}

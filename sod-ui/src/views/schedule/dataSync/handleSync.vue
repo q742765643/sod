@@ -656,10 +656,12 @@ export default {
       // 目标表下拉框
       await this.targetDBChange(this.msgFormDialog.targetDatabaseId);
       await this.targetTableChange(this.msgFormDialog.targetTable, "");
+      // 判断是否是2个表
       if (this.msgFormDialog.targetTable2) {
         this.addnewtargettable = 1;
         await this.targetTableChange2(this.msgFormDialog.targetTable2, "2");
       }
+      // 判断是否是kv表
     },
     //源数据库事件,根据数据库ID获取源表
     async sourceDBChange(selectSourceDB) {
@@ -814,6 +816,7 @@ export default {
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
+      debugger;
       if (!selectTargetTableID) {
         return;
       }
@@ -940,9 +943,7 @@ export default {
         let seleteobj = this.targetTableArray.find(item => {
           return item.id == ttid;
         });
-        if (this.addnewtargettable != 1) {
-          this.editableTabs = [];
-        }
+
         this.editableTabs.push({
           title: table_name,
           name: table_name,
@@ -978,17 +979,16 @@ export default {
             sourceVColumnList[j].celementCode
           ) {
             sourceColumnName = sourceVColumnList[j].celementCode;
+            if (!this.handleObj.slaveRelation || this.targetChangeFlag !== 0) {
+              var obj = {};
+              obj.index = i;
+              obj.isdelete = false;
+              obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
+              obj.sourceColumn_ = sourceColumnName;
+              dataList.push(obj);
+            }
             break;
           }
-        }
-
-        if (!this.handleObj.slaveRelation && this.targetChangeFlag !== 0) {
-          var obj = {};
-          obj.index = i;
-          obj.isdelete = false;
-          obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
-          obj.sourceColumn_ = sourceColumnName;
-          dataList.push(obj);
         }
       }
       if (this.handleObj.slaveRelation && this.targetChangeFlag === 0) {
@@ -1001,9 +1001,7 @@ export default {
           dataList.push(obj);
         });
       }
-      if (this.addnewtargettable != 1) {
-        this.editableTabs = [];
-      }
+
       this.editableTabs.push({
         title: element_obj.table_name,
         name: element_obj.table_name,
