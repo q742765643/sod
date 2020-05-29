@@ -322,12 +322,13 @@ public class Xugu extends DatabaseDclAbs {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }finally {
-            if(ps != null){
-                ps.close();
-            }
             if(rs != null){
                 rs.close();
             }
+            if(ps != null){
+                ps.close();
+            }
+
         }
         return ResultT.success(columnInfos);
     }
