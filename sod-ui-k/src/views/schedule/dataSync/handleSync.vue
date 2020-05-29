@@ -974,17 +974,16 @@ export default {
             sourceVColumnList[j].celementCode
           ) {
             sourceColumnName = sourceVColumnList[j].celementCode;
+            if (!this.handleObj.slaveRelation || this.targetChangeFlag !== 0) {
+              var obj = {};
+              obj.index = i;
+              obj.isdelete = false;
+              obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
+              obj.sourceColumn_ = sourceColumnName;
+              dataList.push(obj);
+            }
             break;
           }
-        }
-
-        if (!this.handleObj.slaveRelation && this.targetChangeFlag !== 0) {
-          var obj = {};
-          obj.index = i;
-          obj.isdelete = false;
-          obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
-          obj.sourceColumn_ = sourceColumnName;
-          dataList.push(obj);
         }
       }
       if (this.handleObj.slaveRelation && this.targetChangeFlag === 0) {
