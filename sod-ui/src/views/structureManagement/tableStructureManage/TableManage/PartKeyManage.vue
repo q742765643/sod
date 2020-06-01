@@ -6,7 +6,7 @@
         <el-col :span="9">
           <el-form-item label="分库键">
             <el-select
-              v-model="editData.database_key"
+              v-model.trim="editData.database_key"
               :disabled="!isEdit"
               placeholder="请选择"
               style="width: 100%;"
@@ -24,7 +24,7 @@
         <el-col :span="9">
           <el-form-item label="分表键">
             <el-select
-              v-model="editData.table_key"
+              v-model.trim="editData.table_key"
               :disabled="!isEdit"
               placeholder="请选择"
               style="width: 100%;"

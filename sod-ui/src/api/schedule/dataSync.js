@@ -93,3 +93,20 @@ export function syncStop(id) {
     method: 'get'
   })
 }
+
+
+export function batchRestart(query) {
+  return request({
+    url: baseUrl + '/schedule/sync/batchRestart',
+    method: 'get',
+    params: query,
+  })
+}
+
+export function batchStop(query) {
+  return request({
+    url: baseUrl + '/schedule/sync/batchStop',
+    method: 'get',
+    params: query,
+  })
+}

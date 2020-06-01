@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="公告标题" prop="noticeTitle">
         <el-input
-          v-model="queryParams.noticeTitle"
+          v-model.trim="queryParams.noticeTitle"
           placeholder="请输入公告标题"
           clearable
           size="small"
@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="操作人员" prop="createBy">
         <el-input
-          v-model="queryParams.createBy"
+          v-model.trim="queryParams.createBy"
           placeholder="请输入操作人员"
           clearable
           size="small"
@@ -20,7 +20,7 @@
         />
       </el-form-item>
       <el-form-item label="类型" prop="noticeType">
-        <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable size="small">
+        <el-select v-model.trim="queryParams.noticeType" placeholder="公告类型" clearable size="small">
           <el-option
             v-for="dict in typeOptions"
             :key="dict.dictValue"
@@ -124,12 +124,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="公告标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入公告标题" />
+              <el-input v-model.trim="form.noticeTitle" placeholder="请输入公告标题" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" placeholder="请选择">
+              <el-select v-model.trim="form.noticeType" placeholder="请选择">
                 <el-option
                   v-for="dict in typeOptions"
                   :key="dict.dictValue"
@@ -141,7 +141,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
+              <el-radio-group v-model.trim="form.status">
                 <el-radio
                   v-for="dict in statusOptions"
                   :key="dict.dictValue"
@@ -152,7 +152,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容">
-              <Editor v-model="form.noticeContent" />
+              <Editor v-model.trim="form.noticeContent" />
             </el-form-item>
           </el-col>
         </el-row>

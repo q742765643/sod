@@ -1,13 +1,13 @@
 <template>
   <div class="scrollMain">
     <el-scrollbar wrap-class="scrollbar-wrapper">
-      <el-tabs v-model="tableActive" @tab-click="manageTabsClick">
+      <el-tabs v-model.trim="tableActive" @tab-click="manageTabsClick">
         <el-tab-pane v-if="tabs.db" label="表结构" name="db">
           <el-container class="structureManageTable">
             <el-main id="box">
               <el-form
                 v-if="this.rowData.STORAGE_TYPE=='ME_table'||this.rowData.STORAGE_TYPE=='MK_table'||this.rowData.STORAGE_TYPE=='NF_table'"
-                v-model="dirRule"
+                v-model.trim="dirRule"
                 class="elementDir"
                 label-width="100px"
               >
@@ -18,7 +18,7 @@
                         :disabled="!isDirEdit"
                         placeholder="目录规范"
                         size="small"
-                        v-model="dirRule.dirNorm"
+                        v-model.trim="dirRule.dirNorm"
                       ></el-input>
                     </el-form-item>
                   </el-col>

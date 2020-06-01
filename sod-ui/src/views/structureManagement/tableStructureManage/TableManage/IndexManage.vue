@@ -30,11 +30,11 @@
       <div>
         <el-form :model="indexForm" label-width="120px" ref="indexFormRef" :rules="indexRules">
           <el-form-item label="索引名称" prop="indexName">
-            <el-input v-model="indexForm.indexName" size="small"></el-input>
+            <el-input v-model.trim="indexForm.indexName" size="small"></el-input>
           </el-form-item>
           <el-form-item label="索引类型" prop="indexType">
             <el-select
-              v-model="indexForm.indexType"
+              v-model.trim="indexForm.indexType"
               size="small"
               placeholder="请选择索引类型"
               style="width: 100%;"
@@ -50,7 +50,7 @@
           <el-form-item label="索引字段" prop="indexColumn">
             <el-select
               size="small"
-              v-model="indexForm.indexColumn"
+              v-model.trim="indexForm.indexColumn"
               multiple
               placeholder="请选择索引字段"
               style="width: 100%;"
@@ -84,7 +84,7 @@ export default {
   props: { tableInfo: Object },
   data() {
     return {
-      indexForm: { indexName: "TRAF_WEA_CHN_REP_TAB_UK", indexColumn: [] },
+      indexForm: { indexName: this.tableInfo.tableName, indexColumn: [] },
       indexItem: [],
       indexItemSel: [],
       columnData: [],
@@ -134,7 +134,7 @@ export default {
         return;
       }
       this.indexForm = {
-        indexName: "TRAF_WEA_CHN_REP_TAB_UK",
+        indexName: this.tableInfo.tableName,
         indexColumn: []
       };
       this.indexTitle = "新增索引";

@@ -3,7 +3,7 @@
     <!-- 查询条件 -->
     <el-form :inline="true" :model="queryParams" ref="modelForm" class="searchBox">
       <el-form-item label="角色名称">
-        <el-input size="small" v-model="queryParams.name"></el-input>
+        <el-input size="small" v-model.trim="queryParams.name"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="searchFun" icon="el-icon-search">查询</el-button>

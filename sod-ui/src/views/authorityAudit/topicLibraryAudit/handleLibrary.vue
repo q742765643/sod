@@ -1,25 +1,25 @@
 <template>
   <section class="handleLiberyDialog">
-    <el-tabs type="border-card" v-model="activeName">
+    <el-tabs type="border-card" v-model.trim="activeName">
       <el-tab-pane label="基本信息" name="first">
         <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px">
           <el-form-item label="图标" v-if="!handleObj.pageName">
             <img v-if="sdbImg" :src="sdbImg" style="width:40px;" alt />
           </el-form-item>
           <el-form-item label="专题库名称">
-            <el-input size="small" v-model="msgFormDialog.sdbName"></el-input>
+            <el-input size="small" v-model.trim="msgFormDialog.sdbName"></el-input>
           </el-form-item>
           <el-form-item label="用途">
-            <el-input size="small" v-model="msgFormDialog.uses"></el-input>
+            <el-input size="small" v-model.trim="msgFormDialog.uses"></el-input>
           </el-form-item>
           <el-form-item label="创建人" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.userName"></el-input>
+            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userName"></el-input>
           </el-form-item>
           <el-form-item label="机构" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.department"></el-input>
+            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.department"></el-input>
           </el-form-item>
           <el-form-item label="联系方式" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.userPhone"></el-input>
+            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userPhone"></el-input>
           </el-form-item>
           <el-form-item label="申请材料" v-if="!handleObj.pageName">
             <el-button
@@ -31,7 +31,7 @@
             >下载</el-button>
           </el-form-item>
           <el-form-item label="排序">
-            <el-input-number v-model="msgFormDialog.sortNo" :min="0"></el-input-number>
+            <el-input-number v-model.trim="msgFormDialog.sortNo" :min="0"></el-input-number>
           </el-form-item>
           <div class="dialog-footer">
             <el-button type="primary" @click="trueDialog('ruleForm')">保 存</el-button>
@@ -61,7 +61,7 @@
             <el-table-column prop="databaseId" label="数据库"></el-table-column>
             <el-table-column label="权限">
               <template slot-scope="scope">
-                <el-checkbox-group v-model="scope.row.checkList">
+                <el-checkbox-group v-model.trim="scope.row.checkList">
                   <el-checkbox label="createTable">创建</el-checkbox>
                   <el-checkbox label="deleteTable">删除</el-checkbox>
                   <el-checkbox label="tableDataAccess">读写</el-checkbox>
@@ -91,14 +91,14 @@
             class="funLoad selSearchCon"
           >
             <el-form-item label="关键字查询">
-              <el-select size="small" v-model="searchLibraryObj.key">
+              <el-select size="small" v-model.trim="searchLibraryObj.key">
                 <el-option label="资料分类" value="typeName"></el-option>
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label>
-              <el-input size="small" v-model="searchLibraryObj.valueText" type="text"></el-input>
+              <el-input size="small" v-model.trim="searchLibraryObj.valueText" type="text"></el-input>
             </el-form-item>
             <el-form-item class="handleSearchBtn">
               <el-button
@@ -138,7 +138,7 @@
             class="funLoad selSearchCon"
           >
             <el-form-item label="关键字查询">
-              <el-select size="small" v-model="searchBaseLibraryObj.key">
+              <el-select size="small" v-model.trim="searchBaseLibraryObj.key">
                 <el-option label="资料分类" value="typeName"></el-option>
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
@@ -147,7 +147,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label>
-              <el-input size="small" v-model="searchBaseLibraryObj.valueText" type="text"></el-input>
+              <el-input size="small" v-model.trim="searchBaseLibraryObj.valueText" type="text"></el-input>
             </el-form-item>
 
             <el-form-item class="handleSearchBtn">

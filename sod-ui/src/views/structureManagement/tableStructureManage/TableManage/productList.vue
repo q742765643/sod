@@ -7,7 +7,7 @@
     </el-row>
     <el-row class="areaTop">
       <el-col :span="20">
-        <el-select v-model="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
+        <el-select v-model.trim="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
           <el-option
             v-for="item in optionsArea"
             :key="item.value"
@@ -56,7 +56,7 @@
         <el-col :span="12">
           <el-form-item label="区域代码" prop="area_id">
             <el-select
-              v-model="msgFormDialog.area_id"
+              v-model.trim="msgFormDialog.area_id"
               placeholder="请选择区域"
               size="small"
               class="areaSelect"
@@ -72,7 +72,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="格点要素存储代码" prop="db_fcst_ele">
-            <el-select v-model="msgFormDialog.db_fcst_ele" placeholder="格点要素存储代码" size="small">
+            <el-select v-model.trim="msgFormDialog.db_fcst_ele" placeholder="格点要素存储代码" size="small">
               <el-option
                 v-for="item in optionsFcst"
                 :key="item.value"
@@ -84,57 +84,57 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="要素服务代码" prop="ele_service_id">
-            <el-input placeholder="要素服务代码" v-model="msgFormDialog.ele_service_id"></el-input>
+            <el-input placeholder="要素服务代码" v-model.trim="msgFormDialog.ele_service_id"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="层次类型" prop="level_type">
-            <el-input placeholder="层次类型" v-model="msgFormDialog.level_type"></el-input>
+            <el-input placeholder="层次类型" v-model.trim="msgFormDialog.level_type"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="grib版本" prop="grib_version">
-            <el-input placeholder="grib版本" v-model="msgFormDialog.grib_version"></el-input>
+            <el-input placeholder="grib版本" v-model.trim="msgFormDialog.grib_version"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="场类型" prop="field_type">
-            <el-input-number v-model="msgFormDialog.field_type" :min="0" size="small"></el-input-number>
+            <el-input-number v-model.trim="msgFormDialog.field_type" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="加工过程类型" prop="genprocess_type">
-            <el-input placeholder="加工过程类型" v-model="msgFormDialog.genprocess_type"></el-input>
+            <el-input placeholder="加工过程类型" v-model.trim="msgFormDialog.genprocess_type"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="要素中文名" prop="ele_name_cn">
-            <el-input placeholder="要素中文名" v-model="msgFormDialog.ele_name_cn"></el-input>
+            <el-input placeholder="要素中文名" v-model.trim="msgFormDialog.ele_name_cn"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="资料时次" prop="ele_hours">
-            <el-input placeholder="资料时次" v-model="msgFormDialog.ele_hours"></el-input>
+            <el-input placeholder="资料时次" v-model.trim="msgFormDialog.ele_hours"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="时效单位" prop="time_unit">
-            <el-input placeholder="时效单位" v-model="msgFormDialog.time_unit"></el-input>
+            <el-input placeholder="时效单位" v-model.trim="msgFormDialog.time_unit"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="层次列表" prop="level_list">
-            <el-input placeholder="层次列表" v-model="msgFormDialog.level_list"></el-input>
+            <el-input placeholder="层次列表" v-model.trim="msgFormDialog.level_list"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="预报时效列表" prop="time_list">
-            <el-input placeholder="预报时效列表" v-model="msgFormDialog.time_list"></el-input>
+            <el-input placeholder="预报时效列表" v-model.trim="msgFormDialog.time_list"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="空间分辨率" prop="grid_pixel">
-            <el-input placeholder="空间分辨率" v-model="msgFormDialog.grid_pixel"></el-input>
+            <el-input placeholder="空间分辨率" v-model.trim="msgFormDialog.grid_pixel"></el-input>
           </el-form-item>
         </el-col>
       </el-form>

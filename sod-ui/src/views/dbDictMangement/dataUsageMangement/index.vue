@@ -3,10 +3,10 @@
     <!-- 数据用途管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途ID:" prop="logicFlag">
-        <el-input size="small" v-model="queryParams.logicFlag" placeholder="请输入数据用途ID" />
+        <el-input size="small" v-model.trim="queryParams.logicFlag" placeholder="请输入数据用途ID" />
       </el-form-item>
       <el-form-item label="用途描述:" prop="logicName">
-        <el-input size="small" v-model="queryParams.logicName" placeholder="请输入用途描述" />
+        <el-input size="small" v-model.trim="queryParams.logicName" placeholder="请输入用途描述" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>

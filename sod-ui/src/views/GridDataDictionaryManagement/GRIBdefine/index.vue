@@ -9,10 +9,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="参数编码:">
-        <el-input size="small" v-model="queryParams.parameterId" placeholder="请输入参数编码" />
+        <el-input size="small" v-model.trim="queryParams.parameterId" placeholder="请输入参数编码" />
       </el-form-item>
       <el-form-item label="要素存储短名:">
-        <el-input size="small" v-model="queryParams.eleCodeShort" placeholder="请输入要素存储短名" />
+        <el-input size="small" v-model.trim="queryParams.eleCodeShort" placeholder="请输入要素存储短名" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -99,16 +99,16 @@
         class="gribdefineDialog"
       >
         <el-form-item label="要素存储短名:" prop="eleCodeShort">
-          <el-input v-model="ruleForm.eleCodeShort" placeholder="请输入要素存储短名" />
+          <el-input v-model.trim="ruleForm.eleCodeShort" placeholder="请输入要素存储短名" />
         </el-form-item>
         <el-form-item label="学科:" prop="subjectId">
-          <el-input v-model.number="ruleForm.subjectId" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.subjectId" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="参数种类:" prop="classify">
-          <el-input v-model.number="ruleForm.classify" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.classify" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="参数编码:" prop="parameterId">
-          <el-input v-model.number="ruleForm.parameterId" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.parameterId" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="GRIB版本:" prop="gribVersion">
           <el-select v-model.number="ruleForm.gribVersion">
@@ -117,16 +117,16 @@
           </el-select>
         </el-form-item>
         <el-form-item label="是否为共有配置:" prop="publicConfig">
-          <el-select v-model="ruleForm.publicConfig">
+          <el-select v-model.trim="ruleForm.publicConfig">
             <el-option label="是" value="Y"></el-option>
             <el-option label="否" value="N"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="模板编号:" prop="templateId">
-          <el-input v-model="ruleForm.templateId" placeholder="请输入模板ID" />
+          <el-input v-model.trim="ruleForm.templateId" placeholder="请输入模板ID" />
         </el-form-item>
         <el-form-item label="模板说明:" prop="templateDesc">
-          <el-input type="textarea" v-model="ruleForm.templateDesc" />
+          <el-input type="textarea" v-model.trim="ruleForm.templateDesc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

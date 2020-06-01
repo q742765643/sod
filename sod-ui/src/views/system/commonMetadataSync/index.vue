@@ -1,7 +1,7 @@
 <template>
   <div class="app-container commonMetadataTem">
     <!-- 公共元数据同步 -->
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model.trim="activeName" @tab-click="handleClick">
       <el-tab-pane label="同步任务配置" name="first">
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
@@ -77,7 +77,7 @@
       <el-tab-pane label="同步记录查询" name="second">
         <el-form :model="rowlogForm" ref="rowlogFormRef" :inline="true" class="searchBox">
           <el-form-item label="同步表名" prop="syncTableName">
-            <el-select size="small" filterable v-model="rowlogForm.syncTableName">
+            <el-select size="small" filterable v-model.trim="rowlogForm.syncTableName">
               <el-option
                 v-for="(item,index) in tableNames"
                 :key="index"
@@ -87,7 +87,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="运行状态" prop="runState">
-            <el-select filterable style="width:150px" v-model="rowlogForm.runState">
+            <el-select filterable style="width:150px" v-model.trim="rowlogForm.runState">
               <el-option value="同步成功" label="同步成功"></el-option>
               <el-option value="同步失败" label="同步失败"></el-option>
             </el-select>
@@ -95,7 +95,7 @@
           <el-form-item label="时间范围" prop="dateRange">
             <el-date-picker
               style="width:300px"
-              v-model="rowlogForm.dateRange"
+              v-model.trim="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"

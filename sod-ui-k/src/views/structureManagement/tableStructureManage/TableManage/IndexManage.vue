@@ -84,7 +84,7 @@ export default {
   props: { tableInfo: Object },
   data() {
     return {
-      indexForm: { indexName: "TRAF_WEA_CHN_REP_TAB_UK", indexColumn: [] },
+      indexForm: { indexName: this.tableInfo.tableName, indexColumn: [] },
       indexItem: [],
       indexItemSel: [],
       columnData: [],
@@ -134,7 +134,7 @@ export default {
         return;
       }
       this.indexForm = {
-        indexName: "TRAF_WEA_CHN_REP_TAB_UK",
+        indexName: this.tableInfo.tableName,
         indexColumn: []
       };
       this.indexTitle = "新增索引";

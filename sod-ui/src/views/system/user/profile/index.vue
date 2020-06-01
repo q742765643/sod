@@ -25,7 +25,7 @@
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="tree" />所属部门
-                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName }} </div>
+                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="peoples" />所属角色
@@ -44,7 +44,7 @@
           <div slot="header" class="clearfix">
             <span>基本资料</span>
           </div>
-          <el-tabs v-model="activeTab">
+          <el-tabs v-model.trim="activeTab">
             <el-tab-pane label="基本资料" name="userinfo">
               <userInfo :user="user" />
             </el-tab-pane>

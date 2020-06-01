@@ -2,13 +2,13 @@
   <section class="fileHandleDict">
     <el-form :model="ruleForm" ref="ruleForm" :rules="rules" label-width="100px">
       <el-form-item label="关键字:" prop="keyCol">
-        <el-input v-model="ruleForm.keyCol" placeholder="请输入字段编码"></el-input>
+        <el-input v-model.trim="ruleForm.keyCol" placeholder="请输入字段编码"></el-input>
       </el-form-item>
       <el-form-item label="中文名:">
-        <el-input v-model="ruleForm.nameCn"></el-input>
+        <el-input v-model.trim="ruleForm.nameCn"></el-input>
       </el-form-item>
       <el-form-item label="字段类型:" prop="type">
-        <el-select v-model="ruleForm.type">
+        <el-select v-model.trim="ruleForm.type">
           <el-option
             v-for="item in dictTypes"
             :key="item.keyCol"
@@ -18,10 +18,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="字典描述:">
-        <el-input v-model="ruleForm.description" placeholder="请输入字典描述"></el-input>
+        <el-input v-model.trim="ruleForm.description" placeholder="请输入字典描述"></el-input>
       </el-form-item>
       <el-form-item label="是否可删:" prop="canDelete">
-        <el-select v-model="ruleForm.canDelete">
+        <el-select v-model.trim="ruleForm.canDelete">
           <el-option label="是" value="Y"></el-option>
           <el-option label="否" value="N"></el-option>
         </el-select>
@@ -31,7 +31,7 @@
           :min="0"
           class="number"
           size="small"
-          v-model="ruleForm.serialNumber"
+          v-model.trim="ruleForm.serialNumber"
           placeholder="请输入显示序号"
         />
       </el-form-item>

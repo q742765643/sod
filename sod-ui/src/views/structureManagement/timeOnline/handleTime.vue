@@ -2,13 +2,13 @@
   <section class="timeOnlineDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="140px">
       <el-form-item label="开始日期" prop="beginTime">
-        <el-date-picker v-model="msgFormDialog.beginTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
+        <el-date-picker v-model.trim="msgFormDialog.beginTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
       </el-form-item>
       <el-form-item label="结束日期" prop="endTime">
-        <el-date-picker v-model="msgFormDialog.endTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
+        <el-date-picker v-model.trim="msgFormDialog.endTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
       </el-form-item>
       <el-form-item label="结束日期（当天）" prop="sectionId">
-        <el-checkbox v-model="msgFormDialog.checkFlag"></el-checkbox>
+        <el-checkbox v-model.trim="msgFormDialog.checkFlag"></el-checkbox>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">

@@ -3,7 +3,7 @@
     <!-- 一致性检查 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="专题库名称：">
-        <el-input size="small" v-model="queryParams.database_name" placeholder="输入关键字搜索"></el-input>
+        <el-input size="small" v-model.trim="queryParams.database_name" placeholder="输入关键字搜索"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
@@ -77,7 +77,7 @@
         <el-form-item label="数据库选择:" prop="databaseId">
           <el-select
             style="width:80%;"
-            v-model="msgFormDialog.databaseId"
+            v-model.trim="msgFormDialog.databaseId"
             placeholder="请选择添加数据库"
             filterable
             @change="databaseChange"

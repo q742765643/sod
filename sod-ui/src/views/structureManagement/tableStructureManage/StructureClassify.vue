@@ -25,7 +25,7 @@
         <el-input
           placeholder="请输入"
           size="small"
-          v-model="sourceTreeText"
+          v-model.trim="sourceTreeText"
           v-show="publicTreeTextActive"
         ></el-input>
         <el-button

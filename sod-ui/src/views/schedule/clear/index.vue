@@ -9,7 +9,7 @@
     >
       <el-form-item label="资料名称" prop="profileName">
         <el-input
-          v-model="queryParams.profileName"
+          v-model.trim="queryParams.profileName"
           placeholder="请输入物理库资料名称"
           clearable
           size="small"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="存储编码" prop="dataClassId">
         <el-input
-          v-model="queryParams.dataClassId"
+          v-model.trim="queryParams.dataClassId"
           placeholder="请输入存储编码或者四级编码"
           clearable
           size="small"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="表名" prop="tableName">
         <el-input
-          v-model="queryParams.tableName"
+          v-model.trim="queryParams.tableName"
           placeholder="请输入表名"
           clearable
           size="small"
@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="triggerStatus">
         <el-select
-          v-model="queryParams.triggerStatus"
+          v-model.trim="queryParams.triggerStatus"
           placeholder="运行状态"
           clearable
           size="small"
@@ -55,7 +55,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"

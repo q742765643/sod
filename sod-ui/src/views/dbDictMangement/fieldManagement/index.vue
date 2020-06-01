@@ -9,7 +9,7 @@
             size="mini"
             style="width:150px;"
             placeholder="输入关键字进行过滤"
-            v-model="filterText"
+            v-model.trim="filterText"
             v-if="showFilter"
           ></el-input>
           <el-button
@@ -50,7 +50,7 @@
       <el-main class="elMain">
         <el-form :model="queryParams" ref="queryForm" :inline="true">
           <el-form-item label="关键字">
-            <el-input size="small" v-model="queryParams.keyCol" placeholder="申请用户"></el-input>
+            <el-input size="small" v-model.trim="queryParams.keyCol" placeholder="申请用户"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>

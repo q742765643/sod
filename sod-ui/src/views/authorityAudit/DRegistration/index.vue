@@ -3,7 +3,7 @@
     <!-- 数据注册审核 -->
     <el-form :model="queryParams" :inline="true" class="searchBox">
       <el-form-item label="数据分类：">
-        <el-select v-model="queryParams.DDataId" placeholder>
+        <el-select v-model.trim="queryParams.DDataId" placeholder>
           <el-option key="index" label="全部" value></el-option>
           <el-option
             v-for="(item,index) in dbtypeselect"
@@ -15,7 +15,7 @@
       </el-form-item>
 
       <el-form-item label="审核状态：">
-        <el-select v-model="queryParams.examineStatus" @change="handleQuery">
+        <el-select v-model.trim="queryParams.examineStatus" @change="handleQuery">
           <!-- <el-option label="全部" value></el-option> -->
           <el-option label="待审核" :value="1"></el-option>
           <el-option label="通过" :value="2"></el-option>

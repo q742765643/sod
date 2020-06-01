@@ -3,10 +3,10 @@
     <!-- 数据库管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据库ID:">
-        <el-input size="small" v-model="queryParams.id" placeholder="请输入数据库ID" />
+        <el-input size="small" v-model.trim="queryParams.id" placeholder="请输入数据库ID" />
       </el-form-item>
       <el-form-item label="数据库名称:">
-        <el-input size="small" v-model="queryParams.databaseName" placeholder="请输入数据库名称" />
+        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="请输入数据库名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>

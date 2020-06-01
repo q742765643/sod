@@ -9,7 +9,7 @@
     >
       <el-form-item label="系统模块" prop="title">
         <el-input
-          v-model="queryParams.title"
+          v-model.trim="queryParams.title"
           placeholder="请输入系统模块"
           clearable
           style="width: 240px;"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="操作人员" prop="operName">
         <el-input
-          v-model="queryParams.operName"
+          v-model.trim="queryParams.operName"
           placeholder="请输入操作人员"
           clearable
           style="width: 240px;"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="类型" prop="businessType">
         <el-select
-          v-model="queryParams.businessType"
+          v-model.trim="queryParams.businessType"
           placeholder="操作类型"
           clearable
           size="small"
@@ -45,7 +45,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select
-          v-model="queryParams.status"
+          v-model.trim="queryParams.status"
           placeholder="操作状态"
           clearable
           size="small"
@@ -62,7 +62,7 @@
       <el-form-item label="操作时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
           start-placeholder="开始日期"

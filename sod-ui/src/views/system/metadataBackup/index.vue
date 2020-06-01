@@ -1,11 +1,16 @@
 <template>
   <div class="app-container metadataBackupTem">
     <!-- 系统元数据备份 -->
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model.trim="activeName" @tab-click="handleClick">
       <el-tab-pane label="元数据备份配置" name="first">
         <el-form :model="queryParams" :inline="true" class="searchBox">
           <el-form-item label="数据库IP">
-            <el-select size="small" style="width:200px" filterable v-model="queryParams.databaseId">
+            <el-select
+              size="small"
+              style="width:200px"
+              filterable
+              v-model.trim="queryParams.databaseId"
+            >
               <el-option
                 v-for="(item,index) in ipList"
                 :key="index"
@@ -15,14 +20,14 @@
             </el-select>
           </el-form-item>
           <el-form-item label="任务名称">
-            <el-input size="small" v-model="queryParams.taskName"></el-input>
+            <el-input size="small" v-model.trim="queryParams.taskName"></el-input>
           </el-form-item>
           <el-form-item label="任务状态">
             <el-select
               size="small"
               filterable
               style="width:200px"
-              v-model="queryParams.triggerStatus"
+              v-model.trim="queryParams.triggerStatus"
             >
               <el-option value=" " label="全部"></el-option>
               <el-option value="0" label="停止"></el-option>
@@ -131,7 +136,7 @@
       <el-tab-pane label="元数据备份监控" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="数据库IP">
-            <el-select style="width:200px" filterable v-model="rowlogForm.databaseId">
+            <el-select style="width:200px" filterable v-model.trim="rowlogForm.databaseId">
               <el-option
                 v-for="(item,index) in ipList"
                 :key="index"
@@ -141,12 +146,12 @@
             </el-select>
           </el-form-item>
           <el-form-item label="任务名称">
-            <el-input size="small" v-model="rowlogForm.taskName"></el-input>
+            <el-input size="small" v-model.trim="rowlogForm.taskName"></el-input>
           </el-form-item>
           <el-form-item label="时间范围">
             <el-date-picker
               style="width:300px"
-              v-model="rowlogForm.dateRange"
+              v-model.trim="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -246,10 +251,10 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="任务名称">
-              <el-input size="small" v-model="logFormDialog.taskName"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.taskName"></el-input>
             </el-form-item>
             <el-form-item label="数据库IP">
-              <el-select size="small" filterable v-model="logFormDialog.databaseId">
+              <el-select size="small" filterable v-model.trim="logFormDialog.databaseId">
                 <el-option
                   v-for="(item,index) in ipList"
                   :key="index"
@@ -259,25 +264,25 @@
               </el-select>
             </el-form-item>
             <el-form-item label="类型">
-              <el-checkbox-group v-model="logFormDialog.checked">
+              <el-checkbox-group v-model.trim="logFormDialog.checked">
                 <el-checkbox label="结构">结构</el-checkbox>
                 <el-checkbox label="数据">数据</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <el-form-item label="存储目录">
-              <el-input size="small" v-model="logFormDialog.storageDirectory"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.storageDirectory"></el-input>
             </el-form-item>
             <el-form-item label="执行地址">
-              <el-input size="small" v-model="logFormDialog.executorAddress"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.executorAddress"></el-input>
             </el-form-item>
             <el-form-item label="执行耗时" class="unitInput">
-              <el-input size="small" v-model="logFormDialog.elapsedTime"></el-input>s
+              <el-input size="small" v-model.trim="logFormDialog.elapsedTime"></el-input>s
             </el-form-item>
             <el-form-item label="应触发时间">
-              <el-input size="small" v-model="logFormDialog.triggerTime"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.triggerTime"></el-input>
             </el-form-item>
             <el-form-item label="实际触发时间">
-              <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.handleTime"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -289,7 +294,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="执行过程">
-              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.handleMsg" type="textarea"></el-input>
               <el-button type="primary" size="small" @click="showAllDetail">显示全部</el-button>
             </el-form-item>
           </el-col>
@@ -308,7 +313,7 @@
       append-to-body
       v-dialogDrag
     >
-      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <el-input size="small" v-model.trim="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>

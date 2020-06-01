@@ -113,18 +113,30 @@
       append-to-body
     >
       <div>
-        <el-tabs v-model="activePublicName" type="border-card">
+        <el-tabs v-model.trim="activePublicName" type="border-card">
           <el-tab-pane label="公共元数据字段" name="first">
             <div class="tableSearch">
               <el-form :inline="true">
                 <el-form-item label="数据源代码">
-                  <el-input v-model="searchMatedata.c_datatype" placeholder="数据源代码" size="small"></el-input>
+                  <el-input
+                    v-model.trim="searchMatedata.c_datatype"
+                    placeholder="数据源代码"
+                    size="small"
+                  ></el-input>
                 </el-form-item>
                 <el-form-item label="中文名称">
-                  <el-input v-model="searchMatedata.c_datum_level" placeholder="中文名称" size="small"></el-input>
+                  <el-input
+                    v-model.trim="searchMatedata.c_datum_level"
+                    placeholder="中文名称"
+                    size="small"
+                  ></el-input>
                 </el-form-item>
                 <el-form-item label="服务代码">
-                  <el-input v-model="searchMatedata.c_datumtype" placeholder="服务代码" size="small"></el-input>
+                  <el-input
+                    v-model.trim="searchMatedata.c_datumtype"
+                    placeholder="服务代码"
+                    size="small"
+                  ></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button
@@ -157,7 +169,7 @@
               <el-table-column label="是否质控" prop="c_is_control" width="80px">
                 <template slot-scope="scope">
                   <el-switch
-                    v-model="scope.row.switch"
+                    v-model.trim="scope.row.switch"
                     active-color="#13ce66"
                     inactive-color="#909399"
                   ></el-switch>
@@ -171,7 +183,7 @@
                 <el-row>
                   <el-col :span="4">
                     <el-form-item label="字段分组">
-                      <el-select v-model="searchMmdata.groupId" size="small">
+                      <el-select v-model.trim="searchMmdata.groupId" size="small">
                         <el-option label="全部" value></el-option>
                         <el-option
                           v-for="item in AllManageGroup"
@@ -184,17 +196,29 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="字段编码">
-                      <el-input v-model="searchMmdata.dbEleCode" placeholder="字段编码" size="small"></el-input>
+                      <el-input
+                        v-model.trim="searchMmdata.dbEleCode"
+                        placeholder="字段编码"
+                        size="small"
+                      ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="中文名称">
-                      <el-input v-model="searchMmdata.dbEleName" placeholder="中文名称" size="small"></el-input>
+                      <el-input
+                        v-model.trim="searchMmdata.dbEleName"
+                        placeholder="中文名称"
+                        size="small"
+                      ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
                     <el-form-item label="服务代码">
-                      <el-input v-model="searchMmdata.userEleCode" placeholder="服务代码" size="small"></el-input>
+                      <el-input
+                        v-model.trim="searchMmdata.userEleCode"
+                        placeholder="服务代码"
+                        size="small"
+                      ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="2">
@@ -263,27 +287,31 @@
       >
         <el-col :span="12">
           <el-form-item label="公共元数据字段" prop="dbEleCode">
-            <el-input placeholder="公共元数据字段" v-model="columnEditData.dbEleCode" size="small"></el-input>
+            <el-input placeholder="公共元数据字段" v-model.trim="columnEditData.dbEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="字段编码" prop="celementCode">
-            <el-input placeholder="字段编码" v-model="columnEditData.celementCode" size="small"></el-input>
+            <el-input placeholder="字段编码" v-model.trim="columnEditData.celementCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="服务代码" prop="userEleCode">
-            <el-input placeholder="服务代码" v-model="columnEditData.userEleCode" size="small"></el-input>
+            <el-input placeholder="服务代码" v-model.trim="columnEditData.userEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文简称" prop="eleName">
-            <el-input placeholder="中文简称" v-model="columnEditData.eleName" size="small"></el-input>
+            <el-input placeholder="中文简称" v-model.trim="columnEditData.eleName" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="数据类型" prop="type">
-            <el-select v-model="columnEditData.type" placeholder="请选择数据类型" style="width: 100%;">
+            <el-select
+              v-model.trim="columnEditData.type"
+              placeholder="请选择数据类型"
+              style="width: 100%;"
+            >
               <el-option
                 v-for="(item,index) in dataTypes"
                 :key="index"
@@ -295,18 +323,18 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="要素单位" prop="unit">
-            <el-input placeholder="要素单位" v-model="columnEditData.unit" size="small"></el-input>
+            <el-input placeholder="要素单位" v-model.trim="columnEditData.unit" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="数据精度">
-            <el-input-number v-model="columnEditData.accuracy" :min="0" size="small"></el-input-number>
+            <el-input-number v-model.trim="columnEditData.accuracy" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否可空">
             <el-switch
-              v-model="columnEditData.isNull"
+              v-model.trim="columnEditData.isNull"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -315,7 +343,7 @@
         <el-col :span="12">
           <el-form-item label="是否可改">
             <el-switch
-              v-model="columnEditData.isUpdate"
+              v-model.trim="columnEditData.isUpdate"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -324,7 +352,7 @@
         <el-col :span="12">
           <el-form-item label="是否显示">
             <el-switch
-              v-model="columnEditData.isShow"
+              v-model.trim="columnEditData.isShow"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -333,7 +361,7 @@
         <el-col :span="12">
           <el-form-item label="是否主键">
             <el-switch
-              v-model="columnEditData.isPrimaryKey"
+              v-model.trim="columnEditData.isPrimaryKey"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -342,7 +370,7 @@
         <el-col :span="12">
           <el-form-item label="是否管理字段">
             <el-switch
-              v-model="columnEditData.isManager"
+              v-model.trim="columnEditData.isManager"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -350,17 +378,17 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="默认值">
-            <el-input placeholder="默认值" v-model="columnEditData.defaultValue" size="small"></el-input>
+            <el-input placeholder="默认值" v-model.trim="columnEditData.defaultValue" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文描述">
-            <el-input placeholder="中文描述" v-model="columnEditData.nameCn" size="small"></el-input>
+            <el-input placeholder="中文描述" v-model.trim="columnEditData.nameCn" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="序号" prop="serialNumber">
-            <el-input-number v-model="columnEditData.serialNumber" size="small" :min="0"></el-input-number>
+            <el-input-number v-model.trim="columnEditData.serialNumber" size="small" :min="0"></el-input-number>
           </el-form-item>
         </el-col>
         <div class="clear"></div>
@@ -384,7 +412,7 @@
           <draggable
             class="list-group"
             tag="ul"
-            v-model="dragList"
+            v-model.trim="dragList"
             v-bind="dragOptions"
             @start="isDragging = true"
             @end="isDragging = false"

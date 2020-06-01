@@ -5,7 +5,7 @@
         <el-col :span="12">
           <el-form-item label="物理库" prop="databaseId">
             <el-select
-              v-model="msgFormDialog.databaseId"
+              v-model.trim="msgFormDialog.databaseId"
               filterable
               @change="selectByDatabaseIds($event,'')"
               placeholder="请选择物理库"
@@ -23,7 +23,7 @@
         <el-col :span="12">
           <el-form-item label="资料名称" prop="dataClassId">
             <el-select
-              v-model="msgFormDialog.dataClassId"
+              v-model.trim="msgFormDialog.dataClassId"
               filterable
               @change="selectTable"
               placeholder="请选择资料"
@@ -41,7 +41,7 @@
         <el-col :span="24">
           <el-form-item label="清除条件" prop="conditions">
             <el-select
-              v-model="msgFormDialog.conditions"
+              v-model.trim="msgFormDialog.conditions"
               placeholder="请选择清除条件"
               filterable
               style="width: 100%"
@@ -57,27 +57,27 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="表名" prop="tableName">
-            <el-input v-model="msgFormDialog.tableName" disabled />
+            <el-input v-model.trim="msgFormDialog.tableName" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="四级编码" prop="ddataId">
-            <el-input v-model="msgFormDialog.ddataId" disabled />
+            <el-input v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="清除限制频率" prop="clearLimit">
-            <el-input v-model="msgFormDialog.clearLimit" placeholder="请输入清除限制频率单位为秒" />
+            <el-input v-model.trim="msgFormDialog.clearLimit" placeholder="请输入清除限制频率单位为秒" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model="cronPopover">
+            <el-popover v-model.trim="cronPopover">
               <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
               <el-input
                 slot="reference"
                 @click="cronPopover=true"
-                v-model="msgFormDialog.jobCron"
+                v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
             </el-popover>
@@ -85,7 +85,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
-            <el-radio-group v-model="msgFormDialog.isAlarm">
+            <el-radio-group v-model.trim="msgFormDialog.isAlarm">
               <el-radio
                 v-for="dict in alarmOptions"
                 :key="dict.dictValue"
@@ -96,12 +96,12 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+            <el-input v-model.trim="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
-            <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+            <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
       </el-row>

@@ -3,7 +3,7 @@
   <div class="app-container storePolicy">
     <el-row :gutter="40">
       <el-col :span="5" :xs="24" class="elTreeAsideBox">
-        <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText" class="filterText"></el-input>
+        <el-input size="small" placeholder="输入关键字进行过滤" v-model.trim="filterText" class="filterText"></el-input>
         <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
           <el-tree
             class="el-tree"

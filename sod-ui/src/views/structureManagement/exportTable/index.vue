@@ -3,7 +3,12 @@
     <!-- 表结构导出 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据库：">
-        <el-select v-model="queryParams.database_id" size="small" style="width:400px" filterable>
+        <el-select
+          v-model.trim="queryParams.database_id"
+          size="small"
+          style="width:400px"
+          filterable
+        >
           <el-option
             v-for="(item,index) in databaseList"
             :key="index"
@@ -36,7 +41,7 @@
           <div slot="header" class="clearfix">
             <span>表信息导出</span>
           </div>
-          <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tabs v-model.trim="activeName" @tab-click="handleClick">
             <el-tab-pane label="表结构导出" name="first">
               <p>表结构</p>
               <el-row>
@@ -71,29 +76,29 @@
               <p>
                 <el-checkbox
                   :indeterminate="isIndeterminate"
-                  v-model="checkAll"
+                  v-model.trim="checkAll"
                   @change="handleCheckAllChange"
                 >表结构</el-checkbox>
               </p>
               <el-checkbox-group
-                v-model="checkedSimple"
+                v-model.trim="checkedSimple"
                 @change="handleCheckedChange"
                 class="simpleBox"
               >
                 <el-checkbox
                   v-for="(item,index) in simples"
-                  v-model="item.value"
+                  v-model.trim="item.value"
                   :label="item.value"
                   :key="index"
                 >{{item.key}}</el-checkbox>
               </el-checkbox-group>
               <el-divider></el-divider>
               <p>
-                <el-checkbox v-model="simpleObj.index">索引</el-checkbox>
+                <el-checkbox v-model.trim="simpleObj.index">索引</el-checkbox>
               </p>
               <el-divider></el-divider>
               <p>
-                <el-checkbox v-model="simpleObj.fenku">分库分表</el-checkbox>
+                <el-checkbox v-model.trim="simpleObj.fenku">分库分表</el-checkbox>
               </p>
               <div style="text-align:right;">
                 <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
@@ -101,8 +106,8 @@
             </el-tab-pane>-->
             <el-tab-pane label="SQL导出" name="third">
               <p>导出方式</p>
-              <el-radio v-model="exportTyoe" :label="1">导出到同一个文件</el-radio>
-              <el-radio v-model="exportTyoe" :label="2">导出到多个文件</el-radio>
+              <el-radio v-model.trim="exportTyoe" :label="1">导出到同一个文件</el-radio>
+              <el-radio v-model.trim="exportTyoe" :label="2">导出到多个文件</el-radio>
               <div style="text-align:right;">
                 <el-button type="success" icon="el-icon-bottom" size="small" @click="exportClick">导出</el-button>
               </div>

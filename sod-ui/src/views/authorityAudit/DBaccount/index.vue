@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="审核状态" prop="examineStatus">
         <el-select
-          v-model="queryParams.examineStatus"
+          v-model.trim="queryParams.examineStatus"
           placeholder="审核状态"
           clearable
           size="small"

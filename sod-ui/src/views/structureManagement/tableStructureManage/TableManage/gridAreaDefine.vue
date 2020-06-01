@@ -7,7 +7,7 @@
     </el-row>
     <el-row v-show="isEdit" class="areaTop">
       <el-col :span="20">
-        <el-select v-model="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
+        <el-select v-model.trim="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
           <el-option
             v-for="(item,index) in optionsArea"
             :key="index"

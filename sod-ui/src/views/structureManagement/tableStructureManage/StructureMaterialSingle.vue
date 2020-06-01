@@ -20,12 +20,12 @@
                 placeholder="名称"
                 :readonly="true"
                 class="styleCursor"
-                v-model="materialData.metaDataName"
+                v-model.trim="materialData.metaDataName"
                 @click.native="showPublicTree"
               ></el-input>
             </el-form-item>
             <el-form-item label="四级编码" prop="ddataId">
-              <el-input placeholder="请选择公共元数据" :readonly="true" v-model="materialData.ddataId"></el-input>
+              <el-input placeholder="请选择公共元数据" :readonly="true" v-model.trim="materialData.ddataId"></el-input>
             </el-form-item>
           </div>
         </div>
@@ -36,45 +36,45 @@
           </div>
           <div class="storageInfo">
             <el-form-item label="资料名称" prop="className">
-              <el-input placeholder="资料名称" v-model="materialData.className"></el-input>
+              <el-input placeholder="资料名称" v-model.trim="materialData.className"></el-input>
             </el-form-item>
             <el-form-item label="存储编码" prop="dataClassId">
               <el-input
                 :disabled="isDisabledEdit"
                 placeholder="存储编码"
-                v-model="materialData.dataClassId"
+                v-model.trim="materialData.dataClassId"
               ></el-input>
             </el-form-item>
             <el-form-item label="父节点" prop="parentId">
               <el-input
                 placeholder="请选择存储元数据父节点"
                 :readonly="true"
-                v-model="materialData.parentId"
+                v-model.trim="materialData.parentId"
                 class="styleCursor"
                 @click.native="showStorageTree"
               ></el-input>
             </el-form-item>
             <el-form-item label="类型" v-if="isSourceTree">
-              <el-input v-model="materialData.typeText" :readonly="true"></el-input>
+              <el-input v-model.trim="materialData.typeText" :readonly="true"></el-input>
             </el-form-item>
             <el-form-item label="访问控制">
-              <el-select v-model="materialData.isAccess">
+              <el-select v-model.trim="materialData.isAccess">
                 <el-option :value="1" label="公开"></el-option>
                 <el-option :value="2" label="限制"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="排序" prop="serialNo">
-              <el-input-number v-model="materialData.serialNo" :min="0"></el-input-number>
-              <!-- <el-input type="number" v-model="materialData.serialNo" :min="0"></el-input> -->
+              <el-input-number v-model.trim="materialData.serialNo" :min="0"></el-input-number>
+              <!-- <el-input type="number" v-model.trim="materialData.serialNo" :min="0"></el-input> -->
             </el-form-item>
             <el-form-item label="是否发布" v-if="tableStructureManageContral">
-              <el-select v-model="materialData.ifStopUse">
+              <el-select v-model.trim="materialData.ifStopUse">
                 <el-option :value="true" label="启用"></el-option>
                 <el-option :value="false" label="停用"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
-              <el-select v-model="materialData.useBaseInfo">
+              <el-select v-model.trim="materialData.useBaseInfo">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
               </el-select>

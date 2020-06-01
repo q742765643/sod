@@ -9,7 +9,7 @@
     >
       <el-form-item label="字典名称" prop="dictName">
         <el-input
-          v-model="queryParams.dictName"
+          v-model.trim="queryParams.dictName"
           placeholder="请输入字典名称"
           clearable
           size="small"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="字典类型" prop="dictType">
         <el-input
-          v-model="queryParams.dictType"
+          v-model.trim="queryParams.dictType"
           placeholder="请输入字典类型"
           clearable
           size="small"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select
-          v-model="queryParams.status"
+          v-model.trim="queryParams.status"
           placeholder="字典状态"
           clearable
           size="small"
@@ -45,7 +45,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           size="small"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
@@ -156,13 +156,13 @@
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="字典名称" prop="dictName">
-          <el-input v-model="form.dictName" placeholder="请输入字典名称" />
+          <el-input v-model.trim="form.dictName" placeholder="请输入字典名称" />
         </el-form-item>
         <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="form.dictType" placeholder="请输入字典类型" />
+          <el-input v-model.trim="form.dictType" placeholder="请输入字典类型" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
+          <el-radio-group v-model.trim="form.status">
             <el-radio
               v-for="dict in statusOptions"
               :key="dict.dictValue"
@@ -171,7 +171,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+          <el-input v-model.trim="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
