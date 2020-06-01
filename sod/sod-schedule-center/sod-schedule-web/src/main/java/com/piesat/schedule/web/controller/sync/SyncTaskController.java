@@ -95,9 +95,9 @@ public class SyncTaskController {
      * @return
      */
     @RequiresPermissions("schedule:sync:batchRestart")
-    @GetMapping("/batchRestart/{taskId}")
+    @GetMapping("/batchRestart")
     @ApiOperation(value = "批量启动", notes = "批量启动")
-    public ResultT batchRestart(@PathVariable String taskIds) {
+    public ResultT batchRestart(String taskIds) {
         String[] split = taskIds.split(",");
         for (String id:split) {
             this.syncTaskService.restart(id);
@@ -126,9 +126,9 @@ public class SyncTaskController {
      * @return
      */
     @RequiresPermissions("schedule:sync:batchStop")
-    @GetMapping("/batchStop/{taskId}")
+    @GetMapping("/batchStop")
     @ApiOperation(value = "批量停止", notes = "批量停止")
-    public ResultT batchStop(@PathVariable String taskIds) {
+    public ResultT batchStop(String taskIds) {
         String[] split = taskIds.split(",");
         for (String id:split) {
             this.syncTaskService.stop(id);

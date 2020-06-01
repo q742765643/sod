@@ -22,7 +22,7 @@ public class DataClassNormDto {
 
     private String property;
 
-    private int variable;
+    private Integer variable;
 
     private Date createTime;
 

@@ -431,11 +431,11 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public String findByParentId(String parentId) {
         List<DataClassEntity> byDDataId = this.dataClassDao.findByDDataId(parentId);
-        if (byDDataId == null || byDDataId.size() == 0 || byDDataId.get(0).getType() == 2) {
+        if (byDDataId == null || byDDataId.size() == 0 || byDDataId.get(0).getType() == 1) {
             return "";
         }
-        String pdataclassId = byDDataId.get(0).getDataClassId();
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdDesc(pdataclassId, 2);
+        String pdataclassId = byDDataId.get(0).getParentId();
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeAndDataClassIdLikeOrderByDataClassIdDesc(pdataclassId, 2,"%M%");
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
         if (pdataclassId.length() > 8) {
             if (dataClassDtos.size() > 0) {

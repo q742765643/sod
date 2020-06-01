@@ -29,5 +29,5 @@ public class DataClassNormEntity extends BaseEntity {
     private String property;
 
     @Column(name = "variable", length = 255)
-    private int variable;
+    private Integer variable;
 }
