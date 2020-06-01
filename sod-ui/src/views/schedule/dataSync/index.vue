@@ -39,10 +39,20 @@
         <el-button type="primary" icon="el-icon-plus" size="small" @click="addSync">添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="primary" icon="el-icon-video-play" size="small" @click="batchRestart">批量启动</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-video-play"
+          size="small"
+          @click="handlebatchRestart"
+        >批量启动</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="primary" icon="el-icon-video-pause" size="small" @click="batchStop">批量停止</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-video-pause"
+          size="small"
+          @click="handlebatchStop"
+        >批量停止</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" icon="el-icon-download" size="small" @click="handleExport">导出</el-button>
@@ -392,7 +402,7 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    batchRestart() {
+    handlebatchRestart() {
       if (this.multipleSelection.length == 0) {
         this.msgError("请选择一条数据");
         return;
@@ -401,9 +411,12 @@ export default {
       this.multipleSelection.forEach(element => {
         ids.push(element.id);
       });
-      batchRestart({ taskIds: ids.join(",") }).then(response => {});
+      batchRestart({ taskIds: ids.join(",") }).then(response => {
+        this.msgSuccess("启动成功");
+        this.getList();
+      });
     },
-    batchStop() {
+    handlebatchStop() {
       if (this.multipleSelection.length == 0) {
         this.msgError("请选择一条数据");
         return;
@@ -412,7 +425,10 @@ export default {
       this.multipleSelection.forEach(element => {
         ids.push(element.id);
       });
-      batchRestart({ taskIds: ids.join(",") }).then(response => {});
+      batchStop({ taskIds: ids.join(",") }).then(response => {
+        this.msgSuccess("停止成功");
+        this.getList();
+      });
     },
     closeSuperSearch() {
       this.dialogSuperSearch = false;
