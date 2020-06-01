@@ -52,16 +52,16 @@ export default {
 
       let exportBase = "";
       if (this.baseUrl == "DM") {
-        exportBase = process.env.VUE_APP_DM;
+        exportBase = window.serverConfig.VUE_APP_DM;
       }
       if (this.baseUrl == "SCHEDULE") {
-        exportBase = process.env.VUE_APP_SCHEDULE_CENTER_API;
+        exportBase = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API;
       }
       if (this.baseUrl == "UCENTER") {
-        exportBase = process.env.VUE_APP_UCENTER_API;
+        exportBase = window.serverConfig.VUE_APP_UCENTER_API;
       }
       if (this.baseUrl == "DMWL") {
-        exportBase = process.env.VUE_APP_DMWLEI;
+        exportBase = window.serverConfig.VUE_APP_DMWLEI;
       }
 
       /*  window.location.href =

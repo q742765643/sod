@@ -230,7 +230,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
+var baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API;
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import {

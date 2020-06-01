@@ -3,7 +3,7 @@
  * Copyright (c) 2019 ruoyi
  */
 
-const baseURL = process.env.VUE_APP_DM
+const baseURL = window.serverConfig.VUE_APP_DM
 import fileDownload from 'js-file-download'
 import {
   downloadTable

@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
+const baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API
 
 export function listClearLog(query) {
   return request({

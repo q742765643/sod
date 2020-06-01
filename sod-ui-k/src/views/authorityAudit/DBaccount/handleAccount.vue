@@ -218,7 +218,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_DM;
+var baseUrl = window.serverConfig.VUE_APP_DM;
 import { getToken, createSign } from "@/utils/auth";
 import {
   databaseList,

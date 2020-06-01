@@ -13,7 +13,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素存储字段">
-              <el-select filterable v-model="baseServe.eleField" placeholder="请选择" size="small">
+              <el-select
+                filterable
+                v-model.trim="baseServe.eleField"
+                placeholder="请选择"
+                size="small"
+              >
                 <el-option
                   v-for="(item,index) in optionsColumnList"
                   :key="index"
@@ -25,7 +30,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="区域存储字段">
-              <el-select filterable v-model="baseServe.regionField" placeholder="请选择" size="small">
+              <el-select
+                filterable
+                v-model.trim="baseServe.regionField"
+                placeholder="请选择"
+                size="small"
+              >
                 <el-option
                   v-for="(item,index) in optionsColumnList"
                   :key="index"
@@ -44,7 +54,7 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="区域选择" prop="region">
-              <el-select filterable v-model="baseSet.region" placeholder="请选择" size="small">
+              <el-select filterable v-model.trim="baseSet.region" placeholder="请选择" size="small">
                 <el-option
                   v-for="item in baseAreaOptions"
                   :key="item.value"
@@ -56,32 +66,32 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input-number v-model="baseSet.gribVersion" :min="0" size="small"></el-input-number>
+              <el-input-number v-model.trim="baseSet.gribVersion" :min="0" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="场类型" prop="fieldType">
-              <el-input-number v-model="baseSet.fieldType" :min="0" size="small"></el-input-number>
+              <el-input-number v-model.trim="baseSet.fieldType" :min="0" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="加工过程类型" prop="processType">
-              <el-input v-model="baseSet.processType" size="small"></el-input>
+              <el-input v-model.trim="baseSet.processType" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="资料时次" prop="dataTime">
-              <el-input v-model="baseSet.dataTime" size="small"></el-input>
+              <el-input v-model.trim="baseSet.dataTime" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="时效单位" prop="timeUnit">
-              <el-input v-model="baseSet.timeUnit" size="small"></el-input>
+              <el-input v-model.trim="baseSet.timeUnit" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="空间分辨率" prop="spatialResolution">
-              <el-input v-model="baseSet.spatialResolution" size="small"></el-input>
+              <el-input v-model.trim="baseSet.spatialResolution" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -144,14 +154,14 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="序号" prop="num">
-              <el-input placeholder="序号" v-model="msgFormDialog.num"></el-input>
+              <el-input placeholder="序号" v-model.trim="msgFormDialog.num"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="区域代码" prop="areaId">
               <el-select
                 filterable
-                v-model="msgFormDialog.areaId"
+                v-model.trim="msgFormDialog.areaId"
                 placeholder="请选择区域"
                 size="small"
                 class="areaSelect"
@@ -172,7 +182,7 @@
               <el-select
                 filterable
                 @change="getServeByEle"
-                v-model="msgFormDialog.dbEleName"
+                v-model.trim="msgFormDialog.dbEleName"
                 placeholder="要素存储代码"
                 size="small"
               >
@@ -190,7 +200,7 @@
               <el-select
                 filterable
                 @change="getEleUnit"
-                v-model="msgFormDialog.eleServiceId"
+                v-model.trim="msgFormDialog.eleServiceId"
                 placeholder="要素服务代码"
                 size="small"
               >
@@ -209,7 +219,7 @@
             <el-form-item label="层次类型" prop="levelType">
               <el-select
                 filterable
-                v-model="msgFormDialog.levelType"
+                v-model.trim="msgFormDialog.levelType"
                 placeholder="层次类型"
                 size="small"
               >
@@ -224,62 +234,69 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="层次类型转换因子" prop="scaleDivisor">
-              <el-input placeholder="层次类型转换因子" v-model="msgFormDialog.scaleDivisor"></el-input>
+              <el-input placeholder="层次类型转换因子" v-model.trim="msgFormDialog.scaleDivisor"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素中文名" prop="eleNameCn">
-              <el-input placeholder="要素中文名" v-model="msgFormDialog.eleNameCn"></el-input>
+              <el-input placeholder="要素中文名" v-model.trim="msgFormDialog.eleNameCn"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="要素长名" prop="eleLongName">
-              <el-input placeholder="要素长名" v-model="msgFormDialog.eleLongName"></el-input>
+              <el-input placeholder="要素长名" v-model.trim="msgFormDialog.eleLongName"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素单位" prop="eleUnit">
-              <el-input placeholder="要素单位" v-model="msgFormDialog.eleUnit"></el-input>
+              <el-input placeholder="要素单位" v-model.trim="msgFormDialog.eleUnit"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input placeholder="GRIB版本" v-model="msgFormDialog.gribVersion"></el-input>
+              <el-input placeholder="GRIB版本" v-model.trim="msgFormDialog.gribVersion"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="资料时次" prop="eleHours">
-              <el-input placeholder="资料时次" v-model="msgFormDialog.eleHours"></el-input>
+              <el-input placeholder="资料时次" v-model.trim="msgFormDialog.eleHours"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="空间分辨率" prop>
-              <el-input placeholder="空间分辨率" v-model="msgFormDialog.gridPixel"></el-input>
+              <el-input placeholder="空间分辨率" v-model.trim="msgFormDialog.gridPixel"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="预报时效单位" prop="timeUnit">
-              <el-input placeholder="预报时效单位" v-model="msgFormDialog.timeUnit"></el-input>
+              <el-input placeholder="预报时效单位" v-model.trim="msgFormDialog.timeUnit"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="层次单位" prop>
-              <el-input placeholder="层次单位" v-model="msgFormDialog.levelUnit"></el-input>
+              <el-input placeholder="层次单位" v-model.trim="msgFormDialog.levelUnit"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="层次列表" prop="levelList">
+              <el-input type="textarea" placeholder="层次列表" v-model.trim="msgFormDialog.levelList"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <el-form-item label="预报时效列表" prop="timeList">
-              <el-input type="textarea" placeholder="预报时效列表" v-model="msgFormDialog.timeList"></el-input>
+              <el-input type="textarea" placeholder="预报时效列表" v-model.trim="msgFormDialog.timeList"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -453,9 +470,14 @@ export default {
     getEleUnit(val) {
       this.eleOptionsList.forEach(element => {
         if (element.userFcstEle == val) {
-          this.msgFormDialog.eleUnit = element.eleUnit;
-          this.msgFormDialog.eleNameCn = element.eleName;
-          this.msgFormDialog.eleLongName = element.elePropertyName;
+          if (this.dialogTitle == "新增数据服务信息") {
+            // 新增
+            this.msgFormDialog.eleUnit = element.eleUnit;
+            this.msgFormDialog.eleNameCn = element.eleName;
+            this.msgFormDialog.eleLongName = element.elePropertyName;
+          } else if (this.dialogTitle == "编辑数据服务信息") {
+            // 编辑
+          }
         }
       });
     },

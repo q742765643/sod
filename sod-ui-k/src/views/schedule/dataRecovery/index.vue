@@ -219,7 +219,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
+var baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API;
 // 树转换
 import { newTeam } from "@/components/commonVaildate";
 // md5校验

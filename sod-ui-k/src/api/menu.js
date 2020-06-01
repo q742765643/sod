@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl =process.env.VUE_APP_UCENTER_API
+const baseUrl =window.serverConfig.VUE_APP_UCENTER_API
 
 // 获取路由
 export const getRouters = () => {

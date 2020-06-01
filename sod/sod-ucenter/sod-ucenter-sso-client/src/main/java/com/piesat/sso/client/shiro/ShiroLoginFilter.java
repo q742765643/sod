@@ -40,6 +40,7 @@ public class ShiroLoginFilter  implements Filter {
         response.setHeader( "Access-Control-Allow-Credentials", "true" );
          response.setHeader( "Access-Control-Expose-Headers", "Content-disposition" );
         if (request.getMethod().equals( "OPTIONS" )) {
+            response.setHeader( "Access-Control-Allow-Headers",  request.getHeader("Access-Control-Request-Headers"));
             response.setStatus( 200 );
             return;
         }

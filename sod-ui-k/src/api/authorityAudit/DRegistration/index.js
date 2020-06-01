@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-const baseUrl = process.env.VUE_APP_DM;
+const baseUrl = window.serverConfig.VUE_APP_DM;
 // 获取数据分类
 export function getDataClassify() {
   return request({
