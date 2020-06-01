@@ -29,7 +29,7 @@ public class ShardingController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:sharding:add")
-    @Log(title = "表分库分表键", businessType = BusinessType.INSERT)
+    @Log(title = "表分库分表键（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody ShardingDto shardingDto) {
         try {
@@ -43,7 +43,7 @@ public class ShardingController {
 
     @ApiOperation(value = "新增多个")
     @RequiresPermissions("dm:sharding:adds")
-    @Log(title = "表分库分表键", businessType = BusinessType.INSERT)
+    @Log(title = "表分库分表键（批量添加）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/saves")
     public ResultT saves(@RequestBody ShardingList shardingList) {
         try {
@@ -70,7 +70,7 @@ public class ShardingController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:sharding:del")
-    @Log(title = "表分库分表键", businessType = BusinessType.DELETE)
+    @Log(title = "表分库分表键（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {

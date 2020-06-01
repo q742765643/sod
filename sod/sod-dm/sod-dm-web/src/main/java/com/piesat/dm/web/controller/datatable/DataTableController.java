@@ -50,7 +50,7 @@ public class DataTableController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataTable:add")
-    @Log(title = "表信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "表信息管理(新增表信息)", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataTableDto dataTableDto) {
         try {
@@ -72,7 +72,7 @@ public class DataTableController {
 
     @ApiOperation(value = "新增申请表")
     @RequiresPermissions("dm:dataTable:addApply")
-    @Log(title = "表信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "表信息管理（新增申请表信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/addApply")
     public ResultT addApply(String classLogicIds, String applyId) {
         try {
@@ -118,7 +118,7 @@ public class DataTableController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:dataTable:del")
-    @Log(title = "表信息管理", businessType = BusinessType.DELETE)
+    @Log(title = "表信息管理（删除表信息）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
@@ -209,7 +209,7 @@ public class DataTableController {
 
     @ApiOperation(value = "粘贴表结构")
     @RequiresPermissions("dm:dataTable:paste")
-    @Log(title = "表信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "表信息管理（粘贴表结构信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/paste")
     public ResultT paste(String copyId, String pasteId) {
         try {
@@ -281,7 +281,7 @@ public class DataTableController {
 
     @ApiOperation(value = "创建表结构")
     @RequiresPermissions("dm:dataTable:createTable")
-    @Log(title = "表信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "表信息管理（创建数据库表结构）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/createTable")
     public ResultT createTable(@RequestBody TableSqlDto tableSqlDto) {
         try {

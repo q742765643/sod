@@ -31,7 +31,7 @@ public class TableIndexController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:tableIndex:add")
-    @Log(title = "表索引", businessType = BusinessType.INSERT)
+    @Log(title = "表索引（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableIndexDto tableIndexDto) {
         try {
@@ -58,7 +58,7 @@ public class TableIndexController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:tableIndex:del")
-    @Log(title = "表索引", businessType = BusinessType.DELETE)
+    @Log(title = "表索引（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(@RequestBody TableIndexDto tableIndexDto) {
         try {

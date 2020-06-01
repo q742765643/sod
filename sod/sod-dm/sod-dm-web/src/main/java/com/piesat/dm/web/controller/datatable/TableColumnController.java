@@ -48,7 +48,7 @@ public class TableColumnController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:tableColumn:add")
-    @Log(title = "表字段管理", businessType = BusinessType.INSERT)
+    @Log(title = "表字段管理（新增字段信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableColumnDto tableColumnDto) {
         try {
@@ -109,7 +109,7 @@ public class TableColumnController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:tableColumn:del")
-    @Log(title = "表字段管理", businessType = BusinessType.DELETE)
+    @Log(title = "表字段管理（删除字段信息）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
@@ -123,7 +123,7 @@ public class TableColumnController {
 
     @ApiOperation(value = "根据多个id删除")
     @RequiresPermissions("dm:tableColumn:delIds")
-    @Log(title = "表字段管理", businessType = BusinessType.DELETE)
+    @Log(title = "表字段管理（批量删除字段信息）", businessType = BusinessType.DELETE)
     @PostMapping(value = "/delIds")
     public ResultT delByIds(String ids) {
         try {
@@ -150,7 +150,7 @@ public class TableColumnController {
 
     @ApiOperation(value = "批量添加")
     @RequiresPermissions("dm:tableColumn:saveList")
-    @Log(title = "表字段管理", businessType = BusinessType.INSERT)
+    @Log(title = "表字段管理（批量添加字段信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/saveList")
     public ResultT saveDtoList(@RequestBody TableColumnList tableColumnList) {
         try {

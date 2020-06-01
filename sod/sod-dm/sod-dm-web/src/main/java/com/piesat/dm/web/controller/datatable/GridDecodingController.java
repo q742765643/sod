@@ -33,7 +33,7 @@ public class GridDecodingController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:griddecoding:add")
-    @Log(title = "编码配置管理", businessType = BusinessType.INSERT)
+    @Log(title = "编码配置管理（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody GridDecodingDto gridDecodingDto) {
         try {
@@ -47,7 +47,7 @@ public class GridDecodingController {
 
     @ApiOperation(value = "新增多个")
     @RequiresPermissions("dm:griddecoding:saveList")
-    @Log(title = "编码配置管理", businessType = BusinessType.INSERT)
+    @Log(title = "编码配置管理（批量新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/saveList")
     public ResultT saveList(@RequestBody GridDecodingList gridDecodingList) {
         try {
@@ -74,7 +74,7 @@ public class GridDecodingController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:griddecoding:del")
-    @Log(title = "编码配置管理", businessType = BusinessType.DELETE)
+    @Log(title = "编码配置管理（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
@@ -89,7 +89,7 @@ public class GridDecodingController {
 
     @ApiOperation(value = "根据id删除多个")
     @RequiresPermissions("dm:griddecoding:delByIds")
-    @Log(title = "编码配置管理", businessType = BusinessType.DELETE)
+    @Log(title = "编码配置管理（批量删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/delByIds")
     public ResultT delByIds(String ids) {
         try {

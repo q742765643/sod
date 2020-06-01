@@ -26,7 +26,7 @@ public class TableSqlController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:tablesql:add")
-    @Log(title = "表sql", businessType = BusinessType.INSERT)
+    @Log(title = "表sql（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableSqlDto tableSqlDto) {
         try {

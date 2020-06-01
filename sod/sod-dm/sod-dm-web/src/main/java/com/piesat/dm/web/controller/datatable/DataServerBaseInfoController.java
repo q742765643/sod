@@ -28,7 +28,7 @@ public class DataServerBaseInfoController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataserverbaseinfo:add")
-    @Log(title = "服务基础信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "服务基础信息管理（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataServerBaseInfoDto dataServerBaseInfoDto) {
         try {
@@ -55,7 +55,7 @@ public class DataServerBaseInfoController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:dataserverbaseinfo:del")
-    @Log(title = "服务基础信息管理", businessType = BusinessType.DELETE)
+    @Log(title = "服务基础信息管理（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {

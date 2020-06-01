@@ -32,7 +32,7 @@ public class DataServerConfigController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataserverconfig:add")
-    @Log(title = "服务基础信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "服务基础信息管理（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataServerConfigDto dataServerConfigDto) {
         try {
@@ -46,7 +46,7 @@ public class DataServerConfigController {
 
     @ApiOperation(value = "新增多个")
     @RequiresPermissions("dm:dataserverconfig:addList")
-    @Log(title = "服务基础信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "服务基础信息管理（批量添加）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/addList")
     public ResultT addList(@RequestBody List<DataServerConfigDto> dataServerConfigDto) {
         try {
@@ -73,7 +73,7 @@ public class DataServerConfigController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:dataserverconfig:del")
-    @Log(title = "服务基础信息管理", businessType = BusinessType.DELETE)
+    @Log(title = "服务基础信息管理（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
@@ -87,7 +87,7 @@ public class DataServerConfigController {
 
     @ApiOperation(value = "根据多个id删除")
     @RequiresPermissions("dm:dataserverconfig:delByIds")
-    @Log(title = "服务基础信息管理", businessType = BusinessType.DELETE)
+    @Log(title = "服务基础信息管理（批量删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/delByIds")
     public ResultT delByIds(String ids) {
         try {

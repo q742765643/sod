@@ -29,7 +29,7 @@ public class TableForeignKeyController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:foreignKey:add")
-    @Log(title = "外键关联", businessType = BusinessType.INSERT)
+    @Log(title = "外键关联（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableForeignKeyDto TableForeignKeyDto) {
         try {
@@ -56,7 +56,7 @@ public class TableForeignKeyController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:foreignKey:del")
-    @Log(title = "外键关联", businessType = BusinessType.DELETE)
+    @Log(title = "外键关联（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
@@ -70,7 +70,7 @@ public class TableForeignKeyController {
 
     @ApiOperation(value = "根据多个id删除")
     @RequiresPermissions("dm:foreignKey:delByIds")
-    @Log(title = "外键关联", businessType = BusinessType.DELETE)
+    @Log(title = "外键关联（批量删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/delByIds")
     public ResultT delByIds(String ids) {
         try {

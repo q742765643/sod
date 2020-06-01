@@ -32,7 +32,7 @@ public class GridAreaController {
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:gridarea:add")
-    @Log(title = "区域信息管理", businessType = BusinessType.INSERT)
+    @Log(title = "区域信息管理（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody GridAreaDto gridAreaDto) {
         try {
@@ -59,7 +59,7 @@ public class GridAreaController {
 
     @ApiOperation(value = "根据id删除")
     @RequiresPermissions("dm:gridarea:del")
-    @Log(title = "区域信息管理", businessType = BusinessType.DELETE)
+    @Log(title = "区域信息管理（删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
@@ -73,7 +73,7 @@ public class GridAreaController {
 
     @ApiOperation(value = "根据多个id删除")
     @RequiresPermissions("dm:gridarea:delByIds")
-    @Log(title = "区域信息管理", businessType = BusinessType.DELETE)
+    @Log(title = "区域信息管理（批量删除）", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/delByIds")
     public ResultT delByIds(String ids) {
         try {
