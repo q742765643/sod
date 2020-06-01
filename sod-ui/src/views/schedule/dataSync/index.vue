@@ -111,7 +111,7 @@
             width="200"
             trigger="hover"
           >
-            <el-button slot="reference">停止中</el-button>
+            <el-button slot="reference">运行出错</el-button>
           </el-popover>
         </template>
       </el-table-column>
