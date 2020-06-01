@@ -28,10 +28,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
-import com.piesat.schedule.dao.sync.SyncConfigDao;
-import com.piesat.schedule.dao.sync.SyncFilterDao;
-import com.piesat.schedule.dao.sync.SyncMappingDao;
-import com.piesat.schedule.dao.sync.SyncTaskDao;
+import com.piesat.schedule.dao.sync.*;
 import com.piesat.schedule.entity.sync.*;
 import com.piesat.schedule.mapper.sync.SyncTaskMapper;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
@@ -45,6 +42,7 @@ import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -77,6 +75,9 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     private SyncTaskLogMapstruct syncTaskLogMapstruct;
     @Autowired
     private SyncTaskMapper syncTaskMapper;
+    @Autowired
+    private SyncEleWarningDao syncEleWarningDao;
+
     @GrpcHthtClient
     private DictDataService dictDataService;
     @GrpcHthtClient
@@ -105,27 +106,27 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //syncTaskEntity.setRunState(pageForm.getT().getRunState());
 
         //指定了运行状态就查询所有记录，没有指定运行状态按页码查询
-        if(!StringUtils.isNotNullString(syncTaskEntity.getRunState())){
-            PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        if (!StringUtils.isNotNullString(syncTaskEntity.getRunState())) {
+            PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
         }
         List<SyncTaskEntity> syncTaskEntities = syncTaskMapper.selectPageList(syncTaskEntity);
 
         //获取同步部署的服务器们
-        List<DictDataDto>  dictDataDtos = dictDataService.selectDictDataByType("sync_run_host");
+        List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType("sync_run_host");
         //获取所有任务的状态
         JSONObject jsonThree = new JSONObject();
-        if(dictDataDtos != null && dictDataDtos.size() > 0){
-            for(int i = 0; i < dictDataDtos.size(); i++){
+        if (dictDataDtos != null && dictDataDtos.size() > 0) {
+            for (int i = 0; i < dictDataDtos.size(); i++) {
                 SyncTaskEntity sync = new SyncTaskEntity();
                 sync.setExecIp(dictDataDtos.get(i).getDictValue().split(":")[0]);
                 sync.setExecPort(Integer.valueOf(dictDataDtos.get(i).getDictValue().split(":")[1]));
                 sync.setId("");
-                String allStatus = getStatusById(sync,"getallstatus");
-                if(!"error".equals(allStatus)) {
-                    try{
+                String allStatus = getStatusById(sync, "getallstatus");
+                if (!"error".equals(allStatus)) {
+                    try {
                         JSONObject jsonObject = JSONObject.parseObject(allStatus);
                         jsonThree.putAll(jsonObject);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         //e.printStackTrace();
                     }
 
@@ -134,11 +135,11 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }
 
         //每条记录赋值运行状态
-        if (syncTaskEntities != null && syncTaskEntities.size()>0) {
+        if (syncTaskEntities != null && syncTaskEntities.size() > 0) {
             for (int i = syncTaskEntities.size() - 1; i >= 0; i--) {
                 //运行状态  true(运行中01) false_有出错原因(运行出错02) error(未启动03)  error_没有出错原因（停止中04，程序正常关闭）
                 String status = jsonThree.getString(syncTaskEntities.get(i).getId());
-                if( null == status) {
+                if (null == status) {
                     status = "error";
                 }
                 String error = "";
@@ -189,19 +190,19 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             DatabaseDto databaseDto = databaseService.getDotById(syncTaskDto.getSourceDatabaseId());
             syncTaskDto.setSourceDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
         }*/
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),syncTaskDtos);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), syncTaskDtos);
         return pageBean;
     }
 
     @Override
     public PageBean selectLogPageList(PageForm<SyncTaskLogDto> pageForm) {
         SyncTaskLogEntity syncTaskLogEntity = syncTaskLogMapstruct.toEntity(pageForm.getT());
-        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
         List<SyncTaskLogEntity> syncTaskLogEntities = syncTaskMapper.selectLogPageList(syncTaskLogEntity);//自定义的接口
         PageInfo<SyncTaskLogEntity> pageInfo = new PageInfo<>(syncTaskLogEntities);
         //获取当前页数据
         List<SyncTaskLogDto> syncTaskLogDtos = syncTaskLogMapstruct.toDto(pageInfo.getList());
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),syncTaskLogDtos);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), syncTaskLogDtos);
         return pageBean;
     }
 
@@ -222,31 +223,31 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //将目标表信息存到sync_config表中
         List<Map<String, Object>> targetRelationList = syncTaskDto.getTargetRelation();
         StringBuffer sourceIds = new StringBuffer();
-        for(int i=0;i<targetRelationList.size();i++) {
-            Map<String, Object>  targetRelation = targetRelationList.get(i);
+        for (int i = 0; i < targetRelationList.size(); i++) {
+            Map<String, Object> targetRelation = targetRelationList.get(i);
             String targetTableId = (String) targetRelation.get("targetTableId");
-            List<Map<String,String>> mapping = (List<Map<String,String>>)targetRelation.get("mapping");
+            List<Map<String, String>> mapping = (List<Map<String, String>>) targetRelation.get("mapping");
             targetTableIds.add(targetTableId);
             //保存
-            String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(),targetTableId, mappingListToString(mapping),filterRecordIds,StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
-            if(sourceIds.length()>0) {
+            String mappingRecordId = syncConfigAndMappingSaveDto(syncTaskDto.getSourceTableId(), targetTableId, mappingListToString(mapping), filterRecordIds, StringUtils.isNotNullString(syncTaskDto.getTargetVTableId()));
+            if (sourceIds.length() > 0) {
                 sourceIds.append(",").append(mappingRecordId);
-            }else {
+            } else {
                 sourceIds.append(mappingRecordId);
             }
         }
 
         //值表映射关系入库
         StringBuffer slaveIds = new StringBuffer();
-        Map<String,Object> slaveRelation = syncTaskDto.getSlaveRelation();
-        if(slaveRelation != null && !slaveRelation.isEmpty()){
+        Map<String, Object> slaveRelation = syncTaskDto.getSlaveRelation();
+        if (slaveRelation != null && !slaveRelation.isEmpty()) {
             String sourceVTableId = (String) slaveRelation.get("sourceVTableId");
             String targetVTableId = (String) slaveRelation.get("targetVTableId");
-            List<Map<String,String>> mapping = (List<Map<String,String>>)slaveRelation.get("mapping");
-            String linkKey = (String)slaveRelation.get("linkKey");
+            List<Map<String, String>> mapping = (List<Map<String, String>>) slaveRelation.get("mapping");
+            String linkKey = (String) slaveRelation.get("linkKey");
             syncTaskDto.setLinkKey(linkKey);
 
-            String mappingRecordId = syncConfigAndMappingSaveDto(sourceVTableId,targetVTableId,mappingListToString(mapping),"",true);
+            String mappingRecordId = syncConfigAndMappingSaveDto(sourceVTableId, targetVTableId, mappingListToString(mapping), "", true);
             slaveIds.append(mappingRecordId);
         }
         syncTaskDto.setSourceTable(sourceIds.toString());
@@ -261,30 +262,40 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }else{
             syncTaskDto.setDiscardOnDuplicate("0");
         }*/
-        if(syncTaskDto.getBeginTime() != null){
+        if (syncTaskDto.getBeginTime() != null) {
             syncTaskDto.setLastSuccessTime(syncTaskDto.getBeginTime());
         }
         syncTaskDto.setHasModify("0");
 
-        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         syncTaskDto.setCreateBy(loginUser.getUserName());
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
 
         //修改存储策略配置
-        updateStorageConfiguration(targetTableIds,syncTaskDto.getTargetDatabaseId(),1,syncTaskEntity.getId());
+        updateStorageConfiguration(targetTableIds, syncTaskDto.getTargetDatabaseId(), 1, syncTaskEntity.getId());
+
+        if (syncTaskDto.getCheckInterval() != null && syncTaskDto.getTimeLimit() != null && syncTaskDto.getBiggestDifference() != null) {
+            SyncEleWarningEntity see = new SyncEleWarningEntity();
+            see.setId(syncTaskEntity.getId());
+            see.setTaskId(syncTaskEntity.getId());
+            see.setCheckInterval(syncTaskDto.getCheckInterval());
+            see.setTimeLimit(syncTaskDto.getTimeLimit());
+            see.setBiggestDifference(syncTaskDto.getBiggestDifference());
+            this.syncEleWarningDao.saveNotNull(see);
+        }
 
         return this.syncTaskMapstruct.toDto(syncTaskEntity);
     }
 
     //修改存储策略配置
-    public void updateStorageConfiguration(List<String> targetTableIds,String targetDatabaseId,Integer syncIdentifier,String taskId){
-        if(targetTableIds != null && targetTableIds.size() > 0){
-            for(String targetTableId : targetTableIds){
+    public void updateStorageConfiguration(List<String> targetTableIds, String targetDatabaseId, Integer syncIdentifier, String taskId) {
+        if (targetTableIds != null && targetTableIds.size() > 0) {
+            for (String targetTableId : targetTableIds) {
                 DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
                 List<DataLogicDto> dataLogicDtos = dataLogicService.getDataLogic(targetTableDto.getDataServiceId(), targetDatabaseId, targetTableDto.getTableName());
-                if(dataLogicDtos != null && dataLogicDtos.size()>0){
-                    for(DataLogicDto dataLogicDto : dataLogicDtos){
+                if (dataLogicDtos != null && dataLogicDtos.size() > 0) {
+                    for (DataLogicDto dataLogicDto : dataLogicDtos) {
                         StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
                         storageConfigurationDto.setClassLogicId(dataLogicDto.getId());
                         storageConfigurationDto.setSyncIdentifier(syncIdentifier);
@@ -302,39 +313,50 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
         this.deleteConfigFilter(syncTaskDto.getId());
         this.saveDto(syncTaskDto);
+        if (syncTaskDto.getCheckInterval() != null && syncTaskDto.getTimeLimit() != null && syncTaskDto.getBiggestDifference() != null) {
+            SyncEleWarningEntity see = new SyncEleWarningEntity();
+            see.setId(syncTaskDto.getId());
+            see.setTaskId(syncTaskDto.getId());
+            see.setCheckInterval(syncTaskDto.getCheckInterval());
+            see.setTimeLimit(syncTaskDto.getTimeLimit());
+            see.setBiggestDifference(syncTaskDto.getBiggestDifference());
+            this.syncEleWarningDao.saveNotNull(see);
+        }
         return syncTaskDto;
     }
 
     /**
      * 保存syncFilter
+     *
      * @param syncTaskDto
      * @return 可能情况：空  一个  多个用逗号分隔
      */
-    public String syncFilterSaveDto(SyncTaskDto syncTaskDto){
+    public String syncFilterSaveDto(SyncTaskDto syncTaskDto) {
         String[] sourceTableFilter = syncTaskDto.getSourceTableFilter();
         String filterRecordIds = "";
-        if(sourceTableFilter != null && sourceTableFilter.length > 0){
-            for(int i=0;i<sourceTableFilter.length;i++){
+        if (sourceTableFilter != null && sourceTableFilter.length > 0) {
+            for (int i = 0; i < sourceTableFilter.length; i++) {
                 SyncFilterEntity sti = new SyncFilterEntity();
                 sti.setColumnName(sourceTableFilter[i]);
                 sti.setFilterValues(syncTaskDto.getSourceTableFilterText()[i]);
                 sti.setColumnOper(syncTaskDto.getColumnOper()[i]);
 
                 sti = syncFilterDao.saveNotNull(sti);
-                if(!"".equals(filterRecordIds)){
+                if (!"".equals(filterRecordIds)) {
                     filterRecordIds += ",";
                 }
-                if(StringUtils.isNotNullString(String.valueOf(sti.getId()))){
+                if (StringUtils.isNotNullString(String.valueOf(sti.getId()))) {
                     filterRecordIds += sti.getId();
                 }
 
             }
         }
-        return  filterRecordIds;
+        return filterRecordIds;
     }
 
     /**
      * 保存syncConfig和syncMapping
+     *
      * @param sourceTableId
      * @param targetTableId
      * @param mapping
@@ -343,7 +365,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
      * @return
      */
 
-    public String syncConfigAndMappingSaveDto(String sourceTableId,String targetTableId,String mapping,String filterRecordIds,boolean isKV){
+    public String syncConfigAndMappingSaveDto(String sourceTableId, String targetTableId, String mapping, String filterRecordIds, boolean isKV) {
         //获取源表信息
         DataTableDto sourceTableDto = dataTableService.getDotById(sourceTableId);
         //获取目标表信息
@@ -355,7 +377,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         List<TableIndexDto> tableIndexDtos = tableIndexService.findByTableId(targetTableId);
         String unique_index = findUniqueIndex(tableIndexDtos);
         //目标表的唯一索引不存在的话用源表唯一索引代替
-        if(!StringUtils.isNotNullString(unique_index)){
+        if (!StringUtils.isNotNullString(unique_index)) {
             tableIndexDtos = tableIndexService.findByTableId(sourceTableId);
             unique_index = findUniqueIndex(tableIndexDtos);
         }
@@ -364,17 +386,17 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         //目标表分库分表键
         List<ShardingDto> shardingDtos = shardingService.getDotByTableId(targetTableId);
         String ttkeys = getPartitionKey(shardingDtos);
-        if(StringUtils.isNotNullString(ttkeys)){
+        if (StringUtils.isNotNullString(ttkeys)) {
             tti.setIfpatitions("1");
             tti.setPartitionKeys(ttkeys);
-        }else{
+        } else {
             tti.setIfpatitions("0");
         }
 
         //是否kv表
-        if(isKV){
+        if (isKV) {
             tti.setIsKv("1");
-        }else{
+        } else {
             tti.setIsKv("0");
         }
 
@@ -382,7 +404,6 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         tti.setDDataId(targetTableDto.getDataServiceId());
         //存储
         tti = syncConfigDao.saveNotNull(tti);
-
 
 
         //保存sync_mapping
@@ -396,28 +417,29 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         return String.valueOf(syncMappingEntity.getId());
     }
 
-    public String mappingListToString(List<Map<String,String>> mapping){
+    public String mappingListToString(List<Map<String, String>> mapping) {
         String mappingString = "";
-        if(mapping != null && mapping.size()>0){
-            for(int i=0;i<mapping.size();i++){
+        if (mapping != null && mapping.size() > 0) {
+            for (int i = 0; i < mapping.size(); i++) {
                 Map<String, String> map = mapping.get(i);
-                String targetColumn_ =  map.get("targetColumn_");
-                String sourceColumn_ =  map.get("sourceColumn_");
-                mappingString = mappingString + "<" + targetColumn_ +">" +sourceColumn_ + "</" + targetColumn_ + ">"+"\r\n";
+                String targetColumn_ = map.get("targetColumn_");
+                String sourceColumn_ = map.get("sourceColumn_");
+                mappingString = mappingString + "<" + targetColumn_ + ">" + sourceColumn_ + "</" + targetColumn_ + ">" + "\r\n";
             }
         }
-        return  mappingString;
+        return mappingString;
     }
-    public JSONArray mappingStringToList(String mapping){
+
+    public JSONArray mappingStringToList(String mapping) {
         JSONArray jsonArray = new JSONArray();
-        if(StringUtils.isNotNullString(mapping)){
-            for(int i=0;i<mapping.split("\r\n").length;i++){
+        if (StringUtils.isNotNullString(mapping)) {
+            for (int i = 0; i < mapping.split("\r\n").length; i++) {
                 JSONObject jsonObject = new JSONObject();
                 String oneMapping = mapping.split("\r\n")[i];
                 String sourceColumn_ = oneMapping.substring(oneMapping.indexOf(">") + 1, oneMapping.indexOf("</"));
                 String targetColumn_ = oneMapping.substring(oneMapping.indexOf("<") + 1, oneMapping.indexOf(">"));
-                jsonObject.put("targetColumn_",targetColumn_);
-                jsonObject.put("sourceColumn_",sourceColumn_);
+                jsonObject.put("targetColumn_", targetColumn_);
+                jsonObject.put("sourceColumn_", sourceColumn_);
                 jsonArray.add(jsonObject);
             }
         }
@@ -425,16 +447,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
 
-
     /**
      * 唯一索引/主键
+     *
      * @param tableIndexList
      * @return
      */
-    private String findUniqueIndex(List<TableIndexDto> tableIndexList){
-        if(tableIndexList != null && tableIndexList.size() > 0){
-            for(TableIndexDto ti : tableIndexList){
-                if(ti.getIndexType().contains("唯一") || ti.getIndexType().contains("UK")){
+    private String findUniqueIndex(List<TableIndexDto> tableIndexList) {
+        if (tableIndexList != null && tableIndexList.size() > 0) {
+            for (TableIndexDto ti : tableIndexList) {
+                if (ti.getIndexType().contains("唯一") || ti.getIndexType().contains("UK")) {
                     return ti.getIndexColumn();
                 }
             }
@@ -444,18 +466,19 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
     /**
      * 分库分表键
+     *
      * @param shardingDtos
      * @return
      */
-    public String getPartitionKey(List<ShardingDto> shardingDtos){
+    public String getPartitionKey(List<ShardingDto> shardingDtos) {
         try {
             String partitionKey = "";//分库分表键，用逗号分隔
-            if(shardingDtos!=null&&shardingDtos.size()>0){
-                for(ShardingDto shard : shardingDtos){
-                    partitionKey += shard.getColumnName()+",";
+            if (shardingDtos != null && shardingDtos.size() > 0) {
+                for (ShardingDto shard : shardingDtos) {
+                    partitionKey += shard.getColumnName() + ",";
                 }
-                if(partitionKey.length()>0){
-                    partitionKey = partitionKey.substring(0,partitionKey.length()-1);
+                if (partitionKey.length() > 0) {
+                    partitionKey = partitionKey.substring(0, partitionKey.length() - 1);
                 }
             }
             return partitionKey;
@@ -480,12 +503,12 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             requestFactory.setConnectTimeout(6000);// 设置超时
             requestFactory.setReadTimeout(6000);
             RestTemplate restTemplate = new RestTemplate(requestFactory);
-            String line=restTemplate.getForObject(strURL,String.class);
-            if(line==null){
-                line="";
+            String line = restTemplate.getForObject(strURL, String.class);
+            if (line == null) {
+                line = "";
             }
             buffer.append(line);
-        }  catch (Exception e) {
+        } catch (Exception e) {
             buffer.append("error");
         } finally {
             try {
@@ -516,13 +539,13 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         //修改存储策略配置
         SyncTaskDto syncTaskDto = this.getDtoById(taskId);
-        updateStorageConfiguration(targetTableIds,syncTaskDto.getTargetDatabaseId(),2,"");
+        updateStorageConfiguration(targetTableIds, syncTaskDto.getTargetDatabaseId(), 2, "");
 
         //删除synctask表
         syncTaskDao.deleteById(taskId);
     }
 
-    public List<String> deleteConfigFilter(String taskId){
+    public List<String> deleteConfigFilter(String taskId) {
         List<String> targetTableIds = new ArrayList<String>();
         SyncTaskDto syncTaskDto = this.getDtoById(taskId);
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
@@ -533,26 +556,26 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         String so = syncTaskDto.getSourceTable();//键表对的mapper的id，可能有多个用逗号分隔
         String sl = syncTaskDto.getSlaveTables();//值表对的mapper的id
         List<Integer> mapperList = new ArrayList<Integer>();
-        if(StringUtils.isNotNullString(so)){
-            for(int i=0;i<so.split(",").length;i++){
+        if (StringUtils.isNotNullString(so)) {
+            for (int i = 0; i < so.split(",").length; i++) {
                 mapperList.add(Integer.valueOf(so.split(",")[i]));
             }
         }
-        if(StringUtils.isNotNullString(sl)){
+        if (StringUtils.isNotNullString(sl)) {
             mapperList.add(Integer.valueOf(sl));
         }
         //查找所有的mapper
         List<SyncMappingEntity> syncMappingLists = syncMappingDao.findAllByIdIn(mapperList);
         //查filter和config的id
-        for(SyncMappingEntity syncMappingEntity : syncMappingLists){
+        for (SyncMappingEntity syncMappingEntity : syncMappingLists) {
             //删除filter
-            if(StringUtils.isNotNullString(syncMappingEntity.getSourceTableId())){
-                for(String filterId:syncMappingEntity.getSourceTableId().split(",")){
+            if (StringUtils.isNotNullString(syncMappingEntity.getSourceTableId())) {
+                for (String filterId : syncMappingEntity.getSourceTableId().split(",")) {
                     syncFilterDao.deleteById(Integer.valueOf(filterId));
                 }
             }
             //删除config
-            if(StringUtils.isNotNullString(syncMappingEntity.getTargetTableId())){
+            if (StringUtils.isNotNullString(syncMappingEntity.getTargetTableId())) {
                 SyncConfigEntity syncConfigEntity = syncConfigDao.findById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
                 targetTableIds.add(syncConfigEntity.getTargetTableId());
                 syncConfigDao.deleteById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
@@ -571,7 +594,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         String sourceTable = syncTaskEntity.getSourceTable();
         List<Integer> mappingKIds = new ArrayList<Integer>();
-        for(int i = 0; i < sourceTable.split(",").length; i++){
+        for (int i = 0; i < sourceTable.split(",").length; i++) {
             mappingKIds.add(Integer.valueOf(sourceTable.split(",")[i]));
         }
         List<SyncMappingEntity> syncMappingEntitys = syncMappingDao.findAllByIdIn(mappingKIds);
@@ -582,28 +605,28 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         String sourceTableFilterText = "";
         SyncMappingEntity syncMappingEntit = syncMappingEntitys.get(0);
         String filterIds = syncMappingEntit.getSourceTableId();
-        if(StringUtils.isNotNullString(filterIds)){
-            for(int i=0;i<filterIds.split(",").length;i++){
+        if (StringUtils.isNotNullString(filterIds)) {
+            for (int i = 0; i < filterIds.split(",").length; i++) {
                 SyncFilterEntity syncFilterEntity = syncFilterDao.findById(Integer.valueOf(filterIds.split(",")[i]));
-                if(StringUtils.isNotNullString(sourceTableFilter)){
-                    sourceTableFilter = ","+syncFilterEntity.getColumnName();
-                    columnOper = ","+syncFilterEntity.getColumnOper();
-                    sourceTableFilterText = ","+syncFilterEntity.getFilterValues();
+                if (StringUtils.isNotNullString(sourceTableFilter)) {
+                    sourceTableFilter = "," + syncFilterEntity.getColumnName();
+                    columnOper = "," + syncFilterEntity.getColumnOper();
+                    sourceTableFilterText = "," + syncFilterEntity.getFilterValues();
 
-                }else{
+                } else {
                     sourceTableFilter = syncFilterEntity.getColumnName();
                     columnOper = syncFilterEntity.getColumnOper();
                     sourceTableFilterText = syncFilterEntity.getFilterValues();
                 }
             }
         }
-        if(StringUtils.isNotNullString(sourceTableFilter)){
+        if (StringUtils.isNotNullString(sourceTableFilter)) {
             syncTaskEntity.setSourceTableFilter(sourceTableFilter.split(","));
         }
-        if(StringUtils.isNotNullString(columnOper)){
+        if (StringUtils.isNotNullString(columnOper)) {
             syncTaskEntity.setColumnOper(columnOper.split(","));
         }
-        if(StringUtils.isNotNullString(sourceTableFilterText)){
+        if (StringUtils.isNotNullString(sourceTableFilterText)) {
             syncTaskEntity.setSourceTableFilterText(sourceTableFilterText.split(","));
         }
 
@@ -611,7 +634,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
 
         //目标表
-        for(SyncMappingEntity syncMappingEntity :syncMappingEntitys){
+        for (SyncMappingEntity syncMappingEntity : syncMappingEntitys) {
 
             //目标表
             Map<String, Object> relation = new HashMap<>();
@@ -628,7 +651,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         //值表mapping的id
         String slaveTable = syncTaskEntity.getSlaveTables();
-        if(StringUtils.isNotNullString(slaveTable)){
+        if (StringUtils.isNotNullString(slaveTable)) {
             Map<String, Object> relation = new HashMap<>();
             SyncMappingEntity syncMappingEntity = syncMappingDao.findById(Integer.valueOf(slaveTable));
 
@@ -636,8 +659,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             String configId = syncMappingEntity.getTargetTableId();
             //将mapping格式化成json
             String mapping = syncMappingEntity.getMapping();
-            relation.put("mapping",mappingStringToList(mapping));
+            relation.put("mapping", mappingStringToList(mapping));
             syncTaskDto.setSlaveRelation(relation);
+        }
+
+        Optional<SyncEleWarningEntity> optionalT = this.syncEleWarningDao.findById(syncTaskDto.getId());
+        SyncEleWarningEntity see = optionalT.isPresent() ? optionalT.get(): null;
+        if (see!=null){
+            syncTaskDto.setCheckInterval(see.getCheckInterval());
+            syncTaskDto.setTimeLimit(see.getTimeLimit());
+            syncTaskDto.setBiggestDifference(see.getBiggestDifference());
         }
         String syncTaskJson = JSONObject.toJSONString(syncTaskDto);
         JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
@@ -649,19 +680,19 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     public void exportExcel(SyncTaskDto syncTaskDto) {
         SyncTaskEntity syncTaskEntity = syncTaskMapstruct.toEntity(syncTaskDto);
         List<SyncTaskEntity> syncTaskEntitiesList = syncTaskMapper.selectPageList(syncTaskEntity);
-        ExcelUtil<SyncTaskEntity> util=new ExcelUtil(SyncTaskEntity.class);
-        util.exportExcel(syncTaskEntitiesList,"数据同步");
+        ExcelUtil<SyncTaskEntity> util = new ExcelUtil(SyncTaskEntity.class);
+        util.exportExcel(syncTaskEntitiesList, "数据同步");
     }
 
     @Override
     public void restart(String taskId) {
         SyncTaskEntity byId = this.getById(taskId);
-        getStatusById(byId,"restart");
+        getStatusById(byId, "restart");
     }
 
     @Override
     public void stop(String taskId) {
         SyncTaskEntity byId = this.getById(taskId);
-        getStatusById(byId,"stop");
+        getStatusById(byId, "stop");
     }
 }

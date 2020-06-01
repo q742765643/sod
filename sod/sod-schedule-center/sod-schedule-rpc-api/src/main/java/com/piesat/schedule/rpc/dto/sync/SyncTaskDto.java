@@ -174,4 +174,11 @@ public class SyncTaskDto extends BaseDto {
      */
     private String[]  sourceTableFilterText = new String[]{};
 
+
+    private Integer checkInterval;
+
+    private Integer timeLimit;
+
+    private Integer biggestDifference;
+
 }
