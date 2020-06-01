@@ -2,10 +2,10 @@
   <section class="handleTaskCommonDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="100px">
       <el-form-item prop="taskName" label="任务名称:">
-        <el-input size="small" v-model="msgFormDialog.taskName" placeholder="请输入" />
+        <el-input size="small" v-model.trim="msgFormDialog.taskName" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="tableName" label="表名:">
-        <el-select size="small" filterable v-model="msgFormDialog.tableName">
+        <el-select size="small" filterable v-model.trim="msgFormDialog.tableName">
           <el-option
             v-for="(item,index) in tableNames"
             :key="index"
@@ -15,27 +15,27 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="apiUrl" label="接口url:">
-        <el-input size="small" v-model="msgFormDialog.apiUrl" placeholder="请输入" />
+        <el-input size="small" v-model.trim="msgFormDialog.apiUrl" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="apiType" label="同步类型:">
-        <el-select size="small" filterable v-model="msgFormDialog.apiType">
+        <el-select size="small" filterable v-model.trim="msgFormDialog.apiType">
           <el-option label="全量同步" value="1"></el-option>
           <el-option label="增量同步" value="2"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item prop="apiDataKey" label="接口关键字:">
-        <el-input size="small" v-model="msgFormDialog.apiDataKey" placeholder="请输入" />
+        <el-input size="small" v-model.trim="msgFormDialog.apiDataKey" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="primaryKey" label="同步主键:">
-        <el-input size="small" v-model="msgFormDialog.primaryKey" placeholder="请输入" />
+        <el-input size="small" v-model.trim="msgFormDialog.primaryKey" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="jobCron" label="执行策略:">
-        <el-popover v-model="cronPopover">
+        <el-popover v-model.trim="cronPopover">
           <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
           <el-input
             slot="reference"
             @click="cronPopover=true"
-            v-model="msgFormDialog.jobCron"
+            v-model.trim="msgFormDialog.jobCron"
             placeholder="请输入定时策略"
           ></el-input>
         </el-popover>

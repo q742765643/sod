@@ -26,7 +26,7 @@
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
           <el-form-item label="字段编码">
-            <el-input size="small" v-model="queryParams.dbEleCode" placeholder="字段编码"></el-input>
+            <el-input size="small" v-model.trim="queryParams.dbEleCode" placeholder="字段编码"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>

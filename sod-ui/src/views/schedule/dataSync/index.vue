@@ -3,7 +3,7 @@
     <!-- 数据同步 -->
     <el-form :model="queryParams" ref="queryParams" :inline="true" class="searchBox">
       <el-form-item label="关键字查询">
-        <el-select size="small" v-model="queryParams.selectInfo">
+        <el-select size="small" v-model.trim="queryParams.selectInfo">
           <el-option
             :key="index"
             v-for="(item,index) in selectInfoSelect"
@@ -13,10 +13,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label>
-        <el-input v-model="queryParams.searchValue"></el-input>
+        <el-input v-model.trim="queryParams.searchValue"></el-input>
       </el-form-item>
       <el-form-item label="运行状态">
-        <el-select size="small" v-model="queryParams.runState" style="width:120px;">
+        <el-select size="small" v-model.trim="queryParams.runState" style="width:120px;">
           <el-option label="全部" value></el-option>
           <el-option
             v-for="(item,index) in runStateSelect"
@@ -39,7 +39,20 @@
         <el-button type="primary" icon="el-icon-plus" size="small" @click="addSync">添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="primary" icon="el-icon-edit" size="small">批量启停</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-video-play"
+          size="small"
+          @click="handlebatchRestart"
+        >批量启动</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-video-pause"
+          size="small"
+          @click="handlebatchStop"
+        >批量停止</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" icon="el-icon-download" size="small" @click="handleExport">导出</el-button>
@@ -48,7 +61,14 @@
         <el-button type="primary" icon="el-icon-refresh" size="small">刷新</el-button>
       </el-col>
     </el-row>
-    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
       <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
@@ -181,7 +201,9 @@ import {
   getSyncInfo,
   exportTable,
   syncStart,
-  syncStop
+  syncStop,
+  batchRestart,
+  batchStop
 } from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
@@ -255,7 +277,8 @@ export default {
       handleDialog: false,
       dialogSuperSearch: false,
       superObj: {},
-      superMsg: {}
+      superMsg: {},
+      multipleSelection: []
     };
   },
   created() {
@@ -376,6 +399,37 @@ export default {
       this.handleDialog = true;
       this.handleObj = {};
     },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handlebatchRestart() {
+      if (this.multipleSelection.length == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      let ids = [];
+      this.multipleSelection.forEach(element => {
+        ids.push(element.id);
+      });
+      batchRestart({ taskIds: ids.join(",") }).then(response => {
+        this.msgSuccess("启动成功");
+        this.getList();
+      });
+    },
+    handlebatchStop() {
+      if (this.multipleSelection.length == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      let ids = [];
+      this.multipleSelection.forEach(element => {
+        ids.push(element.id);
+      });
+      batchStop({ taskIds: ids.join(",") }).then(response => {
+        this.msgSuccess("停止成功");
+        this.getList();
+      });
+    },
     closeSuperSearch() {
       this.dialogSuperSearch = false;
     },
@@ -426,18 +480,27 @@ export default {
     },
 
     updateStatus(row, type) {
-      this.$confirm("是否确认启动/停止任务", "警告", {
+      let handle = "";
+      if (type == 1) {
+        handle = "启动";
+      } else {
+        handle = "停止";
+      }
+      this.$confirm("是否确认" + handle + "任务", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(function() {
-          debugger;
           if (type == 1) {
-            syncStart(row.id).then(response => {});
+            syncStart(row.id).then(response => {
+              this.msgSuccess("启动成功");
+            });
           } else {
             //停止
-            syncStop(row.id).then(response => {});
+            syncStop(row.id).then(response => {
+              this.msgSuccess("停止成功");
+            });
           }
         })
         .then(() => {

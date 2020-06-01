@@ -4,119 +4,119 @@
       <el-row>
         <el-col :span="12">
           <el-form-item prop="crpindname" label="数据所有者:">
-            <el-input v-model="tableFormObject.crpindname" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.crpindname" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cmainfreq" label="维护和更新频率:">
-            <el-input v-model="tableFormObject.cmainfreq" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cmainfreq" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="cdatascal" label="空间分辨率:">
-            <el-input v-model="tableFormObject.cdatascal" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cdatascal" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cgeodesc" label="地理覆盖描述:">
-            <el-input v-model="tableFormObject.cgeodesc" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cgeodesc" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="ceastbl" label="最东经度:">
-            <el-input v-model="tableFormObject.ceastbl" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.ceastbl" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cwestbl" label="最西经度:">
-            <el-input v-model="tableFormObject.cwestbl" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cwestbl" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="cnorthbl" label="最北纬度:">
-            <el-input v-model="tableFormObject.cnorthbl" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cnorthbl" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="csouthbl" label="最南纬度:">
-            <el-input v-model="tableFormObject.csouthbl" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.csouthbl" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="cnettype" label="站网代码:">
-            <el-input v-model="tableFormObject.cnettype" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cnettype" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cnetname" label="站网名称:">
-            <el-input v-model="tableFormObject.cnetname" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cnetname" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="ccreatName" label="申请人名称:">
-            <el-input v-model="tableFormObject.ccreatName" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.ccreatName" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cchecker" label="审核人名称:">
-            <el-input v-model="tableFormObject.cchecker" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cchecker" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="crpindname" label="数据维护人:">
-            <el-input v-model="tableFormObject.crpindname" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.crpindname" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cdocindnname" label="数据集制作人:">
-            <el-input v-model="tableFormObject.cdocindnname" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cdocindnname" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="cobsfreq" label="观测频率:">
-            <el-input v-model="tableFormObject.cobsfreq" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cobsfreq" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="cgeodesc" label="描述:">
-            <el-input v-model="tableFormObject.cgeodesc" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.cgeodesc" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="crporgname" label="责任单位:">
-            <el-input v-model="tableFormObject.crporgname" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.crporgname" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="ccreatName" label="元数据编制人:">
-            <el-input v-model="tableFormObject.ccreatName" size="small"></el-input>
+            <el-input v-model.trim="tableFormObject.ccreatName" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-form-item prop="csource" label="数据源:">
-          <el-input type="textarea" v-model="tableFormObject.csource" size="small"></el-input>
+          <el-input type="textarea" v-model.trim="tableFormObject.csource" size="small"></el-input>
         </el-form-item>
       </el-row>
       <el-row>
         <el-form-item prop="cidabs" label="数据说明:">
-          <el-input type="textarea" v-model="tableFormObject.cidabs" size="small"></el-input>
+          <el-input type="textarea" v-model.trim="tableFormObject.cidabs" size="small"></el-input>
         </el-form-item>
       </el-row>
     </el-form>

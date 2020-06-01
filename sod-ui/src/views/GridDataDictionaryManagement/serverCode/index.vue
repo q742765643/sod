@@ -3,10 +3,10 @@
     <!-- 服务代码定义 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="格点要素服务代码:">
-        <el-input size="small" v-model="queryParams.userFcstEle" />
+        <el-input size="small" v-model.trim="queryParams.userFcstEle" />
       </el-form-item>
       <el-form-item label="要素存储短名:">
-        <el-input size="small" v-model="queryParams.dbFcstEle" />
+        <el-input size="small" v-model.trim="queryParams.dbFcstEle" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -57,19 +57,19 @@
     >
       <el-form :model="ruleForm" :rules="rules" label-width="150px" ref="ruleForm">
         <el-form-item label="要素服务代码:" prop="userFcstEle">
-          <el-input v-model="ruleForm.userFcstEle" placeholder="请输入要素服务代码" />
+          <el-input v-model.trim="ruleForm.userFcstEle" placeholder="请输入要素服务代码" />
         </el-form-item>
         <el-form-item label="要素存储短名:" prop="dbFcstEle">
-          <el-input v-model="ruleForm.dbFcstEle" placeholder="请输入要素存储短名" />
+          <el-input v-model.trim="ruleForm.dbFcstEle" placeholder="请输入要素存储短名" />
         </el-form-item>
         <el-form-item label="中文名称:" prop="eleName">
-          <el-input v-model="ruleForm.eleName" placeholder="请输入中文名称" />
+          <el-input v-model.trim="ruleForm.eleName" placeholder="请输入中文名称" />
         </el-form-item>
         <el-form-item label="属性名(要素长名):" prop="elePropertyName">
-          <el-input v-model="ruleForm.elePropertyName" placeholder="请输入属性名(要素长名)" />
+          <el-input v-model.trim="ruleForm.elePropertyName" placeholder="请输入属性名(要素长名)" />
         </el-form-item>
         <el-form-item label="要素单位:" prop="eleUnit">
-          <el-input v-model="ruleForm.eleUnit" placeholder="请输入要素单位" />
+          <el-input v-model.trim="ruleForm.eleUnit" placeholder="请输入要素单位" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

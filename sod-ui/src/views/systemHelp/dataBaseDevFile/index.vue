@@ -3,15 +3,15 @@
     <!-- 数据库开发文档 2020/4/20 和数据库运维文档合并为数据库文档-->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="文档名称">
-        <el-input size="small" v-model="queryParams.fileName"></el-input>
+        <el-input size="small" v-model.trim="queryParams.fileName"></el-input>
       </el-form-item>
       <el-form-item label="文档后缀">
-        <el-input size="small" v-model="queryParams.fileSuffix"></el-input>
+        <el-input size="small" v-model.trim="queryParams.fileSuffix"></el-input>
       </el-form-item>
       <el-form-item label="上传时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -31,7 +31,7 @@
       <el-col :span="1.5">
         <el-upload
           ref="uploadRef"
-          v-model="examineMaterial"
+          v-model.trim="examineMaterial"
           class="upload-demo"
           accept=".docx, .pdf, .doc"
           :limit="1"

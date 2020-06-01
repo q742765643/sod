@@ -17,7 +17,7 @@
               <el-select
                 size="small"
                 filterable
-                v-model="msgFormDialog.userId"
+                v-model.trim="msgFormDialog.userId"
                 @change="userChange"
               >
                 <el-option
@@ -31,15 +31,15 @@
           </el-col>
           <el-col :span="8" v-else>
             <el-form-item label="申请用户" prop="userName">
-              <el-input :disabled="true" size="small" v-model="msgFormDialog.userName"></el-input>
+              <el-input v-model.trim="msgFormDialog.userName" :disabled="true" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="申请单位">
               <el-input
+                v-model.trim="msgFormDialog.department"
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.department"
                 placeholder="申请单位"
               ></el-input>
             </el-form-item>
@@ -49,7 +49,7 @@
               <el-input
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.telephone"
+                v-model.trim="msgFormDialog.telephone"
                 placeholder="联系电话"
               ></el-input>
             </el-form-item>
@@ -61,7 +61,7 @@
               <el-select
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.storageLogic"
+                v-model.trim="msgFormDialog.storageLogic"
                 @change="storageChange"
               >
                 <el-option
@@ -78,7 +78,7 @@
               <el-input
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.databaseName"
+                v-model.trim="msgFormDialog.databaseName"
                 placeholder="数据库名"
               ></el-input>
             </el-form-item>
@@ -88,7 +88,7 @@
               <el-input
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.applicationSystem"
+                v-model.trim="msgFormDialog.applicationSystem"
                 placeholder="应用系统"
               ></el-input>
             </el-form-item>
@@ -97,7 +97,11 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="8">
             <el-form-item label="申请存储空间大小" prop="storageSpace">
-              <el-select :disabled="isDetail" size="small" v-model="msgFormDialog.storageSpace">
+              <el-select
+                :disabled="isDetail"
+                size="small"
+                v-model.trim="msgFormDialog.storageSpace"
+              >
                 <el-option
                   v-for="(item,index) in storageSpaceList"
                   :key="index"
@@ -112,7 +116,7 @@
               <el-input
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.databaseUse"
+                v-model.trim="msgFormDialog.databaseUse"
                 placeholder="用途"
               ></el-input>
             </el-form-item>
@@ -123,7 +127,7 @@
               prop="cpuMemory"
               v-if="msgFormDialog.storageLogic !='redis'&& msgFormDialog.storageLogic !='file'"
             >
-              <el-select :disabled="isDetail" size="small" v-model="msgFormDialog.cpuMemory">
+              <el-select :disabled="isDetail" size="small" v-model.trim="msgFormDialog.cpuMemory">
                 <el-option
                   v-for="(item,index) in cpuList"
                   :key="index"
@@ -142,7 +146,7 @@
         <el-row type="flex" class="row-bg" justify="center" v-if="this.handleObj.id == undefined">
           <el-col :span="8">
             <el-form-item label="审核人" prop="examiner">
-              <el-input size="small" v-model="msgFormDialog.examiner" placeholder="审核人"></el-input>
+              <el-input size="small" v-model.trim="msgFormDialog.examiner" placeholder="审核人"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10">
@@ -151,7 +155,7 @@
                 <i style="color:red;">*</i>&nbsp;单位审核材料
               </label>
               <el-upload
-                v-model="msgFormDialog.examineMaterial"
+                v-model.trim="msgFormDialog.examineMaterial"
                 class="upload-demo"
                 accept=".docx"
                 :limit="1"
@@ -175,7 +179,7 @@
           <el-col :span="8">
             <el-form-item label="审核状态" prop="examineStatus">
               <el-radio-group
-                v-model="msgFormDialog.examineStatus"
+                v-model.trim="msgFormDialog.examineStatus"
                 @change="statusChange"
                 :disabled="isDetailStatus"
               >
@@ -190,7 +194,7 @@
               <el-input
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.examiner"
+                v-model.trim="msgFormDialog.examiner"
                 placeholder="审核人"
               ></el-input>
             </el-form-item>
@@ -210,7 +214,7 @@
               <el-input
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.failure_reason"
+                v-model.trim="msgFormDialog.failure_reason"
                 placeholder="拒绝原因"
               ></el-input>
             </el-form-item>
@@ -232,7 +236,7 @@
               <el-input
                 :disabled="isDetail"
                 size="small"
-                v-model="msgFormDialog.mountServer"
+                v-model.trim="msgFormDialog.mountServer"
                 placeholder="挂载服务器"
               ></el-input>
             </el-form-item>
@@ -244,7 +248,7 @@
                   <el-input
                     :disabled="isDetail"
                     size="small"
-                    v-model="msgFormDialog.mountDirectory"
+                    v-model.trim="msgFormDialog.mountDirectory"
                     placeholder="挂载目录"
                   ></el-input>
                 </el-form-item>
@@ -269,7 +273,7 @@
               <el-input
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.databaseIp"
+                v-model.trim="msgFormDialog.databaseIp"
                 placeholder="数据库IP"
               ></el-input>
             </el-form-item>
@@ -279,7 +283,7 @@
               <el-input
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.databasePort"
+                v-model.trim="msgFormDialog.databasePort"
                 placeholder="数据库端口号"
               ></el-input>
             </el-form-item>
@@ -289,7 +293,7 @@
               <el-select
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.newStorageSpace"
+                v-model.trim="msgFormDialog.newStorageSpace"
               >
                 <el-option
                   v-for="(item,index) in storageSpaceList"
@@ -312,7 +316,7 @@
               <el-input
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.databaseUsername"
+                v-model.trim="msgFormDialog.databaseUsername"
                 placeholder="数据库用户名"
               ></el-input>
             </el-form-item>
@@ -325,7 +329,7 @@
                     :disabled="isDetailStatus"
                     :type="passwordType"
                     size="small"
-                    v-model="msgFormDialog.databasePassword"
+                    v-model.trim="msgFormDialog.databasePassword"
                     placeholder="数据库密码"
                   ></el-input>
                 </el-form-item>
@@ -347,7 +351,7 @@
               <el-select
                 :disabled="isDetailStatus"
                 size="small"
-                v-model="msgFormDialog.newCpuMemory"
+                v-model.trim="msgFormDialog.newCpuMemory"
               >
                 <el-option
                   v-for="(item,index) in cpuList"

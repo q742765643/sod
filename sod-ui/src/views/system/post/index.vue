@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="岗位编码" prop="postCode">
         <el-input
-          v-model="queryParams.postCode"
+          v-model.trim="queryParams.postCode"
           placeholder="请输入岗位编码"
           clearable
           size="small"
@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="岗位名称" prop="postName">
         <el-input
-          v-model="queryParams.postName"
+          v-model.trim="queryParams.postName"
           placeholder="请输入岗位名称"
           clearable
           size="small"
@@ -20,7 +20,7 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="岗位状态" clearable size="small">
+        <el-select v-model.trim="queryParams.status" placeholder="岗位状态" clearable size="small">
           <el-option
             v-for="dict in statusOptions"
             :key="dict.dictValue"
@@ -126,16 +126,16 @@
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="岗位名称" prop="postName">
-          <el-input v-model="form.postName" placeholder="请输入岗位名称" />
+          <el-input v-model.trim="form.postName" placeholder="请输入岗位名称" />
         </el-form-item>
         <el-form-item label="岗位编码" prop="postCode">
-          <el-input v-model="form.postCode" placeholder="请输入编码名称" />
+          <el-input v-model.trim="form.postCode" placeholder="请输入编码名称" />
         </el-form-item>
         <el-form-item label="岗位顺序" prop="postSort">
-          <el-input-number v-model="form.postSort" controls-position="right" :min="0" />
+          <el-input-number v-model.trim="form.postSort" controls-position="right" :min="0" />
         </el-form-item>
         <el-form-item label="岗位状态" prop="status">
-          <el-radio-group v-model="form.status">
+          <el-radio-group v-model.trim="form.status">
             <el-radio
               v-for="dict in statusOptions"
               :key="dict.dictValue"
@@ -144,7 +144,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model.trim="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

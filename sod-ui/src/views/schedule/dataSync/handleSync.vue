@@ -14,7 +14,7 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="24">
             <el-form-item label="任务名称" prop="taskName">
-              <el-input size="medium" v-model="msgFormDialog.taskName" placeholder="任务名称"></el-input>
+              <el-input size="medium" v-model.trim="msgFormDialog.taskName" placeholder="任务名称"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -28,7 +28,7 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
             <el-form-item label="数据来源" prop="dataSourceId">
-              <el-select size="medium" filterable v-model="msgFormDialog.dataSourceId">
+              <el-select size="medium" filterable v-model.trim="msgFormDialog.dataSourceId">
                 <el-option
                   v-for="(item,index) in dataSourceIdArray"
                   :key="index"
@@ -43,7 +43,7 @@
               <el-select
                 size="medium"
                 filterable
-                v-model="msgFormDialog.sourceDatabaseId"
+                v-model.trim="msgFormDialog.sourceDatabaseId"
                 @change="sourceDBChange"
               >
                 <el-option
@@ -63,7 +63,7 @@
               <el-select
                 size="medium"
                 filterable
-                v-model="msgFormDialog.sourceTableId"
+                v-model.trim="msgFormDialog.sourceTableId"
                 @change="sourceTableChange"
               >
                 <el-option
@@ -81,7 +81,7 @@
               <el-input
                 :disabled="true"
                 size="medium"
-                v-model="msgFormDialog.sourceTableEnName"
+                v-model.trim="msgFormDialog.sourceTableEnName"
                 placeholder="源表名"
               ></el-input>
             </el-form-item>
@@ -100,7 +100,7 @@
               <el-select
                 style="width:35%; margin-left:5px;"
                 size="medium"
-                v-model="domain.sourceTableFilter"
+                v-model.trim="domain.sourceTableFilter"
               >
                 <el-option
                   :key="index"
@@ -113,7 +113,7 @@
                 style="width:22%; margin:0px 5px;"
                 size="medium"
                 filterable
-                v-model="domain.columnOper"
+                v-model.trim="domain.columnOper"
               >
                 <el-option
                   v-for="(itemo,indexo) in columnOperArray"
@@ -125,7 +125,7 @@
               <el-input
                 size="medium"
                 style="width:35%;float:right;"
-                v-model="domain.sourceTableFilterText"
+                v-model.trim="domain.sourceTableFilterText"
                 type="text"
               ></el-input>
             </el-form-item>
@@ -139,7 +139,7 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="24">
             <el-form-item label="同步类型" prop="syncType">
-              <el-select size="medium" v-model="msgFormDialog.syncType">
+              <el-select size="medium" v-model.trim="msgFormDialog.syncType">
                 <el-option label="定时任务同步" :value="1"></el-option>
                 <el-option label="数据触发同步" :value="2"></el-option>
                 <el-option label="数据库日志同步" :value="3"></el-option>
@@ -154,7 +154,11 @@
               prop="sourceTableDatecolumn"
               v-if="this.msgFormDialog.syncType == 1"
             >
-              <el-select size="medium" filterable v-model="msgFormDialog.sourceTableDatecolumn">
+              <el-select
+                size="medium"
+                filterable
+                v-model.trim="msgFormDialog.sourceTableDatecolumn"
+              >
                 <el-option
                   v-for="(item,index) in columnArray"
                   :key="index"
@@ -171,7 +175,7 @@
               <el-date-picker
                 type="datetime"
                 placeholder="选择同步开始时间"
-                v-model="msgFormDialog.beginTime"
+                v-model.trim="msgFormDialog.beginTime"
                 size="small"
               ></el-date-picker>
             </el-form-item>
@@ -182,7 +186,7 @@
               prop="syncPeriod"
               v-if="this.msgFormDialog.syncType == 1"
             >
-              <el-input-number size="medium" v-model="msgFormDialog.syncPeriod" :min="0"></el-input-number>
+              <el-input-number size="medium" v-model.trim="msgFormDialog.syncPeriod" :min="0"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -191,7 +195,7 @@
             <el-form-item label="DI过滤规则" prop="queueName" v-if="this.msgFormDialog.syncType == 2">
               <el-input
                 size="medium"
-                v-model="msgFormDialog.queueName"
+                v-model.trim="msgFormDialog.queueName"
                 placeholder="STATION_LEVEL=11,12,13;DATA_TYPE=A.0010.0001.S001"
               ></el-input>
             </el-form-item>
@@ -200,7 +204,7 @@
             <el-form-item label="主键拼接规则" prop="primaryCom" v-if="this.msgFormDialog.syncType == 2">
               <el-input
                 size="medium"
-                v-model="msgFormDialog.primaryCom"
+                v-model.trim="msgFormDialog.primaryCom"
                 placeholder="prompt:'DATA_TIME;IIiii',multiline:true"
               ></el-input>
             </el-form-item>
@@ -210,7 +214,7 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
             <el-form-item label="同步任务执行节点" prop="ipAndPort">
-              <el-select size="medium" filterable v-model="msgFormDialog.ipAndPort">
+              <el-select size="medium" filterable v-model.trim="msgFormDialog.ipAndPort">
                 <el-option
                   v-for="(item,index) in ipAndPortArray"
                   :key="index"
@@ -222,7 +226,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="批处理条数(条)" prop="batchAmount">
-              <el-input-number size="medium" v-model="msgFormDialog.batchAmount" :min="0"></el-input-number>
+              <el-input-number size="medium" v-model.trim="msgFormDialog.batchAmount" :min="0"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -230,7 +234,7 @@
           <el-col :span="12">
             <el-form-item label="DI/EI发送" prop="diOff">
               <el-switch
-                v-model="msgFormDialog.diOff"
+                v-model.trim="msgFormDialog.diOff"
                 active-value="1"
                 inactive-value="0"
                 active-color="#13ce66"
@@ -241,7 +245,7 @@
           <el-col :span="12">
             <el-form-item label="重复数据丢弃" prop="discardOnDuplicate">
               <el-switch
-                v-model="msgFormDialog.discardOnDuplicate"
+                v-model.trim="msgFormDialog.discardOnDuplicate"
                 active-value="1"
                 inactive-value="0"
                 active-color="#13ce66"
@@ -258,7 +262,7 @@
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="12">
             <el-form-item label="数据流向" prop="dataFlowDirectionId">
-              <el-select size="medium" filterable v-model="msgFormDialog.dataFlowDirectionId">
+              <el-select size="medium" filterable v-model.trim="msgFormDialog.dataFlowDirectionId">
                 <el-option
                   v-for="(item,index) in flowDirArray"
                   :key="index"
@@ -270,7 +274,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="目标存储类型" prop="targetType">
-              <el-select size="medium" v-model="msgFormDialog.targetType">
+              <el-select size="medium" v-model.trim="msgFormDialog.targetType">
                 <el-option label="数据库存储" :value="0"></el-option>
                 <el-option label="文件存储" :value="1"></el-option>
               </el-select>
@@ -287,7 +291,7 @@
               <el-select
                 size="medium"
                 filterable
-                v-model="msgFormDialog.targetDatabaseId"
+                v-model.trim="msgFormDialog.targetDatabaseId"
                 @change="targetDBChange"
               >
                 <el-option
@@ -314,7 +318,7 @@
                 style="width:85%;float:right;"
                 size="medium"
                 filterable
-                v-model="msgFormDialog.targetTable"
+                v-model.trim="msgFormDialog.targetTable"
                 @change="targetTableChange"
               >
                 <el-option
@@ -332,7 +336,7 @@
               <el-input
                 :disabled="true"
                 size="medium"
-                v-model="msgFormDialog.target_table_name"
+                v-model.trim="msgFormDialog.target_table_name"
                 placeholder="目标表名"
               ></el-input>
             </el-form-item>
@@ -347,7 +351,7 @@
                 style="width:85%;float:right;"
                 size="medium"
                 filterable
-                v-model="msgFormDialog.targetTable2"
+                v-model.trim="msgFormDialog.targetTable2"
                 @change="targetTableChange2"
               >
                 <el-option
@@ -365,8 +369,38 @@
               <el-input
                 :disabled="true"
                 size="medium"
-                v-model="msgFormDialog.target_table_name2"
+                v-model.trim="msgFormDialog.target_table_name2"
                 placeholder="目标表名"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card class="box-card" v-if="doubleTableFlag">
+        <div slot="header" class="clearfix">
+          <span>要素告警</span>
+        </div>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="检查间隔（小时）" prop="checkInterval">
+              <el-input
+                size="medium"
+                v-model.trim="msgFormDialog.checkInterval"
+                placeholder="请输入检查间隔"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="时间范围（小时）" prop="timeLimit">
+              <el-input size="medium" v-model.trim="msgFormDialog.timeLimit" placeholder="请输入时间范围"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="最大差异条数" prop="biggestDifference">
+              <el-input
+                size="medium"
+                v-model.trim="msgFormDialog.biggestDifference"
+                placeholder="请输入最大差异条数"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -379,7 +413,7 @@
         size="small"
         style="position: absolute;right: 16px;z-index:9999"
       ></el-button>
-      <el-tabs v-model="editableTabsValue" closable type="card" @tab-remove="removeTab">
+      <el-tabs v-model.trim="editableTabsValue" closable type="card" @tab-remove="removeTab">
         <el-tab-pane
           :key="index"
           v-for="(item,index) in editableTabs"
@@ -391,12 +425,18 @@
             <el-table-column prop="targetColumn_" label="目标表字段" min-width="100"></el-table-column>
             <el-table-column prop="sourceColumn_" label="源表字段" min-width="100">
               <template slot-scope="scope1">
-                <el-input v-model="scope1.row.sourceColumn_"></el-input>
+                <el-input v-model.trim="scope1.row.sourceColumn_"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="tabColStatus_" label="状态" min-width="100">
+              <template slot-scope="scope">
+                <el-button v-if="scope.row.tabColStatus == '通过'">通过</el-button>
+                <el-button v-else @click="showStatusMsg(scope.row.msg)">{{scope.row.tabColStatus}}</el-button>
               </template>
             </el-table-column>
             <el-table-column label="操作" min-width="100">
               <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.isdelete">删除</el-checkbox>
+                <el-checkbox v-model.trim="scope.row.isdelete">删除</el-checkbox>
               </template>
             </el-table-column>
           </el-table>
@@ -486,6 +526,7 @@ export default {
 
       contantTaskChose: [],
       addnewtargettable: 0,
+      doubleTableFlag: false, //是否是建表要素表
       msgFormDialog: {
         taskName: "", //任务名
         dataSourceId: "", //数据来源
@@ -574,7 +615,16 @@ export default {
         targetDatabaseId: [
           { required: true, message: "目标库", trigger: "change" }
         ],
-        targetTable: [{ required: true, message: "目标表", trigger: "change" }]
+        targetTable: [{ required: true, message: "目标表", trigger: "change" }],
+        checkInterval: [
+          { required: true, message: "请输入检查间隔", trigger: "blur" }
+        ],
+        timeLimit: [
+          { required: true, message: "请输入时间范围", trigger: "blur" }
+        ],
+        biggestDifference: [
+          { required: true, message: "请输入最大差异条数", trigger: "blur" }
+        ]
       }
     };
   },
@@ -855,7 +905,7 @@ export default {
             message: "您选择了键值表类型的键表，系统自动匹配值表"
           });
         }
-
+        this.doubleTableFlag = true;
         var element_obj = "";
         this.targetTableArray.forEach(element => {
           if (
@@ -897,6 +947,8 @@ export default {
         var dataList = [];
         for (var i = 0; i < targetLength; i++) {
           var sourceColumnName = "";
+          var sourceColumnObj = "";
+          var tabColStatusObj = "";
           //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
           for (var j = 0; j < sourceLength; j++) {
             if (
@@ -904,6 +956,11 @@ export default {
               this.sourceColumnDetail[j].celementCode
             ) {
               sourceColumnName = this.sourceColumnDetail[j].celementCode;
+              sourceColumnObj = this.sourceColumnDetail[j];
+              tabColStatusObj = this.columnVer(
+                sourceColumnObj,
+                this.targetColumnDetail[i]
+              );
               break;
             }
           }
@@ -920,11 +977,29 @@ export default {
                     this.targetColumnDetail[i].celementCode ==
                     mItem.targetColumn_
                   ) {
+                    debugger;
+                    var sourceColumnObj = this.findStatusKTable(
+                      mItem.sourceColumn_,
+                      "K",
+                      "source"
+                    );
+                    var targetColumnObj = this.findStatusKTable(
+                      mItem.targetColumn_,
+                      "K",
+                      "target",
+                      te.targetTableId
+                    );
+                    tabColStatusObj = this.columnVer(
+                      sourceColumnObj,
+                      targetColumnObj
+                    );
                     var obj = {};
                     obj.index = i;
                     obj.isdelete = false;
                     obj.targetColumn_ = mItem.targetColumn_;
                     obj.sourceColumn_ = mItem.sourceColumn_;
+                    obj.tabColStatus = tabColStatusObj.tabColStatus;
+                    obj.msg = tabColStatusObj.msg;
                     dataList.push(obj);
                   }
                 });
@@ -936,6 +1011,8 @@ export default {
             obj.isdelete = false;
             obj.targetColumn_ = this.targetColumnDetail[i].celementCode;
             obj.sourceColumn_ = sourceColumnName;
+            obj.tabColStatus = tabColStatusObj.tabColStatus;
+            obj.msg = tabColStatusObj.msg;
             dataList.push(obj);
           }
         }
@@ -972,6 +1049,8 @@ export default {
       var dataList = [];
       for (var i = 0; i < targetLength; i++) {
         var sourceColumnName = "";
+        var tabColStatusObj = "";
+        var sourceColumnObj = "";
         //以目标表为基准，如果源表中有对应字段，显示字段名称；如果没有对应字段，显示空
         for (var j = 0; j < sourceLength; j++) {
           if (
@@ -979,12 +1058,19 @@ export default {
             sourceVColumnList[j].celementCode
           ) {
             sourceColumnName = sourceVColumnList[j].celementCode;
+            sourceColumnObj = sourceVColumnList[j];
             if (!this.handleObj.slaveRelation || this.targetChangeFlag !== 0) {
+              tabColStatusObj = this.columnVer(
+                sourceColumnObj,
+                this.targetVColumnDetail[i]
+              );
               var obj = {};
               obj.index = i;
               obj.isdelete = false;
               obj.targetColumn_ = this.targetVColumnDetail[i].celementCode;
               obj.sourceColumn_ = sourceColumnName;
+              obj.tabColStatus = tabColStatusObj.tabColStatus;
+              obj.msg = tabColStatusObj.msg;
               dataList.push(obj);
             }
             break;
@@ -993,11 +1079,27 @@ export default {
       }
       if (this.handleObj.slaveRelation && this.targetChangeFlag === 0) {
         this.handleObj.slaveRelation.mapping.forEach((mItem, i) => {
+          debugger;
+          //获取源表字段的信息
+          var sourceColumnObj = this.findStatusKTable(
+            mItem.sourceColumn_,
+            "V",
+            "source"
+          );
+          var targetColumnObj = this.findStatusKTable(
+            mItem.targetColumn_,
+            "V",
+            "target",
+            element_obj.id
+          );
+          tabColStatusObj = this.columnVer(sourceColumnObj, targetColumnObj);
           var obj = {};
           obj.index = i;
           obj.isdelete = false;
           obj.targetColumn_ = mItem.targetColumn_;
           obj.sourceColumn_ = mItem.sourceColumn_;
+          obj.tabColStatus = tabColStatusObj.tabColStatus;
+          obj.msg = tabColStatusObj.msg;
           dataList.push(obj);
         });
       }
@@ -1157,6 +1259,108 @@ export default {
         this.conIcon = "el-icon-arrow-up";
         document.getElementsByClassName("el-tabs__content")[0].style.display =
           "block";
+      }
+    },
+    columnVer(sourceColumnObj, targetColumnObj) {
+      var timeType = ["timestamp", "datetime", "DATETIME", "TIMESTAMP"];
+      var accuType = [
+        "numeric",
+        "decimal",
+        "number",
+        "NUMERIC",
+        "DECIMAL",
+        "NUMBER"
+      ];
+      var nullType = ["", null];
+      if (typeof sourceColumnObj == "undefined") {
+        sourceColumnObj = "";
+      }
+      if (typeof targetColumnObj == "undefined") {
+        targetColumnObj = "";
+      }
+      var tabColStatusObj = {};
+      if (
+        targetColumnObj.type != sourceColumnObj.type &&
+        !(
+          timeType.indexOf(targetColumnObj.type) > -1 &&
+          timeType.indexOf(sourceColumnObj.type) > -1
+        ) &&
+        !(
+          accuType.indexOf(targetColumnObj.type) > -1 &&
+          accuType.indexOf(sourceColumnObj.type) > -1
+        )
+      ) {
+        debugger;
+        if (sourceColumnObj.type) {
+          tabColStatusObj.msg =
+            "字段类型不一致【目标表：" +
+            targetColumnObj.type +
+            ",源表：" +
+            sourceColumnObj.type +
+            "】";
+        } else {
+          tabColStatusObj.msg =
+            "字段类型不一致【目标表：" +
+            targetColumnObj.type +
+            ",源表：" +
+            "】";
+        }
+
+        tabColStatusObj.tabColStatus = "不通过";
+      } else if (
+        targetColumnObj.accuracy != sourceColumnObj.accuracy &&
+        !(
+          nullType.indexOf(targetColumnObj.accuracy) > -1 &&
+          nullType.indexOf(sourceColumnObj.accuracy) > -1
+        )
+      ) {
+        tabColStatusObj.msg =
+          "字段精度不一致【目标表：" +
+          targetColumnObj.accuracy +
+          ",源表：" +
+          sourceColumnObj.accuracy +
+          "】";
+        tabColStatusObj.tabColStatus = "警告";
+      } else if (targetColumnObj.isNull != sourceColumnObj.isNull) {
+        //是否可空不同
+        tabColStatusObj.msg =
+          "字段是否可空不一致【目标表：" +
+          targetColumnObj.isNull +
+          ",源表：" +
+          sourceColumnObj.isNull +
+          "】";
+
+        tabColStatusObj.tabColStatus = "警告";
+      } else {
+        tabColStatusObj.tabColStatus = "通过";
+      }
+      return tabColStatusObj;
+    },
+    showStatusMsg(msg) {
+      this.$alert(msg, "消息", {
+        confirmButtonText: "确定",
+        callback: action => {}
+      });
+    },
+    findStatusKTable(column_name, kAndE, SAndT, targetTableId) {
+      debugger;
+      if (SAndT == "source" && kAndE == "K") {
+        var columnInfo = this.sourceColumnDetail.find(function(obj) {
+          return obj.dbEleCode === column_name;
+        });
+        return columnInfo;
+      }
+      if (SAndT == "source" && kAndE == "V") {
+        var columnInfo = this.sourceVColumnDetail.find(function(obj) {
+          return obj.dbEleCode === column_name;
+        });
+        return columnInfo;
+      }
+      if (SAndT == "target") {
+        var columnInfo = this.targetColumnDetail.find(function(obj) {
+          return obj.dbEleCode === column_name;
+        });
+        return columnInfo;
       }
     }
   } //method end

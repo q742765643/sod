@@ -3,13 +3,13 @@
     <!-- 服务代码管理 -->
     <el-form :inline="true" :model="queryParams" ref="modelForm" class="searchBox">
       <el-form-item label="服务代码:">
-        <el-input size="small" v-model="queryParams.userEleCode" placeholder="请输入服务代码名称" />
+        <el-input size="small" v-model.trim="queryParams.userEleCode" placeholder="请输入服务代码名称" />
       </el-form-item>
       <el-form-item label="字段编码:">
-        <el-input size="small" v-model="queryParams.dbEleCode" placeholder="请输入字段编码" />
+        <el-input size="small" v-model.trim="queryParams.dbEleCode" placeholder="请输入字段编码" />
       </el-form-item>
       <el-form-item label="要素中文名称:">
-        <el-input size="small" v-model="queryParams.eleName" placeholder="请输入要素中文名称" />
+        <el-input size="small" v-model.trim="queryParams.eleName" placeholder="请输入要素中文名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -74,22 +74,22 @@
     >
       <el-form :model="handleObj" :rules="rules" label-width="130px" ref="ruleForm">
         <el-form-item label="服务代码:" prop="userEleCode" class="labelitem">
-          <el-input v-model="handleObj.userEleCode" placeholder="请输入服务代码名称" />
+          <el-input v-model.trim="handleObj.userEleCode" placeholder="请输入服务代码名称" />
         </el-form-item>
         <el-form-item label="字段编码:" prop="dbEleCode" class="labelitem">
-          <el-input v-model="handleObj.dbEleCode" placeholder="请输入字段编码" />
+          <el-input v-model.trim="handleObj.dbEleCode" placeholder="请输入字段编码" />
         </el-form-item>
         <el-form-item label="要素名称:" prop="eleName" class="labelitem">
-          <el-input v-model="handleObj.eleName" placeholder="请输入要素中文名称" />
+          <el-input v-model.trim="handleObj.eleName" placeholder="请输入要素中文名称" />
         </el-form-item>
         <el-form-item label="单位名称:" prop="eleUnit" class="labelitem">
-          <el-input v-model="handleObj.eleUnit" placeholder="请输入单位名称" />
+          <el-input v-model.trim="handleObj.eleUnit" placeholder="请输入单位名称" />
         </el-form-item>
         <el-form-item label="是否有标识代码:" prop="isCodeParam" class="labelitem">
-          <el-input v-model="handleObj.isCodeParam" placeholder="请输入是否标识代码" />
+          <el-input v-model.trim="handleObj.isCodeParam" placeholder="请输入是否标识代码" />
         </el-form-item>
         <el-form-item label="标识代码表:" prop="codeTableId" class="labelitem">
-          <el-input v-model="handleObj.codeTableId" placeholder="请输入标识代码表" />
+          <el-input v-model.trim="handleObj.codeTableId" placeholder="请输入标识代码表" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

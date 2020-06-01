@@ -5,18 +5,18 @@
         <el-input
           size="small"
           :disabled="isDbIdDisable"
-          v-model="msgFormDialog.logicFlag"
+          v-model.trim="msgFormDialog.logicFlag"
           placeholder="请输入数据用途ID"
         />
       </el-form-item>
       <el-form-item prop="logicName" label="用途描述:">
-        <el-input size="small" v-model="msgFormDialog.logicName" placeholder="请输入" />
+        <el-input size="small" v-model.trim="msgFormDialog.logicName" placeholder="请输入" />
       </el-form-item>
       <el-form-item prop="storageType" label="表类型:">
         <el-select
           size="small"
           filterable
-          v-model="msgFormDialog.storageType"
+          v-model.trim="msgFormDialog.storageType"
           multiple
           @change="$forceUpdate()"
         >
@@ -33,7 +33,7 @@
           @change="$forceUpdate()"
           size="small"
           filterable
-          v-model="msgFormDialog.databaseId"
+          v-model.trim="msgFormDialog.databaseId"
           multiple
         >
           <el-option
@@ -49,7 +49,7 @@
           :min="0"
           class="number"
           size="small"
-          v-model="msgFormDialog.serialNumber"
+          v-model.trim="msgFormDialog.serialNumber"
           placeholder="请输入显示序号"
         />
       </el-form-item>
@@ -58,7 +58,7 @@
           type="textarea"
           size="small"
           :disabled="isDbIdDisable"
-          v-model="msgFormDialog.logicDesc"
+          v-model.trim="msgFormDialog.logicDesc"
           placeholder="请输入用途说明"
         />
       </el-form-item>

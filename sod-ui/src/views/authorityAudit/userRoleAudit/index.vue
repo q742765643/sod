@@ -3,17 +3,17 @@
     <!-- 业务用户审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="用户名称">
-        <el-input size="small" v-model="queryParams.userName" placeholder="请输入用户名称"></el-input>
+        <el-input size="small" v-model.trim="queryParams.userName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
       <el-form-item label="用户名">
-        <el-input size="small" v-model="queryParams.nickName" placeholder="请输入用户名"></el-input>
+        <el-input size="small" v-model.trim="queryParams.nickName" placeholder="请输入用户名"></el-input>
       </el-form-item>
 
       <el-form-item label="机构">
-        <el-input size="small" v-model="queryParams.deptName" placeholder="请输入机构名称"></el-input>
+        <el-input size="small" v-model.trim="queryParams.deptName" placeholder="请输入机构名称"></el-input>
       </el-form-item>
       <el-form-item label="用户状态">
-        <el-select v-model="queryParams.checked" clearable size="small" style="width: 140px">
+        <el-select v-model.trim="queryParams.checked" clearable size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="待审核" value="0"></el-option>
           <el-option label="审核通过" value="1"></el-option>
@@ -106,7 +106,7 @@
     >
       <div>
         <el-select
-          v-model="roleIds"
+          v-model.trim="roleIds"
           multiple
           size="small"
           style="display:block;margin-bottom:20px;"

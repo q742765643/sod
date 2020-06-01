@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="审核状态">
         <el-select
-          v-model="queryParams.examineStatus"
+          v-model.trim="queryParams.examineStatus"
           placeholder="审核状态"
           clearable
           size="small"
@@ -20,15 +20,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input size="small" v-model="queryParams.userName" placeholder="申请用户"></el-input>
+        <el-input size="small" v-model.trim="queryParams.userName" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item label="数据库名">
-        <el-input size="small" v-model="queryParams.databaseName" placeholder="数据库名"></el-input>
+        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="数据库名"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"

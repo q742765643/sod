@@ -9,7 +9,7 @@
     >
       <el-form-item label="资料名称" prop="profileName">
         <el-input
-          v-model="queryParams.profileName"
+          v-model.trim="queryParams.profileName"
           placeholder="请输入物理库资料名称"
           clearable
           size="small"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="存储编码" prop="dataClassId">
         <el-input
-          v-model="queryParams.dataClassId"
+          v-model.trim="queryParams.dataClassId"
           placeholder="请输入存储编码或者四级编码"
           clearable
           size="small"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="表名" prop="tableName">
         <el-input
-          v-model="queryParams.tableName"
+          v-model.trim="queryParams.tableName"
           placeholder="请输入表名"
           clearable
           size="small"
@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="handleCode">
         <el-select
-          v-model="queryParams.handleCode"
+          v-model.trim="queryParams.handleCode"
           placeholder="运行状态"
           clearable
           size="small"
@@ -55,7 +55,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
@@ -149,57 +149,57 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="资料名称" prop="profileName">
-              <el-input v-model="form.profileName" />
+              <el-input v-model.trim="form.profileName" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="清除条件" prop="conditions">
-              <el-input v-model="form.conditions" />
+              <el-input v-model.trim="form.conditions" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="清除条数限制" prop="clearLimit">
-              <el-input v-model="form.clearLimit" />
+              <el-input v-model.trim="form.clearLimit" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="清除分区/数量" prop="clearCount">
-              <el-input v-model="form.clearCount" />
+              <el-input v-model.trim="form.clearCount" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="表名" prop="tableName">
-              <el-input v-model="form.tableName" />
+              <el-input v-model.trim="form.tableName" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="四级编码" prop="ddataId">
-              <el-input v-model="form.ddataId" />
+              <el-input v-model.trim="form.ddataId" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="执行地址" prop="executorAddress">
-              <el-input v-model="form.executorAddress" />
+              <el-input v-model.trim="form.executorAddress" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="执行耗时" prop="elapsedTime" class="unitInput">
-              <el-input v-model="form.elapsedTime" />s
+              <el-input v-model.trim="form.elapsedTime" />s
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="应触发时间" prop="triggerTime">
-              <el-input v-model="form.triggerTime" />
+              <el-input v-model.trim="form.triggerTime" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="实际触发时间" prop="handleTime">
-              <el-input v-model="form.handleTime" />
+              <el-input v-model.trim="form.handleTime" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="执行过程">
-              <el-input v-model="form.handleMsg" type="textarea"></el-input>
+              <el-input v-model.trim="form.handleMsg" type="textarea"></el-input>
               <el-button type="primary" size="small" @click="showAllDetail">显示全部</el-button>
             </el-form-item>
           </el-col>
@@ -218,7 +218,7 @@
       append-to-body
       v-dialogDrag
     >
-      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <el-input size="small" v-model.trim="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>

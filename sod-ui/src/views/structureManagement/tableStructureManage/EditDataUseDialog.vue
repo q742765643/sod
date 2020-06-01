@@ -13,7 +13,7 @@
         </el-table-column>
         <el-table-column label="存储类型" prop="logicStorageTypesEntityList">
           <template slot-scope="scope">
-            <el-radio-group v-model="scope.row.typeIschecked">
+            <el-radio-group v-model.trim="scope.row.typeIschecked">
               <el-radio
                 @change="tableTypeChange(scope.row,item.storageName)"
                 v-for="(item,index) in scope.row.logicStorageTypesEntityList"
@@ -26,7 +26,7 @@
         </el-table-column>
         <el-table-column label="数据库名称" prop="logicDatabaseEntityList">
           <template slot-scope="scope">
-            <el-radio-group v-model="scope.row.physicsNameIschecked">
+            <el-radio-group v-model.trim="scope.row.physicsNameIschecked">
               <el-radio
                 v-for="(item,index) in scope.row.logicDatabaseEntityList"
                 :key="index"
@@ -41,7 +41,7 @@
           <template slot-scope="scope">
             <el-select
               size="small"
-              v-model="scope.row.selectModel"
+              v-model.trim="scope.row.selectModel"
               :disabled="!scope.row.checkType"
               @change="tableSpecialArrChange(scope.row,scope.row.selectModel)"
             >

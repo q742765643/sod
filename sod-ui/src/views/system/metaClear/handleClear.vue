@@ -4,13 +4,13 @@
       <el-row>
         <el-col :span="10">
           <el-form-item label="任务名称" prop="taskName">
-            <el-input size="small" v-model="msgFormDialog.taskName"></el-input>
+            <el-input size="small" v-model.trim="msgFormDialog.taskName"></el-input>
           </el-form-item>
           <el-form-item label="数据库IP">
             <el-select
               size="small"
               filterable
-              v-model="msgFormDialog.databaseId"
+              v-model.trim="msgFormDialog.databaseId"
               @change="findTree"
             >
               <el-option
@@ -25,12 +25,12 @@
           <el-row>
             <el-col :span="20">
               <el-form-item label="执行策略" prop="jobCron">
-                <el-popover v-model="cronPopover">
+                <el-popover v-model.trim="cronPopover">
                   <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
                   <el-input
                     slot="reference"
                     @click="cronPopover=true"
-                    v-model="msgFormDialog.jobCron"
+                    v-model.trim="msgFormDialog.jobCron"
                     placeholder="请输入定时策略"
                   ></el-input>
                 </el-popover>
@@ -48,7 +48,7 @@
             </el-col>
           </el-row>
           <el-form-item label="where条件" prop="conditions">
-            <el-input size="small" v-model="msgFormDialog.conditions"></el-input>
+            <el-input size="small" v-model.trim="msgFormDialog.conditions"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="14">

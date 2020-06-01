@@ -3,13 +3,13 @@
     <!-- 存储字段检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
+        <el-input size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
       <el-form-item label="中文简称:">
-        <el-input size="small" v-model="queryParams.eleName" placeholder="请输入中文简称" />
+        <el-input size="small" v-model.trim="queryParams.eleName" placeholder="请输入中文简称" />
       </el-form-item>
       <el-form-item label="字段名称:">
-        <el-input size="small" v-model="queryParams.CElementCode" placeholder="请输入字段名称" />
+        <el-input size="small" v-model.trim="queryParams.CElementCode" placeholder="请输入字段名称" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleQuery" icon="el-icon-search" size="small">查询</el-button>

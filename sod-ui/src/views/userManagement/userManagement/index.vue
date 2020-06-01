@@ -2,7 +2,7 @@
   <div class="userManagement app-container">
     <el-form :inline="true" class="funLoad selSearchCon">
       <el-form-item label="用户名：">
-        <el-input size="small" v-model="search"></el-input>
+        <el-input size="small" v-model.trim="search"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button

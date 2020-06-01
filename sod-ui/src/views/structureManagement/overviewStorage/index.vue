@@ -3,16 +3,16 @@
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途:">
-        <el-input size="small" v-model="queryParams.logicName" placeholder="请输入数据用途" />
+        <el-input size="small" v-model.trim="queryParams.logicName" placeholder="请输入数据用途" />
       </el-form-item>
       <el-form-item label="数据库:">
-        <el-input size="small" v-model="queryParams.databaseName" placeholder="请输入数据库" />
+        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="请输入数据库" />
       </el-form-item>
       <el-form-item label="资料名称:">
-        <el-input size="small" v-model="queryParams.className" placeholder="请输入资料名称" />
+        <el-input size="small" v-model.trim="queryParams.className" placeholder="请输入资料名称" />
       </el-form-item>
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
+        <el-input size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -161,7 +161,7 @@
       width="650px"
       :before-close="handleClose"
     >
-      <el-checkbox-group v-model="checkSetList">
+      <el-checkbox-group v-model.trim="checkSetList">
         <el-checkbox label="数据同步" border @change="changeSetting($event,'SYNC_IDENTIFIER','数据同步')"></el-checkbox>
         <el-checkbox
           v-for="(item,index) in checkBoxList"

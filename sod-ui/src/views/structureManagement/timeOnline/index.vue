@@ -3,10 +3,10 @@
     <!-- 在线时间检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="四级编码">
-        <el-input size="small" v-model="queryParams.d_data_id"></el-input>
+        <el-input size="small" v-model.trim="queryParams.d_data_id"></el-input>
       </el-form-item>
       <el-form-item label="资料名称">
-        <el-input size="small" v-model="queryParams.class_name"></el-input>
+        <el-input size="small" v-model.trim="queryParams.class_name"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>

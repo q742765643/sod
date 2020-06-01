@@ -4,16 +4,16 @@
       <legend>{{rowData.DATABASE_NAME}}</legend>
       <el-form ref="ruleForm" :model="searchParams" label-width="100px" :inline="true">
         <el-form-item>
-          <el-radio-group v-model="searchParams.isAllLine" @change="handleQuery">
+          <el-radio-group v-model.trim="searchParams.isAllLine" @change="handleQuery">
             <el-radio :label="1">全部在线</el-radio>
             <el-radio :label="2">近线服务</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="归档开始时间" v-show="searchParams.isAllLine==2">
-          <el-input v-model="searchParams.beginTime" size="small" readonly></el-input>
+          <el-input v-model.trim="searchParams.beginTime" size="small" readonly></el-input>
         </el-form-item>
         <el-form-item label="归档结束时间" v-show="searchParams.isAllLine==2">
-          <el-input v-model="searchParams.endTime" size="small" readonly></el-input>
+          <el-input v-model.trim="searchParams.endTime" size="small" readonly></el-input>
         </el-form-item>
       </el-form>
       <el-table border :data="tableData" stripe style="width: 100%;" row-key="id">

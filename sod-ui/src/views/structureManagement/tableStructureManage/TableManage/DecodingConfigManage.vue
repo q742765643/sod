@@ -42,10 +42,10 @@
       <div>
         <el-form :model="optSearchObj" :inline="true" size="small" label-width="120px">
           <el-form-item label="短名">
-            <el-input v-model="optSearchObj.eleCodeShort"></el-input>
+            <el-input v-model.trim="optSearchObj.eleCodeShort"></el-input>
           </el-form-item>
           <el-form-item label="模板ID">
-            <el-input v-model="optSearchObj.templateId"></el-input>
+            <el-input v-model.trim="optSearchObj.templateId"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="small" @click="searchOptConfig(1)">查询</el-button>
@@ -88,28 +88,38 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="处理编码" prop="dataDpcId">
-              <el-input size="small" placeholder="处理编码" v-model="formData.dataDpcId"></el-input>
+              <el-input size="small" placeholder="处理编码" v-model.trim="formData.dataDpcId"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="格点要素短名" prop="eleCodeShort">
-              <el-input size="small" placeholder="格点要素短名" v-model="formData.eleCodeShort"></el-input>
+              <el-input size="small" placeholder="格点要素短名" v-model.trim="formData.eleCodeShort"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="学科" prop="subjectId">
-              <el-input size="small" placeholder="学科" v-model="formData.subjectId" type="number"></el-input>
+              <el-input
+                size="small"
+                placeholder="学科"
+                v-model.trim="formData.subjectId"
+                type="number"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="分类" prop="classify">
-              <el-input size="small" placeholder="分类" v-model="formData.classify" type="number"></el-input>
+              <el-input
+                size="small"
+                placeholder="分类"
+                v-model.trim="formData.classify"
+                type="number"
+              ></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="参数ID" prop="parameterId">
-              <el-input size="small" placeholder="参数ID" v-model="formData.parameterId"></el-input>
+              <el-input size="small" placeholder="参数ID" v-model.trim="formData.parameterId"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -117,7 +127,7 @@
               <el-input
                 size="small"
                 placeholder="GRIB版本"
-                v-model="formData.gribVersion"
+                v-model.trim="formData.gribVersion"
                 type="number"
               ></el-input>
             </el-form-item>
@@ -125,14 +135,14 @@
 
           <el-col :span="12">
             <el-form-item label="模板编号" prop="templateId">
-              <el-input size="small" placeholder="模板编号" v-model="formData.templateId"></el-input>
+              <el-input size="small" placeholder="模板编号" v-model.trim="formData.templateId"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="是否共有配置">
               <el-switch
-                v-model="formData.publicConfig"
+                v-model.trim="formData.publicConfig"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
                 active-value="Y"

@@ -5,7 +5,7 @@
         <el-form-item label="键表字段">
           <el-select
             filterable
-            v-model="formData.keyColumn"
+            v-model.trim="formData.keyColumn"
             placeholder="请选择键表字段"
             style="width: 100%;"
           >
@@ -22,7 +22,7 @@
         <el-form-item label="要素表字段">
           <el-select
             filterable
-            v-model="formData.eleColumn"
+            v-model.trim="formData.eleColumn"
             placeholder="请选择要素表字段"
             style="width: 100%;"
           >
@@ -37,7 +37,7 @@
       </el-col>
       <el-col :span="6">
         <el-form-item label="是否存在真实外键">
-          <el-select v-model="formData.isReal" placeholder="请选择" style="width: 100%;">
+          <el-select v-model.trim="formData.isReal" placeholder="请选择" style="width: 100%;">
             <el-option label="存在" value="true"></el-option>
             <el-option label="不存在" value="false"></el-option>
           </el-select>

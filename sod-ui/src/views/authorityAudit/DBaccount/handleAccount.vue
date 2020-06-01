@@ -6,7 +6,7 @@
           <el-form-item label="账户ID" prop="databaseUpId">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseUpId"
+              v-model.trim="msgFormDialog.databaseUpId"
               :disabled="userDiasbled"
               placeholder="账户ID"
             ></el-input>
@@ -16,7 +16,7 @@
           <el-form-item label="用户名">
             <el-input
               size="small"
-              v-model="msgFormDialog.userName"
+              v-model.trim="msgFormDialog.userName"
               :disabled="userDiasbled"
               placeholder="用户名"
             ></el-input>
@@ -27,7 +27,7 @@
             <el-input
               size="small"
               disabled
-              v-model="msgFormDialog.databaseUpIp"
+              v-model.trim="msgFormDialog.databaseUpIp"
               :placeholder="palceholderIp"
             ></el-input>
           </el-form-item>
@@ -43,7 +43,7 @@
           <el-form-item label="数据库选择" prop="applyDatabaseIdList">
             <el-transfer
               :titles="['未选择数据库列表', '已选择数据库列表']"
-              v-model="msgFormDialog.applyDatabaseIdList"
+              v-model.trim="msgFormDialog.applyDatabaseIdList"
               :data="dataBaseBox"
             ></el-transfer>
           </el-form-item>
@@ -55,7 +55,7 @@
             <el-select
               size="small"
               filterable
-              v-model="msgFormDialog.userId"
+              v-model.trim="msgFormDialog.userId"
               @change="userChange"
               :disabled="isDisabled"
               placeholder="请选择"
@@ -74,7 +74,7 @@
           <el-form-item label="机构">
             <el-input
               size="small"
-              v-model="msgFormDialog.deptName"
+              v-model.trim="msgFormDialog.deptName"
               :disabled="isDisabled"
               placeholder="机构"
             ></el-input>
@@ -84,7 +84,7 @@
           <el-form-item label="联系方式">
             <el-input
               size="small"
-              v-model="msgFormDialog.phonenumber"
+              v-model.trim="msgFormDialog.phonenumber"
               :disabled="isDisabled"
               placeholder="联系方式"
             ></el-input>
@@ -97,7 +97,7 @@
           <el-form-item label="用途说明" prop="databaseUpDesc">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseUpDesc"
+              v-model.trim="msgFormDialog.databaseUpDesc"
               :disabled="isDisabled"
               type="textarea"
               placeholder="用途说明"
@@ -151,7 +151,7 @@
               size="small"
               type="text"
               disabled
-              v-model="msgFormDialog.applyMaterial"
+              v-model.trim="msgFormDialog.applyMaterial"
               v-show="isHide"
               style="width:80%;"
             ></el-input>
@@ -203,7 +203,7 @@
             :key="domain.key"
             :label="index+1+''"
           >
-            <el-input v-model="domain.value" class="elInput"></el-input>
+            <el-input v-model.trim="domain.value" class="elInput"></el-input>
             <i class="el-icon-plus" @click="addDomain"></i>
             <i class="el-icon-minus" @click.prevent="removeDomain(domain)"></i>
           </el-form-item>

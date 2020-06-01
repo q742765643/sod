@@ -4,12 +4,12 @@
       <el-row>
         <el-col :span="12">
           <el-form-item prop="userName" label="用户名:">
-            <el-input v-model="formObject.userName" size="small"></el-input>
+            <el-input v-model.trim="formObject.userName" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="user_role_id" label="所属角色：">
-            <el-select v-model="formObject.user_role_id" size="small">
+            <el-select v-model.trim="formObject.user_role_id" size="small">
               <el-option
                 v-for="(item,index) in roles"
                 :key="index"
@@ -23,49 +23,49 @@
       <el-row>
         <el-col :span="12">
           <el-form-item prop="userPassword" label="用户密码:">
-            <el-input v-model="formObject.userPassword" type="password" size="small"></el-input>
+            <el-input v-model.trim="formObject.userPassword" type="password" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="userPhone" label="电话:">
-            <el-input v-model="formObject.userPhone" size="small"></el-input>
+            <el-input v-model.trim="formObject.userPhone" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="userNickname" label="用户昵称:">
-            <el-input v-model="formObject.userNickname" size="small"></el-input>
+            <el-input v-model.trim="formObject.userNickname" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="userRealname" label="真实姓名:">
-            <el-input v-model="formObject.userRealname" size="small"></el-input>
+            <el-input v-model.trim="formObject.userRealname" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="userAge" label="年龄:">
-            <el-input v-model="formObject.userAge" size="small"></el-input>
+            <el-input v-model.trim="formObject.userAge" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="userSex" label="性别:">
-            <el-radio v-model="formObject.userSex" label="男">男</el-radio>
-            <el-radio v-model="formObject.userSex" label="女">女</el-radio>
+            <el-radio v-model.trim="formObject.userSex" label="男">男</el-radio>
+            <el-radio v-model.trim="formObject.userSex" label="女">女</el-radio>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="userQQ" label="QQ:">
-            <el-input v-model="formObject.userQQ" size="small"></el-input>
+            <el-input v-model.trim="formObject.userQQ" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item prop="userMail" label="邮箱:">
-            <el-input v-model="formObject.userMail" size="small"></el-input>
+            <el-input v-model.trim="formObject.userMail" size="small"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -78,14 +78,14 @@
                   <el-cascader
                     size="small"
                     :options="options"
-                    v-model="formObject.provinceAndCity"
+                    v-model.trim="formObject.provinceAndCity"
                     @change="handleProvinceAndCityChange"
                   ></el-cascader>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="userAddress">
-                  <el-input v-model="formObject.userAddress" size="small"></el-input>
+                  <el-input v-model.trim="formObject.userAddress" size="small"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -94,7 +94,7 @@
       </el-row>
       <el-row>
         <el-form-item prop="mark" label="备注:">
-          <el-input type="textarea" v-model="formObject.mark" size="small"></el-input>
+          <el-input type="textarea" v-model.trim="formObject.mark" size="small"></el-input>
         </el-form-item>
       </el-row>
     </el-form>

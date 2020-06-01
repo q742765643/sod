@@ -3,10 +3,10 @@
     <!-- 层次属性 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item size="small" label="GRIB格式:">
-        <el-input v-model="queryParams.gribVersion" placeholder="请输入GRIB格式" />
+        <el-input v-model.trim="queryParams.gribVersion" placeholder="请输入GRIB格式" />
       </el-form-item>
       <el-form-item size="small" label="层次类型:">
-        <el-input v-model="queryParams.levelType" placeholder="请输入层次类型" />
+        <el-input v-model.trim="queryParams.levelType" placeholder="请输入层次类型" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -59,25 +59,25 @@
     >
       <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
         <el-form-item label="grib格式:" prop="gribVersion">
-          <el-input v-model.number="ruleForm.gribVersion" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.gribVersion" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="层次类型:" prop="levelType">
-          <el-input v-model.number="ruleForm.levelType" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.levelType" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="层次代码:" prop="levelCode">
-          <el-input v-model="ruleForm.levelCode" />
+          <el-input v-model.trim="ruleForm.levelCode" />
         </el-form-item>
         <el-form-item label="比例因子:" prop="scaleDivisor">
-          <el-input v-model.number="ruleForm.scaleDivisor" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.scaleDivisor" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="英文描述:" prop="levelProperity">
-          <el-input v-model="ruleForm.levelProperity" />
+          <el-input v-model.trim="ruleForm.levelProperity" />
         </el-form-item>
         <el-form-item label="中文描述:" prop="levelName">
-          <el-input v-model="ruleForm.levelName" />
+          <el-input v-model.trim="ruleForm.levelName" />
         </el-form-item>
         <el-form-item label="单位:" prop="unit">
-          <el-input v-model="ruleForm.unit" />
+          <el-input v-model.trim="ruleForm.unit" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

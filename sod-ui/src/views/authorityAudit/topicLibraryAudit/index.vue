@@ -3,7 +3,7 @@
     <!-- 专题库审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="资料状态">
-        <el-select v-model="queryParams.examineStatus">
+        <el-select v-model.trim="queryParams.examineStatus">
           <el-option label="全部" value></el-option>
           <el-option
             v-for="(item,index) in auditStatus"
@@ -14,10 +14,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="专题库名称">
-        <el-input v-model="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
+        <el-input v-model.trim="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input v-model="queryParams.userName" type="text" placeholder="申请用户"></el-input>
+        <el-input v-model.trim="queryParams.userName" type="text" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -101,7 +101,11 @@
 </template>
 
 <script>
-import { pageList, deleteList, exportTables } from "@/api/authorityAudit/topicLibraryAudit";
+import {
+  pageList,
+  deleteList,
+  exportTables
+} from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 创建专题库
@@ -232,7 +236,7 @@ export default {
       exportTables(this.queryParams).then(res => {
         this.downloadfileCommon(res);
       });
-    },
+    }
   }
 };
 </script>
