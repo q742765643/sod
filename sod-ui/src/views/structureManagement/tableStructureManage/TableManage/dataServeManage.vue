@@ -458,7 +458,11 @@ export default {
       findByDbFcstEle({ dbFcstEle: val }).then(response => {
         if (response.code == 200) {
           this.eleOptionsList = response.data;
-          console.log(this.eleOptionsList);
+          if (this.dialogTitle == "新增数据服务信息") {
+            if (this.eleOptionsList && this.eleOptionsList.length > 0) {
+              this.msgFormDialog.eleServiceId = this.eleOptionsList[0].userFcstEle;
+            }
+          }
         } else {
           this.$message({
             type: "error",
@@ -524,6 +528,7 @@ export default {
           areaId: this.baseSet.region,
           dataServiceId: this.rowData.DATA_CLASS_ID
         };
+        await this.getServeByEle(this.msgFormDialog.dbEleName);
       } else {
         this.$message({
           type: "error",

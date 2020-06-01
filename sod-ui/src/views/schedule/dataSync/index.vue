@@ -97,7 +97,24 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
+      <el-table-column prop="runState" label="运行状态">
+        <template slot-scope="scope">
+          <span v-if="scope.row.runState.split('|')[0] == 'true'">运行中</span>
+          <span v-else-if="scope.row.runState.split('|')[0] == 'error'">未启动</span>
+          <span
+            v-else-if="scope.row.runState.split('|')[0] == 'false'&&scope.row.runState.split('|')[1] == ''"
+          >停止中</span>
+          <el-popover
+            v-else-if="scope.row.runState.split('|')[0] == 'false'&&scope.row.runState.split('|')[1]"
+            placement="top-start"
+            :title="scope.row.runState.split('|')[1]"
+            width="200"
+            trigger="hover"
+          >
+            <el-button slot="reference">停止中</el-button>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="460">
         <template slot-scope="scope">
           <el-button
@@ -368,24 +385,7 @@ export default {
       this.superObj.pageName = "数据同步";
       this.dialogSuperSearch = true;
     },
-    // 状态
-    getStatus: function(row) {
-      var value = row.runState.split("|");
-      var result = "";
-      if (value[0] == "true") {
-        result = "运行中";
-      } else if (value[0] == "false") {
-        if (value[1] == "") {
-          result = "停止中";
-        } else {
-          result = "运行出错";
-          value[1] = value[1].replace(/[\r\n]/g, ""); //去掉回车换行
-        }
-      } else if (value[0] == "error") {
-        result = "未启动";
-      }
-      return result;
-    },
+
     handleAdd() {
       this.handleDialog = true;
     },
