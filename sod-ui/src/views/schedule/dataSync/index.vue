@@ -480,18 +480,27 @@ export default {
     },
 
     updateStatus(row, type) {
-      this.$confirm("是否确认启动/停止任务", "警告", {
+      let handle = "";
+      if (type == 1) {
+        handle = "启动";
+      } else {
+        handle = "停止";
+      }
+      this.$confirm("是否确认" + handle + "任务", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(function() {
-          debugger;
           if (type == 1) {
-            syncStart(row.id).then(response => {});
+            syncStart(row.id).then(response => {
+              this.msgSuccess("启动成功");
+            });
           } else {
             //停止
-            syncStop(row.id).then(response => {});
+            syncStop(row.id).then(response => {
+              this.msgSuccess("停止成功");
+            });
           }
         })
         .then(() => {
