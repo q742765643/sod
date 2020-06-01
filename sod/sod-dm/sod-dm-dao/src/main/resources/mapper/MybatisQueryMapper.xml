@@ -32,7 +32,7 @@
         <if test="dDataId != null and dDataId != ''">
             AND upper(A.d_data_id) like CONCAT('%',upper(#{dDataId}),'%')
         </if>
-        ORDER BY A.DATA_CLASS_ID
+        ORDER BY A.D_DATA_ID,A.DATA_CLASS_ID
     </select>
     <!--根据物理库查询dataLogic（MAP）-->
     <select id="getDataLogicByDatabaseId" parameterType="String" resultType="java.util.Map">

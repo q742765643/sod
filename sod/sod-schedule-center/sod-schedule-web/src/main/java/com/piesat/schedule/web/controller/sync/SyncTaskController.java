@@ -90,6 +90,24 @@ public class SyncTaskController {
     }
 
     /**
+     * 批量启动
+     *
+     * @return
+     */
+    @RequiresPermissions("schedule:sync:batchRestart")
+    @GetMapping("/batchRestart/{taskId}")
+    @ApiOperation(value = "批量启动", notes = "批量启动")
+    public ResultT batchRestart(@PathVariable String taskIds) {
+        String[] split = taskIds.split(",");
+        for (String id:split) {
+            this.syncTaskService.restart(id);
+        }
+        return ResultT.success();
+    }
+
+
+
+    /**
      * 停止
      *
      * @return
@@ -101,6 +119,23 @@ public class SyncTaskController {
         this.syncTaskService.stop(taskId);
         return ResultT.success();
     }
+
+    /**
+     * 批量停止
+     *
+     * @return
+     */
+    @RequiresPermissions("schedule:sync:batchStop")
+    @GetMapping("/batchStop/{taskId}")
+    @ApiOperation(value = "批量停止", notes = "批量停止")
+    public ResultT batchStop(@PathVariable String taskIds) {
+        String[] split = taskIds.split(",");
+        for (String id:split) {
+            this.syncTaskService.stop(id);
+        }
+        return ResultT.success();
+    }
+
 
     /**
      * 获取同步日志分页数据接口

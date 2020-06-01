@@ -71,7 +71,7 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <!-- cimiss2的私有仓库 -->
+        <!-- 国家局的私有仓库 -->
         <repository>
             <id>releases</id>
             <name>Releases</name>

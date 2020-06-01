@@ -254,7 +254,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getTree() {
-        List<DataClassEntity> all = this.getAll();
+        Sort sort = Sort.by(Sort.Direction.ASC, "dataClassId");
+        List<DataClassEntity> all = this.getAll(sort);
         List l = new ArrayList();
         for (DataClassEntity d : all) {
             TreeLevel tl = new TreeLevel();
