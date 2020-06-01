@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SYSTEM
+const baseUrl = window.serverConfig.VUE_APP_SYSTEM
 //管理字段管理
 export function findAllManageGroup() {
   return request({

@@ -7,7 +7,7 @@
 export default {
   data() {
     return {
-      src: process.env.VUE_APP_BASE_API + "/druid/index.html",
+      src: window.serverConfig.VUE_APP_BASE_API + "/druid/index.html",
       height: document.documentElement.clientHeight - 94.5 + "px;",
       loading: true
     };

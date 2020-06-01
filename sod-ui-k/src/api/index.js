@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = process.env.VUE_APP_SYSTEM;
+const baseUrl = window.serverConfig.VUE_APP_SYSTEM;
 
 // 获取资料分类统计数量
 export function findDataCount(query) {

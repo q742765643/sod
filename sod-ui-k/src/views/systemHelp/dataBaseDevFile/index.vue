@@ -88,7 +88,7 @@
 </template>
 
 <script>
-var baseUrl = process.env.VUE_APP_DM;
+var baseUrl = window.serverConfig.VUE_APP_DM;
 import { getToken, createSign } from "@/utils/auth";
 import { getpage, deleteByIds, upload } from "@/api/systemHelp/dataBaseDevFile";
 var token = getToken();
