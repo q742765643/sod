@@ -198,7 +198,7 @@ public class PostgreSql extends DatabaseDclAbs {
             if (num > 0) return ResultT.success(true);
             else return ResultT.success(false);
         } catch (SQLException e) {
-            if (e.getMessage().contains("not exist")) {
+            if (e.getMessage().contains("not exist")||e.getMessage().contains("不存在")) {
                 return ResultT.success(false);
             } else {
                 e.printStackTrace();

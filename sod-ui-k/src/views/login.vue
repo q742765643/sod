@@ -195,7 +195,7 @@ export default {
   );
   .wrap {
     width: 80%;
-    text-align: right;
+    text-align: left;
     background: url("../assets/image/login-bg.png") no-repeat;
     background-size: 100% 100%;
     .title {
@@ -225,6 +225,8 @@ export default {
       height: 40px;
       float: right;
       img {
+        width: 100%;
+        height: 100%;
         cursor: pointer;
         vertical-align: middle;
       }
