@@ -121,12 +121,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             for (DatabaseUserDto dto : databaseUserDtoList) {
 
                 //获取数据库中文名称
-                if (StringUtils.isNotEmpty(dto.getApplyDatabaseId())) {
-                    String[] applyDatabaseIdArray = dto.getApplyDatabaseId().split(",");
+                if (StringUtils.isNotEmpty(dto.getExamineDatabaseId())) {
+                    String[] examineDatabaseIdArray = dto.getExamineDatabaseId().split(",");
                     String applyDatabaseName = "";
-                    for (String applyDatabaseId : applyDatabaseIdArray) {
+                    for (String examineDatabaseId : examineDatabaseIdArray) {
                         for (DatabaseDefineEntity databaseDefineEntity : databaseDefineEntities) {
-                            if (applyDatabaseId.equals(databaseDefineEntity.getId())) {
+                            if (examineDatabaseId.equals(databaseDefineEntity.getId())) {
                                 applyDatabaseName += databaseDefineEntity.getDatabaseName() + ",";
                                 break;
                             }
@@ -375,7 +375,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     thisHaveIds.remove(databaseId);
                 }
             } catch (Exception e) {
-                sbff.append(databaseId + "修改绑定IP失败，msg:" + e.getMessage() + "\n");
+                sbff.append(databaseId + "数据库用户删除失败，msg:" + e.getMessage() + "\n");
             } finally {
                 if (databaseVO != null) {
                     databaseVO.closeConnect();

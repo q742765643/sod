@@ -11,6 +11,8 @@ import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
+import com.piesat.dm.rpc.service.GrpcService;
+import com.piesat.util.ResultT;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
     private LogicDefineDao logicDefineDao;
     @Autowired
     private DatabaseDao databaseDao;
+    @Autowired
+    private GrpcService grpcService;
 
     @Override
     public BaseDao<TableIndexEntity> getBaseDao() {
@@ -262,6 +266,20 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                         if(sqlMap.get("TABLE_SQL")!=null){
                             Clob sqlClob = (Clob) sqlMap.get("TABLE_SQL");
                             sqlContent = ClobToString(sqlClob);
+                        }else {
+                            String tableId = sqlMap.get("ID").toString();
+                            ResultT sql = this.grpcService.getSql(tableId, databaseId);
+                            if (sql.getCode() == 200){
+                                Object data = sql.getData();
+                                if (data instanceof HashMap){
+                                    String createSql = ((HashMap) data).get("createSql").toString();
+                                    if (StringUtils.isNotEmpty(createSql)){
+                                        sqlContent = createSql;
+                                    }
+                                }
+                            }else {
+                                sqlContent = "--"+sql.getMsg()+"--\n\n";
+                            }
                         }
                         String sql = "--"+sqlMap.getOrDefault("DATA_SERVICE_ID","")
                                 +"_"+sqlMap.getOrDefault("DATA_SERVICE_NAME","")
