@@ -833,6 +833,11 @@
         (select distinct leftb(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
     </select>
 
+    <select id="getDataTypeListPostgresql" parameterType="String" resultType="java.util.Map">
+        select * from t_sod_data_class where data_class_id in
+        (select distinct SUBSTR(data_class_id,1,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
+    </select>
+
     <select id="findByDataServiceId" resultType="java.util.Map" parameterType="String">
         select a.* from t_sod_data_table a,t_sod_data_logic b
         where a.data_service_id in(${dataClassIds})

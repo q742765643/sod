@@ -28,7 +28,7 @@
               v-model="loginForm.code"
               auto-complete="off"
               placeholder="验证码"
-              style="width: 66%"
+              style="width: 65%"
               @keyup.enter.native="handleLogin"
             >
               <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
