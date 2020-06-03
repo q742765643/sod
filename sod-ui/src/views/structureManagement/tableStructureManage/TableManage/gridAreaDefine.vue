@@ -32,7 +32,12 @@
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="areaId" label="区域代码"></el-table-column>
-      <el-table-column prop="areaRegionDesc" label="区域描述"></el-table-column>
+      <el-table-column prop="areaRegionDesc" label="区域描述">
+        <template slot-scope="scope">
+          <span v-if="scope.row.areaRegionDesc == '全球'">全球（起止纬度：[0,-1];起止经度：[89,-89]）</span>
+          <span v-else>{{scope.row.areaRegionDesc}}</span>
+        </template>
+      </el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
