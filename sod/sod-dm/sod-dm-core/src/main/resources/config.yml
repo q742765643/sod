@@ -17,6 +17,7 @@ column:
     short: smallint
     numeric: numeric
     decimal: numeric
+    number: numeric
     char: char
     nchar: nchar
     varchar: varchar

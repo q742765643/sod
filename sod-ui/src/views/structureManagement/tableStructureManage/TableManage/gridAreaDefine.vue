@@ -11,7 +11,7 @@
           <el-option
             v-for="(item,index) in optionsArea"
             :key="index"
-            :label="item.areaId"
+            :label="item.areaId+'：起止经度：['+item.startLat+','+item.endLat+']'+'；起止纬度：['+item.startLon+','+item.endLon+']'"
             :value="item.areaId"
           ></el-option>
         </el-select>

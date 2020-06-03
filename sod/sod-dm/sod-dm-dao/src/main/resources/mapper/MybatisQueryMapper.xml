@@ -873,8 +873,8 @@
     </select>
 
     <select id="getSqlList" resultType="java.util.Map" parameterType="String">
-        SELECT M.data_service_id,M.data_service_name,M.table_name,N.table_sql FROM
-        (SELECT DISTINCT a.data_service_id,a.data_service_name,a.table_name,b.database_id
+        SELECT M.id,M.data_service_id,M.data_service_name,M.table_name,N.table_sql FROM
+        (SELECT DISTINCT a.id,a.data_service_id,a.data_service_name,a.table_name,b.database_id
         FROM t_sod_data_table a,t_sod_data_logic b
         WHERE a.data_service_id in(${dataClassIds})
         AND b.database_id = #{databaseId}
