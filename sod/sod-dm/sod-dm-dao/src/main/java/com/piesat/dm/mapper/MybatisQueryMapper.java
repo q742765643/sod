@@ -125,6 +125,8 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getDataTypeList(@Param("dataClassIds") String dataClassIds);
 
+    List<Map<String, Object>> getDataTypeListPostgresql(@Param("dataClassIds") String dataClassIds);
+
     List<Map<String, Object>> findByDataServiceId(@Param("dataClassIds") String dataClassIds,@Param("databaseId") String databaseId);
 
     List<Map<String, Object>> findColumnByTableId(@Param("tableId") String tableId);

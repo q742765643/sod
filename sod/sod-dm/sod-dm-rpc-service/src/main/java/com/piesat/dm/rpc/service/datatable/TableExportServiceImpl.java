@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.datatable;
 
+import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.DatabaseDao;
@@ -180,7 +181,11 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
 
             //获取资料分类集合
             List<Map<String,Object>> typeList = new ArrayList<Map<String,Object>>();
-            typeList.addAll(mybatisQueryMapper.getDataTypeList(dataClassIdParam));
+            if("postgresql".equals(DatabseType.type)){
+                typeList.addAll(mybatisQueryMapper.getDataTypeListPostgresql(dataClassIdParam));
+            }else{
+                typeList.addAll(mybatisQueryMapper.getDataTypeList(dataClassIdParam));
+            }
             for(int i=0; i<typeList.size(); i++){
                 Map<String,Object> typemap = typeList.get(i);
                 String typeCode = typemap.get("DATA_CLASS_ID").toString();
