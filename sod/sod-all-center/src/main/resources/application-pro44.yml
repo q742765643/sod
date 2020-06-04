@@ -166,7 +166,7 @@ product:
 
 #单位为秒
 session:
-  timeout: 1800
+  timeout: 7200
 
 
 

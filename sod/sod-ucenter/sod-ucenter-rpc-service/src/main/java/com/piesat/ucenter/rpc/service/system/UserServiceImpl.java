@@ -34,6 +34,7 @@ import com.piesat.ucenter.rpc.mapstruct.system.UserMapstruct;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -113,6 +114,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public PageBean selectUserList(PageForm<UserDto> pageForm) {
         UserEntity userEntity = userMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+        UserDto loginUser =(UserDto) SecurityUtils.getSubject().getPrincipal();
+        if (!"admin".equals(loginUser.getUserName())){
+            userEntity.setAppId("no_admin");
+        }
         List<UserEntity> userEntities = userMapper.selectUserList(userEntity);
         PageInfo<UserEntity> pageInfo = new PageInfo<>(userEntities);
         List<UserDto> userDtos = userMapstruct.toDto(pageInfo.getList());
