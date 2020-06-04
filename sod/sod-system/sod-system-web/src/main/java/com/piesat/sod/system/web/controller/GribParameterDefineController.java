@@ -12,9 +12,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yaya
@@ -80,6 +79,7 @@ public class GribParameterDefineController {
     {
         ResultT resultT=new ResultT<>();
         List<GribParameterDefineDto> serviceCodeDto= this.gribParameterDefineService.all();
+        serviceCodeDto = serviceCodeDto.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(GribParameterDefineDto :: getEleCodeShort))), ArrayList::new));
         resultT.setData(serviceCodeDto);
         return resultT;
     }

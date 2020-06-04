@@ -1,6 +1,7 @@
 package com.piesat.sod.system.web.controller;
 
 import com.piesat.sod.system.rpc.api.ServiceCodeDefineService;
+import com.piesat.sod.system.rpc.dto.GribParameterDefineDto;
 import com.piesat.sod.system.rpc.dto.ServiceCodeDefineDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -11,9 +12,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yaya
@@ -78,6 +78,7 @@ public class ServiceCodeDefineController {
     @GetMapping(value = "/findByDbFcstEle")
     public ResultT findByDbFcstEle(String dbFcstEle){
         List<ServiceCodeDefineDto> byDbFcstEle = this.serviceCodeDefineService.findByDbFcstEle(dbFcstEle);
+        byDbFcstEle = byDbFcstEle.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(ServiceCodeDefineDto:: getUserFcstEle))), ArrayList::new));
         return ResultT.success(byDbFcstEle);
     }
 
