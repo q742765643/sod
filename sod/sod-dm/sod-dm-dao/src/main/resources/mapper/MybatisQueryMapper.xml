@@ -1412,4 +1412,16 @@
     <select id="getByDatabaseDefineId" parameterType="String" resultType="java.util.Map">
       select *  from T_SOD_DATABASE t where t.DATABASE_DEFINE_ID=#{id}
     </select>
+
+
+    <select id="getAreaByPage" resultType="GridAreaEntity" parameterType="java.util.Map">
+        select distinct a.id,a.area_id areaId,concat( concat( concat(b.AREA_DESC,'('),a.AREA_REGION_DESC),')') areaRegionDesc,a.data_service_id dataServiceId,a.version
+        from T_SOD_GRID_AREA a
+        inner join (select area_id,area_desc from T_SOD_GRID_AREA_DEFINE ) b on a.area_id = b.area_id
+        <where>
+            <if test="map.dataServiceId != null and map.dataServiceId != ''">
+                a.DATA_SERVICE_ID = #{map.dataServiceId}
+            </if>
+        </where>
+    </select>
 </mapper>

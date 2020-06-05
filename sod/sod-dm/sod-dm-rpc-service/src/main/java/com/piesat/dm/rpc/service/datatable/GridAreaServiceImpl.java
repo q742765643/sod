@@ -1,11 +1,14 @@
 package com.piesat.dm.rpc.service.datatable;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.dao.datatable.GridAreaDao;
 import com.piesat.dm.entity.datatable.GridAreaEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.GridAreaService;
 import com.piesat.dm.rpc.dto.datatable.GridAreaDto;
 import com.piesat.dm.rpc.mapper.datatable.GridAreaMapper;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 区域信息
@@ -33,6 +37,8 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     private GridAreaDao gridAreaDao;
     @Autowired
     private GridAreaMapper gridAreaMapper;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
     public BaseDao<GridAreaEntity> getBaseDao() {
@@ -66,18 +72,14 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     }
 
     @Override
-    public PageBean list(PageForm pageForm, String dataServiceId) {
-        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
-        if (StringUtils.isNotBlank(dataServiceId)) {
-            ssb.add("dataServiceId", SpecificationOperator.Operator.eq.name(), dataServiceId);
-        }else {
-            ssb.add("dataServiceId", SpecificationOperator.Operator.eq.name(), "dataServiceId&&$$$%%%");
-        }
-        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        PageBean page = this.getPage(ssb.generateSpecification(), pageForm, sort);
-        List<GridAreaEntity> pageData = (List<GridAreaEntity>) page.getPageData();
-        page.setPageData(this.gridAreaMapper.toDto(pageData));
-        return page;
+    public PageBean list(PageForm<Map<String,String>> pageForm, String dataServiceId) {
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<GridAreaEntity> lists = mybatisQueryMapper.getAreaByPage(pageForm.getT());
+
+        PageInfo<GridAreaEntity> pageInfo = new PageInfo<>(lists);
+        //获取当前页数据
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
+        return pageBean;
     }
 
     @Override

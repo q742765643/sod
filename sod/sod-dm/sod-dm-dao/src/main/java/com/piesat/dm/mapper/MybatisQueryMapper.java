@@ -219,4 +219,6 @@ public interface MybatisQueryMapper {
     List<Map<String,Object>> getDatabaseName();
 
     List<Map<String,Object>>  getByDatabaseDefineId(@Param("id")String id);
+
+    List<GridAreaEntity> getAreaByPage(@Param("map") Map<String, String> map);
 }
