@@ -210,7 +210,7 @@
               <el-select
                 filterable
                 @change="getEleUnit"
-                v-model.trim="msgFormDialog.eleServiceId"
+                v-model="msgFormDialog.eleServiceId"
                 placeholder="要素服务代码"
                 size="small"
               >
@@ -251,19 +251,31 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素中文名" prop="eleNameCn">
-              <el-input placeholder="要素中文名" v-model.trim="msgFormDialog.eleNameCn"></el-input>
+              <el-input
+                placeholder="要素中文名"
+                v-model.trim="msgFormDialog.eleNameCn"
+                @input="forceUpdate($event)"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="要素长名" prop="eleLongName">
-              <el-input placeholder="要素长名" v-model.trim="msgFormDialog.eleLongName"></el-input>
+              <el-input
+                placeholder="要素长名"
+                v-model.trim="msgFormDialog.eleLongName"
+                @input="forceUpdate($event)"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素单位" prop="eleUnit">
-              <el-input placeholder="要素单位" v-model.trim="msgFormDialog.eleUnit"></el-input>
+              <el-input
+                placeholder="要素单位"
+                v-model.trim="msgFormDialog.eleUnit"
+                @input="forceUpdate($event)"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -534,7 +546,11 @@ export default {
         }
       });
     },
+    forceUpdate() {
+      this.$forceUpdate();
+    },
     getEleUnit(val) {
+      this.$forceUpdate();
       this.eleOptionsList.forEach(element => {
         if (element.userFcstEle == val) {
           if (this.dialogTitle == "新增数据服务信息") {
