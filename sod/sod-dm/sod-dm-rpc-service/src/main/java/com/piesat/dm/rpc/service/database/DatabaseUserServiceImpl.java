@@ -111,6 +111,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (StringUtils.isNotBlank(databaseUserEntity.getUserId())) {
             specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(), databaseUserEntity.getUserId());
         }
+        if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpId())) {
+            specificationBuilder.add("databaseUpId", SpecificationOperator.Operator.likeAll.name(), databaseUserEntity.getDatabaseUpId());
+        }
         Sort sort = Sort.by(Sort.Direction.ASC, "examineStatus").and(Sort.by(Sort.Direction.DESC, "createTime"));
         PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<DatabaseUserEntity> databaseUserEntityList = (List<DatabaseUserEntity>) pageBean.getPageData();
