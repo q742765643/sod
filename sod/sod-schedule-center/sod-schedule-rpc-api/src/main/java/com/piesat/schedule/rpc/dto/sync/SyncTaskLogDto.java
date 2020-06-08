@@ -15,7 +15,7 @@ public class SyncTaskLogDto extends BaseDto {
     /**
      * 任务id
      */
-    private String id;
+    private String taskId;
 
     /**
      * 日志级别
