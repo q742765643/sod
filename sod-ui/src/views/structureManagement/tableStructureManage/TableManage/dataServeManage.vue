@@ -66,7 +66,12 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input-number v-model.trim="baseSet.gribVersion" :min="0" size="small"></el-input-number>
+              <el-input-number
+                v-model.trim="baseSet.gribVersion"
+                :min="0"
+                :max="999999999"
+                size="small"
+              ></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -154,7 +159,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="序号" prop="num">
-              <el-input placeholder="序号" v-model.trim="msgFormDialog.num"></el-input>
+              <el-input-number
+                placeholder="序号"
+                v-model="msgFormDialog.num"
+                :min="1"
+                :max="999999999"
+              ></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -258,7 +268,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input placeholder="GRIB版本" v-model.trim="msgFormDialog.gribVersion"></el-input>
+              <el-input-number
+                v-model="msgFormDialog.gribVersion"
+                :min="0"
+                :max="999999999"
+                placeholder="GRIB版本"
+              ></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -384,8 +399,7 @@ export default {
           { required: true, message: "请选择区域代码", trigger: "change" }
         ],
         gribVersion: [
-          { required: true, message: "请输入GRIB版本", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+          { required: true, message: "请输入GRIB版本", trigger: "blur" }
         ],
         fieldType: [
           { required: true, message: "请输入场类型", trigger: "blur" },
@@ -406,10 +420,7 @@ export default {
         ]
       },
       rules: {
-        num: [
-          { required: true, message: "请输入序号", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
-        ],
+        num: [{ required: true, message: "请输入序号", trigger: "blur" }],
         areaId: [
           { required: true, message: "请选择区域代码", trigger: "change" }
         ],
@@ -421,12 +432,10 @@ export default {
           }
         ],
         levelType: [
-          { required: true, message: "请输入层次类型", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+          { required: true, message: "请输入层次类型", trigger: "blur" }
         ],
         gribVersion: [
-          { required: true, message: "请输入GRIB版本", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+          { required: true, message: "请输入GRIB版本", trigger: "blur" }
         ],
         eleUnit: [
           { min: 0, max: 10, message: "长度在 0 到 10 个字符", trigger: "blur" }
