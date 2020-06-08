@@ -46,9 +46,9 @@
         <result column="insert_count" property="insertCount" />
         <result column="update_count" property="updateCount" />
         <result column="discard_count" property="discardCount" />
-        <result column="begintime" property="begintime" />
-        <result column="endtime" property="endtime" />
-        <result column="spendtime" property="spendtime" />
+        <result column="begin_time" property="begintime" />
+        <result column="end_time" property="endtime" />
+        <result column="spend_time" property="spendtime" />
         <result column="error" property="error" />
     </resultMap>
     <sql id="selectVo">
