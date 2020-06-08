@@ -422,6 +422,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         if (dataClassDto.getIfStopUse() != null) {
             ssb.add("ifStopUse", SpecificationOperator.Operator.eq.name(), dataClassDto.getIfStopUse());
         }
+        ssb.add("type", SpecificationOperator.Operator.eq.name(), 2);
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         List<DataClassEntity> all = this.getAll(ssb.generateSpecification());
         ExcelUtil<DataClassEntity> util = new ExcelUtil(DataClassEntity.class);
