@@ -34,7 +34,7 @@
       <el-table-column prop="areaId" label="区域代码"></el-table-column>
       <el-table-column prop="areaRegionDesc" label="区域描述">
         <template slot-scope="scope">
-          <span v-if="scope.row.areaRegionDesc">{{scope.row.areaRegionDesc.split('&')[1]}}</span>
+          <span v-if="scope.row.areaRegionDesc">{{scope.row.areaRegionDesc}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -117,7 +117,7 @@ export default {
       var time = new Date();
       let obj = {};
       obj.areaId = this.selectArea.split("&")[0];
-      obj.areaRegionDesc = this.selectArea;
+      obj.areaRegionDesc = this.selectArea.split("&")[1];
       obj.dataServiceId = this.rowData.DATA_CLASS_ID;
       console.log(obj);
       gridareaSave(obj).then(res => {
