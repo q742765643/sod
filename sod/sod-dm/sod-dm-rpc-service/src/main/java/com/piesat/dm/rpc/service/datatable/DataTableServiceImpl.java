@@ -324,6 +324,24 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             }
             dte.setTableIndexList(til);
             DataTableEntity save = this.dataTableDao.saveNotNull(dte);
+
+            List<StorageConfigurationDto> sc = this.storageConfigurationService.findByClassLogicId(save.getClassLogic().getId());
+            if (sc != null && sc.size() > 0) {
+                StorageConfigurationDto storageConfigurationDto = sc.get(0);
+                storageConfigurationDto.setStorageDefineIdentifier(1);
+                this.storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
+            } else {
+                StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
+                storageConfigurationDto.setClassLogicId(save.getClassLogic().getId());
+                storageConfigurationDto.setStorageDefineIdentifier(1);
+                storageConfigurationDto.setSyncIdentifier(2);
+                storageConfigurationDto.setCleanIdentifier(2);
+                storageConfigurationDto.setMoveIdentifier(2);
+                storageConfigurationDto.setBackupIdentifier(2);
+                storageConfigurationDto.setArchivingIdentifier(2);
+                this.storageConfigurationService.saveDto(storageConfigurationDto);
+            }
+
             for (ShardingEntity se : shardingEntities) {
                 ShardingEntity sde = new ShardingEntity();
                 BeanUtils.copyProperties(se, sde);
