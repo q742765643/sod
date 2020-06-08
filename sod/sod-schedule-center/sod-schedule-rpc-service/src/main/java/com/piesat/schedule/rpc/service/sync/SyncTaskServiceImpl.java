@@ -543,6 +543,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         //删除synctask表
         syncTaskDao.deleteById(taskId);
+        this.syncEleWarningDao.deleteById(taskId);
     }
 
     public List<String> deleteConfigFilter(String taskId) {
