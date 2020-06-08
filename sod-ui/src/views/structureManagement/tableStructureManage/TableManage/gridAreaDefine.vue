@@ -11,8 +11,8 @@
           <el-option
             v-for="(item,index) in optionsArea"
             :key="index"
-            :label="item.areaId+'：起止经度：['+item.startLat+','+item.endLat+']'+'；起止纬度：['+item.startLon+','+item.endLon+']'"
-            :value="item.areaId"
+            :label="item.areaId+'：起止经度：['+item.startLat+','+item.endLat+']'+'起止纬度：['+item.startLon+','+item.endLon+']'"
+            :value="item.areaId+'&起止经度：['+item.startLat+','+item.endLat+']'+'起止纬度：['+item.startLon+','+item.endLon+']'"
           ></el-option>
         </el-select>
       </el-col>
@@ -34,8 +34,7 @@
       <el-table-column prop="areaId" label="区域代码"></el-table-column>
       <el-table-column prop="areaRegionDesc" label="区域描述">
         <template slot-scope="scope">
-          <span v-if="scope.row.areaRegionDesc == '全球'">全球（起止纬度：[0,-1];起止经度：[89,-89]）</span>
-          <span v-else>{{scope.row.areaRegionDesc}}</span>
+          <span v-if="scope.row.areaRegionDesc">{{scope.row.areaRegionDesc.split('&')[1]}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -117,12 +116,8 @@ export default {
       this.isEdit = !this.isEdit;
       var time = new Date();
       let obj = {};
-      obj.areaId = this.selectArea;
-      this.optionsArea.forEach(element => {
-        if (element.areaId == this.selectArea) {
-          obj.areaRegionDesc = element.areaDesc;
-        }
-      });
+      obj.areaId = this.selectArea.split("&")[0];
+      obj.areaRegionDesc = this.selectArea;
       obj.dataServiceId = this.rowData.DATA_CLASS_ID;
       console.log(obj);
       gridareaSave(obj).then(res => {

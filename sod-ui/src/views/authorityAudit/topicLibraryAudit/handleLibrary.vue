@@ -22,13 +22,7 @@
             <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userPhone"></el-input>
           </el-form-item>
           <el-form-item label="申请材料" v-if="!handleObj.pageName">
-            <el-button
-              :disabled="!msgFormDialog.applyMaterial"
-              size="small"
-              type="success"
-              @click="handleExport"
-              icon="el-icon-document"
-            >下载</el-button>
+            <el-button size="small" type="success" @click="handleExport" icon="el-icon-document">下载</el-button>
           </el-form-item>
           <el-form-item label="排序">
             <el-input-number v-model.trim="msgFormDialog.sortNo" :min="0"></el-input-number>
@@ -330,6 +324,10 @@ export default {
     },
     // 下载
     handleExport() {
+      if (!this.msgFormDialog.applyMaterial) {
+        this.$message({ type: "error", message: "文件不存在" });
+        return;
+      }
       exportTable({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
         if (res.code) {
           this.$message({ type: "warning", message: res.msg });
@@ -344,9 +342,6 @@ export default {
       getById({ id: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
-          if (!this.msgFormDialog.applyMaterial && !this.handleObj.pageName) {
-            this.$message({ type: "error", message: "文件不存在" });
-          }
         }
       });
       // 数据库授权

@@ -269,7 +269,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="空间分辨率" prop>
+            <el-form-item label="空间分辨率" prop="gridPixel">
               <el-input placeholder="空间分辨率" v-model.trim="msgFormDialog.gridPixel"></el-input>
             </el-form-item>
           </el-col>
@@ -281,7 +281,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="层次单位" prop>
+            <el-form-item label="层次单位" prop="levelUnit">
               <el-input placeholder="层次单位" v-model.trim="msgFormDialog.levelUnit"></el-input>
             </el-form-item>
           </el-col>
@@ -344,7 +344,15 @@ export default {
         eleField: "",
         regionField: ""
       },
-      baseSet: {},
+      baseSet: {
+        region: "",
+        gribVersion: "",
+        fieldType: "",
+        processType: "",
+        dataTime: "",
+        timeUnit: "",
+        spatialResolution: ""
+      },
       searchObj: {
         dataServiceId: this.rowData.DATA_CLASS_ID,
         pageNum: 1,
@@ -353,7 +361,23 @@ export default {
       dialogTitle: "新增数据服务信息",
       dataServeDialog: false,
       msgFormDialog: {
-        dataServiceId: this.rowData.DATA_CLASS_ID
+        dataServiceId: this.rowData.DATA_CLASS_ID,
+        num: "",
+        areaId: "",
+        dbEleName: "",
+        eleServiceId: "",
+        levelType: "",
+        scaleDivisor: "",
+        eleNameCn: "",
+        eleLongName: "",
+        eleUnit: "",
+        gribVersion: "",
+        eleHours: "",
+        gridPixel: "",
+        timeUnit: "",
+        levelUnit: "",
+        levelList: "",
+        timeList: ""
       },
       baseRules: {
         region: [
