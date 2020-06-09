@@ -299,8 +299,8 @@ export default {
     };
   },
   created() {
+    console.log(this.handleObj);
     if (this.handleObj.id) {
-      console.log(this.handleObj);
       this.initDetail();
       if (this.handleObj.examineStatus == "1") {
         this.flagBase = false;
