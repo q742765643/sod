@@ -539,11 +539,16 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         //修改存储策略配置
         SyncTaskDto syncTaskDto = this.getDtoById(taskId);
-        updateStorageConfiguration(targetTableIds, syncTaskDto.getTargetDatabaseId(), 2, "");
+        if (syncTaskDto != null) {
+            updateStorageConfiguration(targetTableIds, syncTaskDto.getTargetDatabaseId(), 2, "");
+        }
 
         //删除synctask表
         syncTaskDao.deleteById(taskId);
-        this.syncEleWarningDao.deleteById(taskId);
+        boolean b = this.syncEleWarningDao.existsById(taskId);
+        if (b) {
+            this.syncEleWarningDao.deleteById(taskId);
+        }
     }
 
     public List<String> deleteConfigFilter(String taskId) {
@@ -665,8 +670,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         }
 
         Optional<SyncEleWarningEntity> optionalT = this.syncEleWarningDao.findById(syncTaskDto.getId());
-        SyncEleWarningEntity see = optionalT.isPresent() ? optionalT.get(): null;
-        if (see!=null){
+        SyncEleWarningEntity see = optionalT.isPresent() ? optionalT.get() : null;
+        if (see != null) {
             syncTaskDto.setCheckInterval(see.getCheckInterval());
             syncTaskDto.setTimeLimit(see.getTimeLimit());
             syncTaskDto.setBiggestDifference(see.getBiggestDifference());
