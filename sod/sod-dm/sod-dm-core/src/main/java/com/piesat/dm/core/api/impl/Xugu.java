@@ -321,11 +321,11 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
-        }finally {
-            if(rs != null){
+        } finally {
+            if(rs != null && !rs.isClosed()){
                 rs.close();
             }
-            if(ps != null){
+            if(ps != null && !ps.isClosed()){
                 ps.close();
             }
 
@@ -354,6 +354,14 @@ public class Xugu extends DatabaseDclAbs {
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
+        } finally {
+            if(rs != null && !rs.isClosed()){
+                rs.close();
+            }
+            if(ps != null && !ps.isClosed()){
+                ps.close();
+            }
+
         }
         return ResultT.success(results);
     }
@@ -376,6 +384,14 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if(rs != null && !rs.isClosed()){
+                rs.close();
+            }
+            if(stmt != null && !stmt.isClosed()){
+                stmt.close();
+            }
+
         }
         return  num;
     }
@@ -430,6 +446,14 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if(rs != null && !rs.isClosed()){
+                rs.close();
+            }
+            if(stmt != null && !stmt.isClosed()){
+                stmt.close();
+            }
+
         }
         return minTime;
     }
@@ -477,6 +501,14 @@ public class Xugu extends DatabaseDclAbs {
         }catch (Exception e){
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if(rs != null && !rs.isClosed()){
+                rs.close();
+            }
+            if(stmt != null && !stmt.isClosed()){
+                stmt.close();
+            }
+
         }
         return maxTime;
     }
@@ -494,6 +526,14 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if(rs != null && !rs.isClosed()){
+                rs.close();
+            }
+            if(stmt != null && !stmt.isClosed()){
+                stmt.close();
+            }
+
         }
         return  num;
     }
