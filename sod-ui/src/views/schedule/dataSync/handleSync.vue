@@ -1363,7 +1363,13 @@ export default {
         });
         return columnInfo;
       }
-      if (SAndT == "target") {
+      if (SAndT == "target" && kAndE == "V") {
+        var columnInfo = this.targetVColumnDetail.find(function(obj) {
+          return obj.dbEleCode === column_name;
+        });
+        return columnInfo;
+      }
+      if (SAndT == "target" && kAndE == "K") {
         var columnInfo = this.targetColumnDetail.find(function(obj) {
           return obj.dbEleCode === column_name;
         });
