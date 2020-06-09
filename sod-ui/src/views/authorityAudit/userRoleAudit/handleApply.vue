@@ -146,6 +146,7 @@ export default {
 
   methods: {
     async initDatail() {
+      debugger;
       await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
         if (res.data && res.data.length > 0) {
           this.handleObj = res.data[0];
