@@ -13,12 +13,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素存储字段">
-              <el-select
-                filterable
-                v-model.trim="baseServe.eleField"
-                placeholder="请选择"
-                size="small"
-              >
+              <el-select filterable v-model="baseServe.eleField" placeholder="请选择" size="small">
                 <el-option
                   v-for="(item,index) in optionsColumnList"
                   :key="index"
@@ -30,12 +25,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="区域存储字段">
-              <el-select
-                filterable
-                v-model.trim="baseServe.regionField"
-                placeholder="请选择"
-                size="small"
-              >
+              <el-select filterable v-model="baseServe.regionField" placeholder="请选择" size="small">
                 <el-option
                   v-for="(item,index) in optionsColumnList"
                   :key="index"
@@ -76,7 +66,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="场类型" prop="fieldType">
-              <el-input-number v-model.trim="baseSet.fieldType" :min="0" size="small"></el-input-number>
+              <el-input-number v-model="baseSet.fieldType" :min="0" :max="999999999" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -414,12 +404,10 @@ export default {
           { required: true, message: "请输入GRIB版本", trigger: "blur" }
         ],
         fieldType: [
-          { required: true, message: "请输入场类型", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+          { required: true, message: "请输入场类型", trigger: "blur" }
         ],
         processType: [
-          { required: true, message: "请输入加工过程类型", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+          { required: true, message: "请输入加工过程类型", trigger: "blur" }
         ],
         dataTime: [
           { required: true, message: "请输入资料时次", trigger: "blur" }

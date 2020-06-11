@@ -302,6 +302,16 @@ export default {
       }
     };
 
+    var databaseCapacityValidate = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入总容量"));
+      } else if (value.indexOf(".") > -1) {
+        callback(new Error("不能输入小数"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       dictsList: [],
       //专题列表
@@ -372,7 +382,11 @@ export default {
           { required: true, message: "请输入UP层访问地址", trigger: "blur" }
         ],
         databaseCapacity: [
-          { required: true, message: "请输入总容量", trigger: "blur" }
+          {
+            required: true,
+            validator: databaseCapacityValidate,
+            trigger: "blur"
+          }
         ]
       }
     };
