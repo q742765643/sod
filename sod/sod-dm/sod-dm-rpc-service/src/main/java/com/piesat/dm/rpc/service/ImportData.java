@@ -450,7 +450,7 @@ public class ImportData {
             dte.setCModifier(toString(m.get("C_MODIFIER")));
             dte.setCCreateDate((Date) (m.get("C_CREATE_DATE")));
             dte.setCUpdatedDate((Date) (m.get("C_UPDATED_DATE")));
-            dte.setVersion(((BigDecimal) (m.get("VERSION"))).intValue());
+//            dte.setVersion(((BigDecimal) (m.get("VERSION"))).intValue());
             dte.setCBusinessFrequency(toString(m.get("C_BUSINESS_FREQUENCY")));
             dte.setCNettype(toString(m.get("C_NETTYPE")));
             dte.setCCoremetaId(toString(m.get("C_COREMETA_ID")));
