@@ -2,14 +2,14 @@
   <section class="handleLiberyDialog">
     <el-tabs type="border-card" v-model.trim="activeName">
       <el-tab-pane label="基本信息" name="first">
-        <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px">
+        <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px" :rules="rules">
           <el-form-item label="图标" v-if="!handleObj.pageName">
             <img v-if="sdbImg" :src="sdbImg" style="width:40px;" alt />
           </el-form-item>
-          <el-form-item label="专题库名称">
+          <el-form-item label="专题库名称" prop="sdbName">
             <el-input size="small" v-model.trim="msgFormDialog.sdbName"></el-input>
           </el-form-item>
-          <el-form-item label="用途">
+          <el-form-item label="用途" prop="uses">
             <el-input size="small" v-model.trim="msgFormDialog.uses"></el-input>
           </el-form-item>
           <el-form-item label="创建人" v-if="!handleObj.pageName">
@@ -295,7 +295,13 @@ export default {
         require("@/assets/image/icon/h13.png"),
         require("@/assets/image/icon/h14.png"),
         require("@/assets/image/icon/h15.png")
-      ]
+      ],
+      rules: {
+        sdbName: [
+          { required: true, message: "请输入专题库名称", trigger: "blur" }
+        ],
+        uses: [{ required: true, message: "请输入用途", trigger: "blur" }]
+      }
     };
   },
   created() {
