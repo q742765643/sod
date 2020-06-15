@@ -16,7 +16,15 @@
           <el-option label="审核通过" value="1"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="账户ID" prop="databaseUpId">
+        <el-input v-model.trim="queryParams.databaseUpId" size="small"></el-input>
+      </el-form-item>
       <el-form-item>
+        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+      </el-form-item>
+    </el-form>
+    <el-row :gutter="10" class="handleTableBox">
+      <el-col :span="1.5">
         <el-button
           size="small"
           type="primary"
@@ -24,10 +32,11 @@
           icon="el-icon-plus"
           v-hasPermi="['DBaccount:role:add']"
         >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
-      </el-form-item>
-    </el-form>
-
+      </el-col>
+    </el-row>
     <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="databaseUpId" label="账户ID" width="180" :show-overflow-tooltip="true"></el-table-column>

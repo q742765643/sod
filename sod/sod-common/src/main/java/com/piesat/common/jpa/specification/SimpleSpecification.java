@@ -68,7 +68,7 @@ public class SimpleSpecification<T> implements Specification<T> {
         } else if (SpecificationOperator.Operator.lts.name().equalsIgnoreCase(op.getOper())) {
             return criteriaBuilder.lessThan(root.get(op.getKey()).as(String.class), String.valueOf( op.getValue()));
         } else if (SpecificationOperator.Operator.likeAll.name().equalsIgnoreCase(op.getOper())) {
-            return criteriaBuilder.like(root.get(op.getKey()).as(String.class), "%" + op.getValue() + "%");
+            return criteriaBuilder.like(criteriaBuilder.lower(root.get(op.getKey()).as(String.class)), "%" + op.getValue().toString().toLowerCase() + "%");
         } else if (SpecificationOperator.Operator.likeL.name().equalsIgnoreCase(op.getOper())) {
             return criteriaBuilder.like(root.get(op.getKey()).as(String.class), op.getValue() + "%");
         } else if (SpecificationOperator.Operator.likeR.name().equalsIgnoreCase(op.getOper())) {

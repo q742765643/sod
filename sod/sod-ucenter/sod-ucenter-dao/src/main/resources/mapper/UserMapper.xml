@@ -72,6 +72,9 @@
     <if test="userName != null and userName != ''">
       AND upper(u.user_name) like concat('%', upper(#{userName}), '%')
     </if>
+    <if test="appId != null and appId == 'no_admin'">
+      AND u.user_name <![CDATA[!= ]]> 'admin'
+    </if>
     <if test="status != null and status != ''">
       AND u.status = #{status}
     </if>

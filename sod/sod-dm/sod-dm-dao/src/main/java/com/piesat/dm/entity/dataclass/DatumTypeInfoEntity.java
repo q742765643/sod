@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -15,15 +16,16 @@ import java.util.Date;
  * @date 2019年 11月27日 15:26:37
  */
 @Data
-@Table(name = "T_SOD_DATA_DATUMTYPEINFO")
+@Table(name = "TAB_OMIN_CM_CC_DATUMTYPEINFO")
 @Entity
-public class DatumTypeInfoEntity extends BaseEntity {
+public class DatumTypeInfoEntity{
 
     private static final long serialVersionUID = 1L;
 
     /**
      * c_datum_code
      */
+    @Id
     @Column(name = "c_datum_code", length = 32, nullable = false)
     private String cDatumCode;
 

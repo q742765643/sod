@@ -49,6 +49,7 @@
           </el-form-item>
           <el-form-item label="索引字段" prop="indexColumn">
             <el-select
+              filterable
               size="small"
               v-model.trim="indexForm.indexColumn"
               multiple

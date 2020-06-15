@@ -413,6 +413,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                             try {
                                 databaseVO.createSchemas(schemaName, databaseUpId, null, dataAuthor, creatAuthor, dropAuthor, null);
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 logger.error("[E4006] 同名用户或模式已存在 ");
                             }
                             if (databaseVO != null) {

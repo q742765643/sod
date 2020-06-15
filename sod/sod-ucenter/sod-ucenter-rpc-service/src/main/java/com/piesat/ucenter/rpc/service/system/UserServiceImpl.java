@@ -20,6 +20,7 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.dao.system.UserRoleDao;
 import com.piesat.ucenter.entity.system.BizUserEntity;
@@ -34,6 +35,7 @@ import com.piesat.ucenter.rpc.mapstruct.system.UserMapstruct;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -113,6 +115,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public PageBean selectUserList(PageForm<UserDto> pageForm) {
         UserEntity userEntity = userMapstruct.toEntity(pageForm.getT());
         PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        if (!"admin".equals(loginUser.getUserName())) {
+            userEntity.setAppId("no_admin");
+        }
         List<UserEntity> userEntities = userMapper.selectUserList(userEntity);
         PageInfo<UserEntity> pageInfo = new PageInfo<>(userEntities);
         List<UserDto> userDtos = userMapstruct.toDto(pageInfo.getList());
@@ -317,7 +323,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
 //        String applyAuthority = map.get("applyAuthority");
 //        String deptId = map.get("deptId");
         String loginName = map.get("loginName");
-        String pdfPath=map.get("pdfPath");
+        String pdfPath = map.get("pdfPath");
 //        String userId = map.get("userId");
 //        String interfaceId = map.get("interfaceId");
 //        String nonce = map.get("nonce");
@@ -362,7 +368,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
 
         if ("1".equals(dbCreate)) {
             Map<String, String> spMap = new HashMap<>();
-            spMap.put("TDB_NAME", remark);
+            spMap.put("TDB_NAME", appNames);
             spMap.put("USER_ID", bizUserid);
             spMap.put("USES", remark);
             spMap.put("DATABASE_ID", dbIds);
@@ -377,7 +383,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
             daa.setUserId(bizUserid);
             daa.setCreateTime(new Date());
-            if (applyData!=null){
+            if (applyData != null) {
                 List<DataAuthorityRecordDto> list = new ArrayList<>();
                 for (int i = 0; i < applyData.size(); i++) {
                     DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
@@ -487,7 +493,43 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setDbCreate(dbCreate);
         userEntity.setStatus("1".equals(sodApp) ? "0" : "1");
         userEntity = this.userDao.saveNotNull(userEntity);
-
+        if ("1".equals(dbCreate)) {
+            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.findByUserId(bizUserid);
+            if (databaseSpecialDtos == null || databaseSpecialDtos.size() == 0) {
+                Map<String, String> spMap = new HashMap<>();
+                spMap.put("TDB_NAME", appNames);
+                spMap.put("USER_ID", bizUserid);
+                spMap.put("USES", remark);
+                spMap.put("DATABASE_ID", dbIds);
+                spMap.put("DATABASE_SCHEMA_ID", bizUserid);
+                JSONObject jj = new JSONObject();
+                jj.put("userId", bizUserid);
+                spMap.put("data", jj.toJSONString());
+                spMap.put("TDB_NAME", remark);
+                JSONArray jjj = new JSONArray();
+                spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
+                this.databaseSpecialService.addOrUpdate(spMap, null);
+                DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
+                daa.setUserId(bizUserid);
+                daa.setCreateTime(new Date());
+                if (applyData != null) {
+                    List<DataAuthorityRecordDto> list = new ArrayList<>();
+                    for (int i = 0; i < applyData.size(); i++) {
+                        DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
+                        JSONObject jsonObject1 = applyData.getJSONObject(i);
+                        String databaseId = jsonObject1.getString("databaseId");
+                        String dataClassId = jsonObject1.getString("dataClassId");
+                        dar.setDatabaseId(databaseId);
+                        dar.setDataClassId(dataClassId);
+                        dar.setApplyAuthority(1);
+                        dar.setCreateTime(new Date());
+                        list.add(dar);
+                    }
+                    daa.setDataAuthorityRecordList(list);
+                }
+                this.dataAuthorityApplyService.saveDto(daa);
+            }
+        }
         return ResultT.success(userEntity);
     }
 

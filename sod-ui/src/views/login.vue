@@ -107,6 +107,11 @@ export default {
     }
   },
   created() {
+    if (navigator.userAgent.indexOf("Chrome") > -1) {
+      // 即是chrome
+    } else {
+      this.msgSuccess("为更好体验该系统，请选择chrome浏览器");
+    }
     let winHref = window.location.href;
     if (winHref.indexOf("interfaceId") > -1) {
       let urlParam = winHref.split("?")[1];

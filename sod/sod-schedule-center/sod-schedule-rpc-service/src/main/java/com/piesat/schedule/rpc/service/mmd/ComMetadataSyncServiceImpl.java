@@ -479,7 +479,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
         Map<String, String> row = new HashMap<>();
         for (Map.Entry<String, Object> entry : obj.entrySet()) {
             String key = entry.getKey().toLowerCase();
-            String value = entry.getValue() == null ? "" : entry.getValue().toString();
+            String value = entry.getValue() == null ? null : entry.getValue().toString();
 
             //转换时间类型
             for (Map.Entry<String, String> fieldInfo : filedInfoMap.entrySet()) {

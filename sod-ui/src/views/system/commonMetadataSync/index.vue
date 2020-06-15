@@ -95,7 +95,7 @@
           <el-form-item label="时间范围" prop="dateRange">
             <el-date-picker
               style="width:300px"
-              v-model.trim="rowlogForm.dateRange"
+              v-model="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -378,7 +378,10 @@ export default {
     viewDaily(row) {
       this.activeName = "second";
       this.rowlogForm.syncTableName = row.tableName;
-      this.resetQuery();
+      this.rowlogForm.dateRange = [];
+      this.dateRange = [];
+      this.rowlogForm.pageNum = 1;
+      this.dataBaseExpandForm();
     },
     // 删除记录
     deleteRecord() {

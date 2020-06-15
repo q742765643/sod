@@ -69,7 +69,7 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" label="序号" width="50"></el-table-column>
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
       <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column
@@ -97,13 +97,13 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="runState" label="运行状态">
+      <el-table-column prop="runState" label="运行状态" width="160px">
         <template slot-scope="scope">
           <span v-if="scope.row.runState.split('|')[0] == 'true'">运行中</span>
           <span v-else-if="scope.row.runState.split('|')[0] == 'error'">未启动</span>
           <span
             v-else-if="scope.row.runState.split('|')[0] == 'false'&&scope.row.runState.split('|')[1] == ''"
-          >停止中</span>
+          >停止</span>
           <el-popover
             v-else-if="scope.row.runState.split('|')[0] == 'false'&&scope.row.runState.split('|')[1]"
             placement="top-start"
@@ -111,7 +111,7 @@
             width="200"
             trigger="hover"
           >
-            <el-button slot="reference">运行出错</el-button>
+            <el-button slot="reference" size="mini">运行出错</el-button>
           </el-popover>
         </template>
       </el-table-column>
@@ -285,7 +285,7 @@ export default {
         },
         {
           value: "04",
-          label: "停止中"
+          label: "停止"
         }
       ],
       total: 0,
@@ -493,17 +493,14 @@ export default {
       })
         .then(function() {
           if (type == 1) {
-            syncStart(row.id).then(response => {
-              this.msgSuccess("启动成功");
-            });
+            syncStart(row.id).then(response => {});
           } else {
             //停止
-            syncStop(row.id).then(response => {
-              this.msgSuccess("停止成功");
-            });
+            syncStop(row.id).then(response => {});
           }
         })
         .then(() => {
+          this.msgSuccess(handle + "成功");
           this.getList();
         })
         .catch(function() {});

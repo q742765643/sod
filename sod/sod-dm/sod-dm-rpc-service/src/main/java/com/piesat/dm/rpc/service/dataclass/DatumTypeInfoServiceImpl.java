@@ -55,9 +55,9 @@ public class DatumTypeInfoServiceImpl extends BaseService<DatumTypeInfoEntity> i
                 " (SELECT DISTINCT 'el-icon-tickets' FROM T_SOD_DATA_CLASS C INNER JOIN " +
                 "T_SOD_DATA_LOGIC CA ON C.DATA_CLASS_ID = CA.DATA_CLASS_ID " +
                 " WHERE C.D_DATA_ID = C_DATUM_CODE AND C.TYPE = 2  ) ICON " +
-                " FROM T_SOD_DATA_DATUMTYPEINFO A " +
+                " FROM TAB_OMIN_CM_CC_DATUMTYPEINFO A " +
                 " WHERE  (SUBSTR(C_DATUM_CODE,13,1) NOT IN ('P','R') AND C_DATUMPARENT_CODE != 'G.0019.0001' " +
-                " AND C_DATUMPARENT_CODE != 'G.0019.0002' AND EXISTS( SELECT 1 FROM T_SOD_DATA_DATUMTYPEINFO B " +
+                " AND C_DATUMPARENT_CODE != 'G.0019.0002' AND EXISTS( SELECT 1 FROM TAB_OMIN_CM_CC_DATUMTYPEINFO B " +
                 "WHERE B.C_DATUM_CODE = A.C_DATUMPARENT_CODE)) " +
                 " OR C_DATUMPARENT_CODE = '1' ORDER BY C_DATUM_CODE";
         List<Map<String, Object>> maps = this.queryByNativeSQL(sql);
@@ -82,9 +82,9 @@ public class DatumTypeInfoServiceImpl extends BaseService<DatumTypeInfoEntity> i
     @Override
     public JSONArray getSimpleTree() {
         String sql = "SELECT C_DATUM_CODE ID,C_DATUMTYPE NAME,C_DATUMPARENT_CODE PID  " +
-                " FROM T_SOD_DATA_DATUMTYPEINFO A " +
+                " FROM TAB_OMIN_CM_CC_DATUMTYPEINFO A " +
                 " WHERE  (SUBSTR(C_DATUM_CODE,13,1) NOT IN ('P','R') AND C_DATUMPARENT_CODE != 'G.0019.0001' " +
-                " AND C_DATUMPARENT_CODE != 'G.0019.0002' AND EXISTS( SELECT 1 FROM T_SOD_DATA_DATUMTYPEINFO B " +
+                " AND C_DATUMPARENT_CODE != 'G.0019.0002' AND EXISTS( SELECT 1 FROM TAB_OMIN_CM_CC_DATUMTYPEINFO B " +
                 "WHERE B.C_DATUM_CODE = A.C_DATUMPARENT_CODE)) " +
                 " OR C_DATUMPARENT_CODE = 1 ORDER BY C_DATUM_CODE";
         List<Map<String, Object>> maps = this.queryByNativeSQL(sql);

@@ -206,20 +206,21 @@ export default {
     },
 
     deleteCell(row) {
-      deleteList({ id: row.id }).then(res => {
-        if (res.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
+      this.$confirm("确定要删除这条数据吗?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteList({ id: row.id }).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.resetQuery();
           });
-          this.resetQuery();
-        } else {
-          this.$message({
-            type: "error",
-            message: res.msg
-          });
-        }
-      });
+        })
+        .catch(() => {});
     },
     editCell(row) {
       this.handleObj = row;

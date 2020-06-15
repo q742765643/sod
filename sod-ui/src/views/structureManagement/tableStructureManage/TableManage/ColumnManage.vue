@@ -837,6 +837,7 @@ export default {
           "字段编码",
           "服务代码",
           "中文简称",
+          "数据类型",
           "数据精度",
           "要素单位",
           "是否可空",
@@ -844,9 +845,7 @@ export default {
           "是否显示",
           "是否主键",
           "中文描述",
-          "数据类型",
           "是否管理字段",
-          /*"是否修改数据库",*/
           "默认值",
           "序号"
         ];
@@ -855,6 +854,7 @@ export default {
           "celementCode",
           "userEleCode",
           "eleName",
+          "type",
           "accuracy",
           "unit",
           "isNull",
@@ -862,9 +862,7 @@ export default {
           "isShow",
           "isPrimaryKey",
           "nameCn",
-          "type",
           "isManager",
-          /*"updateDatabase",*/
           "defaultValue",
           "serialNumber"
         ];

@@ -50,7 +50,7 @@
       </el-table-column>
       <el-table-column prop="logicDesc" label="用途说明" width="360" :show-overflow-tooltip="true"></el-table-column>
 
-      <el-table-column prop="createTime" label="创建时间">
+      <el-table-column prop="createTime" label="创建时间" width="160">
         <template slot-scope="scope">
           <span>{{parseTime(scope.row.createTime)}}</span>
         </template>

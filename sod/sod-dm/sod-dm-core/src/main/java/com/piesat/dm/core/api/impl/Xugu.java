@@ -154,7 +154,7 @@ public class Xugu extends DatabaseDclAbs {
             if (rs.next()) {
                 num = rs.getInt(1);
             }
-            if (num == 0) {
+            if (num == 0 && !schemaName.equals(dataBaseUser)) {
                 sql = "CREATE SCHEMA " + schemaName + " AUTHORIZATION " + dataBaseUser;
                 stmt = connection.createStatement();
                 stmt.execute(sql);
@@ -178,6 +178,8 @@ public class Xugu extends DatabaseDclAbs {
                     stmt.addBatch(sql);
                 }
                 stmt.executeBatch();
+                String createSql = "CREATE TABLE " + schemaName + ".TEST (id INT identity(1,1),name CHAR (10),sex CHAR (2),age INTEGER,address VARCHAR,tel INTEGER);";
+                this.createTable(createSql, schemaName + ".TEST", true);
             }
             if (dropAuthor) {
                 //删表权限
@@ -321,11 +323,11 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
-        }finally {
-            if(rs != null){
+        } finally {
+            if (rs != null && !rs.isClosed()) {
                 rs.close();
             }
-            if(ps != null){
+            if (ps != null && !ps.isClosed()) {
                 ps.close();
             }
 
@@ -354,6 +356,14 @@ public class Xugu extends DatabaseDclAbs {
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
+        } finally {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+
         }
         return ResultT.success(results);
     }
@@ -366,7 +376,7 @@ public class Xugu extends DatabaseDclAbs {
     @Override
     public String queryRecordNum(String schema, String tableName) throws Exception {
         String num = "";
-        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName;
+        String sql = "SELECT COUNT(*) as COUNT FROM " + schema + "." + tableName;
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -376,8 +386,16 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+            if (stmt != null && !stmt.isClosed()) {
+                stmt.close();
+            }
+
         }
-        return  num;
+        return num;
     }
 
     @Override
@@ -385,7 +403,7 @@ public class Xugu extends DatabaseDclAbs {
         String minTime = "";
         // 获取所有分区号
         String sql = "SELECT PARTI_VAL FROM DBA_PARTIS WHERE TABLE_ID=(SELECT TABLE_ID FROM DBA_TABLES A INNER JOIN DBA_SCHEMAS B ON A.SCHEMA_ID=B.SCHEMA_ID WHERE TABLE_NAME='"
-                + tableName.toUpperCase() + "' AND SCHEMA_NAME='"+schema.toUpperCase()+"') order by parti_no";
+                + tableName.toUpperCase() + "' AND SCHEMA_NAME='" + schema.toUpperCase() + "') order by parti_no";
         List<String> parti_val = new ArrayList<String>();
         try {
             stmt = connection.createStatement();
@@ -395,32 +413,32 @@ public class Xugu extends DatabaseDclAbs {
             }
             rs.close();
             //表没有分区，不是分区表
-            if(parti_val.size() == 0){
-                sql = "SELECT MIN("+timeColumnName+") FROM "+schema+"."+tableName;
+            if (parti_val.size() == 0) {
+                sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
                 rs = stmt.executeQuery(sql);
                 if (rs.next()) {
                     minTime = rs.getString(1);
                 }
-            }else{
+            } else {
                 // 获取首分区键值，判断是否存在数据，否则偏移至第二个分区
-                sql = "SELECT MIN(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + "<"+parti_val.get(0)+"";
+                sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + "<" + parti_val.get(0) + "";
                 rs = stmt.executeQuery(sql);
-                if(rs.next() && rs.getString(1) != null){
+                if (rs.next() && rs.getString(1) != null) {
                     minTime = rs.getString(1);
-                }else{
-                    for( int i=0;i<parti_val.size()-1;i++){
+                } else {
+                    for (int i = 0; i < parti_val.size() - 1; i++) {
                         //获取偏移分区间的最小值
-                        sql = "SELECT MIN(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + ">="+parti_val.get(i)+" AND " + timeColumnName + "<" +parti_val.get(i+1);
+                        sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i) + " AND " + timeColumnName + "<" + parti_val.get(i + 1);
                         rs = stmt.executeQuery(sql);
-                        if(!rs.next()){
+                        if (!rs.next()) {
                             rs.close();
                             continue;
                         }
                         minTime = rs.getString(1);
-                        if(minTime==null) {
+                        if (minTime == null) {
                             rs.close();
                             continue;
-                        }else{
+                        } else {
                             break;
                         }
                     }
@@ -430,6 +448,14 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+            if (stmt != null && !stmt.isClosed()) {
+                stmt.close();
+            }
+
         }
         return minTime;
     }
@@ -439,7 +465,7 @@ public class Xugu extends DatabaseDclAbs {
         String maxTime = "";
         // 获取所有分区号
         String sql = "SELECT PARTI_VAL FROM DBA_PARTIS WHERE TABLE_ID=(SELECT TABLE_ID FROM DBA_TABLES A INNER JOIN DBA_SCHEMAS B ON A.SCHEMA_ID=B.SCHEMA_ID WHERE UPPER(TABLE_NAME)='"
-                + tableName.toUpperCase() + "' AND SCHEMA_NAME='"+schema.toUpperCase()+"') order by parti_no DESC";
+                + tableName.toUpperCase() + "' AND SCHEMA_NAME='" + schema.toUpperCase() + "') order by parti_no DESC";
         List<String> parti_val = new ArrayList<String>();
         try {
             stmt = connection.createStatement();
@@ -449,34 +475,42 @@ public class Xugu extends DatabaseDclAbs {
             }
             rs.close();
             //表没有分区，不是分区表
-            if(parti_val.size() == 0){
-                sql = "SELECT MAX("+timeColumnName+") FROM "+schema+"."+tableName;
+            if (parti_val.size() == 0) {
+                sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
                 rs = stmt.executeQuery(sql);
                 if (rs.next() && rs.getString(1) != null) {
                     maxTime = rs.getString(1);
                 }
-            }else{
-                for( int i=0;i<parti_val.size()-1;i++){
+            } else {
+                for (int i = 0; i < parti_val.size() - 1; i++) {
                     //获取偏移分区间的最小值
-                    sql = "SELECT MAX(" + timeColumnName + ") FROM "+schema+"." + tableName + " WHERE " + timeColumnName + ">="+parti_val.get(i+1)+" AND " + timeColumnName + "<" +parti_val.get(i);
+                    sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + parti_val.get(i);
                     rs = stmt.executeQuery(sql);
-                    if(!rs.next()){
+                    if (!rs.next()) {
                         rs.close();
                         continue;
                     }
                     maxTime = rs.getString(1);
-                    if(maxTime==null) {
+                    if (maxTime == null) {
                         rs.close();
                         continue;
-                    }else{
+                    } else {
                         break;
                     }
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+            if (stmt != null && !stmt.isClosed()) {
+                stmt.close();
+            }
+
         }
         return maxTime;
     }
@@ -484,7 +518,7 @@ public class Xugu extends DatabaseDclAbs {
     @Override
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         String num = "";
-        String sql = "SELECT COUNT(*) as COUNT FROM "+schema+"."+tableName + " WHERE "+timeColumnName+">='"+beginTime+"' AND "+timeColumnName +"<'"+endTime+"'";
+        String sql = "SELECT COUNT(*) as COUNT FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">='" + beginTime + "' AND " + timeColumnName + "<'" + endTime + "'";
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -494,8 +528,16 @@ public class Xugu extends DatabaseDclAbs {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+            if (stmt != null && !stmt.isClosed()) {
+                stmt.close();
+            }
+
         }
-        return  num;
+        return num;
     }
 
 }

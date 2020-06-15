@@ -430,8 +430,14 @@
             </el-table-column>
             <el-table-column prop="tabColStatus_" label="状态" min-width="100">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.tabColStatus == '通过'">通过</el-button>
-                <el-button v-else @click="showStatusMsg(scope.row.msg)">{{scope.row.tabColStatus}}</el-button>
+                <el-button plain type="success" v-if="scope.row.tabColStatus == '通过'">通过</el-button>
+                <el-button
+                  type="danger"
+                  plain
+                  v-else-if="scope.row.tabColStatus == '不通过'"
+                  @click="showStatusMsg(scope.row.msg)"
+                >不通过</el-button>
+                <el-button plain type="warning" v-else @click="showStatusMsg(scope.row.msg)">警告</el-button>
               </template>
             </el-table-column>
             <el-table-column label="操作" min-width="100">
@@ -898,6 +904,10 @@ export default {
       // 目标表名
       this.msgFormDialog["target_table_name" + tname] =
         targetTableInfo.table_name;
+      // 目标表字段
+      await syncColumnByTableId({ tableId: selectTargetTableID }).then(res => {
+        this.targetColumnDetail = res.data;
+      });
       if (targetTableInfo.db_table_type == "K") {
         if (!this.handleObj.id) {
           this.$message({
@@ -924,10 +934,7 @@ export default {
         //源表值表和目标表的值表映射
         await this.ETableMapping(element_obj);
       }
-      // 目标表字段
-      await syncColumnByTableId({ tableId: selectTargetTableID }).then(res => {
-        this.targetColumnDetail = res.data;
-      });
+
       //源表键表/普通的要素表和目标表的键表/普通的要素表的映射
       this.KTableMapping(
         targetTableInfo.id,
@@ -1356,7 +1363,13 @@ export default {
         });
         return columnInfo;
       }
-      if (SAndT == "target") {
+      if (SAndT == "target" && kAndE == "V") {
+        var columnInfo = this.targetVColumnDetail.find(function(obj) {
+          return obj.dbEleCode === column_name;
+        });
+        return columnInfo;
+      }
+      if (SAndT == "target" && kAndE == "K") {
         var columnInfo = this.targetColumnDetail.find(function(obj) {
           return obj.dbEleCode === column_name;
         });

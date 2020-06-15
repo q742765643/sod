@@ -105,6 +105,7 @@ public class GridAreaController {
                                   @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         Map<String, String> map = new HashMap<String, String>();
+        map.put("dataServiceId",dataServiceId);
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
         PageBean pageBean = gridAreaService.list(pageForm, dataServiceId);

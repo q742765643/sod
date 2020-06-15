@@ -8,6 +8,5 @@ logs/info.2020-05-26.0.log
 log/error.2020-05-26.0.log
 log/info.2020-05-26.0.log
 logs/
-sod-ui-k/dist/
-sod-ui-k/.idea/
-sod-ui-k/dist.rar
+sod/.idea/*
+sod/.idea/libraries/*

@@ -16,6 +16,6 @@ import java.util.Map;
  */
 @Repository
 public interface DatumTypeInfoDao extends BaseDao<DatumTypeInfoEntity> {
-    @Query(value = "select * from T_SOD_DATA_DATUMTYPEINFO A left join T_SOD_DATA_CLASS B ON A.",nativeQuery = true)
+    @Query(value = "select * from TAB_OMIN_CM_CC_DATUMTYPEINFO A left join T_SOD_DATA_CLASS B ON A.",nativeQuery = true)
     List<Map<String, Object>> getMyAll();
 }

@@ -277,7 +277,7 @@ export default {
     closeStep() {
       this.handleMsgObj = {};
       this.dialogApply = false;
-      this.handleQuery();
+      this.getList();
     }
   }
 };

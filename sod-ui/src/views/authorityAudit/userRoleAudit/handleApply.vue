@@ -83,7 +83,8 @@
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
       <el-button type="danger" v-if="stepNum==0" @click="finishStep">拒绝</el-button>
-      <el-button type="primary" v-if="stepNum!=3" @click="nextStep" :disabled="nextFlag">下一步</el-button>
+      <el-button type="primary" v-if="!dbIds" @click="finishStep">通过</el-button>
+      <el-button type="primary" v-if="stepNum!=3&&dbIds" @click="nextStep" :disabled="nextFlag">下一步</el-button>
       <el-button type="primary" v-if="stepNum==3" @click="finishStep">完成</el-button>
     </div>
   </section>
@@ -124,11 +125,13 @@ export default {
       stepNum: 0,
       msgFormDialog: {},
       handleObj: { pageName: "业务用户审核" },
-      nextFlag: false
+      nextFlag: false,
+      dbIds: ""
     };
   },
   async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
+    this.dbIds = this.handleObj.dbIds;
     if (this.handleObj.dbIds) {
       databaseUserExiget({
         databaseUpId: this.handleObj.userName,
@@ -143,6 +146,7 @@ export default {
 
   methods: {
     async initDatail() {
+      debugger;
       await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
         if (res.data && res.data.length > 0) {
           this.handleObj = res.data[0];
@@ -167,10 +171,12 @@ export default {
         return;
       } else {
         this.stepNum = 3;
+        this.finishStep();
         return;
       }
     },
     nextStep() {
+      debugger;
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
         this.$refs.AccountRef.trueAdd();
@@ -295,7 +301,7 @@ export default {
     },
     finishStep() {
       let status;
-      if (this.stepNum == 0) {
+      if (this.stepNum == 0 && this.dbIds) {
         status = 2;
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",

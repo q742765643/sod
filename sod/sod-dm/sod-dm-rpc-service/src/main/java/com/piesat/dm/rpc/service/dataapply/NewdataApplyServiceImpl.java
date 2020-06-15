@@ -312,7 +312,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
     @Override
     public Map<String, Object> getArchiveInfo(String c_datum_code) {
-        String sql = "SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM T_SOD_DATA_DATUMTYPEINFO A " +
+        String sql = "SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM TAB_OMIN_CM_CC_DATUMTYPEINFO A " +
                 "START WITH A.C_DATUM_CODE = '" + c_datum_code + "'" +
                 "CONNECT BY PRIOR A.C_SOURSDATUM_CODE = A.C_DATUM_CODE) B,T_SOD_ARCHIVE_INFO C  " +
                 "WHERE L = 2 AND B.C_SOURSDATUM_CODE = C.PRODUCTIONCODE";

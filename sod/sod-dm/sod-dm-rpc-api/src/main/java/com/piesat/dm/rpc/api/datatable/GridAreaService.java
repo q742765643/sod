@@ -8,6 +8,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 区域信息
@@ -27,7 +28,7 @@ public interface GridAreaService {
 
     List<GridAreaDto> all();
 
-    PageBean list(PageForm pageForm,String dataServiceId);
+    PageBean list(PageForm<Map<String,String>> pageForm, String dataServiceId);
 
     List<GridAreaDto> findByDataServiceId(String dataServiceId);
 }
