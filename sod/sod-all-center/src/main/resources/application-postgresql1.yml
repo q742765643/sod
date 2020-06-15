@@ -1,0 +1,162 @@
+server:
+  port: 28028
+  servlet:
+    context-path: /cmadaas/sod/
+  tomcat:
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 10
+    background-processor-delay: 30
+    basedir: ${user.home}/tomcat/
+    #ssl:
+    #key-store: classpath:keystore.https
+    #key-store-password: qwe123
+    #keyStoreType: PKCS12
+    #keyAlias: htht
+jasypt:
+  encryptor:
+    password: HT95279527
+grpc:
+  server:
+    port: 28228
+  client:
+    schedule-client-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+spring:
+  application:
+    name: schedule-server
+  sleuth:
+    sampler:
+      probability: 1
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 1000000000
+      max-request-size: 1000000000
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    #模式区分大小写大写为"USR_SOD"需带引号
+    url: jdbc:postgresql://10.1.100.8:5432/kddb?currentSchema=usr_sod
+    username: zzj
+    password: zzj
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 下面为连接池的补充设置，应用到上面所有数据源中
+    # 初始化大小，最小，最大
+    initialSize: 1
+    minIdle: 3
+    maxActive: 20
+    # 配置获取连接等待超时的时间
+    #maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    #timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    #minEvictableIdleTimeMillis: 30000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: true
+    testOnReturn: true
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          #auto: validate
+          auto: update
+        dialect: com.piesat.common.jpa.dialect.PostgreDialect
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+  redis:
+    host: 10.1.100.8
+    port: 6379
+    timeout: 50000
+#    password:
+mybatis:
+  type-aliases-package: com.piesat.*.entity
+  mapper-locations: classpath*:mapper/*.xml
+  callSettersOnNulls: true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#分页插件
+pagehelper:
+  helper-dialect: postgresql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://10.1.100.8:28328/eureka/
+
+DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
+
+log:
+  path: ../src/sod_server/logs
+  level: INFO
+
+mng:
+  ip: 10.1.100.8
+
+mmd:
+  userName: dsmsys
+  password: nmic@100200
+are:
+  userName: usr_music
+  password: music#2020
+
+serverfile:
+  dbfile: /root/sod/java/sod/file/upload/dbfile
+  filePath: /root/sod/java/sod/file/upload/filePath
+  dfcheck: /root/sod/java/sod/file/upload/dfcheck
+  special: /root/sod/java/sod/file/upload/special
+  cloud: /root/sod/java/sod/file/upload/cloud
+  user: /root/sod/java/sod/file/upload/user
+  #  dbfile: D:/file
+  #  filePath: D:/file
+  #  dfcheck: D:/file
+  #  special: D:/file
+  #  cloud: D:/file
+  #  user: D:/file
+
+  static:
+    template:
+      add-column: /root/sod/java/sod/file/static/字段模板.xlsx
+      clouddatabase-application: /root/sod/java/sod/file/static/云数据库申请表模板.docx
+      databaseuser-application: /root/sod/java/sod/file/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: /root/sod/java/sod/file/static/个人数据注册上传模板.xlsx
+      topic-application: /root/sod/java/sod/file/static/专题库申请表模板.docx
+      table-export-standard: /root/sod/java/sod/file/static/template_standard.ftl
+    database-client:
+      xugu-client: /root/sod/java/sod/file/static/虚谷数据库V9.0.zip
+      gbase-client: /root/sod/java/sod/file/static/GBaseDataStudio.zip
+      cassandra-client: /root/sod/java/sod/file/static/Dbeaver.zip
+
+fileUpload:
+  savaPath: /root/sod/java/sod/file/upload
+  httpPath: /upload
+
+businessParameters:
+  databaseUserDefaultPassword: Asd123
+
+fidbDownloadUrl: http://10.1.100.8:8028/fileApi
+
+product:
+  enable: true
+
+#单位为秒
+session:
+  timeout: 1800
+
