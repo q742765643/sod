@@ -51,16 +51,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7cdccf2f-582b-4303-a525-f8af74a9cb9d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/system/metadataBackup/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/system/metadataBackup/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/dataclass/LogicDefineServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/dataclass/LogicDefineServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/special/DatabaseSpecialServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-dm/sod-dm-rpc-service/src/main/java/com/piesat/dm/rpc/service/special/DatabaseSpecialServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-dao/src/main/resources/mapper/ComMetadataSyncMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-dao/src/main/resources/mapper/ComMetadataSyncMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-rpc-service/src/main/java/com/piesat/schedule/rpc/service/backup/MetaBackupLogServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-rpc-service/src/main/java/com/piesat/schedule/rpc/service/backup/MetaBackupLogServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-rpc-service/src/main/java/com/piesat/schedule/rpc/service/backup/MetaBackupServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-schedule-center/sod-schedule-rpc-service/src/main/java/com/piesat/schedule/rpc/service/backup/MetaBackupServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-system/sod-system-dao/src/main/resources/mapper/DbFileMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-system/sod-system-dao/src/main/resources/mapper/DbFileMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-system/sod-system-web/src/main/java/com/piesat/sod/system/web/controller/DbFileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-system/sod-system-web/src/main/java/com/piesat/sod/system/web/controller/DbFileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../sod/sod-util/src/main/java/com/piesat/util/ReturnCodeEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/sod-util/src/main/java/com/piesat/util/ReturnCodeEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../sod/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../sod/.idea/misc.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,6 +133,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="65" y="15" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590376499106">
