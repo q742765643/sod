@@ -47,28 +47,28 @@
       <artifactId>elasticsearch</artifactId>
       <version>6.8.7</version>
       <scope>system</scope>
-      <systemPath>/Users/zzj/fsdownload/elasticsearch-6.8.7.jar</systemPath>
+      <systemPath>D:/java/elasticsearch-7.7.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch-core</artifactId>
       <version>6.8.7</version>
       <scope>system</scope>
-      <systemPath>/Users/zzj/fsdownload/elasticsearch-core-6.8.7.jar</systemPath>
+      <systemPath>D:/java/elasticsearch-core-7.7.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>x-pack</artifactId>
       <version>6.8.7</version>
       <scope>system</scope>
-      <systemPath>/Users/zzj/fsdownload/x-pack-core-6.8.7.jar</systemPath>
+      <systemPath>D:/java/x-pack-core-7.7.0.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>lucese</artifactId>
       <version>6.8.7</version>
       <scope>system</scope>
-      <systemPath>/Users/zzj/fsdownload/lucene-core-7.7.2.jar</systemPath>
+      <systemPath>D:/java/lucene-core-8.5.1.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
