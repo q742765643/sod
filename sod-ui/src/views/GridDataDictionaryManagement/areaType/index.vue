@@ -33,6 +33,7 @@
       :data="tableData"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="areaId" label="区域标识"></el-table-column>
@@ -115,7 +116,7 @@ export default {
       tableData: [],
       total: 0,
 
-      choserow: [],
+      multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
@@ -160,6 +161,19 @@ export default {
     this.getList();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     getMyExcelData(data) {
       // data 为读取的excel数据，在这里进行处理该数据
       console.log(data);
@@ -196,6 +210,12 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     showDialog(type) {
@@ -203,14 +223,14 @@ export default {
         this.ruleForm = {};
         this.dialogTitle = "新增";
       } else {
-        if (this.choserow.length != 1) {
+        if (this.multipleSelection.length != 1) {
           this.$message({
             type: "error",
             message: "请选择一条数据"
           });
           return;
         } else {
-          detailById(this.choserow[0].id).then(response => {
+          detailById(this.multipleSelection[0].id).then(response => {
             this.ruleForm = response.data;
           });
         }
@@ -255,10 +275,10 @@ export default {
     },
 
     handleSelectionChange(val) {
-      this.choserow = val;
+      this.multipleSelection = val;
     },
     deleteCell() {
-      if (this.choserow.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -267,7 +287,7 @@ export default {
       }
       let ids = [];
       let areaIds = [];
-      this.choserow.forEach(element => {
+      this.multipleSelection.forEach(element => {
         ids.push(element.id);
         areaIds.push(element.areaId);
       });

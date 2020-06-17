@@ -523,7 +523,11 @@ export default {
       findByDbFcstEle({ dbFcstEle: val }).then(response => {
         if (response.code == 200) {
           this.eleOptionsList = response.data;
-          if (this.eleOptionsList && this.eleOptionsList.length > 0) {
+          if (
+            !this.msgFormDialog.eleServiceId &&
+            this.eleOptionsList &&
+            this.eleOptionsList.length > 0
+          ) {
             this.msgFormDialog.eleServiceId = this.eleOptionsList[0].userFcstEle;
           }
         } else {
@@ -618,6 +622,7 @@ export default {
               this.dialogTitle = "编辑数据服务信息";
               this.msgFormDialog = response.data;
               this.dataServeDialog = true;
+              this.getServeByEle(this.msgFormDialog.dbEleName);
             } else {
               this.$message({
                 type: "error",

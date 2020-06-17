@@ -64,19 +64,11 @@
           >
             <span class="el-tree-node__label" v-if="whichTree == '数据用途分类树'||whichTree == '数据库分类树'">
               <i :class="data.icon"></i>
-              <el-popover placement="top-start" trigger="hover" :content="node.label">
-                <el-button type="text" slot="reference">{{ node.label }}</el-button>
-              </el-popover>
+              <span>{{ node.label }}</span>
             </span>
             <span class="el-tree-node__label" v-else>
               <i :class="data.icon"></i>
-              <el-popover
-                placement="top-start"
-                trigger="hover"
-                :content="node.label+'('+data.id+')'"
-              >
-                <el-button type="text" slot="reference">{{ node.label }}</el-button>
-              </el-popover>
+              <span>{{node.label+'('+data.id+')'}}</span>
             </span>
           </span>
         </el-tree>
@@ -125,7 +117,8 @@ export default {
       showNoCreat: "info",
       showAll: "primary",
       myTreedata: [],
-      whichTree: "资料分类树" //区分是哪颗树
+      whichTree: "资料分类树", //区分是哪颗树
+      defaultExpandedKeys: null
     };
   },
 
@@ -180,7 +173,13 @@ export default {
           this.treeData = response.data;
         });
       }
-      this.defaultStyle();
+      if (this.defaultExpandedKeys) {
+        this.$refs.elTree.setCurrentKey(this.defaultExpandedKeys.id);
+        this.expandedKeys = [];
+        this.expandedKeys.push(this.defaultExpandedKeys.id);
+      } else {
+        this.defaultStyle();
+      }
     },
 
     //左侧分类点击
@@ -201,6 +200,7 @@ export default {
       }
       this.$refs.elTree.setCurrentKey(this.checkNode.id);
       this.sourceNodeClick(this.checkNode);
+      console.log(this.checkNode);
     },
     //获取默认选中的节点
     getDefaultNode(nodeArr) {
@@ -224,6 +224,7 @@ export default {
 
     //节点点击
     sourceNodeClick(data) {
+      this.defaultExpandedKeys = data;
       this.myTreedata = [];
       this.checkedNodeArr = {};
       this.resetData(data);

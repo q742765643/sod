@@ -19,7 +19,15 @@
       </el-form-item>
     </el-form>
 
-    <el-table border v-loading="loading" :data="tableData" row-key="id">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <af-table-column prop="C_ELEMENT_CODE" label="公共元数据字段">
         <template slot-scope="scope">
           <span>{{scope.row.C_ELEMENT_CODE}}</span>
@@ -143,13 +151,17 @@ export default {
       // 高级搜索
       dialogSuperSearch: false,
       superObj: {},
-      superMsg: {}
+      superMsg: {},
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.superMsg = {};
@@ -183,6 +195,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.ID == this.currentRow.ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     // 关闭高级搜索

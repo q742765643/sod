@@ -101,6 +101,7 @@
       :data="typeList"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="字典名称" prop="dictName" :show-overflow-tooltip="true" width="240" />
@@ -243,6 +244,17 @@ export default {
     });
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.typeList.forEach((element, index) => {
+            if (element.id == row) {
+              this.$refs.multipleTable.toggleRowSelection(this.typeList[index]);
+            }
+          });
+        });
+      }
+    },
     handleExport() {
       exportType(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -261,6 +273,12 @@ export default {
           this.typeList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.ids.length == 1) {
+            let newArry = this.ids;
+            this.$nextTick(function() {
+              this.toggleSelection(newArry);
+            });
+          }
         }
       );
     },
@@ -312,6 +330,8 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids;
+      this.ids = [];
+      this.ids.push(id);
       getType(id).then(response => {
         this.form = response.data;
         this.open = true;

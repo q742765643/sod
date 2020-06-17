@@ -77,6 +77,7 @@
       :data="dataList"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="字典标签" prop="dictLabel" />
@@ -233,6 +234,18 @@ export default {
     });
   },
   methods: {
+    toggleSelection(rows) {
+      debugger;
+      if (rows) {
+        rows.forEach(row => {
+          this.dataList.forEach((element, index) => {
+            if (element.id == row) {
+              this.$refs.multipleTable.toggleRowSelection(this.dataList[index]);
+            }
+          });
+        });
+      }
+    },
     handleExport() {
       exportData(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -277,6 +290,13 @@ export default {
         this.dataList = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.ids.length == 1) {
+          debugger;
+          let newArry = this.ids;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     // 数据状态字典翻译
@@ -320,6 +340,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      debugger;
       this.ids = selection.map(item => item.id);
       this.dictLabels = selection.map(item => item.dictLabel);
 
@@ -328,8 +349,11 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      debugger;
       this.reset();
       const id = row.id || this.ids;
+      this.ids = [];
+      this.ids.push(id);
       getData(id).then(response => {
         this.form = response.data;
         this.open = true;

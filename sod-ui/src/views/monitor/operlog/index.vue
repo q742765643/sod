@@ -108,6 +108,7 @@
       row-key="id"
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
+      highlight-current-row
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="系统模块" prop="title" />

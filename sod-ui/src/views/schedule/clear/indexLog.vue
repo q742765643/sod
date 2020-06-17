@@ -94,6 +94,7 @@
       row-key="id"
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
+      highlight-current-row
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />

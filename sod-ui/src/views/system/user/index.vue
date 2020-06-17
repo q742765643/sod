@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container userTemplate">
     <el-row :gutter="40">
       <!--部门数据-->
       <el-col :span="4" :xs="24" class="elTreeAsideBox">
@@ -129,6 +129,7 @@
           row-key="id"
           @selection-change="handleSelectionChange"
           @sort-change="sortChange"
+          ref="multipleTable"
         >
           <el-table-column type="selection" width="50"></el-table-column>
           <el-table-column label="用户名称" prop="userName" />
@@ -418,6 +419,17 @@ export default {
     });
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.userList.forEach((element, index) => {
+            if (element.id == row) {
+              this.$refs.multipleTable.toggleRowSelection(this.userList[index]);
+            }
+          });
+        });
+      }
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -447,6 +459,12 @@ export default {
           this.userList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.ids.length == 1) {
+            let newArry = this.ids;
+            this.$nextTick(function() {
+              this.toggleSelection(newArry);
+            });
+          }
         }
       );
     },
@@ -558,6 +576,8 @@ export default {
       //this.getPosts();
       this.getRoles();
       const id = row.id || this.ids;
+      this.ids = [];
+      this.ids.push(id);
       getUser(id).then(response => {
         this.form = response.data;
         this.form.postIds = response.data.postIds;
@@ -638,3 +658,10 @@ export default {
 };
 </script>
 
+<style lang="scss">
+.userTemplate {
+  .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #dfeffd;
+  }
+}
+</style>

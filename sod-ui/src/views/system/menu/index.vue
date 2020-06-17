@@ -39,6 +39,9 @@
       :data="menuList"
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
     >
       <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="icon" label="图标" width="100px">
@@ -245,7 +248,8 @@ export default {
             trigger: "blur"
           }
         ]
-      }
+      },
+      currentRow: null
     };
   },
   created() {
@@ -255,6 +259,9 @@ export default {
     });
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     // 选择图标
     selected(name) {
       this.form.icon = name;
@@ -265,6 +272,13 @@ export default {
       listMenu(this.queryParams).then(response => {
         this.menuList = response.data;
         this.loading = false;
+        /* if (this.currentRow) {
+          this.menuList.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.singleTable.setCurrentRow(this.menuList[index]);
+            }
+          });
+        } */
       });
     },
     /** 查询菜单下拉树结构 */

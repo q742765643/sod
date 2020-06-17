@@ -36,6 +36,7 @@
       row-key="id"
       @sort-change="sortChange"
       @current-change="handleCurrentChange"
+      ref="singleTable"
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名称"></el-table-column>
@@ -215,6 +216,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
 

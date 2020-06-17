@@ -13,6 +13,7 @@
         <div class="treeTitle">管理字段分组</div>
         <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
           <el-tree
+            class="el-tree"
             :data="treeData"
             :props="defaultProps"
             :expand-on-click-node="false"
@@ -49,8 +50,8 @@
         <el-table
           border
           :data="tableData"
-          highlight-current-row
           @selection-change="handleSelectionChange"
+          ref="multipleTable"
         >
           <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
           <el-table-column type="selection" width="50"></el-table-column>
@@ -149,6 +150,19 @@ export default {
     await this.getTreeData();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     // 导出
     handleExport() {
       exportTable(this.queryParams).then(res => {
@@ -166,6 +180,13 @@ export default {
             });
       });
       this.handleGroup = this.treeData;
+      if (this.checkNode.groupId) {
+        this.treeData.forEach(element => {
+          if (element.groupId == this.checkNode.groupId) {
+            this.$refs.elTree.setCurrentKey(this.checkNode.groupId);
+          }
+        });
+      }
       if (this.treeData.length > 0) {
         this.$refs.elTree.setCurrentKey(this.treeData[0].groupId);
         this.checkNode = this.treeData[0];
@@ -220,17 +241,11 @@ export default {
       })
         .then(() => {
           delManageGroup({ groupId: this.queryParams.groupId }).then(res => {
-            if (res.code == 200) {
-              this.$message({
-                type: "success",
-                message: "删除成功"
-              });
-            } else {
-              this.$message({
-                type: "error",
-                message: res.msg
-              });
-            }
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.checkNode = {};
             this.getTreeData();
           });
         })
@@ -252,6 +267,12 @@ export default {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     addRow() {
@@ -337,6 +358,9 @@ export default {
     text-align: center;
     background: #eee;
     font-size: 14px;
+  }
+  .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #dfeffd;
   }
 }
 </style>

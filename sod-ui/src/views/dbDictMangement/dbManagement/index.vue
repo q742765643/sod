@@ -29,13 +29,11 @@
 
     <el-table
       border
-      class="unChoseAll"
       v-loading="loading"
       :data="tableData"
       row-key="id"
       @selection-change="handleSelectionChange"
-      ref="singleTable"
-      highlight-current-row
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="id" label="数据库ID" :show-overflow-tooltip="true"></el-table-column>
@@ -128,7 +126,7 @@ export default {
       importHeaders: {
         enctype: "multipart/form-data"
       },
-      choserow: [],
+      multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
@@ -140,6 +138,19 @@ export default {
     this.getList();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     // 导出
     handleExport() {
       exportTable(this.queryParams).then(res => {
@@ -173,6 +184,12 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     showDialog(type) {
@@ -181,12 +198,12 @@ export default {
         this.handleMsgObj = {};
         this.msgFormDialog = true;
       } else {
-        if (this.choserow.length != 1) {
+        if (this.multipleSelection.length != 1) {
           this.$message.error("请选择一条数据!");
           return;
         }
         this.dialogTitle = "编辑";
-        this.handleMsgObj = this.choserow[0];
+        this.handleMsgObj = this.multipleSelection[0];
         this.msgFormDialog = true;
       }
     },
@@ -213,7 +230,7 @@ export default {
     },
 
     deleteCell() {
-      if (this.choserow.length > 0) {
+      if (this.multipleSelection.length > 0) {
         this.$confirm("数据删除后将无法恢复,确认删除?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
@@ -221,7 +238,7 @@ export default {
         })
           .then(() => {
             let ids = [];
-            this.choserow.forEach(element => {
+            this.multipleSelection.forEach(element => {
               ids.push(element.id);
             });
             delByIds({ ids: ids.join(",") }).then(response => {
@@ -254,7 +271,7 @@ export default {
 
     // 表格选择
     handleSelectionChange(val) {
-      this.choserow = val;
+      this.multipleSelection = val;
     }
   }
 };

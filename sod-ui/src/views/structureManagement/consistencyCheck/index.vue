@@ -39,6 +39,8 @@
       :data="tableData"
       row-key="id"
       @selection-change="handleCurrentChange"
+      ref="singleTable"
+      highlight-current-row
     >
       <el-table-column type="index" label="序号" :index="table_index" width="50"></el-table-column>
       <el-table-column type="selection" width="50"></el-table-column>
@@ -163,7 +165,7 @@ export default {
   data() {
     return {
       exportIcon: "el-icon-download",
-      currentRow: [],
+      currentRows: [],
       // 遮罩层
       loading: true,
       queryParams: {
@@ -246,10 +248,10 @@ export default {
       });
     },
     handleCurrentChange(val) {
-      this.currentRow = val;
+      this.currentRows = val;
     },
     handleExport() {
-      if (this.currentRow.length != 1) {
+      if (this.currentRows.length != 1) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -262,7 +264,7 @@ export default {
         callback: action => {}
       });
       let obj = {};
-      obj.id = this.currentRow[0].databaseId;
+      obj.id = this.currentRows[0].databaseId;
       exportTable(obj).then(res => {
         this.downloadfileCommon(res);
         this.exportIcon = "el-icon-download";
@@ -309,7 +311,7 @@ export default {
       this.addDataDialog = true;
     },
     deleteData() {
-      if (this.currentRow.length == 0) {
+      if (this.currentRows.length == 0) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -318,7 +320,7 @@ export default {
       }
       let ids = [];
       let databaseNames = [];
-      this.currentRow.forEach(element => {
+      this.currentRows.forEach(element => {
         ids.push(element.id);
         databaseNames.push(element.databaseName);
       });

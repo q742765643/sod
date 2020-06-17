@@ -94,6 +94,9 @@
       row-key="id"
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
@@ -292,7 +295,8 @@ export default {
       // 表单校验
       rules: {},
       allDetailMsg: "",
-      allDetailDialog: false
+      allDetailDialog: false,
+      currentRow: null
     };
   },
   created() {
@@ -302,6 +306,9 @@ export default {
     });
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     showAllDetail(title) {
       this.allDetailMsg = this.form.handleMsg;
       this.allDetailDialog = true;
@@ -335,6 +342,13 @@ export default {
           this.moveLogList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.currentRow) {
+            this.moveLogList.forEach((element, index) => {
+              if (element.id == this.currentRow.id) {
+                this.$refs.singleTable.setCurrentRow(this.moveLogList[index]);
+              }
+            });
+          }
         }
       );
     },

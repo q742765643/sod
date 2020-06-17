@@ -37,7 +37,15 @@
         <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
       </el-col>
     </el-row>
-    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="databaseUpId" label="账户ID" width="180" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="userName" label="关联用户" width="120px"></el-table-column>
@@ -141,13 +149,18 @@ export default {
       total: 0,
       tableData: [],
       dialogTitle: "",
-      handleDialog: false
+      handleDialog: false,
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
+
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -167,6 +180,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     sortChange(column, prop, order) {

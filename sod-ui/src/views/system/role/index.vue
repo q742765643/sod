@@ -95,6 +95,7 @@
       :data="roleList"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" />
@@ -349,6 +350,17 @@ export default {
     });
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.roleList.forEach((element, index) => {
+            if (element.id == row) {
+              this.$refs.multipleTable.toggleRowSelection(this.roleList[index]);
+            }
+          });
+        });
+      }
+    },
     handleExport() {
       exportRole(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -367,6 +379,12 @@ export default {
           this.roleList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.ids.length == 1) {
+            let newArry = this.ids;
+            this.$nextTick(function() {
+              this.toggleSelection(newArry);
+            });
+          }
         }
       );
     },
@@ -488,6 +506,8 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids;
+      this.ids = [];
+      this.ids.push(id);
       this.$nextTick(() => {
         this.getRoleMenuTreeselect(id);
       });

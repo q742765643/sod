@@ -30,6 +30,7 @@
       :data="tableData"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="userFcstEle" label="要素服务代码"></el-table-column>
@@ -103,7 +104,7 @@ export default {
       },
       tableData: [],
       total: 0,
-      choserow: [],
+      multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
@@ -131,6 +132,19 @@ export default {
     this.getList();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -149,10 +163,16 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     handleSelectionChange(val) {
-      this.choserow = val;
+      this.multipleSelection = val;
     },
     showDialog(type) {
       if (type == "add") {
@@ -160,11 +180,11 @@ export default {
         this.dialogTitle = "添加";
         this.msgFormDialog = true;
       } else {
-        if (this.choserow.length == 1) {
+        if (this.multipleSelection.length == 1) {
           this.dialogTitle = "编辑";
           this.msgFormDialog = true;
-          console.log(this.choserow);
-          this.ruleForm = this.choserow[0];
+          console.log(this.multipleSelection);
+          this.ruleForm = this.multipleSelection[0];
         } else {
           this.$message({
             type: "error",
@@ -208,7 +228,7 @@ export default {
       });
     },
     deleteCell() {
-      if (this.choserow.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -217,7 +237,7 @@ export default {
       }
       let ids = [];
       let userFcstEles = [];
-      this.choserow.forEach(element => {
+      this.multipleSelection.forEach(element => {
         ids.push(element.id);
         userFcstEles.push(element.userFcstEle);
       });

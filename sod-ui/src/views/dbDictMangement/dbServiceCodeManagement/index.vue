@@ -30,6 +30,7 @@
       highlight-current-row
       @selection-change="handleSelectionChange"
       style="width: 100%;"
+      ref="multipleTable"
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
@@ -66,7 +67,7 @@
     <!-- 新增-->
     <el-dialog
       :close-on-click-modal="false"
-      title="新增"
+      :title="dialogTitle"
       :visible.sync="DataDialog"
       width="45%"
       class="calculate"
@@ -145,7 +146,7 @@ export default {
       //表格
       tableData: [],
       //当前选中列
-      currentRow: [],
+      multipleSelection: [],
       total: 0,
       //删除确认信息
       dialogVisible: false,
@@ -169,7 +170,8 @@ export default {
         codeTableId: [
           { required: true, message: "请输入标识代码表", trigger: "blur" }
         ]
-      }
+      },
+      currentRow: {}
     };
   },
   mounted() {
@@ -188,16 +190,26 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.multipleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
 
     //新增
     showAddDialog() {
+      this.dialogTitle = "新增";
       this.handleObj = {};
       this.DataDialog = true;
     },
     //编辑
     showEditDialog(row) {
+      this.dialogTitle = "编辑";
+      this.currentRow = row;
       // this.handleObj = row;
       getById({ id: row.id }).then(res => {
         if (res.code == 200) {
@@ -233,7 +245,7 @@ export default {
         .catch(() => {});
     },
     deleteAlert() {
-      if (this.currentRow.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message.error("请选择需要删除的记录！");
         return;
       } else {
@@ -244,7 +256,7 @@ export default {
         })
           .then(() => {
             let ids = [];
-            this.currentRow.forEach(element => {
+            this.multipleSelection.forEach(element => {
               ids.push(element.id);
             });
             return deleteByIds(ids.join(","));
@@ -258,7 +270,7 @@ export default {
     },
     //选中行
     handleSelectionChange(val) {
-      this.currentRow = val;
+      this.multipleSelection = val;
     },
     //保存
     trueReportRecord(formName) {

@@ -69,9 +69,9 @@
             <el-table
               :data="tableData"
               border
+              :span-method="objectSpanMethod"
               highlight-current-row
               @current-change="handleCurrentChange"
-              :span-method="objectSpanMethod"
               ref="singleTable"
             >
               <el-table-column label="资料名称" prop="CLASS_NAME" :show-overflow-tooltip="true"></el-table-column>
@@ -370,6 +370,15 @@ export default {
             });
             this.rowspan();
           }
+          if (this.currentRow.length > 0) {
+            this.tableData.forEach((element, index) => {
+              if (element.DATA_CLASS_ID == this.currentRow[0].DATA_CLASS_ID) {
+                this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+              }
+            });
+          } else {
+            this.$refs.singleTable.setCurrentRow(this.tableData[0]);
+          }
         });
       }
     },
@@ -571,7 +580,7 @@ export default {
     },
     //新增、编辑后刷新数据
     addOrEditSuccess(operateType) {
-      this.currentRow = [];
+      // this.currentRow = [];
       if (operateType == "handleTree") {
         this.$refs.classifyTree.initMethodsTree(this.whichTree);
       } else {

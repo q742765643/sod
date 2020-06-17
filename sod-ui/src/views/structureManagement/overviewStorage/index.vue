@@ -28,7 +28,15 @@
       </el-col>
     </el-row>
 
-    <el-table border v-loading="loading" :data="tableData" row-key="id">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <af-table-column prop="CLASS_NAME" label="资料名称">
         <template slot-scope="scope">
           <span>{{scope.row.CLASS_NAME}}</span>
@@ -335,13 +343,17 @@ export default {
       rowId: "",
       // 数据恢复
       handleDataRecoveryDialog: false,
-      superMsg: {}
+      superMsg: {},
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     handleExport() {
       exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -385,6 +397,14 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        this.$refs.singleTable.setCurrentRow();
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.ID == this.currentRow.ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     superClick() {
