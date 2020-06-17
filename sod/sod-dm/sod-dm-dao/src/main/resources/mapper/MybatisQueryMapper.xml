@@ -1417,7 +1417,7 @@
     <select id="getAreaByPage" resultType="GridAreaEntity" parameterType="java.util.Map">
         select distinct a.id,a.area_id areaId,concat( concat( concat(b.AREA_DESC,'('),a.AREA_REGION_DESC),')') areaRegionDesc,a.data_service_id dataServiceId,a.version
         from T_SOD_GRID_AREA a
-        inner join (select area_id,area_desc from T_SOD_GRID_AREA_DEFINE ) b on a.area_id = b.area_id
+        left join (select * from T_SOD_GRID_AREA_DEFINE ) b on a.area_id = b.area_id
         and a.AREA_REGION_DESC = concat(concat(concat(concat(concat(concat(concat(concat('起止纬度：[',START_LAT),','),END_LAT),'];起止经度：['),START_LON),','),END_LON),']')
         <where>
             <if test="map.dataServiceId != null and map.dataServiceId != ''">

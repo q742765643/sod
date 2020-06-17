@@ -456,7 +456,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     private String findUniqueIndex(List<TableIndexDto> tableIndexList) {
         if (tableIndexList != null && tableIndexList.size() > 0) {
             for (TableIndexDto ti : tableIndexList) {
-                if (ti.getIndexType().contains("唯一") || ti.getIndexType().contains("UK")) {
+                if (ti.getIndexType().contains("唯一") || ti.getIndexType().contains("UK") || ti.getIndexType().contains("PK")) {
                     return ti.getIndexColumn();
                 }
             }

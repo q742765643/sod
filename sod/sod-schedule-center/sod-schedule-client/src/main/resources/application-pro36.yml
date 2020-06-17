@@ -37,7 +37,7 @@ spring:
       max-request-size: 1000000000
   datasource:
       driver-class-name: com.xugu.cloudjdbc.Driver
-      url: jdbc:xugu://10.40.17.34:5138/BABJ_SMDB?char_set=utf8
+      url: jdbc:xugu://10.20.64.167:5138/BABJ_SMDB?ips=10.20.64.168,10.20.64.169&recv_mode=0&char_set=utf8
       username: USR_SOD
       password: ENC(zNhD62iMk8LDM+YXUWiz5cBtWMs/Lemd)
       type: com.alibaba.druid.pool.DruidDataSource
