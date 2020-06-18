@@ -79,9 +79,9 @@ spring:
     open-in-view: false
   redis:
     host: 10.40.17.44
-    port: 6379
+    port: 18228
     timeout: 50000
-    password: ENC(grW2MQSkSU2A4Uhp0jvnUg==)
+    password: ENC(5jvCobFBdeuGb4WpOUBcWzA3U9uogwG0)
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
