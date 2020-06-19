@@ -425,6 +425,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 //            needEmpowerIdist.addAll(haveEmpowerIdist);
 //        }
         for (String databaseId : needEmpowerIdist) {
+            if (StringUtils.isEmpty(databaseId)){
+                continue;
+            }
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
             DatabaseDcl databaseVO = null;
             try {

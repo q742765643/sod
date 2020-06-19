@@ -118,17 +118,21 @@ public class AESUtil {
      */
     public static void main(String args[]) throws Exception {
 
-        String test1 = "Pnmic_qwe123";
+        String test1 = "aa4/123qweasdzxc";
         String test =new String(test1.getBytes(),"UTF-8");
         String data = null;
         String key =  KEY;
         String iv = IV;
         // /g2wzfqvMOeazgtsUVbq1kmJawROa6mcRAzwG1/GeJ4=
-        data = aesEncrypt(test);
+        data = aesEncrypt("123qweasdzxc");
         System.out.println("数据："+test);
         System.out.println("加密："+data);
         String jiemi =aesDecrypt(data).trim();
         System.out.println("解密："+jiemi);
+
+        String jiemi1 =aesDecrypt("8rdeD7IPdkZWcdl/CvzNHQ==").trim();
+        System.out.println("解密1："+jiemi1);
+
 
 
     }
