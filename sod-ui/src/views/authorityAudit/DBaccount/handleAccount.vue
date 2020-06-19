@@ -449,12 +449,14 @@ export default {
         ips.push(element.value);
       });
       for (let i = 0; i < ips.length; i++) {
-        if (!ipUrlValidation(ips[i]) && !ipUrlValidation2(ips[i])) {
-          this.$message({
-            type: "error",
-            message: "请输入正确IP地址"
-          });
-          return;
+        if (ips[i].trim() != "%") {
+          if (!ipUrlValidation(ips[i]) && !ipUrlValidation2(ips[i])) {
+            this.$message({
+              type: "error",
+              message: "请输入正确IP地址"
+            });
+            return;
+          }
         }
       }
 
