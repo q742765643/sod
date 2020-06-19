@@ -333,7 +333,7 @@ export default {
           { required: true, message: "请输入用途说明", trigger: "blur" },
           {
             min: 1,
-            max: 50,
+            max: 200,
             message: "用途说明长度不能超过50个字符",
             trigger: "blur"
           }
