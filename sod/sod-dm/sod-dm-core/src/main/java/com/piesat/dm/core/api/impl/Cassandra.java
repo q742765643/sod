@@ -95,10 +95,10 @@ public class Cassandra implements DatabaseDcl {
     @Override
     public void addUser(String identifier, String password, String[] ips) throws Exception {
         identifier = identifier.toLowerCase();
-        int userNum = getUserNum(identifier);
-        if (userNum > 0) {
-            throw new Exception("数据库用户已经存在!");
-        }
+//        int userNum = getUserNum(identifier);
+//        if (userNum > 0) {
+//            throw new Exception("数据库用户已经存在!");
+//        }
         String cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
         instance.execute(cql);
     }
