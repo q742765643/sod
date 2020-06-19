@@ -3,17 +3,17 @@
     <!-- 业务用户审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="用户名称">
-        <el-input size="small" v-model="queryParams.userName" placeholder="请输入用户名称"></el-input>
+        <el-input size="small" v-model.trim="queryParams.userName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
       <el-form-item label="用户名">
-        <el-input size="small" v-model="queryParams.nickName" placeholder="请输入用户名"></el-input>
+        <el-input size="small" v-model.trim="queryParams.nickName" placeholder="请输入用户名"></el-input>
       </el-form-item>
 
       <el-form-item label="机构">
-        <el-input size="small" v-model="queryParams.deptName" placeholder="请输入机构名称"></el-input>
+        <el-input size="small" v-model.trim="queryParams.deptName" placeholder="请输入机构名称"></el-input>
       </el-form-item>
       <el-form-item label="用户状态">
-        <el-select v-model="queryParams.checked" clearable size="small" style="width: 140px">
+        <el-select v-model.trim="queryParams.checked" clearable size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="待审核" value="0"></el-option>
           <el-option label="审核通过" value="1"></el-option>
@@ -36,6 +36,7 @@
       row-key="id"
       @sort-change="sortChange"
       @current-change="handleCurrentChange"
+      ref="singleTable"
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名称"></el-table-column>
@@ -67,14 +68,14 @@
           >角色授权</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="申请审核" width="120">
+      <el-table-column label="申请审核" width="100">
         <template slot-scope="scope">
           <el-button
             type="text"
             size="mini"
             icon="el-icon-s-check"
             @click="handleApply(scope.row)"
-          >申请审核</el-button>
+          >审核</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -106,7 +107,7 @@
     >
       <div>
         <el-select
-          v-model="roleIds"
+          v-model.trim="roleIds"
           multiple
           size="small"
           style="display:block;margin-bottom:20px;"
@@ -175,7 +176,8 @@ export default {
       total: 0,
       tableData: [],
       dialogTitle: "",
-      currentRow: {}
+      currentRow: {},
+      currentId: ""
     };
   },
   created() {
@@ -214,6 +216,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
 
@@ -246,6 +255,7 @@ export default {
     // 角色授权
     handleRole(row) {
       this.dialogTitle = "角色授权";
+      this.currentId = row.id;
       getUser(row.id).then(response => {
         this.roleIds = response.data.roleIds;
         this.dialogRole = true;
@@ -254,13 +264,13 @@ export default {
     // 确认授权
     trueRole() {
       let obj = {};
-      obj.id = this.currentRow.id;
+      obj.id = this.currentId;
       obj.roleIds = this.roleIds;
       updateUser(obj).then(response => {
         if (response.code === 200) {
           this.msgSuccess("修改成功");
           this.dialogRole = false;
-          this.handleQuery();
+          this.getList();
         } else {
           this.msgError(response.msg);
         }
@@ -275,7 +285,7 @@ export default {
     closeStep() {
       this.handleMsgObj = {};
       this.dialogApply = false;
-      this.handleQuery();
+      this.getList();
     }
   }
 };

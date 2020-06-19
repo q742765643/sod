@@ -1,6 +1,6 @@
 <template>
   <section class="handleMD5Dialog">
-    <el-checkbox-group v-model="checkList">
+    <el-checkbox-group v-model.trim="checkList">
       <div v-for="(item,index) in pathList" :key="index">
         <el-checkbox :label="item.path"></el-checkbox>
       </div>

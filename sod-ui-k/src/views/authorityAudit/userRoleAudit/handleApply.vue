@@ -83,7 +83,8 @@
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
       <el-button type="danger" v-if="stepNum==0" @click="finishStep">拒绝</el-button>
-      <el-button type="primary" v-if="stepNum!=3" @click="nextStep">下一步</el-button>
+      <el-button type="primary" v-if="!dbIds" @click="finishStep">通过</el-button>
+      <el-button type="primary" v-if="stepNum!=3&&dbIds" @click="nextStep" :disabled="nextFlag">下一步</el-button>
       <el-button type="primary" v-if="stepNum==3" @click="finishStep">完成</el-button>
     </div>
   </section>
@@ -100,7 +101,8 @@ import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 import { getRecordByApplyId } from "@/api/authorityAudit/materialPower/index";
 import {
   getRecordByByUserId,
-  editBase
+  editBase,
+  databaseUserExiget
 } from "@/api/authorityAudit/userRoleAudit";
 import {
   updateRecordCheck,
@@ -122,15 +124,29 @@ export default {
       multipleSelection: [],
       stepNum: 0,
       msgFormDialog: {},
-      handleObj: { pageName: "业务用户审核" }
+      handleObj: { pageName: "业务用户审核" },
+      nextFlag: false,
+      dbIds: ""
     };
   },
   async created() {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
+    this.dbIds = this.handleObj.dbIds;
+    if (this.handleObj.dbIds) {
+      databaseUserExiget({
+        databaseUpId: this.handleObj.userName,
+        applyDatabaseId: this.handleObj.dbIds
+      }).then(response => {
+        this.nextFlag = response.data;
+      });
+    } else {
+      this.nextFlag = true;
+    }
   },
 
   methods: {
     async initDatail() {
+      debugger;
       await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
         if (res.data && res.data.length > 0) {
           this.handleObj = res.data[0];
@@ -142,7 +158,10 @@ export default {
         this.stepNum = 1;
       });
     },
-    handleClose() {
+    handleClose(flag) {
+      if (flag === false) {
+        return;
+      }
       if (this.handleMsgObj.dbCreate == "1") {
         // 到专题库
         this.initDatail();
@@ -150,19 +169,17 @@ export default {
       } else if (this.handleMsgObj.sodData == "1") {
         this.getList();
         return;
+      } else {
+        this.stepNum = 3;
+        this.finishStep();
+        return;
       }
     },
     nextStep() {
+      debugger;
       // 数据库访问账户 新增
       if (this.stepNum == 0) {
         this.$refs.AccountRef.trueAdd();
-        if (
-          this.handleMsgObj.dbCreate != "1" &&
-          this.handleMsgObj.sodData != "1"
-        ) {
-          this.stepNum = 3;
-          return;
-        }
         return;
       }
       if (this.stepNum == 1) {
@@ -209,8 +226,8 @@ export default {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           inputValidator: value => {
-            if (value.trim().length < 1 || value.trim().length > 50) {
-              return "拒绝原因长度限制1-50个字符";
+            if (value.trim().length < 1 || value.trim().length > 500) {
+              return "拒绝原因长度限制1-500个字符";
             }
           }
         })
@@ -266,7 +283,7 @@ export default {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: "授权成功:" + res.msg
+              message: res.msg
             });
             this.getList();
           } else {
@@ -284,14 +301,14 @@ export default {
     },
     finishStep() {
       let status;
-      if (this.stepNum == 0) {
+      if (this.stepNum == 0 && this.dbIds) {
         status = 2;
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           inputValidator: value => {
-            if (value.trim().length < 1 || value.trim().length > 50) {
-              return "拒绝原因长度限制1-50个字符";
+            if (value.trim().length < 1 || value.trim().length > 500) {
+              return "拒绝原因长度限制1-500个字符";
             }
           }
         })

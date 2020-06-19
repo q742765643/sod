@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_DM;
 // 新增表格
 export function addTable(data) {
   return request({
@@ -103,5 +103,16 @@ export function demoDownload() {
       name: "databaseuser-application"
     },
     responseType: "arraybuffer"
+  })
+}
+
+
+// 根据ID查询 从业务用户审核来的
+export function getBizDatabaseUser(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/getBizDatabaseUser',
+    async: true,
+    method: 'get',
+    params: query
   })
 }

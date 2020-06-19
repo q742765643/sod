@@ -1,9 +1,17 @@
 <template>
   <section class="dailySyncDialog">
     <el-table border :data="tableData" highlight-current-row stripe>
-      <el-table-column type="index" label="序号" min-width="55"></el-table-column>
-      <el-table-column prop="beginTime" label="开始时间" min-width="100"></el-table-column>
-      <el-table-column prop="endTime" label="结束时间" min-width="100"></el-table-column>
+      <el-table-column type="index" label="序号" width="55" :index="table_index"></el-table-column>
+      <el-table-column prop="beginTime" label="开始时间" min-width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.beginTime">{{ parseTime(scope.row.beginTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="endTime" label="结束时间" min-width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.endTime">{{ parseTime(scope.row.endTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="spendTime" label="总耗时（毫秒）" min-width="80"></el-table-column>
       <el-table-column prop="counts" label="处理记录总数" min-width="80"></el-table-column>
       <el-table-column prop="insertCount" label="成功插入数" min-width="70"></el-table-column>
@@ -58,11 +66,14 @@ export default {
     this.searchFun();
   },
   methods: {
+    table_index(index) {
+      return (this.searchObj.pageNum - 1) * this.searchObj.pageSize + index + 1;
+    },
     searchFun() {
       this.searchObj.taskId = this.handletaskId;
       listLog(this.searchObj).then(response => {
         this.tableData = response.data.pageData;
-        this.total = response.data.totalCount;
+        this.dataTotal = response.data.totalCount;
         this.loading = false;
       });
     },

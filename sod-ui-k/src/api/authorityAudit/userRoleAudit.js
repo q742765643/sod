@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_UCENTER_API
+const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询列表
 export function gatAllBiz(query) {
@@ -37,5 +37,16 @@ export function editBase(data) {
     url: baseUrl + '/system/user/editBaseSod',
     method: 'get',
     params: data
+  })
+}
+
+
+//  从业务用户审核来的
+export function databaseUserExiget(query) {
+  return request({
+    url: baseUrl + '/dm/databaseUser/databaseUserExi',
+    async: true,
+    method: 'get',
+    params: query
   })
 }

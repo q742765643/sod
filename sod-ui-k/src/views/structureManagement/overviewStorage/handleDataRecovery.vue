@@ -9,13 +9,13 @@
       class="searchBox"
     >
       <el-form-item label="数据库名称" prop="databaseId">
-        <el-input size="small" v-model="msgFormDialog.database_name" disabled></el-input>
+        <el-input size="small" v-model.trim="msgFormDialog.database_name" disabled></el-input>
       </el-form-item>
       <el-form-item label="资料名称" prop="dataClassId">
-        <el-input size="small" v-model="msgFormDialog.class_name" disabled></el-input>
+        <el-input size="small" v-model.trim="msgFormDialog.class_name" disabled></el-input>
       </el-form-item>
       <el-form-item label="目录" prop="path">
-        <el-select size="small" v-model="msgFormDialog.path">
+        <el-select size="small" v-model.trim="msgFormDialog.path">
           <el-option
             v-for="dict in storageDirectoryOptions"
             :key="dict.dictValue"

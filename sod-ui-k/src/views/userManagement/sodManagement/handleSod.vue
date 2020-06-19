@@ -2,7 +2,7 @@
   <section class="handleSodDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="100px">
       <el-form-item label="上级功能" prop="parentId">
-        <el-select size="medium" v-model="msgFormDialog.parentId">
+        <el-select size="medium" v-model.trim="msgFormDialog.parentId">
           <el-option
             v-for="(item,index) in queryParentNames"
             :key="index"
@@ -12,26 +12,26 @@
         </el-select>
       </el-form-item>
       <el-form-item label="功能名称" prop="name">
-        <el-input size="medium" v-model="msgFormDialog.name"></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.name"></el-input>
       </el-form-item>
       <el-form-item label="功能KEY" prop="resKey">
-        <el-input size="medium" v-model="msgFormDialog.resKey"></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.resKey"></el-input>
       </el-form-item>
       <el-form-item label="功能URL" prop="resUrl">
-        <el-input size="medium" v-model="msgFormDialog.resUrl"></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.resUrl"></el-input>
       </el-form-item>
       <el-form-item label="功能类型" prop="type">
-        <el-radio-group v-model="msgFormDialog.type">
+        <el-radio-group v-model.trim="msgFormDialog.type">
           <el-radio :label="0">目录</el-radio>
           <el-radio :label="1">菜单</el-radio>
           <el-radio :label="2">按钮</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="优先级" prop="level">
-        <el-input size="medium" v-model="msgFormDialog.level"></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.level"></el-input>
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input type="textarea" size="medium" v-model="msgFormDialog.description"></el-input>
+        <el-input type="textarea" size="medium" v-model.trim="msgFormDialog.description"></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">

@@ -1,37 +1,31 @@
 <template>
   <section class="handleLiberyDialog">
-    <el-tabs type="border-card" v-model="activeName">
+    <el-tabs type="border-card" v-model.trim="activeName">
       <el-tab-pane label="基本信息" name="first">
-        <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px">
+        <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px" :rules="rules">
           <el-form-item label="图标" v-if="!handleObj.pageName">
             <img v-if="sdbImg" :src="sdbImg" style="width:40px;" alt />
           </el-form-item>
-          <el-form-item label="专题库名称">
-            <el-input size="small" v-model="msgFormDialog.sdbName"></el-input>
+          <el-form-item label="专题库名称" prop="sdbName">
+            <el-input size="small" v-model.trim="msgFormDialog.sdbName"></el-input>
           </el-form-item>
-          <el-form-item label="用途">
-            <el-input size="small" v-model="msgFormDialog.uses"></el-input>
+          <el-form-item label="用途" prop="uses">
+            <el-input size="small" v-model.trim="msgFormDialog.uses"></el-input>
           </el-form-item>
           <el-form-item label="创建人" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.userName"></el-input>
+            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userName"></el-input>
           </el-form-item>
           <el-form-item label="机构" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.department"></el-input>
+            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.department"></el-input>
           </el-form-item>
           <el-form-item label="联系方式" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model="msgFormDialog.userPhone"></el-input>
+            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userPhone"></el-input>
           </el-form-item>
           <el-form-item label="申请材料" v-if="!handleObj.pageName">
-            <el-button
-              :disabled="!msgFormDialog.applyMaterial"
-              size="small"
-              type="success"
-              @click="handleExport"
-              icon="el-icon-document"
-            >下载</el-button>
+            <el-button size="small" type="success" @click="handleExport" icon="el-icon-document">下载</el-button>
           </el-form-item>
           <el-form-item label="排序">
-            <el-input size="small" v-model="msgFormDialog.sortNo"></el-input>
+            <el-input-number v-model.trim="msgFormDialog.sortNo" :min="0"></el-input-number>
           </el-form-item>
           <div class="dialog-footer">
             <el-button type="primary" @click="trueDialog('ruleForm')">保 存</el-button>
@@ -47,6 +41,7 @@
         <el-form>
           <el-row class="center">
             <el-col :span="24">
+              <span>专题库名称:</span>
               <span style="font-weight: bold">{{this.msgFormDialog.sdbName}}</span>
             </el-col>
           </el-row>
@@ -60,7 +55,7 @@
             <el-table-column prop="databaseId" label="数据库"></el-table-column>
             <el-table-column label="权限">
               <template slot-scope="scope">
-                <el-checkbox-group v-model="scope.row.checkList">
+                <el-checkbox-group v-model.trim="scope.row.checkList">
                   <el-checkbox label="createTable">创建</el-checkbox>
                   <el-checkbox label="deleteTable">删除</el-checkbox>
                   <el-checkbox label="tableDataAccess">读写</el-checkbox>
@@ -90,14 +85,14 @@
             class="funLoad selSearchCon"
           >
             <el-form-item label="关键字查询">
-              <el-select size="small" v-model="searchLibraryObj.key">
+              <el-select size="small" v-model.trim="searchLibraryObj.key">
                 <el-option label="资料分类" value="typeName"></el-option>
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label>
-              <el-input size="small" v-model="searchLibraryObj.valueText" type="text"></el-input>
+              <el-input size="small" v-model.trim="searchLibraryObj.valueText" type="text"></el-input>
             </el-form-item>
             <el-form-item class="handleSearchBtn">
               <el-button
@@ -137,7 +132,7 @@
             class="funLoad selSearchCon"
           >
             <el-form-item label="关键字查询">
-              <el-select size="small" v-model="searchBaseLibraryObj.key">
+              <el-select size="small" v-model.trim="searchBaseLibraryObj.key">
                 <el-option label="资料分类" value="typeName"></el-option>
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
@@ -146,7 +141,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label>
-              <el-input size="small" v-model="searchBaseLibraryObj.valueText" type="text"></el-input>
+              <el-input size="small" v-model.trim="searchBaseLibraryObj.valueText" type="text"></el-input>
             </el-form-item>
 
             <el-form-item class="handleSearchBtn">
@@ -300,12 +295,18 @@ export default {
         require("@/assets/image/icon/h13.png"),
         require("@/assets/image/icon/h14.png"),
         require("@/assets/image/icon/h15.png")
-      ]
+      ],
+      rules: {
+        sdbName: [
+          { required: true, message: "请输入专题库名称", trigger: "blur" }
+        ],
+        uses: [{ required: true, message: "请输入用途", trigger: "blur" }]
+      }
     };
   },
   created() {
+    console.log(this.handleObj);
     if (this.handleObj.id) {
-      console.log(this.handleObj);
       this.initDetail();
       if (this.handleObj.examineStatus == "1") {
         this.flagBase = false;
@@ -329,6 +330,10 @@ export default {
     },
     // 下载
     handleExport() {
+      if (!this.msgFormDialog.applyMaterial) {
+        this.$message({ type: "error", message: "文件不存在" });
+        return;
+      }
       exportTable({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
         if (res.code) {
           this.$message({ type: "warning", message: res.msg });
@@ -343,9 +348,6 @@ export default {
       getById({ id: this.handleObj.id }).then(res => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
-          if (!this.msgFormDialog.applyMaterial && !this.handleObj.pageName) {
-            this.$message({ type: "danger", message: "文件不存在" });
-          }
         }
       });
       // 数据库授权

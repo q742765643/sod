@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_UCENTER_API
+const baseUrl = process.env.VUE_APP_UCENTER_API
 
 // 查询角色列表
 export function listRole(query) {

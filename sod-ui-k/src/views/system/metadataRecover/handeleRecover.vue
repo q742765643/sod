@@ -2,7 +2,7 @@
   <section class="handeleRecover">
     <el-form ref="ruleForm" :model="msgFormDialog" label-width="80px">
       <el-form-item label="类型" prop="checked">
-        <el-checkbox-group v-model="msgFormDialog.checked">
+        <el-checkbox-group v-model.trim="msgFormDialog.checked">
           <el-checkbox label="结构">结构</el-checkbox>
           <el-checkbox label="数据">数据</el-checkbox>
         </el-checkbox-group>

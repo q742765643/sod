@@ -4,13 +4,13 @@
       <el-row>
         <el-col :span="10">
           <el-form-item label="任务名称" prop="taskName">
-            <el-input size="small" v-model="msgFormDialog.taskName"></el-input>
+            <el-input size="small" v-model.trim="msgFormDialog.taskName"></el-input>
           </el-form-item>
           <el-form-item label="数据库IP">
             <el-select
               size="small"
               filterable
-              v-model="msgFormDialog.databaseId"
+              v-model.trim="msgFormDialog.databaseId"
               @change="findTree"
             >
               <el-option
@@ -22,24 +22,24 @@
             </el-select>
           </el-form-item>
           <el-form-item label="类型" prop="checked">
-            <el-checkbox-group v-model="msgFormDialog.checked">
+            <el-checkbox-group v-model.trim="msgFormDialog.checked">
               <el-checkbox label="结构">结构</el-checkbox>
               <el-checkbox label="数据">数据</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model="cronPopover">
+            <el-popover v-model.trim="cronPopover">
               <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
               <el-input
                 slot="reference"
                 @click="cronPopover=true"
-                v-model="msgFormDialog.jobCron"
+                v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
             </el-popover>
           </el-form-item>
           <el-form-item label="存储目录">
-            <el-select size="small" filterable v-model="msgFormDialog.storageDirectory">
+            <el-select size="small" filterable v-model.trim="msgFormDialog.storageDirectory">
               <el-option
                 v-for="dict in storageDirectoryOptions"
                 :key="dict.dictValue"
@@ -65,7 +65,7 @@
         </el-col>
       </el-row>
       <el-form-item label="where条件" v-show="msgFormDialog.conditions">
-        <el-input size="small" v-model="msgFormDialog.conditions" :disabled="true"></el-input>
+        <el-input size="small" v-model.trim="msgFormDialog.conditions" :disabled="true"></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">

@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_DM;
 // 下载
 export function downloadFile(query) {
   return request({

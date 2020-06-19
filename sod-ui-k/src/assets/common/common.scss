@@ -24,6 +24,10 @@ p {
   width: 90%;
 }
 
+.el-checkbox__inner {
+  border-color: #606266;
+}
+
 // cron
 #changeContab .bottom .value {
   margin-right: 12px;
@@ -33,7 +37,7 @@ p {
 .el-dialog__header {
   border-bottom: 1px solid #dcdfe6;
   background: #f5f7fa;
-  padding-left: 44px;
+  padding-left: 44px !important;
   margin-bottom: 20px;
 }
 
@@ -128,6 +132,7 @@ p {
 
 
 }
+
 
 
 .blueRound {
@@ -235,21 +240,21 @@ ul {
 }
 
 .navbar .right-menu .right-menu-item.hover-effect:hover {
-  color: #fff !important;
+  color: #333 !important;
 }
 
 // 面包屑
 .tags-view-container {
   .tags-view-wrapper {
     .tags-view-item {
-      border: 1px solid #c2c6ca;
+      border: 1px solid #d8dce5;
       color: #495060;
-      background: #c2c6ca;
+      background: #fff;
 
       &.active {
-        background-color: #c2c6ca;
-        color: #6381e8;
-        border-color: #c2c6ca;
+        background-color: #46a6ff;
+        color: #fff;
+        border-color: #46a6ff;
 
         &::before {
           content: "";
@@ -265,7 +270,9 @@ ul {
 
   .sidebar-container {
     width: 240px !important;
-    background: #31394b !important;
+    background: url(../image/menuBk.png) !important;
+    background-repeat: repeat-x;
+    background-size: 100% 100%;
     // background: linear-gradient(#011d79, #0b5ccc, #55cec7) !important;
 
     .router-link-exact-active {
@@ -277,11 +284,7 @@ ul {
       background-size: 82% 100%;
       position: relative;
       color: #333; */
-      background: url(../image/menuActive.png);
-      background-repeat: repeat-x;
-      background-size: 100% 100%;
-      border-left: 4px solid #28cce9;
-      // background:#3aa9ff
+      background:#3aa9ff
       /*  &:after {
         content: '';
         position: absolute;
@@ -307,7 +310,7 @@ ul {
         background-color: rgba(58, 169, 255, 0) !important;
         // background: url(../image/menuActive.png) no-repeat;
         // background-size: 82% 100%;
-        color: #3aa9ff !important;
+        color: rgba(255, 241, 0, 1) !important;
       }
     }
   }
@@ -330,7 +333,7 @@ ul {
   #hamburger-container {
     top: 10px;
     z-index: 1001;
-    background: #e6e6e6;
+    background: #55cec7;
     padding: 0;
     width: 30px;
     height: 30px;
@@ -344,7 +347,6 @@ ul {
 
   .navbar {
     padding-left: 28px;
-    background: #242a37;
   }
 
   .hideSidebar {
@@ -378,14 +380,13 @@ ul {
 
 .el-menu--vertical {
   // background: linear-gradient(#011d79, #0b5ccc, #55cec7) !important;
-  background: #31394b !important;
+  background: url(../image/menuBk.png) !important;
+  background-repeat: repeat-x;
+  background-size: 100% 100%;
 
   .router-link-exact-active {
-    // background: #3aa9ff
-    background: url(../image/menuActive.png);
-    background-repeat: repeat-x;
-    background-size: 100% 100%;
-    /* display: block;
+    background: #3aa9ff
+      /* display: block;
     width: 100%;
     height: 80px;
     line-height: 80px;
@@ -404,7 +405,7 @@ ul {
 
     &:hover {
       background-color: rgba(58, 169, 255, 0) !important;
-      color: #3aa9ff !important;
+      color: rgba(255, 241, 0, 1) !important;
       /* height: 80px;
       line-height: 80px;
       background: url(../image/menuActive.png) no-repeat;

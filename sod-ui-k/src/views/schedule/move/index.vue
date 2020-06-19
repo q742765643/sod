@@ -9,7 +9,7 @@
     >
       <el-form-item label="资料名称" prop="profileName">
         <el-input
-          v-model="queryParams.profileName"
+          v-model.trim="queryParams.profileName"
           placeholder="请输入物理库资料名称"
           moveable
           size="small"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item label="存储编码" prop="dataClassId">
         <el-input
-          v-model="queryParams.dataClassId"
+          v-model.trim="queryParams.dataClassId"
           placeholder="请输入存储编码或者四级编码"
           moveable
           size="small"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="表名" prop="tableName">
         <el-input
-          v-model="queryParams.tableName"
+          v-model.trim="queryParams.tableName"
           placeholder="请输入表名"
           moveable
           size="small"
@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="triggerStatus">
         <el-select
-          v-model="queryParams.triggerStatus"
+          v-model.trim="queryParams.triggerStatus"
           placeholder="运行状态"
           moveable
           size="small"
@@ -55,7 +55,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
@@ -113,6 +113,9 @@
       row-key="id"
       @selection-change="handleSelectionChange"
       @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="资料名称" prop="profileName" :show-overflow-tooltip="true" />
@@ -250,7 +253,8 @@ export default {
           }
         }
       },
-      handleObj: {}
+      handleObj: {},
+      currentRow: null
     };
   },
   created() {
@@ -260,6 +264,9 @@ export default {
     });
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -290,6 +297,13 @@ export default {
           this.moveList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.currentRow) {
+            this.moveList.forEach((element, index) => {
+              if (element.id == this.currentRow.id) {
+                this.$refs.singleTable.setCurrentRow(this.moveList[index]);
+              }
+            });
+          }
         }
       );
     },

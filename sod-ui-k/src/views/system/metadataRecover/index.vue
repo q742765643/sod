@@ -1,15 +1,15 @@
 <template>
   <div class="app-container metaRecTem">
     <!-- 系统元数据恢复 -->
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model.trim="activeName" @tab-click="handleClick">
       <el-tab-pane label="元数据恢复" name="first">
         <el-form :model="queryParams" :inline="true" class="searchBox">
           <el-form-item label="任务名称">
-            <el-input size="small" v-model="queryParams.taskName"></el-input>
+            <el-input size="small" v-model.trim="queryParams.taskName"></el-input>
           </el-form-item>
 
           <el-form-item label="数据库IP">
-            <el-select size="small" filterable v-model="queryParams.databaseId">
+            <el-select size="small" filterable v-model.trim="queryParams.databaseId">
               <el-option
                 v-for="(item,index) in ipList"
                 :key="index"
@@ -20,7 +20,7 @@
           </el-form-item>
 
           <el-form-item label="目录">
-            <el-select size="small" filterable v-model="queryParams.storageDirectory">
+            <el-select size="small" filterable v-model.trim="queryParams.storageDirectory">
               <el-option
                 v-for="dict in storageDirectoryOptions"
                 :key="dict.dictValue"
@@ -64,7 +64,7 @@
       <el-tab-pane label="元数据恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="数据库ip">
-            <el-select size="small" filterable v-model="rowlogForm.databaseId">
+            <el-select size="small" filterable v-model.trim="rowlogForm.databaseId">
               <el-option
                 v-for="(item,index) in ipList"
                 :key="index"
@@ -74,12 +74,12 @@
             </el-select>
           </el-form-item>
           <el-form-item label="任务名称">
-            <el-input size="small" v-model="rowlogForm.taskName"></el-input>
+            <el-input size="small" v-model.trim="rowlogForm.taskName"></el-input>
           </el-form-item>
           <el-form-item label="时间范围">
             <el-date-picker
               style="width:300px"
-              v-model="rowlogForm.dateRange"
+              v-model.trim="rowlogForm.dateRange"
               type="datetimerange"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -162,10 +162,10 @@
         <el-row>
           <el-col :span="12" style="padding-right:12px;">
             <el-form-item label="任务名称">
-              <el-input size="small" v-model="logFormDialog.taskName"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.taskName"></el-input>
             </el-form-item>
             <el-form-item label="数据库IP">
-              <el-select size="small" filterable v-model="logFormDialog.databaseId">
+              <el-select size="small" filterable v-model.trim="logFormDialog.databaseId">
                 <el-option
                   v-for="(item,index) in ipList"
                   :key="index"
@@ -175,22 +175,22 @@
               </el-select>
             </el-form-item>
             <el-form-item label="类型">
-              <el-checkbox-group v-model="logFormDialog.checked">
+              <el-checkbox-group v-model.trim="logFormDialog.checked">
                 <el-checkbox label="结构">结构</el-checkbox>
                 <el-checkbox label="数据">数据</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <el-form-item label="恢复文件">
-              <el-input size="small" v-model="logFormDialog.storageDirectory"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.storageDirectory"></el-input>
             </el-form-item>
             <el-form-item label="数据库">
-              <el-input size="small" v-model="logFormDialog.databaseName"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.databaseName"></el-input>
             </el-form-item>
             <el-form-item label="运行开始时间">
-              <el-input size="small" v-model="logFormDialog.handleTime"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.handleTime"></el-input>
             </el-form-item>
             <el-form-item label="状态">
-              <el-input size="small" v-model="logFormDialog.handleCode"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.handleCode"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -202,7 +202,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="所有执行过程">
-              <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+              <el-input size="small" v-model.trim="logFormDialog.handleMsg" type="textarea"></el-input>
               <el-button type="primary" size="small" @click="showAllDetail('所有执行过程')">显示全部</el-button>
             </el-form-item>
           </el-col>
@@ -221,7 +221,7 @@
       append-to-body
       v-dialogDrag
     >
-      <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+      <el-input size="small" v-model.trim="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>
@@ -230,7 +230,7 @@
 </template>
 
 <script>
-var baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API;
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
 import { newTeam } from "@/components/commonVaildate";
 import { formatDate } from "@/utils/index";
 import {

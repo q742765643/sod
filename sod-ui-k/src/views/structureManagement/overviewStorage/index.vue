@@ -3,16 +3,16 @@
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途:">
-        <el-input size="small" v-model="queryParams.logicName" placeholder="请输入数据用途" />
+        <el-input size="small" v-model.trim="queryParams.logicName" placeholder="请输入数据用途" />
       </el-form-item>
       <el-form-item label="数据库:">
-        <el-input size="small" v-model="queryParams.databaseName" placeholder="请输入数据库" />
+        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="请输入数据库" />
       </el-form-item>
       <el-form-item label="资料名称:">
-        <el-input size="small" v-model="queryParams.className" placeholder="请输入资料名称" />
+        <el-input size="small" v-model.trim="queryParams.className" placeholder="请输入资料名称" />
       </el-form-item>
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
+        <el-input size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -28,7 +28,15 @@
       </el-col>
     </el-row>
 
-    <el-table border v-loading="loading" :data="tableData" row-key="id">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <af-table-column prop="CLASS_NAME" label="资料名称">
         <template slot-scope="scope">
           <span>{{scope.row.CLASS_NAME}}</span>
@@ -72,7 +80,7 @@
           </el-button>
         </template>
       </af-table-column>
-      <af-table-column label="操作" width="80px">
+      <af-table-column label="操作" width="140px">
         <template slot-scope="scope">
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
         </template>
@@ -110,7 +118,7 @@
       width="650px"
       :before-close="handleClose"
     >
-      <el-checkbox-group v-model="checkSetList">
+      <el-checkbox-group v-model.trim="checkSetList">
         <el-checkbox label="数据同步" border @change="changeSetting($event,'SYNC_IDENTIFIER','数据同步')"></el-checkbox>
         <el-checkbox
           v-for="(item,index) in checkBoxList"
@@ -284,13 +292,17 @@ export default {
       rowId: "",
       // 数据恢复
       handleDataRecoveryDialog: false,
-      superMsg: {}
+      superMsg: {},
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     handleExport() {
       exportTable(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -334,6 +346,14 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        this.$refs.singleTable.setCurrentRow();
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.ID == this.currentRow.ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     superClick() {

@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
-          v-model="queryParams.ipaddr"
+          v-model.trim="queryParams.ipaddr"
           placeholder="请输入登录地址"
           clearable
           size="small"
@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="用户名称" prop="userName">
         <el-input
-          v-model="queryParams.userName"
+          v-model.trim="queryParams.userName"
           placeholder="请输入用户名称"
           clearable
           size="small"

@@ -1,12 +1,12 @@
 <template>
   <div class="app-container dataRecoveryTem">
     <!-- 数据恢复 -->
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model.trim="activeName" @tab-click="handleClick">
       <el-tab-pane label="结构化数据恢复" name="first">
         <el-form :model="queryParams" :inline="true" class="searchBox">
           <el-form-item label="数据库名称">
             <el-select
-              v-model="queryParams.databaseId"
+              v-model.trim="queryParams.databaseId"
               filterable
               @change="selectByDatabaseIds"
               placeholder="请选择物理库"
@@ -21,7 +21,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="资料名称">
-            <el-select v-model="queryParams.dataClassId" filterable placeholder="请选择资料">
+            <el-select v-model.trim="queryParams.dataClassId" filterable placeholder="请选择资料">
               <el-option
                 v-for="dataClass in dataClassIdOptions"
                 :key="dataClass.DATA_CLASS_ID"
@@ -31,7 +31,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="目录">
-            <el-select size="small" filterable v-model="queryParams.path">
+            <el-select size="small" filterable v-model.trim="queryParams.path">
               <el-option
                 v-for="dict in storageDirectoryOptions"
                 :key="dict.dictValue"
@@ -75,10 +75,10 @@
       <el-tab-pane label="恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
           <el-form-item label="资料名称">
-            <el-input size="small" v-model="rowlogForm.profileName"></el-input>
+            <el-input size="small" v-model.trim="rowlogForm.profileName"></el-input>
           </el-form-item>
           <el-form-item label="运行状态">
-            <el-select style="width:200px" filterable v-model="rowlogForm.handleCode">
+            <el-select style="width:200px" filterable v-model.trim="rowlogForm.handleCode">
               <el-option
                 v-for="(item,index) in statusOptions"
                 :key="index"
@@ -161,7 +161,7 @@
     >
       <el-form ref="ruleForm" :model="logFormDialog" label-width="120px" class="logDetailBoxRe">
         <el-form-item label="数据库名称">
-          <el-select size="small" filterable v-model="logFormDialog.databaseId">
+          <el-select size="small" filterable v-model.trim="logFormDialog.databaseId">
             <el-option
               v-for="database in databaseOptions"
               :key="database.KEY"
@@ -171,7 +171,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="资料名称">
-          <el-select v-model="logFormDialog.dataClassId" filterable placeholder="请选择资料">
+          <el-select v-model.trim="logFormDialog.dataClassId" filterable placeholder="请选择资料">
             <el-option
               v-for="dataClass in dataClassIdOptions"
               :key="dataClass.DATA_CLASS_ID"
@@ -182,17 +182,17 @@
         </el-form-item>
 
         <el-form-item label="表名称">
-          <el-input size="small" v-model="logFormDialog.tableName"></el-input>
+          <el-input size="small" v-model.trim="logFormDialog.tableName"></el-input>
         </el-form-item>
         <el-form-item label="状态">
-          <el-input size="small" v-model="logFormDialog.handleCode"></el-input>
+          <el-input size="small" v-model.trim="logFormDialog.handleCode"></el-input>
         </el-form-item>
         <el-form-item label="所有执行过程">
-          <el-input size="small" v-model="logFormDialog.handleMsg" type="textarea"></el-input>
+          <el-input size="small" v-model.trim="logFormDialog.handleMsg" type="textarea"></el-input>
           <el-button type="primary" size="small" @click="showAllDetail('所有执行过程')">显示全部</el-button>
         </el-form-item>
         <el-form-item label="恢复文件路径">
-          <el-input size="small" v-model="logFormDialog.storageDirectory" type="textarea"></el-input>
+          <el-input size="small" v-model.trim="logFormDialog.storageDirectory" type="textarea"></el-input>
           <el-button type="primary" size="small" @click="showAllDetail('恢复文件路径')">显示全部</el-button>
         </el-form-item>
       </el-form>
@@ -209,7 +209,7 @@
         append-to-body
         v-dialogDrag
       >
-        <el-input size="small" v-model="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
+        <el-input size="small" v-model.trim="allDetailMsg" type="textarea" class="allDetailMsg"></el-input>
         <span slot="footer" class="dialog-footer">
           <el-button @click="allDetailDialog = false">取 消</el-button>
         </span>
@@ -219,7 +219,7 @@
 </template>
 
 <script>
-var baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API;
+var baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API;
 // 树转换
 import { newTeam } from "@/components/commonVaildate";
 // md5校验

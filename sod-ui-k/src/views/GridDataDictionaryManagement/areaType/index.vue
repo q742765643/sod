@@ -3,7 +3,7 @@
     <!-- 区域类别管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="区域标识:">
-        <el-input size="small" v-model="queryParams.areaId" />
+        <el-input size="small" v-model.trim="queryParams.areaId" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -33,6 +33,7 @@
       :data="tableData"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="areaId" label="区域标识"></el-table-column>
@@ -62,22 +63,22 @@
     >
       <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
         <el-form-item label="区域标识:" prop="areaId">
-          <el-input v-model="ruleForm.areaId" placeholder="请输入区域标识" />
+          <el-input v-model.trim="ruleForm.areaId" placeholder="请输入区域标识" />
         </el-form-item>
         <el-form-item label="开始纬度:" prop="startLat">
-          <el-input v-model.number="ruleForm.startLat" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.startLat" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="结束纬度:" prop="endLat">
-          <el-input v-model.number="ruleForm.endLat" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.endLat" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="开始经度:" prop="startLon">
-          <el-input v-model.number="ruleForm.startLon" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.startLon" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="结束经度:" prop="endLon">
-          <el-input v-model.number="ruleForm.endLon" type="number" placeholder="请输入结束经度" />
+          <el-input v-model.trim.number="ruleForm.endLon" type="number" placeholder="请输入结束经度" />
         </el-form-item>
         <el-form-item label="备注:" prop="areaDesc">
-          <el-input type="textarea" v-model="ruleForm.areaDesc" />
+          <el-input type="textarea" v-model.trim="ruleForm.areaDesc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -115,7 +116,7 @@ export default {
       tableData: [],
       total: 0,
 
-      choserow: [],
+      multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
@@ -160,6 +161,19 @@ export default {
     this.getList();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     getMyExcelData(data) {
       // data 为读取的excel数据，在这里进行处理该数据
       console.log(data);
@@ -196,6 +210,12 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     showDialog(type) {
@@ -203,14 +223,14 @@ export default {
         this.ruleForm = {};
         this.dialogTitle = "新增";
       } else {
-        if (this.choserow.length != 1) {
+        if (this.multipleSelection.length != 1) {
           this.$message({
             type: "error",
             message: "请选择一条数据"
           });
           return;
         } else {
-          detailById(this.choserow[0].id).then(response => {
+          detailById(this.multipleSelection[0].id).then(response => {
             this.ruleForm = response.data;
           });
         }
@@ -255,10 +275,10 @@ export default {
     },
 
     handleSelectionChange(val) {
-      this.choserow = val;
+      this.multipleSelection = val;
     },
     deleteCell() {
-      if (this.choserow.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -267,7 +287,7 @@ export default {
       }
       let ids = [];
       let areaIds = [];
-      this.choserow.forEach(element => {
+      this.multipleSelection.forEach(element => {
         ids.push(element.id);
         areaIds.push(element.areaId);
       });

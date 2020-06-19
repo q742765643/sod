@@ -1,6 +1,6 @@
 <template>
   <section class="filedSearchDeploy">
-    <el-tabs class="pageTas" v-model="activeName" @click="pageTasChange">
+    <el-tabs class="pageTas" v-model.trim="activeName" @click="pageTasChange">
       <el-tab-pane label="基本信息" name="first">
         <el-form
           :model="msgFormDialog"
@@ -12,7 +12,7 @@
           <el-form-item prop="schemaName" label="模式名称:">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseDto.schemaName"
+              v-model.trim="msgFormDialog.databaseDto.schemaName"
               placeholder="请输入数据库实例"
             />
           </el-form-item>
@@ -21,14 +21,14 @@
             <el-input
               size="small"
               disabled="disabled"
-              v-model="msgFormDialog.databaseDto.databaseClassify"
+              v-model.trim="msgFormDialog.databaseDto.databaseClassify"
             />
           </el-form-item>
           <!--  <el-form-item label="数据库名称:">
             <el-input
               size="small"
               disabled="disabled"
-              v-model="msgFormDialog.databaseDto.databaseName"
+              v-model.trim="msgFormDialog.databaseDto.databaseName"
               placeholder="请输入数据库实例"
             />
           </el-form-item>-->
@@ -36,27 +36,35 @@
             <el-input
               size="small"
               :disabled="isDbIdDisable"
-              v-model="msgFormDialog.id"
+              v-model.trim="msgFormDialog.id"
               placeholder="请输入数据库ID"
             />
           </el-form-item>
           <el-form-item prop="databaseName" label="数据库名称:">
-            <el-input size="small" v-model="msgFormDialog.databaseName" placeholder="请输入数据库名称" />
+            <el-input
+              size="small"
+              v-model.trim="msgFormDialog.databaseName"
+              placeholder="请输入数据库名称"
+            />
           </el-form-item>
           <el-form-item prop="serialNumber" label="显示序号:">
             <el-input-number
               :min="0"
               class="number"
               size="small"
-              v-model="msgFormDialog.serialNumber"
+              v-model.trim="msgFormDialog.serialNumber"
               placeholder="请输入显示序号"
             />
           </el-form-item>
           <el-form-item prop="databaseInstance" label="数据库实例:">
-            <el-input size="small" v-model="msgFormDialog.databaseInstance" placeholder="请输入数据库实例" />
+            <el-input
+              size="small"
+              v-model.trim="msgFormDialog.databaseInstance"
+              placeholder="请输入数据库实例"
+            />
           </el-form-item>
           <el-form-item prop="databaseType" label="数据库类型:">
-            <el-select v-model="msgFormDialog.databaseType">
+            <el-select v-model.trim="msgFormDialog.databaseType">
               <el-option
                 v-for="item in dictsList"
                 :key="item.dictValue"
@@ -66,17 +74,21 @@
             </el-select>
           </el-form-item>
           <el-form-item prop="driverClassName" label="数据库驱动:">
-            <el-input size="small" v-model="msgFormDialog.driverClassName" placeholder="请输入数据库驱动" />
+            <el-input
+              size="small"
+              v-model.trim="msgFormDialog.driverClassName"
+              placeholder="请输入数据库驱动"
+            />
           </el-form-item>
           <el-form-item prop="databaseIp" label="数据库IP:">
-            <el-input size="small" v-model="msgFormDialog.databaseIp" placeholder="请输入数据库IP" />
+            <el-input size="small" v-model.trim="msgFormDialog.databaseIp" placeholder="请输入数据库IP" />
           </el-form-item>
           <el-form-item prop="databasePort" label="数据库端口:">
             <el-input-number
               :min="0"
               class="number"
               size="small"
-              v-model="msgFormDialog.databasePort"
+              v-model.trim="msgFormDialog.databasePort"
               placeholder="请输入数据库端口"
             />
           </el-form-item>
@@ -85,7 +97,7 @@
               <el-col :span="20">
                 <el-input
                   size="small"
-                  v-model="msgFormDialog.databaseUrl"
+                  v-model.trim="msgFormDialog.databaseUrl"
                   placeholder="请输入数据库访问地址"
                 />
               </el-col>
@@ -95,26 +107,30 @@
             </el-row>
           </el-form-item>
           <el-form-item prop="upUrl" label="UP层访问地址:">
-            <el-input size="small" v-model="msgFormDialog.upUrl" placeholder="请输入UP层访问地址" />
+            <el-input size="small" v-model.trim="msgFormDialog.upUrl" placeholder="请输入UP层访问地址" />
           </el-form-item>
           <el-form-item prop="userDisplayControl" label="显示控制:">
-            <el-select v-model="msgFormDialog.userDisplayControl" size="small">
+            <el-select v-model.trim="msgFormDialog.userDisplayControl" size="small">
               <el-option label="显示" :value="1"></el-option>
               <el-option label="不显示" :value="2"></el-option>
               <el-option label="前端不显示" :value="3"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="主备类型:">
-            <el-select v-model="msgFormDialog.mainBakType" size="small">
+            <el-select v-model.trim="msgFormDialog.mainBakType" size="small">
               <el-option label="主库" :value="1"></el-option>
               <el-option label="备份库" :value="2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="应用场景:">
-            <el-input size="small" v-model="msgFormDialog.databaseDesc" placeholder="请输入应用场景" />
+            <el-input size="small" v-model.trim="msgFormDialog.databaseDesc" placeholder="请输入应用场景" />
           </el-form-item>
           <el-form-item label="总容量:" prop="databaseCapacity">
-            <el-input size="small" v-model="msgFormDialog.databaseCapacity" placeholder="请输入总容量">
+            <el-input
+              size="small"
+              v-model.trim="msgFormDialog.databaseCapacity"
+              placeholder="请输入总容量"
+            >
               <template slot="append">TB</template>
             </el-input>
           </el-form-item>
@@ -153,12 +169,12 @@
           <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column prop="databaseNode" label="节点列表">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.databaseNode" placeholder="请输入节点IP"></el-input>
+              <el-input v-model.trim="scope.row.databaseNode" placeholder="请输入节点IP"></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="nodeRole" label="节点角色">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.nodeRole" placeholder="请选择">
+              <el-select v-model.trim="scope.row.nodeRole" placeholder="请选择">
                 <el-option label="存储节点" value="存储节点"></el-option>
                 <el-option label="管理节点" value="管理节点"></el-option>
               </el-select>
@@ -166,7 +182,7 @@
           </el-table-column>
           <el-table-column prop="nodeState" label="状态">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.nodeState" placeholder="请选择">
+              <el-select v-model.trim="scope.row.nodeState" placeholder="请选择">
                 <el-option label="使用中" value="使用中"></el-option>
                 <el-option label="停止使用" value="停止使用"></el-option>
                 <el-option label="已废弃" value="已废弃"></el-option>
@@ -199,22 +215,22 @@
           <el-table-column type="index" label="序号" width="50"></el-table-column>
           <el-table-column prop="userName" label="登录用户">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.userName" placeholder="请输入用户名"></el-input>
+              <el-input v-model.trim="scope.row.userName" placeholder="请输入用户名"></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="2" label="登录密码">
             <template slot-scope="scope">
-              <el-input show-password placeholder="请输入密码" v-model="scope.row.passWord"></el-input>
+              <el-input show-password placeholder="请输入密码" v-model.trim="scope.row.passWord"></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="3" label="开户目的">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.introduction"></el-input>
+              <el-input v-model.trim="scope.row.introduction"></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="3" label="是否管理账户">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.isManager">
+              <el-select v-model.trim="scope.row.isManager">
                 <el-option label="是" :value="true"></el-option>
                 <el-option label="否" :value="false"></el-option>
               </el-select>
@@ -281,6 +297,16 @@ export default {
             "请输入正确IP地址,范例(指定IP:192.168.1.1;IP段：192.168.1.%)"
           )
         );
+      } else {
+        callback();
+      }
+    };
+
+    var databaseCapacityValidate = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入总容量"));
+      } else if ((value + "").indexOf(".") > -1) {
+        callback(new Error("不能输入小数"));
       } else {
         callback();
       }
@@ -356,7 +382,11 @@ export default {
           { required: true, message: "请输入UP层访问地址", trigger: "blur" }
         ],
         databaseCapacity: [
-          { required: true, message: "请输入总容量", trigger: "blur" }
+          {
+            required: true,
+            validator: databaseCapacityValidate,
+            trigger: "blur"
+          }
         ]
       }
     };

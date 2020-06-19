@@ -1,10 +1,15 @@
 <template>
   <el-main class="TableInfoManage">
-    <el-form v-model="Info" class="elementTableCon" label-width="100px">
+    <el-form v-model.trim="Info" class="elementTableCon" label-width="100px">
       <div class="el-row">
         <div :class="tableClass">
           <el-form-item label="表名称">
-            <el-input :disabled="!isEdit" placeholder="表名称" size="small" v-model="Info.tableName"></el-input>
+            <el-input
+              :disabled="!isEdit"
+              placeholder="表名称"
+              size="small"
+              v-model.trim="Info.tableName"
+            ></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-3" v-if="isTableName">
@@ -14,7 +19,12 @@
         </div>
         <div class="el-col el-col-10">
           <el-form-item label="中文名称">
-            <el-input :disabled="!isEdit" placeholder="中文名称" size="small" v-model="Info.nameCn"></el-input>
+            <el-input
+              :disabled="!isEdit"
+              placeholder="中文名称"
+              size="small"
+              v-model.trim="Info.nameCn"
+            ></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-4">
@@ -71,12 +81,22 @@
       <div class="el-row">
         <div class="el-col el-col-10">
           <el-form-item label="服务编码">
-            <el-input :disabled="true" placeholder="服务编码" size="small" v-model="Info.dataServiceId"></el-input>
+            <el-input
+              :disabled="true"
+              placeholder="服务编码"
+              size="small"
+              v-model.trim="Info.dataServiceId"
+            ></el-input>
           </el-form-item>
         </div>
         <div class="el-col el-col-10">
           <el-form-item label="备注">
-            <el-input :disabled="!isEdit" placeholder="备注" size="small" v-model="Info.tableDesc"></el-input>
+            <el-input
+              :disabled="!isEdit"
+              placeholder="备注"
+              size="small"
+              v-model.trim="Info.tableDesc"
+            ></el-input>
           </el-form-item>
         </div>
       </div>

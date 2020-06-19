@@ -4,7 +4,7 @@
       <el-row>
         <el-col :span="8">
           <el-form-item label="表名" prop="tableName">
-            <el-input size="small" plcaeholder="请输入表名" v-model="registerForm.tableName"></el-input>
+            <el-input size="small" plcaeholder="请输入表名" v-model.trim="registerForm.tableName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -13,7 +13,7 @@
               size="small"
               @change="logicIdChange"
               class="size-full"
-              v-model="registerForm.logicId"
+              v-model.trim="registerForm.logicId"
             >
               <el-option
                 :key="index"
@@ -30,7 +30,7 @@
               size="small"
               @change="schemaIdChange"
               class="size-full"
-              v-model="registerForm.physicId"
+              v-model.trim="registerForm.physicId"
             >
               <el-option
                 :key="index"
@@ -45,7 +45,7 @@
       <el-row>
         <el-col :span="8">
           <el-form-item label="专题名" prop="schemaId">
-            <el-select size="small" class="size-full" v-model="registerForm.schemaId">
+            <el-select size="small" class="size-full" v-model.trim="registerForm.schemaId">
               <el-option
                 :key="index"
                 :label="item.dbname"
@@ -57,7 +57,7 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="数据频次">
-            <el-select size="small" class="size-full" v-model="registerForm.dataFreq">
+            <el-select size="small" class="size-full" v-model.trim="registerForm.dataFreq">
               <el-option value="不定">不定</el-option>
               <el-option value="连续">连续</el-option>
               <el-option value="1分钟">1分钟</el-option>
@@ -89,7 +89,7 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="数据权限">
-            <el-select size="small" class="size-full" v-model="registerForm.published">
+            <el-select size="small" class="size-full" v-model.trim="registerForm.published">
               <el-option label="公开" value="1"></el-option>
               <el-option label="限制" value="2"></el-option>
             </el-select>
@@ -99,14 +99,14 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="其他说明">
-            <el-input size="small" placeholder="请输入相关说明，例如数据名称等信息" v-model="registerForm.memo"></el-input>
+            <el-input size="small" placeholder="请输入相关说明，例如数据名称等信息" v-model.trim="registerForm.memo"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="属性资料">
-            <el-radio-group @change="dataPropChange" v-model="registerForm.dataProp">
+            <el-radio-group @change="dataPropChange" v-model.trim="registerForm.dataProp">
               <el-radio label="站点要素写入" v-if="this.registerForm.physicId==='STDB'" value="1"></el-radio>
               <el-radio label="产品文件写入" v-if="this.registerForm.physicId==='FIDB'" value="2"></el-radio>
               <el-radio label="数据块写入" v-if="this.registerForm.physicId==='RADB'" value="3"></el-radio>
@@ -117,7 +117,7 @@
       <el-row>
         <el-col :span="24" v-if="this.registerForm.physicId==='RADB'">
           <el-form-item label="数据显示">
-            <el-radio-group @change="datashowChange" v-model="datashow">
+            <el-radio-group @change="datashowChange" v-model.trim="datashow">
               <el-radio label="文件块" value="1"></el-radio>
               <el-radio label="站级文件块" value="2"></el-radio>
               <el-radio label="格点数据块" value="3"></el-radio>
@@ -132,7 +132,7 @@
               size="small"
               :disabled="true"
               placeholder="请选择基本字段或自定义字段表中数据"
-              v-model="registerForm.freuseField"
+              v-model.trim="registerForm.freuseField"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -187,7 +187,7 @@
               ref="c_element_code"
               style="width: 100%"
               v-if="scope.row.c_element_code.edit"
-              v-model="scope.row.c_element_code.value"
+              v-model.trim="scope.row.c_element_code.value"
             ></el-input>
             <span class="editStyle" v-else>{{ scope.row.c_element_code.value }}</span>
           </template>
@@ -200,7 +200,7 @@
               ref="c_element_namech"
               style="width: 100%"
               v-if="scope.row.c_element_namech.edit"
-              v-model="scope.row.c_element_namech.value"
+              v-model.trim="scope.row.c_element_namech.value"
             ></el-input>
             <span class="editStyle" v-else>{{ scope.row.c_element_namech.value }}</span>
           </template>
@@ -213,7 +213,7 @@
               ref="c_datatype"
               style="width: 100%"
               v-if="scope.row.c_datatype.edit"
-              v-model="scope.row.c_datatype.value"
+              v-model.trim="scope.row.c_datatype.value"
             >
               <el-option
                 :key="item.fieldtype"
@@ -233,7 +233,7 @@
               ref="c_element_unit"
               style="width: 100%"
               v-if="scope.row.c_element_unit.edit"
-              v-model="scope.row.c_element_unit.value"
+              v-model.trim="scope.row.c_element_unit.value"
             ></el-input>
             <span class="editStyle" v-else>{{ scope.row.c_element_unit.value }}</span>
           </template>
@@ -246,7 +246,7 @@
               ref="fieldLength"
               style="width: 100%"
               v-if="scope.row.fieldLength.edit"
-              v-model="scope.row.fieldLength.value"
+              v-model.trim="scope.row.fieldLength.value"
             ></el-input>
             <span class="editStyle" v-else>{{ scope.row.fieldLength.value }}</span>
           </template>
@@ -259,7 +259,7 @@
               ref="filedPer"
               style="width: 100%"
               v-if="scope.row.filedPer.edit"
-              v-model="scope.row.filedPer.value"
+              v-model.trim="scope.row.filedPer.value"
             ></el-input>
             <span class="editStyle" v-else>{{ scope.row.filedPer.value }}</span>
           </template>
@@ -272,7 +272,7 @@
               ref="orders"
               style="width: 100%"
               v-if="scope.row.orders.edit"
-              v-model="scope.row.orders.value"
+              v-model.trim="scope.row.orders.value"
             ></el-input>
             <span class="editStyle" v-else>{{ scope.row.orders.value }}</span>
           </template>
@@ -285,7 +285,7 @@
               ref="c_isqc"
               style="width: 100%"
               v-if="scope.row.c_isqc.edit"
-              v-model="scope.row.c_isqc.value"
+              v-model.trim="scope.row.c_isqc.value"
             >
               <el-option label="是" value="1"></el-option>
               <el-option label="否" value="0"></el-option>
@@ -301,7 +301,7 @@
               ref="c_no"
               style="width: 100%"
               v-if="scope.row.c_no.edit"
-              v-model="scope.row.c_no.value"
+              v-model.trim="scope.row.c_no.value"
             >
               <el-option label="是" value="1"></el-option>
               <el-option label="否" value="0"></el-option>

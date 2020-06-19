@@ -1,13 +1,6 @@
 <template>
   <el-main class="columnTemplate">
     <el-button-group style="padding: 8px;">
-      <el-button
-        type="primary"
-        size="small"
-        icon="el-icon-c-scale-to-original"
-        @click="getColumnTables"
-        v-if="tableStructureManageContral"
-      >复用字段</el-button>
       <el-button type="primary" size="small" icon="el-icon-plus" @click="columnAdd">新增</el-button>
       <el-button type="primary" size="small" icon="el-icon-edit" @click="columnEdit">编辑</el-button>
       <el-button type="primary" size="small" icon="el-icon-delete" @click="columnDelete">删除</el-button>
@@ -66,158 +59,10 @@
           <span v-else>否</span>
         </template>
       </el-table-column>
-      <!--<el-table-column label="是否修改数据库" prop="updateDatabase" width="140px">
-        <template slot-scope="scope">
-          <span v-if="scope.row.updateDatabase">是</span>
-          <span v-else>否</span>
-        </template>
-      </el-table-column>-->
       <el-table-column label="默认值" prop="defaultValue" width="100px"></el-table-column>
       <el-table-column label="序号" prop="serialNumber" width="100px"></el-table-column>
     </el-table>
-    <!-- </el-table-column> -->
-    <el-dialog
-      :close-on-click-modal="false"
-      v-dialogDrag
-      width="80%"
-      title="公共元数据"
-      :visible.sync="dialogStatus.publicMatedataDialog"
-      append-to-body
-    >
-      <div>
-        <el-tabs v-model="activePublicName" type="border-card">
-          <el-tab-pane label="公共元数据字段" name="first">
-            <div class="tableSearch">
-              <el-form :inline="true">
-                <el-form-item label="数据源代码">
-                  <el-input v-model="searchMatedata.c_datatype" placeholder="数据源代码" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="中文名称">
-                  <el-input v-model="searchMatedata.c_datum_level" placeholder="中文名称" size="small"></el-input>
-                </el-form-item>
-                <el-form-item label="服务代码">
-                  <el-input v-model="searchMatedata.c_datumtype" placeholder="服务代码" size="small"></el-input>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    type="primary"
-                    icon="el-icon-search"
-                    size="small"
-                    @click="searchFun('matedata')"
-                  >搜索</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
-            <el-table
-              :data="pubData.matedata"
-              border
-              height="320"
-              @selection-change="handleSelectionMatedata"
-            >
-              <el-table-column label="序号" type="index" width="50"></el-table-column>
-              <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="数据源代码" prop="c_element_code"></el-table-column>
-              <el-table-column label="中文名称" prop="c_element_namech"></el-table-column>
-              <el-table-column label="英文名称" prop="c_element_name"></el-table-column>
-              <el-table-column label="数据类型" prop="c_datatype" width="70px"></el-table-column>
-              <el-table-column label="计量单位" prop="c_element_unit" width="80px"></el-table-column>
-              <el-table-column label="数据精度" prop="c_element_pre" width="70px"></el-table-column>
-              <el-table-column label="特征值" prop="c_charactervalue"></el-table-column>
-              <el-table-column label="状态" prop="c_status" width="60px"></el-table-column>
-              <el-table-column label="要素说明" prop="c_notes" width="70px"></el-table-column>
-              <el-table-column label="服务代码" prop="c_short_name"></el-table-column>
-              <el-table-column label="是否质控" prop="c_is_control" width="80px">
-                <template slot-scope="scope">
-                  <el-switch
-                    v-model="scope.row.switch"
-                    active-color="#13ce66"
-                    inactive-color="#909399"
-                  ></el-switch>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-          <el-tab-pane label="管理字段" name="second">
-            <div class="tableSearch">
-              <el-form label-width="80px">
-                <el-row>
-                  <el-col :span="4">
-                    <el-form-item label="字段分组">
-                      <el-select v-model="searchMmdata.groupId" size="small">
-                        <el-option label="全部" value></el-option>
-                        <el-option
-                          v-for="item in AllManageGroup"
-                          :key="item.value"
-                          :label="item.groupId"
-                          :value="item.groupId"
-                        ></el-option>
-                      </el-select>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-form-item label="字段编码">
-                      <el-input v-model="searchMmdata.dbEleCode" placeholder="字段编码" size="small"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-form-item label="中文名称">
-                      <el-input v-model="searchMmdata.dbEleName" placeholder="中文名称" size="small"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="6">
-                    <el-form-item label="服务代码">
-                      <el-input v-model="searchMmdata.userEleCode" placeholder="服务代码" size="small"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="2">
-                    <el-button
-                      class="btnmm"
-                      type="primary"
-                      icon="el-icon-search"
-                      size="small"
-                      @click="searchFun('mmdata')"
-                    >搜索</el-button>
-                    <!-- <el-form-item label>
 
-                    </el-form-item>-->
-                  </el-col>
-                </el-row>
-              </el-form>
-            </div>
-            <el-table
-              :data="pubData.mmdata"
-              border
-              height="320"
-              @selection-change="handleSelectionMmdata"
-            >
-              <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
-              <el-table-column label="服务代码" prop="userEleCode"></el-table-column>
-              <el-table-column label="中文名称" prop="dbEleName"></el-table-column>
-              <el-table-column label="字段短名" prop="eleName"></el-table-column>
-              <el-table-column label="类型" prop="type"></el-table-column>
-              <el-table-column label="字段精度" prop="data_precision" width="90px"></el-table-column>
-              <el-table-column label="是否可为空" prop="isNull" width="90px">
-                <template slot-scope="scope">
-                  <span v-if="scope.row.isNull == true">是</span>
-                  <span v-else>否</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="是否可更新" prop="isUpdate" width="90px">
-                <template slot-scope="scope">
-                  <span v-if="scope.row.isUpdate == true">是</span>
-                  <span v-else>否</span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="truePublic" size="small">确 定</el-button>
-        <el-button @click="dialogStatus.publicMatedataDialog = false" size="small">取 消</el-button>
-      </span>
-    </el-dialog>
     <el-dialog
       :close-on-click-modal="false"
       v-dialogDrag
@@ -234,18 +79,32 @@
         label-width="140px"
       >
         <el-col :span="12">
+          <el-form-item label="公共元数据字段" prop="dbEleCode">
+            <el-input placeholder="公共元数据字段" v-model.trim="columnEditData.dbEleCode" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="字段编码" prop="celementCode">
-            <el-input placeholder="字段编码" v-model="columnEditData.celementCode" size="small"></el-input>
+            <el-input placeholder="字段编码" v-model.trim="columnEditData.celementCode" size="small"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="服务代码" prop="userEleCode">
+            <el-input placeholder="服务代码" v-model.trim="columnEditData.userEleCode" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文简称" prop="eleName">
-            <el-input placeholder="中文简称" v-model="columnEditData.eleName" size="small"></el-input>
+            <el-input placeholder="中文简称" v-model.trim="columnEditData.eleName" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="数据类型" prop="type">
-            <el-select v-model="columnEditData.type" placeholder="请选择数据类型" style="width: 100%;">
+            <el-select
+              v-model.trim="columnEditData.type"
+              placeholder="请选择数据类型"
+              style="width: 100%;"
+            >
               <el-option
                 v-for="(item,index) in dataTypes"
                 :key="index"
@@ -257,18 +116,18 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="要素单位" prop="unit">
-            <el-input placeholder="要素单位" v-model="columnEditData.unit" size="small"></el-input>
+            <el-input placeholder="要素单位" v-model.trim="columnEditData.unit" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="数据精度">
-            <el-input-number v-model="columnEditData.accuracy" :min="0" size="small"></el-input-number>
+            <el-input-number v-model.trim="columnEditData.accuracy" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否可空">
             <el-switch
-              v-model="columnEditData.isNull"
+              v-model.trim="columnEditData.isNull"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -277,7 +136,7 @@
         <el-col :span="12">
           <el-form-item label="是否可改">
             <el-switch
-              v-model="columnEditData.isUpdate"
+              v-model.trim="columnEditData.isUpdate"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -286,7 +145,7 @@
         <el-col :span="12">
           <el-form-item label="是否显示">
             <el-switch
-              v-model="columnEditData.isShow"
+              v-model.trim="columnEditData.isShow"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -295,7 +154,7 @@
         <el-col :span="12">
           <el-form-item label="是否主键">
             <el-switch
-              v-model="columnEditData.isPrimaryKey"
+              v-model.trim="columnEditData.isPrimaryKey"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -304,7 +163,7 @@
         <el-col :span="12">
           <el-form-item label="是否管理字段">
             <el-switch
-              v-model="columnEditData.isManager"
+              v-model.trim="columnEditData.isManager"
               active-color="#13ce66"
               inactive-color="#909399"
             ></el-switch>
@@ -312,17 +171,17 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="默认值">
-            <el-input placeholder="默认值" v-model="columnEditData.defaultValue" size="small"></el-input>
+            <el-input placeholder="默认值" v-model.trim="columnEditData.defaultValue" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文描述">
-            <el-input placeholder="中文描述" v-model="columnEditData.nameCn" size="small"></el-input>
+            <el-input placeholder="中文描述" v-model.trim="columnEditData.nameCn" size="small"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="序号" prop="serialNumber">
-            <el-input-number v-model="columnEditData.serialNumber" size="small" :min="0"></el-input-number>
+            <el-input-number v-model.trim="columnEditData.serialNumber" size="small" :min="0"></el-input-number>
           </el-form-item>
         </el-col>
         <div class="clear"></div>
@@ -346,7 +205,7 @@
           <draggable
             class="list-group"
             tag="ul"
-            v-model="dragList"
+            v-model.trim="dragList"
             v-bind="dragOptions"
             @start="isDragging = true"
             @end="isDragging = false"
@@ -416,14 +275,10 @@ import {
   tableColumnSaveList,
   getDictByType,
   getColumDatailById,
-  syncSCode,
   queryCmccElements,
   managefieldPage
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
-import {
-  enable,
-  exportTable
-} from "@/api/structureManagement/tableStructureManage/index";
+import { exportTable } from "@/api/structureManagement/tableStructureManage/index";
 import { findAllManageGroup } from "@/api/dbDictMangement/manageField";
 import { codeVer } from "@/components/commonVaildate.js";
 export default {
@@ -451,7 +306,6 @@ export default {
       }
     };
     return {
-      tableStructureManageContral: false,
       codeTitle: "新增字段",
       dialogStatus: {
         columnDialog: false,
@@ -525,45 +379,7 @@ export default {
     handleClickTableRow(row, event, column) {
       this.$refs.selectionTable.toggleRowSelection(row);
     },
-    /* 复用字段 */
-    getColumnTables() {
-      if (!this.tableInfo.id) {
-        this.$message({
-          type: "error",
-          message: "表不存在"
-        });
-        return;
-      }
-      this.matedataSelection = [];
-      this.mmdataSelection = [];
-      this.searchMatedata = {};
-      this.searchMmdata = {};
-      this.activePublicName = "first";
-      this.getmatedata();
-      this.getmmdata();
-      this.dialogStatus.publicMatedataDialog = true;
-    },
-    // 公共元数据
-    getmatedata() {
-      this.searchMatedata.c_datum_code = this.rowData.D_DATA_ID;
-      console.log(this.searchMatedata);
-      queryCmccElements(this.searchMatedata).then(res => {
-        if (res.code == 200) {
-          res.data.forEach(element => {
-            element.switch = false;
-          });
-          this.pubData.matedata = res.data;
-        }
-      });
-    },
-    // 管理字段
-    getmmdata() {
-      managefieldPage(this.searchMmdata)
-        .then(res => {
-          this.pubData.mmdata = res.data;
-        })
-        .catch(error => {});
-    },
+
     // 管理字段分组
     getAllGroup() {
       findAllManageGroup().then(res => {
@@ -677,13 +493,6 @@ export default {
       }
     },
 
-    searchFun(type) {
-      if (type == "matedata") {
-        this.getmatedata();
-      } else if (type == "mmdata") {
-        this.getmmdata();
-      }
-    },
     cancleCode(formName) {
       this.$refs[formName].resetFields();
       this.dialogStatus.columnDialog = false;
@@ -751,10 +560,17 @@ export default {
       this.dialogStatus.codeSortDialog = false;
     },
     exportCode(type) {
-      if (!this.tableInfo.id || this.columnData.lenght == 0) {
+      if (!this.tableInfo.id) {
         this.$message({
           type: "error",
           message: "表不存在"
+        });
+        return;
+      }
+      if (this.columnData.length == 0) {
+        this.$message({
+          type: "error",
+          message: "不能导出空表"
         });
         return;
       }
@@ -901,172 +717,7 @@ export default {
     handleSelectionMmdata(val) {
       this.mmdataSelection = val;
     },
-    // 复用字段确定
-    truePublic() {
-      let publicRows = [];
-      this.repeatIndex = 0;
-      if (this.activePublicName == "first") {
-        if (this.matedataSelection.length > 0) {
-          publicRows = this.array_diff(
-            this.matedataSelection,
-            this.columnData,
-            "first"
-          );
-          publicRows.forEach(element => {
-            if (element.switch) {
-              var switchObj = Object.assign({}, element);
-              var firstChar = element.celementCode.substr(0, 1);
-              let newCode = element.celementCode.replace(firstChar, "Q");
-              switchObj.eleName = element.eleName + "质量标志";
-              switchObj.cElementCode = newCode;
-              switchObj.dbEleCode = newCode;
-              publicRows.push(switchObj);
-            }
-          });
-        } else {
-          this.$message({
-            message: msg + "无剩余可添加数据!",
-            type: "info"
-          });
-        }
-      } else if (this.activePublicName == "second") {
-        if (this.mmdataSelection.length > 0) {
-          publicRows = this.array_diff(
-            this.mmdataSelection,
-            this.columnData,
-            "second"
-          );
-        } else {
-          this.$message({
-            message: msg + "无剩余可添加数据!",
-            type: "info"
-          });
-        }
-      }
 
-      let msg = "";
-      if (this.repeatIndex > 0) msg = "去重(" + this.repeatIndex + ")条,";
-      if (publicRows.length > 0) {
-        if (this.tableType == "E-Kshow") {
-          publicRows.forEach(element => {
-            element.isKvK = true;
-            element.id = "";
-            element.tableId = this.tableInfo.id;
-          });
-        } else if (this.tableType == "E-Eshow") {
-          publicRows.forEach(element => {
-            element.isKvK = false;
-            element.id = "";
-            element.tableId = this.tableInfo.id;
-          });
-        }
-        publicRows.forEach(element => {
-          element.id = "";
-          element.tableId = this.tableInfo.id;
-        });
-        tableColumnSaveList({ tableColumnList: publicRows }).then(response => {
-          if (response.code == 200) {
-            this.$message({ message: "操作成功", type: "success" });
-            this.dialogStatus.columnDialog = false;
-            this.getCodeTable();
-          } else {
-            this.$message({
-              type: "error",
-              message: "操作失败"
-            });
-          }
-        });
-      } else {
-        this.$message({
-          message: msg + "无剩余可添加数据!",
-          type: "success"
-        });
-      }
-      this.dialogStatus.publicMatedataDialog = false;
-    },
-    // 质控字段
-    columnControl() {
-      if (this.selColumnData.length == 0) {
-        this.$message({
-          message: "请选择一条数据！",
-          type: "error"
-        });
-      } else {
-        let flag = false;
-        let length = this.selColumnData.length;
-        let publicRows = this.selColumnData;
-        publicRows.forEach(element => {
-          var switchObj = Object.assign({}, element);
-          var firstChar = element.celementCode.substr(0, 1);
-          let newCode = element.celementCode.replace(firstChar, "Q");
-          switchObj.eleName = element.eleName + "质量标志";
-          switchObj.celementCode = newCode;
-          switchObj.dbEleCode = newCode;
-          switchObj.id = "";
-          publicRows.push(switchObj);
-          this.columnData.forEach(c => {
-            if (c.celementCode == switchObj.celementCode) {
-              flag = true;
-            }
-          });
-        });
-        if (flag) {
-          this.$message({
-            message: "不能重复插入质控字段",
-            type: "error"
-          });
-          return;
-        }
-        this.$confirm("是否插入" + length + "条质控字段", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        })
-          .then(() => {
-            tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
-              if (res.code == 200) {
-                this.$message({
-                  message: "操作成功！",
-                  type: "success"
-                });
-                this.getCodeTable();
-              } else {
-                this.$message({
-                  message: res.msg,
-                  type: "error"
-                });
-              }
-            });
-          })
-          .catch(() => {});
-      }
-    },
-    // 同步服务
-    async syncServe() {
-      if (this.columnData.length == 0) {
-        this.$message({
-          message: "请选择一条数据",
-          type: "error"
-        });
-        return;
-      }
-      syncSCode({
-        tableColumnList: this.columnData
-      }).then(res => {
-        if (res.code == 200) {
-          this.$message({
-            message: "同步成功！",
-            type: "success"
-          });
-          this.getCodeTable();
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
-          });
-        }
-      });
-    },
     getMyExcelData(data) {
       let tableJson = [
         { name: "公共元数据字段", value: "dbEleCode" },
@@ -1088,7 +739,6 @@ export default {
       ];
       let dataJson = [];
       // data 为读取的excel数据，在这里进行处理该数据
-      debugger;
       data.forEach(element => {
         var obj = {};
         let itemKeys = Object.keys(element);
@@ -1276,15 +926,6 @@ export default {
       });
       return newRows;
     }
-  },
-  mounted() {
-    enable().then(res => {
-      if (res.data == "true") {
-        this.tableStructureManageContral = true;
-      } else {
-        this.tableStructureManageContral = false;
-      }
-    });
   },
   computed: {
     dragOptions() {

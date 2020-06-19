@@ -2,19 +2,19 @@
   <section class="powerDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="100px">
       <el-form-item label="配置名称" prop="name">
-        <el-input size="medium" v-model="msgFormDialog.name" readonly></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.name" readonly></el-input>
       </el-form-item>
       <el-form-item label="权限" prop="roleKey">
-        <el-input size="medium" v-model="msgFormDialog.roleKey" readonly></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.roleKey" readonly></el-input>
       </el-form-item>
       <el-form-item label="默认通过">
-        <el-radio-group v-model="msgFormDialog.value">
+        <el-radio-group v-model.trim="msgFormDialog.value">
           <el-radio label="1">通过</el-radio>
           <el-radio label="0">不通过</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input type="textarea" size="medium" v-model="msgFormDialog.description"></el-input>
+        <el-input type="textarea" size="medium" v-model.trim="msgFormDialog.description"></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">

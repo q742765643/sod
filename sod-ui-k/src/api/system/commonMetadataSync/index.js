@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API
+const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
 
 // 查询列表
 export function pageList(query) {

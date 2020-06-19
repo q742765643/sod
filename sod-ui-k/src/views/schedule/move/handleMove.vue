@@ -5,7 +5,7 @@
         <el-col :span="12">
           <el-form-item label="物理库" prop="databaseId">
             <el-select
-              v-model="msgFormDialog.databaseId"
+              v-model.trim="msgFormDialog.databaseId"
               filterable
               @change="selectByDatabaseIds($event,'')"
               placeholder="请选择物理库"
@@ -23,7 +23,7 @@
         <el-col :span="12">
           <el-form-item label="资料名称" prop="dataClassId">
             <el-select
-              v-model="msgFormDialog.dataClassId"
+              v-model.trim="msgFormDialog.dataClassId"
               filterable
               @change="selectTable"
               placeholder="请选择资料"
@@ -41,7 +41,7 @@
         <el-col :span="24">
           <el-form-item label="迁移条件" prop="conditions">
             <el-select
-              v-model="msgFormDialog.conditions"
+              v-model.trim="msgFormDialog.conditions"
               placeholder="请选择迁移条件"
               filterable
               style="width: 100%"
@@ -58,7 +58,7 @@
         <el-col :span="12">
           <el-form-item label="迁移源目录" prop="sourceDirectory">
             <el-select
-              v-model="msgFormDialog.sourceDirectory"
+              v-model.trim="msgFormDialog.sourceDirectory"
               placeholder="请选择"
               style="width: 100%"
             >
@@ -74,7 +74,7 @@
         <el-col :span="12">
           <el-form-item label="迁移目标目录" prop="targetDirectory">
             <el-select
-              v-model="msgFormDialog.targetDirectory"
+              v-model.trim="msgFormDialog.targetDirectory"
               placeholder="请选择"
               style="width: 100%"
             >
@@ -89,28 +89,28 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="表名" prop="tableName">
-            <el-input v-model="msgFormDialog.tableName" disabled />
+            <el-input v-model.trim="msgFormDialog.tableName" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="四级编码" prop="ddataId">
-            <el-input v-model="msgFormDialog.ddataId" disabled />
+            <el-input v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="迁移限制频率" prop="moveLimit">
-            <el-input-number v-model="msgFormDialog.moveLimit" :min="0"></el-input-number>秒
+            <el-input-number v-model.trim="msgFormDialog.moveLimit" :min="0"></el-input-number>秒
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input-number v-model="msgFormDialog.executorTimeout" :min="0"></el-input-number>分钟
+            <el-input-number v-model.trim="msgFormDialog.executorTimeout" :min="0"></el-input-number>分钟
           </el-form-item>
         </el-col>
 
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
-            <el-radio-group v-model="msgFormDialog.isAlarm">
+            <el-radio-group v-model.trim="msgFormDialog.isAlarm">
               <el-radio
                 v-for="dict in alarmOptions"
                 :key="dict.dictValue"
@@ -122,7 +122,7 @@
 
         <el-col :span="12">
           <el-form-item label="是否清除" prop="isClear">
-            <el-radio-group v-model="msgFormDialog.isClear">
+            <el-radio-group v-model.trim="msgFormDialog.isClear">
               <el-radio
                 v-for="dict in isClearOptions"
                 :key="dict.dictValue"
@@ -133,12 +133,12 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model="cronPopover">
+            <el-popover v-model.trim="cronPopover">
               <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
               <el-input
                 slot="reference"
                 @click="cronPopover=true"
-                v-model="msgFormDialog.jobCron"
+                v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
             </el-popover>
@@ -146,12 +146,12 @@
         </el-col>
         <el-col :span="24">
           <el-form-item
-            v-if="msgFormDialog.isClear != '0' && msgFormDialog.clearConditions"
+            v-if="msgFormDialog.isClear != '0' ||  msgFormDialog.clearConditions"
             label="二级nas清除条件"
             prop="clearConditions"
           >
             <el-select
-              v-model="msgFormDialog.clearConditions"
+              v-model.trim="msgFormDialog.clearConditions"
               placeholder="请选择二级nas清除条件"
               filterable
               style="width: 100%"
@@ -168,7 +168,7 @@
 
         <el-col :span="24">
           <el-form-item label="备注">
-            <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+            <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
       </el-row>

@@ -3,10 +3,10 @@
     <!-- 查询条件 -->
     <el-form :model="queryParams" ref="materialForm" :inline="true">
       <el-form-item label="资料名称">
-        <el-input v-model="queryParams.className" size="small" placeholder="资料名称"></el-input>
+        <el-input v-model.trim="queryParams.className" size="small" placeholder="资料名称"></el-input>
       </el-form-item>
       <el-form-item label="是否发布">
-        <el-select v-model="queryParams.ifStopUse" size="small">
+        <el-select v-model.trim="queryParams.ifStopUse" size="small">
           <el-option value label="全部"></el-option>
           <el-option :value="true" label="是"></el-option>
           <el-option :value="false" label="否"></el-option>

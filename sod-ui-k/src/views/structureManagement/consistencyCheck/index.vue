@@ -3,7 +3,7 @@
     <!-- 一致性检查 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="专题库名称：">
-        <el-input size="small" v-model="queryParams.database_name" placeholder="输入关键字搜索"></el-input>
+        <el-input size="small" v-model.trim="queryParams.database_name" placeholder="输入关键字搜索"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
@@ -39,6 +39,8 @@
       :data="tableData"
       row-key="id"
       @selection-change="handleCurrentChange"
+      ref="singleTable"
+      highlight-current-row
     >
       <el-table-column type="index" label="序号" :index="table_index" width="50"></el-table-column>
       <el-table-column type="selection" width="50"></el-table-column>
@@ -77,8 +79,9 @@
         <el-form-item label="数据库选择:" prop="databaseId">
           <el-select
             style="width:80%;"
-            v-model="msgFormDialog.databaseId"
+            v-model.trim="msgFormDialog.databaseId"
             placeholder="请选择添加数据库"
+            filterable
             @change="databaseChange"
           >
             <el-option
@@ -157,11 +160,12 @@ import {
   exportTable,
   downHistoryDfcheckFile
 } from "@/api/structureManagement/consistencyCheck";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   data() {
     return {
       exportIcon: "el-icon-download",
-      currentRow: [],
+      currentRows: [],
       // 遮罩层
       loading: true,
       queryParams: {
@@ -244,10 +248,10 @@ export default {
       });
     },
     handleCurrentChange(val) {
-      this.currentRow = val;
+      this.currentRows = val;
     },
     handleExport() {
-      if (this.currentRow.length != 1) {
+      if (this.currentRows.length != 1) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -260,7 +264,7 @@ export default {
         callback: action => {}
       });
       let obj = {};
-      obj.id = this.currentRow[0].databaseId;
+      obj.id = this.currentRows[0].databaseId;
       exportTable(obj).then(res => {
         this.downloadfileCommon(res);
         this.exportIcon = "el-icon-download";
@@ -270,12 +274,12 @@ export default {
       getDatabaseName().then(response => {
         var resdata = response.data;
         resdata.forEach(element => {
-          if (
-            element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
-            element.DATABASE_TYPE.indexOf("xugu") != -1
-          ) {
-            this.databaseNameOptions.push(element);
-          }
+          // if (
+          //element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
+          // element.DATABASE_TYPE.indexOf("xugu") != -1
+          // ) {
+          this.databaseNameOptions.push(element);
+          //}
         });
       });
     },
@@ -297,13 +301,17 @@ export default {
       /*downHistoryDfcheckFile(obj).then(res => {
         this.downloadfileCommon(res);
       });*/
-      this.download(row.fileDirectory + "/" + row.fileName);
+      downloadTable({ filePath: row.fileDirectory + "/" + row.fileName }).then(
+        res => {
+          this.downloadfileCommon(res);
+        }
+      );
     },
     addReportData() {
       this.addDataDialog = true;
     },
     deleteData() {
-      if (this.currentRow.length == 0) {
+      if (this.currentRows.length == 0) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -312,7 +320,7 @@ export default {
       }
       let ids = [];
       let databaseNames = [];
-      this.currentRow.forEach(element => {
+      this.currentRows.forEach(element => {
         ids.push(element.id);
         databaseNames.push(element.databaseName);
       });

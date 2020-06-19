@@ -9,10 +9,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="参数编码:">
-        <el-input size="small" v-model="queryParams.parameterId" placeholder="请输入参数编码" />
+        <el-input size="small" v-model.trim="queryParams.parameterId" placeholder="请输入参数编码" />
       </el-form-item>
       <el-form-item label="要素存储短名:">
-        <el-input size="small" v-model="queryParams.eleCodeShort" placeholder="请输入要素存储短名" />
+        <el-input size="small" v-model.trim="queryParams.eleCodeShort" placeholder="请输入要素存储短名" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -57,6 +57,7 @@
       :data="tableData"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="eleCodeShort" label="要素存储短名"></el-table-column>
@@ -99,16 +100,16 @@
         class="gribdefineDialog"
       >
         <el-form-item label="要素存储短名:" prop="eleCodeShort">
-          <el-input v-model="ruleForm.eleCodeShort" placeholder="请输入要素存储短名" />
+          <el-input v-model.trim="ruleForm.eleCodeShort" placeholder="请输入要素存储短名" />
         </el-form-item>
         <el-form-item label="学科:" prop="subjectId">
-          <el-input v-model.number="ruleForm.subjectId" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.subjectId" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="参数种类:" prop="classify">
-          <el-input v-model.number="ruleForm.classify" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.classify" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="参数编码:" prop="parameterId">
-          <el-input v-model.number="ruleForm.parameterId" type="number" placeholder="请输入数字" />
+          <el-input v-model.trim.number="ruleForm.parameterId" type="number" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="GRIB版本:" prop="gribVersion">
           <el-select v-model.number="ruleForm.gribVersion">
@@ -117,16 +118,16 @@
           </el-select>
         </el-form-item>
         <el-form-item label="是否为共有配置:" prop="publicConfig">
-          <el-select v-model="ruleForm.publicConfig">
+          <el-select v-model.trim="ruleForm.publicConfig">
             <el-option label="是" value="Y"></el-option>
             <el-option label="否" value="N"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="模板编号:" prop="templateId">
-          <el-input v-model="ruleForm.templateId" placeholder="请输入模板ID" />
+          <el-input v-model.trim="ruleForm.templateId" placeholder="请输入模板ID" />
         </el-form-item>
         <el-form-item label="模板说明:" prop="templateDesc">
-          <el-input type="textarea" v-model="ruleForm.templateDesc" />
+          <el-input type="textarea" v-model.trim="ruleForm.templateDesc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -184,7 +185,7 @@ export default {
       importHeaders: {
         enctype: "multipart/form-data"
       },
-      choserow: [],
+      multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
@@ -219,6 +220,19 @@ export default {
     this.getList();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     // table自增定义方法
     table_index(index) {
       return (
@@ -264,6 +278,12 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     showDialog(type) {
@@ -271,9 +291,9 @@ export default {
         this.dialogTitle = "添加";
         this.msgFormDialog = true;
       } else {
-        if (this.choserow.length == 1) {
+        if (this.multipleSelection.length == 1) {
           this.dialogTitle = "编辑";
-          this.ruleForm = this.choserow[0];
+          this.ruleForm = this.multipleSelection[0];
           this.msgFormDialog = true;
         } else {
           this.$message({
@@ -343,10 +363,10 @@ export default {
       this.$refs.upload.clearFiles();
     },
     handleSelectionChange(val) {
-      this.choserow = val;
+      this.multipleSelection = val;
     },
     deleteCell() {
-      if (this.choserow.length == 0) {
+      if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -355,7 +375,7 @@ export default {
       }
       let ids = [];
       let eleCodeShorts = [];
-      this.choserow.forEach(element => {
+      this.multipleSelection.forEach(element => {
         ids.push(element.id);
         eleCodeShorts.push(element.eleCodeShort);
       });

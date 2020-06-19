@@ -3,7 +3,7 @@
     <!-- 数据同步 -->
     <el-form :model="queryParams" ref="queryParams" :inline="true" class="searchBox">
       <el-form-item label="关键字查询">
-        <el-select size="small" v-model="queryParams.selectInfo">
+        <el-select size="small" v-model.trim="queryParams.selectInfo">
           <el-option
             :key="index"
             v-for="(item,index) in selectInfoSelect"
@@ -13,10 +13,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label>
-        <el-input v-model="queryParams.searchValue"></el-input>
+        <el-input v-model.trim="queryParams.searchValue"></el-input>
       </el-form-item>
       <el-form-item label="运行状态">
-        <el-select size="small" v-model="queryParams.runState" style="width:120px;">
+        <el-select size="small" v-model.trim="queryParams.runState" style="width:120px;">
           <el-option label="全部" value></el-option>
           <el-option
             v-for="(item,index) in runStateSelect"
@@ -39,7 +39,20 @@
         <el-button type="primary" icon="el-icon-plus" size="small" @click="addSync">添加</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="primary" icon="el-icon-edit" size="small">批量启停</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-video-play"
+          size="small"
+          @click="handlebatchRestart"
+        >批量启动</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          icon="el-icon-video-pause"
+          size="small"
+          @click="handlebatchStop"
+        >批量停止</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" icon="el-icon-download" size="small" @click="handleExport">导出</el-button>
@@ -48,8 +61,18 @@
         <el-button type="primary" icon="el-icon-refresh" size="small">刷新</el-button>
       </el-col>
     </el-row>
-    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
-      <el-table-column type="index" label="序号" width="50"></el-table-column>
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column type="selection" min-width="15"></el-table-column>
       <el-table-column prop="taskName" width="200px" label="任务名称" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column
@@ -77,7 +100,24 @@
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="runState" label="运行状态" :formatter="getStatus"></el-table-column>
+      <el-table-column prop="runState" label="运行状态" width="160px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.runState.split('|')[0] == 'true'">运行中</span>
+          <span v-else-if="scope.row.runState.split('|')[0] == 'error'">未启动</span>
+          <span
+            v-else-if="scope.row.runState.split('|')[0] == 'false'&&scope.row.runState.split('|')[1] == ''"
+          >停止</span>
+          <el-popover
+            v-else-if="scope.row.runState.split('|')[0] == 'false'&&scope.row.runState.split('|')[1]"
+            placement="top-start"
+            :title="scope.row.runState.split('|')[1]"
+            width="200"
+            trigger="hover"
+          >
+            <el-button slot="reference" size="mini">运行出错</el-button>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="460">
         <template slot-scope="scope">
           <el-button
@@ -85,12 +125,13 @@
             size="mini"
             icon="el-icon-video-play"
             @click="updateStatus(scope.row,1)"
-            v-if="scope.row.runState=='error'"
+            v-if="scope.row.runState!='true'"
           >启动</el-button>
           <el-button
             type="text"
             size="mini"
             icon="el-icon-video-pause"
+            v-if="scope.row.runState=='true'"
             @click="updateStatus(scope.row,2)"
           >停止</el-button>
           <el-button
@@ -180,7 +221,9 @@ import {
   getSyncInfo,
   exportTable,
   syncStart,
-  syncStop
+  syncStop,
+  batchRestart,
+  batchStop
 } from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
@@ -245,7 +288,7 @@ export default {
         },
         {
           value: "04",
-          label: "停止中"
+          label: "停止"
         }
       ],
       total: 0,
@@ -254,13 +297,18 @@ export default {
       handleDialog: false,
       dialogSuperSearch: false,
       superObj: {},
-      superMsg: {}
+      superMsg: {},
+      multipleSelection: [],
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -320,6 +368,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     resetQuery() {
@@ -337,33 +392,14 @@ export default {
       this.dailyDataDialog = false;
       this.getList();
     },
-    closeDialog() {
-      this.handleDialog = false;
-    },
+
     // 高级搜索
     superClick() {
       this.superObj = {};
       this.superObj.pageName = "数据同步";
       this.dialogSuperSearch = true;
     },
-    // 状态
-    getStatus: function(row) {
-      var value = row.runState.split("|");
-      var result = "";
-      if (value[0] == "true") {
-        result = "运行中";
-      } else if (value[0] == "false") {
-        if (value[1] == "") {
-          result = "停止中";
-        } else {
-          result = "运行出错";
-          value[1] = value[1].replace(/[\r\n]/g, ""); //去掉回车换行
-        }
-      } else if (value[0] == "error") {
-        result = "未启动";
-      }
-      return result;
-    },
+
     handleAdd() {
       this.handleDialog = true;
     },
@@ -376,6 +412,37 @@ export default {
       this.dialogTitle = "新增";
       this.handleDialog = true;
       this.handleObj = {};
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handlebatchRestart() {
+      if (this.multipleSelection.length == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      let ids = [];
+      this.multipleSelection.forEach(element => {
+        ids.push(element.id);
+      });
+      batchRestart({ taskIds: ids.join(",") }).then(response => {
+        this.msgSuccess("启动成功");
+        this.getList();
+      });
+    },
+    handlebatchStop() {
+      if (this.multipleSelection.length == 0) {
+        this.msgError("请选择一条数据");
+        return;
+      }
+      let ids = [];
+      this.multipleSelection.forEach(element => {
+        ids.push(element.id);
+      });
+      batchStop({ taskIds: ids.join(",") }).then(response => {
+        this.msgSuccess("停止成功");
+        this.getList();
+      });
     },
     closeSuperSearch() {
       this.dialogSuperSearch = false;
@@ -427,7 +494,13 @@ export default {
     },
 
     updateStatus(row, type) {
-      this.$confirm("是否确认启动/停止任务", "警告", {
+      let handle = "";
+      if (type == 1) {
+        handle = "启动";
+      } else {
+        handle = "停止";
+      }
+      this.$confirm("是否确认" + handle + "任务", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -441,6 +514,7 @@ export default {
           }
         })
         .then(() => {
+          this.msgSuccess(handle + "成功");
           this.getList();
         })
         .catch(function() {});

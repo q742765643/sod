@@ -124,7 +124,7 @@ export default {
         uploadAvatar(formData).then(response => {
           if (response.code === 200) {
             this.open = false;
-            this.options.img = window.serverConfig.VUE_APP_UCENTER_API + response.data;
+            this.options.img = process.env.VUE_APP_UCENTER_API + response.data;
             this.msgSuccess("修改成功");
           } else {
             this.msgError(response.msg);

@@ -3,13 +3,13 @@
     <!-- 存储字段检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="表名称:">
-        <el-input size="small" v-model="queryParams.tableName" placeholder="请输入表名称" />
+        <el-input size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
       <el-form-item label="中文简称:">
-        <el-input size="small" v-model="queryParams.eleName" placeholder="请输入中文简称" />
+        <el-input size="small" v-model.trim="queryParams.eleName" placeholder="请输入中文简称" />
       </el-form-item>
       <el-form-item label="字段名称:">
-        <el-input size="small" v-model="queryParams.CElementCode" placeholder="请输入字段名称" />
+        <el-input size="small" v-model.trim="queryParams.CElementCode" placeholder="请输入字段名称" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleQuery" icon="el-icon-search" size="small">查询</el-button>
@@ -19,7 +19,15 @@
       </el-form-item>
     </el-form>
 
-    <el-table border v-loading="loading" :data="tableData" row-key="id">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <af-table-column prop="C_ELEMENT_CODE" label="公共元数据字段">
         <template slot-scope="scope">
           <span>{{scope.row.C_ELEMENT_CODE}}</span>
@@ -143,13 +151,17 @@ export default {
       // 高级搜索
       dialogSuperSearch: false,
       superObj: {},
-      superMsg: {}
+      superMsg: {},
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.superMsg = {};
@@ -183,6 +195,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.ID == this.currentRow.ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     // 关闭高级搜索

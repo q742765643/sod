@@ -3,7 +3,7 @@
     <!-- 专题库审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="资料状态">
-        <el-select v-model="queryParams.examineStatus">
+        <el-select v-model.trim="queryParams.examineStatus">
           <el-option label="全部" value></el-option>
           <el-option
             v-for="(item,index) in auditStatus"
@@ -14,17 +14,27 @@
         </el-select>
       </el-form-item>
       <el-form-item label="专题库名称">
-        <el-input v-model="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
+        <el-input v-model.trim="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input v-model="queryParams.userName" type="text" placeholder="申请用户"></el-input>
+        <el-input v-model.trim="queryParams.userName" type="text" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
       </el-form-item>
     </el-form>
-    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>
@@ -100,7 +110,11 @@
 </template>
 
 <script>
-import { pageList, deleteList } from "@/api/authorityAudit/topicLibraryAudit";
+import {
+  pageList,
+  deleteList,
+  exportTables
+} from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
 // 创建专题库
@@ -151,13 +165,17 @@ export default {
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
-      applyTopicDialog: false
+      applyTopicDialog: false,
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -187,6 +205,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.id == this.currentRow.id) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     resetQuery() {
@@ -201,20 +226,21 @@ export default {
     },
 
     deleteCell(row) {
-      deleteList({ id: row.id }).then(res => {
-        if (res.code == 200) {
-          this.$message({
-            type: "success",
-            message: "删除成功"
+      this.$confirm("确定要删除这条数据吗?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteList({ id: row.id }).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功"
+            });
+            this.resetQuery();
           });
-          this.resetQuery();
-        } else {
-          this.$message({
-            type: "error",
-            message: res.msg
-          });
-        }
-      });
+        })
+        .catch(() => {});
     },
     editCell(row) {
       this.handleObj = row;
@@ -225,6 +251,12 @@ export default {
       this.handleDialog = false;
       this.applyTopicDialog = false;
       this.getList();
+    },
+    // 导出
+    handleExport() {
+      exportTables(this.queryParams).then(res => {
+        this.downloadfileCommon(res);
+      });
     }
   }
 };

@@ -3,11 +3,8 @@
  * Copyright (c) 2019 ruoyi
  */
 
-const baseURL = window.serverConfig.VUE_APP_DM
+const baseURL = process.env.VUE_APP_DM
 import fileDownload from 'js-file-download'
-import {
-  downloadTable
-} from "@/api/structureManagement/exportTable";
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0) {
@@ -88,12 +85,7 @@ export function selectDictLabel(datas, value) {
 
 // 通用下载方法
 export function download(filePath) {
-  downloadTable({
-    filePath: filePath
-  }).then(res => {
-    this.downloadfileCommon(res);
-  });
-  // window.location.href = baseURL + "/api/com/downloadByPath?filePath=" + filePath;
+  window.location.href = baseURL + "/api/com/downloadByPath?filePath=" + filePath;
 }
 export function downloadfileCommon(res) {
   if (!res) {
@@ -104,6 +96,7 @@ export function downloadfileCommon(res) {
     return;
   }
   // debugger
+
   console.log(res.headers['content-disposition']);
   if (res.headers['content-disposition']) {
     let filename = decodeURI(res.headers['content-disposition'].split(';')[1].split('=')[1]);
@@ -115,6 +108,7 @@ export function downloadfileCommon(res) {
       message: "没有文件，无需下载"
     });
   }
+
   /* console.log(222)
   let fileType = 'type: "application/octet-stream";charset=utf-8'
   if (Type == 'word') {

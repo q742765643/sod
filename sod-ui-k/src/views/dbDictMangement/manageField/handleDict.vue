@@ -2,16 +2,16 @@
   <section class="fileHandleDict">
     <el-form :model="ruleForm" ref="ruleForm" :rules="rules" label-width="100px">
       <el-form-item label="字段编码:" prop="dbEleCode">
-        <el-input v-model="ruleForm.dbEleCode" placeholder="请输入字段编码"></el-input>
+        <el-input v-model.trim="ruleForm.dbEleCode" placeholder="请输入字段编码"></el-input>
       </el-form-item>
       <el-form-item label="服务代码:" prop="userEleCode">
-        <el-input v-model="ruleForm.userEleCode" placeholder="请输入服务代码"></el-input>
+        <el-input v-model.trim="ruleForm.userEleCode" placeholder="请输入服务代码"></el-input>
       </el-form-item>
       <el-form-item label="中文名:" prop="dbEleName">
-        <el-input v-model="ruleForm.dbEleName"></el-input>
+        <el-input v-model.trim="ruleForm.dbEleName"></el-input>
       </el-form-item>
       <el-form-item label="字段类型:" prop="type">
-        <el-select v-model="ruleForm.type">
+        <el-select v-model.trim="ruleForm.type">
           <el-option
             v-for="item in dictTypes"
             :key="item.dictValue"
@@ -21,7 +21,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="组名称:" prop="groupId">
-        <el-select v-model="ruleForm.groupId">
+        <el-select v-model.trim="ruleForm.groupId">
           <el-option
             v-for="(item,index) in GroupNames"
             :key="index"
@@ -31,16 +31,16 @@
         </el-select>
       </el-form-item>
       <el-form-item label="字段精度:">
-        <el-input v-model="ruleForm.dataPrecision"></el-input>
+        <el-input v-model.trim="ruleForm.dataPrecision"></el-input>
       </el-form-item>
       <el-form-item label="是否可为空:" prop="nullAble">
-        <el-select v-model="ruleForm.nullAble">
+        <el-select v-model.trim="ruleForm.nullAble">
           <el-option label="是" value="true"></el-option>
           <el-option label="否" value="false"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="是否可更新:" prop="updateAble">
-        <el-select v-model="ruleForm.updateAble">
+        <el-select v-model.trim="ruleForm.updateAble">
           <el-option label="是" value="true"></el-option>
           <el-option label="否" value="false"></el-option>
         </el-select>

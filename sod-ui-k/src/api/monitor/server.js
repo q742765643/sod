@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl =window.serverConfig.VUE_APP_UCENTER_API
+const baseUrl =process.env.VUE_APP_UCENTER_API
 
 // 查询服务器详细
 export function getServer() {

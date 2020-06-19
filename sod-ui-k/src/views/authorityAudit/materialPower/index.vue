@@ -4,7 +4,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="状态">
         <el-select
-          v-model="queryParams.auditStatus"
+          v-model.trim="queryParams.auditStatus"
           placeholder="状态"
           clearable
           size="small"
@@ -20,12 +20,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="申请人">
-        <el-input size="small" v-model="queryParams.userName" placeholder="申请人"></el-input>
+        <el-input size="small" v-model.trim="queryParams.userName" placeholder="申请人"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
           size="small"
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           type="datetimerange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -50,7 +50,16 @@
         >权限配置</el-button>
       </el-col>
     </el-row>
-    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="机构"></el-table-column>
@@ -147,13 +156,17 @@ export default {
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
-      handlepowerDialog: false
+      handlepowerDialog: false,
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -188,6 +201,13 @@ export default {
           this.tableData = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.currentRow) {
+            this.tableData.forEach((element, index) => {
+              if (element.id == this.currentRow.id) {
+                this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+              }
+            });
+          }
         }
       );
     },

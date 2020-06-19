@@ -170,7 +170,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-// import { interfaceObj } from "@/urlConfig.js";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 import {
   findDataCount,
   findDataMonthCount,
@@ -765,7 +765,9 @@ export default {
     },
     // 下载
     downloadWord(path) {
-      this.download(path);
+      downloadTable({ filePath: path }).then(res => {
+        this.downloadfileCommon(res);
+      });
     },
 
     //获取接口详细信息

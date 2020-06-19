@@ -44,7 +44,7 @@
         <el-row>
           <el-col :span="6">
             <el-form-item label="区域选择" prop="region">
-              <el-select filterable v-model="baseSet.region" placeholder="请选择" size="small">
+              <el-select filterable v-model.trim="baseSet.region" placeholder="请选择" size="small">
                 <el-option
                   v-for="item in baseAreaOptions"
                   :key="item.value"
@@ -56,32 +56,37 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input-number v-model="baseSet.gribVersion" :min="0" size="small"></el-input-number>
+              <el-input-number
+                v-model.trim="baseSet.gribVersion"
+                :min="0"
+                :max="999999999"
+                size="small"
+              ></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="场类型" prop="fieldType">
-              <el-input-number v-model="baseSet.fieldType" :min="0" size="small"></el-input-number>
+              <el-input-number v-model="baseSet.fieldType" :min="0" :max="999999999" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="加工过程类型" prop="processType">
-              <el-input v-model="baseSet.processType" size="small"></el-input>
+              <el-input v-model.trim="baseSet.processType" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="资料时次" prop="dataTime">
-              <el-input v-model="baseSet.dataTime" size="small"></el-input>
+              <el-input v-model.trim="baseSet.dataTime" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="时效单位" prop="timeUnit">
-              <el-input v-model="baseSet.timeUnit" size="small"></el-input>
+              <el-input v-model.trim="baseSet.timeUnit" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="空间分辨率" prop="spatialResolution">
-              <el-input v-model="baseSet.spatialResolution" size="small"></el-input>
+              <el-input v-model.trim="baseSet.spatialResolution" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -144,14 +149,19 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="序号" prop="num">
-              <el-input placeholder="序号" v-model="msgFormDialog.num"></el-input>
+              <el-input-number
+                placeholder="序号"
+                v-model="msgFormDialog.num"
+                :min="1"
+                :max="999999999"
+              ></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="区域代码" prop="areaId">
               <el-select
                 filterable
-                v-model="msgFormDialog.areaId"
+                v-model.trim="msgFormDialog.areaId"
                 placeholder="请选择区域"
                 size="small"
                 class="areaSelect"
@@ -172,7 +182,7 @@
               <el-select
                 filterable
                 @change="getServeByEle"
-                v-model="msgFormDialog.dbEleName"
+                v-model.trim="msgFormDialog.dbEleName"
                 placeholder="要素存储代码"
                 size="small"
               >
@@ -209,7 +219,7 @@
             <el-form-item label="层次类型" prop="levelType">
               <el-select
                 filterable
-                v-model="msgFormDialog.levelType"
+                v-model.trim="msgFormDialog.levelType"
                 placeholder="层次类型"
                 size="small"
               >
@@ -224,62 +234,86 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="层次类型转换因子" prop="scaleDivisor">
-              <el-input placeholder="层次类型转换因子" v-model="msgFormDialog.scaleDivisor"></el-input>
+              <el-input placeholder="层次类型转换因子" v-model.trim="msgFormDialog.scaleDivisor"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素中文名" prop="eleNameCn">
-              <el-input placeholder="要素中文名" v-model="msgFormDialog.eleNameCn"></el-input>
+              <el-input
+                placeholder="要素中文名"
+                v-model.trim="msgFormDialog.eleNameCn"
+                @input="forceUpdate($event)"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="要素长名" prop="eleLongName">
-              <el-input placeholder="要素长名" v-model="msgFormDialog.eleLongName"></el-input>
+              <el-input
+                placeholder="要素长名"
+                v-model.trim="msgFormDialog.eleLongName"
+                @input="forceUpdate($event)"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="要素单位" prop="eleUnit">
-              <el-input placeholder="要素单位" v-model="msgFormDialog.eleUnit"></el-input>
+              <el-input
+                placeholder="要素单位"
+                v-model.trim="msgFormDialog.eleUnit"
+                @input="forceUpdate($event)"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="GRIB版本" prop="gribVersion">
-              <el-input placeholder="GRIB版本" v-model="msgFormDialog.gribVersion"></el-input>
+              <el-input-number
+                v-model="msgFormDialog.gribVersion"
+                :min="0"
+                :max="999999999"
+                placeholder="GRIB版本"
+              ></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="资料时次" prop="eleHours">
-              <el-input placeholder="资料时次" v-model="msgFormDialog.eleHours"></el-input>
+              <el-input placeholder="资料时次" v-model.trim="msgFormDialog.eleHours"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="空间分辨率" prop>
-              <el-input placeholder="空间分辨率" v-model="msgFormDialog.gridPixel"></el-input>
+            <el-form-item label="空间分辨率" prop="gridPixel">
+              <el-input placeholder="空间分辨率" v-model.trim="msgFormDialog.gridPixel"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="预报时效单位" prop="timeUnit">
-              <el-input placeholder="预报时效单位" v-model="msgFormDialog.timeUnit"></el-input>
+              <el-input placeholder="预报时效单位" v-model.trim="msgFormDialog.timeUnit"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="层次单位" prop>
-              <el-input placeholder="层次单位" v-model="msgFormDialog.levelUnit"></el-input>
+            <el-form-item label="层次单位" prop="levelUnit">
+              <el-input placeholder="层次单位" v-model.trim="msgFormDialog.levelUnit"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="层次列表" prop="levelList">
+              <el-input type="textarea" placeholder="层次列表" v-model.trim="msgFormDialog.levelList"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <el-form-item label="预报时效列表" prop="timeList">
-              <el-input type="textarea" placeholder="预报时效列表" v-model="msgFormDialog.timeList"></el-input>
+              <el-input type="textarea" placeholder="预报时效列表" v-model.trim="msgFormDialog.timeList"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -307,6 +341,7 @@ import {
   delByIds
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { getAllLevel } from "@/api/GridDataDictionaryManagement/levelManagement";
+
 export default {
   name: "dataServeManage",
   props: { rowData: Object },
@@ -326,7 +361,15 @@ export default {
         eleField: "",
         regionField: ""
       },
-      baseSet: {},
+      baseSet: {
+        region: "",
+        gribVersion: "",
+        fieldType: "",
+        processType: "",
+        dataTime: "",
+        timeUnit: "",
+        spatialResolution: ""
+      },
       searchObj: {
         dataServiceId: this.rowData.DATA_CLASS_ID,
         pageNum: 1,
@@ -335,7 +378,23 @@ export default {
       dialogTitle: "新增数据服务信息",
       dataServeDialog: false,
       msgFormDialog: {
-        dataServiceId: this.rowData.DATA_CLASS_ID
+        dataServiceId: this.rowData.DATA_CLASS_ID,
+        num: "",
+        areaId: "",
+        dbEleName: "",
+        eleServiceId: "",
+        levelType: "",
+        scaleDivisor: "",
+        eleNameCn: "",
+        eleLongName: "",
+        eleUnit: "",
+        gribVersion: "",
+        eleHours: "",
+        gridPixel: "",
+        timeUnit: "",
+        levelUnit: "",
+        levelList: "",
+        timeList: ""
       },
       baseRules: {
         region: [
@@ -375,8 +434,30 @@ export default {
         levelType: [
           { required: true, message: "请输入层次类型", trigger: "blur" }
         ],
+        gribVersion: [
+          { required: true, message: "请输入GRIB版本", trigger: "blur" }
+        ],
+        eleUnit: [
+          { min: 0, max: 10, message: "长度在 0 到 10 个字符", trigger: "blur" }
+        ],
         scaleDivisor: [
           { required: true, message: "请输入层次转换因子", trigger: "blur" }
+        ],
+        eleNameCn: [
+          {
+            min: 0,
+            max: 255,
+            message: "长度在0 到 255 个字符",
+            trigger: "blur"
+          }
+        ],
+        eleLongName: [
+          {
+            min: 0,
+            max: 255,
+            message: "长度在0 到 255 个字符",
+            trigger: "blur"
+          }
         ]
       }
     };
@@ -437,11 +518,18 @@ export default {
         }
       });
     },
+
     getServeByEle(val) {
       findByDbFcstEle({ dbFcstEle: val }).then(response => {
         if (response.code == 200) {
           this.eleOptionsList = response.data;
-          console.log(this.eleOptionsList);
+          if (
+            !this.msgFormDialog.eleServiceId &&
+            this.eleOptionsList &&
+            this.eleOptionsList.length > 0
+          ) {
+            this.msgFormDialog.eleServiceId = this.eleOptionsList[0].userFcstEle;
+          }
         } else {
           this.$message({
             type: "error",
@@ -450,12 +538,21 @@ export default {
         }
       });
     },
+    forceUpdate() {
+      this.$forceUpdate();
+    },
     getEleUnit(val) {
+      this.$forceUpdate();
       this.eleOptionsList.forEach(element => {
         if (element.userFcstEle == val) {
-          this.msgFormDialog.eleUnit = element.eleUnit;
-          this.msgFormDialog.eleNameCn = element.eleName;
-          this.msgFormDialog.eleLongName = element.elePropertyName;
+          if (this.dialogTitle == "新增数据服务信息") {
+            // 新增
+            this.msgFormDialog.eleUnit = element.eleUnit;
+            this.msgFormDialog.eleNameCn = element.eleName;
+            this.msgFormDialog.eleLongName = element.elePropertyName;
+          } else if (this.dialogTitle == "编辑数据服务信息") {
+            // 编辑
+          }
         }
       });
     },
@@ -502,6 +599,7 @@ export default {
           areaId: this.baseSet.region,
           dataServiceId: this.rowData.DATA_CLASS_ID
         };
+        await this.getServeByEle(this.msgFormDialog.dbEleName);
       } else {
         this.$message({
           type: "error",
@@ -524,6 +622,7 @@ export default {
               this.dialogTitle = "编辑数据服务信息";
               this.msgFormDialog = response.data;
               this.dataServeDialog = true;
+              this.getServeByEle(this.msgFormDialog.dbEleName);
             } else {
               this.$message({
                 type: "error",
@@ -710,24 +809,30 @@ export default {
     border: 1px solid #ebeef5;
     padding: 20px;
   }
+
   .areaSelect,
   .areaTop {
     margin-bottom: 10px;
   }
+
   .areaTop {
     width: 80%;
   }
+
   .el-select {
     width: 100%;
   }
+
   .fieldsetBase {
     margin-top: 20px;
     margin-bottom: 20px;
+
     .el-input-number--small {
       width: 100%;
     }
   }
 }
+
 .dataServeDialog {
   .el-select {
     width: 100%;

@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-const baseUrl = window.serverConfig.VUE_APP_SYSTEM;
+const baseUrl = process.env.VUE_APP_SYSTEM;
 // 查询表格
 export function defineList(query) {
   return request({
