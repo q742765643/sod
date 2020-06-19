@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API
+const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
 
 export function syncList(query) {
   return request({
@@ -91,5 +91,22 @@ export function syncStop(id) {
   return request({
     url: baseUrl + '/schedule/sync/stop/' + id,
     method: 'get'
+  })
+}
+
+
+export function batchRestart(query) {
+  return request({
+    url: baseUrl + '/schedule/sync/batchRestart',
+    method: 'get',
+    params: query,
+  })
+}
+
+export function batchStop(query) {
+  return request({
+    url: baseUrl + '/schedule/sync/batchStop',
+    method: 'get',
+    params: query,
   })
 }

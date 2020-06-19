@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="参数名称" prop="configName">
         <el-input
-          v-model="queryParams.configName"
+          v-model.trim="queryParams.configName"
           placeholder="请输入参数名称"
           clearable
           size="small"
@@ -13,7 +13,7 @@
       </el-form-item>
       <el-form-item label="参数键名" prop="configKey">
         <el-input
-          v-model="queryParams.configKey"
+          v-model.trim="queryParams.configKey"
           placeholder="请输入参数键名"
           clearable
           size="small"
@@ -22,7 +22,7 @@
         />
       </el-form-item>
       <el-form-item label="系统内置" prop="configType">
-        <el-select v-model="queryParams.configType" placeholder="系统内置" clearable size="small">
+        <el-select v-model.trim="queryParams.configType" placeholder="系统内置" clearable size="small">
           <el-option
             v-for="dict in typeOptions"
             :key="dict.dictValue"
@@ -33,7 +33,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           size="small"
           style="width: 240px"
           value-format="yyyy-MM-dd"
@@ -146,16 +146,16 @@
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="form.configName" placeholder="请输入参数名称" />
+          <el-input v-model.trim="form.configName" placeholder="请输入参数名称" />
         </el-form-item>
         <el-form-item label="参数键名" prop="configKey">
-          <el-input v-model="form.configKey" placeholder="请输入参数键名" />
+          <el-input v-model.trim="form.configKey" placeholder="请输入参数键名" />
         </el-form-item>
         <el-form-item label="参数键值" prop="configValue">
-          <el-input v-model="form.configValue" placeholder="请输入参数键值" />
+          <el-input v-model.trim="form.configValue" placeholder="请输入参数键值" />
         </el-form-item>
         <el-form-item label="系统内置" prop="configType">
-          <el-radio-group v-model="form.configType">
+          <el-radio-group v-model.trim="form.configType">
             <el-radio
               v-for="dict in typeOptions"
               :key="dict.dictValue"
@@ -164,7 +164,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model.trim="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -184,7 +184,7 @@ import {
   updateConfig,
   exportConfig
 } from "@/api/system/config";
-
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   data() {
     return {
@@ -370,7 +370,9 @@ export default {
           return exportConfig(queryParams);
         })
         .then(response => {
-          this.download(response.msg);
+          downloadTable({ filePath: response.msg }).then(res => {
+            this.downloadfileCommon(res);
+          });
         })
         .catch(function() {});
     }

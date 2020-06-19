@@ -11,7 +11,7 @@
     <div class="tableCon" v-show="tableShow">
       <el-radio-group
         size="small"
-        v-model="tabPosition"
+        v-model.trim="tabPosition"
         v-for="(item,index) in publicTopList"
         :key="index"
         style="margin-bottom:10px;"

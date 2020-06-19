@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_DM;
 // 查询表格
 export function pageList(query) {
   return request({
@@ -97,5 +97,14 @@ export function updateExamineStatus(query) {
     url: baseUrl + '/dm/databaseSpecial/updateExamineStatus',
     method: 'get',
     params: query,
+  })
+}
+
+export function exportTables(query) {
+  return request({
+    url: baseUrl + '/dm/databaseSpecial/exportTable',
+    method: 'get',
+    params: query,
+    responseType: "arraybuffer"
   })
 }

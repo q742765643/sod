@@ -1,28 +1,28 @@
 <template>
-  <el-tabs v-model="activeName" @tab-click="handleClick" class="handleMaterialDialog">
+  <el-tabs v-model.trim="activeName" @tab-click="handleClick" class="handleMaterialDialog">
     <el-tab-pane label="基本信息" name="first">
       <el-form :model="formBaseInfo" class="demo-form-inline" label-width="120px">
         <el-form-item label="用户名">
-          <el-input v-model="formBaseInfo.USERREALNAME" readonly></el-input>
+          <el-input v-model.trim="formBaseInfo.USERREALNAME" readonly></el-input>
         </el-form-item>
         <el-form-item label="机构">
-          <el-input v-model="formBaseInfo.DEPARTMENT" readonly></el-input>
+          <el-input v-model.trim="formBaseInfo.DEPARTMENT" readonly></el-input>
         </el-form-item>
         <el-form-item label="联系方式">
-          <el-input v-model="formBaseInfo.USERPHONE" readonly></el-input>
+          <el-input v-model.trim="formBaseInfo.USERPHONE" readonly></el-input>
         </el-form-item>
         <el-form-item label="申请时间">
-          <el-input v-model="formBaseInfo.CREATE_TIME" readonly></el-input>
+          <el-input v-model.trim="formBaseInfo.CREATE_TIME" readonly></el-input>
         </el-form-item>
         <el-form-item label="数据库账户名">
-          <el-input v-model="formBaseInfo.DATABASE_UP_ID" readonly></el-input>
+          <el-input v-model.trim="formBaseInfo.DATABASE_UP_ID" readonly></el-input>
         </el-form-item>
 
         <el-row>
           <el-col :span="22">
             <el-form-item label="数据库账户密码">
               <el-input
-                v-model="formBaseInfo.DATABASE_UP_PASSWORD"
+                v-model.trim="formBaseInfo.DATABASE_UP_PASSWORD"
                 readonly
                 @blur="capsTooltip = false"
                 :type="passwordType"
@@ -49,7 +49,7 @@
       ></el-alert>
       <el-form :model="queryParams" ref="queryForm" :inline="true">
         <el-form-item label="关键字查询">
-          <el-select size="small" v-model="queryParams.searchSelect" @change="changeSearch">
+          <el-select size="small" v-model.trim="queryParams.searchSelect" @change="changeSearch">
             <el-option label="资料分类" value="typeName"></el-option>
             <el-option label="资料名称" value="className"></el-option>
             <el-option label="表名称" value="tableName"></el-option>
@@ -60,7 +60,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label>
-          <el-input size="small" v-model="queryParams.searchInput" type="text"></el-input>
+          <el-input size="small" v-model.trim="queryParams.searchInput" type="text"></el-input>
         </el-form-item>
 
         <el-form-item>

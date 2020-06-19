@@ -2,13 +2,13 @@
   <section class="handleWork">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="80px">
       <el-form-item label="用户名称" prop="conditions">
-        <el-input size="small" v-model="msgFormDialog.conditions"></el-input>
+        <el-input size="small" v-model.trim="msgFormDialog.conditions"></el-input>
       </el-form-item>
       <el-form-item label="机构" prop="conditions">
-        <el-input size="small" v-model="msgFormDialog.conditions"></el-input>
+        <el-input size="small" v-model.trim="msgFormDialog.conditions"></el-input>
       </el-form-item>
       <el-form-item label="联系方式" prop="conditions">
-        <el-input size="small" v-model="msgFormDialog.conditions"></el-input>
+        <el-input size="small" v-model.trim="msgFormDialog.conditions"></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">

@@ -21,22 +21,27 @@
           class="demo-ruleForm"
         >
           <el-form-item label="名称" prop="name">
-            <el-input v-model="ruleForm.name" placeholder="请输入专题库名称，支持中文，英文，数字和下划线，不超过20个字符"></el-input>
+            <el-input v-model.trim="ruleForm.name" placeholder="请输入专题库名称，支持中文，英文，数字和下划线，不超过20个字符"></el-input>
           </el-form-item>
           <el-form-item label="简称" prop="pname">
-            <el-input v-model="ruleForm.pname" placeholder="请输入6个字符以内的英文大写"></el-input>
+            <el-input v-model.trim="ruleForm.pname" placeholder="请输入6个字符以内的英文大写"></el-input>
           </el-form-item>
           <el-form-item label="数据库" prop="dbSelect">
-            <el-checkbox-group v-model="ruleForm.dbSelect">
+            <el-checkbox-group v-model.trim="ruleForm.dbSelect">
               <el-checkbox v-for="db in ruleForm.database" :label="db.name" :key="db.id">{{db.name}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="用途" prop="use">
-            <el-input type="textarea" v-model="ruleForm.use"></el-input>
+            <el-input type="textarea" v-model.trim="ruleForm.use"></el-input>
           </el-form-item>
           <el-form-item label="图标" prop="imageURL">
             <img style="width:40px;" v-if="dialogImageUrl" :src="dialogImageUrl" alt />
-            <el-popover v-model="popoverVisibale" placement="right" width="260" trigger="click">
+            <el-popover
+              v-model.trim="popoverVisibale"
+              placement="right"
+              width="260"
+              trigger="click"
+            >
               <div>
                 <div
                   v-for="(url,index) in dialogImageUrlData"
@@ -82,7 +87,7 @@
       <div>
         <el-form label-width="100px" class="demo-ruleForm">
           <el-form-item label>
-            <el-checkbox-group v-model="sdbSelect">
+            <el-checkbox-group v-model.trim="sdbSelect">
               <el-checkbox
                 v-for="db in ruleForm.database"
                 :label="db.id"

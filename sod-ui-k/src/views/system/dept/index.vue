@@ -3,7 +3,7 @@
     <el-form :inline="true" class="searchBox">
       <el-form-item label="部门名称">
         <el-input
-          v-model="queryParams.deptName"
+          v-model.trim="queryParams.deptName"
           placeholder="请输入部门名称"
           clearable
           size="small"
@@ -11,7 +11,7 @@
         />
       </el-form-item>
       <el-form-item label="状态">
-        <el-select v-model="queryParams.status" placeholder="部门状态" clearable size="small">
+        <el-select v-model.trim="queryParams.status" placeholder="部门状态" clearable size="small">
           <el-option
             v-for="dict in statusOptions"
             :key="dict.dictValue"
@@ -95,37 +95,37 @@
         <el-row>
           <el-col :span="24" v-if="form.parentId !== '0'">
             <el-form-item label="上级部门" prop="parentId">
-              <treeselect v-model="form.parentId" :options="deptOptions" placeholder="选择上级部门" />
+              <treeselect v-model.trim="form.parentId" :options="deptOptions" placeholder="选择上级部门" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+              <el-input v-model.trim="form.deptName" placeholder="请输入部门名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number v-model.trim="form.orderNum" controls-position="right" :min="0" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="负责人" prop="leader">
-              <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+              <el-input v-model.trim="form.leader" placeholder="请输入负责人" maxlength="20" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="联系电话" prop="phone">
-              <el-input v-model="form.phone" placeholder="请输入联系电话" maxlength="11" />
+              <el-input v-model.trim="form.phone" placeholder="请输入联系电话" maxlength="11" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+              <el-input v-model.trim="form.email" placeholder="请输入邮箱" maxlength="50" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="部门状态">
-              <el-radio-group v-model="form.status">
+              <el-radio-group v-model.trim="form.status">
                 <el-radio
                   v-for="dict in statusOptions"
                   :key="dict.dictValue"

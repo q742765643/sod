@@ -6,7 +6,7 @@
           <el-form-item label="账户ID" prop="databaseUpId">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseUpId"
+              v-model.trim="msgFormDialog.databaseUpId"
               :disabled="userDiasbled"
               placeholder="账户ID"
             ></el-input>
@@ -16,7 +16,7 @@
           <el-form-item label="用户名">
             <el-input
               size="small"
-              v-model="msgFormDialog.userName"
+              v-model.trim="msgFormDialog.userName"
               :disabled="userDiasbled"
               placeholder="用户名"
             ></el-input>
@@ -27,7 +27,7 @@
             <el-input
               size="small"
               disabled
-              v-model="msgFormDialog.databaseUpIp"
+              v-model.trim="msgFormDialog.databaseUpIp"
               :placeholder="palceholderIp"
             ></el-input>
           </el-form-item>
@@ -38,12 +38,12 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row v-if="dbFalg">
         <el-col :span="24">
           <el-form-item label="数据库选择" prop="applyDatabaseIdList">
             <el-transfer
               :titles="['未选择数据库列表', '已选择数据库列表']"
-              v-model="msgFormDialog.applyDatabaseIdList"
+              v-model.trim="msgFormDialog.applyDatabaseIdList"
               :data="dataBaseBox"
             ></el-transfer>
           </el-form-item>
@@ -55,7 +55,7 @@
             <el-select
               size="small"
               filterable
-              v-model="msgFormDialog.userId"
+              v-model.trim="msgFormDialog.userId"
               @change="userChange"
               :disabled="isDisabled"
               placeholder="请选择"
@@ -74,7 +74,7 @@
           <el-form-item label="机构">
             <el-input
               size="small"
-              v-model="msgFormDialog.deptName"
+              v-model.trim="msgFormDialog.deptName"
               :disabled="isDisabled"
               placeholder="机构"
             ></el-input>
@@ -84,7 +84,7 @@
           <el-form-item label="联系方式">
             <el-input
               size="small"
-              v-model="msgFormDialog.phonenumber"
+              v-model.trim="msgFormDialog.phonenumber"
               :disabled="isDisabled"
               placeholder="联系方式"
             ></el-input>
@@ -97,7 +97,7 @@
           <el-form-item label="用途说明" prop="databaseUpDesc">
             <el-input
               size="small"
-              v-model="msgFormDialog.databaseUpDesc"
+              v-model.trim="msgFormDialog.databaseUpDesc"
               :disabled="isDisabled"
               type="textarea"
               placeholder="用途说明"
@@ -151,7 +151,7 @@
               size="small"
               type="text"
               disabled
-              v-model="msgFormDialog.applyMaterial"
+              v-model.trim="msgFormDialog.applyMaterial"
               v-show="isHide"
               style="width:80%;"
             ></el-input>
@@ -203,7 +203,7 @@
             :key="domain.key"
             :label="index+1+''"
           >
-            <el-input v-model="domain.value" class="elInput"></el-input>
+            <el-input v-model.trim="domain.value" class="elInput"></el-input>
             <i class="el-icon-plus" @click="addDomain"></i>
             <i class="el-icon-minus" @click.prevent="removeDomain(domain)"></i>
           </el-form-item>
@@ -218,7 +218,7 @@
 </template>
 
 <script>
-var baseUrl = window.serverConfig.VUE_APP_DM;
+var baseUrl = process.env.VUE_APP_DM;
 import { getToken, createSign } from "@/utils/auth";
 import {
   databaseList,
@@ -228,15 +228,18 @@ import {
   getById,
   update,
   demoDownload,
-  exportData
+  exportData,
+  getBizDatabaseUser
 } from "@/api/authorityAudit/DBaccount";
 import { getUserByType } from "@/api/authorityAudit/cloudDBaudit";
+import { downloadTable } from "@/api/structureManagement/exportTable";
 import {
   unstartnumValidation,
   englishAndNumValidation,
   ipUrlValidation,
   ipUrlValidation2
 } from "@/components/commonVaildate.js";
+
 var token = getToken();
 export default {
   name: "handleAccountDialog",
@@ -341,25 +344,52 @@ export default {
         applyMaterial: [
           { required: true, message: "请选择申请材料", trigger: "blur" }
         ]
-      }
+      },
+      dbFalg: true //是否显示穿梭框
     };
   },
   async created() {
     await this.getUserAll();
-    this.getDBlist();
+    await this.getDBlist();
     if (this.handleObj.pageName == "业务用户审核") {
-      this.userDiasbled = true;
-      this.msgFormDialog.userName = this.handleObj.userName;
-      this.msgFormDialog.userId = this.handleObj.userName;
-      this.msgFormDialog.databaseUpId = this.handleObj.userName;
-      this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
-      this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
-      this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
-      this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(",");
-      this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
-      this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
-      this.msgFormDialog.databaseUpPassword = this.handleObj.password;
+      getBizDatabaseUser({
+        userId: this.handleObj.userName,
+        databaseUpId: this.handleObj.userName
+      }).then(res => {
+        if (res.data && this.handleObj.checked != "0") {
+          this.msgFormDialog = res.data;
+          if (res.data.examineDatabaseId) {
+            this.msgFormDialog.applyDatabaseIdList = res.data.examineDatabaseId.split(
+              ","
+            );
+            this.msgFormDialog.applyDatabaseId = res.data.examineDatabaseId;
+          }
+          if (res.data.databaseUpId) {
+            this.msgFormDialog.userName = res.data.databaseUpId;
+          }
+        } else {
+          this.msgFormDialog.userName = this.handleObj.userName;
+          this.msgFormDialog.userId = this.handleObj.userName;
+          this.msgFormDialog.databaseUpId = this.handleObj.userName;
+          this.msgFormDialog.databaseUpIp = this.handleObj.bizIp;
+          this.msgFormDialog.databaseUpDesc = this.handleObj.remark;
+          this.msgFormDialog.applyMaterial = this.handleObj.applyPaper;
+          if (this.handleObj.dbIds) {
+            this.msgFormDialog.applyDatabaseIdList = this.handleObj.dbIds.split(
+              ","
+            );
+            // /dm/databaseUser/databaseUserExi
+            // get接口查询，如果返回true,不能进行下一步操作，只能拒绝
+          } else {
+            this.dbFalg = false;
+          }
 
+          this.msgFormDialog.applyDatabaseId = this.handleObj.dbIds;
+          this.msgFormDialog.pdfPath = this.handleObj.pdfPath;
+          this.msgFormDialog.databaseUpPassword = this.handleObj.password;
+        }
+      });
+      this.userDiasbled = true;
       this.isHideAdd = false;
       this.isHide = true;
     } else {
@@ -377,7 +407,11 @@ export default {
     },
     // 下载
     detailExport() {
-      this.download(this.msgFormDialog.applyMaterial);
+      downloadTable({ filePath: this.msgFormDialog.applyMaterial }).then(
+        res => {
+          this.downloadfileCommon(res);
+        }
+      );
     },
     // 预览
     previewDocx() {
@@ -415,12 +449,14 @@ export default {
         ips.push(element.value);
       });
       for (let i = 0; i < ips.length; i++) {
-        if (!ipUrlValidation(ips[i]) && !ipUrlValidation2(ips[i])) {
-          this.$message({
-            type: "error",
-            message: "请输入正确IP地址"
-          });
-          return;
+        if (ips[i].trim() != "%") {
+          if (!ipUrlValidation(ips[i]) && !ipUrlValidation2(ips[i])) {
+            this.$message({
+              type: "error",
+              message: "请输入正确IP地址"
+            });
+            return;
+          }
         }
       }
 
@@ -431,13 +467,13 @@ export default {
     showEditIp() {
       this.innerVisible = true;
       /* ipArryForm: {
-        domains: [
-          {
-            value: "",
-            select: ""
-          }
-        ]
-      } */
+          domains: [
+            {
+              value: "",
+              select: ""
+            }
+          ]
+        } */
       if (this.msgFormDialog.databaseUpIp) {
         let ipsArry = this.msgFormDialog.databaseUpIp.split(",");
         this.ipArryForm.domains = [];
@@ -534,18 +570,18 @@ export default {
             this.handleExportObj = {};
             this.handleExportObj.filePath = this.msgFormDialog.applyMaterial;
             /* this.msgFormDialog = res.data.data.databaseobj;
-              // 回显数据库选择
-              let transferDataList = res.data.data.databaseList;
-              let transferarry = [];
-              transferDataList.forEach(element => {
-                transferarry.push(element.applyDatabaseId);
-              });
-              this.msgFormDialog.applyDatabaseId = transferarry;
-              // 用户信息
-              this.userChange(this.msgFormDialog.userId);
-              console.log(this.msgFormDialog.userId);
-              this.downUrl =
-                interfaceObj.download + res.data.data.applyMaterial; */
+                // 回显数据库选择
+                let transferDataList = res.data.data.databaseList;
+                let transferarry = [];
+                transferDataList.forEach(element => {
+                  transferarry.push(element.applyDatabaseId);
+                });
+                this.msgFormDialog.applyDatabaseId = transferarry;
+                // 用户信息
+                this.userChange(this.msgFormDialog.userId);
+                console.log(this.msgFormDialog.userId);
+                this.downUrl =
+                  interfaceObj.download + res.data.data.applyMaterial; */
           }
         });
       }
@@ -569,8 +605,8 @@ export default {
               this.auditMethods("");
             }
             /*  if (this.handleObj.record_id != undefined) {
-              this.msgFormDialog.record_id = this.handleObj.record_id;
-            } */
+                this.msgFormDialog.record_id = this.handleObj.record_id;
+              } */
           } else {
             console.log("error submit!!");
             return false;
@@ -579,41 +615,49 @@ export default {
       }
     },
     trueAdd() {
-      this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
-        ","
-      );
-      // 新增
-      if (this.handleObj.pageName) {
-        addBzi(this.msgFormDialog).then(res => {
-          if (res.code == 200) {
-            this.$message({
-              type: "success",
-              message: "增加成功"
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
+            ","
+          );
+          // 新增
+          if (this.handleObj.pageName) {
+            addBzi(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "增加成功"
+                });
+                this.$emit("handleDialogClose", true);
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
             });
-            this.$emit("handleDialogClose");
           } else {
-            this.$message({
-              type: "error",
-              message: res.msg
+            addTable(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "增加成功"
+                });
+                this.$emit("handleDialogClose");
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.msg
+                });
+              }
             });
           }
-        });
-      } else {
-        addTable(this.msgFormDialog).then(res => {
-          if (res.code == 200) {
-            this.$message({
-              type: "success",
-              message: "增加成功"
-            });
-            this.$emit("handleDialogClose");
-          } else {
-            this.$message({
-              type: "error",
-              message: res.msg
-            });
-          }
-        });
-      }
+        } else {
+          this.$emit("handleDialogClose", false);
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     cancelDialog(formName) {
       if (!this.handleObj.id) {
@@ -679,21 +723,26 @@ export default {
   .methodReload {
     margin-left: 4px;
     padding: 9px 10px;
+
     a {
       color: #fff;
     }
   }
+
   .reloaddemo {
     position: absolute;
     right: 0;
     top: 0;
+
     a {
       color: #fff;
     }
   }
+
   .el-form-item.is-validating .el-input__inner {
     border-color: #67c23a;
   }
+
   .el-transfer-panel {
     width: 370px;
   }
@@ -702,15 +751,19 @@ export default {
     height: 166px;
     overflow: auto;
   }
+
   .el-transfer-panel__item {
     display: block;
   }
+
   .el-checkbox-group.el-transfer-panel__list {
     overflow: hidden;
   }
+
   .upload-demo {
     display: flex;
   }
+
   .eye,
   .el-icon-view {
     cursor: pointer;
@@ -724,27 +777,33 @@ export default {
     background: url("../../../assets/image/eye.png") no-repeat;
     background-size: 100%;
   }
+
   .el-icon-view {
     background: none;
   }
+
   .preViewBox {
     position: absolute;
     right: 100px;
     top: 0px;
   }
+
   .preViewBox2 {
     position: absolute;
     right: 80px;
     top: 0px;
   }
+
   .el-checkbox + .el-checkbox {
     margin-left: 0;
   }
 }
+
 .ipDialog {
   .el-input {
     width: 86%;
   }
+
   .el-icon-plus,
   .el-icon-minus {
     width: 16px;
@@ -755,9 +814,11 @@ export default {
     text-align: center;
     line-height: 16px;
   }
+
   .el-icon-plus {
     background: #409eff;
   }
+
   .el-icon-minus {
     background: #f56c6c;
     margin-left: 8px;

@@ -5,7 +5,7 @@
         <el-col :span="12">
           <el-form-item label="物理库" prop="databaseId">
             <el-select
-              v-model="msgFormDialog.databaseId"
+              v-model.trim="msgFormDialog.databaseId"
               filterable
               @change="selectByDatabaseIds($event,'')"
               placeholder="请选择物理库"
@@ -23,7 +23,7 @@
         <el-col :span="12">
           <el-form-item label="资料名称" prop="dataClassId">
             <el-select
-              v-model="msgFormDialog.dataClassId"
+              v-model.trim="msgFormDialog.dataClassId"
               filterable
               @change="selectTable"
               placeholder="请选择资料"
@@ -41,7 +41,7 @@
         <el-col :span="24">
           <el-form-item label="近时备份条件" prop="conditions">
             <el-select
-              v-model="msgFormDialog.conditions"
+              v-model.trim="msgFormDialog.conditions"
               placeholder="请选择近时备份条件"
               filterable
               style="width: 100%"
@@ -58,7 +58,7 @@
         <el-col :span="24">
           <el-form-item label="远时备份条件" prop="secondConditions">
             <el-select
-              v-model="msgFormDialog.secondConditions"
+              v-model.trim="msgFormDialog.secondConditions"
               placeholder="请选择远时备份条件"
               filterable
               style="width: 100%"
@@ -75,7 +75,7 @@
         <el-col :span="24">
           <el-form-item label="存储目录" prop="storageDirectory">
             <el-select
-              v-model="msgFormDialog.storageDirectory"
+              v-model.trim="msgFormDialog.storageDirectory"
               placeholder="请选择"
               filterable
               style="width: 100%"
@@ -91,22 +91,22 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="表名" prop="tableName">
-            <el-input v-model="msgFormDialog.tableName" disabled />
+            <el-input v-model.trim="msgFormDialog.tableName" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="四级编码" prop="ddataId">
-            <el-input v-model="msgFormDialog.ddataId" disabled />
+            <el-input v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model="cronPopover">
+            <el-popover v-model.trim="cronPopover">
               <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
               <el-input
                 slot="reference"
                 @click="cronPopover=true"
-                v-model="msgFormDialog.jobCron"
+                v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
             </el-popover>
@@ -114,7 +114,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
-            <el-radio-group v-model="msgFormDialog.isAlarm">
+            <el-radio-group v-model.trim="msgFormDialog.isAlarm">
               <el-radio
                 v-for="dict in alarmOptions"
                 :key="dict.dictValue"
@@ -125,22 +125,22 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input v-model="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+            <el-input v-model.trim="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="失败重试次数" prop="executorFailRetryCount">
-            <el-input v-model="msgFormDialog.executorFailRetryCount" placeholder="请输入失败重试次数" />
+            <el-input v-model.trim="msgFormDialog.executorFailRetryCount" placeholder="请输入失败重试次数" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="重试间隔时间" prop="retryInterval">
-            <el-input v-model="msgFormDialog.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
+            <el-input v-model.trim="msgFormDialog.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
-            <el-input v-model="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+            <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
           </el-form-item>
         </el-col>
       </el-row>

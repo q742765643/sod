@@ -2,13 +2,13 @@
   <section class="roleDialog">
     <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="100px">
       <el-form-item label="角色名称" prop="name">
-        <el-input size="medium" v-model="msgFormDialog.name"></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.name"></el-input>
       </el-form-item>
       <el-form-item label="角色KEY" prop="roleKey">
-        <el-input size="medium" v-model="msgFormDialog.roleKey"></el-input>
+        <el-input size="medium" v-model.trim="msgFormDialog.roleKey"></el-input>
       </el-form-item>
       <el-form-item label="所属科室" prop="sectionId">
-        <el-select size="medium" v-model="msgFormDialog.sectionId">
+        <el-select size="medium" v-model.trim="msgFormDialog.sectionId">
           <el-option
             v-for="(item,index) in optionsList"
             :key="index"
@@ -18,13 +18,13 @@
         </el-select>
       </el-form-item>
       <el-form-item label="是否禁用" prop="enable">
-        <el-radio-group v-model="msgFormDialog.enable">
+        <el-radio-group v-model.trim="msgFormDialog.enable">
           <el-radio :label="0">禁用</el-radio>
           <el-radio :label="1">正常</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input type="textarea" size="medium" v-model="msgFormDialog.description"></el-input>
+        <el-input type="textarea" size="medium" v-model.trim="msgFormDialog.description"></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">

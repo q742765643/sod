@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const baseUrl = window.serverConfig.VUE_APP_SCHEDULE_CENTER_API
+const baseUrl = process.env.VUE_APP_SCHEDULE_CENTER_API
 
 // 获取资料名称
 export function getByDatabaseId(id) {

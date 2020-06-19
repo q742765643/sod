@@ -1,11 +1,11 @@
 <template>
   <section class="SQLTemplate">
-    <el-form label-width="100px" v-model="handleSqlTemplate">
+    <el-form label-width="100px" v-model.trim="handleSqlTemplate">
       <el-row>
         <el-col :span="9">
           <el-form-item label="数据库厂商：">
             <el-select
-              v-model="handleSqlTemplate.databaseServer"
+              v-model.trim="handleSqlTemplate.databaseServer"
               size="small"
               :disabled="disabledFlag"
             >
@@ -85,7 +85,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="15">
-          <textarea v-model="handleSqlTemplate.template" class="textClass" id="addtextareaId"></textarea>
+          <textarea v-model.trim="handleSqlTemplate.template" class="textClass" id="addtextareaId"></textarea>
         </el-col>
       </el-row>
     </el-form>

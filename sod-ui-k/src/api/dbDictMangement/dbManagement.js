@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-const baseUrl = window.serverConfig.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_DM;
 
 /* 数据库管理 */
 // 查询表格
@@ -87,6 +87,7 @@ export function conStatus(query) {
     params: query
   });
 }
+
 export function connStatus(data) {
   return request({
     url: baseUrl + "/dm/databaseDefine/connStatus",

@@ -7,12 +7,12 @@
     </el-row>
     <el-row v-show="isEdit" class="areaTop">
       <el-col :span="20">
-        <el-select v-model="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
+        <el-select v-model.trim="selectArea" placeholder="请选择区域" size="small" class="areaSelect">
           <el-option
             v-for="(item,index) in optionsArea"
             :key="index"
-            :label="item.areaId"
-            :value="item.areaId"
+            :label="item.areaId+'：起止纬度：['+item.startLat+','+item.endLat+'];'+'起止经度：['+item.startLon+','+item.endLon+']'"
+            :value="item.areaId+'&起止纬度：['+item.startLat+','+item.endLat+'];'+'起止经度：['+item.startLon+','+item.endLon+']'"
           ></el-option>
         </el-select>
       </el-col>
@@ -32,7 +32,11 @@
       <el-table-column type="index" label="序号" width="50"></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="areaId" label="区域代码"></el-table-column>
-      <el-table-column prop="areaRegionDesc" label="区域描述"></el-table-column>
+      <el-table-column prop="areaRegionDesc" label="区域描述">
+        <template slot-scope="scope">
+          <span v-if="scope.row.areaRegionDesc">{{scope.row.areaRegionDesc}}</span>
+        </template>
+      </el-table-column>
     </el-table>
     <pagination
       v-show="total>0"
@@ -112,12 +116,8 @@ export default {
       this.isEdit = !this.isEdit;
       var time = new Date();
       let obj = {};
-      obj.areaId = this.selectArea;
-      this.optionsArea.forEach(element => {
-        if (element.areaId == this.selectArea) {
-          obj.areaRegionDesc = element.areaDesc;
-        }
-      });
+      obj.areaId = this.selectArea.split("&")[0];
+      obj.areaRegionDesc = this.selectArea.split("&")[1];
       obj.dataServiceId = this.rowData.DATA_CLASS_ID;
       console.log(obj);
       gridareaSave(obj).then(res => {

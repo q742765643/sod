@@ -8,13 +8,18 @@
         <img src="@/assets/image/title.png" class="title" />
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
           <el-form-item prop="username">
-            <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
+            <el-input
+              v-model.trim="loginForm.username"
+              type="text"
+              auto-complete="off"
+              placeholder="账号"
+            >
               <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
-              v-model="loginForm.password"
+              v-model.trim="loginForm.password"
               type="password"
               auto-complete="off"
               placeholder="密码"
@@ -25,10 +30,10 @@
           </el-form-item>
           <el-form-item prop="code">
             <el-input
-              v-model="loginForm.code"
+              v-model.trim="loginForm.code"
               auto-complete="off"
               placeholder="验证码"
-              style="width: 65%"
+              style="width: 66%"
               @keyup.enter.native="handleLogin"
             >
               <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
@@ -37,7 +42,7 @@
               <img :src="codeUrl" @click="getCode" />
             </div>
           </el-form-item>
-          <!-- <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox> -->
+          <!-- <el-checkbox v-model.trim="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox> -->
           <el-form-item>
             <el-button
               :loading="loading"
@@ -55,10 +60,6 @@
     </el-row>
 
     <!--  底部  -->
-    <!-- <div class="el-login-footer">
-      <p>Copyright&nbsp;2018-2020&nbsp;&nbsp;国家气象信息中心</p>
-      <p>地址：北京海淀区中关村南大街46号 | 邮编：100081 | 电话 : 86-10-68407499</p>
-    </div>-->
   </div>
 </template>
 
@@ -102,6 +103,11 @@ export default {
     }
   },
   created() {
+    if (navigator.userAgent.indexOf("Chrome") > -1) {
+      // 即是chrome
+    } else {
+      this.msgSuccess("为更好体验该系统，请选择chrome浏览器");
+    }
     let winHref = window.location.href;
     if (winHref.indexOf("interfaceId") > -1) {
       let urlParam = winHref.split("?")[1];
@@ -195,7 +201,7 @@ export default {
   );
   .wrap {
     width: 80%;
-    text-align: left;
+    text-align: right;
     background: url("../assets/image/login-bg.png") no-repeat;
     background-size: 100% 100%;
     .title {
@@ -225,8 +231,6 @@ export default {
       height: 40px;
       float: right;
       img {
-        width: 100%;
-        height: 100%;
         cursor: pointer;
         vertical-align: middle;
       }

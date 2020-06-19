@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="角色名称" prop="roleName">
         <el-input
-          v-model="queryParams.roleName"
+          v-model.trim="queryParams.roleName"
           placeholder="请输入角色名称"
           clearable
           size="small"
@@ -13,7 +13,7 @@
       </el-form-item>
       <el-form-item label="权限字符" prop="roleKey">
         <el-input
-          v-model="queryParams.roleKey"
+          v-model.trim="queryParams.roleKey"
           placeholder="请输入权限字符"
           clearable
           size="small"
@@ -23,7 +23,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select
-          v-model="queryParams.status"
+          v-model.trim="queryParams.status"
           placeholder="角色状态"
           clearable
           size="small"
@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item label="创建时间" prop="dateRange">
         <el-date-picker
-          v-model="queryParams.dateRange"
+          v-model.trim="queryParams.dateRange"
           size="small"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
@@ -95,6 +95,7 @@
       :data="roleList"
       row-key="id"
       @selection-change="handleSelectionChange"
+      ref="multipleTable"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" />
@@ -103,7 +104,7 @@
       <el-table-column label="状态" width="100">
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.status"
+            v-model.trim="scope.row.status"
             active-value="0"
             inactive-value="1"
             @change="handleStatusChange(scope.row)"
@@ -160,16 +161,16 @@
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名称" />
+          <el-input v-model.trim="form.roleName" placeholder="请输入角色名称" />
         </el-form-item>
         <el-form-item label="权限字符" prop="roleKey">
-          <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
+          <el-input v-model.trim="form.roleKey" placeholder="请输入权限字符" />
         </el-form-item>
         <el-form-item label="角色顺序" prop="roleSort">
-          <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
+          <el-input-number v-model.trim="form.roleSort" controls-position="right" :min="0" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-radio-group v-model="form.status">
+          <el-radio-group v-model.trim="form.status">
             <el-radio
               v-for="dict in statusOptions"
               :key="dict.dictValue"
@@ -188,7 +189,7 @@
           ></el-tree>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+          <el-input v-model.trim="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -207,13 +208,13 @@
     >
       <el-form :model="form" label-width="80px">
         <el-form-item label="角色名称">
-          <el-input v-model="form.roleName" :disabled="true" />
+          <el-input v-model.trim="form.roleName" :disabled="true" />
         </el-form-item>
         <el-form-item label="权限字符">
-          <el-input v-model="form.roleKey" :disabled="true" />
+          <el-input v-model.trim="form.roleKey" :disabled="true" />
         </el-form-item>
         <!--  <el-form-item label="权限范围">
-          <el-select v-model="form.dataScope">
+          <el-select v-model.trim="form.dataScope">
             <el-option
               v-for="item in dataScopeOptions"
               :key="item.value"
@@ -349,6 +350,17 @@ export default {
     });
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.roleList.forEach((element, index) => {
+            if (element.id == row) {
+              this.$refs.multipleTable.toggleRowSelection(this.roleList[index]);
+            }
+          });
+        });
+      }
+    },
     handleExport() {
       exportRole(this.queryParams).then(res => {
         this.downloadfileCommon(res);
@@ -367,6 +379,12 @@ export default {
           this.roleList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
+          if (this.ids.length == 1) {
+            let newArry = this.ids;
+            this.$nextTick(function() {
+              this.toggleSelection(newArry);
+            });
+          }
         }
       );
     },
@@ -488,6 +506,8 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids;
+      this.ids = [];
+      this.ids.push(id);
       this.$nextTick(() => {
         this.getRoleMenuTreeselect(id);
       });

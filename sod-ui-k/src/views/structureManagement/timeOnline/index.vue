@@ -3,16 +3,25 @@
     <!-- 在线时间检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="四级编码">
-        <el-input size="small" v-model="queryParams.d_data_id"></el-input>
+        <el-input size="small" v-model.trim="queryParams.d_data_id"></el-input>
       </el-form-item>
       <el-form-item label="资料名称">
-        <el-input size="small" v-model="queryParams.class_name"></el-input>
+        <el-input size="small" v-model.trim="queryParams.class_name"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table border v-loading="loading" :data="tableData" row-key="id" @sort-change="sortChange">
+    <el-table
+      border
+      v-loading="loading"
+      :data="tableData"
+      row-key="id"
+      @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="CLASS_NAME" label="资料名称"></el-table-column>
       <el-table-column prop="D_DATA_ID" label="四级编码" width="160"></el-table-column>
@@ -83,13 +92,17 @@ export default {
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
-      handleObj: {}
+      handleObj: {},
+      currentRow: null
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRow = val;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -119,6 +132,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRow) {
+          this.tableData.forEach((element, index) => {
+            if (element.DATA_CLASS_ID == this.currentRow.DATA_CLASS_ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     resetQuery() {

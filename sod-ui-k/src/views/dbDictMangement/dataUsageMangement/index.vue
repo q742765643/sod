@@ -3,14 +3,14 @@
     <!-- 数据用途管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="数据用途ID:" prop="logicFlag">
-        <el-input size="small" v-model="queryParams.logicFlag" placeholder="请输入数据用途ID" />
+        <el-input size="small" v-model.trim="queryParams.logicFlag" placeholder="请输入数据用途ID" />
       </el-form-item>
       <el-form-item label="用途描述:" prop="logicName">
-        <el-input size="small" v-model="queryParams.logicName" placeholder="请输入用途描述" />
+        <el-input size="small" v-model.trim="queryParams.logicName" placeholder="请输入用途描述" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -33,6 +33,7 @@
       v-loading="loading"
       :data="tableData"
       row-key="id"
+      ref="multipleTable"
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="50"></el-table-column>
@@ -50,7 +51,7 @@
       </el-table-column>
       <el-table-column prop="logicDesc" label="用途说明" width="360" :show-overflow-tooltip="true"></el-table-column>
 
-      <el-table-column prop="createTime" label="创建时间">
+      <el-table-column prop="createTime" label="创建时间" width="160">
         <template slot-scope="scope">
           <span>{{parseTime(scope.row.createTime)}}</span>
         </template>
@@ -111,7 +112,7 @@ export default {
       importHeaders: {
         enctype: "multipart/form-data"
       },
-      choserow: [],
+      multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
@@ -123,6 +124,19 @@ export default {
     this.getList();
   },
   methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.tableData.forEach((element, index) => {
+            if (element.id == row.id) {
+              this.$refs.multipleTable.toggleRowSelection(
+                this.tableData[index]
+              );
+            }
+          });
+        });
+      }
+    },
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
@@ -159,12 +173,19 @@ export default {
       this.getList();
     },
     /** 查询列表 */
+
     getList() {
       this.loading = true;
       queryDataBaseLogicAll(this.queryParams).then(response => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.multipleSelection.length == 1) {
+          let newArry = this.multipleSelection;
+          this.$nextTick(function() {
+            this.toggleSelection(newArry);
+          });
+        }
       });
     },
     showDialog(type) {
@@ -173,7 +194,7 @@ export default {
         this.handleObj = {};
         this.msgFormDialog = true;
       } else {
-        if (this.choserow.length != 1) {
+        if (this.multipleSelection.length != 1) {
           this.$message({
             type: "error",
             message: "请选择一条数据"
@@ -181,7 +202,7 @@ export default {
           return;
         }
         this.dialogTitle = "编辑";
-        getById({ id: this.choserow[0].id }).then(res => {
+        getById({ id: this.multipleSelection[0].id }).then(res => {
           this.handleObj = res.data;
           this.handleObj.storageType = [];
           res.data.logicStorageTypesEntityList.forEach(element => {
@@ -198,10 +219,10 @@ export default {
     },
 
     handleSelectionChange(val) {
-      this.choserow = val;
+      this.multipleSelection = val;
     },
     deleteCell() {
-      if (this.choserow.length != 1) {
+      if (this.multipleSelection.length != 1) {
         this.$message({
           type: "error",
           message: "请选择一条数据"
@@ -209,7 +230,7 @@ export default {
         return;
       } else {
         this.$confirm(
-          "确认要删除" + this.choserow[0].logicFlag + "吗?",
+          "确认要删除" + this.multipleSelection[0].logicFlag + "吗?",
           "提示",
           {
             confirmButtonText: "确定",
@@ -218,7 +239,7 @@ export default {
           }
         )
           .then(() => {
-            delLogic({ id: this.choserow[0].id }).then(response => {
+            delLogic({ id: this.multipleSelection[0].id }).then(response => {
               if (response.code == 200) {
                 this.$message({
                   type: "success",

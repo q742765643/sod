@@ -22,10 +22,10 @@
             <div class="tableSearch">
               <el-form :inline="true">
                 <el-form-item label="资料名称">
-                  <el-input size="small" v-model="searchObj.className" placeholder="资料名称"></el-input>
+                  <el-input size="small" v-model.trim="searchObj.className" placeholder="资料名称"></el-input>
                 </el-form-item>
                 <el-form-item label="存储编码">
-                  <el-input size="small" v-model="searchObj.dDataId" placeholder="存储编码"></el-input>
+                  <el-input size="small" v-model.trim="searchObj.dDataId" placeholder="存储编码"></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button
@@ -62,9 +62,9 @@
             <el-table
               :data="tableData"
               border
+              :span-method="objectSpanMethod"
               highlight-current-row
               @current-change="handleCurrentChange"
-              :span-method="objectSpanMethod"
               ref="singleTable"
             >
               <el-table-column label="资料名称" prop="CLASS_NAME" :show-overflow-tooltip="true"></el-table-column>
@@ -362,6 +362,15 @@ export default {
             });
             this.rowspan();
           }
+          if (this.currentRow.length > 0) {
+            this.tableData.forEach((element, index) => {
+              if (element.DATA_CLASS_ID == this.currentRow[0].DATA_CLASS_ID) {
+                this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+              }
+            });
+          } else {
+            this.$refs.singleTable.setCurrentRow(this.tableData[0]);
+          }
         });
       }
     },
@@ -563,7 +572,7 @@ export default {
     },
     //新增、编辑后刷新数据
     addOrEditSuccess(operateType) {
-      this.currentRow = [];
+      // this.currentRow = [];
       if (operateType == "handleTree") {
         this.$refs.classifyTree.initMethodsTree(this.whichTree);
       } else {
@@ -572,6 +581,7 @@ export default {
         } else {
           this.$refs.classifyTree.initMethodsTree(this.whichTree);
         }
+        // this.searchFun("search");
       }
       // this.$refs.classifyTree.initMethodsTree(this.whichTree);
       this.materialSingleVisible = false;

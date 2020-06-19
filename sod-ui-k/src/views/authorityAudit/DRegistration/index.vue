@@ -3,7 +3,7 @@
     <!-- 数据注册审核 -->
     <el-form :model="queryParams" :inline="true" class="searchBox">
       <el-form-item label="数据分类：">
-        <el-select v-model="queryParams.DDataId" placeholder>
+        <el-select v-model.trim="queryParams.DDataId" placeholder>
           <el-option key="index" label="全部" value></el-option>
           <el-option
             v-for="(item,index) in dbtypeselect"
@@ -15,7 +15,7 @@
       </el-form-item>
 
       <el-form-item label="审核状态：">
-        <el-select v-model="queryParams.examineStatus" @change="handleQuery">
+        <el-select v-model.trim="queryParams.examineStatus" @change="handleQuery">
           <!-- <el-option label="全部" value></el-option> -->
           <el-option label="待审核" :value="1"></el-option>
           <el-option label="通过" :value="2"></el-option>
@@ -48,6 +48,9 @@
       :data="tableData"
       row-key="id"
       @sort-change="sortChange"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
     >
       <af-table-column type="index" :index="table_index" width="45" label=" "></af-table-column>
       <af-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></af-table-column>
@@ -417,7 +420,8 @@ export default {
       handleCLeadupDialog: false, //清除
       /* 数据注册审核 */
       handleReDialog: false,
-      currentRow: {} //当前行
+      currentRow: {}, //当前行
+      currentRows: null
     };
   },
   created() {
@@ -429,6 +433,9 @@ export default {
     this.getList();
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentRows = val;
+    },
     sortChange(column, prop, order) {
       var orderBy = {};
       if (column.order == "ascending") {
@@ -458,6 +465,13 @@ export default {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
+        if (this.currentRows) {
+          this.tableData.forEach((element, index) => {
+            if (element.SYNC_ID == this.currentRows.SYNC_ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        }
       });
     },
     // 重置

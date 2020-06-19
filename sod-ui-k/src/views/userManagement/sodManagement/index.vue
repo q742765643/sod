@@ -3,10 +3,10 @@
     <!-- 查询条件 -->
     <el-form :inline="true" :model="queryParams" ref="modelForm" class="searchBox">
       <el-form-item label="功能名称">
-        <el-input size="small" v-model="queryParams.name"></el-input>
+        <el-input size="small" v-model.trim="queryParams.name"></el-input>
       </el-form-item>
       <el-form-item label="功能类型">
-        <el-select size="small" v-model="queryParams.type" @change="statusChange">
+        <el-select size="small" v-model.trim="queryParams.type" @change="statusChange">
           <el-option label="全部" value="全部"></el-option>
           <el-option label="目录" value="0"></el-option>
           <el-option label="菜单" value="1"></el-option>

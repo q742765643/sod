@@ -565,7 +565,9 @@ export default {
         await getById({ id: this.handleObj.id }).then(res => {
           if (res.code == 200) {
             let data = res.data;
-            data.applyDatabaseIdList = data.applyDatabaseId.split(",");
+            if (data.applyDatabaseId) {
+              data.applyDatabaseIdList = data.applyDatabaseId.split(",");
+            }
             this.msgFormDialog = data;
             this.handleExportObj = {};
             this.handleExportObj.filePath = this.msgFormDialog.applyMaterial;
@@ -617,9 +619,15 @@ export default {
     trueAdd() {
       this.$refs["ruleForm"].validate(valid => {
         if (valid) {
-          this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
-            ","
-          );
+          let list = [];
+          this.dataBaseBox.forEach(element => {
+            this.msgFormDialog.applyDatabaseIdList.forEach(item => {
+              if (element.key == item) {
+                list.push(item);
+              }
+            });
+          });
+          this.msgFormDialog.applyDatabaseId = list.join(",");
           // 新增
           if (this.handleObj.pageName) {
             addBzi(this.msgFormDialog).then(res => {

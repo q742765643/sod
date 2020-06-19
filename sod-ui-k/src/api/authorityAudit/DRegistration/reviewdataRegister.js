@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-const baseUrl = window.serverConfig.VUE_APP_DM;
+const baseUrl = process.env.VUE_APP_DM;
 // 存储资料审核
 export function updateStatus(data) {
   return request({
