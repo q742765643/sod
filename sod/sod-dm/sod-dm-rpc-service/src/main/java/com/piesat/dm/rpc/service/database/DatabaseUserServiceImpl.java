@@ -195,6 +195,37 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
     @Override
+    public void deleteById(String id) {
+        DatabaseUserDto dotById1 = this.getDotById(id);
+        String[] needEmpowerIdArr = dotById1.getExamineDatabaseId().split(",");
+        for (String databaseid : needEmpowerIdArr) {
+            if (StringUtils.isEmpty(id)) {
+                continue;
+            }
+            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseid);
+            DatabaseDcl databaseVO = null;
+            try {
+                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                if (databaseVO != null) {
+                    databaseVO.deleteUser(dotById1.getDatabaseUpId());
+                    databaseVO.closeConnect();
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (databaseVO != null) {
+                    databaseVO.closeConnect();
+                }
+            } finally {
+                if (databaseVO != null) {
+                    databaseVO.closeConnect();
+                }
+            }
+        }
+        this.delete(id);
+    }
+
+    @Override
     public DatabaseUserDto getDotByUPID(String databaseUPId) {
         DatabaseUserEntity databaseUserEntity = databaseUserDao.findByDatabaseUpId(databaseUPId);
         return this.databaseUserMapper.toDto(databaseUserEntity);
@@ -425,7 +456,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     databaseVO.closeConnect();
                 }
             } catch (Exception e) {
-                sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
+//                sbff.append(databaseId + "数据库账户删除失败，msg:" + e.getMessage() + "\n");
             } finally {
                 if (databaseVO != null) {
                     databaseVO.closeConnect();

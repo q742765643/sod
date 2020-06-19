@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 public interface SyncConfigDao extends BaseDao<SyncConfigEntity> {
     public void deleteById(Integer id);
+    public Boolean existsById(Integer id);
 
     public SyncConfigEntity findById(Integer id);
 

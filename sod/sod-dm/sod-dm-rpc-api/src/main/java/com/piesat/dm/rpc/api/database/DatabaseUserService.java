@@ -40,6 +40,9 @@ public interface DatabaseUserService {
      */
     void delete(String id);
 
+
+    void deleteById(String id);
+
     /**
      * 根据UP账户查询
      *

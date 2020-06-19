@@ -19,6 +19,7 @@ public interface SyncMappingDao extends BaseDao<SyncMappingEntity> {
     public List<SyncMappingEntity> findAllByIdIn (List<Integer> id);
 
     public void deleteById(Integer id);
+    public Boolean existsById(Integer id);
 
     public SyncMappingEntity findById(Integer id);
 

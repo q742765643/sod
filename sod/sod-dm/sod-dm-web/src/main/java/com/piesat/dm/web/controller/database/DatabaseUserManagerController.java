@@ -124,7 +124,7 @@ public class DatabaseUserManagerController {
     @DeleteMapping(value = "/delete")
     public ResultT delete(String id) {
         try {
-            this.databaseUserService.delete(id);
+            this.databaseUserService.deleteById(id);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
