@@ -208,11 +208,14 @@ public class UserController {
                 }
                 //存入
                 applyPaper.transferTo(newFile);
-                String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
-                String pdfPath = outFilePath + "/" + pdfName;
-                Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
-                parameterMap.put("pdfPath",(httpPath + "/filePath/" + pdfName).split(","));
-                // 判断目标文件所在目录是否存在
+                if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
+                    parameterMap.put("pdfPath",(httpPath + "/filePath/" + newFile.getName()).split(","));
+                }else{
+                    String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
+                    String pdfPath = outFilePath + "/" + pdfName;
+                    Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
+                    parameterMap.put("pdfPath",(httpPath + "/filePath/" + pdfName).split(","));
+                }
             }
             ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
             return add;

@@ -509,6 +509,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             }
             buffer.append(line);
         } catch (Exception e) {
+            e.printStackTrace();
             buffer.append("error");
         } finally {
             try {
@@ -577,17 +578,24 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             //删除filter
             if (StringUtils.isNotNullString(syncMappingEntity.getSourceTableId())) {
                 for (String filterId : syncMappingEntity.getSourceTableId().split(",")) {
-                    syncFilterDao.deleteById(Integer.valueOf(filterId));
+                    if (syncFilterDao.existsById(Integer.valueOf(filterId))){
+                        syncFilterDao.deleteById(Integer.valueOf(filterId));
+                    }
                 }
             }
             //删除config
             if (StringUtils.isNotNullString(syncMappingEntity.getTargetTableId())) {
                 SyncConfigEntity syncConfigEntity = syncConfigDao.findById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
                 targetTableIds.add(syncConfigEntity.getTargetTableId());
-                syncConfigDao.deleteById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
+                if (syncConfigDao.existsById(Integer.valueOf(syncMappingEntity.getTargetTableId()))){
+                    syncConfigDao.deleteById(Integer.valueOf(syncMappingEntity.getTargetTableId()));
+                }
             }
             //删除mapping表
-            syncMappingDao.deleteById(syncMappingEntity.getId());
+            if (syncMappingDao.existsById(syncMappingEntity.getId())){
+                syncMappingDao.deleteById(syncMappingEntity.getId());
+            }
+
         }
 
         //删除dimessage表

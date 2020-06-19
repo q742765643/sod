@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface SyncFilterDao extends BaseDao<SyncFilterEntity> {
 
     public void deleteById(Integer id);
-
+    Boolean existsById(Integer id);
     public SyncFilterEntity findById(Integer id);
 }
