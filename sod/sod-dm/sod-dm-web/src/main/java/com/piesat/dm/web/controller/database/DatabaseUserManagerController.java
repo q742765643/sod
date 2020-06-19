@@ -308,7 +308,7 @@ public class DatabaseUserManagerController {
                 byUserId.setApplyDatabaseId(databaseUserDto.getApplyDatabaseId());
                 byUserId.setDatabaseUpPassword(databaseUserDto.getDatabaseUpPassword());
                 byUserId.setRemarks(databaseUserDto.getRemarks());
-                byUserId.setDatabaseUpIp(databaseUserDto.getDatabaseUpId());
+                byUserId.setDatabaseUpIp(databaseUserDto.getDatabaseUpIp());
                 byUserId.setExamineStatus("0");
                 save = this.databaseUserService.saveDto(byUserId);
             } else {
@@ -416,12 +416,15 @@ public class DatabaseUserManagerController {
                     }
                     //存入
                     applyMaterial.transferTo(newFile);
-
-                    //转换PDF
-                    String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
-                    String pdfPath = fileAddress + "/" + pdfName;
-                    Doc2PDF.doc2pdf(filePath, pdfPath);
-                    parameterMap.put("pdfPath", new String[]{httpPath + "/user/" + pdfName});
+                    if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
+                        parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
+                    }else{
+                        //转换PDF
+                        String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
+                        String pdfPath = fileAddress + "/" + pdfName;
+                        Doc2PDF.doc2pdf(filePath, pdfPath);
+                        parameterMap.put("pdfPath", new String[]{httpPath + "/user/" + pdfName});
+                    }
                 }
             }
             DatabaseUserDto databaseUserDto = databaseUserService.addOrUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
