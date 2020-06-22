@@ -71,7 +71,12 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="加工过程类型" prop="processType">
-              <el-input-number v-model.trim="baseSet.processType" :min="0" size="small"></el-input-number>
+              <el-input-number
+                v-model.trim="baseSet.processType"
+                :min="0"
+                :max="999999999"
+                size="small"
+              ></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
