@@ -150,7 +150,7 @@ public class Gbase8a extends DatabaseDclAbs {
             stmt = connection.createStatement();
 
             for (int j = 0; j < permissions.length; j++) {
-                sql = "GRANT " + permissions[j] + " ON " + schemaName + ".* to '" + dataBaseUser;
+                sql = "GRANT " + permissions[j] + " ON " + schemaName + ".* to " + dataBaseUser;
                 if ((dataAuthor && j == 0) || (creatAuthor && j == 1) || (dropAuthor && j == 2)) {
                     stmt.execute(sql);
                 }

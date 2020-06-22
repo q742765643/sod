@@ -354,7 +354,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     @Transactional
     public void empowerDatabaseSpecial(DatabaseDto databaseDto) {
-        System.out.println(databaseDto);
+//        System.out.println(databaseDto);
         try {
             String userId = databaseDto.getUserId();
             //判断用户是否申请过数据库账户

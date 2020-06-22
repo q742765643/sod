@@ -381,7 +381,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 e.printStackTrace();
                 String message = e.getMessage();
                 if (StringUtils.isNotBlank(message)) {
-                    if (message.contains("用户已经存在")) {
+                    if (message.contains("用户已经存在")||message.contains("already exists")) {
                         if (!thisHaveIds.contains(databaseId)) thisHaveIds.add(databaseId);
                     } else {
                         sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
