@@ -71,7 +71,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="加工过程类型" prop="processType">
-              <el-input v-model.trim="baseSet.processType" size="small"></el-input>
+              <el-input-number v-model.trim="baseSet.processType" :min="0" size="small"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -716,6 +716,9 @@ export default {
     },
     trueHandle(formName) {
       let obj = Object.assign(this.msgFormDialog, this.baseServe);
+      console.log(obj);
+      obj.fieldType = this.baseSet.fieldType;
+      obj.processType = this.baseSet.processType;
       console.log(obj);
       this.$refs[formName].validate(valid => {
         if (valid) {

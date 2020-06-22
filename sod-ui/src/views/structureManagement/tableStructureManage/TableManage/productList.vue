@@ -104,7 +104,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="加工过程类型" prop="genprocess_type">
-            <el-input placeholder="加工过程类型" v-model.trim="msgFormDialog.genprocess_type"></el-input>
+            <el-input-number v-model.trim="msgFormDialog.genprocess_type" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
