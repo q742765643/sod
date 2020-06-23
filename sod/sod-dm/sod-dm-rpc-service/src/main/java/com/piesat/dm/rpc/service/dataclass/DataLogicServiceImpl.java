@@ -15,6 +15,7 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
+import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
@@ -49,6 +50,8 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
 
     @Autowired
     private DatabaseSpecialReadWriteDao databaseSpecialReadWriteDao;
+    @Autowired
+    private DataAuthorityApplyService dataAuthorityApplyService;
 
     @Override
     public BaseDao<DataLogicEntity> getBaseDao() {
@@ -179,6 +182,7 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             //查询物理库下专题库下的表信息
             List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(Arrays.asList(logics.split(",")));
 
+
             //如果是向砖题库中追加资料，过滤掉之前选择过的资料
             if(!StringUtils.isBlank(tdbId)){
                 //专题库下的资料
@@ -190,6 +194,22 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                     for(Map<String,Object> notSelect :dataList){
                         for(DatabaseSpecialReadWriteEntity databaseSpecial :selectedList){
                             if(notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDataClassId().toString())){
+                                delectedList.add(notSelect);
+                            }
+                        }
+                    }
+                    dataList.removeAll(delectedList);
+                }
+
+                //资料申请访问权限下得资料，专题库id=业务用户id
+                Map<String, Object> dataAuthorityMap = dataAuthorityApplyService.getDataAuthorityList(tdbId,"","","","","");
+                //dataList剔除掉资料访问权限申请的资料
+                if(dataAuthorityMap != null && dataAuthorityMap.get("DS") != null){
+                    List<Map<String,Object>> dataAuthorityList = (List<Map<String,Object>>)dataAuthorityMap.get("DS");
+                    List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
+                    for(Map<String,Object> notSelect :dataList){
+                        for(Map<String, Object> dataAuthorityRecord :dataAuthorityList){
+                            if(notSelect.get("DATA_CLASS_ID").toString().equals(dataAuthorityRecord.get("DATA_CLASS_ID").toString())){
                                 delectedList.add(notSelect);
                             }
                         }
