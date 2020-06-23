@@ -702,9 +702,16 @@ export default {
         this.msgFormDialog.examineStatus = 1;
       }
       this.msgFormDialog.failureReason = value;
-      this.msgFormDialog.applyDatabaseId = this.msgFormDialog.applyDatabaseIdList.join(
-        ","
-      );
+
+      let list = [];
+      this.dataBaseBox.forEach(element => {
+        this.msgFormDialog.applyDatabaseIdList.forEach(item => {
+          if (element.key == item) {
+            list.push(item);
+          }
+        });
+      });
+      this.msgFormDialog.applyDatabaseId = list.join(",");
       // 审核
       update(this.msgFormDialog).then(res => {
         if (res.code == 200) {
