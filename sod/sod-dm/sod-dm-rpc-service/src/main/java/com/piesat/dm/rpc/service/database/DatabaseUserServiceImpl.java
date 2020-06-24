@@ -199,7 +199,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public void deleteById(String id) {
         DatabaseUserDto dotById1 = this.getDotById(id);
-        if (StringUtils.isNotBlank(dotById1.getExamineDatabaseId())){
+        String[] sysIds = this.sysUsers.toLowerCase().split(",");
+        List<String> sysIdList = Arrays.asList(sysIds);
+        String upId = dotById1.getDatabaseUpId().toLowerCase();
+        if (!sysIdList.contains(upId) && StringUtils.isNotBlank(dotById1.getExamineDatabaseId())) {
             String[] needEmpowerIdArr = dotById1.getExamineDatabaseId().split(",");
             for (String databaseid : needEmpowerIdArr) {
                 if (StringUtils.isEmpty(id)) {
@@ -346,8 +349,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String[] sysIds = this.sysUsers.toLowerCase().split(",");
         List<String> sysIdList = Arrays.asList(sysIds);
         String upId = databaseUserDto.getDatabaseUpId().toLowerCase();
-        if (sysIdList.contains(upId)){
-            return ResultT.failed(databaseUserDto.getDatabaseUpId()+"为数据库内部用户，禁止创建！");
+        if (sysIdList.contains(upId)) {
+            return ResultT.failed(databaseUserDto.getDatabaseUpId() + "为数据库内部用户，禁止创建！");
         }
         //根据ID获取旧的申请信息
         DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
@@ -389,7 +392,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 e.printStackTrace();
                 String message = e.getMessage();
                 if (StringUtils.isNotBlank(message)) {
-                    if (message.contains("用户已经存在")||message.contains("already exists")) {
+                    if (message.contains("用户已经存在") || message.contains("already exists")) {
                         if (!thisHaveIds.contains(databaseId)) thisHaveIds.add(databaseId);
                     } else {
                         sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
@@ -433,7 +436,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 //            needEmpowerIdist.addAll(haveEmpowerIdist);
 //        }
         for (String databaseId : needEmpowerIdist) {
-            if (StringUtils.isEmpty(databaseId)){
+            if (StringUtils.isEmpty(databaseId)) {
                 continue;
             }
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseId);
