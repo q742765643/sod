@@ -113,7 +113,7 @@ log:
 
 #数据库可视化部署节点
 mng:
-  ip: 10.40.17.44
+  ip: 10.40.17.44,10.40.17.45
 
 #公共元数据接口
 mmd:
@@ -168,5 +168,7 @@ product:
 session:
   timeout: 7200
 
-
+#数据库系统用户
+database:
+  sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase
 

@@ -372,7 +372,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             spMap.put("USER_ID", bizUserid);
             spMap.put("USES", remark);
             spMap.put("DATABASE_ID", dbIds);
-            spMap.put("DATABASE_SCHEMA_ID", bizUserid);
+            String schemaName = bizUserid.replace("USR_","");
+            spMap.put("DATABASE_SCHEMA_ID", schemaName);
             JSONObject jj = new JSONObject();
             jj.put("userId", bizUserid);
             spMap.put("data", jj.toJSONString());
@@ -501,7 +502,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                 spMap.put("USER_ID", bizUserid);
                 spMap.put("USES", remark);
                 spMap.put("DATABASE_ID", dbIds);
-                spMap.put("DATABASE_SCHEMA_ID", bizUserid);
+                String schemaName = bizUserid.replace("USR_","");
+                spMap.put("DATABASE_SCHEMA_ID", schemaName);
                 JSONObject jj = new JSONObject();
                 jj.put("userId", bizUserid);
                 spMap.put("data", jj.toJSONString());

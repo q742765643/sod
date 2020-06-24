@@ -95,6 +95,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private DatabaseDefineDao databaseDefineDao;
     @Value("${mng.ip}")
     private String mngIp;
+    @Value("${database.sys-users}")
+    private String sysUsers;
 
     @Override
     public BaseDao<DatabaseUserEntity> getBaseDao() {
@@ -341,7 +343,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public ResultT empower(DatabaseUserDto databaseUserDto) {
-
+        String[] sysIds = this.sysUsers.toLowerCase().split(",");
+        List<String> sysIdList = Arrays.asList(sysIds);
+        String upId = databaseUserDto.getDatabaseUpId().toLowerCase();
+        if (sysIdList.contains(upId)){
+            return ResultT.failed(databaseUserDto.getDatabaseUpId()+"为数据库内部用户，禁止创建！");
+        }
         //根据ID获取旧的申请信息
         DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
         //待授权Id
