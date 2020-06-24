@@ -197,28 +197,29 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public void deleteById(String id) {
         DatabaseUserDto dotById1 = this.getDotById(id);
-        String[] needEmpowerIdArr = dotById1.getExamineDatabaseId().split(",");
-        for (String databaseid : needEmpowerIdArr) {
-            if (StringUtils.isEmpty(id)) {
-                continue;
-            }
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseid);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-                if (databaseVO != null) {
-                    databaseVO.deleteUser(dotById1.getDatabaseUpId());
-                    databaseVO.closeConnect();
-
+        if (StringUtils.isNotBlank(dotById1.getExamineDatabaseId())){
+            String[] needEmpowerIdArr = dotById1.getExamineDatabaseId().split(",");
+            for (String databaseid : needEmpowerIdArr) {
+                if (StringUtils.isEmpty(id)) {
+                    continue;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (databaseVO != null) {
-                    databaseVO.closeConnect();
-                }
-            } finally {
-                if (databaseVO != null) {
-                    databaseVO.closeConnect();
+                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(databaseid);
+                DatabaseDcl databaseVO = null;
+                try {
+                    databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
+                    if (databaseVO != null) {
+                        databaseVO.deleteUser(dotById1.getDatabaseUpId());
+                        databaseVO.closeConnect();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (databaseVO != null) {
+                        databaseVO.closeConnect();
+                    }
+                } finally {
+                    if (databaseVO != null) {
+                        databaseVO.closeConnect();
+                    }
                 }
             }
         }

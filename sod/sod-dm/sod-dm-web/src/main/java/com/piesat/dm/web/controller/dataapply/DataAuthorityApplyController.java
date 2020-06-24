@@ -77,7 +77,7 @@ public class DataAuthorityApplyController {
         ResultT<List<Map<String,Object>>> resultT=new ResultT<>();
         List<DataAuthorityApplyDto> dataAuthorityApplyList = this.dataAuthorityApplyService.findByUserId(bizUserId);
         if (dataAuthorityApplyList!=null&&dataAuthorityApplyList.size()>0){
-            String id = dataAuthorityApplyList.get(0).getId();
+            String id = dataAuthorityApplyList.get(dataAuthorityApplyList.size()-1).getId();
             Map<String,String> map = new HashMap<String,String>();
             map.put("applyId",id);
             List<Map<String,Object>> lists = this.dataAuthorityApplyService.getRecordByApplyId(map);

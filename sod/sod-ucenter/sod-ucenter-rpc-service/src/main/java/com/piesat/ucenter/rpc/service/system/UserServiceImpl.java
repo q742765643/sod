@@ -509,10 +509,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                 JSONArray jjj = new JSONArray();
                 spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
                 this.databaseSpecialService.addOrUpdate(spMap, null);
-                DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
-                daa.setUserId(bizUserid);
-                daa.setCreateTime(new Date());
                 if (applyData != null) {
+                    DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
+                    daa.setUserId(bizUserid);
+                    daa.setCreateTime(new Date());
                     List<DataAuthorityRecordDto> list = new ArrayList<>();
                     for (int i = 0; i < applyData.size(); i++) {
                         DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
@@ -526,8 +526,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                         list.add(dar);
                     }
                     daa.setDataAuthorityRecordList(list);
+                    this.dataAuthorityApplyService.saveDto(daa);
                 }
-                this.dataAuthorityApplyService.saveDto(daa);
             }
         }
         return ResultT.success(userEntity);
