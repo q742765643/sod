@@ -174,7 +174,7 @@ public class DatabaseVisibleService {
             mm.put("CLASS_NAME", map.get("CLASS_NAME"));
             for (LinkedHashMap<String, Object> obj : dataClassByBizUserOrDatabase) {
                 if (obj.get("DATA_CLASS_ID").equals(map.get("DATA_CLASS_ID"))){
-                    mm.put("DATABASE_ID",obj.get(""));
+                    mm.put("DATABASE_ID",obj.get("DATABASE_DEFINE_ID"));
                 }
             }
             mm.put("DATA_CLASS_ID", map.get("DATA_CLASS_ID"));

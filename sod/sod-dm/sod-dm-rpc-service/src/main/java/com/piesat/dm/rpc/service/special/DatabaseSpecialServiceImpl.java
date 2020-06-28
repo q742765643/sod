@@ -202,9 +202,12 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Transactional
     @Override
     public void deleteById(String id) {
-        this.databaseSpecialAuthorityDao.deleteBySdbId(id);
-        this.databaseSpecialReadWriteDao.deleteBySdbId(id);
-        this.delete(id);
+        if (StringUtils.isNotEmpty(id)){
+            this.databaseSpecialAuthorityDao.deleteBySdbId(id);
+            this.databaseSpecialReadWriteDao.deleteBySdbId(id);
+            databaseDao.deleteByTdbId(id);
+            this.delete(id);
+        }
     }
 
     @Transactional
