@@ -303,7 +303,7 @@ export default {
     };
 
     var databaseCapacityValidate = (rule, value, callback) => {
-      if (!value) {
+      if (value === "") {
         callback(new Error("请输入总容量"));
       } else if ((value + "").indexOf(".") > -1) {
         callback(new Error("不能输入小数"));
