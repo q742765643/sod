@@ -159,7 +159,7 @@ export default {
     },
     cancelDialog() {
       this.msgFormDialog = false;
-      if (this.dialogTitle.indexOf("新增") != -1) {
+      if (this.dialogTitle && this.dialogTitle.indexOf("新增") != -1) {
         this.handleQuery();
       } else {
         this.getList();
