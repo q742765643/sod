@@ -245,6 +245,14 @@ public class UserController {
                     }
                     //存入
                     applyPaper.transferTo(newFile);
+                    if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
+                        parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
+                    }else{
+                        String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
+                        String pdfPath = outFilePath + "/" + pdfName;
+                        Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
+                        parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + pdfName});
+                    }
                 }
             }
             ResultT add = userService.updateBizUser(parameterMap, newFile == null ? "" : newFile.getPath());

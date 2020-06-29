@@ -14,8 +14,8 @@ import java.net.URL;
 public class Doc2PDF {
 
     public static void main(String[] args) {
-        String sourcePath = "D:\\项目\\航天宏图研发体系可复用组件使用手册[模板].docx";
-        String targetPath = "D:\\项目\\航天宏图研发体系可复用组件使用手册[模板].pdf";
+        String sourcePath = "D:\\项目\\[模板].docx";
+        String targetPath = "D:\\项目\\[模板].pdf";
         doc2pdf(sourcePath, targetPath);
     }
 

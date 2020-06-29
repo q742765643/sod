@@ -79,13 +79,12 @@ public class Cassandra implements DatabaseDcl {
     }
 
     public int getUserNum(String user) throws Exception {
-        user = user.toLowerCase();
         String cql = "LIST USERS;";
         ResultSet rs = instance.execute(cql);
         Iterator<Row> it = rs.iterator();
         while (it.hasNext()) {
             Row row = it.next();
-            if (user.equals(row.getObject(0).toString().toLowerCase())) {
+            if (user.equals(row.getObject(0).toString())) {
                 return 1;
             }
         }
@@ -94,7 +93,6 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void addUser(String identifier, String password, String[] ips) throws Exception {
-        identifier = identifier.toLowerCase();
 //        int userNum = getUserNum(identifier);
 //        if (userNum > 0) {
 //            throw new Exception("数据库用户已经存在!");
@@ -105,14 +103,12 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void deleteUser(String identifier, String ip) {
-        identifier = identifier.toLowerCase();
         String cql = "DROP USER IF EXISTS " + identifier;
         instance.execute(cql);
     }
 
     @Override
     public void deleteUser(String identifier) throws Exception {
-        identifier = identifier.toLowerCase();
         String cql = "DROP USER IF EXISTS " + identifier;
         instance.execute(cql);
     }
@@ -129,12 +125,11 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
-        identifier = identifier.toLowerCase();
         String permission = select ? "SELECT" : "MODIFY,SELECT";
         String[] split = permission.split(",");
         try {
             for (String s:split ) {
-                String cql = "GRANT " + s + " ON TABLE " + resource + "." + tableName + " To " + identifier;
+                String cql = "GRANT " + s + " ON TABLE " + resource + "." + tableName + " To '" + identifier+"'";
                 instance.execute(cql);
             }
         }catch (Exception e){
@@ -146,10 +141,9 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
-        identifier = identifier.toLowerCase();
         try {
             for (String s:permissions ) {
-                String cql = "REVOKE " + s + " ON " + resource + "." + tableName + " FROM " + identifier;
+                String cql = "REVOKE " + s + " ON " + resource + "." + tableName + " FROM '" + identifier+"'";
                 instance.execute(cql);
             }
         } catch (Exception e) {
@@ -160,21 +154,20 @@ public class Cassandra implements DatabaseDcl {
     @Override
     public void createSchemas(String schemaName, String dataBaseUser, String password, boolean dataAuthor, boolean creatAuthor, boolean dropAuthor, List<String> ips) throws Exception {
         try {
-            dataBaseUser = dataBaseUser.toLowerCase();
-            String cql = "CREATE KEYSPACE IF NOT EXISTS " + schemaName + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1}";
+            String cql = "CREATE KEYSPACE IF NOT EXISTS " + schemaName + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 4}";
             instance.execute(cql);
             if (dataAuthor) {
-                cql = "GRANT MODIFY ON KEYSPACE " + schemaName + " TO " + dataBaseUser;
+                cql = "GRANT MODIFY ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
                 instance.execute(cql);
             }
             if (creatAuthor) {
-                cql = "GRANT CREATE ON KEYSPACE " + schemaName + " TO " + dataBaseUser;
+                cql = "GRANT CREATE ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
                 instance.execute(cql);
-                cql = "GRANT ALTER ON KEYSPACE " + schemaName + " TO " + dataBaseUser;
+                cql = "GRANT ALTER ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
                 instance.execute(cql);
             }
             if (dropAuthor) {
-                cql = "GRANT DROP ON KEYSPACE " + schemaName + " TO " + dataBaseUser;
+                cql = "GRANT DROP ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
                 instance.execute(cql);
             }
         } catch (Exception e) {
@@ -227,7 +220,6 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public ResultT updateAccount(String dataBaseUser, String newPassword) {
-        dataBaseUser = dataBaseUser.toLowerCase();
         String cql = "ALTER USER " + dataBaseUser + " WITH PASSWORD '" + newPassword + "'";
         try {
             instance.execute(cql);
@@ -318,4 +310,5 @@ public class Cassandra implements DatabaseDcl {
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         return null;
     }
+
 }

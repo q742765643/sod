@@ -125,6 +125,7 @@
       <el-table-column prop="eleUnit" label="要素单位" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="levelType" label="层次类型" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="scaleDivisor" label="层次转换因子" width="150" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="gribVersion" label="GRIB版本" width="150"></el-table-column>
       <el-table-column prop="eleHours" label="资料时次" width="200"></el-table-column>
       <el-table-column prop="gridPixel" label="空间分辨率" width="150" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="timeUnit" label="预报时效单位" width="150" :show-overflow-tooltip="true"></el-table-column>
