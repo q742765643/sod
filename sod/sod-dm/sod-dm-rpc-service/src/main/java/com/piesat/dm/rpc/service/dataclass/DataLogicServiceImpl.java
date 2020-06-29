@@ -5,10 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -16,9 +19,13 @@ import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
+import com.piesat.dm.rpc.util.DatabaseUtil;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +59,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     private DatabaseSpecialReadWriteDao databaseSpecialReadWriteDao;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
+    @Autowired
+    private DatabaseService databaseService;
+    @Autowired
+    private DatabaseInfo databaseInfo;
+
 
     @Override
     public BaseDao<DataLogicEntity> getBaseDao() {
@@ -181,9 +193,10 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             List<Map<String,Object>> dataList=mybatisQueryMapper.queryTableBylogics(Arrays.asList(logics.split(",")));
             //查询物理库下专题库下的表信息
             List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(Arrays.asList(logics.split(",")));
+            //获取物理库中得表名称
+             Map<String, List<String>> databaseTables = getDatabaseTables(logics);
 
-
-            //如果是向砖题库中追加资料，过滤掉之前选择过的资料
+             //如果是向砖题库中追加资料，过滤掉之前选择过的资料
             if(!StringUtils.isBlank(tdbId)){
                 //专题库下的资料
                 List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findBySdbId(tdbId);
@@ -218,12 +231,22 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                 }
             }
 
+
+
             // 下面创建JSONArray对象，来存储查出的所有记录数据。
             JSONArray data = new JSONArray();
             HashSet<String> pp = new HashSet<String>();
             if(dataList != null && dataList.size()>0){
                 for(int i=0;i<dataList.size();i++){
                     Map<String,Object> dataTable = dataList.get(i);
+
+                    //剔除掉物理库中不存在得资料
+                    String database_define_id = dataTable.get("DATABASE_DEFINE_ID") == null ? null : (String)dataTable.get("DATABASE_DEFINE_ID") ;
+                    String table_name = dataTable.get("TABLE_NAME") == null ? null : (String)dataTable.get("TABLE_NAME") ;
+                    if(databaseTables.get(database_define_id) != null && !databaseTables.get(database_define_id).contains(table_name.toUpperCase())){
+                        continue;
+                    }
+
                     JSONObject pIdData = new JSONObject();
                     if(!pp.contains(dataTable.get("PID"))){
                         pIdData.put("id",dataTable.get("PID"));
@@ -269,5 +292,39 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
 
             //下面返回值。
             return map;
+    }
+
+    public Map<String,List<String>> getDatabaseTables(String logics){
+        HashMap<String, List<String>> map = new HashMap<>();
+        if(StringUtils.isNotEmpty(logics)){
+            List<DatabaseDto> databaseDtos = databaseService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
+            for(int i=0;i<databaseDtos.size();i++){
+                DatabaseDcl databaseDcl = null;
+                try {
+                    databaseDcl = DatabaseUtil.getDatabase(databaseDtos.get(i), databaseInfo);
+                }catch (Exception e){
+                    if (e.getMessage().contains("用户不存在")){
+                        if(databaseDcl != null) databaseDcl.closeConnect();
+                        continue;
+                    }
+                }
+
+                try{
+                    ResultT resultT = databaseDcl.queryAllTableName(databaseDtos.get(i).getSchemaName());
+                    if(resultT.isSuccess() && resultT.getData() != null){
+                        map.put(databaseDtos.get(i).getDatabaseDefine().getId(),(List<String>)resultT.getData());
+                    }
+                    databaseDcl.closeConnect();
+                }catch (Exception e){
+                    continue;
+                }finally {
+                    if (databaseDcl!=null){
+                        databaseDcl.closeConnect();
+                    }
+                }
+            }
+
+        }
+        return map;
     }
 }
