@@ -264,7 +264,19 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public ResultT queryAllTableName(String schema) throws Exception {
-        return null;
+        List<String> list = new ArrayList<String>();
+        String sql = "select table_name from system_schema.tables where keyspace_name='" + schema.toLowerCase() + "'";
+        try {
+
+            ResultSet rs = instance.execute(sql);
+            for (Row r : rs) {
+                list.add(r.getString("table_name").toUpperCase());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+        return ResultT.success(list);
     }
 
     @Override
