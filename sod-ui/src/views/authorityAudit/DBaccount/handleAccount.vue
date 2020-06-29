@@ -357,6 +357,7 @@ export default {
         databaseUpId: this.handleObj.userName
       }).then(res => {
         if (res.data && this.handleObj.checked != "0") {
+          res.data.applyDatabaseIdList = [];
           this.msgFormDialog = res.data;
           if (res.data.examineDatabaseId) {
             this.msgFormDialog.applyDatabaseIdList = res.data.examineDatabaseId.split(
