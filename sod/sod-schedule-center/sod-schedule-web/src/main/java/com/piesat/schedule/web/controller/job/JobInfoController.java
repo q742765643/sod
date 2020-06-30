@@ -255,6 +255,9 @@ public class JobInfoController {
         List<BackupEntity> backupEntityList = backupDao.findAll();
         for (BackupEntity backupEntity : backupEntityList) {
             try {
+                if(backupEntity.getTriggerStatus()!=1){
+                    continue;
+                }
                 diSendService.sendBackup(backupEntity);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -264,6 +267,9 @@ public class JobInfoController {
         List<MoveEntity> moveEntityList = moveDao.findAll();
         for (MoveEntity moveDto : moveEntityList) {
             try {
+                if(moveDto.getTriggerStatus()!=1){
+                    continue;
+                }
                 diSendService.sendMove(moveDto);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -273,6 +279,9 @@ public class JobInfoController {
         List<ClearEntity> clearEntityList = clearDao.findAll();
         for (ClearEntity clearDto : clearEntityList) {
             try {
+                if(clearDto.getTriggerStatus()!=1){
+                    continue;
+                }
                 diSendService.sendClear(clearDto);
             } catch (Exception e) {
                 e.printStackTrace();
