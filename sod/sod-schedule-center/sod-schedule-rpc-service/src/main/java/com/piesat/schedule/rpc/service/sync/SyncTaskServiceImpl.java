@@ -567,6 +567,10 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         if (b) {
             this.syncEleWarningDao.deleteById(taskId);
         }
+        boolean syncDiMessageExist = this.syncDiMessageDao.existsById(taskId);
+        if(syncDiMessageExist){
+            this.syncDiMessageDao.deleteById(taskId);
+        }
     }
 
     public List<String> deleteConfigFilter(String taskId) {
