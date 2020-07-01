@@ -301,7 +301,7 @@ export default {
     },
     finishStep() {
       let status;
-      if (this.stepNum == 0 && this.dbIds) {
+      if (this.stepNum == 0) {
         status = 2;
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
