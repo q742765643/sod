@@ -189,7 +189,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 if(dataAuthorityRecordList != null && dataAuthorityRecordList.size()>0){
                     for(DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordList){
                         if(dataAuthorityRecordEntity.getApplyAuthority().intValue() == 1){
-                            dataAuthorityRecordEntity.setAuthorize(1);
+//                            dataAuthorityRecordEntity.setAuthorize(1);
                             DataAuthorityRecordDto dataAuthorityRecordDto = dataAuthorityRecordMapper.toDto(dataAuthorityRecordEntity);
                             //物理库授权
                             updateOneRecordCheck(dataAuthorityApplyEntity.getUserId(),dataAuthorityRecordDto);
@@ -323,19 +323,13 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         if(databaseUserDto == null){
             return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
         }
-        String ip = "";
-        if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIp())){
-            ip = databaseUserDto.getDatabaseUpIp();
-        }else if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIpSegment())){
-            ip = databaseUserDto.getDatabaseUpIpSegment();
-        }
 
         //用户up账户对应的可用物理库
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
 
         DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
-        if(!databaseIds.contains(dataAuthorityRecordDto.getDatabaseId())){
+        if(!databaseIds.contains(databaseDto.getDatabaseDefine().getId())){
             return ResultT.failed("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"的访问权限" + "<br/>");
         }
 
