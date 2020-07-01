@@ -80,7 +80,7 @@ public class DatabaseVisibleService {
         UserDto userDto = this.userService.selectUserByUserName(bizUserId);
         List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(bizUserId);
         String dbIds = "";
-        if (databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+        if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
             dbIds = databaseUserEntityList.get(0).getExamineDatabaseId();
         }
         String[] split = dbIds.split(",");
@@ -116,7 +116,7 @@ public class DatabaseVisibleService {
         UserDto userDto = this.userService.selectUserByUserName(bizUserId);
         List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(bizUserId);
         String dbIds = "";
-        if (databaseUserEntityList!=null&&databaseUserEntityList.size()>0){
+        if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
             dbIds = databaseUserEntityList.get(0).getExamineDatabaseId();
         }
         String[] split = dbIds.split(",");
@@ -160,21 +160,21 @@ public class DatabaseVisibleService {
         List<Map<String, Object>> ll = new ArrayList<>();
         for (LinkedHashMap<String, Object> map : dataclassTreeByClassIds) {
             Map<String, Object> mm = new HashMap<>();
-            if (map.get("EXPR1").equals(4)) {
+            if (map.get("LEVEL").equals(4)) {
                 mm.put("DATA_LEVEL", 1);
-            } else if (map.get("EXPR1").equals(3)) {
+            } else if (map.get("LEVEL").equals(3)) {
                 mm.put("DATA_LEVEL", 2);
-            } else if (map.get("EXPR1").equals(2)) {
+            } else if (map.get("LEVEL").equals(2)) {
                 mm.put("DATA_LEVEL", 3);
-            } else if (map.get("EXPR1").equals(1)) {
+            } else if (map.get("LEVEL").equals(1)) {
                 mm.put("DATA_LEVEL", 4);
             }
             mm.put("META_DATA_STOR_TYPE", map.get("TYPE").equals(2) ? "资料" : "目录");
             mm.put("PARENT_CLASS_ID", map.get("PARENT_ID"));
             mm.put("CLASS_NAME", map.get("CLASS_NAME"));
             for (LinkedHashMap<String, Object> obj : dataClassByBizUserOrDatabase) {
-                if (obj.get("DATA_CLASS_ID").equals(map.get("DATA_CLASS_ID"))){
-                    mm.put("DATABASE_ID",obj.get("DATABASE_DEFINE_ID"));
+                if (obj.get("DATA_CLASS_ID").equals(map.get("DATA_CLASS_ID"))) {
+                    mm.put("DATABASE_ID", obj.get("DATABASE_DEFINE_ID"));
                 }
             }
             mm.put("DATA_CLASS_ID", map.get("DATA_CLASS_ID"));

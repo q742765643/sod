@@ -87,7 +87,7 @@ public class DiSendService{
         diTaskConfiguration.setTaskId(moveEntity.getId());
         diTaskConfiguration.setSystem("SOD");
         diTaskConfiguration.setTaskName(moveEntity.getProfileName());
-        diTaskConfiguration.setTaskDuty("1");
+        diTaskConfiguration.setTaskDuty("3");
         diTaskConfiguration.setTaskCron(moveEntity.getJobCron());
         diTaskConfiguration.setOvertime(moveEntity.getExecutorTimeout());
         diTaskConfiguration.setTaskMaxTime(1);

@@ -1304,13 +1304,13 @@
     </select>
 
     <select id="getDataclassTreeByClassIds" resultType="java.util.LinkedHashMap" parameterType="java.util.List">
-        SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,level
+        SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,MAX(LEVEL) LEVEL FROM  ( SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,level LEVEL
         FROM  T_SOD_DATA_CLASS
         START WITH DATA_CLASS_ID IN
         <foreach collection="list" item="e" separator="," open="(" close=")">
             #{e}
         </foreach>
-        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id
+        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id )  GROUP BY  TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID
     </select>
 
 
