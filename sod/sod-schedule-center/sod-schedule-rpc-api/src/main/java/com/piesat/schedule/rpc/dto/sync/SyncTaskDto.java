@@ -181,4 +181,14 @@ public class SyncTaskDto extends BaseDto {
 
     private Integer biggestDifference;
 
+    /**
+     * DI过滤规则
+     */
+    private String queueName;
+
+    /**
+     * 主键拼接规则
+     */
+    private String primaryCom;
+
 }

@@ -77,6 +77,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     private SyncTaskMapper syncTaskMapper;
     @Autowired
     private SyncEleWarningDao syncEleWarningDao;
+    @Autowired
+    private SyncDiMessageDao syncDiMessageDao;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -269,6 +271,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         syncTaskDto.setCreateBy(loginUser.getUserName());
+
+
         SyncTaskEntity syncTaskEntity = this.syncTaskMapstruct.toEntity(syncTaskDto);
         syncTaskEntity = syncTaskDao.saveNotNull(syncTaskEntity);
 
@@ -284,6 +288,19 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             see.setBiggestDifference(syncTaskDto.getBiggestDifference());
             this.syncEleWarningDao.saveNotNull(see);
         }
+
+        DataTableDto sourceTableDto = dataTableService.getDotById(syncTaskDto.getSourceTableId());
+
+        //数据触发同步
+        if(syncTaskDto.getSyncType() != null && syncTaskDto.getSyncType().intValue() == 2){
+            SyncDiMessageEntity sde = new SyncDiMessageEntity();
+            sde.setId(syncTaskEntity.getId());
+            sde.setMessageQueueName(syncTaskDto.getQueueName());
+            sde.setPrimaryComposition(syncTaskDto.getPrimaryCom());
+            sde.setDDataId(sourceTableDto.getClassLogic().getDataClassId());
+            this.syncDiMessageDao.saveNotNull(sde);
+        }
+
 
         return this.syncTaskMapstruct.toDto(syncTaskEntity);
     }
@@ -684,6 +701,18 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             syncTaskDto.setTimeLimit(see.getTimeLimit());
             syncTaskDto.setBiggestDifference(see.getBiggestDifference());
         }
+
+        //数据触发同步
+        if(syncTaskDto.getSyncType() != null &&  syncTaskDto.getSyncType().intValue() == 2){
+            Optional<SyncDiMessageEntity> syncDiMessageOptionl = this.syncDiMessageDao.findById(syncTaskDto.getId());
+            SyncDiMessageEntity syncDiMessageEntity = syncDiMessageOptionl.isPresent() ? syncDiMessageOptionl.get() : null;
+            if(syncDiMessageEntity != null){
+                syncTaskDto.setQueueName(syncDiMessageEntity.getMessageQueueName());
+                syncTaskDto.setPrimaryCom(syncDiMessageEntity.getPrimaryComposition());
+            }
+
+        }
+
         String syncTaskJson = JSONObject.toJSONString(syncTaskDto);
         JSONObject jsonObject = JSONObject.parseObject(syncTaskJson);
         return jsonObject;
