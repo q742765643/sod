@@ -769,7 +769,7 @@
         'delete')) h on c.C_COREMETA_ID = h.C_COREMETA_ID
         left join
         (select * from TAB_OMIN_CM_CC_DDDDOCAUTHINFO mm where (mm.C_OPT_TYPE is null or mm.C_OPT_TYPE <![CDATA[ <> ]]>
-        'delete')) m on c.C_COREMETA_ID = h.C_COREMETA_ID
+        'delete')) m on c.C_COREMETA_ID = m.C_COREMETA_ID
         left join
         (select * from tab_omin_cm_cc_apply a where C_UPDATED_DATE = (select max(C_UPDATED_DATE) from
         tab_omin_cm_cc_apply b where a.C_DATA_ID = b.C_DATA_ID ))
