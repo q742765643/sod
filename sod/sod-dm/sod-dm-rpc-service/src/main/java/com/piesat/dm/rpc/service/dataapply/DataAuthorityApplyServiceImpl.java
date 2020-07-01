@@ -353,6 +353,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }else if(dataAuthorityRecordDto.getApplyAuthority()==2){//授权写
                 databaseDcl.addPermissions(false,databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(),databaseUserDto.getDatabaseUpId(),"",null);
             }
+            dataAuthorityRecordDto.setAuthorize(1);
         }catch (Exception e){
             databaseDcl.closeConnect();
             return ResultT.failed("表"+dataAuthorityRecordDto.getTableName()+"授权失败"+e.getMessage()+"<br/>");
