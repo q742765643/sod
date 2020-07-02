@@ -82,8 +82,8 @@
       </span>
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
-      <el-button type="danger" v-if="stepNum==0" @click="finishStep">拒绝</el-button>
-      <el-button type="primary" v-if="!dbIds" @click="finishStep">通过</el-button>
+      <el-button type="danger" v-if="stepNum==0" @click="finishStep(2)">拒绝</el-button>
+      <el-button type="primary" v-if="!dbIds" @click="finishStep(1)">通过</el-button>
       <el-button type="primary" v-if="stepNum!=3&&dbIds" @click="nextStep" :disabled="nextFlag">下一步</el-button>
       <el-button type="primary" v-if="stepNum==3" @click="finishStep">完成</el-button>
     </div>
@@ -299,9 +299,9 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    finishStep() {
+    finishStep(handleType) {
       let status;
-      if (this.stepNum == 0) {
+      if (this.stepNum == 0&&handleType==2) {
         status = 2;
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
