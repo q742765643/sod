@@ -251,10 +251,13 @@ public class JobInfoController {
     }
     @GetMapping(value = "/sendDI")
     @ApiOperation(value = "发送di配置", notes = "发送di配置")
-    public ResultT<String> sendDI() {
+    public ResultT<String> sendDI(String isDelete) {
         List<BackupEntity> backupEntityList = backupDao.findAll();
         for (BackupEntity backupEntity : backupEntityList) {
             try {
+                if(null!=isDelete&&isDelete.equals("true")) {
+                    diSendService.sendDeleteDi(backupEntity.getId());
+                }
                 if(backupEntity.getTriggerStatus()!=1){
                     continue;
                 }
@@ -267,6 +270,9 @@ public class JobInfoController {
         List<MoveEntity> moveEntityList = moveDao.findAll();
         for (MoveEntity moveDto : moveEntityList) {
             try {
+                if(null!=isDelete&&isDelete.equals("true")) {
+                    diSendService.sendDeleteDi(moveDto.getId());
+                }
                 if(moveDto.getTriggerStatus()!=1){
                     continue;
                 }
@@ -279,6 +285,9 @@ public class JobInfoController {
         List<ClearEntity> clearEntityList = clearDao.findAll();
         for (ClearEntity clearDto : clearEntityList) {
             try {
+                if(null!=isDelete&&isDelete.equals("true")) {
+                    diSendService.sendDeleteDi(clearDto.getId());
+                }
                 if(clearDto.getTriggerStatus()!=1){
                     continue;
                 }
@@ -287,6 +296,13 @@ public class JobInfoController {
                 e.printStackTrace();
             }
         }
+        return new ResultT<>();
+    }
+
+    @GetMapping(value = "/deleteDI")
+    @ApiOperation(value = "删除di配置", notes = "删除di配置")
+    public ResultT<String> deleteDI(String taskId) {
+        diSendService.sendDeleteDi(taskId);
         return new ResultT<>();
     }
     @GetMapping(value = "/redisScan")
