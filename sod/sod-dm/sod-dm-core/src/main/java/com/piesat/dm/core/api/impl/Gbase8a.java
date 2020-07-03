@@ -1,12 +1,11 @@
 package com.piesat.dm.core.api.impl;
 
-import com.piesat.dm.core.api.DatabaseDclAbs;
+import com.piesat.dm.core.api.AbstractDatabaseDcl;
 import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -16,12 +15,13 @@ import java.util.*;
  * @author cwh
  * @date 2020年 02月04日 16:11:06
  */
-public class Gbase8a extends DatabaseDclAbs {
+public class Gbase8a extends AbstractDatabaseDcl {
     private final String driver = "com.gbase.jdbc.Driver";
 
     public Gbase8a(String url, String user, String password) throws Exception {
         try {
             Class.forName(driver);
+            DriverManager.setLoginTimeout(5);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -33,6 +33,7 @@ public class Gbase8a extends DatabaseDclAbs {
     }
 
 
+    @Override
     public int getUserNum(String user) throws Exception {
         int num = 0;
         String sql = "SELECT COUNT(*) FROM GBASE.USER WHERE USER='" + user + "'";
@@ -89,6 +90,7 @@ public class Gbase8a extends DatabaseDclAbs {
         }
     }
 
+    @Override
     public void deleteUser(String identifier) throws Exception {
         int userNum = getUserNum(identifier);
         if (userNum == 0) {
@@ -195,8 +197,11 @@ public class Gbase8a extends DatabaseDclAbs {
             while (rs.next()) {
                 num++;
             }
-            if (num > 0) return ResultT.success(true);
-            else return ResultT.success(false);
+            if (num > 0) {
+                return ResultT.success(true);
+            } else {
+                return ResultT.success(false);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             if (e.getMessage().contains("doesn't exist")) {

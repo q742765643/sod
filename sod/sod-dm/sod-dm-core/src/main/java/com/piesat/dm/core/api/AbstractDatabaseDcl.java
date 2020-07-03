@@ -16,7 +16,7 @@ import java.util.Map;
  * @author cwh
  * @date 2020年 02月04日 15:48:24
  */
-public abstract class DatabaseDclAbs implements DatabaseDcl {
+public abstract class AbstractDatabaseDcl implements DatabaseDcl {
     public Connection connection;
     public Statement stmt = null;
     public PreparedStatement ps = null;

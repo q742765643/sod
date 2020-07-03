@@ -144,7 +144,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Override
     public List<Map<String, Object>> findByUserId(String userId) {
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-        if (DatabseType.type.toLowerCase().equals("mysql")) {
+        if ("mysql".equals(DatabseType.type.toLowerCase())) {
             resultList = mybatisQueryMapper.getInfoByUserIdMysql(userId);
         } else {
             resultList = mybatisQueryMapper.getInfoByUserId(userId);
@@ -223,7 +223,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             if (tableEntities.size() == 1) {
                 keyTable = tableEntities.get(0);
             } else {
-                if (tableEntities.get(0).getDbTableType().toUpperCase().equals("K")) {
+                if ("K".equals(tableEntities.get(0).getDbTableType().toUpperCase())) {
                     keyTable = tableEntities.get(0);
                     eleTable = tableEntities.get(1);
                 } else {

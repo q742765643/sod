@@ -49,14 +49,14 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
             paramMap.put("dataName", databaseSpecialReadWriteDto.getDataName());
             paramMap.put("tableName", databaseSpecialReadWriteDto.getTableName());
             if(StringUtils.isNotNullString(databaseSpecialReadWriteDto.getApplyAuthorityString())){
-                if(databaseSpecialReadWriteDto.getApplyAuthorityString().equals("只读")){
+                if("只读".equals(databaseSpecialReadWriteDto.getApplyAuthorityString())){
                     paramMap.put("applyAuthority", 1);
                 }else{
                     paramMap.put("applyAuthority", 2);
                 }
             }
             if(StringUtils.isNotNullString(databaseSpecialReadWriteDto.getExamineStatusString())){
-                if(databaseSpecialReadWriteDto.getExamineStatusString().equals("拒绝")){
+                if("拒绝".equals(databaseSpecialReadWriteDto.getExamineStatusString())){
                     paramMap.put("examineStatus", 3);
                 }else if(databaseSpecialReadWriteDto.getExamineStatusString().contains("已授权")){
                     paramMap.put("examineStatus", 2);
@@ -76,7 +76,7 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
                     dto.setDDataId(map.get("D_DATA_ID") + "");
                     dto.setTableName(map.get("TABLE_NAME") + "");
                     dto.setDatabaseName(map.get("DATABASE_NAME") + "");
-                    if(map.get("FAILURE_REASON")!=null&&!map.get("FAILURE_REASON").toString().equals("null")){
+                    if(map.get("FAILURE_REASON")!=null&&!"null".equals(map.get("FAILURE_REASON").toString())){
                         dto.setFailureReason(map.get("FAILURE_REASON").toString());
                     }else{
                         dto.setFailureReason("");
@@ -180,11 +180,11 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
                     String value = oneTableInfo.getString(key);
 
                     // 下面循环读取每个数据。
-                    if (key.equals("TDB_ID") == true) {
+                    if ("TDB_ID".equals(key)) {
                         dataMap.put("tdbId", value);
-                    } else if (key.equals("DATA_CLASS_ID") == true) {
+                    } else if ("DATA_CLASS_ID".equals(key)) {
                         dataMap.put("dataClassId", value);
-                    } else if (key.equals("LOGIC_ID") == true) {
+                    } else if ("LOGIC_ID".equals(key)) {
                         dataMap.put("logicId", value);
                     }
                 }

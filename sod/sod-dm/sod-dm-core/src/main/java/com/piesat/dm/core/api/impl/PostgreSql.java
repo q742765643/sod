@@ -1,12 +1,10 @@
 package com.piesat.dm.core.api.impl;
 
-import com.piesat.dm.core.api.DatabaseDclAbs;
+import com.piesat.dm.core.api.AbstractDatabaseDcl;
 import com.piesat.util.ResultT;
-import org.apache.commons.lang.StringUtils;
 
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +17,7 @@ import java.util.Map;
  * @author: zzj
  * @create: 2020-05-22 13:27
  **/
-public class PostgreSql extends DatabaseDclAbs {
+public class PostgreSql extends AbstractDatabaseDcl {
     private final String driver = "org.postgresql.Driver";
     public PostgreSql(String url, String user, String password) throws Exception {
         try {

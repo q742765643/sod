@@ -503,7 +503,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 }
                 List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
 
-                if (!databaseId.equals("RADB")) {
+                if (!"RADB".equals(databaseId)) {
                     if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {//授权
                         empowerAuthority(userId, databaseId, dataClassId, applyAuthority);
                     } else if (databaseSpecialReadWriteDto.getExamineStatus() == 2) {//撤销权限
@@ -809,7 +809,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         boolean readAuthorityFlag = false;
         List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
         if (readAuthorityEntities != null && readAuthorityEntities.size() > 0) {
-            if (readAuthorityEntities.get(0).getValue().equals("1")) {
+            if ("1".equals(readAuthorityEntities.get(0).getValue())) {
                 readAuthorityFlag = true;
             }
         }
@@ -863,7 +863,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     public DatabaseSpecialAccessDto specialAccessAutho(DatabaseSpecialAccessDto databaseSpecialAccessDto) {
         DatabaseSpecialAccessEntity databaseSpecialAccessEntity = databaseSpecialAccessMapper.toEntity(databaseSpecialAccessDto);
         //审核通过，设置使用状态为2使用中
-        if (databaseSpecialAccessEntity.getExamineStatus().equals("2")) {
+        if ("2".equals(databaseSpecialAccessEntity.getExamineStatus())) {
             databaseSpecialAccessEntity.setUseStatus("2");
         }
         databaseSpecialAccessEntity.setExamineTime(new Date());
@@ -871,7 +871,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         mybatisModifyMapper.updateSpecialAccess(databaseSpecialAccessEntity);
 
         //给专题库下的资料授权
-        if (databaseSpecialAccessEntity.getExamineStatus().equals("2")) {
+        if ("2".equals(databaseSpecialAccessEntity.getExamineStatus())) {
             List<DatabaseSpecialReadWriteEntity> databaseSpecialReadWriteEntities = this.databaseSpecialReadWriteDao.findBySdbId(databaseSpecialAccessDto.getSdbId());
             if (databaseSpecialReadWriteEntities != null && databaseSpecialReadWriteEntities.size() > 0) {
                 for (int i = 0; i < databaseSpecialReadWriteEntities.size(); i++) {
@@ -900,9 +900,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         specialdb.setExamineStatus(examineStatus);
         specialdb.setId(tdbId);
         specialdb.setUserId(userId);
-        if (examineStatus.equals("1") || examineStatus.equals("3")) {
+        if ("1".equals(examineStatus) || "3".equals(examineStatus)) {
             specialdb.setUseStatus("1");
-        } else if (examineStatus.equals("2")) {
+        } else if ("2".equals(examineStatus)) {
             specialdb.setUseStatus("2");
         }//else if(examineStatus.equals("2")&&)
         databaseSpecialDao.save(databaseSpecialMapper.toEntity(specialdb));
@@ -914,7 +914,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             Map<String, Object> parammap = new HashMap<String, Object>();
             //根据专题库ID获取到专题库资料列表
             getAllRecordByTdbId(tdbId, dataMap);
-            if (dataMap.get("returnCode").toString().equals("0")) {
+            if ("0".equals(dataMap.get("returnCode").toString())) {
                 JSONArray data = (JSONArray) dataMap.get("data");
                 if (data != null && data.size() > 0) {
                     //遍历单条授权
@@ -1123,11 +1123,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 String value = oneTableInfo.getString(key);
 
                 //下面循环读取每个数据。
-                if (key.equals("TDB_ID") == true) {
+                if ("TDB_ID".equals(key)) {
                     oneRecord.setSdbId(value);
-                } else if (key.equals("USER_ID") == true) {
+                } else if ("USER_ID".equals(key)) {
                     oneRecord.setUserId(value);
-                } else if (key.equals("USES") == true) {
+                } else if ("USES".equals(key)) {
                     oneRecord.setUses(value);
                 }
             }

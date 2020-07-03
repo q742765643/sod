@@ -184,12 +184,12 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //读申请是否自动授权
         List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
         if(readAuthorityEntities != null && readAuthorityEntities.size()>0){
-            if(readAuthorityEntities.get(0).getValue().equals("1")){//读申请自动授权
+            //读申请自动授权
+            if("1".equals(readAuthorityEntities.get(0).getValue())){
                 Set<DataAuthorityRecordEntity> dataAuthorityRecordList = dataAuthorityApplyEntity.getDataAuthorityRecordList();
                 if(dataAuthorityRecordList != null && dataAuthorityRecordList.size()>0){
                     for(DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordList){
                         if(dataAuthorityRecordEntity.getApplyAuthority().intValue() == 1){
-//                            dataAuthorityRecordEntity.setAuthorize(1);
                             DataAuthorityRecordDto dataAuthorityRecordDto = dataAuthorityRecordMapper.toDto(dataAuthorityRecordEntity);
                             //物理库授权
                             updateOneRecordCheck(dataAuthorityApplyEntity.getUserId(),dataAuthorityRecordDto);
@@ -223,7 +223,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public List<Map<String,Object>> getRecordByApplyId(Map<String,String> map) {
-        if(DatabseType.type.toLowerCase().equals("mysql")){
+        if("mysql".equals(DatabseType.type.toLowerCase())){
             return mybatisQueryMapper.getRecordByApplyIdMysql(map);
         }else{
             return mybatisQueryMapper.getRecordByApplyId(map);
@@ -418,7 +418,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public List<Map<String,Object>> getRecordListByUserId(String userId) {
-        if(DatabseType.type.toLowerCase().equals("mysql")){
+        if("mysql".equals(DatabseType.type.toLowerCase())){
             return mybatisQueryMapper.getRecordListByUserIdMysql(userId);
         }else{
             return mybatisQueryMapper.getRecordListByUserId(userId);

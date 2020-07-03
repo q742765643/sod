@@ -19,16 +19,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service("indexCountTaskService")
 @Slf4j
 public class IndexTaskCountServiceImpl implements IndexCountTaskService{
-	
+
 	@Autowired
 	private ClassCountTask classCountTask;
-	
+
 	/**
 	 *  运行资料统计任务
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年3月30日下午4:58:18
 	 */
+	@Override
 	public void runClassCountTask() {
 		log.info("运行首页资料统计任务");
 		Timer t = new Timer();

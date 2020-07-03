@@ -375,7 +375,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         /**为申请的IP授权**/
         //待授权IP
         String databaseUpIp = databaseUserDto.getDatabaseUpIp();
-        if (StringUtils.isNotBlank(databaseUpIp)) databaseUpIp += "," + mngIp;
+        if (StringUtils.isNotBlank(databaseUpIp)) {
+            databaseUpIp += "," + mngIp;
+        }
 
         String[] needEmpowerIpArr = databaseUpIp.split(",");
         for (String databaseId : needEmpowerIdist) {
@@ -386,14 +388,18 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 if (databaseVO != null) {
                     databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
                     databaseVO.closeConnect();
-                    if (!thisHaveIds.contains(databaseId)) thisHaveIds.add(databaseId);
+                    if (!thisHaveIds.contains(databaseId)) {
+                        thisHaveIds.add(databaseId);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
                 if (StringUtils.isNotBlank(message)) {
                     if (message.contains("用户已经存在") || message.contains("already exists")) {
-                        if (!thisHaveIds.contains(databaseId)) thisHaveIds.add(databaseId);
+                        if (!thisHaveIds.contains(databaseId)) {
+                            thisHaveIds.add(databaseId);
+                        }
                     } else {
                         sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                     }
