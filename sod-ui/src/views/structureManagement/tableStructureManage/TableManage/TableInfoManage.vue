@@ -338,6 +338,7 @@ export default {
       saveObj.version = this.Info.version;
       saveObj.id = this.Info.id;
       saveObj.createTime = this.Info.createTime;
+      saveObj.dataServiceName = this.rowData.CLASS_NAME;
       if (this.tableType == "E-Kshow") {
         saveObj.dbTableType = this.childTableType;
       } else {
