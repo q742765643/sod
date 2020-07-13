@@ -42,7 +42,7 @@ public class HttpUtils
             // 创建uri
             Map<String, String> map = new LinkedHashMap<>();
             map.put("nonce",  UUID.randomUUID().toString());
-            map.put("timestamp", Long.toString(new Date().getTime()));
+            map.put("timestamp", Long.toString(System.currentTimeMillis()));
             map.put("userId", userName);
             map.put("interfaceId", interfaceId);
             map.put("pwd", password);
@@ -103,7 +103,7 @@ public class HttpUtils
             // 创建uri
             HashMap<String, String> map = new LinkedHashMap<>();
             map.put("nonce",  UUID.randomUUID().toString());
-            map.put("timestamp", Long.toString(new Date().getTime()));
+            map.put("timestamp", Long.toString(System.currentTimeMillis()));
             map.put("userId", userName);
             map.put("pwd", password);
             String sign = getSign(map);

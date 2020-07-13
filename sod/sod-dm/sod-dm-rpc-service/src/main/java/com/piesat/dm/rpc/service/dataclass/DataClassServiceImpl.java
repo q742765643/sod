@@ -135,7 +135,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public JSONArray getLogicClass() {
         List<Map<String, Object>> maps=new ArrayList<>();
-        if(DatabseType.type.equals("postgresql")){
+        if("postgresql".equals(DatabseType.type)){
             maps=this.mybatisQueryMapper.getLogicClassTreePostgresql();
         }else{
             maps = this.mybatisQueryMapper.getLogicClassTree();
@@ -271,7 +271,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public JSONArray getSimpleTree(String databaseId) {
         List<DataClassEntity> dataClassList=new ArrayList<>();
-        if(DatabseType.type.equals("postgresql")){
+        if("postgresql".equals(DatabseType.type)){
             dataClassList = mybatisQueryMapper.getDataClassTreePostgresql(databaseId);
         }else{
             dataClassList = mybatisQueryMapper.getDataClassTree(databaseId);

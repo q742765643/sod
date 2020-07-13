@@ -78,6 +78,7 @@ public class Cassandra implements DatabaseDcl {
 
     }
 
+    @Override
     public int getUserNum(String user) throws Exception {
         String cql = "LIST USERS;";
         ResultSet rs = instance.execute(cql);

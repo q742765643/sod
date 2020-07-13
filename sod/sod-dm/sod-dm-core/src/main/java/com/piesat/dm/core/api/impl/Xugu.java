@@ -1,10 +1,9 @@
 package com.piesat.dm.core.api.impl;
 
-import com.piesat.dm.core.api.DatabaseDclAbs;
+import com.piesat.dm.core.api.AbstractDatabaseDcl;
 import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
 
-import javax.xml.transform.Result;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,7 +16,7 @@ import java.util.*;
  * @author cwh
  * @date 2020年 02月04日 15:50:07
  */
-public class Xugu extends DatabaseDclAbs {
+public class Xugu extends AbstractDatabaseDcl {
     private final String driver = "com.xugu.cloudjdbc.Driver";
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -25,6 +24,7 @@ public class Xugu extends DatabaseDclAbs {
     public Xugu(String url, String user, String password) throws Exception {
         try {
             Class.forName(driver);
+            DriverManager.setLoginTimeout(5);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -55,6 +55,7 @@ public class Xugu extends DatabaseDclAbs {
 
     }
 
+    @Override
     public int getUserNum(String user) throws Exception {
         int num = 0;
         String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + user.toUpperCase() + "'";
@@ -255,8 +256,11 @@ public class Xugu extends DatabaseDclAbs {
             while (rs.next()) {
                 num++;
             }
-            if (num > 0) return ResultT.success(true);
-            else return ResultT.success(false);
+            if (num > 0) {
+                return ResultT.success(true);
+            } else {
+                return ResultT.success(false);
+            }
         } catch (SQLException e) {
             if (e.getMessage().contains("表或视图") && e.getMessage().contains("不存在")) {
                 return ResultT.success(false);

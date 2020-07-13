@@ -9,6 +9,7 @@
     >
       <el-form-item label="资料名称" prop="profileName">
         <el-input
+          clearable
           v-model.trim="queryParams.profileName"
           placeholder="请输入物理库资料名称"
           moveable
@@ -19,6 +20,7 @@
       </el-form-item>
       <el-form-item label="存储编码" prop="dataClassId">
         <el-input
+          clearable
           v-model.trim="queryParams.dataClassId"
           placeholder="请输入存储编码或者四级编码"
           moveable
@@ -29,6 +31,7 @@
       </el-form-item>
       <el-form-item label="表名" prop="tableName">
         <el-input
+          clearable
           v-model.trim="queryParams.tableName"
           placeholder="请输入表名"
           moveable
@@ -239,6 +242,21 @@
         <el-button @click="allDetailDialog = false">取 消</el-button>
       </span>
     </el-dialog>
+
+    <!-- 删除提示 -->
+    <el-dialog title="温馨提示" :visible.sync="deleteVisible" width="30%" v-dialogDrag>
+      <p>
+        <i class="el-icon-warning" style="color:#e6a23c;"></i>是否删除以下资料的日志
+      </p>
+      <p v-for="(item,index) in multipleSelection" :key="index" v-if="item.id">
+        <span>{{index+1}}:</span>
+        {{item.profileName}}
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancleDelete">取 消</el-button>
+        <el-button type="primary" @click="trueDelete">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -254,10 +272,12 @@ import { formatDate } from "@/utils/index";
 export default {
   data() {
     return {
+      deleteVisible: false,
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
+      multipleSelection: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -381,6 +401,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      this.multipleSelection = selection;
+      console.log(this.multipleSelection);
       this.ids = selection.map(item => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
@@ -398,17 +420,35 @@ export default {
       });
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$confirm(
-        '是否确认删除任务日志编号为"' + ids + '"的数据项?',
-        "警告",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+    trueDelete() {
+      let ids = [];
+      this.multipleSelection.forEach(element => {
+        if (element.id) {
+          ids.push(element.id);
         }
-      )
+      });
+      console.log(ids);
+      delMoveLog(ids.join(",")).then(response => {
+        this.msgSuccess("删除成功");
+        this.deleteVisible = false;
+        this.multipleSelection = [];
+        this.getList();
+      });
+    },
+    cancleDelete() {
+      this.deleteVisible = false;
+    },
+    handleDelete(row) {
+      this.multipleSelection.push(row);
+      // const ids = row.id || this.ids;
+      this.deleteVisible = true;
+      /* this.deleteMethods(ids);
+      this.$confirm("<p>是否确认删除以下任务日志?</p>", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true
+      })
         .then(function() {
           return delMoveLog(ids);
         })
@@ -416,7 +456,7 @@ export default {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function() {}); */
     }
   }
 };
@@ -431,5 +471,9 @@ export default {
   .el-textarea__inner {
     min-height: 300px !important;
   }
+}
+.el-message-box__message p {
+  max-height: 300px;
+  overflow-y: auto;
 }
 </style>
