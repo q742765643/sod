@@ -28,9 +28,21 @@ p {
   border-color: #606266;
 }
 
+// 
+.el-input.is-disabled .el-input__inner {
+  color: #606266;
+}
+
 // cron
-#changeContab .bottom .value {
-  margin-right: 12px;
+#changeContab {
+  .bottom .value {
+    margin-right: 12px;
+  }
+
+  .el-tabs--border-card>.el-tabs__content {
+    max-height: 300px;
+    overflow: auto;
+  }
 }
 
 // 弹框

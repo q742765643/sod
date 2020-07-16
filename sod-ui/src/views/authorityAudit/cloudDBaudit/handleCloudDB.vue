@@ -31,14 +31,14 @@
           </el-col>
           <el-col :span="8" v-else>
             <el-form-item label="申请用户" prop="userName">
-              <el-input v-model.trim="msgFormDialog.userName" :disabled="true" size="small"></el-input>
+              <el-input v-model="msgFormDialog.userName" :disabled="true" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="申请单位">
               <el-input
-                v-model.trim="msgFormDialog.department"
-                :disabled="isDetail"
+                v-model="msgFormDialog.department"
+                :disabled="true"
                 size="small"
                 placeholder="申请单位"
               ></el-input>
@@ -47,7 +47,7 @@
           <el-col :span="8">
             <el-form-item label="联系电话">
               <el-input
-                :disabled="isDetail"
+                :disabled="true"
                 size="small"
                 v-model.trim="msgFormDialog.telephone"
                 placeholder="联系电话"

@@ -131,19 +131,7 @@
             </el-radio-group>
           </el-form-item>
         </el-col>
-        <el-col :span="24">
-          <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
-              <el-input
-                slot="reference"
-                @click="cronPopover=true"
-                v-model.trim="msgFormDialog.jobCron"
-                placeholder="请输入定时策略"
-              ></el-input>
-            </el-popover>
-          </el-form-item>
-        </el-col>
+
         <el-col :span="24">
           <el-form-item
             v-if="msgFormDialog.isClear != '0' ||  msgFormDialog.clearConditions"
@@ -165,7 +153,19 @@
             </el-select>
           </el-form-item>
         </el-col>
-
+        <el-col :span="24">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-popover v-model.trim="cronPopover">
+              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+              <el-input
+                slot="reference"
+                @click="cronPopover=true"
+                v-model.trim="msgFormDialog.jobCron"
+                placeholder="请输入定时策略"
+              ></el-input>
+            </el-popover>
+          </el-form-item>
+        </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>

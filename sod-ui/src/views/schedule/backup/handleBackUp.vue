@@ -99,19 +99,7 @@
             <el-input v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
-        <el-col :span="24">
-          <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
-              <el-input
-                slot="reference"
-                @click="cronPopover=true"
-                v-model.trim="msgFormDialog.jobCron"
-                placeholder="请输入定时策略"
-              ></el-input>
-            </el-popover>
-          </el-form-item>
-        </el-col>
+
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
             <el-radio-group v-model.trim="msgFormDialog.isAlarm">
@@ -136,6 +124,19 @@
         <el-col :span="12">
           <el-form-item label="重试间隔时间" prop="retryInterval">
             <el-input v-model.trim="msgFormDialog.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-popover v-model.trim="cronPopover">
+              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+              <el-input
+                slot="reference"
+                @click="cronPopover=true"
+                v-model.trim="msgFormDialog.jobCron"
+                placeholder="请输入定时策略"
+              ></el-input>
+            </el-popover>
           </el-form-item>
         </el-col>
         <el-col :span="24">
