@@ -78,6 +78,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 专题库管理
@@ -202,7 +203,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Transactional
     @Override
     public void deleteById(String id) {
-        if (StringUtils.isNotEmpty(id)){
+        if (StringUtils.isNotEmpty(id)) {
             this.databaseSpecialAuthorityDao.deleteBySdbId(id);
             this.databaseSpecialReadWriteDao.deleteBySdbId(id);
             databaseDao.deleteByTdbId(id);
@@ -366,7 +367,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 //删除历史授权记录，重新添加
                 String sdbId = databaseDto.getTdbId();
                 databaseSpecialAuthorityDao.deleteBySdbId(sdbId);
-                databaseDao.deleteByTdbId(sdbId);
+                List<DatabaseEntity> databaseEntitys = databaseDao.findByTdbId(sdbId);
+                List<String> databaseIds = databaseEntitys.stream().map(d -> d.getDatabaseDefine().getId()).collect(Collectors.toList());
                 //需要授权的数据库列表
                 List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList = databaseDto.getDatabaseSpecialAuthorityList();
                 for (int i = 0; i < databaseSpecialAuthorityList.size(); i++) {
@@ -377,7 +379,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     //需要处理的数据库ID
                     String databaseId = databaseSpecialAuthorityDto.getDatabaseId();
                     DatabaseDefineEntity databaseDefineEntity = databaseDefineDao.findById(databaseId).get();
-                    if (databaseDefineEntity != null) {
+                    if (databaseDefineEntity != null && !databaseIds.contains(databaseId)) {
                         DatabaseEntity databaseEntity = new DatabaseEntity();
                         databaseEntity.setDatabaseClassify("专题库");
                         databaseEntity.setDatabaseName(databaseDto.getDatabaseName());
@@ -653,11 +655,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         List<DatabaseSpecialDto> databaseSpecialDtos = databaseSpecialMapper.toDto(databaseSpecialEntities);
         //调用接口获取所有的用户信息
         List<UserEntity> userEntities = userDao.findByUserType("11");
-        if(databaseSpecialDtos != null && databaseSpecialDtos.size()>0){
-            for(DatabaseSpecialDto databaseSpecialDto:databaseSpecialDtos){
+        if (databaseSpecialDtos != null && databaseSpecialDtos.size() > 0) {
+            for (DatabaseSpecialDto databaseSpecialDto : databaseSpecialDtos) {
                 //遍历所有用户信息找到每条记录对应的用户信息
-                for(UserEntity userEntity:userEntities){
-                    if(userEntity.getUserName().equals(databaseSpecialDto.getUserId())){
+                for (UserEntity userEntity : userEntities) {
+                    if (userEntity.getUserName().equals(databaseSpecialDto.getUserId())) {
                         databaseSpecialDto.setUserName(userEntity.getWebUsername());
                         databaseSpecialDto.setUserPhone(userEntity.getPhonenumber());
                         databaseSpecialDto.setDepartment(userEntity.getDeptName());
@@ -1161,52 +1163,52 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     @Override
     public void exportExcel(DatabaseSpecialDto databaseSpecialDto) {
         List<DatabaseSpecialDto> databaseSpecialDtos = this.findByParam(databaseSpecialDto);
-        List<DatabaseSpecialEntity> entities=databaseSpecialMapper.toEntity(databaseSpecialDtos);
-        List<DatabaseSpecialEntity> newEn=new ArrayList<>();
-            for(int i=0;i<entities.size();i++){
-                DatabaseSpecialEntity databaseSpecialEntity=entities.get(i);
-                databaseSpecialEntity.setNum(i+1);
-                List<DatabaseSpecialAuthorityDto> authorityList = this.databaseSpecialAuthorityService.getAuthorityBySdbId(databaseSpecialEntity.getId());
-                if(authorityList.size()>0){
-                    String vv="☑";
-                    String xx="☒";
-                    for(int j=0;j<authorityList.size();j++){
-                        DatabaseSpecialEntity newD=new DatabaseSpecialEntity();
-                        BeanUtils.copyProperties(databaseSpecialEntity,newD);
-                        DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto=authorityList.get(j);
-                        String position15 = String.format("%-15s",databaseSpecialAuthorityDto.getDatabaseId());
-                        if(2==databaseSpecialAuthorityDto.getCreateTable()){
-                           position15+=vv+"创建   ";
-                        }else{
-                           position15+=xx+"创建   ";
-                        }
-                        if(2==databaseSpecialAuthorityDto.getDeleteTable()){
-                           position15+=vv+"删除   ";
-                        }else{
-                           position15+=xx+"删除   ";
-                        }
-                        if(2==databaseSpecialAuthorityDto.getTableDataAccess()){
-                           position15+=vv+"读写   ";
-                        }else{
-                           position15+=xx+"读写   ";
-                        }
-                        newD.setAuthorizationStatus(position15);
-                        newEn.add(newD);
+        List<DatabaseSpecialEntity> entities = databaseSpecialMapper.toEntity(databaseSpecialDtos);
+        List<DatabaseSpecialEntity> newEn = new ArrayList<>();
+        for (int i = 0; i < entities.size(); i++) {
+            DatabaseSpecialEntity databaseSpecialEntity = entities.get(i);
+            databaseSpecialEntity.setNum(i + 1);
+            List<DatabaseSpecialAuthorityDto> authorityList = this.databaseSpecialAuthorityService.getAuthorityBySdbId(databaseSpecialEntity.getId());
+            if (authorityList.size() > 0) {
+                String vv = "☑";
+                String xx = "☒";
+                for (int j = 0; j < authorityList.size(); j++) {
+                    DatabaseSpecialEntity newD = new DatabaseSpecialEntity();
+                    BeanUtils.copyProperties(databaseSpecialEntity, newD);
+                    DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = authorityList.get(j);
+                    String position15 = String.format("%-15s", databaseSpecialAuthorityDto.getDatabaseId());
+                    if (2 == databaseSpecialAuthorityDto.getCreateTable()) {
+                        position15 += vv + "创建   ";
+                    } else {
+                        position15 += xx + "创建   ";
                     }
-                }else{
-                    DatabaseSpecialEntity newD=new DatabaseSpecialEntity();
-                    BeanUtils.copyProperties(databaseSpecialEntity,newD);
+                    if (2 == databaseSpecialAuthorityDto.getDeleteTable()) {
+                        position15 += vv + "删除   ";
+                    } else {
+                        position15 += xx + "删除   ";
+                    }
+                    if (2 == databaseSpecialAuthorityDto.getTableDataAccess()) {
+                        position15 += vv + "读写   ";
+                    } else {
+                        position15 += xx + "读写   ";
+                    }
+                    newD.setAuthorizationStatus(position15);
                     newEn.add(newD);
                 }
-
+            } else {
+                DatabaseSpecialEntity newD = new DatabaseSpecialEntity();
+                BeanUtils.copyProperties(databaseSpecialEntity, newD);
+                newEn.add(newD);
             }
-            ExcelUtil<DatabaseSpecialEntity> util=new ExcelUtil(DatabaseSpecialEntity.class,true);
-            util.exportExcel(newEn,"专题库审核");
+
+        }
+        ExcelUtil<DatabaseSpecialEntity> util = new ExcelUtil(DatabaseSpecialEntity.class, true);
+        util.exportExcel(newEn, "专题库审核");
     }
 
     @Override
     public List<DatabaseSpecialDto> findByParam(DatabaseSpecialDto databaseSpecialDto) {
-        DatabaseSpecialEntity databaseSpecialEntity=databaseSpecialMapper.toEntity(databaseSpecialDto);
+        DatabaseSpecialEntity databaseSpecialEntity = databaseSpecialMapper.toEntity(databaseSpecialDto);
         SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
         if (StringUtils.isNotNullString(databaseSpecialEntity.getExamineStatus())) {
             specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(), databaseSpecialEntity.getExamineStatus());
@@ -1300,6 +1302,20 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
         // 下面返回值。
         return;
+    }
+
+    public static void main(String[] args) {
+        List<DatabaseEntity> databaseEntitys = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            DatabaseDefineEntity dd = new DatabaseDefineEntity();
+            dd.setId("www"+i);
+            DatabaseEntity d = new DatabaseEntity();
+                    d.setDatabaseDefine(dd);
+            databaseEntitys.add(d);
+        }
+
+                List<String> databaseIds = databaseEntitys.stream().map(d -> d.getDatabaseDefine().getId()).collect(Collectors.toList());
+        databaseIds.stream().forEach(System.out::println);
     }
 
 }

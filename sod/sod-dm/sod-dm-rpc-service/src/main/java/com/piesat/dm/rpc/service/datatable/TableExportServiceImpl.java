@@ -260,8 +260,9 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
             //获取数据列表
             List<Map<String,Object>> sqlList = mybatisQueryMapper.getSqlList(databaseId,dataClassIds);
             String databaseName = getDatabaseName(databaseId);
-            String nowtime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-            String outFileName = databaseName+"_"+nowtime;
+//            String nowtime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            String outFileName = databaseName+"_"+uuid;
             if(sqlList!=null&&sqlList.size()>0){
                 //判断导出一个文件还是多个文件
                 if(exportType==1){
@@ -307,13 +308,34 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                 }else if(exportType==2){
                     List<File> fileList = new ArrayList<>();
                     for(Map<String,Object> sqlMap : sqlList){
+                        String sqlContent = "";
+                        if(sqlMap.get("TABLE_SQL")!=null){
+                            Clob sqlClob = (Clob) sqlMap.get("TABLE_SQL");
+                            sqlContent = ClobToString(sqlClob);
+                        }else {
+                            String tableId = sqlMap.get("ID").toString();
+                            ResultT sql = this.grpcService.getSql(tableId, databaseId);
+                            if (sql.getCode() == 200){
+                                Object data = sql.getData();
+                                if (data instanceof HashMap){
+                                    String createSql = ((HashMap) data).get("createSql").toString();
+                                    if (StringUtils.isNotEmpty(createSql)){
+                                        sqlContent = createSql;
+                                    }
+                                }
+                            }else {
+                                sqlContent = "--"+sql.getMsg()+"--\n\n";
+                            }
+                        }
+
                         String sql = "--"+sqlMap.getOrDefault("DATA_SERVICE_ID","")
                                 +"_"+sqlMap.getOrDefault("DATA_SERVICE_NAME","")
                                 +"_"+sqlMap.getOrDefault("TABLE_NAME","")
                                 +"\n"
-                                +sqlMap.getOrDefault("TABLE_SQL","")
+                                +sqlContent
                                 +"\n\n";
-                        String fileName = sqlMap.getOrDefault("DATA_SERVICE_ID","")
+                        String fileName = sqlMap.getOrDefault("ID","")
+                                +"_"+sqlMap.getOrDefault("DATA_SERVICE_ID","")
                                 +"_"+sqlMap.getOrDefault("DATA_SERVICE_NAME","")
                                 +"_"+sqlMap.getOrDefault("TABLE_NAME","")+".sql";
                         File file = new File(outFilePath+"/"+fileName);

@@ -32,8 +32,8 @@ public class Cassandra implements DatabaseDcl {
     public Cassandra(String ip, int port, String username, String password, String keyspace) throws Exception {
         String[] ips = ip.split(",");
         if (null == instance) {
+            lock.lock();
             try {
-                lock.lock();
                 if (null == instance) {
                     cluster = Cluster.builder()
                             .addContactPoints(ips).withPort(port)
@@ -59,8 +59,8 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void closeConnect() {
-        instance.close();
-        cluster.close();
+        Optional.ofNullable(this.instance).ifPresent(i -> i.close());
+        Optional.ofNullable(this.cluster).ifPresent(c -> c.close());
     }
 
     @Override
@@ -129,11 +129,11 @@ public class Cassandra implements DatabaseDcl {
         String permission = select ? "SELECT" : "MODIFY,SELECT";
         String[] split = permission.split(",");
         try {
-            for (String s:split ) {
-                String cql = "GRANT " + s + " ON TABLE " + resource + "." + tableName + " To '" + identifier+"'";
+            for (String s : split) {
+                String cql = "GRANT " + s + " ON TABLE " + resource + "." + tableName + " To '" + identifier + "'";
                 instance.execute(cql);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
 
@@ -143,8 +143,8 @@ public class Cassandra implements DatabaseDcl {
     @Override
     public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
         try {
-            for (String s:permissions ) {
-                String cql = "REVOKE " + s + " ON " + resource + "." + tableName + " FROM '" + identifier+"'";
+            for (String s : permissions) {
+                String cql = "REVOKE " + s + " ON " + resource + "." + tableName + " FROM '" + identifier + "'";
                 instance.execute(cql);
             }
         } catch (Exception e) {
@@ -158,17 +158,17 @@ public class Cassandra implements DatabaseDcl {
             String cql = "CREATE KEYSPACE IF NOT EXISTS " + schemaName + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 4}";
             instance.execute(cql);
             if (dataAuthor) {
-                cql = "GRANT MODIFY ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
+                cql = "GRANT MODIFY ON KEYSPACE " + schemaName + " TO '" + dataBaseUser + "'";
                 instance.execute(cql);
             }
             if (creatAuthor) {
-                cql = "GRANT CREATE ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
+                cql = "GRANT CREATE ON KEYSPACE " + schemaName + " TO '" + dataBaseUser + "'";
                 instance.execute(cql);
-                cql = "GRANT ALTER ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
+                cql = "GRANT ALTER ON KEYSPACE " + schemaName + " TO '" + dataBaseUser + "'";
                 instance.execute(cql);
             }
             if (dropAuthor) {
-                cql = "GRANT DROP ON KEYSPACE " + schemaName + " TO '" + dataBaseUser+"'";
+                cql = "GRANT DROP ON KEYSPACE " + schemaName + " TO '" + dataBaseUser + "'";
                 instance.execute(cql);
             }
         } catch (Exception e) {
@@ -187,7 +187,9 @@ public class Cassandra implements DatabaseDcl {
     public ResultT createTable(String sql, String tableName, Boolean deleteOld) {
         try {
             String cql = "DROP TABLE IF EXISTS " + tableName;
-            if (deleteOld) instance.execute(cql);
+            if (deleteOld) {
+                instance.execute(cql);
+            }
             instance.execute(sql);
         } catch (Exception e) {
             e.printStackTrace();
@@ -207,8 +209,11 @@ public class Cassandra implements DatabaseDcl {
                 it.next();
                 no++;
             }
-            if (no > 0) return ResultT.success(true);
-            else return ResultT.success(false);
+            if (no > 0) {
+                return ResultT.success(true);
+            } else {
+                return ResultT.success(false);
+            }
         } catch (Exception e) {
             if (e.getMessage().contains("unconfigured table")) {
                 return ResultT.success(false);

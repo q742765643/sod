@@ -1,5 +1,6 @@
 package com.piesat.dm.core.api.impl;
 
+import com.piesat.dm.common.util.TemplateUtil;
 import com.piesat.dm.core.api.AbstractDatabaseDcl;
 import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
@@ -17,13 +18,18 @@ import java.util.*;
  * @date 2020年 02月04日 15:50:07
  */
 public class Xugu extends AbstractDatabaseDcl {
-    private final String driver = "com.xugu.cloudjdbc.Driver";
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final String DRIVER = "com.xugu.cloudjdbc.Driver";
+    public static final String ADD_USER_SQL = "CREATE USER ${userName} IDENTIFIED BY '${password}'";
+    public static final String GET_USER_NUM_SQL = "SELECT COUNT(*) FROM DBA_USERS WHERE  UPPER(USER_NAME) = '${userName}'";
+    public static final String ADD_USER_GRANT_SQL = "GRANT CREATE ANY SCHEMA TO ${userName} ";
+    public static final String DROP_USER_SQL = "DROP USER ${userName} ";
+    public static final String LOCK_USER_SQL = "ALTER USER ${userName} ACCOUNT LOCK ";
+
 
     public Xugu(String url, String user, String password) throws Exception {
         try {
-            Class.forName(driver);
+            Class.forName(DRIVER);
             DriverManager.setLoginTimeout(5);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
@@ -39,18 +45,21 @@ public class Xugu extends AbstractDatabaseDcl {
     public void addUser(String identifier, String password, String[] ips) throws Exception {
         int userNum = getUserNum(identifier);
         if (userNum > 0) {
-            throw new Exception("数据库用户已经存在！");
+            throw new Exception("数据库用户已存在！");
         }
-        String sql = "CREATE USER " + identifier + " IDENTIFIED BY '" + password + "'";
-        String sql1 = "GRANT CREATE ANY SCHEMA TO " + identifier;
+        Map<String, Object> model = new HashMap<>();
+        model.put(USER_NAME, identifier);
+        model.put(PASSWORD, password);
+        String addUserSql = TemplateUtil.rendering(ADD_USER_SQL, model);
+        String addUserGrantSql = TemplateUtil.rendering(ADD_USER_GRANT_SQL, model);
 
         try {
             stmt = connection.createStatement();
-            stmt.execute(sql);
-            stmt.execute(sql1);
+            stmt.execute(addUserSql);
+            stmt.execute(addUserGrantSql);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new Exception("新增用户失败！errInfo：" + e.getMessage());
+            throw new Exception("新增用户失败！ERRINFO：" + e.getMessage());
         }
 
     }
@@ -58,7 +67,9 @@ public class Xugu extends AbstractDatabaseDcl {
     @Override
     public int getUserNum(String user) throws Exception {
         int num = 0;
-        String sql = "SELECT COUNT(*) FROM DBA_USERS WHERE USER_NAME='" + user.toUpperCase() + "'";
+        Map<String, Object> model = new HashMap<>();
+        model.put(USER_NAME, user.toUpperCase());
+        String sql = TemplateUtil.rendering(GET_USER_NUM_SQL, model);
         try {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(sql);
@@ -75,11 +86,13 @@ public class Xugu extends AbstractDatabaseDcl {
     @Override
     public void deleteUser(String identifier, String ip) throws Exception {
         int userNum = getUserNum(identifier);
+        Map<String, Object> model = new HashMap<>();
+        model.put(USER_NAME, identifier);
         try {
             if (userNum > 0) {
-                String sql = "DROP USER " + identifier;
+                String dropUserSql = TemplateUtil.rendering(DROP_USER_SQL, model);
                 stmt = connection.createStatement();
-                stmt.execute(sql);
+                stmt.execute(dropUserSql);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,9 +105,11 @@ public class Xugu extends AbstractDatabaseDcl {
         int userNum = getUserNum(identifier);
         try {
             if (userNum > 0) {
-                String sql = "DROP USER " + identifier;
+                Map<String, Object> model = new HashMap<>();
+                model.put(USER_NAME, identifier);
+                String dropUserSql = TemplateUtil.rendering(DROP_USER_SQL, model);
                 stmt = connection.createStatement();
-                stmt.execute(sql);
+                stmt.execute(dropUserSql);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,10 +119,12 @@ public class Xugu extends AbstractDatabaseDcl {
 
 
     public void disabledUser(String identifier) throws Exception {
-        String sql = "ALTER USER " + identifier + " ACCOUNT LOCK ";
+        Map<String, Object> model = new HashMap<>();
+        model.put(USER_NAME, identifier);
+        String lockUserSql = TemplateUtil.rendering(LOCK_USER_SQL, model);
         try {
             stmt = connection.createStatement();
-            rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(lockUserSql);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("禁用用户(" + identifier + ")失败！errInfo：" + e.getMessage());
@@ -126,7 +143,7 @@ public class Xugu extends AbstractDatabaseDcl {
 
     @Override
     public void addPermissions(Boolean select, String resource, String tableName, String identifier, String password, List<String> ips) throws SQLException {
-        String permission = select ? "SELECT" : "SELECT,UPDATE,INSERT,DELETE";
+        String permission = select ? SELECT_GRANT : ALL_GRANT;
         String sql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
         stmt = connection.createStatement();
         rs = stmt.executeQuery(sql);

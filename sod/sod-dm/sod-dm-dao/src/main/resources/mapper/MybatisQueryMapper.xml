@@ -878,7 +878,7 @@
         FROM t_sod_data_table a,t_sod_data_logic b
         WHERE a.data_service_id in(${dataClassIds})
         AND b.database_id = #{databaseId}
-        AND a.data_service_id = b.data_class_id)M
+        AND a.CLASS_LOGIC_ID = b.id)M
         LEFT JOIN t_sod_data_table_sql N
         ON M.database_id = N.database_id
         AND M.table_name = N.table_name
