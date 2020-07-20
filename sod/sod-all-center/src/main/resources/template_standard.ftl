@@ -2051,7 +2051,7 @@
             </w:p>
           </w:tc>
         </w:tr>
-		<#list dataInfo.sharedList as sharedInfo>
+		<#list dataInfo.sharedList! as sharedInfo>
         <w:tr>
           <w:tblPrEx>
             <w:tblBorders>
@@ -2091,7 +2091,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${sharedInfo.shared_num}</w:t>
+                <w:t>${sharedInfo.shared_num!}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -2116,7 +2116,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${sharedInfo.shared_type}</w:t>
+                <w:t>${sharedInfo.shared_type!}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -2141,7 +2141,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${sharedInfo.shared_column}</w:t>
+                <w:t>${sharedInfo.shared_column!}</w:t>
               </w:r>
             </w:p>
           </w:tc>
