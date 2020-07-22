@@ -24,7 +24,7 @@ import javax.xml.crypto.Data;
 import java.io.File;
 import java.text.Collator;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 /**
  * @program: sod
@@ -52,47 +52,79 @@ public class ExecutorBizServiceImpl implements ExecutorBiz {
 
     @Override
     public void execute(JobInfoEntity jobInfo){
-        executorService.execute(()->{
-            try {
-                int i=0;
-                boolean flag=false;
-                if(null==jobInfo.getExecutorFailRetryCount()){
-                    jobInfo.setExecutorFailRetryCount(0);
-                }
-                if(jobInfo.getExecutorFailRetryCount()==0){
-                    jobInfo.setExecutorFailRetryCount(1);
-                }
-                while (i<=jobInfo.getExecutorFailRetryCount()&&!flag){
-                    ResultT<String> resultT=new ResultT<>();
-                    this.executeJob(jobInfo,resultT);
-                    if(resultT.isSuccess()){
-                        flag=true;
-                    }else {
-                        Thread.sleep(6000);
-                    }
-                    if(i>=1){
-                        log.info("id:{},重试第{}次",jobInfo.getId(),i);
-                    }
-                    i++;
-
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                boolean flag=false;
-                while (!flag){
+        executorService.execute(
+                ()->{
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    FutureTask<String> future = new FutureTask<String>(new Callable<String>() {
+                        @Override
+                        public String call() throws Exception {
+                            executeTimeOut(jobInfo);
+                            return "00";
+                        }
+                    });
+                    executor.execute(future);
                     try {
-                        redisUtil.del(QUARTZ_HTHT_PERFORM+":"+jobInfo.getExecutorAddress()+":"+jobInfo.getId());
-                        redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfo.getId());
-                        redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfo.getId());
-                        flag=true;
-                    } catch (Exception e) {
+                        String result = future.get(1, TimeUnit.DAYS);
+                        log.info("返回结果{}",result);
+                    } catch (InterruptedException e) {
+                        log.error("线程异常{}", OwnException.get(e));
+                        // TODO Auto-generated catch block
                         e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO Auto-generated catch block
+                        log.error("线程异常{}", OwnException.get(e));
+                        e.printStackTrace();
+                    } catch (TimeoutException e) {
+                        log.error("线程超时异常{}", OwnException.get(e));
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }finally{
+                        log.info("关闭线程");
+                        future.cancel(true);
+                        executor.shutdown();
                     }
+                });
+    }
+    public void executeTimeOut(JobInfoEntity jobInfo){
+        try {
+            int i=0;
+            boolean flag=false;
+            if(null==jobInfo.getExecutorFailRetryCount()){
+                jobInfo.setExecutorFailRetryCount(0);
+            }
+            if(jobInfo.getExecutorFailRetryCount()==0){
+                jobInfo.setExecutorFailRetryCount(1);
+            }
+            while (i<=jobInfo.getExecutorFailRetryCount()&&!flag){
+                ResultT<String> resultT=new ResultT<>();
+                this.executeJob(jobInfo,resultT);
+                if(resultT.isSuccess()){
+                    flag=true;
+                }else {
+                    Thread.sleep(500);
+                }
+                if(i>=1){
+                    log.info("id:{},重试第{}次",jobInfo.getId(),i);
+                }
+                i++;
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            boolean flag=false;
+            while (!flag){
+                try {
+                    redisUtil.del(QUARTZ_HTHT_PERFORM+":"+jobInfo.getExecutorAddress()+":"+jobInfo.getId());
+                    redisUtil.del(QUARTZ_HTHT_TASK_SERIAL+":"+jobInfo.getId());
+                    redisUtil.del(QUARTZ_HTHT_CLUSTER_SERIAL+":"+jobInfo.getId());
+                    flag=true;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        });
+        }
     }
     public void executeJob(JobInfoEntity jobInfo,ResultT<String> resultT){
         try {

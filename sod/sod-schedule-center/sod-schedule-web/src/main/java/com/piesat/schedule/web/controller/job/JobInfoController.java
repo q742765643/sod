@@ -42,6 +42,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -312,6 +313,26 @@ public class JobInfoController {
         RedisUtil redisUtil= SpringUtil.getBean(RedisUtil.class);
         long size=redisUtil.scanSize(key);
         resultT.setData(size);
+        return resultT;
+    }
+    @GetMapping(value = "/getNextTime")
+    @ApiOperation(value = "计算下5次执行时间", notes = "计算下5次执行时间")
+    public ResultT< List<String>> getNextTime(String cronExpression){
+        ResultT< List<String>> resultT=new ResultT<>();
+        List<String> cronTimeList = new ArrayList<>();
+        try {
+            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cronExpression);
+            Date nextTimePoint = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (int i = 0; i < 5; i++) {
+                nextTimePoint = cronSequenceGenerator.next(nextTimePoint);
+                cronTimeList.add(sdf.format(nextTimePoint));
+            }
+            resultT.setData(cronTimeList);
+        } catch (Exception e) {
+            resultT.setErrorMessage("表达式错误");
+            e.printStackTrace();
+        }
         return resultT;
     }
 }
