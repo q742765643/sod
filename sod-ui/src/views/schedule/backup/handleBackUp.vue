@@ -172,7 +172,7 @@ export default {
   data() {
     //校验是否为cron表达式
     var handleCronValidate = (rule, value, callback) => {
-      if (!!value) {
+      /* if (!!value) {
         let parser = require("cron-parser");
         try {
           let interval = parser.parseExpression(value);
@@ -183,7 +183,7 @@ export default {
       } else {
         callback("请输入执行策略!");
       }
-      callback();
+      callback(); */
     };
     return {
       cronPopover: false,
@@ -278,7 +278,11 @@ export default {
   },
   methods: {
     changeCron(val) {
-      this.msgFormDialog.jobCron = val;
+      if (val.substring(0, 5) == "* * *") {
+        this.msgError("小时,分钟,秒必填");
+      } else {
+        this.msgFormDialog.jobCron = val;
+      }
     },
     selectTable(dataClassId) {
       this.msgFormDialog.tableName = "";

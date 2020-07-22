@@ -130,7 +130,11 @@ export default {
   },
   methods: {
     changeCron(val) {
-      this.msgFormDialog.jobCron = val;
+      if (val.substring(0, 5) == "* * *") {
+        this.msgError("小时,分钟,秒必填");
+      } else {
+        this.msgFormDialog.jobCron = val;
+      }
     },
     trueDialog(formName) {
       console.log(this.msgFormDialog);
