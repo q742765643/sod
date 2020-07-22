@@ -305,6 +305,25 @@ export default {
         callback();
       }
     };
+    const numValidate = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入序号"));
+      } else {
+        let flag = false;
+        this.columnData.forEach(element => {
+          if (element.serialNumber == value) {
+            console.log("重复");
+            flag = true;
+            return;
+          }
+        });
+        if (flag) {
+          callback(new Error("序号不能重复"));
+        } else {
+          callback();
+        }
+      }
+    };
     return {
       codeTitle: "新增字段",
       dialogStatus: {
@@ -360,7 +379,7 @@ export default {
         ],
         unit: [{ required: true, message: "请输入要素单位", trigger: "blur" }],
         serialNumber: [
-          { required: true, message: "请输入序号", trigger: "blur" }
+          { required: true, validator: numValidate, trigger: "blur" }
         ]
       },
       // 字段导入
@@ -422,6 +441,9 @@ export default {
       };
       this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
+      this.columnEditData.serialNumber = Number(
+        this.columnData[this.columnData.length - 1].serialNumber + 1
+      );
       this.dialogStatus.columnDialog = true;
     },
 

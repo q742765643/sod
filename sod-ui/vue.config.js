@@ -30,6 +30,7 @@ module.exports = {
   devServer: {
     host: "0.0.0.0",
     port: port,
+    sockHost: 'http://localhost:8081/',
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {

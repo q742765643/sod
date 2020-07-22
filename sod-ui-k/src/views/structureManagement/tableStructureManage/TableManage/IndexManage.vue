@@ -84,6 +84,25 @@ import {
 export default {
   props: { tableInfo: Object },
   data() {
+    const nameValidate = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入索引名称"));
+      } else {
+        let flag = false;
+        this.indexItem.forEach(element => {
+          if (element.indexName == value) {
+            console.log("重复");
+            flag = true;
+            return;
+          }
+        });
+        if (flag) {
+          callback(new Error("索引名称不能重复"));
+        } else {
+          callback();
+        }
+      }
+    };
     return {
       indexForm: { indexName: this.tableInfo.tableName, indexColumn: [] },
       indexItem: [],
@@ -94,7 +113,7 @@ export default {
       indexTitle: "新增索引",
       indexRules: {
         indexName: [
-          { required: true, message: "请输入索引名称", trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" }
         ],
         indexType: [
           { required: true, message: "请选择索引类型", trigger: "change" }
