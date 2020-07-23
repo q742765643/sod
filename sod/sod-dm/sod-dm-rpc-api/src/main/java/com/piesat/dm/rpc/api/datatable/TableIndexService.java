@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.datatable;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface TableIndexService {
-    TableIndexDto saveDto(TableIndexDto tableIndexDto);
+    ResultT saveDto(TableIndexDto tableIndexDto);
 
     TableIndexDto getDotById(String id);
 
