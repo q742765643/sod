@@ -99,19 +99,7 @@
             <el-input v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
-        <el-col :span="24">
-          <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
-              <el-input
-                slot="reference"
-                @click="cronPopover=true"
-                v-model.trim="msgFormDialog.jobCron"
-                placeholder="请输入定时策略"
-              ></el-input>
-            </el-popover>
-          </el-form-item>
-        </el-col>
+
         <el-col :span="12">
           <el-form-item label="是否告警" prop="isAlarm">
             <el-radio-group v-model.trim="msgFormDialog.isAlarm">
@@ -139,6 +127,19 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-popover v-model.trim="cronPopover">
+              <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
+              <el-input
+                slot="reference"
+                @click="cronPopover=true"
+                v-model.trim="msgFormDialog.jobCron"
+                placeholder="请输入定时策略"
+              ></el-input>
+            </el-popover>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
           </el-form-item>
@@ -159,7 +160,8 @@ import {
   updateBackup,
   findAllDataBase,
   getByDatabaseId,
-  getByDatabaseIdAndClassId
+  getByDatabaseIdAndClassId,
+  getNextTime
 } from "@/api/schedule/backup/backup";
 export default {
   name: "handleClearDialog",
@@ -170,21 +172,25 @@ export default {
   },
   data() {
     //校验是否为cron表达式
-    var handleCronValidate = (rule, value, callback) => {
-      if (!!value) {
-        let parser = require("cron-parser");
-        try {
-          let interval = parser.parseExpression(value);
-          console.log("cronDate:", interval.next().toDate());
-        } catch (e) {
-          callback("执行策略非Cron表达式格式，请检查！");
-        }
+    var handleCronValidate = async (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("请输入执行策略!"));
       } else {
-        callback("请输入执行策略!");
+        let flag = true;
+        await getNextTime({
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?"
+        }).then(res => {
+          flag = false;
+        });
+        if (flag) {
+          callback(new Error("执行策略表达式错误!"));
+        } else {
+          callback();
+        }
       }
-      callback();
     };
     return {
+      cronExpression: "",
       cronPopover: false,
       alarmOptions: [],
       databaseOptions: [],
@@ -219,7 +225,7 @@ export default {
           { required: true, message: "存储目录不能为空", trigger: "change" }
         ],
         jobCron: [
-          { required: true, message: "请输入执行策略", trigger: "blur" }
+          { required: true, validator: handleCronValidate, trigger: "blur" }
         ],
         executorTimeout: [
           { required: true, message: "超时时间不能为空", trigger: "blur" }
@@ -277,7 +283,32 @@ export default {
   },
   methods: {
     changeCron(val) {
-      this.msgFormDialog.jobCron = val;
+      this.cronExpression = val;
+      if (val.substring(0, 5) == "* * *") {
+        this.msgError("小时,分钟,秒必填");
+      } else {
+        this.msgFormDialog.jobCron = val.split(" ?")[0] + " ?";
+      }
+    },
+    closeCronPopover() {
+      if (this.cronExpression.substring(0, 5) == "* * *") {
+        return;
+      } else {
+        getNextTime({
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
+        }).then(res => {
+          let times = res.data;
+          let html = "";
+          times.forEach(element => {
+            html += "<p>" + element + "</p>";
+          });
+          this.$alert(html, "前5次执行时间", {
+            dangerouslyUseHTMLString: true
+          }).then(() => {
+            this.CronPopover = false;
+          });
+        });
+      }
     },
     selectTable(dataClassId) {
       this.msgFormDialog.tableName = "";

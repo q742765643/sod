@@ -9,6 +9,7 @@ import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
+import com.piesat.dm.dao.dataclass.LogicDatabaseDao;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
@@ -51,6 +52,8 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     private DatabaseInfo databaseInfo;
     @Autowired
     private DatabaseDefineMapper databaseDefineMapper;
+    @Autowired
+    private LogicDatabaseDao logicDatabaseDao;
 
     @Override
     public BaseDao<DatabaseDefineEntity> getBaseDao() {
@@ -205,6 +208,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         for (String id:split) {
 //            this.databaseDefineDao.deleteById(id);
             this.databaseDao.deleteByDatabaseDefine_Id(id);
+            this.logicDatabaseDao.deleteByDatabaseId(id);
         }
         this.deleteByIds(Arrays.asList(split));
     }

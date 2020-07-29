@@ -131,19 +131,7 @@
             </el-radio-group>
           </el-form-item>
         </el-col>
-        <el-col :span="24">
-          <el-form-item label="执行策略" prop="jobCron">
-            <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
-              <el-input
-                slot="reference"
-                @click="cronPopover=true"
-                v-model.trim="msgFormDialog.jobCron"
-                placeholder="请输入定时策略"
-              ></el-input>
-            </el-popover>
-          </el-form-item>
-        </el-col>
+
         <el-col :span="24">
           <el-form-item
             v-if="msgFormDialog.isClear != '0' ||  msgFormDialog.clearConditions"
@@ -165,7 +153,19 @@
             </el-select>
           </el-form-item>
         </el-col>
-
+        <el-col :span="24">
+          <el-form-item label="执行策略" prop="jobCron">
+            <el-popover v-model.trim="cronPopover">
+              <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
+              <el-input
+                slot="reference"
+                @click="cronPopover=true"
+                v-model.trim="msgFormDialog.jobCron"
+                placeholder="请输入定时策略"
+              ></el-input>
+            </el-popover>
+          </el-form-item>
+        </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
             <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
@@ -311,7 +311,32 @@ export default {
   },
   methods: {
     changeCron(val) {
-      this.msgFormDialog.jobCron = val;
+      this.cronExpression = val;
+      if (val.substring(0, 5) == "* * *") {
+        this.msgError("小时,分钟,秒必填");
+      } else {
+        this.msgFormDialog.jobCron = val.split(" ?")[0] + " ?";
+      }
+    },
+    closeCronPopover() {
+      if (this.cronExpression.substring(0, 5) == "* * *") {
+        return;
+      } else {
+        getNextTime({
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
+        }).then(res => {
+          let times = res.data;
+          let html = "";
+          times.forEach(element => {
+            html += "<p>" + element + "</p>";
+          });
+          this.$alert(html, "前5次执行时间", {
+            dangerouslyUseHTMLString: true
+          }).then(() => {
+            this.CronPopover = false;
+          });
+        });
+      }
     },
     selectTable(dataClassId) {
       this.msgFormDialog.tableName = "";

@@ -5,10 +5,7 @@ import com.piesat.dm.core.model.Column;
 import com.piesat.util.ResultT;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 数据库管理抽象类
@@ -17,6 +14,13 @@ import java.util.Map;
  * @date 2020年 02月04日 15:48:24
  */
 public abstract class AbstractDatabaseDcl implements DatabaseDcl {
+
+    public static final String USER_NAME = "userName";
+    public static final String PASSWORD = "password";
+    public static final String TABLE_NAME = "tableName";
+    public static final String SELECT_GRANT = "SELECT";
+    public static final String ALL_GRANT = "SELECT,UPDATE,INSERT,DELETE";
+
     public Connection connection;
     public Statement stmt = null;
     public PreparedStatement ps = null;

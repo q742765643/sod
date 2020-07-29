@@ -53,7 +53,7 @@ public class Gbase8a extends AbstractDatabaseDcl {
     public void addUser(String identifier, String password, String[] ips) throws Exception {
         int userNum = getUserNum(identifier);
         if (userNum > 0) {
-            throw new Exception("数据库用户已经存在！");
+            throw new Exception("数据库用户已存在！");
         }
         String ipStr = StringUtils.join(ips, " ");
 

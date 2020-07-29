@@ -739,9 +739,9 @@ export default {
       //显示源表名
       this.findColumnByValue(selectSourceTableID);
       await this.querySourceColumn(selectSourceTableID);
-      if (this.handleObj.pageName == "数据注册审核") {
+      /* if (this.handleObj.pageName == "数据注册审核") {
         await this.targetTableChange(this.msgFormDialog.targetTable, "");
-      }
+      } */
     },
     //显示源表名
     findColumnByValue(selectSourceTableID) {
@@ -894,13 +894,16 @@ export default {
       sourceTableInfo = this.sourceTableArray.find(item => {
         return item.id === this.msgFormDialog.sourceTableId; //筛选源表出匹配数据
       });
-      if (sourceTableInfo.db_table_type != targetTableInfo.db_table_type) {
-        this.$message({
-          showClose: true,
-          message: "源表和目标表的类型不一致"
-        });
-        return;
+      if (sourceTableInfo && targetTableInfo) {
+        if (sourceTableInfo.db_table_type != targetTableInfo.db_table_type) {
+          this.$message({
+            showClose: true,
+            message: "源表和目标表的类型不一致"
+          });
+          return;
+        }
       }
+
       // 目标表名
       this.msgFormDialog["target_table_name" + tname] =
         targetTableInfo.table_name;

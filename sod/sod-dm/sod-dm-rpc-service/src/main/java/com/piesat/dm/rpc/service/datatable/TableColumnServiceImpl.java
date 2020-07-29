@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 表字段信息
@@ -102,18 +103,16 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     @Override
     @Transactional
     public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
-        List<TableColumnDto> l = new ArrayList<>();
-        for (TableColumnDto t : tableColumnDtoList) {
-            TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(t);
+        return tableColumnDtoList.stream().map(e -> {
+            TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(e);
             if (StringUtils.isEmpty(tableColumnEntity.getId())) {
                 tableColumnEntity.setVersion(0);
                 tableColumnEntity.setCreateTime(new Date());
                 tableColumnEntity.setId(null);
             }
             tableColumnEntity = this.saveNotNull(tableColumnEntity);
-            l.add(this.tableColumnMapper.toDto(tableColumnEntity));
-        }
-        return l;
+            return this.tableColumnMapper.toDto(tableColumnEntity);
+        }).collect(Collectors.toList());
     }
 
     @Override

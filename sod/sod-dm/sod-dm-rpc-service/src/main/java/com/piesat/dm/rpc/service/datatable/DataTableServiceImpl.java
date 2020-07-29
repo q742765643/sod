@@ -364,8 +364,11 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         DatabaseDcl database = null;
         try {
             database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            database.createTable(tableSqlDto.getTableSql(), tableSqlDto.getTableName(), tableSqlDto.getDelOld());
+            ResultT t = database.createTable(tableSqlDto.getTableSql(), tableSqlDto.getTableName(), tableSqlDto.getDelOld());
             database.closeConnect();
+            if (t.getCode()!=200){
+                return ResultT.failed(t.getMsg());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

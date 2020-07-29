@@ -18,10 +18,11 @@ import java.util.Map;
  * @create: 2020-05-22 13:27
  **/
 public class PostgreSql extends AbstractDatabaseDcl {
-    private final String driver = "org.postgresql.Driver";
+    private static final String DRIVER = "org.postgresql.Driver";
+
     public PostgreSql(String url, String user, String password) throws Exception {
         try {
-            Class.forName(driver);
+            Class.forName(DRIVER);
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,7 +54,7 @@ public class PostgreSql extends AbstractDatabaseDcl {
     public void addUser(String identifier, String password, String[] ips) throws Exception {
         int userNum = getUserNum(identifier);
         if (userNum > 0) {
-            throw new Exception("数据库用户已经存在！");
+            throw new Exception("数据库用户已存在！");
         }
         String sql="create user "+identifier+" with password '"+password+"'";
         try {

@@ -89,7 +89,7 @@
       <af-table-column
         prop="STORAGE_DEFINE_IDENTIFIER"
         label="存储构建"
-        width="120"
+        width="140"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">
@@ -141,7 +141,7 @@
       <af-table-column
         prop="CLEAR_ST"
         label="清除"
-        min-width="120"
+        min-width="130"
         v-if="queryParams.examineStatus===2"
       >
         <template slot-scope="scope">

@@ -11,7 +11,9 @@ import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -86,14 +88,12 @@ public class DatabaseUtil {
         int port = Integer.parseInt(databaseDefineDto.getDatabasePort());
         Set<DatabaseAdministratorDto> dal = databaseDefineDto.getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
-        for (DatabaseAdministratorDto da : dal) {
-            if (da.getIsManager()) {
-                dad = da;
-            }
-        }
-        if (dad == null) {
+        boolean b = dal.stream().anyMatch(DatabaseAdministratorDto::getIsManager);
+        if (!b) {
             throw new Exception("数据库管理用户不存在");
         }
+        dad = dal.stream().filter(DatabaseAdministratorDto::getIsManager).findFirst().get();
+
         if (databaseInfo.getXugu().toLowerCase().equals(databaseType)) {
             db = new Xugu(databaseUrl, dad.getUserName(), dad.getPassWord());
         } else if (databaseInfo.getGbase8a().toLowerCase().equals(databaseType)) {

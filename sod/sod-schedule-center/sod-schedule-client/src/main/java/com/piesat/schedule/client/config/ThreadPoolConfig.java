@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPoolConfig {
     @Bean
     public ExecutorService executorService(){
-        return new ThreadPoolExecutor(100, 200,
+        return new ThreadPoolExecutor(400, 600,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000), new ThreadFactoryBuilder().setNameFormat("schedule-log-%d").build(), new ThreadPoolExecutor.AbortPolicy());
     }

@@ -5,7 +5,6 @@
         <el-step title="存储元数据注册"></el-step>
         <el-step title="表结构管理"></el-step>
         <el-step title="数据同步"></el-step>
-        <el-step title="数据迁移"></el-step>
         <el-step title="数据备份"></el-step>
         <el-step title="完成"></el-step>
       </el-steps>
@@ -54,16 +53,8 @@
           @getStepFlag="getStepFlag"
         />
       </el-card>
+
       <el-card class="box-card" shadow="never" v-if="stepNum==3">
-        <!-- 迁移 -->
-        <handleMove
-          :handleObj="handleMsgObj"
-          ref="moveRef"
-          @getStepFlag="getStepFlag"
-          :formPage="formPage"
-        ></handleMove>
-      </el-card>
-      <el-card class="box-card" shadow="never" v-if="stepNum==4">
         <!-- 备份 -->
         <handleBackUp
           :handleObj="handleMsgObj"
@@ -72,7 +63,7 @@
           :formPage="formPage"
         />
       </el-card>
-      <el-card class="box-card" shadow="never" v-if="stepNum==5">
+      <el-card class="box-card" shadow="never" v-if="stepNum==4">
         <span
           style="font-size: 26px;display:block;text-align:center;padding: 20px 0;color: #13ce66;"
         >
@@ -81,8 +72,9 @@
       </el-card>
     </div>
     <div class="dialog-footer">
-      <el-button type="primary" v-if="stepNum!=5" @click="nextStep">下一步</el-button>
-      <el-button type="primary" v-if="stepNum==5" @click="trueStep">审核通过</el-button>
+      <el-button type="primary" v-if="stepNum>=2" @click="trueStep">跳过</el-button>
+      <el-button type="primary" v-if="stepNum!=3" @click="nextStep">下一步</el-button>
+      <el-button type="primary" v-if="stepNum==3" @click="nextStep">审核通过</el-button>
     </div>
     <el-dialog
       :close-on-click-modal="false"
@@ -193,18 +185,18 @@ export default {
         this.$refs.syncRef.trueDialog("ruleForm");
       }
       // 数据迁移
-      if (this.stepNum == 3) {
+      /* if (this.stepNum == 3) {
         this.$refs.moveRef.trueDialog("ruleForm");
-      }
+      } */
       // 数据备份
-      if (this.stepNum == 4) {
+      if (this.stepNum == 3) {
         this.$refs.backupRef.trueDialog("ruleForm");
       }
     },
     getStepFlag(stepFlag) {
       if (stepFlag) {
         this.stepNum = this.stepNum + 1;
-        if (this.stepNum === 5) {
+        if (this.stepNum === 4) {
           this.trueStep();
         }
         return;

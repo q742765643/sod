@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yaya
@@ -59,33 +60,33 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     public PageBean selectPageList(PageForm<CloudDatabaseApplyDto> pageForm) {
         CloudDatabaseApplyEntity cloudDatabaseApplyEntity = cloudDatabaseApplyMapper.toEntity(pageForm.getT());
 
-        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotNullString(cloudDatabaseApplyEntity.getExamineStatus())){
-            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(),cloudDatabaseApplyEntity.getExamineStatus());
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotNullString(cloudDatabaseApplyEntity.getExamineStatus())) {
+            specificationBuilder.add("examineStatus", SpecificationOperator.Operator.eq.name(), cloudDatabaseApplyEntity.getExamineStatus());
         }
-        if(StringUtils.isNotNullString(pageForm.getT().getUserName())){
+        if (StringUtils.isNotNullString(pageForm.getT().getUserName())) {
             //调用接口 根据用户名查询用户id
-            List<String> userId= new ArrayList<String>();
+            List<String> userId = new ArrayList<String>();
             userId.add("noUseId");
-            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%"+pageForm.getT().getUserName()+"%");
-            if(userEntities != null && userEntities.size()>0){
-                for(UserEntity userEntity : userEntities){
+            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%" + pageForm.getT().getUserName() + "%");
+            if (userEntities != null && userEntities.size() > 0) {
+                for (UserEntity userEntity : userEntities) {
                     userId.add(userEntity.getUserName());
                 }
             }
-            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(),userId);
+            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
         }
-        if(StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getDatabaseName())){
-            specificationBuilder.add("databaseName",SpecificationOperator.Operator.likeAll.name(),cloudDatabaseApplyEntity.getDatabaseName());
+        if (StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getDatabaseName())) {
+            specificationBuilder.add("databaseName", SpecificationOperator.Operator.likeAll.name(), cloudDatabaseApplyEntity.getDatabaseName());
         }
-        if(StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getParamt().get("beginTime"))){
-            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) cloudDatabaseApplyEntity.getParamt().get("beginTime"));
+        if (StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getParamt().get("beginTime"))) {
+            specificationBuilder.add("createTime", SpecificationOperator.Operator.ges.name(), (String) cloudDatabaseApplyEntity.getParamt().get("beginTime"));
         }
-        if(StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getParamt().get("endTime"))){
-            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) cloudDatabaseApplyEntity.getParamt().get("endTime"));
+        if (StringUtils.isNotNullString((String) cloudDatabaseApplyEntity.getParamt().get("endTime"))) {
+            specificationBuilder.add("createTime", SpecificationOperator.Operator.les.name(), (String) cloudDatabaseApplyEntity.getParamt().get("endTime"));
         }
-        Sort sort = Sort.by(Sort.Direction.ASC,"examineStatus").and(Sort.by(Sort.Direction.DESC,"createTime"));
-        PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
+        Sort sort = Sort.by(Sort.Direction.ASC, "examineStatus").and(Sort.by(Sort.Direction.DESC, "createTime"));
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<CloudDatabaseApplyEntity> cloudDatabaseApplyEntities = (List<CloudDatabaseApplyEntity>) pageBean.getPageData();
 
         List<CloudDatabaseApplyDto> cloudDatabaseApplyDtos = cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntities);
@@ -93,17 +94,17 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
 
         //调用接口获取所有的用户信息
         List<UserEntity> userEntities = userDao.findByUserType("11");
-        //循环遍历
-        for(CloudDatabaseApplyDto cloudDatabaseApplyDto : cloudDatabaseApplyDtos){
-            //遍历所有用户信息找到每条记录对应的用户信息
-            for(UserEntity userEntity:userEntities){
-                if(userEntity.getUserName().equals(cloudDatabaseApplyDto.getUserId())){
-                    cloudDatabaseApplyDto.setUserName(userEntity.getWebUsername());
-                    cloudDatabaseApplyDto.setTelephone(userEntity.getTutorPhone());
-                    cloudDatabaseApplyDto.setDepartment(userEntity.getDeptName());
-                }
+
+        cloudDatabaseApplyDtos = cloudDatabaseApplyDtos.parallelStream().map(c -> {
+            UserEntity userEntity = userEntities.stream().filter(d -> c.getUserId().equals(d.getUserName())).findFirst().orElse(null);
+            if (userEntity != null) {
+                c.setUserName(userEntity.getWebUsername());
+                c.setTelephone(userEntity.getTutorPhone());
+                c.setDepartment(userEntity.getDeptName());
             }
-        }
+            return c;
+        }).collect(Collectors.toList());
+
         pageBean.setPageData(cloudDatabaseApplyDtos);
         return pageBean;
     }
@@ -125,16 +126,16 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
     @Override
     public CloudDatabaseApplyDto addOrUpdate(Map<String, String[]> parameterMap, String filePath) {
         CloudDatabaseApplyEntity cloudDatabaseApplyEntity = new CloudDatabaseApplyEntity();
-        MyBeanUtils.getObject(cloudDatabaseApplyEntity,parameterMap);
+        MyBeanUtils.getObject(cloudDatabaseApplyEntity, parameterMap);
         String[] data = parameterMap.get("data");
-        if(data != null && data.length>0){
-            if(StringUtils.isNotEmpty(data[0])){
+        if (data != null && data.length > 0) {
+            if (StringUtils.isNotEmpty(data[0])) {
                 JSONObject object = JSONObject.parseObject(data[0]);
                 String userId = (String) object.get("userId");
                 cloudDatabaseApplyEntity.setUserId(userId);
             }
         }
-        if(StringUtils.isNotNullString(filePath)){
+        if (StringUtils.isNotNullString(filePath)) {
             cloudDatabaseApplyEntity.setExamineMaterial(filePath);
         }
         cloudDatabaseApplyEntity.setExamineStatus("01");
@@ -148,7 +149,7 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
         CloudDatabaseApplyDto cloudDatabaseApplyDto = cloudDatabaseApplyMapper.toDto(cloudDatabaseApplyEntity);
         //调接口查申请人详情
         UserEntity userEntity = userDao.findByUserName(cloudDatabaseApplyDto.getUserId());
-        if(userEntity != null){
+        if (userEntity != null) {
             cloudDatabaseApplyDto.setUserName(userEntity.getWebUsername());
             cloudDatabaseApplyDto.setTelephone(userEntity.getTutorPhone());
             cloudDatabaseApplyDto.setDepartment(userEntity.getDeptName());
@@ -178,18 +179,18 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
 
     @Override
     public Map<String, Object> getRecentTime(String classDataId, String ctsCode) {
-        Map<String,Object> result = new HashMap<String,Object>();
+        Map<String, Object> result = new HashMap<String, Object>();
         try {
             //获取近线时间
-            List<Map<String,Object>> recentOnlineList = mybatisQueryMapper.getRecentOnlineTime(ctsCode);
-            if(null != recentOnlineList && recentOnlineList.size()>0) {
+            List<Map<String, Object>> recentOnlineList = mybatisQueryMapper.getRecentOnlineTime(ctsCode);
+            if (null != recentOnlineList && recentOnlineList.size() > 0) {
                 result.put("recentOnline", recentOnlineList.get(0));
             }
             DataClassDto dataClassDto = this.dataClassService.findByDataClassId(classDataId);
-            if (dataClassDto != null){
+            if (dataClassDto != null) {
                 int is_all_line = dataClassDto.getIsAllLine();
                 result.put("is_all_line", is_all_line);
-            }else {
+            } else {
                 result.put("is_all_line", 1);
             }
             return result;
