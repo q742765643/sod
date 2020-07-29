@@ -32,6 +32,8 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     private DatabaseSpecialReadWriteMapper databaseSpecialReadWriteMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private DatabaseSpecialServiceImpl databaseSpecialServiceImpl;
 
     @Override
     public BaseDao<DatabaseSpecialReadWriteEntity> getBaseDao() {
@@ -154,56 +156,22 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
 
     @Override
     @Transactional
-    public Map<String, Object> deleteRecords(HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        try {
-            // 下面通过request取得传入的JSONArray对象对应字符串。
-            StringBuilder responseStrBuilder = new StringBuilder();
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null) {
-                responseStrBuilder.append(inputStr);
-            }
-
-            // 下面从info中获取多个专题库ID号和资料存储编码。
-            JSONArray dataJsonArray = JSONArray.parseArray(responseStrBuilder.toString());
-            // 下面遍历dataJsonArray中的JSONObject对象。
-            for (int i = 1; i <= dataJsonArray.size(); i = i + 1) {
-                // 下面定义Map对象。
+    public void deleteRecords(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos) {
+        if(databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size()>0){
+            for(int i=0;i<databaseSpecialReadWriteDtos.size();i++){
                 Map<String, String> dataMap = new HashMap<String, String>();
-                // 下面取得一张表的信息。
-                JSONObject oneTableInfo = dataJsonArray.getJSONObject(i - 1);
-                // 下面遍历JSONObject对象。
-                Iterator iterator = oneTableInfo.keySet().iterator();
-                while (iterator.hasNext()) {
-                    String key = (String) iterator.next();
-                    String value = oneTableInfo.getString(key);
-
-                    // 下面循环读取每个数据。
-                    if ("TDB_ID".equals(key)) {
-                        dataMap.put("tdbId", value);
-                    } else if ("DATA_CLASS_ID".equals(key)) {
-                        dataMap.put("dataClassId", value);
-                    } else if ("LOGIC_ID".equals(key)) {
-                        dataMap.put("logicId", value);
-                    }
-                }
+                dataMap.put("tdbId", databaseSpecialReadWriteDtos.get(i).getSdbId());
+                dataMap.put("dataClassId", databaseSpecialReadWriteDtos.get(i).getDataClassId());
+                dataMap.put("databaseId", databaseSpecialReadWriteDtos.get(i).getDatabaseId());
+                dataMap.put("userId", databaseSpecialReadWriteDtos.get(i).getUserId());
+                //撤销权限
+                databaseSpecialServiceImpl.cancelAuthority(dataMap.get("userId"),dataMap.get("databaseId"),dataMap.get("dataClassId"),null);
                 // 下面将删除该条记录。
                 mybatisQueryMapper.deleteRecordByTdbId(dataMap);
                 mybatisQueryMapper.deleteDataAuthor(dataMap);
             }
-
-            // 下面生成返回信息。
-            map.put("returnCode", 0);
-            map.put("returnMessage", "删除数据成功");
-            streamReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 下面生成返回信息。
-            map.put("returnCode", 1);
-            map.put("returnMessage", "删除数据失败：" + e.getMessage());
         }
-        // 下面返回值。
-        return map;
+
+
     }
 }

@@ -510,12 +510,12 @@ public class DatabaseSpecialController {
         }
     }
     @ApiOperation(value = "专题库资料清单删除")
-    @RequiresPermissions("dm:databaseSpecial:deleteRecords")
-    @GetMapping(value = "/deleteRecords")
-    public  ResultT deleteRecords(HttpServletRequest request){
+    //@RequiresPermissions("dm:databaseSpecial:deleteRecords")
+    @PostMapping(value = "/deleteRecords")
+    public  ResultT deleteRecords(@RequestBody List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos){
         try {
-            Map<String,Object> map =  this.databaseSpecialReadWriteService.deleteRecords(request);
-            return ResultT.success(map);
+            this.databaseSpecialReadWriteService.deleteRecords(databaseSpecialReadWriteDtos);
+            return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
