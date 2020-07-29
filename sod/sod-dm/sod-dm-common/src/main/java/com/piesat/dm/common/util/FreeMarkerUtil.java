@@ -24,7 +24,7 @@ public class FreeMarkerUtil {
 		configuration.setDefaultEncoding("utf-8");
 	}
 
-	public File createDoc(Map<String, Object> dataMap, String fileName, String modelPath,HttpServletRequest request){
+	public File createDoc(Map<String, Object> dataMap, String fileName, String modelPath,HttpServletRequest request) throws Exception {
 		Writer out = null;
 		FileOutputStream fos = null;
 		try {
@@ -58,6 +58,7 @@ public class FreeMarkerUtil {
 			return outFile;
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new Exception(e.getMessage());
 		} finally{
 			//代码审查修改的
 			if(out != null){
@@ -83,6 +84,5 @@ public class FreeMarkerUtil {
 //				e.printStackTrace();
 //			}
 		}
-		return null;
 	}
 }

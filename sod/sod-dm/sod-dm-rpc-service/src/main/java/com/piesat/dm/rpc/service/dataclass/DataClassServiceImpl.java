@@ -47,6 +47,7 @@ import java.io.BufferedReader;
 import java.io.Reader;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 资料分类
@@ -100,25 +101,18 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
-        dataClassEntity = this.saveNotNull(dataClassEntity);
         if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
         }
         List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
-        List<String> all = new ArrayList<>();
-        for (DataLogicDto aa : byDataClassId) {
-            all.add(aa.getId());
-        }
-        List<String> nnn = new ArrayList<>();
-        for (DataLogicDto aa : dataClassDto.getDataLogicList()) {
-            nnn.add(aa.getId());
-        }
+        List<String> all = byDataClassId.stream().map(DataLogicDto::getId).collect(Collectors.toList());
+        List<String> nnn = dataClassDto.getDataLogicList().stream().map(DataLogicDto::getId).collect(Collectors.toList());
         all.removeAll(nnn);
-        byDataClassId.removeAll(dataClassDto.getDataLogicList());
         for (String d : all) {
-            dataLogicService.deleteById(d);
+            dataLogicService.onlyDeleteById(d);
         }
+        dataClassEntity = this.saveNotNull(dataClassEntity);
         List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
         DataClassDto dataClassDto1 = this.dataClassMapper.toDto(dataClassEntity);
         dataClassDto1.setDataLogicList(dataLogicDtos);
