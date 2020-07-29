@@ -743,7 +743,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     /**
      * 撤销权限
      */
-    private void cancelAuthority(String userId, String databaseId, String dataClassId, Integer mark) {
+    public void cancelAuthority(String userId, String databaseId, String dataClassId, Integer mark) {
         DatabaseDcl databaseVO = null;
         try {
             //判断用户是否申请过数据库账户

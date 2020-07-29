@@ -957,7 +957,7 @@
         b.DATA_CLASS_ID,d.DATA_SERVICE_NAME,ee.D_DATA_ID,
         b.APPLY_AUTHORITY,b.EMPOWER_AUTHORITY,f.logic_flag,
         b.examine_status,b.failure_reason,c1.DATABASE_NAME,
-        d.TABLE_NAME,e.CLASS_NAME
+        d.TABLE_NAME,e.CLASS_NAME,b.DATABASE_ID
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and f.database_id = b.DATABASE_ID
         inner join t_sod_data_table d on d.class_logic_id = f.id
@@ -979,11 +979,11 @@
         M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.TABLE_NAME,WM_CONCAT(M.APPLY_AUTHORITY)
         APPLY_AUTHORITY,
         WM_CONCAT(M.empower_authority) REAL_AUTHORITY,WM_CONCAT(M.logic_flag) PHYSICAL,WM_CONCAT(M.DATABASE_NAME)
-        DATABASE_NAME,M.DATA_TYPE,M.SPECIAL_DATABASE_NAME
+        DATABASE_NAME,M.DATA_TYPE,M.SPECIAL_DATABASE_NAME,M.SPECIAL_DATABASE_ID
         FROM(
         SELECT DISTINCT f.DATA_CLASS_ID,d.DATA_SERVICE_NAME,ee.D_DATA_ID,
         b.APPLY_AUTHORITY,b.empower_authority,f.logic_flag,c1.DATABASE_NAME,c.DATABASE_NAME
-        SPECIAL_DATABASE_NAME,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
+        SPECIAL_DATABASE_NAME,c.ID SPECIAL_DATABASE_ID,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and b.database_id = f.database_id
         inner join t_sod_data_table d on d.class_logic_id = f.id
@@ -1006,7 +1006,7 @@
         </if>
         )M
         GROUP BY
-        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.SPECIAL_DATABASE_NAME,M.TABLE_NAME,M.DATA_TYPE
+        M.CLASS_NAME,M.DATA_CLASS_ID,M.DATA_SERVICE_NAME,M.D_DATA_ID,M.SPECIAL_DATABASE_NAME,M.SPECIAL_DATABASE_ID,M.TABLE_NAME,M.DATA_TYPE
         ORDER BY M.DATA_CLASS_ID
     </select>
     <!-- 获取资料申请 -->
@@ -1124,8 +1124,8 @@
             <if test="dataClassId != null and dataClassId !=''">
                 and DATA_CLASS_ID=#{dataClassId}
             </if>
-            <if test="logicId != null and logicId !=''">
-                and LOGIC_ID=#{logicId}
+            <if test="databaseId != null and databaseId !=''">
+                and DATABASE_ID=#{databaseId}
             </if>
         </trim>
     </delete>
@@ -1138,8 +1138,8 @@
             <if test="dataClassId != null and dataClassId !=''">
                 and DATA_CLASS_ID=#{dataClassId}
             </if>
-            <if test="logicId != null and logicId !=''">
-                and DATABASE_ID=#{logicId}
+            <if test="databaseId != null and databaseId !=''">
+                and DATABASE_ID=#{databaseId}
             </if>
         </trim>
     </delete>
