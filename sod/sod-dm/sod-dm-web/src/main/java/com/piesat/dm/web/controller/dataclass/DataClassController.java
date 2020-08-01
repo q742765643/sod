@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.dataclass.DataClassLabelService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -39,6 +40,8 @@ public class DataClassController {
     @Autowired
     private DataLogicService dataLogicService;
     @Autowired
+    private DataClassLabelService dataClassLabelService;
+    @Autowired
     private DatabaseService databaseService;
     @Autowired
     private GrpcService grpcService;
@@ -67,6 +70,8 @@ public class DataClassController {
     public ResultT get(String id) {
         try {
             DataClassDto dataClassDto = this.dataClassService.getDotById(id);
+            List<DataClassLabelDto> dataClassLabels = this.dataClassLabelService.findByDataClassId(dataClassDto.getDataClassId());
+            dataClassDto.setDataClassLabelList(dataClassLabels);
             return ResultT.success(dataClassDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,6 +122,8 @@ public class DataClassController {
                 }
             }
             dataClassDto.setDataLogicList(byDataClassId);
+            List<DataClassLabelDto> dataClassLabels = this.dataClassLabelService.findByDataClassId(dataClassDto.getDataClassId());
+            dataClassDto.setDataClassLabelList(dataClassLabels);
             return ResultT.success(dataClassDto);
         } catch (Exception e) {
             e.printStackTrace();

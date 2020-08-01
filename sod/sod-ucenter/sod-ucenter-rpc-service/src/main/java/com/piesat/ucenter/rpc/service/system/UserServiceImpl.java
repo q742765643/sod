@@ -454,6 +454,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
 //        String applyAuthority = map.get("applyAuthority");
 //        String deptId = map.get("deptId");
         String loginName = map.get("loginName");
+        String pdfPath = map.get("pdfPath");
 //        String userId = map.get("userId");
 //        String interfaceId = map.get("interfaceId");
 //        String nonce = map.get("nonce");
@@ -481,6 +482,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setRemark(remark);
         userEntity.setTutorName(tutorName);
         userEntity.setTutorPhone(tutorPhone);
+        userEntity.setPdfPath(pdfPath);
         Date date = null;
         try {
             date = DateUtils.dateTime("yyyy-MM-dd", validTime);

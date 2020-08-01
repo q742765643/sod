@@ -92,6 +92,8 @@ public class DataClassDto {
 
     private List<DataLogicDto> dataLogicList;
 
+    private List<DataClassLabelDto> dataClassLabelList;
+
     //portal申请id
     private String applyId;
 
