@@ -316,6 +316,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             }
             this.dataTableDao.deleteByClassLogic_Id(dl.getId());
         }
+        this.dataClassLabelService.deleteByDataClassId(dataClassId);
         this.dataLogicDao.deleteByDataClassId(dataClassId);
         this.dataClassDao.deleteByDataClassId(dataClassId);
     }

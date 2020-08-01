@@ -7,7 +7,8 @@
         select
         A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,B.ID
         LOGIC_ID,B.LOGIC_FLAG,B.STORAGE_TYPE,B.DATABASE_ID,B.IS_COMPLETE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
-        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL,G.tableCount TABLECOUNT,H.TABLE_DESC
+        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,E.LOGIC_NAME,F.DICT_LABEL,G.tableCount
+        TABLECOUNT,H.TABLE_DESC
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATA_LOGIC B on A.data_class_id = B.data_class_id
         left join T_SOD_LOGIC_DEFINE E on B.logic_flag=E.logic_flag
@@ -52,13 +53,15 @@
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = ee.id) BACKUP_ST,
         h.CLASS_LOGIC_ID,h.STORAGE_DEFINE_IDENTIFIER,h.SYNC_IDENTIFIER,h.CLEAN_IDENTIFIER,h.MOVE_IDENTIFIER,
         h.BACKUP_IDENTIFIER,h.ARCHIVING_IDENTIFIER,h.SYNC_ID,h.CLEAR_ID,h.MOVE_ID,h.BACKUP_ID,h.ID,a.ID LOGIC_ID
-        from t_sod_data_class f
-        INNER join t_sod_data_logic a on a.DATA_CLASS_ID = f.DATA_CLASS_ID
-        left join t_sod_database e on a.DATABASE_ID = e.id
-        left join t_sod_database_define ee on e.database_define_id = ee.id
-        inner join t_sod_storage_configuration h on h.class_logic_id=a.id
-        left join t_sod_logic_define c on a.logic_flag = c.logic_flag
-        left join t_sod_data_table b on (a.id = b.CLASS_LOGIC_ID AND b.DB_TABLE_TYPE = 'E')
+        FROM t_sod_data_class f
+        INNER JOIN t_sod_data_logic a ON a.DATA_CLASS_ID = f.DATA_CLASS_ID
+        LEFT JOIN t_sod_database e ON a.DATABASE_ID = e.id
+        LEFT JOIN t_sod_database_define ee ON e.database_define_id = ee.id
+        INNER JOIN t_sod_storage_configuration h ON h.class_logic_id=a.id
+        LEFT JOIN t_sod_logic_define c ON a.logic_flag = c.logic_flag
+        LEFT JOIN t_sod_data_table b ON (a.id = b.CLASS_LOGIC_ID AND b.DB_TABLE_TYPE = 'E')
+        LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = a.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DICT_DATA H ON (G.LABEL_KEY = H.DICT_VALUE AND H.dict_type = 'dataclass_label')
         <where>
             f.type = 2
             <if test="map.database_name != null and map.database_name  != ''">
@@ -96,6 +99,11 @@
             <if test="map.logic_name != null and map.logic_name  != ''">
                 AND c.logic_name like '%${map.logic_name}%'
             </if>
+            <!-- 标签 -->
+            <if test="map.label_name != null and map.label_name  != ''">
+                AND H.DICT_LABEL like '%${map.label_name}%'
+            </if>
+
         </where>
     </select>
     <!--存储字段检索-->
@@ -350,7 +358,8 @@
 
     <!--新增注册资料-->
     <select id="selectDataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
-        select a.id,a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,bbb.DATABASE_ID, dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
+        select a.id,a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,bbb.DATABASE_ID,
+        dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
         a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
         a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,bbb.ID as R_LOGIC_ID,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = dbf.id) MOVE_ST,
@@ -536,7 +545,8 @@
         d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name,dd.special_id
         from t_sod_data_authority_record d left join
         (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name
-        type_name,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name,ee.id database_id,e.id special_id
+        type_name,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name,ee.id
+        database_id,e.id special_id
         from T_SOD_DATA_CLASS a
         left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
         left join T_SOD_DATA_LOGIC b on a.data_class_id = b.data_class_id
@@ -884,11 +894,13 @@
         AND M.table_name = N.table_name
     </select>
     <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
-        SELECT DISTINCT a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,a.failure_reason,
+        SELECT DISTINCT
+        a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,a.failure_reason,
         b.d_data_id,b.class_name,c.class_name type_name,d.table_name,f.database_name
         FROM t_sod_database_special_read_write a
         INNER JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
-        INNER JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON  SUBSTR(b.d_data_id,0,1)
+        INNER JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON
+        SUBSTR(b.d_data_id,0,1)
         = c.d_data_id
         INNER JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
         LEFT JOIN t_sod_database e ON a.database_id = e.id
@@ -1044,7 +1056,8 @@
             and t4.id = #{schemaId}
         </if>
         group by
-        t1.database_id,t6.class_name,t1.apply_id ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
+        t1.database_id,t6.class_name,t1.apply_id
+        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
         t3.class_name,t4.database_name,t4.schema_name,t4.database_define_id,t5.database_name
         order by
         t1.create_time desc
@@ -1304,23 +1317,24 @@
     </select>
 
     <select id="getDataclassTreeByClassIds" resultType="java.util.LinkedHashMap" parameterType="java.util.List">
-        SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,MAX(LEVEL) LEVEL FROM  ( SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,level LEVEL
-        FROM  T_SOD_DATA_CLASS
+        SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID,MAX(LEVEL) LEVEL FROM ( SELECT TYPE, DATA_CLASS_ID ,CLASS_NAME
+        ,PARENT_ID,level LEVEL
+        FROM T_SOD_DATA_CLASS
         START WITH DATA_CLASS_ID IN
         <foreach collection="list" item="e" separator="," open="(" close=")">
             #{e}
         </foreach>
-        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id )  GROUP BY  TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID
+        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id ) GROUP BY TYPE, DATA_CLASS_ID ,CLASS_NAME ,PARENT_ID
     </select>
 
 
-    <select id="getDataClassByBizUserOrDatabase" parameterType="String"  resultType="java.util.LinkedHashMap">
+    <select id="getDataClassByBizUserOrDatabase" parameterType="String" resultType="java.util.LinkedHashMap">
         select b.DATA_CLASS_ID,c.DATABASE_DEFINE_ID from t_sod_data_authority_apply a
-        left join t_sod_data_authority_record b  on a.id=b.apply_id
+        left join t_sod_data_authority_record b on a.id=b.apply_id
         left join t_sod_database c on b.database_id = c.id
         left join t_sod_database_define c1 on c.database_define_id = c1.id
         <where>
-                b.authorize = 1
+            b.authorize = 1
             <if test="bizUserId != null and bizUserId != ''">
                 and a.user_id = #{bizUserId}
             </if>
@@ -1331,10 +1345,11 @@
     </select>
 
 
-    <select id="getDataInfoByUserId"  resultType="java.util.Map">
+    <select id="getDataInfoByUserId" resultType="java.util.Map">
         select nvl(sna.id,(sdc.data_class_id || srw.sdb_id)) as APPLY_ID,srw.sdb_id,
         dit.DATA_SERVICE_NAME dataname,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
-        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
+        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdl.logic_flag logic_id,sld.LOGIC_NAME,sdb.database_name || '【' ||
+        sdb.schema_name || '】' as schemaName,
         sdd.id as PHYSICSID,sdd.DATABASE_NAME PHYSICNAME,sdc.is_access is_publish
         from t_sod_data_table dit
         inner join T_SOD_DATA_LOGIC sdl on dit.class_logic_id = sdl.id
@@ -1415,10 +1430,12 @@
 
 
     <select id="getAreaByPage" resultType="GridAreaEntity" parameterType="java.util.Map">
-        select distinct a.id,a.area_id areaId,concat( concat( concat(b.AREA_DESC,'('),a.AREA_REGION_DESC),')') areaRegionDesc,a.data_service_id dataServiceId,a.version
+        select distinct a.id,a.area_id areaId,concat( concat( concat(b.AREA_DESC,'('),a.AREA_REGION_DESC),')')
+        areaRegionDesc,a.data_service_id dataServiceId,a.version
         from T_SOD_GRID_AREA a
         left join (select * from T_SOD_GRID_AREA_DEFINE ) b on a.area_id = b.area_id
-        and a.AREA_REGION_DESC = concat(concat(concat(concat(concat(concat(concat(concat('起止纬度：[',START_LAT),','),END_LAT),'];起止经度：['),START_LON),','),END_LON),']')
+        and a.AREA_REGION_DESC =
+        concat(concat(concat(concat(concat(concat(concat(concat('起止纬度：[',START_LAT),','),END_LAT),'];起止经度：['),START_LON),','),END_LON),']')
         <where>
             <if test="map.dataServiceId != null and map.dataServiceId != ''">
                 a.DATA_SERVICE_ID = #{map.dataServiceId}
