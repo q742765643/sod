@@ -444,7 +444,7 @@ public class BackupHandler implements BaseHandler {
             File[] files=file.listFiles();
             Pattern pattern = Pattern.compile(fileNameEl);
             int sort=1;
-            if(files.length>0){
+            if(null!=files&&files.length>0){
                 for(File f:files){
                     Matcher m = pattern.matcher(f.getName());
                     String str = "";
