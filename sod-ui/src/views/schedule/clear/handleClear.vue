@@ -120,14 +120,15 @@ import {
   updateClear,
   addClear,
   findAllDataBase,
-  getClear
+  getClear,
 } from "@/api/schedule/clear/clear";
+import { getNextTime } from "@/api/schedule/backup/backup";
 export default {
   name: "handleClearDialog",
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     //校验是否为cron表达式
@@ -137,8 +138,8 @@ export default {
       } else {
         let flag = true;
         await getNextTime({
-          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?",
+        }).then((res) => {
           flag = false;
         });
         if (flag) {
@@ -165,37 +166,37 @@ export default {
         jobCron: "0 0 2 * * ?",
         isAlarm: "",
         executorTimeout: "",
-        jobDesc: ""
+        jobDesc: "",
       },
       rules: {
         databaseId: [
-          { required: true, message: "物理库不能为空", trigger: "blur" }
+          { required: true, message: "物理库不能为空", trigger: "blur" },
         ],
         dataClassId: [
-          { required: true, message: "资料名称不能为空", trigger: "blur" }
+          { required: true, message: "资料名称不能为空", trigger: "blur" },
         ],
         jobCron: [
           // { required: true, validator: handleCronValidate, trigger: "blur" }
-          { required: true, message: "请输入执行策略", trigger: "blur" }
+          { required: true, message: "请输入执行策略", trigger: "blur" },
         ],
         executorTimeout: [
-          { required: true, message: "超时时间不能为空", trigger: "blur" }
+          { required: true, message: "超时时间不能为空", trigger: "blur" },
         ],
         clearLimit: [
-          { required: true, message: "清除限制频率不能为空", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "清除限制频率不能为空", trigger: "blur" },
+        ],
+      },
     };
   },
 
   async created() {
-    this.getDicts("job_is_alarm").then(response => {
+    this.getDicts("job_is_alarm").then((response) => {
       this.alarmOptions = response.data;
     });
-    await findAllDataBase().then(response => {
+    await findAllDataBase().then((response) => {
       this.databaseOptions = response.data;
     });
-    await this.getDicts("database_clear_where").then(response => {
+    await this.getDicts("database_clear_where").then((response) => {
       this.conditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
@@ -212,7 +213,7 @@ export default {
     }
     // 查看详情
     if (this.handleObj.id) {
-      await getClear(this.handleObj.id).then(response => {
+      await getClear(this.handleObj.id).then((response) => {
         this.selectByDatabaseIds(
           response.data.databaseId,
           response.data.dataClassId
@@ -235,15 +236,15 @@ export default {
         return;
       } else {
         getNextTime({
-          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
           let times = res.data;
           let html = "";
-          times.forEach(element => {
+          times.forEach((element) => {
             html += "<p>" + element + "</p>";
           });
           this.$alert(html, "前5次执行时间", {
-            dangerouslyUseHTMLString: true
+            dangerouslyUseHTMLString: true,
           }).then(() => {
             this.CronPopover = false;
           });
@@ -258,14 +259,14 @@ export default {
       );
     },
     findTable(databaseId, dataClassId) {
-      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+      getByDatabaseIdAndClassId(databaseId, dataClassId).then((response) => {
         this.msgFormDialog.ddataId = response.data.ddataId;
         this.msgFormDialog.tableName = response.data.tableName;
         this.msgFormDialog.vTableName = response.data.vTableName;
       });
     },
     async selectByDatabaseIds(databaseId, dataClassId) {
-      await getByDatabaseId(databaseId, dataClassId).then(response => {
+      await getByDatabaseId(databaseId, dataClassId).then((response) => {
         this.dataClassIdOptions = response.data;
         this.msgFormDialog.dataClassId = dataClassId;
       });
@@ -274,10 +275,10 @@ export default {
     trueDialog(formName) {
       this.msgFormDialog.triggerStatus = 1;
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.msgFormDialog.id != undefined) {
-            updateClear(this.msgFormDialog).then(response => {
+            updateClear(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.$emit("cancelHandle");
@@ -286,7 +287,7 @@ export default {
               }
             });
           } else {
-            addClear(this.msgFormDialog).then(response => {
+            addClear(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.$emit("cancelHandle");
@@ -300,8 +301,8 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -2,11 +2,17 @@
   <div class="app-container">
     <!-- 一致性检查 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="专题库名称：">
-        <el-input size="small" v-model.trim="queryParams.database_name" placeholder="输入关键字搜索"></el-input>
+      <el-form-item label="专题库名称：" prop="database_name">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.database_name"
+          placeholder="输入关键字搜索"
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -158,7 +164,7 @@ import {
   historyList,
   deleteByIds,
   exportTable,
-  downHistoryDfcheckFile
+  downHistoryDfcheckFile,
 } from "@/api/structureManagement/consistencyCheck";
 import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
@@ -171,13 +177,13 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        database_name: ""
+        database_name: "",
       },
       total: 0,
       tableData: [],
       msgFormDialog: {
         databaseId: "",
-        databaseName: ""
+        databaseName: "",
       },
       // 添加弹窗
       addDataDialog: false,
@@ -192,15 +198,15 @@ export default {
         id: "",
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
       rules: {
         databaseId: [
-          { required: true, message: "请选择数据库", trigger: "change" }
-        ]
-      }
+          { required: true, message: "请选择数据库", trigger: "change" },
+        ],
+      },
     };
   },
   created() {
@@ -216,7 +222,7 @@ export default {
         orderBy.createTime = "desc";
       }
       this.historyObj.params.orderBy = orderBy;
-      historyList(this.historyObj).then(response => {
+      historyList(this.historyObj).then((response) => {
         this.historyData = response.data.pageData;
         this.historyTotal = response.data.totalCount;
         this.loading = false;
@@ -238,10 +244,14 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
-      consistencyCheckList(this.queryParams).then(response => {
+      consistencyCheckList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -254,26 +264,26 @@ export default {
       if (this.currentRows.length != 1) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       this.exportIcon = "el-icon-loading";
       this.$alert("生成差异报告中,请稍后", "提示", {
         confirmButtonText: "确定",
-        callback: action => {}
+        callback: (action) => {},
       });
       let obj = {};
       obj.id = this.currentRows[0].databaseId;
-      exportTable(obj).then(res => {
+      exportTable(obj).then((res) => {
         this.downloadfileCommon(res);
         this.exportIcon = "el-icon-download";
       });
     },
     getOptions() {
-      getDatabaseName().then(response => {
+      getDatabaseName().then((response) => {
         var resdata = response.data;
-        resdata.forEach(element => {
+        resdata.forEach((element) => {
           // if (
           //element.DATABASE_TYPE.indexOf("Gbase") != -1 ||
           // element.DATABASE_TYPE.indexOf("xugu") != -1
@@ -288,7 +298,7 @@ export default {
       this.historyDialog = true;
       this.historyObj.id = row.id;
       this.historyObj.databaseId = row.databaseId;
-      historyList(this.historyObj).then(response => {
+      historyList(this.historyObj).then((response) => {
         this.historyData = response.data.pageData;
         this.historyTotal = response.data.totalCount;
         this.loading = false;
@@ -302,7 +312,7 @@ export default {
         this.downloadfileCommon(res);
       });*/
       downloadTable({ filePath: row.fileDirectory + "/" + row.fileName }).then(
-        res => {
+        (res) => {
           this.downloadfileCommon(res);
         }
       );
@@ -314,13 +324,13 @@ export default {
       if (this.currentRows.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       let ids = [];
       let databaseNames = [];
-      this.currentRows.forEach(element => {
+      this.currentRows.forEach((element) => {
         ids.push(element.id);
         databaseNames.push(element.databaseName);
       });
@@ -330,21 +340,21 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
         .then(() => {
-          deleteByIds(ids.join(",")).then(response => {
+          deleteByIds(ids.join(",")).then((response) => {
             if (response.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               this.handleQuery();
             } else {
               this.$message({
                 type: "error",
-                message: "删除失败"
+                message: "删除失败",
               });
             }
           });
@@ -357,13 +367,13 @@ export default {
       this.$refs[formName].resetFields();
     },
     addReportRecord(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
-          consistencyCheckSave(this.msgFormDialog).then(res => {
+          consistencyCheckSave(this.msgFormDialog).then((res) => {
             if (res.code == "200") {
               this.$message({
                 type: "success",
-                message: "添加成功"
+                message: "添加成功",
               });
               this.$emit("resetQuery");
               this.handleQuery();
@@ -372,7 +382,7 @@ export default {
             } else {
               this.$message({
                 type: "error",
-                message: "添加失败"
+                message: "添加失败",
               });
             }
           });
@@ -385,11 +395,11 @@ export default {
     getHistoryData() {},
     databaseChange(databaseId) {
       let databaseInfo = {};
-      databaseInfo = this.databaseNameOptions.find(item => {
+      databaseInfo = this.databaseNameOptions.find((item) => {
         return item.ID === databaseId;
       });
       this.msgFormDialog.databaseName = databaseInfo.DATABASE_NAME;
-    }
-  }
+    },
+  },
 };
 </script>

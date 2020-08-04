@@ -14,10 +14,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="专题库名称">
-        <el-input v-model.trim="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
+        <el-input clearable v-model.trim="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input v-model.trim="queryParams.userName" type="text" placeholder="申请用户"></el-input>
+        <el-input clearable v-model.trim="queryParams.userName" type="text" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -113,7 +113,7 @@
 import {
   pageList,
   deleteList,
-  exportTables
+  exportTables,
 } from "@/api/authorityAudit/topicLibraryAudit";
 // / 修改权限
 import handleLibrary from "@/views/authorityAudit/topicLibraryAudit/handleLibrary";
@@ -122,7 +122,7 @@ import applyTopic from "@/views/authorityAudit/topicLibraryAudit/applyTopic";
 export default {
   components: {
     handleLibrary,
-    applyTopic
+    applyTopic,
   },
   data() {
     return {
@@ -139,34 +139,34 @@ export default {
         userName: "",
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
       auditStatus: [
         {
           value: "1",
-          label: "待审核"
+          label: "待审核",
         },
         {
           value: "2",
-          label: "已审核"
+          label: "已审核",
         },
         {
           value: "3",
-          label: "审核不通过"
+          label: "审核不通过",
         },
         {
           value: "4",
-          label: "再次审核"
-        }
+          label: "再次审核",
+        },
       ],
       total: 0,
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
       applyTopicDialog: false,
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -201,7 +201,7 @@ export default {
     getList() {
       this.loading = true;
       console.log(this.queryParams);
-      pageList(this.queryParams).then(response => {
+      pageList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -220,7 +220,7 @@ export default {
         pageSize: 10,
         examineStatus: "",
         sdbName: "",
-        userName: ""
+        userName: "",
       };
       this.handleQuery();
     },
@@ -229,13 +229,13 @@ export default {
       this.$confirm("确定要删除这条数据吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deleteList({ id: row.id }).then(res => {
+          deleteList({ id: row.id }).then((res) => {
             this.$message({
               type: "success",
-              message: "删除成功"
+              message: "删除成功",
             });
             this.resetQuery();
           });
@@ -254,11 +254,11 @@ export default {
     },
     // 导出
     handleExport() {
-      exportTables(this.queryParams).then(res => {
+      exportTables(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="css" scoped>

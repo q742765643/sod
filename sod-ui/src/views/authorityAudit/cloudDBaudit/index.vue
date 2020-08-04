@@ -20,10 +20,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="申请用户">
-        <el-input size="small" v-model.trim="queryParams.userName" placeholder="申请用户"></el-input>
+        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item label="数据库名">
-        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="数据库名"></el-input>
+        <el-input clearable size="small" v-model.trim="queryParams.databaseName" placeholder="数据库名"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
@@ -150,13 +150,13 @@
 import {
   cldbApplicationAll,
   deleteExamine,
-  getById
+  getById,
 } from "@/api/authorityAudit/cloudDBaudit";
 
 import handleAccount from "@/views/authorityAudit/cloudDBaudit/handleCloudDB";
 export default {
   components: {
-    handleAccount
+    handleAccount,
   },
   data() {
     return {
@@ -173,38 +173,38 @@ export default {
         databaseName: "",
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
       dateRange: [],
       auditStatus: [
         {
           value: "01",
-          label: "待审"
+          label: "待审",
         },
         {
           value: "02",
-          label: "已审"
+          label: "已审",
         },
         {
           value: "03",
-          label: "拒绝"
+          label: "拒绝",
         },
         {
           value: "04",
-          label: "申请释放"
+          label: "申请释放",
         },
         {
           value: "05",
-          label: "已释放"
-        }
+          label: "已释放",
+        },
       ],
       total: 0,
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -246,7 +246,7 @@ export default {
       console.log(this.addDateRange(this.queryParams, this.dateRange));
       cldbApplicationAll(
         this.addDateRange(this.queryParams, this.dateRange)
-      ).then(response => {
+      ).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -265,13 +265,13 @@ export default {
         pageSize: 10,
         examineStatus: "",
         userName: "",
-        databaseName: ""
+        databaseName: "",
       };
       this.dateRange = [];
       this.handleQuery();
     },
     // 状态
-    statusShow: function(row) {
+    statusShow: function (row) {
       if (row.examineStatus == "01") {
         return "待审";
       } else if (row.examineStatus == "02") {
@@ -295,18 +295,18 @@ export default {
     //查看原因
     viewReason(row) {
       this.$alert(row.failure_reason, "拒绝原因", {
-        confirmButtonText: "确定"
+        confirmButtonText: "确定",
       });
     },
     // 资源分析
     analysisCell(row) {
       this.$message({
         type: "info",
-        message: "资源分析暂无数据"
+        message: "资源分析暂无数据",
       });
     },
     viewCell(row, type) {
-      getById({ id: row.id }).then(response => {
+      getById({ id: row.id }).then((response) => {
         if (type == "view") {
           this.dialogTitle = "云数据库详情";
         } else {
@@ -321,10 +321,10 @@ export default {
       this.$confirm("确定要删除这条数据吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deleteExamine({ id: row.id }).then(response => {
+          deleteExamine({ id: row.id }).then((response) => {
             if (response.code == 200) {
               this.msgSuccess("删除成功");
               this.getList();
@@ -341,7 +341,7 @@ export default {
       } else {
         this.getList();
       }
-    }
-  }
+    },
+  },
 };
 </script>

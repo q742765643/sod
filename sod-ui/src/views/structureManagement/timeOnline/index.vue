@@ -2,14 +2,21 @@
   <div class="app-container">
     <!-- 在线时间检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="四级编码">
-        <el-input size="small" v-model.trim="queryParams.d_data_id"></el-input>
+      <el-form-item label="四级编码" prop="d_data_id">
+        <el-input size="small" clearable v-model.trim="queryParams.d_data_id"></el-input>
       </el-form-item>
-      <el-form-item label="资料名称">
-        <el-input size="small" v-model.trim="queryParams.class_name"></el-input>
+      <el-form-item label="资料名称" prop="class_name">
+        <el-input size="small" clearable v-model.trim="queryParams.class_name"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button
+          size="small"
+          clearable
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+        >查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -59,7 +66,7 @@
       <handleTime
         v-if="handleDialog"
         :handleObj="handleObj"
-        @cancelHandle="resetQuery"
+        @cancelHandle="cancelHandle"
         ref="myHandleServer"
       />
     </el-dialog>
@@ -71,7 +78,7 @@ import { onLineList } from "@/api/structureManagement/timeOnline";
 import handleTime from "@/views/structureManagement/timeOnline/handleTime";
 export default {
   components: {
-    handleTime
+    handleTime,
   },
   data() {
     return {
@@ -84,16 +91,16 @@ export default {
         class_name: "",
         params: {
           orderBy: {
-            END_TIME: "desc"
-          }
-        }
+            END_TIME: "desc",
+          },
+        },
       },
       total: 0,
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
       handleObj: {},
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -124,11 +131,15 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
       console.log(this.queryParams);
-      onLineList(this.queryParams).then(response => {
+      onLineList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -141,7 +152,7 @@ export default {
         }
       });
     },
-    resetQuery() {
+    cancelHandle() {
       this.handleDialog = false;
 
       this.getList();
@@ -150,8 +161,8 @@ export default {
     handleCell(row) {
       this.handleDialog = true;
       this.handleObj = row;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="css" scoped>

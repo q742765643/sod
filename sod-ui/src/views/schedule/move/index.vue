@@ -9,6 +9,7 @@
     >
       <el-form-item label="资料名称" prop="profileName">
         <el-input
+          clearable
           v-model.trim="queryParams.profileName"
           placeholder="请输入物理库资料名称"
           moveable
@@ -19,6 +20,7 @@
       </el-form-item>
       <el-form-item label="存储编码" prop="dataClassId">
         <el-input
+          clearable
           v-model.trim="queryParams.dataClassId"
           placeholder="请输入存储编码或者四级编码"
           moveable
@@ -29,6 +31,7 @@
       </el-form-item>
       <el-form-item label="表名" prop="tableName">
         <el-input
+          clearable
           v-model.trim="queryParams.tableName"
           placeholder="请输入表名"
           moveable
@@ -204,12 +207,12 @@ import {
   startMove,
   stopMove,
   executeMove,
-  exportTable
+  exportTable,
 } from "@/api/schedule/move/move";
 
 export default {
   components: {
-    handleMove
+    handleMove,
   },
   data() {
     return {
@@ -249,17 +252,17 @@ export default {
         tableName: undefined,
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
       handleObj: {},
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
     this.getList();
-    this.getDicts("job_trigger_status").then(response => {
+    this.getDicts("job_trigger_status").then((response) => {
       this.statusOptions = response.data;
     });
   },
@@ -280,7 +283,7 @@ export default {
 
     // 导出
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -293,7 +296,7 @@ export default {
       }
       this.loading = true;
       listMove(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
+        (response) => {
           this.moveList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
@@ -339,8 +342,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id);
-      this.profileNames = selection.map(item => item.profileName);
+      this.ids = selection.map((item) => item.id);
+      this.profileNames = selection.map((item) => item.profileName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -361,49 +364,49 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return delMove(ids);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     handleStop(row) {
       const id = row.id;
       this.$confirm('是否确认停止"' + row.profileName + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           return stopMove(id);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("停止成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     handleStart(row) {
       const id = row.id;
       this.$confirm('是否确认启动"' + row.profileName + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           return startMove(id);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("启动成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     handleExecute(row) {
       const id = row.id;
@@ -413,25 +416,25 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return executeMove(id);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("执行成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     // 查询日志
     queryDaily(row) {
       this.$router.push({
         name: "数据迁移日志",
-        params: { profileName: row.profileName }
+        params: { profileName: row.profileName },
       });
-    }
-  }
+    },
+  },
 };
 </script>

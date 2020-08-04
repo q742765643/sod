@@ -9,16 +9,27 @@
         </el-select>
       </el-form-item>
       <el-form-item label="参数编码:">
-        <el-input size="small" v-model.trim="queryParams.parameterId" placeholder="请输入参数编码" />
+        <el-input
+          size="small"
+          clearable
+          v-model.trim="queryParams.parameterId"
+          placeholder="请输入参数编码"
+        />
       </el-form-item>
       <el-form-item label="要素存储短名:">
-        <el-input size="small" v-model.trim="queryParams.eleCodeShort" placeholder="请输入要素存储短名" />
+        <el-input
+          size="small"
+          clearable
+          v-model.trim="queryParams.eleCodeShort"
+          placeholder="请输入要素存储短名"
+        />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
         </el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -160,7 +171,7 @@ import {
   gridEleDecodeDefineEdit,
   gridEleDecodeDefineDelete,
   exportJSON,
-  importJSON
+  importJSON,
 } from "@/api/GridDataDictionaryManagement/GRIBdefine";
 
 // 高级搜索
@@ -173,7 +184,7 @@ export default {
       loading: true,
       queryParams: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       tableData: [],
       total: 0,
@@ -183,7 +194,7 @@ export default {
       actionUrl: "",
       showFile: false,
       importHeaders: {
-        enctype: "multipart/form-data"
+        enctype: "multipart/form-data",
       },
       multipleSelection: [],
       // 弹窗
@@ -192,28 +203,40 @@ export default {
       ruleForm: {},
       rules: {
         eleCodeShort: [
-          { required: true, message: "请输入活动区域", trigger: "blur" }
+          { required: true, message: "请输入活动区域", trigger: "blur" },
         ],
         subjectId: [
-          { required: true, message: "请输入数字格式学科", trigger: "blur" }
+          { required: true, message: "请输入数字格式学科", trigger: "blur" },
         ],
         classify: [
-          { required: true, message: "请输入数字格式参数种类", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入数字格式参数种类",
+            trigger: "blur",
+          },
         ],
         parameterId: [
-          { required: true, message: "请输入数字格式参数编码", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入数字格式参数编码",
+            trigger: "blur",
+          },
         ],
         gribVersion: [
-          { required: true, message: "请选择GRIB版本", trigger: "change" }
+          { required: true, message: "请选择GRIB版本", trigger: "change" },
         ],
         publicConfig: [
-          { required: true, message: "请选择是否为共有配置", trigger: "change" }
+          {
+            required: true,
+            message: "请选择是否为共有配置",
+            trigger: "change",
+          },
         ],
         templateDesc: [
-          { required: true, message: "请输入模板说明", trigger: "blur" }
-        ]
+          { required: true, message: "请输入模板说明", trigger: "blur" },
+        ],
       },
-      superMsg: {}
+      superMsg: {},
     };
   },
   created() {
@@ -222,7 +245,7 @@ export default {
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.tableData.forEach((element, index) => {
             if (element.id == row.id) {
               this.$refs.multipleTable.toggleRowSelection(
@@ -242,6 +265,14 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.superMsg = {};
+      this.getList();
+    },
+    resetQuery() {
+      this.superMsg = {};
+      this.queryParams = {
+        pageNum: 1,
+        pageSize: 10,
+      };
       this.getList();
     },
     /** 查询列表 */
@@ -274,13 +305,13 @@ export default {
         }
       }
       this.loading = true;
-      gridEleDecodeDefineAll(queryObj).then(response => {
+      gridEleDecodeDefineAll(queryObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
         if (this.multipleSelection.length == 1) {
           let newArry = this.multipleSelection;
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.toggleSelection(newArry);
           });
         }
@@ -298,18 +329,18 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: "请选择一条数据"
+            message: "请选择一条数据",
           });
           return;
         }
       }
     },
     handleTrue(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dialogTitle == "添加") {
             console.log(this.ruleForm);
-            gridEleDecodeDefineAdd(this.ruleForm).then(response => {
+            gridEleDecodeDefineAdd(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.$refs[formName].resetFields();
@@ -320,7 +351,7 @@ export default {
               }
             });
           } else if (this.dialogTitle == "编辑") {
-            gridEleDecodeDefineEdit(this.ruleForm).then(response => {
+            gridEleDecodeDefineEdit(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("编辑成功");
                 this.$refs[formName].resetFields();
@@ -351,13 +382,13 @@ export default {
       if (res.returnCode == 0) {
         this.$message({
           type: "success",
-          message: "导入成功"
+          message: "导入成功",
         });
         this.getList();
       } else {
         this.$message({
           type: "error",
-          message: "导入失败"
+          message: "导入失败",
         });
       }
       this.$refs.upload.clearFiles();
@@ -369,23 +400,23 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       let ids = [];
       let eleCodeShorts = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
         eleCodeShorts.push(element.eleCodeShort);
       });
       this.$confirm("是否删除" + eleCodeShorts.join(","), "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          gridEleDecodeDefineDelete(ids.join(",")).then(response => {
+          gridEleDecodeDefineDelete(ids.join(",")).then((response) => {
             if (response.code == 200) {
               this.msgSuccess("删除成功");
               this.getList();
@@ -395,7 +426,7 @@ export default {
         .catch(() => {});
     },
     tableExoprt() {
-      exportJSON(this.queryParams).then(res => {
+      exportJSON(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -410,11 +441,11 @@ export default {
         parameterId: "",
         eleCodeShort: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       };
       this.dialogSuperSearch = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

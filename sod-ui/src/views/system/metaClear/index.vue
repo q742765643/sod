@@ -3,8 +3,8 @@
     <!-- 元数据清除 -->
     <el-tabs v-model.trim="activeName" @tab-click="handleClick">
       <el-tab-pane label="元数据清除配置" name="first">
-        <el-form :model="queryParams" :inline="true" class="searchBox">
-          <el-form-item label="数据库IP">
+        <el-form :model="queryParams" :inline="true" class="searchBox" ref="queryParamsRef">
+          <el-form-item label="数据库IP" prop="databaseId">
             <el-select
               size="small"
               style="width:200px"
@@ -19,10 +19,10 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="任务名称">
-            <el-input size="small" v-model.trim="queryParams.taskName"></el-input>
+          <el-form-item label="任务名称" prop="taskName">
+            <el-input clearable size="small" v-model.trim="queryParams.taskName"></el-input>
           </el-form-item>
-          <el-form-item label="任务状态">
+          <el-form-item label="任务状态" prop="triggerStatus">
             <el-select
               size="small"
               filterable
@@ -128,7 +128,7 @@
       </el-tab-pane>
       <el-tab-pane label="元数据清除日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
-          <el-form-item label="数据库IP">
+          <el-form-item label="数据库IP" prop="name">
             <el-select style="width:200px" filterable v-model.trim="rowlogForm.name">
               <el-option
                 v-for="(item,index) in ipList"
@@ -138,12 +138,12 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="任务名称">
-            <el-input size="small" v-model.trim="rowlogForm.taskName"></el-input>
+          <el-form-item label="任务名称" prop="taskName">
+            <el-input size="small" clearable v-model.trim="rowlogForm.taskName"></el-input>
           </el-form-item>
-
           <el-form-item>
             <el-button size="small" type="primary" @click="queryListLog" icon="el-icon-search">查询</el-button>
+            <el-button size="small" @click="resetQueryLog" icon="el-icon-refresh-right">重置</el-button>
           </el-form-item>
         </el-form>
         <el-row :gutter="10" class="handleTableBox">
@@ -285,13 +285,13 @@ import {
   listLog,
   deleteLogById,
   listLogDatail,
-  metaClearLogExport
+  metaClearLogExport,
 } from "@/api/system/metaClear";
 //增加查看弹框
 import handleClear from "@/views/system/metaClear/handleClear";
 export default {
   components: {
-    handleClear
+    handleClear,
   },
   data() {
     return {
@@ -303,7 +303,7 @@ export default {
       ipList: [],
       queryParams: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       tableData: [],
       total: 0,
@@ -318,27 +318,27 @@ export default {
         pageNum: 1,
         pageSize: 10,
         taskName: "",
-        databaseId: ""
+        databaseId: "",
       },
       logTableData: [], //同步表格数据
       logDataTotal: 0,
       tableNames: [],
       statusOptions: [],
       logFormDialog: {
-        checked: []
+        checked: [],
       },
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
-      treedata: []
+      treedata: [],
     };
   },
   created() {
-    findDataBase().then(response => {
+    findDataBase().then((response) => {
       this.ipList = response.data;
     });
-    this.getDicts("job_handle_status").then(response => {
+    this.getDicts("job_handle_status").then((response) => {
       this.statusOptions = response.data;
     });
     this.getMetaBackupList();
@@ -349,12 +349,12 @@ export default {
       this.allDetailDialog = true;
     },
     handleLogExport() {
-      metaClearLogExport(this.rowlogForm).then(res => {
+      metaClearLogExport(this.rowlogForm).then((res) => {
         this.downloadfileCommon(res);
       });
     },
     handleExport() {
-      metaClearExport(this.queryParams).then(res => {
+      metaClearExport(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -379,10 +379,14 @@ export default {
       this.rowlogForm.pageNum = 1;
       this.getListLog();
     },
+    resetQueryLog() {
+      this.$refs["rowlogForm"].resetFields();
+      this.queryListLog();
+    },
     /** 查询列表 */
     getMetaBackupList() {
       this.loading = true;
-      metaClearList(this.queryParams).then(response => {
+      metaClearList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -398,9 +402,9 @@ export default {
       this.$confirm("是否确认" + type + row.taskName + "?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           if (type == "启动") {
             return startTask(row.id);
           } else if (type == "停止") {
@@ -413,30 +417,30 @@ export default {
           this.getMetaBackupList();
           this.msgSuccess(type + "成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     // 删除配置
     deleteShow() {
       if (this.currentRow.length > 0) {
         let names = [];
         let ids = [];
-        this.currentRow.forEach(element => {
+        this.currentRow.forEach((element) => {
           names.push(element.taskName);
           ids.push(element.id);
         });
         this.$confirm('是否确认删除"' + names.join(",") + '"?', "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
-          .then(function() {
+          .then(function () {
             return metaClearDel(ids.join(","));
           })
           .then(() => {
             this.getMetaBackupList();
             this.msgSuccess("删除成功");
           })
-          .catch(function() {});
+          .catch(function () {});
       }
     },
     resetQuery() {
@@ -445,7 +449,7 @@ export default {
         pageSize: 10,
         databaseId: "",
         taskName: "",
-        triggerStatus: ""
+        triggerStatus: "",
       };
       this.getMetaBackupList();
     },
@@ -481,7 +485,7 @@ export default {
     //日志列表
     getListLog() {
       this.loading = true;
-      listLog(this.rowlogForm).then(response => {
+      listLog(this.rowlogForm).then((response) => {
         this.logTableData = response.data.pageData;
         this.logDataTotal = response.data.totalCount;
         this.loading = false;
@@ -489,7 +493,7 @@ export default {
     },
     // 查看详情
     showDetailDialog(row) {
-      listLogDatail(row.id).then(res => {
+      listLogDatail(row.id).then((res) => {
         this.logFormDialog = res.data;
         this.logDetailDialog = true;
         this.logFormDialog.checked = [];
@@ -518,16 +522,16 @@ export default {
       this.$confirm('是否确认删除"' + row.taskName + '"?', "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           return deleteLogById(row.id);
         })
         .then(() => {
           this.handleClick();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     handleClick() {
       if (this.activeName == "first") {
@@ -537,12 +541,12 @@ export default {
           pageNum: 1,
           pageSize: 10,
           taskName: "",
-          databaseId: ""
+          databaseId: "",
         };
         this.queryListLog();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

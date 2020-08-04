@@ -2,18 +2,18 @@
   <div class="app-container">
     <!-- 业务用户审核 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="用户名称">
-        <el-input size="small" v-model.trim="queryParams.userName" placeholder="请输入用户名称"></el-input>
+      <el-form-item label="用户名称" prop="userName">
+        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="请输入用户名称"></el-input>
       </el-form-item>
-      <el-form-item label="用户名">
-        <el-input size="small" v-model.trim="queryParams.nickName" placeholder="请输入用户名"></el-input>
+      <el-form-item label="用户名" prop="nickName">
+        <el-input clearable size="small" v-model.trim="queryParams.nickName" placeholder="请输入用户名"></el-input>
       </el-form-item>
 
-      <el-form-item label="机构">
-        <el-input size="small" v-model.trim="queryParams.deptName" placeholder="请输入机构名称"></el-input>
+      <el-form-item label="机构" prop="deptName">
+        <el-input clearable size="small" v-model.trim="queryParams.deptName" placeholder="请输入机构名称"></el-input>
       </el-form-item>
-      <el-form-item label="用户状态">
-        <el-select v-model.trim="queryParams.checked" clearable size="small" style="width: 140px">
+      <el-form-item label="用户状态" prop="checked">
+        <el-select v-model="queryParams.checked" size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="待审核" value="0"></el-option>
           <el-option label="审核通过" value="1"></el-option>
@@ -25,6 +25,7 @@
 
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -106,20 +107,14 @@
       v-dialogDrag
     >
       <div>
-        <el-select
-          v-model.trim="roleIds"
-          multiple
-          size="small"
-          style="display:block;margin-bottom:20px;"
-        >
-          <el-option
+        <el-checkbox-group v-model="roleIds" style="display:block;margin-bottom:20px;">
+          <el-checkbox
             v-for="item in roleOptions"
             :key="item.roleId"
             :label="item.roleName"
-            :value="item.id"
             :disabled="item.status == 1"
-          ></el-option>
-        </el-select>
+          ></el-checkbox>
+        </el-checkbox-group>
         <div class="dialog-footer" slot="footer">
           <el-button type="primary" @click="trueRole">确 定</el-button>
           <el-button @click="dialogRole = false">取 消</el-button>
@@ -149,7 +144,7 @@ import handleApply from "@/views/authorityAudit/userRoleAudit/handleApply";
 export default {
   components: {
     handleWork,
-    handleApply
+    handleApply,
   },
   data() {
     return {
@@ -168,16 +163,16 @@ export default {
         nameSourceDB: "",
         params: {
           orderBy: {
-            updateTime: "desc"
-          }
-        }
+            updateTime: "desc",
+          },
+        },
       },
 
       total: 0,
       tableData: [],
       dialogTitle: "",
       currentRow: {},
-      currentId: ""
+      currentId: "",
     };
   },
   created() {
@@ -209,10 +204,14 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
-      gatAllBiz(this.queryParams).then(response => {
+      gatAllBiz(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -228,7 +227,7 @@ export default {
 
     /** 查询角色列表 */
     getRoles() {
-      optionselect().then(response => {
+      optionselect().then((response) => {
         this.roleOptions = response.data;
       });
     },
@@ -246,7 +245,7 @@ export default {
       } else {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
       }
     },
@@ -256,8 +255,14 @@ export default {
     handleRole(row) {
       this.dialogTitle = "角色授权";
       this.currentId = row.id;
-      getUser(row.id).then(response => {
-        this.roleIds = response.data.roleIds;
+      getUser(row.id).then((response) => {
+        this.roleOptions.forEach((element) => {
+          response.data.roleIds.forEach((item) => {
+            if (element.id == item) {
+              this.roleIds.push(element.roleName);
+            }
+          });
+        });
         this.dialogRole = true;
       });
     },
@@ -265,8 +270,16 @@ export default {
     trueRole() {
       let obj = {};
       obj.id = this.currentId;
-      obj.roleIds = this.roleIds;
-      updateUser(obj).then(response => {
+      obj.roleIds = [];
+      this.roleOptions.forEach((element) => {
+        this.roleIds.forEach((item) => {
+          if (element.roleName == item) {
+            obj.roleIds.push(element.id);
+          }
+        });
+      });
+
+      updateUser(obj).then((response) => {
         if (response.code === 200) {
           this.msgSuccess("修改成功");
           this.dialogRole = false;
@@ -286,8 +299,8 @@ export default {
       this.handleMsgObj = {};
       this.dialogApply = false;
       this.getList();
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

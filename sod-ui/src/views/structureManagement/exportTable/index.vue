@@ -2,8 +2,9 @@
   <div class="app-container export-container">
     <!-- 表结构导出 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="数据库：">
+      <el-form-item label="数据库：" prop="database_id">
         <el-select
+          clearable
           v-model.trim="queryParams.database_id"
           size="small"
           style="width:400px"
@@ -19,6 +20,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="20">
@@ -128,23 +130,23 @@ import {
   exportTable,
   exportSQL,
   exportTableSimple,
-  downloadTable
+  downloadTable,
 } from "@/api/structureManagement/exportTable";
 export default {
   components: {
-    treeTransfer
+    treeTransfer,
   },
   data() {
     return {
       //格式化tree数据
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       // 遮罩层
       loading: true,
       queryParams: {
-        database_id: ""
+        database_id: "",
       },
       databaseList: [],
       // 穿梭框
@@ -218,7 +220,7 @@ export default {
         serial_number: false, //序号
         name_cn: false, //中文描述
         index: false, //索引
-        fenku: false //分库分表
+        fenku: false, //分库分表
       },
       checkAll: false,
       checkedSimple: [],
@@ -236,10 +238,10 @@ export default {
         { key: "是否主键", value: "is_premary_key" },
         { key: "是否显示", value: "is_show" },
         { key: "序号", value: "serial_number" },
-        { key: "中文描述", value: "name_cn" }
+        { key: "中文描述", value: "name_cn" },
       ],
       isIndeterminate: false,
-      toIds: []
+      toIds: [],
     };
   },
   created() {
@@ -247,16 +249,20 @@ export default {
   },
   methods: {
     getDatabaseList() {
-      databaseList().then(response => {
+      databaseList().then((response) => {
         this.databaseList = response.data;
       });
     },
     handleQuery() {
       this.toTreeData = [];
-      dataTree(this.queryParams).then(response => {
+      dataTree(this.queryParams).then((response) => {
         this.resetData(response.data);
         this.fromTreeData = response.data;
       });
+    },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
     },
     resetData(dataArr) {
       for (var i in dataArr) {
@@ -285,7 +291,7 @@ export default {
     handleCheckAllChange(value) {
       if (value) {
         this.checkedSimple = [];
-        this.simples.forEach(element => {
+        this.simples.forEach((element) => {
           this.checkedSimple.push(element.value);
         });
       } else {
@@ -318,7 +324,7 @@ export default {
         this.$message({
           showClose: true,
           message: "请选择要导出的数据",
-          type: "error"
+          type: "error",
         });
         return;
       }
@@ -331,17 +337,17 @@ export default {
       obj.database_id = this.queryParams.database_id;
       if (this.activeName == "first") {
         obj.use_id = this.queryParams.use_id;
-        exportTable(obj).then(response => {
+        exportTable(obj).then((response) => {
           if (response.code == 200) {
-            downloadTable({ filePath: response.data.filePath }).then(res => {
+            downloadTable({ filePath: response.data.filePath }).then((res) => {
               this.downloadfileCommon(res);
             });
           }
         });
       } else if (this.activeName == "second") {
-        exportTableSimple(obj).then(response => {
+        exportTableSimple(obj).then((response) => {
           if (response.code == 200) {
-            downloadTable({ filePath: response.data.filePath }).then(res => {
+            downloadTable({ filePath: response.data.filePath }).then((res) => {
               this.downloadfileCommon(res);
             });
           }
@@ -350,17 +356,17 @@ export default {
         this.$confirm("请确保已在【SQL建表】内保存待导出的SQL语句?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             let obj = {};
             obj.data_class_ids = this.toIds.join(",");
             obj.database_id = this.queryParams.database_id;
             obj.exportType = this.exportTyoe;
-            exportSQL(obj).then(response => {
+            exportSQL(obj).then((response) => {
               if (response.code == 200) {
                 downloadTable({ filePath: response.data.filePath }).then(
-                  res => {
+                  (res) => {
                     this.downloadfileCommon(res);
                   }
                 );
@@ -369,8 +375,8 @@ export default {
           })
           .catch(() => {});
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

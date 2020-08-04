@@ -2,14 +2,15 @@
   <div class="app-container">
     <!-- 层次属性 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item size="small" label="GRIB格式:">
-        <el-input v-model.trim="queryParams.gribVersion" placeholder="请输入GRIB格式" />
+      <el-form-item size="small" label="GRIB格式:" prop="gribVersion">
+        <el-input clearable v-model.trim="queryParams.gribVersion" placeholder="请输入GRIB格式" />
       </el-form-item>
-      <el-form-item size="small" label="层次类型:">
-        <el-input v-model.trim="queryParams.levelType" placeholder="请输入层次类型" />
+      <el-form-item size="small" label="层次类型:" prop="levelType">
+        <el-input clearable v-model.trim="queryParams.levelType" placeholder="请输入层次类型" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -94,7 +95,7 @@ import {
   levelList,
   levelSave,
   levelEdit,
-  levelDelete
+  levelDelete,
 } from "@/api/GridDataDictionaryManagement/levelManagement";
 export default {
   data() {
@@ -104,7 +105,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        user_fcst_ele: ""
+        user_fcst_ele: "",
       },
       tableData: [],
       total: 0,
@@ -112,7 +113,7 @@ export default {
       actionUrl: "",
       showFile: false,
       importHeaders: {
-        enctype: "multipart/form-data"
+        enctype: "multipart/form-data",
       },
       multipleSelection: [],
       // 弹窗
@@ -121,25 +122,25 @@ export default {
       ruleForm: {},
       rules: {
         gribVersion: [
-          { required: true, message: "请输入grib格式", trigger: "blur" }
+          { required: true, message: "请输入grib格式", trigger: "blur" },
         ],
         levelType: [
-          { required: true, message: "请输入层次类型", trigger: "blur" }
+          { required: true, message: "请输入层次类型", trigger: "blur" },
         ],
         levelCode: [
-          { required: true, message: "请输入层次代码", trigger: "blur" }
+          { required: true, message: "请输入层次代码", trigger: "blur" },
         ],
         scaleDivisor: [
-          { required: true, message: "请输入比例因子", trigger: "blur" }
+          { required: true, message: "请输入比例因子", trigger: "blur" },
         ],
         levelProperity: [
-          { required: true, message: "请输入英文描述", trigger: "blur" }
+          { required: true, message: "请输入英文描述", trigger: "blur" },
         ],
         levelName: [
-          { required: true, message: "请输入中文描述", trigger: "change" }
+          { required: true, message: "请输入中文描述", trigger: "change" },
         ],
-        unit: [{ required: true, message: "请输入单位", trigger: "change" }]
-      }
+        unit: [{ required: true, message: "请输入单位", trigger: "change" }],
+      },
     };
   },
   created() {
@@ -148,7 +149,7 @@ export default {
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.tableData.forEach((element, index) => {
             if (element.id == row.id) {
               this.$refs.multipleTable.toggleRowSelection(
@@ -170,16 +171,20 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
-      levelList(this.queryParams).then(response => {
+      levelList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
         if (this.multipleSelection.length == 1) {
           let newArry = this.multipleSelection;
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.toggleSelection(newArry);
           });
         }
@@ -193,7 +198,7 @@ export default {
         if (this.multipleSelection.length != 1) {
           this.$message({
             type: "error",
-            message: "请选择一条数据"
+            message: "请选择一条数据",
           });
           return;
         } else {
@@ -205,10 +210,10 @@ export default {
     },
     handleTrue(formName) {
       console.log(this.ruleForm);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dialogTitle == "添加") {
-            levelSave(this.ruleForm).then(response => {
+            levelSave(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.resetForm(formName);
@@ -217,7 +222,7 @@ export default {
               }
             });
           } else if (this.dialogTitle == "编辑") {
-            levelEdit(this.ruleForm).then(response => {
+            levelEdit(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("编辑成功");
                 this.resetForm(formName);
@@ -247,13 +252,13 @@ export default {
       if (res.returnCode == 0) {
         this.$message({
           type: "success",
-          message: "导入成功"
+          message: "导入成功",
         });
         this.getList();
       } else {
         this.$message({
           type: "error",
-          message: "导入失败"
+          message: "导入失败",
         });
       }
       this.$refs.upload.clearFiles();
@@ -265,23 +270,23 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       let ids = [];
       let levelNames = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
         levelNames.push(element.levelName);
       });
       this.$confirm("是否删除" + levelNames.join(","), "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          levelDelete(ids.join(",")).then(response => {
+          levelDelete(ids.join(",")).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("删除成功");
               this.getList();
@@ -291,7 +296,7 @@ export default {
         .catch(() => {});
     },
     tableExoprt() {},
-    superClick() {}
-  }
+    superClick() {},
+  },
 };
 </script>

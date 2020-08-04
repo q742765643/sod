@@ -17,10 +17,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="账户ID" prop="databaseUpId">
-        <el-input v-model.trim="queryParams.databaseUpId" size="small"></el-input>
+        <el-input v-model.trim="queryParams.databaseUpId" size="small" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -121,12 +122,12 @@
 import {
   databaseUserAll,
   deleteList,
-  download
+  download,
 } from "@/api/authorityAudit/DBaccount";
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 export default {
   components: {
-    handleAccount
+    handleAccount,
   },
   data() {
     return {
@@ -141,16 +142,16 @@ export default {
             : this.$route.params.status,
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
 
       total: 0,
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -173,10 +174,14 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
-      databaseUserAll(this.queryParams).then(response => {
+      databaseUserAll(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -207,7 +212,7 @@ export default {
     //查看原因
     viewReason(row) {
       this.$alert(row.failureReason, "拒绝原因", {
-        confirmButtonText: "确定"
+        confirmButtonText: "确定",
       });
     },
     viewCell(row) {
@@ -219,14 +224,14 @@ export default {
       this.$confirm("确认删除" + row.databaseUpId + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deleteList({ id: row.id }).then(res => {
+          deleteList({ id: row.id }).then((res) => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               this.handleQuery();
             }
@@ -236,7 +241,7 @@ export default {
     },
     //导出
     handleExport() {
-      download(this.queryParams).then(res => {
+      download(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -248,8 +253,8 @@ export default {
       } else {
         this.getList();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

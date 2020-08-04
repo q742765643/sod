@@ -2,17 +2,33 @@
   <div class="app-container">
     <!-- 服务代码管理 -->
     <el-form :inline="true" :model="queryParams" ref="modelForm" class="searchBox">
-      <el-form-item label="服务代码:">
-        <el-input size="small" v-model.trim="queryParams.userEleCode" placeholder="请输入服务代码名称" />
+      <el-form-item label="服务代码:" prop="userEleCode">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.userEleCode"
+          placeholder="请输入服务代码名称"
+        />
       </el-form-item>
-      <el-form-item label="字段编码:">
-        <el-input size="small" v-model.trim="queryParams.dbEleCode" placeholder="请输入字段编码" />
+      <el-form-item label="字段编码:" prop="dbEleCode">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.dbEleCode"
+          placeholder="请输入字段编码"
+        />
       </el-form-item>
-      <el-form-item label="要素中文名称:">
-        <el-input size="small" v-model.trim="queryParams.eleName" placeholder="请输入要素中文名称" />
+      <el-form-item label="要素中文名称:" prop="eleName">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.eleName"
+          placeholder="请输入要素中文名称"
+        />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -109,7 +125,7 @@ import {
   editCode,
   getById,
   deleteById,
-  deleteByIds
+  deleteByIds,
 } from "@/api/dbDictMangement/dbServiceCodeManagement";
 export default {
   name: "filedSearchDeploy",
@@ -130,7 +146,7 @@ export default {
         pageSize: 10,
         userEleCode: "",
         dbEleCode: "",
-        eleName: ""
+        eleName: "",
       },
       editdataObj: {},
       //新增
@@ -140,7 +156,7 @@ export default {
         eleName: "",
         eleUnit: "",
         isCodeParam: "",
-        codeTableId: ""
+        codeTableId: "",
       },
       DataDialog: false,
       //表格
@@ -153,25 +169,25 @@ export default {
       rules: {
         userEleCode: [
           // { required: true, validator: ENLValidate, trigger: "blur" }
-          { required: true, message: "请输入服务代码名称", trigger: "blur" }
+          { required: true, message: "请输入服务代码名称", trigger: "blur" },
         ],
         dbEleCode: [
-          { required: true, message: "请输入字段编码", trigger: "blur" }
+          { required: true, message: "请输入字段编码", trigger: "blur" },
         ],
         eleName: [
-          { required: true, message: "请输入要素中文名称", trigger: "blur" }
+          { required: true, message: "请输入要素中文名称", trigger: "blur" },
         ],
         eleUnit: [
-          { required: true, message: "请输入单位名称", trigger: "blur" }
+          { required: true, message: "请输入单位名称", trigger: "blur" },
         ],
         isCodeParam: [
-          { required: true, message: "请输入是否标识代码", trigger: "blur" }
+          { required: true, message: "请输入是否标识代码", trigger: "blur" },
         ],
         codeTableId: [
-          { required: true, message: "请输入标识代码表", trigger: "blur" }
-        ]
+          { required: true, message: "请输入标识代码表", trigger: "blur" },
+        ],
       },
-      currentRow: {}
+      currentRow: {},
     };
   },
   mounted() {
@@ -186,7 +202,7 @@ export default {
     },
     handleQuery() {
       this.loading = true;
-      defineList(this.queryParams).then(response => {
+      defineList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -199,7 +215,10 @@ export default {
         }
       });
     },
-
+    resetQuery() {
+      this.$refs["modelForm"].resetFields();
+      this.handleQuery();
+    },
     //新增
     showAddDialog() {
       this.dialogTitle = "新增";
@@ -211,7 +230,7 @@ export default {
       this.dialogTitle = "编辑";
       this.currentRow = row;
       // this.handleObj = row;
-      getById({ id: row.id }).then(res => {
+      getById({ id: row.id }).then((res) => {
         if (res.code == 200) {
           this.handleObj = res.data;
           this.DataDialog = true;
@@ -229,11 +248,11 @@ export default {
       this.$confirm("确定要删除吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           console.log(row.id);
-          deleteById({ id: row.id }).then(res => {
+          deleteById({ id: row.id }).then((res) => {
             if (res.code == 200) {
               this.msgSuccess("删除成功");
               this.handleQuery();
@@ -252,11 +271,11 @@ export default {
         this.$confirm("确定要删除选中项吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             let ids = [];
-            this.multipleSelection.forEach(element => {
+            this.multipleSelection.forEach((element) => {
               ids.push(element.id);
             });
             return deleteByIds(ids.join(","));
@@ -275,10 +294,10 @@ export default {
     //保存
     trueReportRecord(formName) {
       console.log(this.handleObj);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.handleObj.id) {
-            editCode(this.handleObj).then(res => {
+            editCode(this.handleObj).then((res) => {
               if (res.code == 200) {
                 this.msgSuccess("编辑成功");
                 this.handleQuery();
@@ -289,7 +308,7 @@ export default {
               }
             });
           } else {
-            addCode(this.handleObj).then(res => {
+            addCode(this.handleObj).then((res) => {
               if (res.code == 200) {
                 this.msgSuccess("新增成功");
                 this.handleQuery();
@@ -302,7 +321,7 @@ export default {
           }
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>

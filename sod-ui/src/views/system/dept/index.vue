@@ -1,7 +1,7 @@
 <template>
   <div class="app-container deptTemplate">
-    <el-form :inline="true" class="searchBox">
-      <el-form-item label="部门名称">
+    <el-form :inline="true" class="searchBox" ref="queryForm">
+      <el-form-item label="部门名称" prop="deptName">
         <el-input
           v-model.trim="queryParams.deptName"
           placeholder="请输入部门名称"
@@ -10,7 +10,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="状态" prop="status">
         <el-select v-model.trim="queryParams.status" placeholder="部门状态" clearable size="small">
           <el-option
             v-for="dict in statusOptions"
@@ -28,6 +28,7 @@
           size="mini"
           @click="handleQuery"
         >搜索</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
         <el-button
           class="filter-item"
           type="primary"
@@ -151,7 +152,7 @@ import {
   treeselect,
   delDept,
   addDept,
-  updateDept
+  updateDept,
 } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -175,41 +176,41 @@ export default {
       // 查询参数
       queryParams: {
         deptName: undefined,
-        status: undefined
+        status: undefined,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         parentId: [
-          { required: true, message: "上级部门不能为空", trigger: "blur" }
+          { required: true, message: "上级部门不能为空", trigger: "blur" },
         ],
         deptName: [
-          { required: true, message: "部门名称不能为空", trigger: "blur" }
+          { required: true, message: "部门名称不能为空", trigger: "blur" },
         ],
         orderNum: [
-          { required: true, message: "菜单顺序不能为空", trigger: "blur" }
+          { required: true, message: "菜单顺序不能为空", trigger: "blur" },
         ],
         email: [
           {
             type: "email",
             message: "'请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
         phone: [
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   created() {
     this.getList();
-    this.getDicts("sys_normal_disable").then(response => {
+    this.getDicts("sys_normal_disable").then((response) => {
       this.statusOptions = response.data;
     });
   },
@@ -217,14 +218,14 @@ export default {
     /** 查询部门列表 */
     getList() {
       this.loading = true;
-      listDept(this.queryParams).then(response => {
+      listDept(this.queryParams).then((response) => {
         this.deptList = response.data;
         this.loading = false;
       });
     },
     /** 查询部门下拉树结构 */
     getTreeselect() {
-      treeselect().then(response => {
+      treeselect().then((response) => {
         this.deptOptions = [];
         const dept = { id: 0, label: "主类目", children: [] };
         dept.children = response.data;
@@ -250,12 +251,19 @@ export default {
         leader: undefined,
         phone: undefined,
         email: undefined,
-        status: "0"
+        status: "0",
       };
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.getList();
+    },
+    resetQuery() {
+      this.queryParams = {
+        deptName: undefined,
+        status: undefined,
+      };
       this.getList();
     },
     /** 新增按钮操作 */
@@ -272,18 +280,18 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.getTreeselect();
-      getDept(row.id).then(response => {
+      getDept(row.id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改部门";
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateDept(this.form).then(response => {
+            updateDept(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -293,7 +301,7 @@ export default {
               }
             });
           } else {
-            addDept(this.form).then(response => {
+            addDept(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -314,19 +322,19 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return delDept(row.id);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
-    }
-  }
+        .catch(function () {});
+    },
+  },
 };
 </script>
 <style lang="scss" >

@@ -2,14 +2,15 @@
   <div class="app-container">
     <!-- 服务代码定义 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="格点要素服务代码:">
-        <el-input size="small" v-model.trim="queryParams.userFcstEle" />
+      <el-form-item label="格点要素服务代码:" prop="userFcstEle">
+        <el-input clearable size="small" v-model.trim="queryParams.userFcstEle" />
       </el-form-item>
-      <el-form-item label="要素存储短名:">
-        <el-input size="small" v-model.trim="queryParams.dbFcstEle" />
+      <el-form-item label="要素存储短名:" prop="dbFcstEle">
+        <el-input clearable size="small" v-model.trim="queryParams.dbFcstEle" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -86,7 +87,7 @@ import {
   gridEleServiceDefineAll,
   gridEleServiceDefineAdd,
   gridEleServiceDefineEdit,
-  gridEleServiceDefineDelete
+  gridEleServiceDefineDelete,
 } from "@/api/GridDataDictionaryManagement/serverCode";
 
 export default {
@@ -100,7 +101,7 @@ export default {
         examine_status: "",
         nameUser: "",
         nameSourceDB: "",
-        time: ["", ""]
+        time: ["", ""],
       },
       tableData: [],
       total: 0,
@@ -111,21 +112,25 @@ export default {
       ruleForm: {},
       rules: {
         userFcstEle: [
-          { required: true, message: "请输入要素服务代码", trigger: "blur" }
+          { required: true, message: "请输入要素服务代码", trigger: "blur" },
         ],
         dbFcstEle: [
-          { required: true, message: "请输入要素存储短名", trigger: "blur" }
+          { required: true, message: "请输入要素存储短名", trigger: "blur" },
         ],
         eleName: [
-          { required: true, message: "请输入中文名称", trigger: "blur" }
+          { required: true, message: "请输入中文名称", trigger: "blur" },
         ],
         elePropertyName: [
-          { required: true, message: "请输入属性名(要素长名)", trigger: "blur" }
+          {
+            required: true,
+            message: "请输入属性名(要素长名)",
+            trigger: "blur",
+          },
         ],
         eleUnit: [
-          { required: true, message: "请输入要素单位", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入要素单位", trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -134,7 +139,7 @@ export default {
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.tableData.forEach((element, index) => {
             if (element.id == row.id) {
               this.$refs.multipleTable.toggleRowSelection(
@@ -156,16 +161,20 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
-      gridEleServiceDefineAll(this.queryParams).then(response => {
+      gridEleServiceDefineAll(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
         if (this.multipleSelection.length == 1) {
           let newArry = this.multipleSelection;
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.toggleSelection(newArry);
           });
         }
@@ -188,7 +197,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: "请选择一条数据"
+            message: "请选择一条数据",
           });
           return;
         }
@@ -196,10 +205,10 @@ export default {
     },
     handleTrue(formName) {
       console.log(this.ruleForm);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dialogTitle == "添加") {
-            gridEleServiceDefineAdd(this.ruleForm).then(response => {
+            gridEleServiceDefineAdd(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.$refs[formName].resetFields();
@@ -210,7 +219,7 @@ export default {
               }
             });
           } else if (this.dialogTitle == "编辑") {
-            gridEleServiceDefineEdit(this.ruleForm).then(response => {
+            gridEleServiceDefineEdit(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("编辑成功");
                 this.$refs[formName].resetFields();
@@ -231,23 +240,23 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       let ids = [];
       let userFcstEles = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
         userFcstEles.push(element.userFcstEle);
       });
       this.$confirm("是否删除" + userFcstEles.join(","), "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          gridEleServiceDefineDelete(ids.join(",")).then(response => {
+          gridEleServiceDefineDelete(ids.join(",")).then((response) => {
             if (response.code == 200) {
               this.msgSuccess("删除成功");
               this.getList();
@@ -259,7 +268,7 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.msgFormDialog = false;
-    }
-  }
+    },
+  },
 };
 </script>
