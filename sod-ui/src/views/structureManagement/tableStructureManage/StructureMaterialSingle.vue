@@ -405,7 +405,7 @@ export default {
           } else {
             response.data.labelKeyFrom = [];
             response.data.dataClassLabelList.forEach((element) => {
-              response.data.labelKeyFrom.push(element.dictValue);
+              response.data.labelKeyFrom.push(element.labelKey);
             });
           }
 
