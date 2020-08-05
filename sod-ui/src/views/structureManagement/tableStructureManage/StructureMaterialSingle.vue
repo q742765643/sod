@@ -402,6 +402,11 @@ export default {
         if (response.code == "200") {
           if (!response.data.labelKey) {
             response.data.labelKeyFrom = [];
+          } else {
+            response.data.labelKeyFrom = [];
+            response.data.labelKey.forEach((element) => {
+              response.data.labelKeyFrom.push(element.dictValue);
+            });
           }
 
           this.materialData = response.data;
