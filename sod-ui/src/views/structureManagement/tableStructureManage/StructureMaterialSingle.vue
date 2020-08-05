@@ -263,7 +263,7 @@ export default {
         dataLogicList: [], //数据用途回显的树
         dataLogicListTable: [], //数据用途回显的树
         labelKeyFrom: [],
-        labelKey: [],
+        dataClassLabelList: [],
       },
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
@@ -400,11 +400,11 @@ export default {
       console.log(id);
       getDetailById({ id: id }).then((response) => {
         if (response.code == "200") {
-          if (!response.data.labelKey) {
+          if (!response.data.dataClassLabelList) {
             response.data.labelKeyFrom = [];
           } else {
             response.data.labelKeyFrom = [];
-            response.data.labelKey.forEach((element) => {
+            response.data.dataClassLabelList.forEach((element) => {
               response.data.labelKeyFrom.push(element.dictValue);
             });
           }
@@ -544,11 +544,14 @@ export default {
             else {
               handleMessage = "新增资料成功";
             }
-            this.materialData.labelKey = [];
+            this.materialData.dataClassLabelList = [];
             this.dictdataTypes.forEach((element) => {
               this.materialData.labelKeyFrom.forEach((item) => {
                 if (element.dictValue == item) {
-                  this.materialData.labelKey.push(element);
+                  let obj = {
+                    labelKey: item,
+                  };
+                  this.materialData.dataClassLabelList.push(obj);
                 }
               });
             });
