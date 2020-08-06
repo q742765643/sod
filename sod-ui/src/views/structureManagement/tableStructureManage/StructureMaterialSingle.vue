@@ -400,7 +400,6 @@ export default {
       console.log(id);
       getDetailById({ id: id }).then((response) => {
         if (response.code == "200") {
-          debugger;
           if (!response.data.dataClassLabelList) {
             response.data.labelKeyFrom = [];
           } else {
