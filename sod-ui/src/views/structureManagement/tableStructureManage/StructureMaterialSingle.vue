@@ -15,7 +15,7 @@
             <i class="el-icon-price-tag"></i>公共元数据信息
           </div>
           <div class="publicInfo">
-            <el-form-item label="名称" prop="metaDataName">
+            <el-form-item label="名称" prop="ddataId">
               <!--  <el-input
                 placeholder="名称"
                 :readonly="true"
@@ -25,7 +25,7 @@
               ></el-input>-->
               <treeselect
                 @select="getChildCheckNode"
-                v-model.trim="materialData.metaDataName"
+                v-model.trim="materialData.ddataId"
                 :options="publicTreeOptions"
                 :normalizer="normalizer"
                 :show-count="true"
@@ -251,7 +251,7 @@ export default {
       isDisabledEdit: false,
       materialData: {
         ddataId: "",
-        metaDataName: null,
+        ddataId: null,
         dataClassId: "",
         className: "",
         parentId: null,
@@ -268,7 +268,7 @@ export default {
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
       rules: {
-        metaDataName: [
+        ddataId: [
           {
             required: true,
             message: "名称不能为空",
@@ -371,7 +371,7 @@ export default {
       // 从数据注册审核来的资料
       if (this.DRegistrationObj) {
         this.materialData.applyId = this.DRegistrationObj.applyId;
-        this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
+        // this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
         this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList;
         getNewDataClassId({ parentId: this.materialData.ddataId }).then(
@@ -400,6 +400,7 @@ export default {
       console.log(id);
       getDetailById({ id: id }).then((response) => {
         if (response.code == "200") {
+          debugger;
           if (!response.data.dataClassLabelList) {
             response.data.labelKeyFrom = [];
           } else {
@@ -462,7 +463,7 @@ export default {
       }
 
       this.materialData.ddataId = checkNode.id;
-      this.materialData.metaDataName = checkNode.name;
+      // this.materialData.metaDataName = checkNode.name;
       // this.publicTreeVisible = false;
     },
     //关闭公共元数据弹出层
