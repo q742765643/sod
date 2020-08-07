@@ -83,7 +83,7 @@
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
       <el-button type="danger" v-if="stepNum==0" @click="finishStep(2)">拒绝</el-button>
-      <el-button type="primary" v-if="stepNum==0||stepNum==3" @click="finishStep(1)">通过</el-button>
+      <el-button type="primary" v-if="stepNum==2||stepNum==3" @click="finishStep(1)">通过</el-button>
       <el-button type="primary" v-if="stepNum!=2&&dbIds" @click="nextStep" :disabled="nextFlag">下一步</el-button>
     </div>
   </section>
