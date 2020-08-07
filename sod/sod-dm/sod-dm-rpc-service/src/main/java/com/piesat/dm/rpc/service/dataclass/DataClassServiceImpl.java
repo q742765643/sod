@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.dataclass;
 
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
@@ -120,6 +121,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
         this.dataClassLabelService.deleteByDataClassId(dataClassDto.getDataClassId());
         List<DataClassLabelDto> dataClassLabelList = dataClassDto.getDataClassLabelList();
+        dataClassLabelList.forEach(e -> {
+            e.setCreateTime(new DateTime());
+            e.setDataClassId(dataClassDto.getDataClassId());
+        });
         if (dataClassLabelList != null && dataClassLabelList.size() > 0) {
             this.dataClassLabelService.saveList(dataClassLabelList);
         }
