@@ -210,11 +210,13 @@ public class UserController {
                 applyPaper.transferTo(newFile);
                 if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
                     parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
-                }else{
+                }else if (newFile.getName().endsWith(".doc")||newFile.getName().endsWith(".DOC")||newFile.getName().endsWith(".docx")||newFile.getName().endsWith(".DOCX")){
                     String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
                     String pdfPath = outFilePath + "/" + pdfName;
                     Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
                     parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + pdfName});
+                }else {
+                    parameterMap.put("pdfPath",new String[]{""});
                 }
             }
             ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
