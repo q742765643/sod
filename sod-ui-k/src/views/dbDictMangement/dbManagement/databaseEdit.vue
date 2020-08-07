@@ -261,13 +261,13 @@ import {
   findByDatabaseDefineId,
   conStatus,
   findBaseByPId,
-  connStatus
+  connStatus,
 } from "@/api/dbDictMangement/dbManagement";
 import { getDicts } from "@/api/system/dict/data";
 import {
   EngNumLine,
   ipUrlValidation,
-  ipUrlValidation2
+  ipUrlValidation2,
 } from "@/components/commonVaildate.js";
 
 export default {
@@ -275,8 +275,8 @@ export default {
   components: {},
   props: {
     handleMsgObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     var nameValidate = (rule, value, callback) => {
@@ -323,7 +323,7 @@ export default {
         databaseDto: {
           schemaName: "",
           databaseClassify: "物理库",
-          databaseName: "基础库"
+          databaseName: "基础库",
         },
 
         id: "",
@@ -341,7 +341,7 @@ export default {
         databaseDesc: "",
         databaseCapacity: 0,
         databaseNodesList: [], //存储信息
-        databaseAdministratorList: [] //账户信息
+        databaseAdministratorList: [], //账户信息
       },
       //默认site页
       activeName: "first",
@@ -353,42 +353,42 @@ export default {
       baseFormRules: {
         id: { required: true, validator: nameValidate, trigger: "blur" },
         databaseName: [
-          { required: true, message: "请输入数据库名称", trigger: "blur" }
+          { required: true, message: "请输入数据库名称", trigger: "blur" },
         ],
         serialNumber: [
           { required: true, message: "请输入显示序号", trigger: "blur" },
-          { type: "number", message: "显示序号必须为数字值" }
+          { type: "number", message: "显示序号必须为数字值" },
         ],
         databaseInstance: [
-          { required: true, message: "数据库实例", trigger: "blur" }
+          { required: true, message: "数据库实例", trigger: "blur" },
         ],
         databaseType: [
-          { required: true, message: "请输入数据库类型", trigger: "blur" }
+          { required: true, message: "请输入数据库类型", trigger: "blur" },
         ],
         driverClassName: [
-          { required: true, message: "请输入数据库驱动", trigger: "blur" }
+          { required: true, message: "请输入数据库驱动", trigger: "blur" },
         ],
         databaseIp: [
-          { required: true, validator: ipValidate, trigger: "blur" }
+          { required: true, validator: ipValidate, trigger: "blur" },
         ],
         databasePort: [
           { required: true, message: "请输入数据库端口", trigger: "blur" },
-          { type: "number", message: "数据库端口必须为数字值" }
+          { type: "number", message: "数据库端口必须为数字值" },
         ],
         databaseUrl: [
-          { required: true, message: "请输入数据库访问地址", trigger: "blur" }
+          { required: true, message: "请输入数据库访问地址", trigger: "blur" },
         ],
         upUrl: [
-          { required: true, message: "请输入UP层访问地址", trigger: "blur" }
+          { required: true, message: "请输入UP层访问地址", trigger: "blur" },
         ],
         databaseCapacity: [
           {
             required: true,
             validator: databaseCapacityValidate,
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   async created() {
@@ -410,7 +410,7 @@ export default {
   },
   methods: {
     async getDictsList() {
-      getDicts("sys_database_type").then(response => {
+      getDicts("sys_database_type").then((response) => {
         if (response.code == 200) {
           this.dictsList = response.data;
         }
@@ -419,7 +419,7 @@ export default {
     //添加或修改数据库基本信息的保存按钮
     async trueDialog(formName) {
       //验证基本信息页的必填项是否输入
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (!valid) {
           this.$message.error("请正确填写基本信息列表");
           return;
@@ -434,7 +434,7 @@ export default {
             return;
           }
           //验证存储信息列表的必填项是否输入
-          this.msgFormDialog.databaseNodesList.forEach(element => {
+          this.msgFormDialog.databaseNodesList.forEach((element) => {
             if (!element.databaseNode) {
               this.$message.error("请正确填写存储信息列表");
               flagInfo = true;
@@ -443,7 +443,7 @@ export default {
             this.$set(element, "databaseId", this.msgFormDialog.id);
           });
           //验证账户信息列表的必填项是否输入
-          this.msgFormDialog.databaseAdministratorList.forEach(element => {
+          this.msgFormDialog.databaseAdministratorList.forEach((element) => {
             if (!element.userName || !element.passWord) {
               this.$message.error("请正确填写账户信息列表");
               flagInfo = true;
@@ -477,7 +477,7 @@ export default {
             this.$message({ message: "数据库ID重复", type: "error" });
             return;
           }
-          databaseDefineSave(this.msgFormDialog).then(response => {
+          databaseDefineSave(this.msgFormDialog).then((response) => {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.cancelDialog();
@@ -490,7 +490,7 @@ export default {
       });
     },
     formDetail(id, type) {
-      databaseDefineGet({ id: id }).then(response => {
+      databaseDefineGet({ id: id }).then((response) => {
         if (type == "repeat") {
           if (response.data) {
             this.flag = true;
@@ -502,7 +502,7 @@ export default {
             response.data.databaseDto = {
               schemaName: "",
               databaseClassify: "物理库",
-              databaseName: "基础库"
+              databaseName: "基础库",
             };
           }
           this.msgFormDialog = response.data;
@@ -520,7 +520,7 @@ export default {
     //测试数据库连接
     checkParam() {
       if (this.isDbIdDisable) {
-        conStatus({ id: this.msgFormDialog.id }).then(res => {
+        conStatus({ id: this.msgFormDialog.id }).then((res) => {
           if (res.data.checkConn == 1) {
             this.$message({ message: "连接正常", type: "success" });
           } else {
@@ -549,7 +549,7 @@ export default {
         }
         let flagInfo = false;
         //验证账户信息列表的必填项是否输入
-        this.msgFormDialog.databaseAdministratorList.forEach(element => {
+        this.msgFormDialog.databaseAdministratorList.forEach((element) => {
           if (!element.userName || !element.passWord) {
             this.$message.error("请正确填写账户信息列表");
             flagInfo = true;
@@ -577,7 +577,7 @@ export default {
           this.$message({ message: "数据库ID重复", type: "error" });
           return;
         }
-        connStatus(this.msgFormDialog).then(response => {
+        connStatus(this.msgFormDialog).then((response) => {
           this.$message({ message: "连接正常", type: "success" });
         });
       }
@@ -595,7 +595,7 @@ export default {
       this.msgFormDialog.databaseNodesList.push({
         databaseNode: "",
         nodeRole: "存储节点",
-        nodeState: "使用中"
+        nodeState: "使用中",
       });
     },
     //存储信息删除一行
@@ -626,7 +626,7 @@ export default {
         userName: "",
         passWord: "",
         introduction: "",
-        isManager: true
+        isManager: true,
       });
     },
     //账户列表页删除一行
@@ -645,7 +645,7 @@ export default {
     },
     //专题库信息查询页
     getPhysicsSpecial(id) {
-      findByDatabaseDefineId({ id: id }).then(res => {
+      findByDatabaseDefineId({ id: id }).then((res) => {
         if (res.code == 200) {
           this.physicsSpecialList = res.data;
         }
@@ -654,8 +654,8 @@ export default {
     //页签切换时间(将选中对象清掉)
     pageTasChange() {
       this.currentRow = null;
-    }
-  }
+    },
+  },
 };
 </script>
 

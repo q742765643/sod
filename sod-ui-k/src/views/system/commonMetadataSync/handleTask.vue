@@ -31,7 +31,7 @@
       </el-form-item>
       <el-form-item prop="jobCron" label="执行策略:">
         <el-popover v-model.trim="cronPopover">
-          <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+          <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
           <el-input
             slot="reference"
             @click="cronPopover=true"
@@ -52,35 +52,40 @@
 import {
   editConfig,
   addConfig,
-  findCfgByPk
+  findCfgByPk,
 } from "@/api/system/commonMetadataSync/index";
 import { getDictList } from "@/api/system/commonMetadataSync/select";
+import { getNextTime } from "@/api/schedule/backup/backup";
 
 export default {
   name: "handleTaskCommonDialog",
 
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     //校验是否为cron表达式
-    var handleCronValidate = (rule, value, callback) => {
-      if (!!value) {
-        let parser = require("cron-parser");
-        try {
-          let interval = parser.parseExpression(value);
-          console.log("cronDate:", interval.next().toDate());
-        } catch (e) {
-          callback("执行策略非Cron表达式格式，请检查！");
-        }
+    var handleCronValidate = async (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("请输入执行策略!"));
       } else {
-        callback("请输入执行策略!");
+        let flag = true;
+        await getNextTime({
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?",
+        }).then((res) => {
+          flag = false;
+        });
+        if (flag) {
+          callback(new Error("执行策略表达式错误!"));
+        } else {
+          callback();
+        }
       }
-      callback();
     };
     return {
+      cronExpression: "",
       cronPopover: false,
       msgFormDialog: {
         // 这里定义弹框内的参数
@@ -90,25 +95,25 @@ export default {
         apiType: "",
         apiDataKey: "",
         primaryKey: "",
-        jobCron: "0 0 2 * * ?"
+        jobCron: "0 0 2 * * ?",
       },
       tableNames: [],
       rules: {
         taskName: [
-          { required: true, message: "请输入任务名称", trigger: "blur" }
+          { required: true, message: "请输入任务名称", trigger: "blur" },
         ],
         tableName: [{ required: true, message: "选择表名", trigger: "change" }],
         apiUrl: [{ required: true, message: "请输入接口url", trigger: "blur" }],
         apiType: [
-          { required: true, message: "请选择同步类型", trigger: "change" }
+          { required: true, message: "请选择同步类型", trigger: "change" },
         ],
         apiDataKey: [
-          { required: true, message: "请输入接口关键字", trigger: "blur" }
+          { required: true, message: "请输入接口关键字", trigger: "blur" },
         ],
         jobCron: [
-          { required: true, message: "请输入执行策略", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入执行策略", trigger: "blur" },
+        ],
+      },
     };
   },
   async created() {
@@ -116,13 +121,13 @@ export default {
     await this.selectAllTaskName();
     // this.initDetail();
     if (this.handleObj.id) {
-      await findCfgByPk({ id: this.handleObj.id }).then(res => {
+      await findCfgByPk({ id: this.handleObj.id }).then((res) => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
         } else {
           this.$message({
             type: "error",
-            message: "查询失败"
+            message: "查询失败",
           });
         }
       });
@@ -130,38 +135,63 @@ export default {
   },
   methods: {
     changeCron(val) {
-      this.msgFormDialog.jobCron = val;
+      this.cronExpression = val;
+      if (val.substring(0, 5) == "* * *") {
+        this.msgError("小时,分钟,秒必填");
+      } else {
+        this.msgFormDialog.jobCron = val.split(" ?")[0] + " ?";
+      }
+    },
+    closeCronPopover() {
+      if (this.cronExpression.substring(0, 5) == "* * *") {
+        return;
+      } else {
+        getNextTime({
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
+          let times = res.data;
+          let html = "";
+          times.forEach((element) => {
+            html += "<p>" + element + "</p>";
+          });
+          this.$alert(html, "前5次执行时间", {
+            dangerouslyUseHTMLString: true,
+          }).then(() => {
+            this.CronPopover = false;
+          });
+        });
+      }
     },
     trueDialog(formName) {
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (!this.handleObj.id) {
-            addConfig(this.msgFormDialog).then(res => {
+            addConfig(this.msgFormDialog).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "新增成功"
+                  message: "新增成功",
                 });
               } else {
                 this.$message({
                   type: "error",
-                  message: "新增失败"
+                  message: "新增失败",
                 });
               }
               this.$emit("cancelHandle");
             });
           } else {
-            editConfig(this.msgFormDialog).then(res => {
+            editConfig(this.msgFormDialog).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "编辑成功"
+                  message: "编辑成功",
                 });
               } else {
                 this.$message({
                   type: "error",
-                  message: "编辑失败"
+                  message: "编辑失败",
                 });
               }
               this.$emit("cancelHandle");
@@ -177,13 +207,13 @@ export default {
       this.$emit("cancelHandle");
     },
     selectAllTaskName() {
-      getDictList(this.queryParams).then(res => {
+      getDictList(this.queryParams).then((res) => {
         if (res.code == 200) {
           this.tableNames = res.data;
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

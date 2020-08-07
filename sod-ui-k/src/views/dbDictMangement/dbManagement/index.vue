@@ -2,14 +2,20 @@
   <div class="app-container">
     <!-- 数据库管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="数据库ID:">
-        <el-input size="small" v-model.trim="queryParams.id" placeholder="请输入数据库ID" />
+      <el-form-item label="数据库ID:" prop="id">
+        <el-input clearable size="small" v-model.trim="queryParams.id" placeholder="请输入数据库ID" />
       </el-form-item>
-      <el-form-item label="数据库名称:">
-        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="请输入数据库名称" />
+      <el-form-item label="数据库名称:" prop="databaseName">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.databaseName"
+          placeholder="请输入数据库名称"
+        />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -99,14 +105,14 @@ import {
   delList,
   delByIds,
   conStatus,
-  exportTable
+  exportTable,
 } from "@/api/dbDictMangement/dbManagement";
 import handleDataBase from "@/views/dbDictMangement/dbManagement/databaseEdit";
 import "font-awesome/css/font-awesome.css";
 
 export default {
   components: {
-    handleDataBase
+    handleDataBase,
   },
   data() {
     return {
@@ -116,7 +122,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         id: "",
-        databaseName: ""
+        databaseName: "",
       },
       tableData: [],
       total: 0,
@@ -124,14 +130,14 @@ export default {
       actionUrl: "",
       showFile: false,
       importHeaders: {
-        enctype: "multipart/form-data"
+        enctype: "multipart/form-data",
       },
       multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
       ruleForm: {},
-      handleMsgObj: {}
+      handleMsgObj: {},
     };
   },
   created() {
@@ -140,7 +146,7 @@ export default {
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.tableData.forEach((element, index) => {
             if (element.id == row.id) {
               this.$refs.multipleTable.toggleRowSelection(
@@ -153,13 +159,13 @@ export default {
     },
     // 导出
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
     cancelDialog() {
       this.msgFormDialog = false;
-      if (this.dialogTitle.indexOf("新增") != -1) {
+      if (this.dialogTitle && this.dialogTitle.indexOf("新增") != -1) {
         this.handleQuery();
       } else {
         this.getList();
@@ -176,17 +182,21 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
       console.log(this.queryParams);
-      defineList(this.queryParams).then(response => {
+      defineList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
         if (this.multipleSelection.length == 1) {
           let newArry = this.multipleSelection;
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.toggleSelection(newArry);
           });
         }
@@ -217,13 +227,13 @@ export default {
       if (res.returnCode == 0) {
         this.$message({
           type: "success",
-          message: "导入成功"
+          message: "导入成功",
         });
         this.getList();
       } else {
         this.$message({
           type: "error",
-          message: "导入失败"
+          message: "导入失败",
         });
       }
       this.$refs.upload.clearFiles();
@@ -234,14 +244,14 @@ export default {
         this.$confirm("数据删除后将无法恢复,确认删除?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             let ids = [];
-            this.multipleSelection.forEach(element => {
+            this.multipleSelection.forEach((element) => {
               ids.push(element.id);
             });
-            delByIds({ ids: ids.join(",") }).then(response => {
+            delByIds({ ids: ids.join(",") }).then((response) => {
               if (response.code == 200) {
                 this.$message({ message: "删除成功", type: "success" });
                 this.handleQuery();
@@ -255,7 +265,7 @@ export default {
     },
 
     checkError(row) {
-      conStatus({ id: row.id }).then(res => {
+      conStatus({ id: row.id }).then((res) => {
         if (res.data.checkConn == 1) {
           this.$message({ message: "连接正常", type: "success" });
         } else {
@@ -272,8 +282,8 @@ export default {
     // 表格选择
     handleSelectionChange(val) {
       this.multipleSelection = val;
-    }
-  }
+    },
+  },
 };
 </script>
 

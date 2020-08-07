@@ -102,3 +102,11 @@ export function exportBackup(query) {
     responseType: "arraybuffer"
   })
 }
+
+export function getNextTime(query) {
+  return request({
+    url: baseUrl + '/schedule/job/getNextTime',
+    method: 'get',
+    params: query,
+  })
+}
