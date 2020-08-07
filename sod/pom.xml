@@ -42,11 +42,11 @@
             <id>maven-ali</id>
             <url>http://maven.aliyun.com/nexus/content/groups/public//</url>
             <releases>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
                 <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </repository>
@@ -54,25 +54,65 @@
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
             <url>https://repo.spring.io/milestone</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>nexus-pentaho</id>
             <name>Nexus pentaho</name>
             <url>https://nexus.pentaho.org/content/repositories/omni/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
         </repository>
         <!-- 国家局的私有仓库 -->
         <repository>
             <id>releases</id>
             <name>Releases</name>
             <url>http://60.205.204.230:8081/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>elastic.co</id>
             <url>https://artifacts.elastic.co/maven</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
         </repository>
     </repositories>
 
