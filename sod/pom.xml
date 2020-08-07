@@ -42,7 +42,7 @@
             <id>maven-ali</id>
             <url>http://maven.aliyun.com/nexus/content/groups/public//</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -55,7 +55,7 @@
             <name>Spring Milestones</name>
             <url>https://repo.spring.io/milestone</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -68,7 +68,7 @@
             <name>Nexus pentaho</name>
             <url>https://nexus.pentaho.org/content/repositories/omni/</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -80,7 +80,7 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -94,7 +94,7 @@
             <name>Releases</name>
             <url>http://60.205.204.230:8081/nexus/content/repositories/releases/</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -106,7 +106,7 @@
             <id>elastic.co</id>
             <url>https://artifacts.elastic.co/maven</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
