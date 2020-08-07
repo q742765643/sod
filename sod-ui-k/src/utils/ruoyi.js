@@ -63,8 +63,8 @@ export function addDateRange(params, dateRange) {
   }
   if (null != dateRange) {
     search.params = {
-      beginTime: this.dateRange[0],
-      endTime: this.dateRange[1],
+      beginTime: dateRange[0],
+      endTime: dateRange[1],
       orderBy: orderBy
     };
   }

@@ -26,7 +26,7 @@
             <el-col :span="20">
               <el-form-item label="执行策略" prop="jobCron">
                 <el-popover v-model.trim="cronPopover">
-                  <vueCron @change="changeCron" @close="cronPopover=false" i18n="cn"></vueCron>
+                  <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
                   <el-input
                     slot="reference"
                     @click="cronPopover=true"
@@ -81,32 +81,37 @@ import {
   findDataBase,
   findMeta,
   addMetaClear,
-  editMetaBackup
+  editMetaBackup,
 } from "@/api/system/metaClear";
+import { getNextTime } from "@/api/schedule/backup/backup";
 export default {
   name: "handleClear",
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     //校验是否为cron表达式
-    var handleCronValidate = (rule, value, callback) => {
-      if (!!value) {
-        let parser = require("cron-parser");
-        try {
-          let interval = parser.parseExpression(value);
-          console.log("cronDate:", interval.next().toDate());
-        } catch (e) {
-          callback("执行策略非Cron表达式格式，请检查！");
-        }
+    var handleCronValidate = async (rule, value, callback) => {
+      if (value == "") {
+        callback(new Error("请输入执行策略!"));
       } else {
-        callback("请输入执行策略!");
+        let flag = true;
+        await getNextTime({
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?",
+        }).then((res) => {
+          flag = false;
+        });
+        if (flag) {
+          callback(new Error("执行策略表达式错误!"));
+        } else {
+          callback();
+        }
       }
-      callback();
     };
     return {
+      cronExpression: "",
       treeJson: [],
       storageDirectoryOptions: [],
       cronPopover: false,
@@ -115,48 +120,48 @@ export default {
         taskName: "",
         databaseId: "",
         jobCron: "0 0 2 * * ?",
-        conditions: ""
+        conditions: "",
       },
       ipList: [],
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       treedata: [],
       rules: {
         taskName: [
-          { required: true, message: "请输入任务名称", trigger: "blur" }
+          { required: true, message: "请输入任务名称", trigger: "blur" },
         ],
         databaseId: [
-          { required: true, message: "请选择数据库IP", trigger: "change" }
+          { required: true, message: "请选择数据库IP", trigger: "change" },
         ],
         jobCron: [
-          { required: true, message: "请输入执行策略", trigger: "blur" }
+          { required: true, message: "请输入执行策略", trigger: "blur" },
         ],
         conditions: [
-          { required: true, message: "请输入where条件", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入where条件", trigger: "blur" },
+        ],
+      },
     };
   },
   async created() {
-    await findDataBase().then(response => {
+    await findDataBase().then((response) => {
       this.ipList = response.data;
     });
-    await this.getDicts("metabackup_storage_directory").then(response => {
+    await this.getDicts("metabackup_storage_directory").then((response) => {
       this.storageDirectoryOptions = response.data;
     });
     if (this.handleObj.id) {
       // 查详情
-      await getDetailByID(this.handleObj.id).then(response => {
+      await getDetailByID(this.handleObj.id).then((response) => {
         this.msgFormDialog = response.data;
       });
       await this.findTree(this.msgFormDialog.databaseId);
       // // 获取树的选中节点
       this.defaultChecked = [];
       let checkedTree = this.msgFormDialog.clearContent.split(",");
-      checkedTree.forEach(element => {
-        this.treeJson.forEach(t => {
+      checkedTree.forEach((element) => {
+        this.treeJson.forEach((t) => {
           if (element == t.id) {
             this.defaultChecked.push(t.nodeKey);
           }
@@ -166,13 +171,38 @@ export default {
   },
   methods: {
     changeCron(val) {
-      this.msgFormDialog.jobCron = val;
+      this.cronExpression = val;
+      if (val.substring(0, 5) == "* * *") {
+        this.msgError("小时,分钟,秒必填");
+      } else {
+        this.msgFormDialog.jobCron = val.split(" ?")[0] + " ?";
+      }
+    },
+    closeCronPopover() {
+      if (this.cronExpression.substring(0, 5) == "* * *") {
+        return;
+      } else {
+        getNextTime({
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
+          let times = res.data;
+          let html = "";
+          times.forEach((element) => {
+            html += "<p>" + element + "</p>";
+          });
+          this.$alert(html, "前5次执行时间", {
+            dangerouslyUseHTMLString: true,
+          }).then(() => {
+            this.CronPopover = false;
+          });
+        });
+      }
     },
     // 获取数据库对象
     async findTree(val) {
-      await findMeta({ databaseId: val }).then(res => {
+      await findMeta({ databaseId: val }).then((res) => {
         this.treeJson = res.data;
-        this.treeJson.forEach(element => {
+        this.treeJson.forEach((element) => {
           element.nodeKey = element.pid + "+" + element.id;
         });
         // 第一级的pid为空
@@ -190,8 +220,8 @@ export default {
         return;
       }
       let newArry = [];
-      checkedArry.forEach(element => {
-        this.treeJson.forEach(t => {
+      checkedArry.forEach((element) => {
+        this.treeJson.forEach((t) => {
           if (element == t.nodeKey && t.pid) {
             /*  let obj = {};
             obj = t; */
@@ -206,10 +236,10 @@ export default {
       this.msgFormDialog.clearContent = newArry.join(",");
       // this.msgFormDialog.clearContent = checkedArry.join(",");
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.handleObj.id) {
-            editMetaBackup(this.msgFormDialog).then(response => {
+            editMetaBackup(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.$emit("cancelHandle");
@@ -218,7 +248,7 @@ export default {
               }
             });
           } else {
-            addMetaClear(this.msgFormDialog).then(response => {
+            addMetaClear(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.$emit("cancelHandle");
@@ -235,8 +265,8 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

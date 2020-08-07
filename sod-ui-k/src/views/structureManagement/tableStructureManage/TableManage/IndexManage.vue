@@ -79,7 +79,7 @@ import {
   findTableIndex,
   delTableIndex,
   getDictByType,
-  tableIndexSave
+  tableIndexSave,
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   props: { tableInfo: Object },
@@ -89,8 +89,8 @@ export default {
         callback(new Error("请输入索引名称"));
       } else {
         let flag = false;
-        this.indexItem.forEach(element => {
-          if (element.indexName == value) {
+        this.indexItem.forEach((element) => {
+          if (element.indexName == value && value != this.indexForm.indexName) {
             console.log("重复");
             flag = true;
             return;
@@ -113,15 +113,15 @@ export default {
       indexTitle: "新增索引",
       indexRules: {
         indexName: [
-          { required: true, validator: nameValidate, trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" },
         ],
         indexType: [
-          { required: true, message: "请选择索引类型", trigger: "change" }
+          { required: true, message: "请选择索引类型", trigger: "change" },
         ],
         indexColumn: [
-          { required: true, message: "请选择索引字段", trigger: "change" }
-        ]
-      }
+          { required: true, message: "请选择索引字段", trigger: "change" },
+        ],
+      },
     };
   },
   methods: {
@@ -134,13 +134,13 @@ export default {
       this.dialogStatus.indexDialog = false;
     },
     getIndexTable() {
-      findTableIndex({ tableId: this.tableInfo.id }).then(res => {
+      findTableIndex({ tableId: this.tableInfo.id }).then((res) => {
         if (res.code == 200) {
           this.indexItem = res.data;
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -149,13 +149,13 @@ export default {
       if (!this.tableInfo.id) {
         this.$message({
           type: "error",
-          message: "表不存在"
+          message: "表不存在",
         });
         return;
       }
       this.indexForm = {
         indexName: this.tableInfo.tableName,
-        indexColumn: []
+        indexColumn: [],
       };
       this.indexTitle = "新增索引";
       this.indexForm.indexColumn = [];
@@ -167,7 +167,7 @@ export default {
       if (this.indexItemSel.length != 1) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "warning",
         });
       } else {
         this.getDictByTypeMethods("table_index_type");
@@ -179,19 +179,19 @@ export default {
     },
     // 根据类型查询字典信息
     getDictByTypeMethods(dictType) {
-      getDictByType({ dictType: dictType }).then(response => {
+      getDictByType({ dictType: dictType }).then((response) => {
         if (response.code == 200) {
           this.indexTypeOptions = response.data;
         }
       });
     },
     trueIndex() {
-      this.$refs["indexFormRef"].validate(valid => {
+      this.$refs["indexFormRef"].validate((valid) => {
         if (valid) {
           this.indexForm.tableId = this.tableInfo.id;
           this.indexForm.indexColumn = this.indexForm.indexColumn.join(",");
           console.log(this.indexForm);
-          tableIndexSave(this.indexForm).then(response => {
+          tableIndexSave(this.indexForm).then((response) => {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.getIndexTable();
@@ -200,7 +200,7 @@ export default {
             } else {
               this.$message({
                 type: "error",
-                message: "操作失败"
+                message: "操作失败",
               });
             }
           });
@@ -215,7 +215,7 @@ export default {
       if (this.indexItemSel.length != 1) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "warning",
         });
       } else {
         this.$confirm(
@@ -224,28 +224,28 @@ export default {
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
-            type: "warning"
+            type: "warning",
           }
         )
           .then(() => {
-            delTableIndex({ id: this.indexItemSel[0].id }).then(res => {
+            delTableIndex({ id: this.indexItemSel[0].id }).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "删除成功"
+                  message: "删除成功",
                 });
                 this.getIndexTable();
               } else {
                 this.$message({
                   message: res.msg,
-                  type: "error"
+                  type: "error",
                 });
               }
             });
           })
           .catch(() => {});
       }
-    }
+    },
   },
 
   mounted() {},
@@ -253,7 +253,7 @@ export default {
     async tableInfo(val) {
       this.indexItem = this.tableInfo.tableIndexList;
       this.columnData = this.tableInfo.columns;
-    }
-  }
+    },
+  },
 };
 </script>

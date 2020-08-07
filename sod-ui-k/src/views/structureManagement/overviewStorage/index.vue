@@ -2,20 +2,23 @@
   <div class="app-container overviewStorage">
     <!-- 存储结构概览 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="数据用途:">
-        <el-input size="small" v-model.trim="queryParams.logicName" placeholder="请输入数据用途" />
+      <el-form-item label="四级编码:" prop="DDataId">
+        <el-input clearable size="small" v-model.trim="queryParams.DDataId" placeholder="请输入数据库" />
       </el-form-item>
-      <el-form-item label="数据库:">
-        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="请输入数据库" />
+      <el-form-item label="资料名称:" prop="className">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.className"
+          placeholder="请输入资料名称"
+        />
       </el-form-item>
-      <el-form-item label="资料名称:">
-        <el-input size="small" v-model.trim="queryParams.className" placeholder="请输入资料名称" />
-      </el-form-item>
-      <el-form-item label="表名称:">
-        <el-input size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
+      <el-form-item label="表名称:" prop="tableName">
+        <el-input clearable size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
         <el-button size="small" type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
         </el-button>
@@ -225,7 +228,7 @@ import {
   storageConfigurationList,
   updateColumnValue,
   deleteColumnValue,
-  exportTable
+  exportTable,
 } from "@/api/structureManagement/overviewStorage";
 import { getSyncInfo } from "@/api/schedule/dataSync";
 // 高级搜索
@@ -250,7 +253,7 @@ export default {
     handleMove,
     handleClear,
     handleBackUp,
-    handleSync
+    handleSync,
   },
   data() {
     return {
@@ -264,7 +267,7 @@ export default {
         logicName: "",
         databaseName: "",
         tableName: "",
-        className: ""
+        className: "",
       },
       total: 0,
       tableData: [],
@@ -293,7 +296,7 @@ export default {
       // 数据恢复
       handleDataRecoveryDialog: false,
       superMsg: {},
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -304,7 +307,7 @@ export default {
       this.currentRow = val;
     },
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -319,6 +322,11 @@ export default {
       this.superMsg = {};
       this.queryParams.pageNum = 1;
       this.getList();
+    },
+    resetQuery() {
+      this.superMsg = {};
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
     },
     /** 查询列表 */
     getList(superMsg) {
@@ -342,7 +350,7 @@ export default {
         queryObj = this.queryParams;
       }
       this.loading = true;
-      storageConfigurationList(queryObj).then(response => {
+      storageConfigurationList(queryObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -371,7 +379,7 @@ export default {
     handlSyncMethods(row) {
       this.handleMsgObj = {};
       if (row.SYNC_ID) {
-        getSyncInfo(row.SYNC_ID).then(response => {
+        getSyncInfo(row.SYNC_ID).then((response) => {
           this.dialogMsgTitle = "编辑";
           this.handleMsgObj = response.data;
           // / 同步任务执行节点回显
@@ -449,26 +457,26 @@ export default {
       let setArry = [
         {
           label: "数据同步",
-          value: "SYNC_IDENTIFIER"
+          value: "SYNC_IDENTIFIER",
         },
         {
           label: "恢复",
-          value: "ARCHIVING_IDENTIFIER"
-        }
+          value: "ARCHIVING_IDENTIFIER",
+        },
       ];
       let setArry2 = [
         {
           label: "迁移",
-          value: "MOVE_ST"
+          value: "MOVE_ST",
         },
         {
           label: "清除",
-          value: "CLEAR_ST"
+          value: "CLEAR_ST",
         },
         {
           label: "备份",
-          value: "BACKUP_ID"
-        }
+          value: "BACKUP_ID",
+        },
       ];
 
       let checkedBoxArry = [
@@ -478,16 +486,16 @@ export default {
         }, */
         {
           label: "迁移",
-          value: "MOVE_IDENTIFIER"
+          value: "MOVE_IDENTIFIER",
         },
         {
           label: "清除",
-          value: "CLEAN_IDENTIFIER"
+          value: "CLEAN_IDENTIFIER",
         },
         {
           label: "备份",
-          value: "BACKUP_IDENTIFIER"
-        }
+          value: "BACKUP_IDENTIFIER",
+        },
         /* {
           label: "恢复",
           value: "ARCHIVING_IDENTIFIER"
@@ -496,19 +504,19 @@ export default {
       this.rowId = row.ID;
       this.checkSetList = [];
       this.checkBoxList = [];
-      setArry.forEach(element => {
+      setArry.forEach((element) => {
         if (row[element.value] === 1 || row[element.value] === 2) {
           this.checkSetList.push(element.label);
         }
       });
-      setArry2.forEach(element => {
+      setArry2.forEach((element) => {
         if (row[element.value] == 1) {
           this.checkSetList.push(element.label);
         }
       });
 
-      this.checkSetList.forEach(element => {
-        checkedBoxArry.forEach(item => {
+      this.checkSetList.forEach((element) => {
+        checkedBoxArry.forEach((item) => {
           if (element == item.label) {
             this.checkBoxList.push(item);
           }
@@ -522,20 +530,20 @@ export default {
       this.$confirm("确认删除" + row.CLASS_NAME + "吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deleteColumnValue({ id: row.ID }).then(response => {
+          deleteColumnValue({ id: row.ID }).then((response) => {
             if (response.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               this.handleQuery();
             } else {
               this.$message({
                 type: "error",
-                message: response.msg
+                message: response.msg,
               });
             }
           });
@@ -571,14 +579,14 @@ export default {
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
-            type: "warning"
+            type: "warning",
           }
         )
           .then(() => {
-            updateColumnValue(settingObj).then(response => {
+            updateColumnValue(settingObj).then((response) => {
               this.$message({
                 type: "success",
-                message: "配置成功"
+                message: "配置成功",
               });
               this.getList();
             });
@@ -588,16 +596,16 @@ export default {
           });
       } else {
         settingObj.value = 2;
-        updateColumnValue(settingObj).then(response => {
+        updateColumnValue(settingObj).then((response) => {
           this.$message({
             type: "success",
-            message: "配置成功"
+            message: "配置成功",
           });
           this.getList();
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

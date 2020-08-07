@@ -13,10 +13,10 @@
               >
                 <el-row>
                   <el-col :span="20">
-                    <el-form-item label="目录规范">
+                    <el-form-item label="存储目录">
                       <el-input
                         :disabled="!isDirEdit"
-                        placeholder="目录规范"
+                        placeholder="存储目录"
                         size="small"
                         v-model.trim="dirRule.dirNorm"
                       ></el-input>

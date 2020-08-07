@@ -2,14 +2,20 @@
   <div class="app-container">
     <!-- 数据库管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="数据库ID:">
-        <el-input size="small" v-model.trim="queryParams.id" placeholder="请输入数据库ID" />
+      <el-form-item label="数据库ID:" prop="id">
+        <el-input clearable size="small" v-model.trim="queryParams.id" placeholder="请输入数据库ID" />
       </el-form-item>
-      <el-form-item label="数据库名称:">
-        <el-input size="small" v-model.trim="queryParams.databaseName" placeholder="请输入数据库名称" />
+      <el-form-item label="数据库名称:" prop="databaseName">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.databaseName"
+          placeholder="请输入数据库名称"
+        />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -175,6 +181,10 @@ export default {
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
+    },
+    resetQuery() {
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
     },
     /** 查询列表 */
     getList() {
