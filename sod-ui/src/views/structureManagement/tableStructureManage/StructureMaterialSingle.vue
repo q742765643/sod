@@ -85,8 +85,9 @@
             </el-form-item>
             <el-form-item label="是否发布" v-if="tableStructureManageContral">
               <el-select v-model.trim="materialData.ifStopUse">
-                <el-option :value="true" label="启用"></el-option>
-                <el-option :value="false" label="停用"></el-option>
+                <el-option :value="true" label="全部发布"></el-option>
+                <el-option :value="false" label="不发布"></el-option>
+                <el-option :value="3" label="部分发布"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
@@ -110,6 +111,23 @@
                   :key="index"
                 >{{item.dictLabel}}</el-checkbox>
               </el-checkbox-group>
+            </el-form-item>
+          </div>
+        </div>
+        <div class="dictData" v-show="materialData.ifStopUse==3">
+          <div class="dictDataTitle">
+            <i class="el-icon-price-tag"></i>数据权限
+          </div>
+          <div class="dictInfo">
+            <el-form-item label="数据权限" prop="labelKeyFrom" style="width:100%;">
+              <el-transfer
+                filterable
+                :filter-method="filterMethod"
+                filter-placeholder="请输入用户名称"
+                :titles="['待授权用户列表', '已授权用户列表']"
+                v-model="materialData.hasPowerList"
+                :data="userList"
+              ></el-transfer>
             </el-form-item>
           </div>
         </div>
@@ -187,6 +205,7 @@
 </template>
 
 <script>
+import { listUser } from "@/api/system/user";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { getDictByType } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
@@ -233,6 +252,10 @@ export default {
   },
   data() {
     return {
+      filterMethod(query, item) {
+        return item.label.indexOf(query) > -1;
+      }, //用户列表查询
+      userList: [], //用户列表
       dictdataTypes: [], //标签
       publicTreeOptions: [], //资料名称
       storageTree: [], //父节点
@@ -264,6 +287,7 @@ export default {
         dataLogicListTable: [], //数据用途回显的树
         labelKeyFrom: [],
         dataClassLabelList: [],
+        hasPowerList: [],
       },
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
@@ -335,6 +359,18 @@ export default {
     await getDictByType({ dictType: "dataclass_label" }).then((response) => {
       console.log(response.data);
       this.dictdataTypes = response.data;
+    });
+    // 用户列表
+    await listUser({ pageNum: 1, pageSize: 999999 }).then((response) => {
+      var resdata = response.data.pageData;
+      var dataList = [];
+      for (var i = 0; i < resdata.length; i++) {
+        var obj = {};
+        obj.key = resdata[i].userName;
+        obj.label = resdata[i].userName + "(" + resdata[i].nickName + ")";
+        dataList.push(obj);
+      }
+      this.userList = dataList;
     });
     // 初始化
     await this.initMaterialForm();
@@ -729,6 +765,20 @@ export default {
 
   .el-input-number {
     width: 100%;
+  }
+  .el-transfer-panel {
+    width: 400px;
+    .el-checkbox-group {
+      text-align: left;
+      .el-checkbox {
+        display: block;
+      }
+    }
+    .el-transfer-panel__header {
+      .el-checkbox {
+        text-align: left;
+      }
+    }
   }
 }
 </style>
