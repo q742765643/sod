@@ -356,13 +356,13 @@ export default {
       this.storageTree = response.data;
     });
     // 标签
-    await getDictByType({ dictType: "dataclass_label" }).then((response) => {
+    await getDictByType({ dictType: "zt_label" }).then((response) => {
       console.log(response.data);
       this.dictdataTypes = response.data;
     });
     // 用户列表
     await getBizUserByName().then((response) => {
-      var resdata = response.data.data;
+      var resdata = response.data;
       var dataList = [];
       for (var i = 0; i < resdata.length; i++) {
         var obj = {};
