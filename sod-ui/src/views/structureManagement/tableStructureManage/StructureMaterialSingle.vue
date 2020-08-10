@@ -205,7 +205,7 @@
 </template>
 
 <script>
-import { listUser } from "@/api/system/user";
+import { getBizUserByName } from "@/api/structureManagement/tableStructureManage/index";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import { getDictByType } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
@@ -361,8 +361,8 @@ export default {
       this.dictdataTypes = response.data;
     });
     // 用户列表
-    await listUser({ pageNum: 1, pageSize: 999999 }).then((response) => {
-      var resdata = response.data.pageData;
+    await getBizUserByName().then((response) => {
+      var resdata = response.data.data;
       var dataList = [];
       for (var i = 0; i < resdata.length; i++) {
         var obj = {};
@@ -442,6 +442,14 @@ export default {
             response.data.labelKeyFrom = [];
             response.data.dataClassLabelList.forEach((element) => {
               response.data.labelKeyFrom.push(element.labelKey);
+            });
+          }
+          if (!response.data.dataClassUserList) {
+            response.data.dataClassUserList = [];
+          } else {
+            response.data.hasPowerList = [];
+            response.data.dataClassUserList.forEach((element) => {
+              response.data.hasPowerList.push(element.userName);
             });
           }
 
@@ -590,6 +598,14 @@ export default {
                   this.materialData.dataClassLabelList.push(obj);
                 }
               });
+            });
+
+            this.materialData.dataClassUserList = [];
+            this.materialData.hasPowerList.forEach((element) => {
+              let obj = {
+                userName: item,
+              };
+              this.materialData.dataClassUserList.push(obj);
             });
             console.log(this.materialData);
             let dataLogicList = this.materialData.dataLogicListTable;
