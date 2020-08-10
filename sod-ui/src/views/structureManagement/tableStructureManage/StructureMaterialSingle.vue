@@ -603,7 +603,7 @@ export default {
             this.materialData.dataClassUserList = [];
             this.materialData.hasPowerList.forEach((element) => {
               let obj = {
-                userName: item,
+                userName: element,
               };
               this.materialData.dataClassUserList.push(obj);
             });
