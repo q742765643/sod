@@ -2,6 +2,7 @@ package com.piesat.dm.dao.dataclass;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
+import io.swagger.models.auth.In;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -21,4 +22,6 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
     List<DataClassEntity> findByParentIdOrderByDataClassIdDesc(String parentId);
 
     List<DataClassEntity> findByParentIdAndTypeAndDataClassIdLikeOrderByDataClassIdDesc(String parentId,int type,String DataClassId);
+
+    List<DataClassEntity> findByDataClassIdInOrTypeOrderByDataClassIdAsc(List<String> classIds, Integer type);
 }

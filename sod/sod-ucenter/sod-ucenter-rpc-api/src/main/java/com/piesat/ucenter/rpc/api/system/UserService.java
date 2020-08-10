@@ -105,5 +105,7 @@ public interface UserService {
 
     List<UserDto> findByUserType(String userType);
 
+    List<UserDto> getBizUserByName(String userName);
+
     ResultT editPwd(UserDto user);
 }
