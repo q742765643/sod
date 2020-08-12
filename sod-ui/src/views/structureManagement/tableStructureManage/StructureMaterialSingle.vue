@@ -527,7 +527,7 @@ export default {
       } else {
         this.$message({
           type: "error",
-          message: "只能选择三级目录",
+          message: "只能选择三级目录或者主类目",
         });
         this.$nextTick(function () {
           this.materialData.parentId = null;
