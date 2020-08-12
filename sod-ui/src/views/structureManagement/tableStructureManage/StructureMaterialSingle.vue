@@ -522,16 +522,20 @@ export default {
     },
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
-      if (checkNode.id === 0 || checkNode.id.split(".").length == 3) {
+      if (this.isSourceTree) {
         this.materialData.parentId = checkNode.id;
       } else {
-        this.$message({
-          type: "error",
-          message: "只能选择三级目录或者主类目",
-        });
-        this.$nextTick(function () {
-          this.materialData.parentId = null;
-        });
+        if (checkNode.id === 0 || checkNode.id.split(".").length == 3) {
+          this.materialData.parentId = checkNode.id;
+        } else {
+          this.$message({
+            type: "error",
+            message: "只能选择三级目录或者主类目",
+          });
+          this.$nextTick(function () {
+            this.materialData.parentId = null;
+          });
+        }
       }
     },
     //关闭存储元数据弹出层
