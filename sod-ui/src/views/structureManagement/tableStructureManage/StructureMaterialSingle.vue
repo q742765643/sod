@@ -353,7 +353,10 @@ export default {
     // 父节点树
     await dataClassAll().then((response) => {
       // this.resetData(response.data);
-      this.storageTree = response.data;
+      // this.storageTree = response.data;
+      const menu = { id: 0, name: "主类目", children: [] };
+      menu.children = response.data;
+      this.storageTree.push(menu);
     });
     // 标签
     await getDictByType({ dictType: "zt_label" }).then((response) => {
@@ -519,7 +522,7 @@ export default {
     },
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
-      if (checkNode.id.split(".").length == 3) {
+      if (checkNode.id === 0 || checkNode.id.split(".").length == 3) {
         this.materialData.parentId = checkNode.id;
       } else {
         this.$message({
