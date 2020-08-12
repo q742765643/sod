@@ -85,9 +85,11 @@
             </el-form-item>
             <el-form-item label="是否发布" v-if="tableStructureManageContral">
               <el-select v-model.trim="materialData.ifStopUse">
-                <el-option :value="true" label="全部发布"></el-option>
+                <el-option :value="true" label="发布"></el-option>
                 <el-option :value="false" label="不发布"></el-option>
-                <el-option :value="3" label="部分发布"></el-option>
+                <!-- <el-option :value="true" label="全部发布"></el-option>
+                <el-option :value="false" label="不发布"></el-option>
+                <el-option :value="3" label="部分发布"></el-option>-->
               </el-select>
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
@@ -98,7 +100,7 @@
             </el-form-item>
           </div>
         </div>
-        <div class="dictData">
+        <div class="dictData" v-if="dictshowflag">
           <div class="dictDataTitle">
             <i class="el-icon-price-tag"></i>数据标签
           </div>
@@ -252,6 +254,7 @@ export default {
   },
   data() {
     return {
+      dictshowflag: false,
       filterMethod(query, item) {
         return item.label.indexOf(query) > -1;
       }, //用户列表查询
@@ -347,24 +350,24 @@ export default {
     });
     // 名称树
     await datumTypeGetTree().then((response) => {
+      this.resetData(response.data);
       this.publicTreeOptions = response.data;
       console.log(this.publicTreeOptions);
     });
     // 父节点树
     await dataClassAll().then((response) => {
-      // this.resetData(response.data);
-      // this.storageTree = response.data;
       const menu = { id: 0, name: "主类目", children: [] };
+      this.resetData(response.data);
       menu.children = response.data;
       this.storageTree.push(menu);
     });
-    // 标签
-    await getDictByType({ dictType: "zt_label" }).then((response) => {
+    // 标签 todo
+    /*  await getDictByType({ dictType: "zt_label" }).then((response) => {
       console.log(response.data);
       this.dictdataTypes = response.data;
-    });
-    // 用户列表
-    await getBizUserByName().then((response) => {
+    }); */
+    // 用户列表 todo
+    /*   await getBizUserByName().then((response) => {
       var resdata = response.data;
       var dataList = [];
       for (var i = 0; i < resdata.length; i++) {
@@ -374,18 +377,15 @@ export default {
         dataList.push(obj);
       }
       this.userList = dataList;
-    });
+    }); */
     // 初始化
     await this.initMaterialForm();
   },
   methods: {
     resetData(dataArr) {
       for (var i in dataArr) {
-        if (dataArr[i].id.split(".").length == 3) {
-          dataArr[i].isDisabled = false;
-        } else {
-          dataArr[i].isDisabled = true;
-        }
+        dataArr[i].name = dataArr[i].name + "(" + dataArr[i].id + ")";
+        this.resetData(dataArr[i].children);
       }
     },
     //初始化表单
