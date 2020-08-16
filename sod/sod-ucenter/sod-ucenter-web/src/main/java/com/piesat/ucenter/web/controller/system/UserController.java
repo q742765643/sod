@@ -2,20 +2,14 @@ package com.piesat.ucenter.web.controller.system;
 
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.annotation.HtParam;
-import com.piesat.common.filter.WrapperedRequest;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
-import com.piesat.common.jpa.BaseDao;
-import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.Doc2PDF;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
-import com.piesat.ucenter.dao.system.UserDao;
-import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.rpc.api.system.UserService;
-import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -26,9 +20,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -210,11 +202,13 @@ public class UserController {
                 applyPaper.transferTo(newFile);
                 if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
                     parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
-                }else{
+                }else if (newFile.getName().endsWith(".doc")||newFile.getName().endsWith(".DOC")||newFile.getName().endsWith(".docx")||newFile.getName().endsWith(".DOCX")){
                     String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
                     String pdfPath = outFilePath + "/" + pdfName;
                     Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
                     parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + pdfName});
+                }else {
+                    parameterMap.put("pdfPath",new String[]{""});
                 }
             }
             ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
@@ -402,6 +396,16 @@ public class UserController {
     public ResultT getAllPortalUser(String userType)
     {
         List<UserDto> userDtos = this.userService.findByUserType(userType);
+        return ResultT.success(userDtos);
+    }
+
+
+    @RequiresPermissions("system:user:getBizUserByName")
+    @GetMapping(value = "/getBizUserByName")
+    @ApiOperation(value = "根据用户名查询业务用户", notes = "根据用户名查询业务用户")
+    public ResultT getBizUserByName(String userName)
+    {
+        List<UserDto> userDtos = this.userService.getBizUserByName(userName);
         return ResultT.success(userDtos);
     }
 

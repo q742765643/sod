@@ -71,8 +71,8 @@ public class TableColumnController {
     public ResultT saveColumns(@RequestBody DataTableDto dataTableDto) {
         try {
             LinkedHashSet<TableColumnDto> columns = dataTableDto.getColumns();
-            if(columns != null){
-                for(TableColumnDto tableColumnDto :columns){
+            if (columns != null) {
+                for (TableColumnDto tableColumnDto : columns) {
                     this.tableColumnService.saveDto(tableColumnDto);
                 }
             }
@@ -86,10 +86,9 @@ public class TableColumnController {
 
     @PutMapping("/edit")
     @ApiOperation(value = "编辑", notes = "编辑")
-    public ResultT<TableColumnDto> edit(@RequestBody TableColumnDto tableColumnDto)
-    {
-        ResultT<TableColumnDto> resultT=new ResultT<>();
-        tableColumnDto= this.tableColumnService.updateDto(tableColumnDto);
+    public ResultT<TableColumnDto> edit(@RequestBody TableColumnDto tableColumnDto) {
+        ResultT<TableColumnDto> resultT = new ResultT<>();
+        tableColumnDto = this.tableColumnService.updateDto(tableColumnDto);
         resultT.setData(tableColumnDto);
         return resultT;
     }
@@ -336,6 +335,13 @@ public class TableColumnController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @ApiOperation(value = "查询最大编号")
+    @RequiresPermissions("dm:tableColumn:findMaxNum")
+    @GetMapping(value = "/findMaxNum")
+    public Integer findMaxNum(String tableId) {
+        return this.tableColumnService.findMaxNum(tableId);
     }
 
 }

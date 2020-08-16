@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.dataclass;
 
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
@@ -23,13 +24,9 @@ import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
-import com.piesat.dm.rpc.api.dataclass.DataClassBaseInfoService;
-import com.piesat.dm.rpc.api.dataclass.DataClassService;
-import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
-import com.piesat.dm.rpc.dto.dataclass.DataClassBaseInfoDto;
-import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -47,6 +44,7 @@ import java.io.BufferedReader;
 import java.io.Reader;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 资料分类
@@ -82,6 +80,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataClassBaseInfoService dataClassBaseInfoService;
     @Autowired
     private DataClassBaseInfoMapper dataClassBaseInfoMapper;
+    @Autowired
+    private DataClassLabelService dataClassLabelService;
+    @Autowired
+    private DataClassUserService dataClassUserService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -100,26 +102,48 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
-        dataClassEntity = this.saveNotNull(dataClassEntity);
         if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
         }
         List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
-        List<String> all = new ArrayList<>();
-        for (DataLogicDto aa : byDataClassId) {
-            all.add(aa.getId());
-        }
-        List<String> nnn = new ArrayList<>();
-        for (DataLogicDto aa : dataClassDto.getDataLogicList()) {
-            nnn.add(aa.getId());
-        }
+        List<String> all = byDataClassId.stream().map(DataLogicDto::getId).collect(Collectors.toList());
+        List<String> nnn = dataClassDto.getDataLogicList().stream().map(DataLogicDto::getId).collect(Collectors.toList());
         all.removeAll(nnn);
-        byDataClassId.removeAll(dataClassDto.getDataLogicList());
         for (String d : all) {
-            dataLogicService.deleteById(d);
+            dataLogicService.onlyDeleteById(d);
         }
+        dataClassEntity = this.saveNotNull(dataClassEntity);
         List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
+
+        this.dataClassLabelService.deleteByDataClassId(dataClassDto.getDataClassId());
+        List<DataClassLabelDto> dataClassLabelList = dataClassDto.getDataClassLabelList();
+
+        if (dataClassLabelList != null && dataClassLabelList.size() > 0) {
+            dataClassLabelList = dataClassLabelList.stream().map(e -> {
+                DataClassLabelDto d = new DataClassLabelDto();
+                d.setCreateTime(new DateTime());
+                d.setLabelKey(e.getLabelKey());
+                d.setDataClassId(dataClassDto.getDataClassId());
+                return d;
+            }).collect(Collectors.toList());
+            this.dataClassLabelService.saveList(dataClassLabelList);
+        }
+
+        this.dataClassUserService.deleteByDataClassId(dataClassDto.getDataClassId());
+        List<DataClassUserDto> dataClassUserList = dataClassDto.getDataClassUserList();
+
+        if (dataClassUserList != null && dataClassUserList.size() > 0) {
+            dataClassUserList = dataClassUserList.stream().map(e -> {
+                DataClassUserDto d = new DataClassUserDto();
+                d.setCreateTime(new DateTime());
+                d.setUserName(e.getUserName());
+                d.setDataClassId(dataClassDto.getDataClassId());
+                return d;
+            }).collect(Collectors.toList());
+            this.dataClassUserService.saveList(dataClassUserList);
+        }
+
         DataClassDto dataClassDto1 = this.dataClassMapper.toDto(dataClassEntity);
         dataClassDto1.setDataLogicList(dataLogicDtos);
         return dataClassDto1;
@@ -134,10 +158,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getLogicClass() {
-        List<Map<String, Object>> maps=new ArrayList<>();
-        if("postgresql".equals(DatabseType.type)){
-            maps=this.mybatisQueryMapper.getLogicClassTreePostgresql();
-        }else{
+        List<Map<String, Object>> maps = new ArrayList<>();
+        if ("postgresql".equals(DatabseType.type)) {
+            maps = this.mybatisQueryMapper.getLogicClassTreePostgresql();
+        } else {
             maps = this.mybatisQueryMapper.getLogicClassTree();
         }
 
@@ -215,6 +239,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         }
         return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
     }
+
     @Override
     public JSONArray getDatabaseClassPostgresql() {
         List<DatabaseEntity> databaseList = this.databaseDao.findByDatabaseDefine_UserDisplayControl(1);
@@ -254,9 +279,17 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getTree() {
-        Sort sort = Sort.by(Sort.Direction.ASC, "dataClassId");
-        List<DataClassEntity> all = this.getAll(sort);
         List l = new ArrayList();
+        Sort sort = Sort.by(Sort.Direction.ASC, "dataClassId");
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        List<DataClassEntity> all;
+        if ("11".equals(loginUser.getUserType())) {
+            List<DataClassUserDto> users = this.dataClassUserService.findByUserName(loginUser.getUserName());
+            List<String> classIds = users.stream().map(DataClassUserDto::getDataClassId).collect(Collectors.toList());
+            all = this.dataClassDao.findByDataClassIdInOrTypeOrderByDataClassIdAsc(classIds, 1);
+        } else {
+            all = this.getAll(sort);
+        }
         for (DataClassEntity d : all) {
             TreeLevel tl = new TreeLevel();
             tl.setId(d.getDataClassId());
@@ -270,10 +303,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getSimpleTree(String databaseId) {
-        List<DataClassEntity> dataClassList=new ArrayList<>();
-        if("postgresql".equals(DatabseType.type)){
+        List<DataClassEntity> dataClassList = new ArrayList<>();
+        if ("postgresql".equals(DatabseType.type)) {
             dataClassList = mybatisQueryMapper.getDataClassTreePostgresql(databaseId);
-        }else{
+        } else {
             dataClassList = mybatisQueryMapper.getDataClassTree(databaseId);
         }
         List l = new ArrayList();
@@ -312,6 +345,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             }
             this.dataTableDao.deleteByClassLogic_Id(dl.getId());
         }
+        this.dataClassLabelService.deleteByDataClassId(dataClassId);
         this.dataLogicDao.deleteByDataClassId(dataClassId);
         this.dataClassDao.deleteByDataClassId(dataClassId);
     }
@@ -436,7 +470,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             return "";
         }
         String pdataclassId = byDDataId.get(0).getParentId();
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeAndDataClassIdLikeOrderByDataClassIdDesc(pdataclassId, 2,"%M%");
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeAndDataClassIdLikeOrderByDataClassIdDesc(pdataclassId, 2, "%M%");
         List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
         if (pdataclassId.length() > 8) {
             if (dataClassDtos.size() > 0) {

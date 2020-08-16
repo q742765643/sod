@@ -12,7 +12,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label>
+      <el-form-item clearable label>
         <el-input v-model.trim="queryParams.searchValue"></el-input>
       </el-form-item>
       <el-form-item label="运行状态">
@@ -223,7 +223,7 @@ import {
   syncStart,
   syncStop,
   batchRestart,
-  batchStop
+  batchStop,
 } from "@/api/schedule/dataSync";
 // 日志查看
 import dailySync from "@/views/schedule/dataSync/dailySync";
@@ -235,7 +235,7 @@ export default {
   components: {
     dailySync,
     handleSync,
-    SuperSearch
+    SuperSearch,
   },
   data() {
     return {
@@ -251,45 +251,45 @@ export default {
         runState: "",
         params: {
           orderBy: {
-            updateTime: "desc"
-          }
-        }
+            updateTime: "desc",
+          },
+        },
       },
       selectInfoSelect: [
         {
           value: "taskName",
-          label: "任务名称"
+          label: "任务名称",
         },
         {
           value: "sourceDatabaseName",
-          label: "源库"
+          label: "源库",
         },
         {
           value: "dataSourceId",
-          label: "数据来源标识"
+          label: "数据来源标识",
         },
         {
           value: "dataFlowDirectionId",
-          label: "数据流向标识"
-        }
+          label: "数据流向标识",
+        },
       ],
       runStateSelect: [
         {
           value: "01",
-          label: "运行中"
+          label: "运行中",
         },
         {
           value: "02",
-          label: "运行出错"
+          label: "运行出错",
         },
         {
           value: "03",
-          label: "未启动"
+          label: "未启动",
         },
         {
           value: "04",
-          label: "停止"
-        }
+          label: "停止",
+        },
       ],
       total: 0,
       tableData: [],
@@ -299,7 +299,7 @@ export default {
       superObj: {},
       superMsg: {},
       multipleSelection: [],
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -321,7 +321,7 @@ export default {
     },
 
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -339,7 +339,7 @@ export default {
     /** 查询列表 */
     getList(superMsg) {
       // 普通搜索
-      this.selectInfoSelect.forEach(element => {
+      this.selectInfoSelect.forEach((element) => {
         if (element.value == this.queryParams.selectInfo) {
           this.queryParams[element.value] = this.queryParams.searchValue;
         }
@@ -364,7 +364,7 @@ export default {
         queryObj = this.queryParams;
       }
       this.loading = true;
-      syncList(queryObj).then(response => {
+      syncList(queryObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -384,7 +384,7 @@ export default {
           pageSize: 10,
           selectInfo: "taskName",
           searchValue: "",
-          runState: ""
+          runState: "",
         };
       }
       this.superMsg = {};
@@ -422,10 +422,10 @@ export default {
         return;
       }
       let ids = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
       });
-      batchRestart({ taskIds: ids.join(",") }).then(response => {
+      batchRestart({ taskIds: ids.join(",") }).then((response) => {
         this.msgSuccess("启动成功");
         this.getList();
       });
@@ -436,10 +436,10 @@ export default {
         return;
       }
       let ids = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
       });
-      batchStop({ taskIds: ids.join(",") }).then(response => {
+      batchStop({ taskIds: ids.join(",") }).then((response) => {
         this.msgSuccess("停止成功");
         this.getList();
       });
@@ -456,17 +456,17 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return delSync(id);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
     /** 修改按钮操作 */
     handleUpdate(row, type) {
@@ -476,7 +476,7 @@ export default {
       } else {
         this.dialogTitle = "查看详情";
       }
-      getSyncInfo(id).then(response => {
+      getSyncInfo(id).then((response) => {
         this.handleDialog = true;
         this.handleObj = response.data;
 
@@ -503,22 +503,22 @@ export default {
       this.$confirm("是否确认" + handle + "任务", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           if (type == 1) {
-            syncStart(row.id).then(response => {});
+            syncStart(row.id).then((response) => {});
           } else {
             //停止
-            syncStop(row.id).then(response => {});
+            syncStop(row.id).then((response) => {});
           }
         })
         .then(() => {
           this.msgSuccess(handle + "成功");
           this.getList();
         })
-        .catch(function() {});
-    }
-  }
+        .catch(function () {});
+    },
+  },
 };
 </script>

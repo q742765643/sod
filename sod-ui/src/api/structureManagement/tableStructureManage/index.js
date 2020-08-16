@@ -111,3 +111,12 @@ export function exportTable() {
     responseType: "arraybuffer"
   })
 }
+
+
+export function getBizUserByName(query) {
+  return request({
+    url: baseUrl + '/system/user/getBizUserByName',
+    method: 'get',
+    params: query
+  })
+}

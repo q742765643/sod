@@ -104,7 +104,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="加工过程类型" prop="genprocess_type">
-            <el-input placeholder="加工过程类型" v-model.trim="msgFormDialog.genprocess_type"></el-input>
+            <el-input-number v-model.trim="msgFormDialog.genprocess_type" :min="0" size="small"></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -161,58 +161,58 @@ export default {
       selectArea: "",
       searchObj: {
         area_id: this.selectArea,
-        data_class_id: this.rowData.data_class_id
+        data_class_id: this.rowData.data_class_id,
       },
       dialogTitle: "新增数据服务信息",
       productDialog: false,
       msgFormDialog: {
-        data_class_id: this.rowData.data_class_id
+        data_class_id: this.rowData.data_class_id,
       },
       rules: {
         area_id: [
-          { required: true, message: "请选择区域代码", trigger: "change" }
+          { required: true, message: "请选择区域代码", trigger: "change" },
         ],
         db_fcst_ele: [
           {
             required: true,
             message: "请选择格点要素存储代码",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         ele_service_id: [
-          { required: true, message: "请输入要素服务代码", trigger: "blur" }
+          { required: true, message: "请输入要素服务代码", trigger: "blur" },
         ],
         level_type: [
-          { required: true, message: "请输入层次类型", trigger: "blur" }
+          { required: true, message: "请输入层次类型", trigger: "blur" },
         ],
         grib_version: [
-          { required: true, message: "请输入grib版本", trigger: "blur" }
+          { required: true, message: "请输入grib版本", trigger: "blur" },
         ],
         field_type: [
-          { required: true, message: "请输入场类型", trigger: "blur" }
+          { required: true, message: "请输入场类型", trigger: "blur" },
         ],
         genprocess_type: [
-          { required: true, message: "请输入加工过程类型", trigger: "blur" }
+          { required: true, message: "请输入加工过程类型", trigger: "blur" },
         ],
         ele_name_cn: [
-          { required: true, message: "请输入要素中文名", trigger: "blur" }
+          { required: true, message: "请输入要素中文名", trigger: "blur" },
         ],
         ele_hours: [
-          { required: true, message: "请输入资料时次", trigger: "blur" }
+          { required: true, message: "请输入资料时次", trigger: "blur" },
         ],
         time_unit: [
-          { required: true, message: "请输入时效单位", trigger: "blur" }
+          { required: true, message: "请输入时效单位", trigger: "blur" },
         ],
         level_list: [
-          { required: true, message: "请输入层次列表", trigger: "blur" }
+          { required: true, message: "请输入层次列表", trigger: "blur" },
         ],
         time_list: [
-          { required: true, message: "请输入预报时效列表", trigger: "blur" }
+          { required: true, message: "请输入预报时效列表", trigger: "blur" },
         ],
         grid_pixel: [
-          { required: true, message: "请输入空间分辨率", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入空间分辨率", trigger: "blur" },
+        ],
+      },
     };
   },
 
@@ -222,9 +222,9 @@ export default {
       this.searchObj = { ...this.searchObj, ...paginateObj };
       this.axios
         .get(interfaceObj.TableStructure_getProductModeDef, {
-          params: this.searchObj
+          params: this.searchObj,
         })
-        .then(res => {
+        .then((res) => {
           this.tableData = res.data.data;
           this.dataTotal = res.data.total;
         });
@@ -240,17 +240,19 @@ export default {
       this.axios
         .get(interfaceObj.TableStructure_getGridArea, {
           params: {
-            data_class_id: this.rowData.data_class_id
-          }
+            data_class_id: this.rowData.data_class_id,
+          },
         })
-        .then(res => {
+        .then((res) => {
           this.optionsArea = res.data.data;
         });
     },
     getoptionsFcst() {
-      this.axios.get(interfaceObj.TableStructure_modeEleQueryAll).then(res => {
-        this.optionsFcst = res.data.data;
-      });
+      this.axios
+        .get(interfaceObj.TableStructure_modeEleQueryAll)
+        .then((res) => {
+          this.optionsFcst = res.data.data;
+        });
     },
     add() {
       // this.msgFormDialog = {};
@@ -262,7 +264,7 @@ export default {
       if (this.multipleSelection.length != 1) {
         this.$message({
           type: "info",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
       } else {
         this.dialogTitle = "编辑数据服务信息";
@@ -272,26 +274,26 @@ export default {
     },
     deleteProduct() {
       let ids = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.mode_data_def_id);
       });
       this.axios
         .get(interfaceObj.TableStructure_deleteProductList, {
           params: {
-            mode_data_def_id: ids.join(",")
-          }
+            mode_data_def_id: ids.join(","),
+          },
         })
-        .then(res => {
+        .then((res) => {
           if (res.data.returnCode == 0) {
             this.$message({
               type: "success",
-              message: "删除成功"
+              message: "删除成功",
             });
             this.searchFun();
           } else {
             this.$message({
               type: "error",
-              message: res.data.returnMessage
+              message: res.data.returnMessage,
             });
           }
         });
@@ -301,7 +303,7 @@ export default {
       this.productDialog = false;
     },
     trueHandle(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dialogTitle == "新增数据服务信息") {
             this.msgFormDialog.data_class_id = this.rowData.data_class_id;
@@ -311,11 +313,11 @@ export default {
                 interfaceObj.TableStructure_addProductList,
                 this.msgFormDialog
               )
-              .then(res => {
+              .then((res) => {
                 if (res.data.returnCode == 0) {
                   this.$message({
                     type: "success",
-                    message: "新增成功"
+                    message: "新增成功",
                   });
                   this.searchFun();
                   this.$refs[formName].resetFields();
@@ -323,7 +325,7 @@ export default {
                 } else {
                   this.$message({
                     type: "error",
-                    message: res.data.returnMessage
+                    message: res.data.returnMessage,
                   });
                 }
               });
@@ -335,11 +337,11 @@ export default {
                 interfaceObj.TableStructure_updateProductList,
                 this.msgFormDialog
               )
-              .then(res => {
+              .then((res) => {
                 if (res.data.returnCode == 0) {
                   this.$message({
                     type: "success",
-                    message: "编辑成功"
+                    message: "编辑成功",
                   });
                   this.searchFun();
                   this.$refs[formName].resetFields();
@@ -347,7 +349,7 @@ export default {
                 } else {
                   this.$message({
                     type: "error",
-                    message: res.data.returnMessage
+                    message: res.data.returnMessage,
                   });
                 }
               });
@@ -361,8 +363,8 @@ export default {
     forParent() {
       this.searchFun();
       this.getoptionsArea();
-    }
-  }
+    },
+  },
 };
 </script>
 

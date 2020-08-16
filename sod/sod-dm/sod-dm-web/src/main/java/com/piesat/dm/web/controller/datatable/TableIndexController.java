@@ -1,6 +1,5 @@
 package com.piesat.dm.web.controller.datatable;
 
-import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.sso.client.annotation.Log;
@@ -26,21 +25,13 @@ import java.util.List;
 public class TableIndexController {
     @Autowired
     private TableIndexService tableIndexService;
-    @Autowired
-    private DataTableService dataTableService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:tableIndex:add")
     @Log(title = "表索引（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody TableIndexDto tableIndexDto) {
-        try {
-            TableIndexDto save = this.tableIndexService.saveDto(tableIndexDto);
-            return ResultT.success(save);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
+        return this.tableIndexService.saveDto(tableIndexDto);
     }
 
     @ApiOperation(value = "根据id查询")

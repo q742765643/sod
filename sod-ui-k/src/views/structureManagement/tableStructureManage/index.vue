@@ -22,10 +22,20 @@
             <div class="tableSearch">
               <el-form :inline="true">
                 <el-form-item label="资料名称">
-                  <el-input size="small" v-model.trim="searchObj.className" placeholder="资料名称"></el-input>
+                  <el-input
+                    clearable
+                    size="small"
+                    v-model.trim="searchObj.className"
+                    placeholder="资料名称"
+                  ></el-input>
                 </el-form-item>
                 <el-form-item label="存储编码">
-                  <el-input size="small" v-model.trim="searchObj.dDataId" placeholder="存储编码"></el-input>
+                  <el-input
+                    clearable
+                    size="small"
+                    v-model.trim="searchObj.dDataId"
+                    placeholder="存储编码"
+                  ></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button
@@ -67,20 +77,14 @@
               @current-change="handleCurrentChange"
               ref="singleTable"
             >
-              <el-table-column label="资料名称" prop="CLASS_NAME" :show-overflow-tooltip="true"></el-table-column>
-              <el-table-column
-                label="存储编码"
-                prop="D_DATA_ID"
-                v-if="tableStructureManageContral"
-                :show-overflow-tooltip="true"
-              ></el-table-column>
-              <el-table-column label="数据用途类型" prop="LOGIC_NAME" :show-overflow-tooltip="true"></el-table-column>
-              <el-table-column label="存储类型" prop="DICT_LABEL" :show-overflow-tooltip="true"></el-table-column>
-              <el-table-column label="数据库" prop="DATABASE_NAME_F" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column label="资料名称" prop="CLASS_NAME"></el-table-column>
+              <el-table-column label="存储编码" prop="D_DATA_ID" v-if="tableStructureManageContral"></el-table-column>
+              <el-table-column label="数据用途类型" prop="LOGIC_NAME"></el-table-column>
+              <el-table-column label="存储类型" prop="DICT_LABEL"></el-table-column>
+              <el-table-column label="数据库" prop="DATABASE_NAME_F"></el-table-column>
               <el-table-column
                 label="描述代码"
                 prop="TABLE_DESC"
-                :show-overflow-tooltip="true"
                 v-if="this.treeRefreshData&&this.treeRefreshData.id&&this.treeRefreshData.id.substring(0,1) == 'F'"
               ></el-table-column>
               <el-table-column label="操作" width="320px">
@@ -195,14 +199,14 @@ import handleSQL from "@/views/structureManagement/tableStructureManage/handleSQ
 import {
   dataClassAll,
   databaseClass,
-  logicClass
+  logicClass,
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   getListBYIn,
   delByClass,
   pasteTable,
   dataLogicGet,
-  enable
+  enable,
 } from "@/api/structureManagement/tableStructureManage/index";
 import { gcl } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
@@ -212,7 +216,7 @@ export default {
     PublicDatumPage,
     StructureManageTable,
     StructureMaterialList,
-    handleSQL
+    handleSQL,
   },
   data() {
     return {
@@ -221,7 +225,7 @@ export default {
       searchObj: {
         stringList: "",
         className: "",
-        dDataId: ""
+        dDataId: "",
       },
       tableData: [],
       dataTotal: 0,
@@ -247,11 +251,11 @@ export default {
       handleSQLDialog: false,
       // treeUrl: interfaceObj.TableStructure_dataTypeTree, //区分刷新那颗树
       whichTree: "资料分类树", //区分刷新那颗树
-      treeRefreshData: {}
+      treeRefreshData: {},
     };
   },
   created() {
-    enable().then(res => {
+    enable().then((res) => {
       if (res.data == "true") {
         this.tableStructureManageContral = true;
       } else {
@@ -264,10 +268,10 @@ export default {
     var left = document.getElementById("left");
     var right = document.getElementById("right");
     var box = document.getElementById("box");
-    resize.onmousedown = function(e) {
+    resize.onmousedown = function (e) {
       var startX = e.clientX;
       resize.left = resize.offsetLeft;
-      document.onmousemove = function(e) {
+      document.onmousemove = function (e) {
         var endX = e.clientX;
 
         var moveLen = resize.left + (endX - startX);
@@ -279,7 +283,7 @@ export default {
         left.style.width = moveLen + "px";
         right.style.width = box.clientWidth - moveLen - 5 + "px";
       };
-      document.onmouseup = function(evt) {
+      document.onmouseup = function (evt) {
         document.onmousemove = null;
         document.onmouseup = null;
         resize.releaseCapture && resize.releaseCapture();
@@ -310,7 +314,7 @@ export default {
         if (this.currentRow == null || this.currentRow.length == 0) {
           this.$message({
             type: "error",
-            message: "请选择一条数据"
+            message: "请选择一条数据",
           });
           return false;
         } else {
@@ -349,7 +353,7 @@ export default {
           this.searchObj.stringList = "";
         }
         console.log(this.searchObj);
-        getListBYIn(this.searchObj).then(response => {
+        getListBYIn(this.searchObj).then((response) => {
           this.tableData = response.data;
           if (this.tableData.length > 0) {
             this.tableData.forEach((item, index) => {
@@ -378,21 +382,21 @@ export default {
       if (this.currentRow.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
       } else {
         this.$confirm("是否删除资料" + this.currentRow[0].CLASS_NAME, "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             delByClass({ dataClassId: this.currentRow[0].DATA_CLASS_ID }).then(
-              response => {
+              (response) => {
                 if (response.code == 200) {
                   this.$message({
                     type: "success",
-                    message: "删除成功"
+                    message: "删除成功",
                   });
                   this.searchFun("search");
                 }
@@ -405,7 +409,7 @@ export default {
     composeValue(item, row) {
       return {
         button: item,
-        row: row
+        row: row,
       };
     },
     cancelHandle() {
@@ -420,7 +424,7 @@ export default {
         );
         this.$message({
           message: "复制成功",
-          type: "success"
+          type: "success",
         });
       } else if (command.button == "paste") {
         let copyObj = JSON.parse(
@@ -429,25 +433,25 @@ export default {
         if (!copyObj) {
           this.$message({
             message: "请选择一条数据",
-            type: "error"
+            type: "error",
           });
         }
         if (command.row.STORAGE_TYPE !== copyObj.STORAGE_TYPE) {
           this.$message({
             message: "复制与粘贴表存储类型不一致！",
-            type: "info"
+            type: "info",
           });
           return;
         }
         let msg = "";
         let resulet = await gcl({ classLogic: command.row.LOGIC_ID }).then(
-          response => {
+          (response) => {
             if (response.code == 200) {
               return response.data;
             } else {
               this.$message({
                 message: res.msg,
-                type: "error"
+                type: "error",
               });
             }
           }
@@ -465,21 +469,21 @@ export default {
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
-            type: "warning"
+            type: "warning",
           }
         )
           .then(() => {
-            pasteTable(pasteObj).then(res => {
+            pasteTable(pasteObj).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   message: "粘贴成功",
-                  type: "success"
+                  type: "success",
                 });
                 this.searchFun("search");
               } else {
                 this.$message({
                   message: res.msg,
-                  type: "error"
+                  type: "error",
                 });
               }
             });
@@ -506,7 +510,7 @@ export default {
       } else {
         this.$message({
           message: "表结构不存在，请先创建",
-          type: "info"
+          type: "info",
         });
       }
     },
@@ -532,7 +536,7 @@ export default {
         const _col = _row > 0 ? 1 : 0;
         return {
           rowspan: _row,
-          colspan: _col
+          colspan: _col,
         };
       }
       if (columnIndex === 1) {
@@ -540,7 +544,7 @@ export default {
         const _col = _row > 0 ? 1 : 0;
         return {
           rowspan: _row,
-          colspan: _col
+          colspan: _col,
         };
       }
     },
@@ -589,8 +593,8 @@ export default {
     //关闭新增或编辑资料弹出层
     closeMaterialDialog() {
       this.materialSingleVisible = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

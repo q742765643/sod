@@ -27,7 +27,12 @@
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
           <el-form-item label="字段编码">
-            <el-input size="small" v-model.trim="queryParams.dbEleCode" placeholder="字段编码"></el-input>
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="queryParams.dbEleCode"
+              placeholder="字段编码"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -107,14 +112,14 @@ import {
   delManageGroup,
   pageField,
   delManageField,
-  exportTable
+  exportTable,
 } from "@/api/dbDictMangement/manageField";
 
 //分类树
 export default {
   components: {
     handleTree,
-    handleDict
+    handleDict,
   },
   data() {
     return {
@@ -122,7 +127,7 @@ export default {
       treeData: [],
       defaultProps: {
         children: "children",
-        label: "groupName"
+        label: "groupName",
       },
       checkNode: {}, //选中高亮的节点
       // 弹窗 树
@@ -137,13 +142,13 @@ export default {
         dbEleCode: "", //字段编码
         groupId: "", //分组ID
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       // 选中的行
       multipleSelection: [],
       // 弹窗 字典
       DictDialog: false,
-      handleDictObj: {}
+      handleDictObj: {},
     };
   },
   async created() {
@@ -152,7 +157,7 @@ export default {
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.tableData.forEach((element, index) => {
             if (element.id == row.id) {
               this.$refs.multipleTable.toggleRowSelection(
@@ -165,23 +170,23 @@ export default {
     },
     // 导出
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
     // 查询字段分组
     async getTreeData() {
-      await findAllManageGroup().then(res => {
+      await findAllManageGroup().then((res) => {
         res.success
           ? (this.treeData = res.data)
           : this.$message({
               type: "error",
-              message: res.msg
+              message: res.msg,
             });
       });
       this.handleGroup = this.treeData;
       if (this.checkNode.groupId) {
-        this.treeData.forEach(element => {
+        this.treeData.forEach((element) => {
           if (element.groupId == this.checkNode.groupId) {
             this.$refs.elTree.setCurrentKey(this.checkNode.groupId);
           }
@@ -237,13 +242,13 @@ export default {
       this.$confirm("数据和类型都会被删除，确认删除", "提示", {
         cancelButtonText: "取消",
         confirmButtonText: "确定",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          delManageGroup({ groupId: this.queryParams.groupId }).then(res => {
+          delManageGroup({ groupId: this.queryParams.groupId }).then((res) => {
             this.$message({
               type: "success",
-              message: "删除成功"
+              message: "删除成功",
             });
             this.checkNode = {};
             this.getTreeData();
@@ -263,13 +268,13 @@ export default {
     handleQuery() {
       this.loading = true;
       console.log(this.queryParams);
-      pageField(this.queryParams).then(res => {
+      pageField(this.queryParams).then((res) => {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
         this.loading = false;
         if (this.multipleSelection.length == 1) {
           let newArry = this.multipleSelection;
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.toggleSelection(newArry);
           });
         }
@@ -285,7 +290,7 @@ export default {
         this.$message({ message: "请选中一条需要编辑的数据!", type: "error" });
         return;
       }
-      findManageFieldByPk({ id: this.multipleSelection[0].id }).then(res => {
+      findManageFieldByPk({ id: this.multipleSelection[0].id }).then((res) => {
         this.dialogTitle = "编辑管理字段";
         this.handleDictObj = res.data;
         this.handleDictObj.groupId = this.checkNode.groupId;
@@ -300,23 +305,23 @@ export default {
       this.$confirm("确认删除吗", "提示", {
         cancelButtonText: "取消",
         confirmButtonText: "确定",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           let ids = [];
-          this.multipleSelection.forEach(element => {
+          this.multipleSelection.forEach((element) => {
             ids.push(element.id);
           });
-          delManageField({ ids: ids.join(",") }).then(res => {
+          delManageField({ ids: ids.join(",") }).then((res) => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
             } else {
               this.$message({
                 type: "error",
-                message: res.msg
+                message: res.msg,
               });
             }
             this.handleQuery();
@@ -336,8 +341,8 @@ export default {
         ret = "否";
       }
       return ret;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

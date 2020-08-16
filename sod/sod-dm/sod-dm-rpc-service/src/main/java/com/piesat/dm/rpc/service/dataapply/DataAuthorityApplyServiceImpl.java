@@ -130,6 +130,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) dataAuthorityApplyEntity.getParamt().get("endTime"));
         }
         List<String> allApplyId = this.dataAuthorityRecordDao.findAllApplyId();
+        if(allApplyId==null||allApplyId.size()==0){
+            return null;
+        }
         specificationBuilder.add("id", SpecificationOperator.Operator.in.name(),allApplyId);
         Sort sort = Sort.by(Sort.Direction.DESC,"auditStatus","createTime");
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
@@ -239,12 +242,6 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(dataAuthorityApplyDto.getUserId(), "1");
         if(databaseUserDto == null){
             return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
-        }
-        String ip = "";
-        if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIp())){
-            ip = databaseUserDto.getDatabaseUpIp();
-        }else if(StringUtils.isNotNullString(databaseUserDto.getDatabaseUpIpSegment())){
-            ip = databaseUserDto.getDatabaseUpIpSegment();
         }
 
         //用户up账户对应的可用物理库

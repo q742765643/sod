@@ -54,7 +54,7 @@
                   <li>
                     <p>
                       <span>{{'数据库名称:'}}</span>
-                      <span>{{this.rowData.DATABASE_NAME}}</span>
+                      <span>{{this.rowData.DATABASE_NAME_F}}</span>
                     </p>
                   </li>
                   <li>
@@ -167,12 +167,12 @@ import { tableNameVail } from "@/components/commonVaildate.js";
 export default {
   name: "TableInfoManage",
   components: {
-    handleBaseMsg
+    handleBaseMsg,
   },
   props: {
     rowData: Object,
     tableInfo: Object,
-    tableType: String
+    tableType: String,
   },
   data() {
     return {
@@ -181,7 +181,7 @@ export default {
         table_name: "",
         name_cn: "",
         dataServiceId: "",
-        tableDesc: ""
+        tableDesc: "",
       },
       childTableType: this.tableType,
       namehelp: "",
@@ -197,38 +197,38 @@ export default {
           code: "0",
           means: "分析产品",
           code2: "1",
-          means2: "预报产品"
+          means2: "预报产品",
         },
         {
           code: "2",
           means: "分析和预报产品",
           code2: "3",
-          means2: "控制预报产品"
+          means2: "控制预报产品",
         },
         {
           code: "4",
           means: "扰动预报产品",
           code2: "5",
-          means2: "控制和扰动预报产品"
+          means2: "控制和扰动预报产品",
         },
         {
           code: "6",
           means: "加工的卫星观测资料",
           code2: "7",
-          means2: "加工的雷达观测资料"
+          means2: "加工的雷达观测资料",
         },
         {
           code: "8",
           means: "事件概率",
           code2: "9-191",
-          means2: "保留"
+          means2: "保留",
         },
         {
           code: "192—254",
           means: "保留，供本地使用",
           code2: "255",
-          means2: "空缺"
-        }
+          means2: "空缺",
+        },
       ],
       tableData2: [
         {
@@ -237,7 +237,7 @@ export default {
           code2: "1",
           means2: "初始化",
           code3: "2",
-          means3: "预报"
+          means3: "预报",
         },
         {
           code: "3",
@@ -245,7 +245,7 @@ export default {
           code2: "4",
           means2: "集合预报",
           code3: "5",
-          means3: "概率预报"
+          means3: "概率预报",
         },
         {
           code: "6",
@@ -253,7 +253,7 @@ export default {
           code2: "7",
           means2: "分析误差",
           code3: "8",
-          means3: "观测"
+          means3: "观测",
         },
         {
           code: "9",
@@ -261,7 +261,7 @@ export default {
           code2: "10",
           means2: "加权概率预报",
           code3: "11",
-          means3: "偏差订正集合预报"
+          means3: "偏差订正集合预报",
         },
         {
           code: "12—191",
@@ -269,13 +269,13 @@ export default {
           code2: "192—254",
           means2: "保留，供本地使用",
           code3: "255",
-          means3: "空缺值"
-        }
-      ]
+          means3: "空缺值",
+        },
+      ],
     };
   },
   created() {
-    enable().then(res => {
+    enable().then((res) => {
       if (res.data == "true") {
         this.tableStructureManageContral = true;
       } else {
@@ -309,7 +309,7 @@ export default {
           {
             type: "warning",
             confirmButtonText: "确定",
-            callback: action => {}
+            callback: (action) => {},
           }
         );
         return;
@@ -318,7 +318,7 @@ export default {
       saveObj.classLogic = this.Info.classLogic;
       if (!saveObj.classLogic) {
         saveObj.classLogic = {
-          id: this.rowData.LOGIC_ID
+          id: this.rowData.LOGIC_ID,
         };
       }
       saveObj.tableName = this.Info.tableName;
@@ -328,22 +328,23 @@ export default {
       saveObj.version = this.Info.version;
       saveObj.id = this.Info.id;
       saveObj.createTime = this.Info.createTime;
+      saveObj.dataServiceName = this.rowData.CLASS_NAME;
       if (this.tableType == "E-Kshow") {
         saveObj.dbTableType = this.childTableType;
       } else {
         saveObj.dbTableType = this.tableType;
       }
-      dataTableSavle(saveObj).then(response => {
+      dataTableSavle(saveObj).then((response) => {
         if (response.code == 200) {
           this.$message({
             type: "success",
-            message: "操作成功"
+            message: "操作成功",
           });
           this.$emit("reloadTableInfo");
         } else {
           this.$message({
             type: "error",
-            message: "操作失败"
+            message: "操作失败",
           });
         }
       });
@@ -364,7 +365,7 @@ export default {
     handleClose() {
       this.dialogVisible = false;
       this.baseMsgEditDialog = false;
-    }
+    },
   },
   watch: {
     tableInfo(val) {
@@ -381,8 +382,8 @@ export default {
         this.tableClass = "el-col el-col-10";
         this.isTableName = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

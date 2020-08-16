@@ -83,14 +83,15 @@ import {
   findMeta,
   addMetaBackup,
   editMetaBackup,
-  handExecute
+  handExecute,
 } from "@/api/system/metadataBackup";
+import { getNextTime } from "@/api/schedule/backup/backup";
 export default {
   name: "handleExport",
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     //校验是否为cron表达式
@@ -100,8 +101,8 @@ export default {
       } else {
         let flag = true;
         await getNextTime({
-          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?",
+        }).then((res) => {
           flag = false;
         });
         if (flag) {
@@ -123,43 +124,43 @@ export default {
         checked: [],
         jobCron: "0 0 2 * * ?",
         storageDirectory: "",
-        conditions: ""
+        conditions: "",
       },
       ipList: [],
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       treedata: [],
       rules: {
         taskName: [
-          { required: true, message: "请输入任务名称", trigger: "blur" }
+          { required: true, message: "请输入任务名称", trigger: "blur" },
         ],
         databaseId: [
-          { required: true, message: "请选择数据库IP", trigger: "change" }
+          { required: true, message: "请选择数据库IP", trigger: "change" },
         ],
         checked: [{ required: true, message: "请选择类型", trigger: "change" }],
         jobCron: [
-          { required: true, message: "请输入执行策略", trigger: "blur" }
+          { required: true, message: "请输入执行策略", trigger: "blur" },
         ],
         storageDirectory: [
-          { required: true, message: "请选择存储目录", trigger: "change" }
-        ]
-      }
+          { required: true, message: "请选择存储目录", trigger: "change" },
+        ],
+      },
     };
   },
   async created() {
-    await findDataBase().then(response => {
+    await findDataBase().then((response) => {
       this.ipList = response.data;
     });
-    await this.getDicts("metabackup_storage_directory").then(response => {
+    await this.getDicts("metabackup_storage_directory").then((response) => {
       this.storageDirectoryOptions = response.data;
     });
     if (this.handleObj.id) {
       this.msgFormDialog = this.handleObj;
       this.msgFormDialog.checked = [];
       let checkedArry = this.msgFormDialog.isStructure.split(",");
-      checkedArry.forEach(element => {
+      checkedArry.forEach((element) => {
         if (element == "0") {
           this.msgFormDialog.checked.push("结构");
         }
@@ -171,8 +172,8 @@ export default {
       // 获取树的选中节点
       let checkedTree = JSON.parse(this.msgFormDialog.backContent);
       this.defaultChecked = [];
-      checkedTree.forEach(element => {
-        this.treeJson.forEach(t => {
+      checkedTree.forEach((element) => {
+        this.treeJson.forEach((t) => {
           if (element.nodeKey == t.nodeKey && element.isParent == false) {
             this.defaultChecked.push(element.nodeKey);
           }
@@ -195,15 +196,15 @@ export default {
         return;
       } else {
         getNextTime({
-          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
           let times = res.data;
           let html = "";
-          times.forEach(element => {
+          times.forEach((element) => {
             html += "<p>" + element + "</p>";
           });
           this.$alert(html, "前5次执行时间", {
-            dangerouslyUseHTMLString: true
+            dangerouslyUseHTMLString: true,
           }).then(() => {
             this.CronPopover = false;
           });
@@ -212,9 +213,9 @@ export default {
     },
     // 获取数据库对象
     async findTree(val) {
-      await findMeta({ databaseId: val }).then(res => {
+      await findMeta({ databaseId: val }).then((res) => {
         this.treeJson = res.data;
-        this.treeJson.forEach(element => {
+        this.treeJson.forEach((element) => {
           element.nodeKey = element.pid + "+" + element.id;
         });
         // 第一级的pid为空
@@ -234,8 +235,8 @@ export default {
         return;
       }
       let newArry = [];
-      checkedArry.forEach(element => {
-        this.treeJson.forEach(t => {
+      checkedArry.forEach((element) => {
+        this.treeJson.forEach((t) => {
           if (element == t.nodeKey) {
             let obj = {};
             obj = t;
@@ -243,8 +244,8 @@ export default {
           }
         });
       });
-      halfcheckedArry.forEach(element => {
-        this.treeJson.forEach(t => {
+      halfcheckedArry.forEach((element) => {
+        this.treeJson.forEach((t) => {
           if (element == t.nodeKey) {
             let obj = {};
             obj = t;
@@ -254,7 +255,7 @@ export default {
       });
       this.msgFormDialog.backContent = JSON.stringify(newArry);
       this.msgFormDialog.isStructure = [];
-      this.msgFormDialog.checked.forEach(element => {
+      this.msgFormDialog.checked.forEach((element) => {
         if (element == "结构") {
           this.msgFormDialog.isStructure.push("0");
         }
@@ -264,11 +265,11 @@ export default {
       });
       this.msgFormDialog.isStructure = this.msgFormDialog.isStructure.join(",");
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (type == "handtrue") {
             if (this.handleObj.id) {
-              editMetaBackup(this.msgFormDialog).then(response => {
+              editMetaBackup(this.msgFormDialog).then((response) => {
                 if (response.code === 200) {
                   this.msgSuccess("修改成功");
                   this.$emit("cancelHandle");
@@ -277,7 +278,7 @@ export default {
                 }
               });
             } else {
-              addMetaBackup(this.msgFormDialog).then(response => {
+              addMetaBackup(this.msgFormDialog).then((response) => {
                 if (response.code === 200) {
                   this.msgSuccess("新增成功");
                   this.$emit("cancelHandle");
@@ -289,11 +290,11 @@ export default {
           } else {
             this.$prompt("请输入where条件", "温馨提示", {
               confirmButtonText: "确定",
-              cancelButtonText: "取消"
+              cancelButtonText: "取消",
             })
               .then(({ value }) => {
                 this.msgFormDialog.conditions = value;
-                handExecute(this.msgFormDialog).then(response => {
+                handExecute(this.msgFormDialog).then((response) => {
                   if (response.code === 200) {
                     this.msgSuccess("新增成功");
                     this.$emit("cancelHandle");
@@ -302,7 +303,7 @@ export default {
                   }
                 });
               })
-              .catch(function() {});
+              .catch(function () {});
           }
         } else {
           console.log("error submit!!");
@@ -312,8 +313,8 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

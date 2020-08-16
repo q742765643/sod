@@ -7,6 +7,7 @@ import com.piesat.dm.entity.datatable.TableIndexEntity;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.mapper.datatable.TableIndexMapper;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +32,19 @@ public class TableIndexServiceImpl extends BaseService<TableIndexEntity> impleme
     }
 
     @Override
-    public TableIndexDto saveDto(TableIndexDto tableIndexDto) {
+    public ResultT saveDto(TableIndexDto tableIndexDto) {
         TableIndexEntity tableIndexEntity = this.tableIndexMapper.toEntity(tableIndexDto);
+        if (tableIndexEntity.getId()==null){
+            List<TableIndexEntity> byTableId = this.tableIndexDao.findByTableId(tableIndexEntity.getTableId());
+            TableIndexEntity finalTableIndexEntity = tableIndexEntity;
+            boolean b = byTableId.stream().anyMatch(e -> e.getIndexName().equals(finalTableIndexEntity.getIndexName()));
+            if (b){
+                return ResultT.failed("索引名称重复!");
+            }
+        }
         tableIndexEntity = this.saveNotNull(tableIndexEntity);
-        return this.tableIndexMapper.toDto(tableIndexEntity);
+        TableIndexDto tableIndexDto1 = this.tableIndexMapper.toDto(tableIndexEntity);
+        return ResultT.success(tableIndexDto1);
     }
 
     @Override

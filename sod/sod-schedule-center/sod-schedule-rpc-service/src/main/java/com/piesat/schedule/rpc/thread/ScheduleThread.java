@@ -256,7 +256,11 @@ public class  ScheduleThread {
                     return;
                 }
                 newJob.setType(type);
-                newJob.setTriggerLastTime(jobInfo.getTriggerLastTime());
+                long triggerLastTime=jobInfo.getTriggerLastTime();
+                if(triggerLastTime==0){
+                    triggerLastTime=jobInfo.getTriggerNextTime();
+                }
+                newJob.setTriggerLastTime(triggerLastTime);
                 newJob.setTriggerNextTime(jobInfo.getTriggerNextTime());
                 this.pushRedis(newJob);
                 log.info("执行成功:{}" ,jobInfo.getId());

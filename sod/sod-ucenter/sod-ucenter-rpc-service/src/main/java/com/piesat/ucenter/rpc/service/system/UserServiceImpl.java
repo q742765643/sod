@@ -454,6 +454,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
 //        String applyAuthority = map.get("applyAuthority");
 //        String deptId = map.get("deptId");
         String loginName = map.get("loginName");
+        String pdfPath = map.get("pdfPath");
 //        String userId = map.get("userId");
 //        String interfaceId = map.get("interfaceId");
 //        String nonce = map.get("nonce");
@@ -481,6 +482,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setRemark(remark);
         userEntity.setTutorName(tutorName);
         userEntity.setTutorPhone(tutorPhone);
+        userEntity.setPdfPath(pdfPath);
         Date date = null;
         try {
             date = DateUtils.dateTime("yyyy-MM-dd", validTime);
@@ -563,7 +565,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public ResultT editBase(UserDto user) {
         UserDto userDto = this.selectUserByUserName(user.getUserName());
-        if (userDto == null) return ResultT.failed("用户不存在!");
+        if (userDto == null) {
+            return ResultT.failed("用户不存在!");
+        }
         user.setId(userDto.getId());
         user.setPassword(null);
         this.saveNotNull(this.userMapstruct.toEntity(user));
@@ -574,6 +578,21 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public List<UserDto> findByUserType(String userType) {
         List<UserEntity> userEntities = this.userDao.findByUserType(userType);
         return userMapstruct.toDto(userEntities);
+    }
+
+    @Override
+    public List<UserDto> getBizUserByName(String userName) {
+
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        specificationBuilder.add("userType", SpecificationOperator.Operator.eq.name(), "11");
+        if (StringUtils.isNotNullString(userName)) {
+            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(), userName);
+            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userName);
+        }
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        List<UserEntity> all = this.getAll(specificationBuilder.generateSpecification(),sort);
+
+        return this.userMapstruct.toDto(all);
     }
 
     @Override

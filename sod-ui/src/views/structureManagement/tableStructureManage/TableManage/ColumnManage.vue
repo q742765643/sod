@@ -484,11 +484,11 @@ import {
   getColumDatailById,
   syncSCode,
   queryCmccElements,
-  managefieldPage
+  managefieldPage,
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import {
   enable,
-  exportTable
+  exportTable,
 } from "@/api/structureManagement/tableStructureManage/index";
 import { findAllManageGroup } from "@/api/dbDictMangement/manageField";
 import { codeVer } from "@/components/commonVaildate.js";
@@ -496,7 +496,7 @@ export default {
   props: { tableInfo: Object, tableType: String, rowData: Object },
   components: {
     draggable,
-    inputExcel
+    inputExcel,
   },
   data() {
     var nameValidate = (rule, value, callback) => {
@@ -521,8 +521,11 @@ export default {
         callback(new Error("请输入序号"));
       } else {
         let flag = false;
-        this.columnData.forEach(element => {
-          if (element.serialNumber == value) {
+        this.columnData.forEach((element) => {
+          if (
+            element.serialNumber == value &&
+            value != this.columnEditData.serialNumber
+          ) {
             console.log("重复");
             flag = true;
             return;
@@ -541,7 +544,7 @@ export default {
       dialogStatus: {
         columnDialog: false,
         publicMatedataDialog: false,
-        codeSortDialog: false
+        codeSortDialog: false,
       },
       exportInnerVisible: false,
       filepath: "",
@@ -551,7 +554,7 @@ export default {
         isPrimaryKey: false,
         isShow: false,
         isUpdate: false,
-        isNull: false
+        isNull: false,
       },
       columnData: [],
       selColumnData: [],
@@ -559,13 +562,13 @@ export default {
       searchMatedata: {
         c_datatype: "",
         c_datum_level: "",
-        c_datumtype: ""
+        c_datumtype: "",
       },
       searchMmdata: {
         groupId: "",
         dbEleCode: "",
         dbEleName: "",
-        userEleCode: ""
+        userEleCode: "",
       },
       dataTypes: [],
       dragList: [],
@@ -575,34 +578,34 @@ export default {
       repeatIndex: 0,
       rules: {
         dbEleCode: [
-          { required: true, validator: nameValidate, trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" },
         ],
         celementCode: [
-          { required: true, validator: nameValidate, trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" },
         ],
         userEleCode: [
-          { required: true, message: "请输入服务名称", trigger: "blur" }
+          { required: true, message: "请输入服务名称", trigger: "blur" },
         ],
         eleName: [
-          { required: true, message: "请输入中文简称", trigger: "blur" }
+          { required: true, message: "请输入中文简称", trigger: "blur" },
         ],
         type: [
-          { required: true, message: "请选择数据类型", trigger: "change" }
+          { required: true, message: "请选择数据类型", trigger: "change" },
         ],
         unit: [{ required: true, message: "请输入要素单位", trigger: "blur" }],
         serialNumber: [
-          { required: true, validator: numValidate, trigger: "blur" }
-        ]
+          { required: true, validator: numValidate, trigger: "blur" },
+        ],
       },
       // 字段导入
       fileTemp: null,
       fileListUpload: [],
-      AllManageGroup: []
+      AllManageGroup: [],
     };
   },
   methods: {
     handleExport() {
-      exportTable().then(res => {
+      exportTable().then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -615,7 +618,7 @@ export default {
       if (!this.tableInfo.id) {
         this.$message({
           type: "error",
-          message: "表不存在"
+          message: "表不存在",
         });
         return;
       }
@@ -633,9 +636,9 @@ export default {
     getmatedata() {
       this.searchMatedata.c_datum_code = this.rowData.D_DATA_ID;
       console.log(this.searchMatedata);
-      queryCmccElements(this.searchMatedata).then(res => {
+      queryCmccElements(this.searchMatedata).then((res) => {
         if (res.code == 200) {
-          res.data.forEach(element => {
+          res.data.forEach((element) => {
             element.switch = false;
           });
           this.pubData.matedata = res.data;
@@ -645,19 +648,19 @@ export default {
     // 管理字段
     getmmdata() {
       managefieldPage(this.searchMmdata)
-        .then(res => {
+        .then((res) => {
           this.pubData.mmdata = res.data;
         })
-        .catch(error => {});
+        .catch((error) => {});
     },
     // 管理字段分组
     getAllGroup() {
-      findAllManageGroup().then(res => {
+      findAllManageGroup().then((res) => {
         res.success
           ? (this.AllManageGroup = res.data)
           : this.$message({
               type: "error",
-              message: res.msg
+              message: res.msg,
             });
       });
     },
@@ -667,7 +670,7 @@ export default {
       if (this.tableType == "E-Kshow") {
         flag = "true";
       }
-      await findByTableId({ tableId: this.tableInfo.id }).then(response => {
+      await findByTableId({ tableId: this.tableInfo.id }).then((response) => {
         if (response.code == 200) {
           this.columnData = response.data;
           this.$emit("reloadTableInfo");
@@ -678,7 +681,7 @@ export default {
       if (!this.tableInfo.id) {
         this.$message({
           type: "error",
-          message: "表不存在"
+          message: "表不存在",
         });
         return;
       }
@@ -688,7 +691,7 @@ export default {
         isPrimaryKey: false,
         isShow: false,
         isUpdate: false,
-        isNull: false
+        isNull: false,
       };
       this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
@@ -702,22 +705,24 @@ export default {
       if (this.selColumnData.length != 1) {
         this.$message({
           message: "请选择一条数据！",
-          type: "error"
+          type: "error",
         });
       } else {
         this.codeTitle = "编辑字段";
         this.getDictByTypeMethods("table_column_type");
-        getColumDatailById({ id: this.selColumnData[0].id }).then(response => {
-          if (response.code == 200) {
-            this.columnEditData = response.data;
-            this.dialogStatus.columnDialog = true;
+        getColumDatailById({ id: this.selColumnData[0].id }).then(
+          (response) => {
+            if (response.code == 200) {
+              this.columnEditData = response.data;
+              this.dialogStatus.columnDialog = true;
+            }
           }
-        });
+        );
       }
     },
     // 根据类型查询字典信息
     getDictByTypeMethods(dictType) {
-      getDictByType({ dictType: dictType }).then(response => {
+      getDictByType({ dictType: dictType }).then((response) => {
         if (response.code == 200) {
           this.dataTypes = response.data;
         }
@@ -728,17 +733,17 @@ export default {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "error"
+          type: "error",
         });
       } else {
         this.$confirm("确认要删除选中字段吗?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             let ids = [];
-            this.selColumnData.forEach(element => {
+            this.selColumnData.forEach((element) => {
               ids.push(element.id);
             });
             /* if (ids.length > 600) {
@@ -749,14 +754,14 @@ export default {
               return;
             } */
             console.log(ids.join(","));
-            tableColumnDel({ ids: ids.join(",") }).then(response => {
+            tableColumnDel({ ids: ids.join(",") }).then((response) => {
               if (response.code == 200) {
                 this.$message({ message: "删除成功", type: "success" });
                 this.getCodeTable();
               } else {
                 this.$message({
                   message: "删除失败",
-                  type: "error"
+                  type: "error",
                 });
                 return;
               }
@@ -780,7 +785,7 @@ export default {
     // 字段新增编辑
     trueCode(formName) {
       //校验表单
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.columnEditData.tableId = this.tableInfo.id;
           if (this.tableType == "E-Kshow") {
@@ -789,7 +794,7 @@ export default {
             this.columnEditData.isKvK = false;
           }
           console.log(this.columnEditData);
-          tableColumnSave(this.columnEditData).then(response => {
+          tableColumnSave(this.columnEditData).then((response) => {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.$refs[formName].resetFields();
@@ -799,7 +804,7 @@ export default {
             } else {
               this.$message({
                 type: "error",
-                message: "操作失败"
+                message: "操作失败",
               });
             }
           });
@@ -811,7 +816,7 @@ export default {
       if (this.columnData.length == 0) {
         this.$message({
           type: "error",
-          message: "当前没有字段，无法排序"
+          message: "当前没有字段，无法排序",
         });
       }
       this.dragList = this.columnData;
@@ -821,17 +826,17 @@ export default {
       this.dragList.forEach((item, index) => {
         item.serialNumber = index;
       });
-      tableColumnSaveList({ tableColumnList: this.dragList }).then(res => {
+      tableColumnSaveList({ tableColumnList: this.dragList }).then((res) => {
         if (res.code == 200) {
           this.$message({
             message: "排序成功！",
-            type: "success"
+            type: "success",
           });
           this.getCodeTable();
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -841,14 +846,14 @@ export default {
       if (!this.tableInfo.id) {
         this.$message({
           type: "error",
-          message: "表不存在"
+          message: "表不存在",
         });
         return;
       }
       if (this.columnData.length == 0) {
         this.$message({
           type: "error",
-          message: "不能导出空表"
+          message: "不能导出空表",
         });
         return;
       }
@@ -869,7 +874,7 @@ export default {
           "中文描述",
           "是否管理字段",
           "默认值",
-          "序号"
+          "序号",
         ];
         let tableProp = [
           "dbEleCode",
@@ -886,11 +891,11 @@ export default {
           "nameCn",
           "isManager",
           "defaultValue",
-          "serialNumber"
+          "serialNumber",
         ];
         let newArry = [];
-        this.columnData.forEach(element => {
-          tableProp.forEach(item => {
+        this.columnData.forEach((element) => {
+          tableProp.forEach((item) => {
             if (element[item] === false) {
               element[item] = "否";
             } else if (element[item] === true) {
@@ -914,7 +919,7 @@ export default {
       if (!this.tableInfo.id) {
         this.$message({
           type: "error",
-          message: "表不存在"
+          message: "表不存在",
         });
         return;
       }
@@ -925,7 +930,7 @@ export default {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "error"
+          type: "error",
         });
       } else {
         sessionStorage.setItem(
@@ -934,7 +939,7 @@ export default {
         );
         this.$message({
           message: "复制成功",
-          type: "success"
+          type: "success",
         });
       }
     },
@@ -942,7 +947,7 @@ export default {
       if (!this.tableInfo.id) {
         this.$message({
           type: "error",
-          message: "表不存在"
+          message: "表不存在",
         });
         return;
       }
@@ -954,7 +959,7 @@ export default {
       if (pasteArry.length == 0) {
         this.$message({
           message: msg + "已无可插入数据!",
-          type: "info"
+          type: "info",
         });
       } else {
         this.$confirm(
@@ -963,25 +968,25 @@ export default {
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
-            type: "warning"
+            type: "warning",
           }
         )
           .then(() => {
-            pasteArry.forEach(element => {
+            pasteArry.forEach((element) => {
               element.id = "";
               element.tableId = this.tableInfo.id;
             });
-            tableColumnSaveList({ tableColumnList: pasteArry }).then(res => {
+            tableColumnSaveList({ tableColumnList: pasteArry }).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   message: "插入成功！",
-                  type: "success"
+                  type: "success",
                 });
                 this.getCodeTable();
               } else {
                 this.$message({
                   message: res.msg,
-                  type: "error"
+                  type: "error",
                 });
               }
             });
@@ -1008,7 +1013,7 @@ export default {
             this.columnData,
             "first"
           );
-          publicRows.forEach(element => {
+          publicRows.forEach((element) => {
             if (element.switch) {
               var switchObj = Object.assign({}, element);
               var firstChar = element.celementCode.substr(0, 1);
@@ -1022,7 +1027,7 @@ export default {
         } else {
           this.$message({
             message: msg + "无剩余可添加数据!",
-            type: "info"
+            type: "info",
           });
         }
       } else if (this.activePublicName == "second") {
@@ -1035,7 +1040,7 @@ export default {
         } else {
           this.$message({
             message: msg + "无剩余可添加数据!",
-            type: "info"
+            type: "info",
           });
         }
       }
@@ -1044,38 +1049,40 @@ export default {
       if (this.repeatIndex > 0) msg = "去重(" + this.repeatIndex + ")条,";
       if (publicRows.length > 0) {
         if (this.tableType == "E-Kshow") {
-          publicRows.forEach(element => {
+          publicRows.forEach((element) => {
             element.isKvK = true;
             element.id = "";
             element.tableId = this.tableInfo.id;
           });
         } else if (this.tableType == "E-Eshow") {
-          publicRows.forEach(element => {
+          publicRows.forEach((element) => {
             element.isKvK = false;
             element.id = "";
             element.tableId = this.tableInfo.id;
           });
         }
-        publicRows.forEach(element => {
+        publicRows.forEach((element) => {
           element.id = "";
           element.tableId = this.tableInfo.id;
         });
-        tableColumnSaveList({ tableColumnList: publicRows }).then(response => {
-          if (response.code == 200) {
-            this.$message({ message: "操作成功", type: "success" });
-            this.dialogStatus.columnDialog = false;
-            this.getCodeTable();
-          } else {
-            this.$message({
-              type: "error",
-              message: "操作失败"
-            });
+        tableColumnSaveList({ tableColumnList: publicRows }).then(
+          (response) => {
+            if (response.code == 200) {
+              this.$message({ message: "操作成功", type: "success" });
+              this.dialogStatus.columnDialog = false;
+              this.getCodeTable();
+            } else {
+              this.$message({
+                type: "error",
+                message: "操作失败",
+              });
+            }
           }
-        });
+        );
       } else {
         this.$message({
           message: msg + "无剩余可添加数据!",
-          type: "success"
+          type: "success",
         });
       }
       this.dialogStatus.publicMatedataDialog = false;
@@ -1085,13 +1092,13 @@ export default {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "error"
+          type: "error",
         });
       } else {
         let flag = false;
         let length = this.selColumnData.length;
         let publicRows = this.selColumnData;
-        publicRows.forEach(element => {
+        publicRows.forEach((element) => {
           var switchObj = Object.assign({}, element);
           var firstChar = element.celementCode.substr(0, 1);
           let newCode = element.celementCode.replace(firstChar, "Q");
@@ -1100,7 +1107,7 @@ export default {
           switchObj.dbEleCode = newCode;
           switchObj.id = "";
           publicRows.push(switchObj);
-          this.columnData.forEach(c => {
+          this.columnData.forEach((c) => {
             if (c.celementCode == switchObj.celementCode) {
               flag = true;
             }
@@ -1109,27 +1116,27 @@ export default {
         if (flag) {
           this.$message({
             message: "不能重复插入质控字段",
-            type: "error"
+            type: "error",
           });
           return;
         }
         this.$confirm("是否插入" + length + "条质控字段", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
-            tableColumnSaveList({ tableColumnList: publicRows }).then(res => {
+            tableColumnSaveList({ tableColumnList: publicRows }).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   message: "操作成功！",
-                  type: "success"
+                  type: "success",
                 });
                 this.getCodeTable();
               } else {
                 this.$message({
                   message: res.msg,
-                  type: "error"
+                  type: "error",
                 });
               }
             });
@@ -1142,23 +1149,23 @@ export default {
       if (this.columnData.length == 0) {
         this.$message({
           message: "请选择一条数据",
-          type: "error"
+          type: "error",
         });
         return;
       }
       syncSCode({
-        tableColumnList: this.columnData
-      }).then(res => {
+        tableColumnList: this.columnData,
+      }).then((res) => {
         if (res.code == 200) {
           this.$message({
             message: "同步成功！",
-            type: "success"
+            type: "success",
           });
           this.getCodeTable();
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -1180,16 +1187,16 @@ export default {
         { name: "数据类型", value: "type" },
         // { name: "是否修改数据库", value: "updateDatabase" },
         { name: "默认值", value: "defaultValue" },
-        { name: "序号", value: "serialNumber" }
+        { name: "序号", value: "serialNumber" },
       ];
       let dataJson = [];
       // data 为读取的excel数据，在这里进行处理该数据
       debugger;
-      data.forEach(element => {
+      data.forEach((element) => {
         var obj = {};
         let itemKeys = Object.keys(element);
-        itemKeys.forEach(ikey => {
-          tableJson.forEach(tkey => {
+        itemKeys.forEach((ikey) => {
+          tableJson.forEach((tkey) => {
             if (ikey == tkey.name) {
               obj[tkey.value] = element[ikey];
             }
@@ -1201,13 +1208,13 @@ export default {
       if (dataJson.length == 0) {
         this.$message({
           type: "error",
-          message: "不能导入空表"
+          message: "不能导入空表",
         });
         return;
       }
       let flag = false;
       let flagmsg = "";
-      dataJson.forEach(element => {
+      dataJson.forEach((element) => {
         element.id = "";
         element.tableId = this.tableInfo.id;
 
@@ -1232,7 +1239,7 @@ export default {
           flagmsg = "字段编码不允许输入小写字母和中文，且需以大写字母开头";
           return;
         }
-        this.columnData.forEach(c => {
+        this.columnData.forEach((c) => {
           if (c.celementCode == element.celementCode) {
             flag = true;
             flagmsg = "字段编码不能重复";
@@ -1259,11 +1266,7 @@ export default {
           flagmsg = "要素单位不能为空";
           return;
         }
-        if (
-          element.serialNumber === "" ||
-          element.serialNumber === null ||
-          element.serialNumber === undefined
-        ) {
+        if (!element.serialNumber) {
           flag = true;
           flagmsg = "序号不能为空";
           return;
@@ -1307,12 +1310,12 @@ export default {
       if (flag) {
         this.$message({
           type: "error",
-          message: flagmsg
+          message: flagmsg,
         });
         return;
       }
 
-      tableColumnSaveList({ tableColumnList: dataJson }).then(response => {
+      tableColumnSaveList({ tableColumnList: dataJson }).then((response) => {
         if (response.code == 200) {
           this.$message({ message: "导入成功", type: "success" });
           this.exportInnerVisible = false;
@@ -1320,7 +1323,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: "导入失败"
+            message: "导入失败",
           });
         }
       });
@@ -1340,7 +1343,7 @@ export default {
         }
       }
       let newRows = [];
-      a.forEach(element => {
+      a.forEach((element) => {
         let obj = {};
         if (tabActive == "paste") {
           obj = element;
@@ -1384,10 +1387,10 @@ export default {
         }
       });
       return newRows;
-    }
+    },
   },
   mounted() {
-    enable().then(res => {
+    enable().then((res) => {
       if (res.data == "true") {
         this.tableStructureManageContral = true;
       } else {
@@ -1401,9 +1404,9 @@ export default {
         animation: 0,
         group: "description",
         disabled: false,
-        ghostClass: "ghost"
+        ghostClass: "ghost",
       };
-    }
+    },
   },
   watch: {
     tableInfo(val) {
@@ -1412,8 +1415,8 @@ export default {
         flag = "true";
       }
       this.columnData = this.tableInfo.columns;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

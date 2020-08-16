@@ -33,4 +33,6 @@ public interface TableColumnService {
 
     List<TableColumnDto> getPrimaryKey(String tableId);
 
+    Integer findMaxNum(String tableId);
+
 }

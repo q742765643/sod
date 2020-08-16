@@ -3,7 +3,13 @@
   <div class="app-container storePolicy">
     <el-row :gutter="40">
       <el-col :span="5" :xs="24" class="elTreeAsideBox">
-        <el-input size="small" placeholder="输入关键字进行过滤" v-model.trim="filterText" class="filterText"></el-input>
+        <el-input
+          clearable
+          size="small"
+          placeholder="输入关键字进行过滤"
+          v-model.trim="filterText"
+          class="filterText"
+        ></el-input>
         <el-scrollbar wrap-class="scrollbar-wrapper elTreeScroll">
           <el-tree
             class="el-tree"
@@ -184,7 +190,7 @@ export default {
     handleBackUp,
     handleClear,
     handleMove,
-    handleSync
+    handleSync,
   },
   data() {
     return {
@@ -194,7 +200,7 @@ export default {
       groupList: [],
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       checkNode: {}, //选中高亮的节点
       expandedKeys: [], //展开的节点
@@ -210,13 +216,13 @@ export default {
       queryParams: {
         key_col: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       clearDialog: false,
       backUpDialog: false,
       moveDialog: false,
       handleObj: {},
-      SyncDialog: false //数据同步
+      SyncDialog: false, //数据同步
     };
   },
   async created() {
@@ -225,16 +231,16 @@ export default {
   watch: {
     filterText(val) {
       this.$refs.elTree.filter(val);
-    }
+    },
   },
   methods: {
     async getTreeData() {
-      await strategyTree().then(res => {
+      await strategyTree().then((res) => {
         res.success
           ? (this.treeData = res.data)
           : this.$message({
               type: "error",
-              message: res.msg
+              message: res.msg,
             });
       });
       if (this.treeData.length != 0) {
@@ -260,7 +266,7 @@ export default {
       this.getfindData(data.id);
     },
     getfindData(classId) {
-      findData({ classId: classId }).then(res => {
+      findData({ classId: classId }).then((res) => {
         if (res.code == "200") {
           this.groupList = res.data;
         } else {
@@ -274,7 +280,7 @@ export default {
       that.myTreedata.push({
         label: dataArr.label,
         id: dataArr.id,
-        disabled: dataArr.disabled
+        disabled: dataArr.disabled,
       });
       if (dataArr.children) {
         var child = dataArr.children;
@@ -329,10 +335,10 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           if (name == "备份") {
             return delBackup(item.taskId);
           } else if (name == "清除") {
@@ -346,7 +352,7 @@ export default {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
 
     filterNode(value, data) {
@@ -358,8 +364,8 @@ export default {
       this.clearDialog = false;
       this.moveDialog = false;
       this.getfindData(this.checkNode.id);
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

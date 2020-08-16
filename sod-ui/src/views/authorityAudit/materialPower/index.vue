@@ -20,7 +20,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="申请人">
-        <el-input size="small" v-model.trim="queryParams.userName" placeholder="申请人"></el-input>
+        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="申请人"></el-input>
       </el-form-item>
       <el-form-item label="申请时间">
         <el-date-picker
@@ -121,7 +121,7 @@ import handlePower from "@/views/authorityAudit/materialPower/handlePower";
 export default {
   components: {
     handleMaterial,
-    handlePower
+    handlePower,
   },
   data() {
     return {
@@ -137,27 +137,27 @@ export default {
         userName: "",
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
       dateRange: [],
       examineStatus: [
         {
           value: "01",
-          label: "待审核"
+          label: "待审核",
         },
         {
           value: "02",
-          label: "已审核"
-        }
+          label: "已审核",
+        },
       ],
       total: 0,
       tableData: [],
       dialogTitle: "",
       handleDialog: false,
       handlepowerDialog: false,
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -197,7 +197,7 @@ export default {
       }
       this.loading = true;
       queryList(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
+        (response) => {
           this.tableData = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
@@ -217,7 +217,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         auditStatus: "",
-        userName: ""
+        userName: "",
       };
       this.handleQuery();
     },
@@ -229,7 +229,7 @@ export default {
     //查看原因
     viewReason(row) {
       this.$alert(row.failure_reason, "拒绝原因", {
-        confirmButtonText: "确定"
+        confirmButtonText: "确定",
       });
     },
     viewCell(row) {
@@ -251,7 +251,7 @@ export default {
       this.getList();
       this.handlepowerDialog = false;
       this.handleDialog = false;
-    }
-  }
+    },
+  },
 };
 </script>

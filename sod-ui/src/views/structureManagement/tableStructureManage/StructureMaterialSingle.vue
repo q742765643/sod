@@ -15,14 +15,22 @@
             <i class="el-icon-price-tag"></i>公共元数据信息
           </div>
           <div class="publicInfo">
-            <el-form-item label="名称" prop="metaDataName">
-              <el-input
+            <el-form-item label="名称" prop="ddataId">
+              <!--  <el-input
                 placeholder="名称"
                 :readonly="true"
                 class="styleCursor"
                 v-model.trim="materialData.metaDataName"
                 @click.native="showPublicTree"
-              ></el-input>
+              ></el-input>-->
+              <treeselect
+                @select="getChildCheckNode"
+                v-model.trim="materialData.ddataId"
+                :options="publicTreeOptions"
+                :normalizer="normalizer"
+                :show-count="true"
+                placeholder="请选择名称"
+              />
             </el-form-item>
             <el-form-item label="四级编码" prop="ddataId">
               <el-input placeholder="请选择公共元数据" :readonly="true" v-model.trim="materialData.ddataId"></el-input>
@@ -46,13 +54,21 @@
               ></el-input>
             </el-form-item>
             <el-form-item label="父节点" prop="parentId">
-              <el-input
+              <!--  <el-input
                 placeholder="请选择存储元数据父节点"
                 :readonly="true"
                 v-model.trim="materialData.parentId"
                 class="styleCursor"
                 @click.native="showStorageTree"
-              ></el-input>
+              ></el-input>-->
+              <treeselect
+                @select="getStorageCheckNode"
+                v-model.trim="materialData.parentId"
+                :options="storageTree"
+                :normalizer="normalizer"
+                :show-count="true"
+                placeholder="请选择存储元数据父节点"
+              />
             </el-form-item>
             <el-form-item label="类型" v-if="isSourceTree">
               <el-input v-model.trim="materialData.typeText" :readonly="true"></el-input>
@@ -69,8 +85,11 @@
             </el-form-item>
             <el-form-item label="是否发布" v-if="tableStructureManageContral">
               <el-select v-model.trim="materialData.ifStopUse">
-                <el-option :value="true" label="启用"></el-option>
-                <el-option :value="false" label="停用"></el-option>
+                <el-option :value="true" label="发布"></el-option>
+                <el-option :value="false" label="不发布"></el-option>
+                <!-- <el-option :value="true" label="全部发布"></el-option>
+                <el-option :value="false" label="不发布"></el-option>
+                <el-option :value="3" label="部分发布"></el-option>-->
               </el-select>
             </el-form-item>
             <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
@@ -78,6 +97,39 @@
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
               </el-select>
+            </el-form-item>
+          </div>
+        </div>
+        <div class="dictData" v-if="dictshowflag">
+          <div class="dictDataTitle">
+            <i class="el-icon-price-tag"></i>数据标签
+          </div>
+          <div class="dictInfo">
+            <el-form-item label="数据标签" prop="labelKeyFrom">
+              <el-checkbox-group v-model="materialData.labelKeyFrom">
+                <el-checkbox
+                  :label="item.dictValue"
+                  v-for="(item,index) in dictdataTypes"
+                  :key="index"
+                >{{item.dictLabel}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </div>
+        </div>
+        <div class="dictData" v-show="materialData.ifStopUse==3">
+          <div class="dictDataTitle">
+            <i class="el-icon-price-tag"></i>数据权限
+          </div>
+          <div class="dictInfo">
+            <el-form-item label="数据权限" prop="labelKeyFrom" style="width:100%;">
+              <el-transfer
+                filterable
+                :filter-method="filterMethod"
+                filter-placeholder="请输入用户名称"
+                :titles="['待授权用户列表', '已授权用户列表']"
+                v-model="materialData.hasPowerList"
+                :data="userList"
+              ></el-transfer>
             </el-form-item>
           </div>
         </div>
@@ -155,17 +207,21 @@
 </template>
 
 <script>
+import { getBizUserByName } from "@/api/structureManagement/tableStructureManage/index";
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import { getDictByType } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import {
   dataClassAll,
   databaseClass,
-  logicClass
+  logicClass,
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
-
+import { datumTypeGetTree } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   save,
   getDetailById,
   enable,
-  getNewDataClassId
+  getNewDataClassId,
 } from "@/api/structureManagement/tableStructureManage/index";
 // 公共元数据资料树
 import StructurePublicTree from "@/views/structureManagement/tableStructureManage/StructurePublicTree";
@@ -176,23 +232,43 @@ import EditDataUseDialog from "@/views/structureManagement/tableStructureManage/
 //接口地址
 export default {
   name: "structureMaterialSingle",
-  components: { EditDataUseDialog, StructurePublicTree, StructureStorageTree },
+  components: {
+    Treeselect,
+    EditDataUseDialog,
+    StructurePublicTree,
+    StructureStorageTree,
+  },
   props: {
     isSourceTree: {
-      type: Boolean
+      type: Boolean,
     },
     editNodeId: {
-      type: String
+      type: String,
     },
     editMaterial: {
-      type: String
+      type: String,
     },
     DRegistrationObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
+      dictshowflag: false,
+      filterMethod(query, item) {
+        return item.label.indexOf(query) > -1;
+      }, //用户列表查询
+      userList: [], //用户列表
+      dictdataTypes: [], //标签
+      publicTreeOptions: [], //资料名称
+      storageTree: [], //父节点
+      normalizer(node) {
+        return {
+          id: node.id,
+          label: node.name,
+          children: node.children,
+        };
+      },
       tableStructureManageContral: false,
       handleArry: [],
       labelWidth: "100px",
@@ -201,77 +277,117 @@ export default {
       isDisabledEdit: false,
       materialData: {
         ddataId: "",
-        metaDataName: "",
+        ddataId: null,
         dataClassId: "",
         className: "",
-        parentId: "",
+        parentId: null,
         typeText: "资料",
         ifStopUse: true,
         isAccess: 1,
         useBaseInfo: 0,
         serialNo: 0,
         dataLogicList: [], //数据用途回显的树
-        dataLogicListTable: [] //数据用途回显的树
+        dataLogicListTable: [], //数据用途回显的树
+        labelKeyFrom: [],
+        dataClassLabelList: [],
+        hasPowerList: [],
       },
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
       rules: {
-        metaDataName: [
+        ddataId: [
           {
             required: true,
             message: "名称不能为空",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         ddataId: [
           {
             required: true,
             message: "四级编码不能为空",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         parentId: [
           {
             required: true,
             message: "父节点不能为空",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         className: [
           {
             required: true,
             message: "资料名称不能为空",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         dataClassId: [
           {
             required: true,
             message: "存储编码不能为空",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         serialNo: [
           {
             required: true,
             message: "排序不能为空",
-            trigger: "change"
-          }
-        ]
-      }
+            trigger: "change",
+          },
+        ],
+      },
     };
   },
   async created() {
-    await enable().then(res => {
+    await enable().then((res) => {
       if (res.data == "true") {
         this.tableStructureManageContral = true;
       } else {
         this.tableStructureManageContral = false;
       }
     });
-    this.initMaterialForm();
+    // 名称树
+    await datumTypeGetTree().then((response) => {
+      this.resetData(response.data);
+      this.publicTreeOptions = response.data;
+      console.log(this.publicTreeOptions);
+    });
+    // 父节点树
+    await dataClassAll().then((response) => {
+      const menu = { id: 0, name: "主类目", children: [] };
+      this.resetData(response.data);
+      menu.children = response.data;
+      this.storageTree.push(menu);
+    });
+    // 标签 todo
+    /*  await getDictByType({ dictType: "zt_label" }).then((response) => {
+      console.log(response.data);
+      this.dictdataTypes = response.data;
+    }); */
+    // 用户列表 todo
+    /*   await getBizUserByName().then((response) => {
+      var resdata = response.data;
+      var dataList = [];
+      for (var i = 0; i < resdata.length; i++) {
+        var obj = {};
+        obj.key = resdata[i].userName;
+        obj.label = resdata[i].userName + "(" + resdata[i].nickName + ")";
+        dataList.push(obj);
+      }
+      this.userList = dataList;
+    }); */
+    // 初始化
+    await this.initMaterialForm();
   },
   methods: {
+    resetData(dataArr) {
+      for (var i in dataArr) {
+        dataArr[i].name = dataArr[i].name + "(" + dataArr[i].id + ")";
+        this.resetData(dataArr[i].children);
+      }
+    },
     //初始化表单
     initMaterialForm() {
       if (this.isSourceTree) {
@@ -294,24 +410,26 @@ export default {
       // 从数据注册审核来的资料
       if (this.DRegistrationObj) {
         this.materialData.applyId = this.DRegistrationObj.applyId;
-        this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
+        // this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
         this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList;
-        getNewDataClassId({ parentId: this.materialData.ddataId }).then(res => {
-          if (res.code == 200) {
-            this.materialData.dataClassId = res.data;
-            if (res.data == "") {
-              let code = checkNode.id.split(".");
-              if (code.length == 4) {
-                let fCode = code[3].substring(0, 1);
-                code[3] = code[3].replace(fCode, "M");
-                this.materialData.dataClassId = code.join(".");
-              } else {
-                this.materialData.dataClassId = checkNode.id;
+        getNewDataClassId({ parentId: this.materialData.ddataId }).then(
+          (res) => {
+            if (res.code == 200) {
+              this.materialData.dataClassId = res.data;
+              if (res.data == "") {
+                let code = checkNode.id.split(".");
+                if (code.length == 4) {
+                  let fCode = code[3].substring(0, 1);
+                  code[3] = code[3].replace(fCode, "M");
+                  this.materialData.dataClassId = code.join(".");
+                } else {
+                  this.materialData.dataClassId = checkNode.id;
+                }
               }
             }
           }
-        });
+        );
         this.editUseShow = true;
         console.log(this.materialData);
       }
@@ -319,8 +437,25 @@ export default {
     //获取资料树，资料的数据
     getMaterialForm(id) {
       console.log(id);
-      getDetailById({ id: id }).then(response => {
+      getDetailById({ id: id }).then((response) => {
         if (response.code == "200") {
+          if (!response.data.dataClassLabelList) {
+            response.data.labelKeyFrom = [];
+          } else {
+            response.data.labelKeyFrom = [];
+            response.data.dataClassLabelList.forEach((element) => {
+              response.data.labelKeyFrom.push(element.labelKey);
+            });
+          }
+          if (!response.data.dataClassUserList) {
+            response.data.dataClassUserList = [];
+          } else {
+            response.data.hasPowerList = [];
+            response.data.dataClassUserList.forEach((element) => {
+              response.data.hasPowerList.push(element.userName);
+            });
+          }
+
           this.materialData = response.data;
           if (this.materialData.type == 1) {
             this.materialData.typeText = "目录";
@@ -335,6 +470,7 @@ export default {
             this.materialData.dataLogicList = response.data.dataLogicList;
             this.materialData.dataLogicListTable = response.data.dataLogicList;
           }
+
           console.log(this.materialData.dataLogicList);
         } else {
           console.log("出错了，出错信息：" + response.msg);
@@ -349,11 +485,10 @@ export default {
     getChildCheckNode(checkNode) {
       console.log(checkNode);
       if (!this.isDisabledEdit) {
-        //
         if (this.materialData.typeText == "目录") {
           this.materialData.dataClassId = checkNode.id;
         } else if (this.materialData.typeText == "资料") {
-          getNewDataClassId({ parentId: checkNode.id }).then(res => {
+          getNewDataClassId({ parentId: checkNode.id }).then((res) => {
             if (res.code == 200) {
               this.materialData.dataClassId = res.data;
               if (res.data == "") {
@@ -374,8 +509,8 @@ export default {
       }
 
       this.materialData.ddataId = checkNode.id;
-      this.materialData.metaDataName = checkNode.name;
-      this.publicTreeVisible = false;
+      // this.materialData.metaDataName = checkNode.name;
+      // this.publicTreeVisible = false;
     },
     //关闭公共元数据弹出层
     closePublicDialog() {
@@ -387,8 +522,21 @@ export default {
     },
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
-      this.materialData.parentId = checkNode.id;
-      this.storageTreeVisible = false;
+      if (this.isSourceTree) {
+        this.materialData.parentId = checkNode.id;
+      } else {
+        if (checkNode.id === 0 || checkNode.id.split(".").length == 3) {
+          this.materialData.parentId = checkNode.id;
+        } else {
+          this.$message({
+            type: "error",
+            message: "只能选择三级目录或者主类目",
+          });
+          this.$nextTick(function () {
+            this.materialData.parentId = null;
+          });
+        }
+      }
     },
     //关闭存储元数据弹出层
     closeStorageTreeDialog() {
@@ -415,7 +563,7 @@ export default {
     },
     // 保存数据
     makeSureSave(resForm) {
-      this.$refs["materialForm"].validate(valid => {
+      this.$refs["materialForm"].validate((valid) => {
         if (valid) {
           // 1为目录   2为资料
           if (this.materialData.typeText == "目录") {
@@ -447,11 +595,31 @@ export default {
             else {
               handleMessage = "新增资料成功";
             }
+            this.materialData.dataClassLabelList = [];
+            this.dictdataTypes.forEach((element) => {
+              this.materialData.labelKeyFrom.forEach((item) => {
+                if (element.dictValue == item) {
+                  let obj = {
+                    labelKey: item,
+                  };
+                  this.materialData.dataClassLabelList.push(obj);
+                }
+              });
+            });
+
+            this.materialData.dataClassUserList = [];
+            this.materialData.hasPowerList.forEach((element) => {
+              let obj = {
+                userName: element,
+              };
+              this.materialData.dataClassUserList.push(obj);
+            });
+            console.log(this.materialData);
             let dataLogicList = this.materialData.dataLogicListTable;
             if (dataLogicList.length == 0) {
               this.$message({
                 type: "error",
-                message: "请选择数据用途"
+                message: "请选择数据用途",
               });
               return false;
             }
@@ -478,7 +646,7 @@ export default {
             if (dataLogicListTable.length != 1) {
               this.$message({
                 type: "error",
-                message: "只能选择一条数据用途"
+                message: "只能选择一条数据用途",
               });
             } else if (
               !dataLogicListTable[0].storageType ||
@@ -487,7 +655,7 @@ export default {
             ) {
               this.$message({
                 type: "error",
-                message: "请选择存储类型"
+                message: "请选择存储类型",
               });
             } else {
               this.saveData(handleMessage, refreshWhich);
@@ -499,11 +667,11 @@ export default {
       });
     },
     saveData(handleMessage, refreshWhich) {
-      save(this.materialData).then(response => {
+      save(this.materialData).then((response) => {
         if (response.success === true) {
           this.$message({
             type: "success",
-            message: handleMessage
+            message: handleMessage,
           });
           if (refreshWhich == "tree") {
             //资料树节点 新增  编辑  isSourceTree:true   isSourceTree:false
@@ -518,7 +686,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: response.msg
+            message: response.msg,
           });
         }
       });
@@ -526,15 +694,16 @@ export default {
 
     cancleSave() {
       this.$emit("closeMaterialDialog");
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 .structureMaterialSingle {
   .publicDataTitle,
-  .storageDataTitle {
+  .storageDataTitle,
+  .dictDataTitle {
     box-sizing: border-box;
     padding: 10px;
     border: 1px solid #ebeef5;
@@ -547,7 +716,8 @@ export default {
   }
 
   .publicInfo,
-  .storageInfo {
+  .storageInfo,
+  .dictInfo {
     box-sizing: border-box;
     display: flex;
     flex-direction: row;
@@ -618,6 +788,20 @@ export default {
 
   .el-input-number {
     width: 100%;
+  }
+  .el-transfer-panel {
+    width: 400px;
+    .el-checkbox-group {
+      text-align: left;
+      .el-checkbox {
+        display: block;
+      }
+    }
+    .el-transfer-panel__header {
+      .el-checkbox {
+        text-align: left;
+      }
+    }
   }
 }
 </style>

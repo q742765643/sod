@@ -2,17 +2,23 @@
   <div class="app-container filedSearch">
     <!-- 存储字段检索 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="表名称:">
-        <el-input size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
+      <el-form-item label="表名称:" porp="tableName">
+        <el-input clearable size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
       </el-form-item>
-      <el-form-item label="中文简称:">
-        <el-input size="small" v-model.trim="queryParams.eleName" placeholder="请输入中文简称" />
+      <el-form-item label="中文简称:" porp="eleName">
+        <el-input clearable size="small" v-model.trim="queryParams.eleName" placeholder="请输入中文简称" />
       </el-form-item>
-      <el-form-item label="字段名称:">
-        <el-input size="small" v-model.trim="queryParams.CElementCode" placeholder="请输入字段名称" />
+      <el-form-item label="字段名称:" porp="CElementCode">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.CElementCode"
+          placeholder="请输入字段名称"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleQuery" icon="el-icon-search" size="small">查询</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
         <el-button type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
         </el-button>
@@ -130,7 +136,7 @@ import SuperSearch from "@/components/superSearch";
 export default {
   components: {
     SuperSearch,
-    StructureManageTable
+    StructureManageTable,
   },
   data() {
     return {
@@ -144,7 +150,7 @@ export default {
         pageSize: 10,
         tableName: "",
         eleName: "",
-        CElementCode: ""
+        CElementCode: "",
       },
       total: 0,
       tableData: [],
@@ -152,7 +158,7 @@ export default {
       dialogSuperSearch: false,
       superObj: {},
       superMsg: {},
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
@@ -167,6 +173,11 @@ export default {
       this.superMsg = {};
       this.queryParams.pageNum = 1;
       this.getList("");
+    },
+    resetQuery() {
+      this.superMsg = {};
+      this.$refs["queryForm"].resetFields();
+      this.handleQuery();
     },
     /** 查询列表 */
     getList(superMsg) {
@@ -191,7 +202,7 @@ export default {
       }
       console.log(queryObj);
       this.loading = true;
-      storageFieldList(queryObj).then(response => {
+      storageFieldList(queryObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -225,8 +236,8 @@ export default {
     closeStructureManage() {
       this.getList("");
       this.structureManageVisible = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

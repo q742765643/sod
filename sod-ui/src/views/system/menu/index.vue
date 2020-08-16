@@ -1,7 +1,7 @@
 <template>
   <div class="app-container menuTemplate">
-    <el-form :inline="true" class="searchBox">
-      <el-form-item label="菜单名称">
+    <el-form :inline="true" class="searchBox" ref="queryForm">
+      <el-form-item label="菜单名称" prop="menuName">
         <el-input
           v-model.trim="queryParams.menuName"
           placeholder="请输入菜单名称"
@@ -10,7 +10,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="状态" prop="visible">
         <el-select v-model.trim="queryParams.visible" placeholder="请选择菜单状态" clearable size="small">
           <el-option
             v-for="dict in visibleOptions"
@@ -22,6 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
         <el-button
           type="primary"
           icon="el-icon-plus"
@@ -197,7 +198,7 @@ import {
   treeselect,
   delMenu,
   addMenu,
-  updateMenu
+  updateMenu,
 } from "@/api/system/menu";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -222,7 +223,7 @@ export default {
       // 查询参数
       queryParams: {
         menuName: undefined,
-        visible: ""
+        visible: "",
       },
       // 表单参数
       form: {},
@@ -234,27 +235,27 @@ export default {
             min: 1,
             max: 50,
             message: "菜单名称长度不能大于50个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         orderNum: [
-          { required: true, message: "菜单顺序不能为空", trigger: "blur" }
+          { required: true, message: "菜单顺序不能为空", trigger: "blur" },
         ],
         path: [
           {
             min: 0,
             max: 50,
             message: "路由地址长度不能大于50个字符",
-            trigger: "blur"
-          }
-        ]
+            trigger: "blur",
+          },
+        ],
       },
-      currentRow: null
+      currentRow: null,
     };
   },
   created() {
     this.getList();
-    this.getDicts("sys_show_hide").then(response => {
+    this.getDicts("sys_show_hide").then((response) => {
       this.visibleOptions = response.data;
     });
   },
@@ -269,7 +270,7 @@ export default {
     /** 查询菜单列表 */
     getList() {
       this.loading = true;
-      listMenu(this.queryParams).then(response => {
+      listMenu(this.queryParams).then((response) => {
         this.menuList = response.data;
         this.loading = false;
         /* if (this.currentRow) {
@@ -283,7 +284,7 @@ export default {
     },
     /** 查询菜单下拉树结构 */
     getTreeselect() {
-      treeselect().then(response => {
+      treeselect().then((response) => {
         this.menuOptions = [];
         const menu = { id: 0, label: "主类目", children: [] };
         if (this.title == "修改菜单") {
@@ -328,12 +329,19 @@ export default {
         menuType: "M",
         orderNum: undefined,
         isFrame: 1,
-        visible: ""
+        visible: "",
       };
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.getList();
+    },
+    resetQuery() {
+      this.queryParams = {
+        menuName: undefined,
+        visible: "",
+      };
       this.getList();
     },
     /** 新增按钮操作 */
@@ -350,18 +358,18 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.getTreeselect();
-      getMenu(row.id).then(response => {
+      getMenu(row.id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改菜单";
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateMenu(this.form).then(response => {
+            updateMenu(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -371,7 +379,7 @@ export default {
               }
             });
           } else {
-            addMenu(this.form).then(response => {
+            addMenu(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -392,19 +400,19 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return delMenu(row.id);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
-    }
-  }
+        .catch(function () {});
+    },
+  },
 };
 </script>
 <style lang="scss" >

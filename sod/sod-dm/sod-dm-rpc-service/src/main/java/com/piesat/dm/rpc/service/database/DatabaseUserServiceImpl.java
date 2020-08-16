@@ -325,6 +325,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
+    public static void main(String[] args) {
+
+    }
+
     @Override
     public ResultT empower(DatabaseUserDto databaseUserDto) {
         String[] sysIds = this.sysUsers.toLowerCase().split(",");
@@ -358,11 +362,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             return e.split(",");
         }).orElse(mngIp.split(","));
         List<DatabaseDefineDto> DatabaseDefineList = needEmpowerList.stream().map(this.databaseDefineService::getDotById).collect(Collectors.toList());
-        for (DatabaseDefineDto d:DatabaseDefineList ) {
+        for (DatabaseDefineDto d : DatabaseDefineList) {
             Set<DatabaseAdministratorDto> databaseAdministratorList = d.getDatabaseAdministratorList();
             boolean b = databaseAdministratorList.stream().anyMatch(DatabaseAdministratorDto::getIsManager);
-            if(!b){
-                return ResultT.failed(String.format("%s 数据库管理账户缺失!",d.getDatabaseName()));
+            if (!b) {
+                return ResultT.failed(String.format("%s 数据库管理账户缺失!", d.getDatabaseName()));
             }
         }
         DatabaseDefineList.forEach(d -> {
@@ -380,9 +384,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
-                Boolean pass = StringUtils.isNotBlank(message) && (message.contains("已存在") || message.contains("already exists")) && !thisHaveIds.contains(databaseId);
+                Boolean pass = StringUtils.isNotBlank(message) && (message.contains("已经存在") || message.contains("已存在") || message.contains("already exists"));
                 if (pass) {
-                    thisHaveIds.add(databaseId);
+                    if (!thisHaveIds.contains(databaseId)){
+                        thisHaveIds.add(databaseId);
+                    }
                 } else {
                     sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
                 }
@@ -462,7 +468,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (StringUtils.isNotBlank(msg)) {
             System.out.println(msg);
             //前端不需要返回这么详细的错误信息
-            return ResultT.failed("授权失败");
+            return ResultT.failed(msg);
         } else {
             return ResultT.success();
         }
@@ -514,38 +520,29 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                         item.write(new File(upload_file_path, fileName));
                         //下面将数据存入upLoadData中。
                         upLoadData.put(name, upload_file_path + fileName);
+
                     }
                 }
             }
-
-
-            for (Map.Entry<String, Object> item : upLoadData.entrySet()) {
-                //下面取得upLoadData中的每个值。
-                String key = item.getKey();
-                Object val = item.getValue();
-
-                if (key.equals("databaseup_id")) {
-                    databases.setDatabaseUpId((String) val);
-                } else if (key.equals("databaseup_password")) {
-                    databases.setDatabaseUpPassword((String) val);
-                } else if (key.equals("database_id")) {
-                    databases.setApplyDatabaseId((String) val);
-                } else if (key.equals("databaseup_desc")) {
-                    databases.setDatabaseUpDesc((String) val);
-                } else if (key.equals("user_id")) {
-                    databases.setUserId((String) val);
-                } else if (key.equals("database_id")) {
-                    databases.setApplyDatabaseId((String) val);
-                } else if (key.equals("DATABASEUP_IP")) {
-                    databases.setDatabaseUpIp((String) val);
-                } else if (key.equals("DATABASEUP_IP_SEGMENT")) {
-                    databases.setDatabaseUpIpSegment((String) val);
-                } else if (key.equals("databaseup_desc")) {
-                    databases.setDatabaseUpDesc((String) val);
-                } else if (key.equals("apply_material")) {
-                    databases.setApplyMaterial(fileName);
+            databases.setApplyMaterial(fileName);
+            upLoadData.forEach((k, v) -> {
+                switch (k) {
+                    case "databaseup_id":
+                        databases.setDatabaseUpId(v.toString());
+                    case "databaseup_password":
+                        databases.setDatabaseUpPassword(v.toString());
+                    case "database_id":
+                        databases.setApplyDatabaseId(v.toString());
+                    case "databaseup_desc":
+                        databases.setDatabaseUpDesc(v.toString());
+                    case "user_id":
+                        databases.setUserId(v.toString());
+                    case "DATABASEUP_IP":
+                        databases.setDatabaseUpIp(v.toString());
+                    case "DATABASEUP_IP_SEGMENT":
+                        databases.setDatabaseUpIpSegment(v.toString());
                 }
-            }
+            });
             String st = "0";
             databases.setExamineStatus(st);
             DatabaseUserEntity databaseUserEntity = this.databaseUserMapper.toEntity(databases);

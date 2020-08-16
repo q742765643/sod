@@ -74,10 +74,10 @@
       </el-tab-pane>
       <el-tab-pane label="恢复日志" name="second">
         <el-form :model="rowlogForm" ref="rowlogForm" :inline="true" class="searchBox">
-          <el-form-item label="资料名称">
-            <el-input size="small" v-model.trim="rowlogForm.profileName"></el-input>
+          <el-form-item label="资料名称" prop="profileName">
+            <el-input clearable size="small" v-model.trim="rowlogForm.profileName"></el-input>
           </el-form-item>
-          <el-form-item label="运行状态">
+          <el-form-item label="运行状态" prop="handleCode">
             <el-select style="width:200px" filterable v-model.trim="rowlogForm.handleCode">
               <el-option
                 v-for="(item,index) in statusOptions"
@@ -89,6 +89,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="primary" @click="queryListLog" icon="el-icon-search">查询</el-button>
+            <el-button size="small" @click="resetQueryLog" icon="el-icon-refresh-right">重置</el-button>
           </el-form-item>
         </el-form>
         <el-table
@@ -234,12 +235,12 @@ import {
   recoverStructedData,
   recoverLogList,
   deleteLogById,
-  detailLogById
+  detailLogById,
 } from "@/api/schedule/dataRecovery";
 //增加查看弹框
 export default {
   components: {
-    chechExe
+    chechExe,
   },
   data() {
     return {
@@ -248,7 +249,7 @@ export default {
       queryParams: {
         dataClassId: "",
         databaseId: "",
-        path: ""
+        path: "",
       },
       databaseOptions: [],
       dataClassIdOptions: [],
@@ -257,7 +258,7 @@ export default {
       treedata: [],
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       // md5
       innerCheckMD5Visible: false,
@@ -274,9 +275,9 @@ export default {
         handleCode: "",
         params: {
           orderBy: {
-            handleTime: "desc"
-          }
-        }
+            handleTime: "desc",
+          },
+        },
       },
       logTableData: [],
       logDataTotal: 0,
@@ -290,17 +291,17 @@ export default {
       TreeDetaildata: [],
       statusOptions: [],
       uploadData: {},
-      upLoadUrl: baseUrl + "/api/schedule/uploadDown/uploadFile"
+      upLoadUrl: baseUrl + "/api/schedule/uploadDown/uploadFile",
     };
   },
   created() {
-    findAllDataBase().then(response => {
+    findAllDataBase().then((response) => {
       this.databaseOptions = response.data;
     });
-    this.getDicts("backup_storage_directory").then(response => {
+    this.getDicts("backup_storage_directory").then((response) => {
       this.storageDirectoryOptions = response.data;
     });
-    this.getDicts("job_handle_status").then(response => {
+    this.getDicts("job_handle_status").then((response) => {
       this.statusOptions = response.data;
       console.log(this.statusOptions);
     });
@@ -318,7 +319,7 @@ export default {
     },
     //数据库名称change事件
     selectByDatabaseIds(val) {
-      getByDatabaseId(val).then(response => {
+      getByDatabaseId(val).then((response) => {
         this.dataClassIdOptions = response.data;
       });
     },
@@ -326,7 +327,7 @@ export default {
     getTreeList() {
       this.loading = true;
       console.log(this.queryParams);
-      getDataFileList(this.queryParams).then(res => {
+      getDataFileList(this.queryParams).then((res) => {
         // 第一级的pid为空
         this.treedata = newTeam(res.data, "");
         console.log(this.treedata);
@@ -337,7 +338,7 @@ export default {
       this.queryParams = {
         dataClassId: "",
         databaseId: "",
-        path: ""
+        path: "",
       };
       this.treedata = [];
     },
@@ -346,7 +347,7 @@ export default {
       if (node.level === 0 || node.data.isParent == false) {
         return resolve([]);
       } else {
-        getFileChidren({ childrenPath: node.data.id }).then(res => {
+        getFileChidren({ childrenPath: node.data.id }).then((res) => {
           resolve(res.data);
         });
       }
@@ -356,7 +357,7 @@ export default {
     handleExe() {
       let checkedArry = this.$refs.eltree.getCheckedNodes();
       let childArry = [];
-      checkedArry.forEach(element => {
+      checkedArry.forEach((element) => {
         if (element.parent == false) {
           childArry.push(element.id);
         }
@@ -369,7 +370,7 @@ export default {
       obj.databaseId = this.queryParams.databaseId;
       obj.paths = childArry;
       console.log(obj);
-      md5Check(obj).then(res => {
+      md5Check(obj).then((res) => {
         if (res.code == 200) {
           this.handlecheckObj = {};
           this.handlecheckObj = this.queryParams;
@@ -394,9 +395,9 @@ export default {
           databaseId: "",
           params: {
             orderBy: {
-              handleTime: "desc"
-            }
-          }
+              handleTime: "desc",
+            },
+          },
         };
         this.queryListLog();
       }
@@ -404,6 +405,20 @@ export default {
     queryListLog() {
       this.rowlogForm.pageNum = 1;
       this.getListLog();
+    },
+    resetQueryLog() {
+      this.rowlogForm = {
+        pageNum: 1,
+        pageSize: 10,
+        databaseId: "",
+        profileName: "",
+        params: {
+          orderBy: {
+            handleTime: "desc",
+          },
+        },
+      };
+      this.queryListLog();
     },
     // table自增定义方法
     table_index_log(index) {
@@ -415,7 +430,7 @@ export default {
     getListLog() {
       this.loading = true;
       console.log(this.rowlogForm);
-      recoverLogList(this.rowlogForm).then(response => {
+      recoverLogList(this.rowlogForm).then((response) => {
         this.logTableData = response.data.pageData;
         this.logDataTotal = response.data.totalCount;
         this.loading = false;
@@ -430,21 +445,21 @@ export default {
       this.$confirm("是否确认删除该数据?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
-        .then(function() {
+        .then(function () {
           return deleteLogById(row.id);
         })
         .then(() => {
           this.handleClick();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
+        .catch(function () {});
     },
 
     viewDetail(row) {
       console.log(row.id);
-      detailLogById(row.id).then(res => {
+      detailLogById(row.id).then((res) => {
         if (res.code == 200) {
           this.logDetailDialog = true;
           this.selectByDatabaseIds(res.data.databaseId);
@@ -483,7 +498,7 @@ export default {
         return;
       }
       let pid = "";
-      this.databaseOptions.forEach(element => {
+      this.databaseOptions.forEach((element) => {
         if (element.KEY == this.queryParams.databaseId) {
           pid = element.parentId;
         }
@@ -497,8 +512,8 @@ export default {
       } else {
         this.msgError(res.msg);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

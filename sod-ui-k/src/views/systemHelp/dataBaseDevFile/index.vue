@@ -3,10 +3,10 @@
     <!-- 数据库开发文档 2020/4/20 和数据库运维文档合并为数据库文档-->
     <el-form :model="queryParams" ref="queryForm" :inline="true">
       <el-form-item label="文档名称">
-        <el-input size="small" v-model.trim="queryParams.fileName"></el-input>
+        <el-input clearable size="small" v-model.trim="queryParams.fileName"></el-input>
       </el-form-item>
       <el-form-item label="文档后缀">
-        <el-input size="small" v-model.trim="queryParams.fileSuffix"></el-input>
+        <el-input clearable size="small" v-model.trim="queryParams.fileSuffix"></el-input>
       </el-form-item>
       <el-form-item label="上传时间">
         <el-date-picker
@@ -105,9 +105,9 @@ export default {
         fileSuffix: "",
         params: {
           orderBy: {
-            updateTime: "desc"
-          }
-        }
+            updateTime: "desc",
+          },
+        },
       },
       dateRange: [],
       uoploaFile: "",
@@ -118,7 +118,7 @@ export default {
       uploadData: {},
       examineMaterial: "",
       showFile: false,
-      myHeaders: { Authorization: token }
+      myHeaders: { Authorization: token },
     };
   },
   created() {
@@ -159,7 +159,7 @@ export default {
         this.dateRange = [];
       }
       getpage(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
+        (response) => {
           this.tableData = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
@@ -174,9 +174,9 @@ export default {
         fileSuffix: "",
         params: {
           orderBy: {
-            updateTime: "desc"
-          }
-        }
+            updateTime: "desc",
+          },
+        },
       };
       this.dateRange = [];
       this.handleQuery();
@@ -189,20 +189,20 @@ export default {
         this.$confirm("数据删除后将无法恢复，确认删除?", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
-            deleteByIds(this.currentRow.id).then(response => {
+            deleteByIds(this.currentRow.id).then((response) => {
               if (response.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "删除成功"
+                  message: "删除成功",
                 });
                 this.getList();
               } else {
                 this.$message({
                   type: "error",
-                  message: response.msg
+                  message: response.msg,
                 });
               }
             });
@@ -211,7 +211,7 @@ export default {
       } else {
         this.$message({
           type: "danger",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
       }
     },
@@ -221,7 +221,7 @@ export default {
     successUpload(res, file) {
       this.$message({
         type: "success",
-        message: "上传成功"
+        message: "上传成功",
       });
       this.getList();
       /*if (res.returnCode == 0) {
@@ -241,11 +241,11 @@ export default {
     },
     downloadFile(row) {
       // this.download(row.fileStorPath);
-      downloadTable({ filePath: row.fileStorPath }).then(res => {
+      downloadTable({ filePath: row.fileStorPath }).then((res) => {
         this.downloadfileCommon(res);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

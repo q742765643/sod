@@ -19,4 +19,11 @@ public interface TableColumnDao extends BaseDao<TableColumnEntity> {
 
     List<TableColumnEntity> findByTableIdAndIsPrimaryKeyTrue(String tableId);
 
+    /**
+     * 查询最大序号
+     * @param tableId
+     * @return
+     */
+    TableColumnEntity findFirstByTableIdOrderBySerialNumberDesc(String tableId);
+
 }

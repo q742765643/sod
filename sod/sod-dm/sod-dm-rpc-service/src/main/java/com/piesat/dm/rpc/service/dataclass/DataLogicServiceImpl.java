@@ -185,6 +185,15 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             this.dataClassDao.deleteByDataClassId(dataClassId);
         }
     }
+
+    @Override
+    @Transactional
+    public void onlyDeleteById(String id) {
+        DataLogicDto dotById = this.getDotById(id);
+        dataTableService.deleteByClassLogicId(dotById.getId());
+        this.delete(id);
+    }
+
     @Override
     public Map<String, Object> getTableByDBLogics(String tdbId, String logics) {
             Map<String, Object> map = new HashMap();

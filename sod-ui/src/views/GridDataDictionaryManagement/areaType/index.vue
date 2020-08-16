@@ -3,7 +3,7 @@
     <!-- 区域类别管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="区域标识:">
-        <el-input size="small" v-model.trim="queryParams.areaId" />
+        <el-input clearable size="small" v-model.trim="queryParams.areaId" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -98,11 +98,11 @@ import {
   defineEdit,
   defineDelete,
   detailById,
-  exportTable
+  exportTable,
 } from "@/api/GridDataDictionaryManagement/areaType";
 export default {
   components: {
-    inputExcel
+    inputExcel,
   },
   data() {
     return {
@@ -111,7 +111,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        areaId: ""
+        areaId: "",
       },
       tableData: [],
       total: 0,
@@ -123,38 +123,38 @@ export default {
       ruleForm: {},
       rules: {
         areaId: [
-          { required: true, message: "请输入区域标识", trigger: "blur" }
+          { required: true, message: "请输入区域标识", trigger: "blur" },
         ],
         startLat: [
           {
             required: true,
             message: "请输入数字格式的开始纬度",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         endLat: [
           {
             required: true,
             message: "请输入数字格式的结束纬度",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         startLon: [
           {
             required: true,
             message: "请输入数字格式的开始经度",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         endLon: [
           {
             required: true,
             message: "请输入数字格式的结束经度",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
-        areaDesc: [{ required: true, message: "请输入备注", trigger: "blur" }]
-      }
+        areaDesc: [{ required: true, message: "请输入备注", trigger: "blur" }],
+      },
     };
   },
   created() {
@@ -163,7 +163,7 @@ export default {
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.tableData.forEach((element, index) => {
             if (element.id == row.id) {
               this.$refs.multipleTable.toggleRowSelection(
@@ -177,17 +177,17 @@ export default {
     getMyExcelData(data) {
       // data 为读取的excel数据，在这里进行处理该数据
       console.log(data);
-      data.forEach(element => {
+      data.forEach((element) => {
         element.id = "";
       });
-      defineSave(data).then(response => {
+      defineSave(data).then((response) => {
         if (response.code == 200) {
           this.msgSuccess("导入成功");
           this.handleQuery();
         } else {
           this.$message({
             type: "error",
-            message: "操作失败"
+            message: "操作失败",
           });
         }
       });
@@ -206,13 +206,13 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      defineList(this.queryParams).then(response => {
+      defineList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
         if (this.multipleSelection.length == 1) {
           let newArry = this.multipleSelection;
-          this.$nextTick(function() {
+          this.$nextTick(function () {
             this.toggleSelection(newArry);
           });
         }
@@ -226,11 +226,11 @@ export default {
         if (this.multipleSelection.length != 1) {
           this.$message({
             type: "error",
-            message: "请选择一条数据"
+            message: "请选择一条数据",
           });
           return;
         } else {
-          detailById(this.multipleSelection[0].id).then(response => {
+          detailById(this.multipleSelection[0].id).then((response) => {
             this.ruleForm = response.data;
           });
         }
@@ -239,10 +239,10 @@ export default {
       this.msgFormDialog = true;
     },
     handleTrue(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dialogTitle == "新增") {
-            defineSave(this.ruleForm).then(response => {
+            defineSave(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.resetForm(formName);
@@ -252,7 +252,7 @@ export default {
               }
             });
           } else if (this.dialogTitle == "编辑") {
-            defineEdit(this.ruleForm).then(response => {
+            defineEdit(this.ruleForm).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("编辑成功");
                 this.resetForm(formName);
@@ -281,23 +281,23 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       let ids = [];
       let areaIds = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
         areaIds.push(element.areaId);
       });
       this.$confirm("是否删除" + areaIds.join(","), "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          defineDelete(ids.join(",")).then(response => {
+          defineDelete(ids.join(",")).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("删除成功");
               this.getList();
@@ -307,11 +307,11 @@ export default {
         .catch(() => {});
     },
     tableExoprt() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

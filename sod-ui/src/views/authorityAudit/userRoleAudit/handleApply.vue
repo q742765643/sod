@@ -83,13 +83,14 @@
     </el-card>
     <div class="dialog-footer" style="margin-top:20px;">
       <el-button type="danger" v-if="stepNum==0" @click="finishStep(2)">拒绝</el-button>
-      <el-button type="primary" v-if="stepNum==0||stepNum==3" @click="finishStep(1)">通过</el-button>
+      <el-button type="primary" v-if="stepNum==2||stepNum==3" @click="finishStep(1)">通过</el-button>
       <el-button type="primary" v-if="stepNum!=2&&dbIds" @click="nextStep" :disabled="nextFlag">下一步</el-button>
     </div>
   </section>
 </template>
 
 <script>
+import { Loading } from "element-ui";
 // 数据库访问账户
 import handleAccount from "@/views/authorityAudit/DBaccount/handleAccount";
 // / 专题库
@@ -101,18 +102,18 @@ import { getRecordByApplyId } from "@/api/authorityAudit/materialPower/index";
 import {
   getRecordByByUserId,
   editBase,
-  databaseUserExiget
+  databaseUserExiget,
 } from "@/api/authorityAudit/userRoleAudit";
 import {
   updateRecordCheck,
-  updateRecordCheckCancel
+  updateRecordCheckCancel,
 } from "@/api/authorityAudit/materialPower/index";
 export default {
   name: "handleApply",
   props: {
     handleMsgObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   components: { handleAccount, handleLibrary, handleMaterial },
   data() {
@@ -125,7 +126,7 @@ export default {
       msgFormDialog: {},
       handleObj: { pageName: "业务用户审核" },
       nextFlag: false,
-      dbIds: ""
+      dbIds: "",
     };
   },
   async created() {
@@ -135,8 +136,8 @@ export default {
     if (this.handleObj.dbIds) {
       databaseUserExiget({
         databaseUpId: this.handleObj.userName,
-        applyDatabaseId: this.handleObj.dbIds
-      }).then(response => {
+        applyDatabaseId: this.handleObj.dbIds,
+      }).then((response) => {
         this.nextFlag = response.data;
       });
     } else {
@@ -147,7 +148,7 @@ export default {
   methods: {
     async initDatail() {
       debugger;
-      await findByUserId({ userId: this.handleMsgObj.userName }).then(res => {
+      await findByUserId({ userId: this.handleMsgObj.userName }).then((res) => {
         if (res.data && res.data.length > 0) {
           this.handleObj = res.data[0];
         } else {
@@ -196,10 +197,10 @@ export default {
     getList() {
       let obj = {
         dataType: 2,
-        sdbId: this.forId
+        sdbId: this.forId,
       };
       this.loading = true;
-      getRecordByByUserId({ bizUserId: this.forId }).then(res => {
+      getRecordByByUserId({ bizUserId: this.forId }).then((res) => {
         if (res.code == 200) {
           this.loading = false;
           this.tableData = res.data;
@@ -225,11 +226,11 @@ export default {
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          inputValidator: value => {
+          inputValidator: (value) => {
             if (value.trim().length < 1 || value.trim().length > 500) {
               return "拒绝原因长度限制1-500个字符";
             }
-          }
+          },
         })
           .then(({ value }) => {
             this.powerMethods(value);
@@ -242,7 +243,7 @@ export default {
       let obj = {};
       obj.userId = this.forId;
       obj.dataAuthorityRecordList = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         let cobj = {};
         cobj.id = element.ID;
         cobj.applyId = element.APPLY_ID;
@@ -261,35 +262,35 @@ export default {
       });
       console.log(obj);
       if (value) {
-        updateRecordCheckCancel(JSON.parse(JSON.stringify(obj))).then(res => {
+        updateRecordCheckCancel(JSON.parse(JSON.stringify(obj))).then((res) => {
           if (res.code == 200) {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: res.msg
+              message: res.msg,
             });
             this.getList();
           } else {
             this.loading = false;
             this.$alert(res.msg, "提示", {
-              dangerouslyUseHTMLString: true
+              dangerouslyUseHTMLString: true,
             });
             this.getList();
           }
         });
       } else {
-        updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
+        updateRecordCheck(JSON.parse(JSON.stringify(obj))).then((res) => {
           if (res.code == 200) {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: res.msg
+              message: res.msg,
             });
             this.getList();
           } else {
             this.loading = false;
             this.$alert(res.msg, "提示", {
-              dangerouslyUseHTMLString: true
+              dangerouslyUseHTMLString: true,
             });
             this.getList();
           }
@@ -306,18 +307,18 @@ export default {
         this.$prompt("请输入拒绝原因", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          inputValidator: value => {
+          inputValidator: (value) => {
             if (value.trim().length < 1 || value.trim().length > 500) {
               return "拒绝原因长度限制1-500个字符";
             }
-          }
+          },
         })
           .then(({ value }) => {
             editBase({
               bizUserid: this.forId,
               checked: status,
-              reason: value
-            }).then(res => {
+              reason: value,
+            }).then((res) => {
               if (res.code == 200) {
                 this.msgSuccess("操作成功");
                 this.$emit("closeStep");
@@ -329,17 +330,23 @@ export default {
           .catch(() => {});
       } else {
         status = 1;
-        editBase({ bizUserid: this.forId, checked: status }).then(res => {
+        var loading = Loading.service({
+          lock: true,
+          text: "正在审核中...",
+          background: "rgba(0, 0, 0, 0.7)",
+        });
+        editBase({ bizUserid: this.forId, checked: status }).then((res) => {
           if (res.code == 200) {
             this.msgSuccess("操作成功");
             this.$emit("closeStep");
+            loading.close();
           } else {
             this.msgError(res.msg);
           }
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

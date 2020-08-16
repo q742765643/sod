@@ -9,8 +9,6 @@ import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
-import com.piesat.dm.entity.datatable.CmccElementEntity;
-import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
@@ -25,9 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -147,9 +145,17 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
+    public Integer findMaxNum(String tableId) {
+        TableColumnEntity tableColumn = this.tableColumnDao.findFirstByTableIdOrderBySerialNumberDesc(tableId);
+        return Optional.ofNullable(tableColumn).map(TableColumnEntity::getSerialNumber).orElse(0);
+    }
+
+    @Override
     public TableColumnDto getDotById(String id) {
         TableColumnEntity tableColumnEntity = this.getById(id);
         return this.tableColumnMapper.toDto(tableColumnEntity);
     }
+
+
 
 }

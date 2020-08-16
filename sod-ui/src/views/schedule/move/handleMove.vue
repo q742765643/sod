@@ -188,14 +188,15 @@ import {
   delMove,
   findAllDataBase,
   getByDatabaseId,
-  getByDatabaseIdAndClassId
+  getByDatabaseIdAndClassId,
 } from "@/api/schedule/move/move";
+import { getNextTime } from "@/api/schedule/backup/backup";
 export default {
   name: "handleMoveDialog",
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
 
   data() {
@@ -234,55 +235,55 @@ export default {
         jobCron: "0 0 2 * * ?",
         isAlarm: "",
         executorTimeout: "",
-        jobDesc: ""
+        jobDesc: "",
       },
       // 表单校验
       rules: {
         databaseId: [
-          { required: true, message: "物理库不能为空", trigger: "blur" }
+          { required: true, message: "物理库不能为空", trigger: "blur" },
         ],
         dataClassId: [
-          { required: true, message: "资料名称不能为空", trigger: "blur" }
+          { required: true, message: "资料名称不能为空", trigger: "blur" },
         ],
         jobCron: [
-          { required: true, message: "请输入执行策略", trigger: "blur" }
+          { required: true, message: "请输入执行策略", trigger: "blur" },
         ],
         executorTimeout: [
-          { required: true, message: "超时时间不能为空", trigger: "blur" }
+          { required: true, message: "超时时间不能为空", trigger: "blur" },
         ],
         moveLimit: [
-          { required: true, message: "迁移限制频率不能为空", trigger: "blur" }
+          { required: true, message: "迁移限制频率不能为空", trigger: "blur" },
         ],
         sourceDirectory: [
-          { required: true, message: "迁移源目录不能为空", trigger: "blur" }
+          { required: true, message: "迁移源目录不能为空", trigger: "blur" },
         ],
         targetDirectory: [
-          { required: true, message: "迁移目标目录不能为空", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "迁移目标目录不能为空", trigger: "blur" },
+        ],
+      },
     };
   },
 
   async created() {
-    this.getDicts("job_is_alarm").then(response => {
+    this.getDicts("job_is_alarm").then((response) => {
       this.alarmOptions = response.data;
     });
-    await findAllDataBase().then(response => {
+    await findAllDataBase().then((response) => {
       this.databaseOptions = response.data;
     });
-    await this.getDicts("move_is_clear").then(response => {
+    await this.getDicts("move_is_clear").then((response) => {
       this.isClearOptions = response.data;
     });
-    await this.getDicts("move_source_directory").then(response => {
+    await this.getDicts("move_source_directory").then((response) => {
       this.sourceDirectoryOptions = response.data;
     });
-    await this.getDicts("move_target_directory").then(response => {
+    await this.getDicts("move_target_directory").then((response) => {
       this.targetDirectoryOptions = response.data;
     });
-    await this.getDicts("database_move_1_where").then(response => {
+    await this.getDicts("database_move_1_where").then((response) => {
       this.conditionsOptions = response.data;
     });
-    await this.getDicts("database_move_2_where").then(response => {
+    await this.getDicts("database_move_2_where").then((response) => {
       this.clearConditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
@@ -300,7 +301,7 @@ export default {
     }
     // 查看详情
     if (this.handleObj.id) {
-      await getMove(this.handleObj.id).then(response => {
+      await getMove(this.handleObj.id).then((response) => {
         this.selectByDatabaseIds(
           response.data.databaseId,
           response.data.dataClassId
@@ -323,15 +324,15 @@ export default {
         return;
       } else {
         getNextTime({
-          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
           let times = res.data;
           let html = "";
-          times.forEach(element => {
+          times.forEach((element) => {
             html += "<p>" + element + "</p>";
           });
           this.$alert(html, "前5次执行时间", {
-            dangerouslyUseHTMLString: true
+            dangerouslyUseHTMLString: true,
           }).then(() => {
             this.CronPopover = false;
           });
@@ -346,7 +347,7 @@ export default {
       );
     },
     findTable(databaseId, dataClassId) {
-      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+      getByDatabaseIdAndClassId(databaseId, dataClassId).then((response) => {
         console.log(response);
         this.msgFormDialog.ddataId = response.data.ddataId;
         this.msgFormDialog.tableName = response.data.tableName;
@@ -354,7 +355,7 @@ export default {
       });
     },
     async selectByDatabaseIds(databaseId, dataClassId) {
-      await getByDatabaseId(databaseId, dataClassId).then(response => {
+      await getByDatabaseId(databaseId, dataClassId).then((response) => {
         this.dataClassIdOptions = response.data;
         this.msgFormDialog.dataClassId = dataClassId;
       });
@@ -363,10 +364,10 @@ export default {
     trueDialog(formName) {
       this.msgFormDialog.triggerStatus = 1;
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.msgFormDialog.id != undefined) {
-            updateMove(this.msgFormDialog).then(response => {
+            updateMove(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 if (this.handleObj.pageName == "数据注册审核") {
@@ -379,7 +380,7 @@ export default {
               }
             });
           } else {
-            addMove(this.msgFormDialog).then(response => {
+            addMove(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 if (this.handleObj.pageName == "数据注册审核") {
@@ -401,8 +402,8 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -338,7 +338,7 @@ import {
   saveBase,
   dataserverconfigget,
   addList,
-  delByIds
+  delByIds,
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { getAllLevel } from "@/api/GridDataDictionaryManagement/levelManagement";
 
@@ -359,7 +359,7 @@ export default {
       optionsLevels: [],
       baseServe: {
         eleField: "",
-        regionField: ""
+        regionField: "",
       },
       baseSet: {
         region: "",
@@ -368,12 +368,12 @@ export default {
         processType: "",
         dataTime: "",
         timeUnit: "",
-        spatialResolution: ""
+        spatialResolution: "",
       },
       searchObj: {
         dataServiceId: this.rowData.DATA_CLASS_ID,
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       dialogTitle: "新增数据服务信息",
       dataServeDialog: false,
@@ -394,72 +394,77 @@ export default {
         timeUnit: "",
         levelUnit: "",
         levelList: "",
-        timeList: ""
+        timeList: "",
       },
       baseRules: {
         region: [
-          { required: true, message: "请选择区域代码", trigger: "change" }
+          { required: true, message: "请选择区域代码", trigger: "change" },
         ],
         gribVersion: [
-          { required: true, message: "请输入GRIB版本", trigger: "blur" }
+          { required: true, message: "请输入GRIB版本", trigger: "blur" },
         ],
         fieldType: [
-          { required: true, message: "请输入场类型", trigger: "blur" }
+          { required: true, message: "请输入场类型", trigger: "blur" },
         ],
         processType: [
-          { required: true, message: "请输入加工过程类型", trigger: "blur" }
+          { required: true, message: "请输入加工过程类型", trigger: "blur" },
         ],
         dataTime: [
-          { required: true, message: "请输入资料时次", trigger: "blur" }
+          { required: true, message: "请输入资料时次", trigger: "blur" },
         ],
         timeUnit: [
-          { required: true, message: "请输入时效单位", trigger: "blur" }
+          { required: true, message: "请输入时效单位", trigger: "blur" },
         ],
         spatialResolution: [
-          { required: true, message: "请输入空间分辨率", trigger: "blur" }
-        ]
+          { required: true, message: "请输入空间分辨率", trigger: "blur" },
+        ],
       },
       rules: {
         num: [{ required: true, message: "请输入序号", trigger: "blur" }],
         areaId: [
-          { required: true, message: "请选择区域代码", trigger: "change" }
+          { required: true, message: "请选择区域代码", trigger: "change" },
         ],
         dbEleName: [
           {
             required: true,
             message: "请选择格点要素存储代码",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         levelType: [
-          { required: true, message: "请输入层次类型", trigger: "blur" }
+          { required: true, message: "请输入层次类型", trigger: "blur" },
         ],
         gribVersion: [
-          { required: true, message: "请输入GRIB版本", trigger: "blur" }
+          { required: true, message: "请输入GRIB版本", trigger: "blur" },
         ],
         eleUnit: [
-          { min: 0, max: 10, message: "长度在 0 到 10 个字符", trigger: "blur" }
+          {
+            min: 0,
+            max: 10,
+            message: "长度在 0 到 10 个字符",
+            trigger: "blur",
+          },
         ],
         scaleDivisor: [
-          { required: true, message: "请输入层次转换因子", trigger: "blur" }
+          { required: true, message: "请输入层次转换因子", trigger: "blur" },
         ],
         eleNameCn: [
           {
             min: 0,
             max: 255,
             message: "长度在0 到 255 个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         eleLongName: [
           {
             min: 0,
             max: 255,
             message: "长度在0 到 255 个字符",
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
 
@@ -476,7 +481,7 @@ export default {
       }
     },
     searchFun() {
-      dataserverconfiglist(this.searchObj).then(response => {
+      dataserverconfiglist(this.searchObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -488,7 +493,7 @@ export default {
 
     async getFormDetail() {
       await findByDataCLassId({ dataCLassId: this.rowData.DATA_CLASS_ID }).then(
-        response => {
+        (response) => {
           if (response.code == 200 && response.data.length > 0) {
             console.log(response);
             let data = response.data[0];
@@ -501,26 +506,26 @@ export default {
     },
 
     async getAllLevelMethods() {
-      await getAllLevel().then(response => {
+      await getAllLevel().then((response) => {
         this.optionsLevels = response.data;
         this.optionsLevels.push({ levelType: 999998 });
       });
     },
     async modeEleQueryAll() {
-      await serviceCodeQueryAll().then(response => {
+      await serviceCodeQueryAll().then((response) => {
         if (response.code == 200) {
           this.eleQueryAll = response.data;
         } else {
           this.$message({
             type: "error",
-            message: response.msg
+            message: response.msg,
           });
         }
       });
     },
 
     getServeByEle(val) {
-      findByDbFcstEle({ dbFcstEle: val }).then(response => {
+      findByDbFcstEle({ dbFcstEle: val }).then((response) => {
         if (response.code == 200) {
           this.eleOptionsList = response.data;
           if (
@@ -533,7 +538,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: response.msg
+            message: response.msg,
           });
         }
       });
@@ -543,7 +548,7 @@ export default {
     },
     getEleUnit(val) {
       this.$forceUpdate();
-      this.eleOptionsList.forEach(element => {
+      this.eleOptionsList.forEach((element) => {
         if (element.userFcstEle == val) {
           if (this.dialogTitle == "新增数据服务信息") {
             // 新增
@@ -557,21 +562,21 @@ export default {
       });
     },
     addBase() {
-      this.$refs["formBase"].validate(valid => {
+      this.$refs["formBase"].validate((valid) => {
         if (valid) {
           let obj = Object.assign(this.baseSet, this.baseServe);
           obj.dataCLassId = this.rowData.DATA_CLASS_ID;
           console.log(obj);
-          saveBase(obj).then(response => {
+          saveBase(obj).then((response) => {
             if (response.code == 200) {
               this.$message({
                 type: "success",
-                message: "保存成功"
+                message: "保存成功",
               });
             } else {
               this.$message({
                 type: "error",
-                message: response.msg
+                message: response.msg,
               });
             }
           });
@@ -597,13 +602,13 @@ export default {
           gribVersion: this.baseSet.gribVersion,
           timeUnit: this.baseSet.timeUnit,
           areaId: this.baseSet.region,
-          dataServiceId: this.rowData.DATA_CLASS_ID
+          dataServiceId: this.rowData.DATA_CLASS_ID,
         };
         await this.getServeByEle(this.msgFormDialog.dbEleName);
       } else {
         this.$message({
           type: "error",
-          message: "请先设置默认配置"
+          message: "请先设置默认配置",
         });
       }
     },
@@ -611,11 +616,11 @@ export default {
       if (this.multipleSelection.length != 1) {
         this.$message({
           type: "info",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
       } else {
         dataserverconfigget({ id: this.multipleSelection[0].id }).then(
-          response => {
+          (response) => {
             if (response.code == 200) {
               this.getAllLevelMethods();
               this.modeEleQueryAll();
@@ -626,7 +631,7 @@ export default {
             } else {
               this.$message({
                 type: "error",
-                message: response.msg
+                message: response.msg,
               });
             }
           }
@@ -636,7 +641,7 @@ export default {
     deleteCell() {
       let ids = [];
       let areaIds = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
         areaIds.push(element.areaId);
       });
@@ -644,20 +649,20 @@ export default {
       this.$confirm("确认删除" + areaIds.join(",") + "吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          delByIds({ ids: ids.join(",") }).then(res => {
+          delByIds({ ids: ids.join(",") }).then((res) => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               this.searchFun();
             } else {
               this.$message({
                 type: "error",
-                message: res.msg
+                message: res.msg,
               });
             }
           });
@@ -668,7 +673,7 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning"
+          type: "warning",
         });
       } else {
         sessionStorage.setItem(
@@ -677,7 +682,7 @@ export default {
         );
         this.$message({
           message: "复制成功",
-          type: "success"
+          type: "success",
         });
       }
     },
@@ -687,24 +692,24 @@ export default {
       if (pasteArry[0].dataServiceId == this.rowData.DATA_CLASS_ID) {
         this.$message({
           message: "不能在同一个表内插入数据!",
-          type: "info"
+          type: "info",
         });
       } else {
-        pasteArry.forEach(element => {
+        pasteArry.forEach((element) => {
           element.dataServiceId = this.rowData.DATA_CLASS_ID;
           element.id = "";
         });
-        addList(pasteArry).then(response => {
+        addList(pasteArry).then((response) => {
           if (response.code == 200) {
             this.$message({
               message: "插入成功！",
-              type: "success"
+              type: "success",
             });
             this.searchFun();
           } else {
             this.$message({
               type: "error",
-              message: response.msg
+              message: response.msg,
             });
           }
         });
@@ -716,8 +721,10 @@ export default {
     },
     trueHandle(formName) {
       let obj = Object.assign(this.msgFormDialog, this.baseServe);
+      obj.fieldType = this.baseSet.fieldType;
+      obj.processType = this.baseSet.processType;
       console.log(obj);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           let msg = "";
           if (this.dialogTitle == "新增数据服务信息") {
@@ -726,19 +733,19 @@ export default {
           } else {
             msg = "编辑成功";
           }
-          dataserverconfigSave(obj).then(response => {
+          dataserverconfigSave(obj).then((response) => {
             if (response.code == 200) {
               this.searchFun();
               this.$refs[formName].resetFields();
               this.dataServeDialog = false;
               this.$message({
                 type: "success",
-                message: msg
+                message: msg,
               });
             } else {
               this.$message({
                 type: "error",
-                message: response.msg
+                message: response.msg,
               });
             }
           });
@@ -750,7 +757,7 @@ export default {
     },
 
     async gettableInfo() {
-      await gcl({ classLogic: this.rowData.LOGIC_ID }).then(response => {
+      await gcl({ classLogic: this.rowData.LOGIC_ID }).then((response) => {
         if (response.code == 200) {
           let data = response.data;
           let tableInfo_k = [];
@@ -758,14 +765,14 @@ export default {
           for (let i = 0; i < data.length; i++) {
             if (data[i].dbTableType == "K") {
               let colArry = data[i].columns;
-              colArry.forEach(element => {
+              colArry.forEach((element) => {
                 if (element.dbEleCode.slice(0, 1) == "V") {
                   tableInfo_k.push(element);
                 }
               });
             } else if (data[i].dbTableType == "E") {
               let colArry = data[i].columns;
-              colArry.forEach(element => {
+              colArry.forEach((element) => {
                 if (element.dbEleCode.slice(0, 1) == "V") {
                   tableInfo_e.push(element);
                 }
@@ -779,7 +786,7 @@ export default {
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -787,8 +794,8 @@ export default {
 
     async getBaseAreaOptions() {
       await findByDataServiceId({
-        dataServiceId: this.rowData.DATA_CLASS_ID
-      }).then(response => {
+        dataServiceId: this.rowData.DATA_CLASS_ID,
+      }).then((response) => {
         console.log(response);
         this.baseAreaOptions = response.data;
       });
@@ -798,8 +805,8 @@ export default {
       await this.getBaseAreaOptions(); //获取区域下拉框
       this.searchFun();
       await this.getFormDetail();
-    }
-  }
+    },
+  },
 };
 </script>
 

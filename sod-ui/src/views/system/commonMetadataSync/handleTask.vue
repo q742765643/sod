@@ -52,8 +52,9 @@
 import {
   editConfig,
   addConfig,
-  findCfgByPk
+  findCfgByPk,
 } from "@/api/system/commonMetadataSync/index";
+import { getNextTime } from "@/api/schedule/backup/backup";
 import { getDictList } from "@/api/system/commonMetadataSync/select";
 
 export default {
@@ -61,8 +62,8 @@ export default {
 
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     //校验是否为cron表达式
@@ -72,8 +73,8 @@ export default {
       } else {
         let flag = true;
         await getNextTime({
-          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?",
+        }).then((res) => {
           flag = false;
         });
         if (flag) {
@@ -94,25 +95,25 @@ export default {
         apiType: "",
         apiDataKey: "",
         primaryKey: "",
-        jobCron: "0 0 2 * * ?"
+        jobCron: "0 0 2 * * ?",
       },
       tableNames: [],
       rules: {
         taskName: [
-          { required: true, message: "请输入任务名称", trigger: "blur" }
+          { required: true, message: "请输入任务名称", trigger: "blur" },
         ],
         tableName: [{ required: true, message: "选择表名", trigger: "change" }],
         apiUrl: [{ required: true, message: "请输入接口url", trigger: "blur" }],
         apiType: [
-          { required: true, message: "请选择同步类型", trigger: "change" }
+          { required: true, message: "请选择同步类型", trigger: "change" },
         ],
         apiDataKey: [
-          { required: true, message: "请输入接口关键字", trigger: "blur" }
+          { required: true, message: "请输入接口关键字", trigger: "blur" },
         ],
         jobCron: [
-          { required: true, message: "请输入执行策略", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入执行策略", trigger: "blur" },
+        ],
+      },
     };
   },
   async created() {
@@ -120,13 +121,13 @@ export default {
     await this.selectAllTaskName();
     // this.initDetail();
     if (this.handleObj.id) {
-      await findCfgByPk({ id: this.handleObj.id }).then(res => {
+      await findCfgByPk({ id: this.handleObj.id }).then((res) => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
         } else {
           this.$message({
             type: "error",
-            message: "查询失败"
+            message: "查询失败",
           });
         }
       });
@@ -146,15 +147,15 @@ export default {
         return;
       } else {
         getNextTime({
-          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
           let times = res.data;
           let html = "";
-          times.forEach(element => {
+          times.forEach((element) => {
             html += "<p>" + element + "</p>";
           });
           this.$alert(html, "前5次执行时间", {
-            dangerouslyUseHTMLString: true
+            dangerouslyUseHTMLString: true,
           }).then(() => {
             this.CronPopover = false;
           });
@@ -163,34 +164,34 @@ export default {
     },
     trueDialog(formName) {
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (!this.handleObj.id) {
-            addConfig(this.msgFormDialog).then(res => {
+            addConfig(this.msgFormDialog).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "新增成功"
+                  message: "新增成功",
                 });
               } else {
                 this.$message({
                   type: "error",
-                  message: "新增失败"
+                  message: "新增失败",
                 });
               }
               this.$emit("cancelHandle");
             });
           } else {
-            editConfig(this.msgFormDialog).then(res => {
+            editConfig(this.msgFormDialog).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "编辑成功"
+                  message: "编辑成功",
                 });
               } else {
                 this.$message({
                   type: "error",
-                  message: "编辑失败"
+                  message: "编辑失败",
                 });
               }
               this.$emit("cancelHandle");
@@ -206,13 +207,13 @@ export default {
       this.$emit("cancelHandle");
     },
     selectAllTaskName() {
-      getDictList(this.queryParams).then(res => {
+      getDictList(this.queryParams).then((res) => {
         if (res.code == 200) {
           this.tableNames = res.data;
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
