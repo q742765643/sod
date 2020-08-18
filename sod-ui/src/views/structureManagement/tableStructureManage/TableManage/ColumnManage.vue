@@ -695,9 +695,14 @@ export default {
       };
       this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
-      this.columnEditData.serialNumber = Number(
-        this.columnData[this.columnData.length - 1].serialNumber + 1
-      );
+      if (this.columnData.length == 0) {
+        this.columnEditData.serialNumber = 0;
+      } else {
+        this.columnEditData.serialNumber = Number(
+          this.columnData[this.columnData.length - 1].serialNumber + 1
+        );
+      }
+
       this.dialogStatus.columnDialog = true;
     },
 
