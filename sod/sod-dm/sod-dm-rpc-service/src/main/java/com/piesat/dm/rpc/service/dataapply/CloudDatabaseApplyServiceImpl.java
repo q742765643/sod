@@ -133,6 +133,10 @@ public class CloudDatabaseApplyServiceImpl extends BaseService<CloudDatabaseAppl
                 JSONObject object = JSONObject.parseObject(data[0]);
                 String userId = (String) object.get("userId");
                 cloudDatabaseApplyEntity.setUserId(userId);
+                String id = (String) object.get("id");
+                if(StringUtils.isNotNullString(id)){
+                    cloudDatabaseApplyEntity.setId(id);
+                }
             }
         }
         if (StringUtils.isNotNullString(filePath)) {

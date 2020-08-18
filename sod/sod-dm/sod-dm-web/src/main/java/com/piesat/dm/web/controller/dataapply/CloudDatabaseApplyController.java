@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.net.URLDecoder;
 
 /**
  * @author yaya
@@ -39,7 +40,7 @@ import java.util.Map;
 @RequestMapping("/dm/cloudDatabaseApply")
 @Api(value="云数据库审核",tags= {"云数据库审核"})
 public class CloudDatabaseApplyController {
-    
+
     @Autowired
     private CloudDatabaseApplyService cloudDatabaseApplyService;
     @GrpcHthtClient
@@ -87,10 +88,10 @@ public class CloudDatabaseApplyController {
     }
 
     @ApiOperation(value="申请文件下载接口")
-    @RequiresPermissions("dm:cloudDatabaseApply:download")
+    //@RequiresPermissions("dm:cloudDatabaseApply:download")
     @GetMapping(value="/download")
-    public void download(HttpServletRequest request, HttpServletResponse response) {
-        String fullPath = request.getParameter("filePath");
+    public void download(HttpServletRequest request, HttpServletResponse response,String apply_material) {
+        String fullPath = fileAddress + File.separator + request.getParameter("apply_material");
         File file = new File(fullPath);
         String fileName = file.getName();
 
@@ -174,6 +175,12 @@ public class CloudDatabaseApplyController {
             if (applyMaterial != null) {
                 String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
                 if(StringUtils.isNotNullString(originalFileName1)){
+                    //再次进行文件格式判断，防止绕过js上传非法格式文件
+                    String extName = originalFileName1.substring(originalFileName1.lastIndexOf(".")+1);//获取文件扩展名
+                    if(!"jpg".equalsIgnoreCase(extName) && !"jpeg".equalsIgnoreCase(extName) && !"pdf".equalsIgnoreCase(extName) && !"png".equalsIgnoreCase(extName)
+                            && !"gif".equalsIgnoreCase(extName) && !"doc".equalsIgnoreCase(extName) && !"docx".equalsIgnoreCase(extName)){
+                        return ResultT.failed("文件格式错误");
+                    }
                     //新的文件名
                     String newFileName1 = originalFileName1.substring(0,originalFileName1.lastIndexOf(".")) +"_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS",new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
                     newFile = new File(fileAddress + File.separator + newFileName1);
@@ -267,5 +274,22 @@ public class CloudDatabaseApplyController {
     {
         List<UserDto> userDtos = this.userService.findByUserType("11");
         return ResultT.success(userDtos);
+    }
+
+    @ApiOperation(value = "申请材料是否存在")
+    @GetMapping(value = "fileIsExist")
+    public ResultT fileIsExist(HttpServletRequest request,String apply_material) {
+        try {
+            //String fileName = fileAddress + File.separator + apply_material;
+            String fileName = apply_material;
+            File testFile = new File(fileName);
+            if (testFile.exists()) {
+                return ResultT.success();
+            }
+            return ResultT.failed();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }
