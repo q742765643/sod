@@ -100,7 +100,7 @@
             </el-form-item>
           </div>
         </div>
-        <div class="dictData" v-if="dictshowflag">
+        <div class="dictData">
           <div class="dictDataTitle">
             <i class="el-icon-price-tag"></i>数据标签
           </div>
