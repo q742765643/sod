@@ -226,9 +226,9 @@ public class DataClassController {
             JSONArray all = null;
             if ("mysql".equals(DatabseType.type.toLowerCase())) {
                 all = this.dataClassService.getDatabaseClassMysql();
-            } else if("postgresql".equals(DatabseType.type.toLowerCase())) {
+            } else if ("postgresql".equals(DatabseType.type.toLowerCase())) {
                 all = this.dataClassService.getDatabaseClassPostgresql();
-            }else {
+            } else {
                 all = this.dataClassService.getDatabaseClass();
             }
 
@@ -343,4 +343,11 @@ public class DataClassController {
         resultT.setData(dataClassDto);
         return resultT;
     }
+
+    @GetMapping("/haveClassByDataId")
+    @ApiOperation(value = "是否存在四级编码对应资料", notes = "是否存在四级编码对应资料")
+    public ResultT<Boolean> haveClassByDataId(String dataId) {
+        return this.dataClassService.haveClassByDataId(dataId);
+    }
+
 }

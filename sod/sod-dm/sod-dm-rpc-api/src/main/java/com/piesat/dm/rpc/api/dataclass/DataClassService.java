@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -81,4 +82,12 @@ public interface DataClassService {
     DataClassDto updateIsAllLine(DataClassDto dataClassDto);
 
     Map<String, Object> getArchive(String ddataid);
+
+    /**
+     * 是否存在资料
+     *
+     * @param dDataId
+     * @return
+     */
+    ResultT haveClassByDataId(String dataId);
 }

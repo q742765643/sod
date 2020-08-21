@@ -29,6 +29,7 @@ import java.util.Map;
  * @author cwh
  * @date 2020年 04月17日 17:26:49
  */
+@Deprecated
 @Service
 public class BizUserServiceImpl extends BaseService<BizUserEntity> implements BizUserService {
 

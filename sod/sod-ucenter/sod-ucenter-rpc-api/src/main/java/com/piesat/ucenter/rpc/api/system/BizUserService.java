@@ -16,6 +16,7 @@ import java.util.Map;
  * @author cwh
  * @date 2020年 04月17日 17:25:33
  */
+@Deprecated
 @GrpcHthtService(server = GrpcConstant.UCENTER_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface BizUserService {
     UserDto findByBizUserId(String userId);

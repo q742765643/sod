@@ -30,6 +30,7 @@ import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import com.xugu.cloudjdbc.Clob;
@@ -611,5 +612,17 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         map.put("beginTime", beginTime);
         map.put("endTime", endTime);
         return map;
+    }
+
+    @Override
+    public ResultT haveClassByDataId(String dataId) {
+        List<DataClassEntity> dataClassEntities = this.dataClassDao.findByDDataId(dataId);
+        if (dataClassEntities.size() > 0) {
+            List<DataLogicDto> dataLogicDto = this.dataLogicService.findByDataClassId(dataClassEntities.get(0).getDataClassId());
+            if (dataLogicDto.size() > 0) {
+                return ResultT.success(true);
+            }
+        }
+        return ResultT.success(false);
     }
 }

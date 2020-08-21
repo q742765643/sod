@@ -122,6 +122,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         List<UserEntity> userEntities = userMapper.selectUserList(userEntity);
         PageInfo<UserEntity> pageInfo = new PageInfo<>(userEntities);
         List<UserDto> userDtos = userMapstruct.toDto(pageInfo.getList());
+        userDtos.forEach(e -> {
+            e.setPassword("");
+        });
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), userDtos);
         return pageBean;
     }
@@ -234,6 +237,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public UserDto selectUserById(String userId) {
         UserEntity userEntity = this.getById(userId);
+        userEntity.setPassword("");
         List<String> roles = roleMapper.selectRoleListByUserId(userId);
         userEntity.setRoleIds(roles.toArray(new String[roles.size()]));
         return userMapstruct.toDto(userEntity);
@@ -262,6 +266,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     public void exportExcel(UserDto userDto) {
         UserEntity userEntity = userMapstruct.toEntity(userDto);
         List<UserEntity> entities = userMapper.selectUserList(userEntity);
+        entities.forEach(e -> {
+            e.setPassword("");
+        });
         ExcelUtil<UserEntity> util = new ExcelUtil(UserEntity.class);
         util.exportExcel(entities, "用户");
     }
@@ -372,7 +379,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             spMap.put("USER_ID", bizUserid);
             spMap.put("USES", remark);
             spMap.put("DATABASE_ID", dbIds);
-            String schemaName = bizUserid.replace("USR_","");
+            String schemaName = bizUserid.replace("USR_", "");
             spMap.put("DATABASE_SCHEMA_ID", schemaName);
             JSONObject jj = new JSONObject();
             jj.put("userId", bizUserid);
@@ -504,7 +511,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                 spMap.put("USER_ID", bizUserid);
                 spMap.put("USES", remark);
                 spMap.put("DATABASE_ID", dbIds);
-                String schemaName = bizUserid.replace("USR_","");
+                String schemaName = bizUserid.replace("USR_", "");
                 spMap.put("DATABASE_SCHEMA_ID", schemaName);
                 JSONObject jj = new JSONObject();
                 jj.put("userId", bizUserid);
@@ -558,6 +565,9 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<UserEntity> userEntitys = (List<UserEntity>) pageBean.getPageData();
         List<UserDto> userDtos = this.userMapstruct.toDto(userEntitys);
+        userDtos.forEach(e -> {
+            e.setPassword("");
+        });
         pageBean.setPageData(userDtos);
         return pageBean;
     }
@@ -590,8 +600,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
             specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userName);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        List<UserEntity> all = this.getAll(specificationBuilder.generateSpecification(),sort);
-
+        List<UserEntity> all = this.getAll(specificationBuilder.generateSpecification(), sort);
+        all.forEach(e -> {
+            e.setPassword("");
+        });
         return this.userMapstruct.toDto(all);
     }
 

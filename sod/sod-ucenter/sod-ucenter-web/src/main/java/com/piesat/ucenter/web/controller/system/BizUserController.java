@@ -20,11 +20,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 注册用户
+ * 注册用户(废弃)
  *
  * @author cwh
  * @date 2020年 04月20日 10:55:15
  */
+@Deprecated
 @RestController
 @Api(value = "注册用户", tags = {"注册用户"})
 @RequestMapping("/system/bizuser")
@@ -37,7 +38,7 @@ public class BizUserController {
     private String outFilePath;
 
     @PostMapping(value = "/save")
-    @RequiresPermissions("system:bizuser:list")
+//    @RequiresPermissions("system:bizuser:list")
     @ApiOperation(value = "添加", notes = "添加")
     public ResultT save(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
         try {
@@ -54,7 +55,7 @@ public class BizUserController {
                     newFile.getParentFile().mkdirs();
                 }
                 //存入
-                applyPaper.transferTo(newFile);
+//                applyPaper.transferTo(newFile);
             }
             ResultT add = bizUserService.add(parameterMap, newFile == null ? "" : newFile.getPath());
             return add;

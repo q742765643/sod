@@ -13,6 +13,7 @@ import java.util.List;
  * @author cwh
  * @date 2020年 04月17日 17:23:01
  */
+@Deprecated
 @Repository
 public interface BizUserDao extends BaseDao<BizUserEntity> {
     BizUserEntity findByBizUserIdAndChecked(String userId,String check);
