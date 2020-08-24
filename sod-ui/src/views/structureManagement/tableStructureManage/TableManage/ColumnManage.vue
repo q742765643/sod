@@ -1306,6 +1306,11 @@ export default {
         } else if (element.isPrimaryKey === "否") {
           element.isPrimaryKey = "false";
         }
+        if (this.tableType == "E-Kshow") {
+          element.isKvK = true;
+        } else if (this.tableType == "E-Eshow") {
+          element.isKvK = false;
+        }
         element.isNull = element.isNull.toLowerCase();
         element.isUpdate = element.isUpdate.toLowerCase();
         element.isShow = element.isShow.toLowerCase();
