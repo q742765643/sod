@@ -4,7 +4,6 @@
       <el-step title="数据库访问账户" icon="el-icon-menu"></el-step>
       <el-step title="专题库" icon="el-icon-s-ticket" v-show="handleMsgObj.dbCreate=='1'"></el-step>
       <el-step title="资料访问权限审核" icon="el-icon-s-finance" v-show="handleMsgObj.sodData=='1'">></el-step>
-      <el-step title="完成" icon="el-icon-circle-check"></el-step>
     </el-steps>
     <el-card class="box-card" shadow="never" v-if="stepNum==0">
       <handleAccount :handleObj="handleObj" ref="AccountRef" @handleDialogClose="handleClose" />
@@ -76,15 +75,19 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-card class="box-card" shadow="never" v-if="stepNum==3">
-      <span style="font-size: 26px;display:block;text-align:center;">
-        <i class="el-icon-circle-check"></i> 完成
-      </span>
-    </el-card>
+
     <div class="dialog-footer" style="margin-top:20px;">
-      <el-button type="danger" v-if="stepNum==0" @click="finishStep(2)">拒绝</el-button>
-      <el-button type="primary" v-if="stepNum==2||stepNum==3" @click="finishStep(1)">通过</el-button>
-      <el-button type="primary" v-if="stepNum!=2&&dbIds" @click="nextStep" :disabled="nextFlag">下一步</el-button>
+      <el-button type="danger" @click="finishStep(2)">拒绝</el-button>
+      <el-button
+        type="primary"
+        v-if="stepNum==1||stepNum==2 || (handleMsgObj.dbCreate!=1 &&handleMsgObj.sodData !=1)"
+        @click="finishStep(1)"
+      >通过</el-button>
+      <el-button
+        type="primary"
+        v-if="(stepNum==0 ||stepNum==1)&&(handleMsgObj.dbCreate==1 || handleMsgObj.sodData ==1)"
+        @click="nextStep"
+      >下一步</el-button>
     </div>
   </section>
 </template>
@@ -116,6 +119,21 @@ export default {
     },
   },
   components: { handleAccount, handleLibrary, handleMaterial },
+  watch: {
+    handleObj: function () {
+      this.$nextTick(function () {
+        /*现在数据已经渲染完毕*/
+        if (
+          this.handleObj.dbCreate != 1 &&
+          this.handleObj.sodData != 1 &&
+          this.stepNum == 0
+        ) {
+          document.getElementsByClassName("el-step__line")[0].style.display =
+            "none";
+        }
+      });
+    },
+  },
   data() {
     return {
       forId: this.handleMsgObj.userName,
@@ -133,8 +151,8 @@ export default {
     this.handleObj = Object.assign(this.handleMsgObj, this.handleObj);
     this.dbIds = this.handleObj.dbIds;
     console.log(this.dbIds);
-    if (this.handleObj.dbIds) {
-      databaseUserExiget({
+    /*  if (this.handleObj.dbIds) {
+      await databaseUserExiget({
         databaseUpId: this.handleObj.userName,
         applyDatabaseId: this.handleObj.dbIds,
       }).then((response) => {
@@ -142,7 +160,7 @@ export default {
       });
     } else {
       this.nextFlag = true;
-    }
+    } */
   },
 
   methods: {

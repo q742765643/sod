@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller.dataapply;
 
+import com.piesat.common.constant.FileTypesConstant;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
@@ -14,6 +15,7 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +41,7 @@ import java.net.URLDecoder;
  */
 @RestController
 @RequestMapping("/dm/cloudDatabaseApply")
-@Api(value="云数据库审核",tags= {"云数据库审核"})
+@Api(value = "云数据库审核", tags = {"云数据库审核"})
 public class CloudDatabaseApplyController {
 
     @Autowired
@@ -63,21 +66,24 @@ public class CloudDatabaseApplyController {
         return resultT;
     }
 
-    @ApiOperation(value="申请文件上传接口")
-    @PostMapping(value="/upload")
+    @ApiOperation(value = "申请文件上传接口")
+    @PostMapping(value = "/upload")
     @RequiresPermissions("dm:cloudDatabaseApply:upload")
     public ResultT uploadFile(MultipartHttpServletRequest request) {
         try {
             // 获取文件存储路径 , 如果没有 , 创建
-            if(!Paths.get(fileAddress).toFile().exists()){
+            if (!Paths.get(fileAddress).toFile().exists()) {
                 Paths.get(fileAddress).toFile().mkdirs();
             }
             List<MultipartFile> fileList = request.getFiles("filename");
-            Date now = new Date();
             MultipartFile mf = fileList.get(0);
             //文件路径
             String filePath = fileAddress + mf.getOriginalFilename();
-            String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
+            String fileSuffix = FilenameUtils.getExtension(mf.getOriginalFilename());
+            boolean b = Arrays.stream(FileTypesConstant.ALLOW_TYPES).anyMatch(e -> e.equalsIgnoreCase(fileSuffix));
+            if (!b) {
+                return ResultT.failed("文件格式不支持！");
+            }
             //上传文件到服务器指定路径
             FileCopyUtils.copy(mf.getBytes(), new File(filePath));
             return ResultT.success(filePath);
@@ -87,15 +93,16 @@ public class CloudDatabaseApplyController {
         }
     }
 
-    @ApiOperation(value="申请文件下载接口")
+
+    @ApiOperation(value = "申请文件下载接口")
     //@RequiresPermissions("dm:cloudDatabaseApply:download")
-    @GetMapping(value="/download")
-    public void download(HttpServletRequest request, HttpServletResponse response,String apply_material) {
+    @GetMapping(value = "/download")
+    public void download(HttpServletRequest request, HttpServletResponse response, String apply_material) {
         String fullPath = fileAddress + File.separator + request.getParameter("apply_material");
         File file = new File(fullPath);
         String fileName = file.getName();
 
-        if(file.exists()){
+        if (file.exists()) {
             try {
                 String userAgent = request.getHeader("User-Agent");
                 if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
@@ -120,10 +127,10 @@ public class CloudDatabaseApplyController {
                 outputStream.write(buffer);
                 outputStream.flush();
                 outputStream.close();
-            }catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }else{
+        } else {
             try {
                 response.setContentType("text/html; charset=UTF-8"); //转码
                 PrintWriter out = response.getWriter();
@@ -156,11 +163,10 @@ public class CloudDatabaseApplyController {
     @PutMapping("/edit")
     @RequiresPermissions("dm:cloudDatabaseApply:edit")
     @ApiOperation(value = "编辑", notes = "编辑")
-    public ResultT<CloudDatabaseApplyDto> edit(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
-    {
-        ResultT<CloudDatabaseApplyDto> resultT=new ResultT<>();
+    public ResultT<CloudDatabaseApplyDto> edit(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
+        ResultT<CloudDatabaseApplyDto> resultT = new ResultT<>();
         cloudDatabaseApplyDto.setExamineTime(new Date());
-        cloudDatabaseApplyDto= this.cloudDatabaseApplyService.updateDto(cloudDatabaseApplyDto);
+        cloudDatabaseApplyDto = this.cloudDatabaseApplyService.updateDto(cloudDatabaseApplyDto);
         resultT.setData(cloudDatabaseApplyDto);
         return resultT;
     }
@@ -174,15 +180,15 @@ public class CloudDatabaseApplyController {
             File newFile = null;
             if (applyMaterial != null) {
                 String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
-                if(StringUtils.isNotNullString(originalFileName1)){
+                if (StringUtils.isNotNullString(originalFileName1)) {
                     //再次进行文件格式判断，防止绕过js上传非法格式文件
-                    String extName = originalFileName1.substring(originalFileName1.lastIndexOf(".")+1);//获取文件扩展名
-                    if(!"jpg".equalsIgnoreCase(extName) && !"jpeg".equalsIgnoreCase(extName) && !"pdf".equalsIgnoreCase(extName) && !"png".equalsIgnoreCase(extName)
-                            && !"gif".equalsIgnoreCase(extName) && !"doc".equalsIgnoreCase(extName) && !"docx".equalsIgnoreCase(extName)){
+                    String extension = FilenameUtils.getExtension(originalFileName1);
+                    boolean b = Arrays.stream(FileTypesConstant.ALLOW_TYPES).anyMatch(e -> e.equalsIgnoreCase(extension));
+                   if (!b){
                         return ResultT.failed("文件格式错误");
                     }
                     //新的文件名
-                    String newFileName1 = originalFileName1.substring(0,originalFileName1.lastIndexOf(".")) +"_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS",new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                    String newFileName1 = originalFileName1.substring(0, originalFileName1.lastIndexOf(".")) + "_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS", new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
                     newFile = new File(fileAddress + File.separator + newFileName1);
                     if (!newFile.getParentFile().exists()) {
                         newFile.getParentFile().mkdirs();
@@ -202,10 +208,9 @@ public class CloudDatabaseApplyController {
     @GetMapping("/updateExamineStatus")
     @RequiresPermissions("dm:cloudDatabaseApply:updateExamineStatus")
     @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
-    public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id,String examineStatus)
-    {
-        ResultT<CloudDatabaseApplyDto> resultT=new ResultT<>();
-        CloudDatabaseApplyDto cloudDatabaseApplyDto = this.cloudDatabaseApplyService.updateExamineStatus(id,examineStatus);
+    public ResultT<CloudDatabaseApplyDto> updateExamineStatus(String id, String examineStatus) {
+        ResultT<CloudDatabaseApplyDto> resultT = new ResultT<>();
+        CloudDatabaseApplyDto cloudDatabaseApplyDto = this.cloudDatabaseApplyService.updateExamineStatus(id, examineStatus);
         resultT.setData(cloudDatabaseApplyDto);
         return resultT;
     }
@@ -213,10 +218,9 @@ public class CloudDatabaseApplyController {
     @GetMapping(value = "/getById")
     @RequiresPermissions("dm:cloudDatabaseApply:getById")
     @ApiOperation(value = "根据id查询", notes = "根据id查询")
-    public ResultT<CloudDatabaseApplyDto> getById(String id)
-    {
-        ResultT<CloudDatabaseApplyDto> resultT=new ResultT<>();
-        CloudDatabaseApplyDto cloudDatabaseApplyDto= this.cloudDatabaseApplyService.getDotById(id);
+    public ResultT<CloudDatabaseApplyDto> getById(String id) {
+        ResultT<CloudDatabaseApplyDto> resultT = new ResultT<>();
+        CloudDatabaseApplyDto cloudDatabaseApplyDto = this.cloudDatabaseApplyService.getDotById(id);
         resultT.setData(cloudDatabaseApplyDto);
         return resultT;
     }
@@ -224,9 +228,8 @@ public class CloudDatabaseApplyController {
     @DeleteMapping("/deleteById")
 //    @RequiresPermissions("dm:cloudDatabaseApply:deleteById")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
-    public ResultT<String> remove(String id)
-    {
-        ResultT<String> resultT=new ResultT<>();
+    public ResultT<String> remove(String id) {
+        ResultT<String> resultT = new ResultT<>();
         this.cloudDatabaseApplyService.deleteById(id);
         return resultT;
     }
@@ -234,9 +237,8 @@ public class CloudDatabaseApplyController {
     @DeleteMapping("/deleteByIdPortal")
     @RequiresPermissions("dm:cloudDatabaseApply:deleteByIdPortal")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
-    public ResultT<String> deleteByIdPortal(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto)
-    {
-        ResultT<String> resultT=new ResultT<>();
+    public ResultT<String> deleteByIdPortal(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
+        ResultT<String> resultT = new ResultT<>();
         this.cloudDatabaseApplyService.deleteById(cloudDatabaseApplyDto.getId());
         return resultT;
     }
@@ -244,41 +246,39 @@ public class CloudDatabaseApplyController {
     @ApiOperation(value = "根据字典类型查询")
     @GetMapping("/getDictDataByType/{type}")
     @RequiresPermissions("dm:cloudDatabaseApply:getDictDataByType")
-    public ResultT getDictDataByType(@PathVariable String type){
+    public ResultT getDictDataByType(@PathVariable String type) {
         List<DictDataDto> dictDataDtos = dictDataService.selectDictDataByType(type);
-        return  ResultT.success(dictDataDtos);
+        return ResultT.success(dictDataDtos);
     }
 
     @GetMapping(value = "/getByUserId")
     @RequiresPermissions("dm:cloudDatabaseApply:getByUserId")
     @ApiOperation(value = "根据用户id查询", notes = "根据用户id查询")
-    public ResultT<List<CloudDatabaseApplyDto>> getByUserId(String userId)
-    {
-        ResultT<List<CloudDatabaseApplyDto>> resultT=new ResultT<>();
+    public ResultT<List<CloudDatabaseApplyDto>> getByUserId(String userId) {
+        ResultT<List<CloudDatabaseApplyDto>> resultT = new ResultT<>();
         List<CloudDatabaseApplyDto> cloudDatabaseApplyDtos = this.cloudDatabaseApplyService.getByUserId(userId);
         resultT.setData(cloudDatabaseApplyDtos);
         return resultT;
     }
+
     @GetMapping(value = "/getRecentTime")
     @RequiresPermissions("dm:cloudDatabaseApply:getRecentTime")
     @ApiOperation(value = "根据存储编码和cts编码查询进线时间", notes = "根据存储编码和cts编码查询进线时间")
-    public ResultT getRecentTime(String classDataId, String ctsCode)
-    {
-        Map<String, Object> map = this.cloudDatabaseApplyService.getRecentTime(classDataId,ctsCode);
+    public ResultT getRecentTime(String classDataId, String ctsCode) {
+        Map<String, Object> map = this.cloudDatabaseApplyService.getRecentTime(classDataId, ctsCode);
         return ResultT.success(map);
     }
 
     @GetMapping(value = "/getAllPortalUser")
     @ApiOperation(value = "获取所有业务用户", notes = "获取所有业务用户")
-    public ResultT getAllPortalUser()
-    {
+    public ResultT getAllPortalUser() {
         List<UserDto> userDtos = this.userService.findByUserType("11");
         return ResultT.success(userDtos);
     }
 
     @ApiOperation(value = "申请材料是否存在")
     @GetMapping(value = "fileIsExist")
-    public ResultT fileIsExist(HttpServletRequest request,String apply_material) {
+    public ResultT fileIsExist(HttpServletRequest request, String apply_material) {
         try {
             //String fileName = fileAddress + File.separator + apply_material;
             String fileName = apply_material;

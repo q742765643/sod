@@ -19,12 +19,12 @@ export function createSign(param) {
   let pro = Object.keys(param).sort()
   let result = '';
   for (let i = 0; i < pro.length; i++) {
-    if (typeof  param[pro[i]] != 'undefined') {
-        result = result + pro[i] + "=" + param[pro[i]] + "&";
+    if (typeof param[pro[i]] != 'undefined') {
+      result = result + pro[i] + "=" + param[pro[i]] + "&";
     }
 
   }
-  console.log(result)
+
   let sign = md5(result).toUpperCase();
   return sign
 

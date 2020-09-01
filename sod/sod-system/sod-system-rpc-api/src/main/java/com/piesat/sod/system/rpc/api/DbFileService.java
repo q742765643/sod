@@ -3,6 +3,7 @@ package com.piesat.sod.system.rpc.api;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.sod.system.rpc.dto.DbFileDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -40,7 +41,7 @@ public interface DbFileService {
 	 * @param request
 	 * @throws Exeption
 	 */
-	void save(MultipartHttpServletRequest request) throws Exception;
+	ResultT save(MultipartHttpServletRequest request) throws Exception;
 	/**
 	 *  根据id批量删除记录
 	 * @description

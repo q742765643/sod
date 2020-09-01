@@ -52,7 +52,9 @@ public class DatabaseSqlService {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
             column.append(" COMMENT '").append(ds.getEleName()).append("'");
-            if (i < dataStructures.size() - 1) column.append(",\n");
+            if (i < dataStructures.size() - 1) {
+                column.append(",\n");
+            }
             columns.append(column);
         }
         String dp_shard = "";
@@ -174,7 +176,9 @@ public class DatabaseSqlService {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
             column.append(" COMMENT '").append(ds.getEleName()).append("'");
-            if (i < dataStructures.size() - 1) column.append(",\n");
+            if (i < dataStructures.size() - 1) {
+                column.append(",\n");
+            }
             columns.append(column);
         }
         String dp_shard = "";
@@ -323,7 +327,9 @@ public class DatabaseSqlService {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
             comments.append(" COMMENT ON COLUMN ").append(schema+"."+dataTable.getTableName()+"."+ds.getDbEleCode() +" IS '").append(ds.getEleName()).append("'").append(";\n");
-            if (i < dataStructures.size() - 1) column.append(",\n");
+            if (i < dataStructures.size() - 1) {
+                column.append(",\n");
+            }
             columns.append(column);
         }
         String dp_shard = "";

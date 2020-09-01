@@ -456,9 +456,14 @@
       append-to-body
       v-dialogDrag
     >
-      <el-row :v-if="exportInnerVisible">
+      <el-row>
         <el-col :span="12">
-          <input-excel @getResult="getMyExcelData"></input-excel>
+          <input-excel
+            :uploadTableId="uploadTableId"
+            :tableType="tableType"
+            :tableColumn="uploadColumnData"
+            @getResult="getMyExcelData"
+          ></input-excel>
         </el-col>
         <el-col :span="12">
           <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">模板下载</el-button>
@@ -517,7 +522,7 @@ export default {
       }
     };
     const numValidate = (rule, value, callback) => {
-      if (!value) {
+      if (value === "" || value === null || value === undefined) {
         callback(new Error("请输入序号"));
       } else {
         let flag = false;
@@ -539,6 +544,9 @@ export default {
       }
     };
     return {
+      uploadTableId: "",
+      uploadTableType: "",
+      uploadColumnData: [],
       tableStructureManageContral: false,
       codeTitle: "新增字段",
       dialogStatus: {
@@ -695,9 +703,14 @@ export default {
       };
       this.getDictByTypeMethods("table_column_type");
       this.codeTitle = "新增字段";
-      this.columnEditData.serialNumber = Number(
-        this.columnData[this.columnData.length - 1].serialNumber + 1
-      );
+      if (this.columnData.length == 0) {
+        this.columnEditData.serialNumber = 0;
+      } else {
+        this.columnEditData.serialNumber = Number(
+          this.columnData[this.columnData.length - 1].serialNumber + 1
+        );
+      }
+
       this.dialogStatus.columnDialog = true;
     },
 
@@ -923,6 +936,9 @@ export default {
         });
         return;
       }
+      this.uploadTableType = this.tableType;
+      this.uploadColumnData = this.tableInfo.columns;
+      this.uploadTableId = this.tableInfo.id;
       this.exportInnerVisible = true;
     },
 
@@ -1170,7 +1186,7 @@ export default {
         }
       });
     },
-    getMyExcelData(data) {
+    getMyExcelData(data, getTableId, gettableType, gettableColumn) {
       let tableJson = [
         { name: "公共元数据字段", value: "dbEleCode" },
         { name: "字段编码", value: "celementCode" },
@@ -1216,7 +1232,7 @@ export default {
       let flagmsg = "";
       dataJson.forEach((element) => {
         element.id = "";
-        element.tableId = this.tableInfo.id;
+        element.tableId = getTableId;
 
         if (!element.dbEleCode) {
           flag = true;
@@ -1239,7 +1255,8 @@ export default {
           flagmsg = "字段编码不允许输入小写字母和中文，且需以大写字母开头";
           return;
         }
-        this.columnData.forEach((c) => {
+        let tableArry = JSON.parse(gettableColumn);
+        tableArry.forEach((c) => {
           if (c.celementCode == element.celementCode) {
             flag = true;
             flagmsg = "字段编码不能重复";
@@ -1300,6 +1317,11 @@ export default {
           element.isPrimaryKey = "true";
         } else if (element.isPrimaryKey === "否") {
           element.isPrimaryKey = "false";
+        }
+        if (gettableType == "E-Kshow") {
+          element.isKvK = true;
+        } else if (gettableType == "E-Eshow") {
+          element.isKvK = false;
         }
         element.isNull = element.isNull.toLowerCase();
         element.isUpdate = element.isUpdate.toLowerCase();

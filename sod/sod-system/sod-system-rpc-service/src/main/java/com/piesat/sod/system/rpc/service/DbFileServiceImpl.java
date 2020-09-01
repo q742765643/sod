@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.*;
 
+import com.piesat.common.constant.FileTypesConstant;
+import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -154,25 +156,31 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 	 * @throws Exception
 	 */
 	@Override
-	public void save(MultipartHttpServletRequest request){
+	public ResultT save(MultipartHttpServletRequest request){
 		try{
 			// 获取文件存储路径 , 如果没有 , 创建
-			if(!Paths.get(fileArr).toFile().exists())
+			if(!Paths.get(fileArr).toFile().exists()) {
 				Paths.get(fileArr).toFile().mkdirs();
+			}
 
 			List<MultipartFile> fileList = request.getFiles("file");
 			Date now = new Date();
 			for(MultipartFile mf:fileList) {
 				DbFileEntity dfe = new DbFileEntity();
+				String originalFilename = mf.getOriginalFilename();
 				//文件路径
-				String filePath = fileArr + "/" +mf.getOriginalFilename();
-				String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.')+1);
+				String filePath = fileArr + "/" +originalFilename;
+				String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf('.')+1);
+				boolean b = Arrays.stream(FileTypesConstant.ALLOW_TYPES).anyMatch(e -> e.equalsIgnoreCase(fileSuffix));
+				if (!b){
+					return ResultT.failed("文件格式错误");
+				}
 				String fileType = request.getParameter("fileType");
-				dfe.setFileName(mf.getOriginalFilename());
+				dfe.setFileName(originalFilename);
 				dfe.setFileSuffix(fileSuffix);
 				dfe.setUpdateTime(now);
 				dfe.setFileType(fileType);
-				dfe.setFileStorName(mf.getOriginalFilename());
+				dfe.setFileStorName(originalFilename);
 				dfe.setFileStorPath(filePath);
 				dfe.setFilePictrue("文档");
 				//上传文件到服务器指定路径
@@ -181,7 +189,9 @@ public class DbFileServiceImpl extends BaseService<DbFileEntity> implements DbFi
 			}
 		}catch (Exception e){
 			e.printStackTrace();
+			return ResultT.failed("上传失败");
 		}
+		return ResultT.success();
 	}
 
 	/**

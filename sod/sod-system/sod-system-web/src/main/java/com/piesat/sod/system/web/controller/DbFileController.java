@@ -73,8 +73,8 @@ public class DbFileController {
     @Log(title = "数据库文档管理", businessType = BusinessType.INSERT)
 	public ResultT uploadFile(MultipartHttpServletRequest request) {
 		try {
-			dbFileService.save(request);
-			return ResultT.success();
+			ResultT save = dbFileService.save(request);
+			return save;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResultT.failed(e.getMessage());

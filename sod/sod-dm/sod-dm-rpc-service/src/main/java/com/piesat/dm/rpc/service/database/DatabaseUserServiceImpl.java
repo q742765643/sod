@@ -125,7 +125,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         List<DatabaseDefineEntity> databaseDefineEntities = databaseDefineDao.findAll();
         if (databaseUserDtoList != null && databaseUserDtoList.size() > 0 && databaseDefineEntities != null && databaseDefineEntities.size() > 0) {
             for (DatabaseUserDto dto : databaseUserDtoList) {
-
+                dto.setDatabaseUpPassword("");
                 //获取数据库中文名称
                 if (StringUtils.isNotEmpty(dto.getExamineDatabaseId())) {
                     String[] examineDatabaseIdArray = dto.getExamineDatabaseId().split(",");

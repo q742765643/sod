@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller.database;
 
+import com.piesat.common.constant.FileTypesConstant;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DateUtils;
@@ -20,6 +21,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jdk.nashorn.internal.runtime.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,17 +144,22 @@ public class DatabaseUserManagerController {
                 Paths.get(fileAddress).toFile().mkdirs();
             }
             List<MultipartFile> fileList = request.getFiles("filename");
-            Date now = new Date();
             MultipartFile mf = fileList.get(0);
             //文件路径
             String filePath = fileAddress + "/" + mf.getOriginalFilename();
-            String fileSuffix = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf('.'));
+            String fileSuffix = FilenameUtils.getExtension(mf.getOriginalFilename());
+            boolean b = Arrays.stream(FileTypesConstant.ALLOW_TYPES).anyMatch(e -> e.equalsIgnoreCase(fileSuffix));
+            if (!b) {
+                return ResultT.failed("文件格式不支持！");
+            }
             //上传文件到服务器指定路径
             FileCopyUtils.copy(mf.getBytes(), new File(filePath));
             //转换PDF
             String pdfName = mf.getOriginalFilename().substring(0, mf.getOriginalFilename().lastIndexOf(".")) + ".pdf";
             String pdfPath = fileAddress + "/" + pdfName;
-            Doc2PDF.doc2pdf(filePath, pdfPath);
+            if(!fileSuffix.equalsIgnoreCase("pdf")){
+                Doc2PDF.doc2pdf(filePath, pdfPath);
+            }
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("filePath", filePath);
             resultMap.put("pdfPath", httpPath + "/user/" + pdfName);
@@ -279,7 +286,7 @@ public class DatabaseUserManagerController {
     @ApiOperation(value = "获取业务注册数据库用户")
     @RequiresPermissions("dm:databaseUser:getBizDatabaseUser")
     @GetMapping(value = "/getBizDatabaseUser")
-    public ResultT getBizDatabaseUser(String userId,String databaseUpId) {
+    public ResultT getBizDatabaseUser(String userId, String databaseUpId) {
         DatabaseUserDto byUserId = this.databaseUserService.findByUserIdAndDatabaseUpId(userId, databaseUpId);
         return ResultT.success(byUserId);
     }
@@ -416,9 +423,9 @@ public class DatabaseUserManagerController {
                     }
                     //存入
                     applyMaterial.transferTo(newFile);
-                    if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
-                        parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
-                    }else{
+                    if (newFile.getName().endsWith(".pdf") || newFile.getName().endsWith(".PDF")) {
+                        parameterMap.put("pdfPath", new String[]{httpPath + "/filePath/" + newFile.getName()});
+                    } else {
                         //转换PDF
                         String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
                         String pdfPath = fileAddress + "/" + pdfName;
