@@ -123,7 +123,11 @@ export default {
     handleObj: function () {
       this.$nextTick(function () {
         /*现在数据已经渲染完毕*/
-        if (this.handleObj.dbCreate != 1 && this.handleObj.sodData != 1) {
+        if (
+          this.handleObj.dbCreate != 1 &&
+          this.handleObj.sodData != 1 &&
+          this.stepNum == 0
+        ) {
           document.getElementsByClassName("el-step__line")[0].style.display =
             "none";
         }
