@@ -658,6 +658,22 @@
                   where a.data_class_id = b.data_class_id and b.sdb_id = #{sdbId} and b.examine_status = 1
     </select>
 
+    <update id="updateSpecialTreeData">
+        update t_sod_database_special_tree
+        set type_name=#{typeName}
+        <where>
+            <if test="sdbId != null and sdbId  != ''">
+                and sdb_id = #{sdbId}
+            </if>
+            <if test="typeId != null  and typeId  != ''">
+                and type_id = #{typeId}
+            </if>
+            <if test="parentId != null  and parentId  != ''">
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </update>
+
     <select id="getRecordSpecialByTdbId" resultType="java.util.Map">
         select  b.data_class_id,b.database_id,b.apply_authority,b.empower_authority,b.examine_status,b.failure_reason,d.data_service_name,d.table_name,e.class_name,
                 c.database_name,cc.database_name as special_database_name,

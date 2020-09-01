@@ -15,4 +15,6 @@ import java.util.List;
 public interface DatabaseSpecialTreeDao extends BaseDao<DatabaseSpecialTreeEntity> {
 
     List<DatabaseSpecialTreeEntity> findBySdbId(String sdbId);
+
+    DatabaseSpecialTreeEntity findBySdbIdAndTypeId(String sdbId,String typeId);
 }
