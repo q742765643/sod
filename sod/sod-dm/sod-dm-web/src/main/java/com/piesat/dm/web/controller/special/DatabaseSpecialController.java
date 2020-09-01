@@ -533,17 +533,10 @@ public class DatabaseSpecialController {
 
     @ApiOperation(value = "保存专题库资料树")
     @RequiresPermissions("dm:databaseSpecial:saveTreeData")
-<<<<<<< .merge_file_a18672
     @PostMapping(value = "/saveTreeData")
     public  ResultT saveTreeData(@RequestBody DatabaseSpecialTreeDto databaseSpecialTreeDto){
         try {
             Map<String,Object> map =  this.databaseSpecialTreeService.saveTreeData(databaseSpecialTreeDto);
-=======
-    @GetMapping(value = "/saveTreeData")
-    public ResultT saveTreeData(String tdbId, HttpServletRequest request) {
-        try {
-            Map<String, Object> map = this.databaseSpecialTreeService.saveTreeData(tdbId, request);
->>>>>>> .merge_file_a23060
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
@@ -553,17 +546,10 @@ public class DatabaseSpecialController {
 
     @ApiOperation(value = "根据专题库ID号和分类ID修改对应分类名称、上级分类、排序")
     @RequiresPermissions("dm:databaseSpecial:updateOneRecordByTdbId")
-<<<<<<< .merge_file_a18672
     @PostMapping(value = "/updateOneRecordByTdbId")
     public  ResultT updateOneRecordByTdbId(@RequestBody DatabaseSpecialTreeDto databaseSpecialTreeDto){
         try {
             Map<String,Object> map =  this.databaseSpecialTreeService.updateOneRecordByTdbId(databaseSpecialTreeDto);
-=======
-    @GetMapping(value = "/updateOneRecordByTdbId")
-    public ResultT updateOneRecordByTdbId(HttpServletRequest request) {
-        try {
-            Map<String, Object> map = this.databaseSpecialTreeService.updateOneRecordByTdbId(request);
->>>>>>> .merge_file_a23060
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
