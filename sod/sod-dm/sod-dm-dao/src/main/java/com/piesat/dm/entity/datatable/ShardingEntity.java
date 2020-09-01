@@ -28,7 +28,7 @@ public class ShardingEntity extends BaseEntity {
      * 列名
      * column_name
      */
-    @Column(name = "column_name", length = 255, nullable = false)
+    @Column(name = "column_name", length = 255)
     private String columnName;
 
     /**

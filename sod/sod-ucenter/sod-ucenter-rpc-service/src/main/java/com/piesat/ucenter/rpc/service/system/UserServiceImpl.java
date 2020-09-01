@@ -237,7 +237,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public UserDto selectUserById(String userId) {
         UserEntity userEntity = this.getById(userId);
-        userEntity.setPassword("");
         List<String> roles = roleMapper.selectRoleListByUserId(userId);
         userEntity.setRoleIds(roles.toArray(new String[roles.size()]));
         return userMapstruct.toDto(userEntity);
