@@ -119,12 +119,16 @@ export default {
     },
   },
   components: { handleAccount, handleLibrary, handleMaterial },
-  watch: {
-    handleObj: function () {
-      this.$nextTick(function () {
+  watch: {
+    handleObj: function () {
+      this.$nextTick(function () {
         /*现在数据已经渲染完毕*/
-        if (this.handleObj.dbCreate != 1 && this.handleObj.sodData != 1) {
-          document.getElementsByClassName("el-step__line")[0].style.display =
+        if (
+          this.handleObj.dbCreate != 1 &&
+          this.handleObj.sodData != 1 &&
+          this.stepNum == 0
+        ) {
+          document.getElementsByClassName("el-step__line")[0].style.display =
             "none";
         }
       });
