@@ -1,0 +1,118 @@
+server:
+  port: 8007
+  servlet:
+    context-path: /
+tomcat:
+  remote-ip-header: x-forward-for
+  uri-encoding: UTF-8
+  max-threads: 10
+  background-processor-delay: 30
+  basedir: ${user.home}/tomcat/
+
+grpc:
+  server:
+    port: 8008
+  client:
+    ucenter-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    dm-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    portal-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    schedule-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+spring:
+  application:
+    name: portal-server
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  datasource:
+    #driver-class-name: com.xugu.cloudjdbc.Driver
+    #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
+    #username: sod5
+    #password: 123456
+#    driver-class-name: com.xugu.cloudjdbc.Driver
+#    url: jdbc:xugu://10.1.6.117:5138/BABJ_SMDB?char_set=utf8&compatibleoracle=false
+#    username: USR_SOD
+#    password: Pnmic_qwe123
+    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:8000/sod
+    url: jdbc:mysql://10.1.6.117:8000/sod
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 下面为连接池的补充设置，应用到上面所有数据源中
+    # 初始化大小，最小，最大
+    initialSize: 1
+    minIdle: 3
+    maxActive: 20
+    # 配置获取连接等待超时的时间
+    #maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    #timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    # minEvictableIdleTimeMillis: 30000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+    show-sql: true
+    #database: mysql
+    open-in-view: false
+  redis:
+#    host: 127.0.0.1
+    host: 10.1.6.117
+    port: 8001
+    timeout: 5000
+    password:
+mybatis:
+  type-aliases-package: com.piesat.*.entity
+  mapper-locations: classpath:mapper/*.xml
+  callSettersOnNulls:  true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
+eureka:
+  instance:
+    hostname: desktop-2vav0fh
+  #    prefer-ip-address: true
+  #    ip-address: 127.0.0.1
+  #    ip-address: 10.1.6.117
+  #    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+#      defaultZone: http://127.0.0.1:8002/eureka/
+      defaultZone: http://10.1.6.117:8002/eureka/
+
+serverfile:
+  filePath: D:/upload/
+
+product:
+  enable: true
