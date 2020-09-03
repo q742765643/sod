@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.htht</groupId>
-            <artifactId>sod-dm-common</artifactId>
+            <artifactId>sod-portal-common</artifactId>
             <version>${parent.version}</version>
         </dependency>
     </dependencies>
