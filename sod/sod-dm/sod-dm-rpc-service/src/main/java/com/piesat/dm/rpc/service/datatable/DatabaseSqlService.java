@@ -316,7 +316,7 @@ public class DatabaseSqlService {
                 throw new Exception("postgresql不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
-            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)) {
+            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)&&type.toUpperCase().indexOf("INT")==-1) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";

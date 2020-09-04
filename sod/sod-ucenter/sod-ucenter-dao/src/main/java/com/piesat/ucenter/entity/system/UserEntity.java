@@ -62,7 +62,7 @@ public class UserEntity extends BaseEntity {
      * 手机号码
      */
     @Excel(name = "手机号码")
-    @Column(name="phonenumber",columnDefinition = "varchar(11) default ''")
+    @Column(name="phonenumber",length = 18)
     private String phonenumber;
 
     /**

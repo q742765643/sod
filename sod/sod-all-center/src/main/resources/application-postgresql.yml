@@ -41,43 +41,47 @@ spring:
       max-request-size: 1000000000
   datasource:
     driver-class-name: org.postgresql.Driver
-    #模式区分大小写大写为"USR_SOD"需带引号
-    url: jdbc:postgresql://10.1.100.8:5432/kddb?currentSchema=usr_sod
-    username: zzj
-    password: zzj
+    #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
+    #username: ENC(YxpGRv4xpm1043WVImWDSw==)
+    #password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
+    url: jdbc:postgresql://10.1.100.31:5432/smdb?currentSchema=usr_sod
+    username: usr_sod
+    #password: ENC(c50mzX6HB5LbLvohno/sRHtY8ASWFjVT)
+    password: ENC(c50mzX6HB5LbLvohno/sRHtY8ASWFjVT)
     type: com.alibaba.druid.pool.DruidDataSource
-    # 下面为连接池的补充设置，应用到上面所有数据源中
-    # 初始化大小，最小，最大
-    initialSize: 1
-    minIdle: 3
-    maxActive: 20
-    # 配置获取连接等待超时的时间
-    #maxWait: 60000
-    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-    #timeBetweenEvictionRunsMillis: 60000
-    # 配置一个连接在池中最小生存的时间，单位是毫秒
-    #minEvictableIdleTimeMillis: 30000
-    validationQuery: select 'x'
-    testWhileIdle: true
-    testOnBorrow: true
-    testOnReturn: true
+    druid:
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initialSize: 1
+      minIdle: 3
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      #maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      #timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      #minEvictableIdleTimeMillis: 30000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: true
+      timeBetweenEvictionRunsMillis: 60000
   main:
     allow-bean-definition-overriding: true
   jpa:
     properties:
       hibernate:
         hbm2ddl:
-          #auto: validate
           auto: update
         dialect: com.piesat.common.jpa.dialect.PostgreDialect
         format_sql: true
     show-sql: true
     open-in-view: false
   redis:
-    host: 10.1.100.8
-    port: 6379
+    host: 10.1.100.36
+    port: 18228
     timeout: 50000
-#    password:
+    password: ENC(HbaZNoUMJp0EsMMUFpNxiTUjZZvy9NKm)
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
@@ -98,32 +102,36 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.1.100.8:28328/eureka/
+      defaultZone: http://10.1.100.36:28328/eureka/
 
-DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
-DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKADDURL: http://10.1.89.183/bdtiming/openapi/taskConfigs/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKDELURL: http://10.1.89.183/bdtiming/openapi/taskConfigs/delete?apikey=e10adc3949ba59abbe56e057f2gg88dd
 
 log:
-  path: ../src/sod_server/logs
+  path: ../logs
   level: INFO
 
+#数据库可视化部署节点
 mng:
-  ip: 10.1.100.8
+  ip: 10.1.100.36
 
+#公共元数据接口
 mmd:
   userName: dsmsys
-  password: nmic@100200
+  password: ENC(6nWEl93FF/El/bxvEZU78KabHzDMPCl3)
+
+#归档系统接口
 are:
   userName: usr_music
-  password: music#2020
+  password: ENC(2MsI7daWmuDHTsnvV3GG3A8O9BLj2Wrg)
 
 serverfile:
-  dbfile: /root/sod/java/sod/file/upload/dbfile
-  filePath: /root/sod/java/sod/file/upload/filePath
-  dfcheck: /root/sod/java/sod/file/upload/dfcheck
-  special: /root/sod/java/sod/file/upload/special
-  cloud: /root/sod/java/sod/file/upload/cloud
-  user: /root/sod/java/sod/file/upload/user
+  dbfile: /CMADAAS/EXCHANGE/SOD/SOD_FILES/dbfile
+  filePath: /CMADAAS/EXCHANGE/SOD/SOD_FILES/filePath
+  dfcheck: /CMADAAS/EXCHANGE/SOD/SOD_FILES/dfcheck
+  special: /CMADAAS/EXCHANGE/SOD/SOD_FILES/special
+  cloud: /CMADAAS/EXCHANGE/SOD/SOD_FILES/cloud
+  user: /CMADAAS/EXCHANGE/SOD/SOD_FILES/user
   #  dbfile: D:/file
   #  filePath: D:/file
   #  dfcheck: D:/file
@@ -133,25 +141,25 @@ serverfile:
 
   static:
     template:
-      add-column: /root/sod/java/sod/file/static/字段模板.xlsx
-      clouddatabase-application: /root/sod/java/sod/file/static/云数据库申请表模板.docx
-      databaseuser-application: /root/sod/java/sod/file/static/大数据云平台存储账户申请模板.docx
-      dataregister-application: /root/sod/java/sod/file/static/个人数据注册上传模板.xlsx
-      topic-application: /root/sod/java/sod/file/static/专题库申请表模板.docx
-      table-export-standard: /root/sod/java/sod/file/static/template_standard.ftl
+      add-column: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/字段模板.xlsx
+      clouddatabase-application: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/云数据库申请表模板.docx
+      databaseuser-application: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/个人数据注册上传模板.xlsx
+      topic-application: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/upload/专题库申请表模板.docx
+      table-export-standard: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/template_standard.ftl
     database-client:
-      xugu-client: /root/sod/java/sod/file/static/虚谷数据库V9.0.zip
-      gbase-client: /root/sod/java/sod/file/static/GBaseDataStudio.zip
-      cassandra-client: /root/sod/java/sod/file/static/Dbeaver.zip
+      xugu-client: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/虚谷数据库V9.0.zip
+      gbase-client: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/GBaseDataStudio.zip
+      cassandra-client: /CMADAAS/EXCHANGE/SOD/SOD_FILES/static/Dbeaver.zip
 
 fileUpload:
-  savaPath: /root/sod/java/sod/file/upload
+  savaPath: /CMADAAS/EXCHANGE/SOD/SOD_FILES
   httpPath: /upload
 
 businessParameters:
   databaseUserDefaultPassword: Asd123
 
-fidbDownloadUrl: http://10.1.100.8:8028/fileApi
+fidbDownloadUrl: http://10.1.100.36:8028/fileApi
 
 product:
   enable: true
@@ -160,3 +168,6 @@ product:
 session:
   timeout: 1800
 
+#数据库系统用户
+database:
+  sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase

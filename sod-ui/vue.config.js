@@ -34,7 +34,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://10.40.17.44:28028/cmadaas/sod`,
+        target: `http://127.0.0.1:28028/cmadaas/sod`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_BASE_API]: ""
@@ -42,7 +42,7 @@ module.exports = {
       },
       //ucenter
       [process.env.VUE_APP_UCENTER_API]: {
-        target: `http://10.40.17.44:28028/cmadaas/sod`,
+        target: `http://127.0.0.1:28028/cmadaas/sod`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_UCENTER_API]: ""
@@ -50,7 +50,7 @@ module.exports = {
       },
       //schedule
       [process.env.VUE_APP_SCHEDULE_CENTER_API]: {
-        target: `http://10.40.17.44:28028/cmadaas/sod`,
+        target: `http://127.0.0.1:28028/cmadaas/sod`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SCHEDULE_CENTER_API]: ""
@@ -58,7 +58,7 @@ module.exports = {
       },
       // dm模块
       [process.env.VUE_APP_DM]: {
-        target: `http://10.40.17.44:28028/cmadaas/sod`,
+        target: `http://127.0.0.1:28028/cmadaas/sod`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_DM]: ""
@@ -66,7 +66,7 @@ module.exports = {
       },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
-        target: `http://10.40.17.44:28028/cmadaas/sod`,
+        target: `http://127.0.0.1:28028/cmadaas/sod`,
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_SYSTEM]: ""

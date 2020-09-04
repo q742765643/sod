@@ -64,7 +64,7 @@ public class TableColumnEntity extends BaseEntity {
      * 中文名称
      * ele_name
      */
-    @Column(name = "ele_name", length = 255, nullable = false)
+    @Column(name = "ele_name", length = 255)
     private String eleName;
 
     /**
