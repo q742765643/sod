@@ -1,5 +1,23 @@
 package com.piesat.schedule.rpc.config;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
+import com.piesat.schedule.dao.backup.BackupDao;
+import com.piesat.schedule.dao.clear.ClearDao;
+import com.piesat.schedule.dao.move.MoveDao;
+import com.piesat.schedule.entity.backup.BackupEntity;
+import com.piesat.schedule.entity.clear.ClearEntity;
+import com.piesat.schedule.entity.move.MoveEntity;
+import com.piesat.schedule.rpc.api.JobInfoService;
+import com.piesat.schedule.rpc.api.backup.BackupService;
+import com.piesat.schedule.rpc.api.clear.ClearService;
+import com.piesat.schedule.rpc.api.move.MoveService;
+import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.schedule.rpc.dto.clear.ClearDto;
+import com.piesat.schedule.rpc.dto.move.MoveDto;
+import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
+import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
+import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.schedule.rpc.thread.ScheduleThread;
 import com.piesat.schedule.rpc.thread.SendThread;
 import org.springframework.beans.factory.DisposableBean;
@@ -8,6 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: sod
@@ -21,12 +45,68 @@ public class ScheduleConfig implements ApplicationRunner {
     private ScheduleThread scheduleThread;
     @Autowired
     private SendThread sendThread;
-
+    private static ScheduledExecutorService timingPool;
+    @Autowired
+    private BackupService backupService;
+    @Autowired
+    private BackupMapstruct backupMapstruct;
+    @Autowired
+    private MoveMapstruct moveMapstruct;
+    @Autowired
+    private MoveService moveService;
+    @Autowired
+    private ClearMapstruct clearMapstruct;
+    @Autowired
+    private ClearService clearService;
+    @Autowired
+    private BackupDao backupDao;
+    @Autowired
+    private MoveDao moveDao;
+    @Autowired
+    private ClearDao clearDao;
 
     @Override
     public void run(ApplicationArguments applicationArguments) throws Exception {
+
         sendThread.init();
         scheduleThread.start();
+        ThreadFactory timingPoolFactory = new ThreadFactoryBuilder().setNameFormat("worker-timing-pool-%d").build();
+        timingPool = Executors.newScheduledThreadPool(1, timingPoolFactory);
+        timingPool.scheduleWithFixedDelay (()->{
+            try {
+                List<BackupEntity> backupEntityList = backupDao.findAll();
+                List<BackUpDto> backUpDtoList = backupMapstruct.toDto(backupEntityList);
+                for (BackUpDto backUpDto : backUpDtoList) {
+                    try {
+                        backupService.updateBackup(backUpDto);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                List<MoveEntity> moveEntityList = moveDao.findAll();
+                List<MoveDto> moveDtoList = moveMapstruct.toDto(moveEntityList);
+                for (MoveDto moveDto : moveDtoList) {
+                    try {
+                        moveService.updateMove(moveDto);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                List<ClearEntity> clearEntityList = clearDao.findAll();
+                List<ClearDto> clearDtoList = clearMapstruct.toDto(clearEntityList);
+                for (ClearDto clearDto : clearDtoList) {
+                    try {
+                        clearService.updateClear(clearDto);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        },0, 1, TimeUnit.DAYS);
     }
 }
 

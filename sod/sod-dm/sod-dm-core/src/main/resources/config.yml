@@ -83,6 +83,7 @@ column:
   postgresql:
     bigint: bigint
     int8: int8
+    int: int
     bigserial: bigserial
     serial8: serial8
     bit: bit

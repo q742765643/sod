@@ -50,7 +50,10 @@ public class SqlController {
                 List<String> ll=new ArrayList<>();
                 while (ts.next()) {
                     String tableName=ts.getString("TABLE_NAME");
-                    sm.executeUpdate("DELETE FROM "+tableName);
+                    if(tableName.toUpperCase().indexOf("TAB_OMIN") == -1){
+                        sm.executeUpdate("DELETE FROM "+tableName);
+                    }
+
 
                 }
             } catch (SQLException e) {
@@ -64,6 +67,7 @@ public class SqlController {
 
         for(File file:files){
             try {
+                System.out.println(file.getPath());
                 SQLExec sqlExec = new SQLExec();
                 sqlExec.setDriver("org.postgresql.Driver");
                 sqlExec.setUrl(url);
@@ -74,13 +78,13 @@ public class SqlController {
                 sqlExec.setOnerror((SQLExec.OnError) (EnumeratedAttribute.getInstance(SQLExec.OnError.class, "abort")));
                 sqlExec.setProject(new Project()); // 要指定这个属性，不然会出错
                 sqlExec.execute();
+                //readFileByLines(file.getPath());
             } catch (Exception e) {
 
                 e.printStackTrace();
                 try {
-                    if(e.getMessage().indexOf("不存在")==-1){
                         readFileByLines(file.getPath());
-                    }
+
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -381,13 +385,26 @@ public class SqlController {
                     new FileInputStream(filePath), "UTF-8"));
             String tempString = null;
             int line = 1;
+            int ii=0;
+            conn.setAutoCommit(false);
             // 一次读入一行，直到读入null为文件结束
             while ((tempString = reader.readLine()) != null) {
                 // 显示行号
                 // System.out.println("line " + line + ": " + tempString);
-                if(line>1&&tempString.startsWith("INSERT")&&str.length()>0){
+                if(line>1&&tempString.toUpperCase().startsWith("INSERT")&&str.length()>0){
                     try {
-                        sm.execute(str.toString());
+                        sm.addBatch(str.toString().substring(0,str.toString().length()-1));
+                        ii++;
+                        if(ii>10000){
+                            try {
+                                sm.executeBatch();
+                                conn.commit();
+                            } catch (SQLException throwables) {
+                                sm.clearBatch();
+                                throwables.printStackTrace();
+                            }
+                            ii=0;
+                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -398,6 +415,16 @@ public class SqlController {
                 line++;
 
             }
+            if(ii>0){
+                try {
+                    sm.executeBatch();
+                    conn.commit();
+                } catch (SQLException throwables) {
+                    sm.clearBatch();
+                    throwables.printStackTrace();
+                }
+            }
+
             if(str.length()>0){
                 try {
                     sm.execute(str.toString());

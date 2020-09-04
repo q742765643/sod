@@ -28,7 +28,7 @@ public class TabOminCmCcStationnetship implements Serializable {
     /**
      * c_snetship_id
      */
-    @Column(name="c_snetship_id",length = 36)
+    @Column(name="c_snetship_id",length = 50)
     private String cSnetshipId;
 
     /**
@@ -82,7 +82,7 @@ public class TabOminCmCcStationnetship implements Serializable {
     /**
      * is_check
      */
-    @Column(name="is_check",length = 1)
+    @Column(name="is_check",length = 10)
     private String isCheck;
 
     /**
@@ -136,7 +136,7 @@ public class TabOminCmCcStationnetship implements Serializable {
     /**
      * c_obserway
      */
-    @Column(name="c_obserway",length = 1)
+    @Column(name="c_obserway",length = 10)
     private String cObserway;
 
     /**

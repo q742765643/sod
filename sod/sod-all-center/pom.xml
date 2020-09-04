@@ -58,10 +58,10 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <excludes>
+              <!--  <excludes>
                     <exclude>application*.yml</exclude>
                     <exclude>logback-spring.xml</exclude>
-                </excludes>
+                </excludes>-->
             </resource>
         </resources>
         <plugins>
