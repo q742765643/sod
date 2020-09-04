@@ -69,7 +69,7 @@ public class ScheduleConfig implements ApplicationRunner {
     public void run(ApplicationArguments applicationArguments) throws Exception {
 
         scheduleThread.start();
-        /*ThreadFactory timingPoolFactory = new ThreadFactoryBuilder().setNameFormat("worker-timing-pool-%d").build();
+        ThreadFactory timingPoolFactory = new ThreadFactoryBuilder().setNameFormat("worker-timing-pool-%d").build();
         timingPool = Executors.newScheduledThreadPool(2, timingPoolFactory);
         timingPool.scheduleWithFixedDelay (()->{
             try {
@@ -106,7 +106,7 @@ public class ScheduleConfig implements ApplicationRunner {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        },0, 1, TimeUnit.DAYS);*/
+        },0, 1, TimeUnit.DAYS);
     }
 }
 
