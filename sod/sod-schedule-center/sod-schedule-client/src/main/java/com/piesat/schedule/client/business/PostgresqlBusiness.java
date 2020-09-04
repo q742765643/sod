@@ -119,9 +119,11 @@ public class PostgresqlBusiness extends BaseBusiness{
         return null;
     }
     public void deletePostgresql(ClearLogEntity clearLogEntity,String conditions,ResultT<String> resultT){
+        //clearLogEntity.setTableName(clearLogEntity.getTableName().toLowerCase());
         try {
             DatabaseOperationService databaseOperationService=SpringUtil.getBean(DatabaseOperationService.class);
             if(null!=clearLogEntity.getVTableName()&& StringUtils.isNotNullString(clearLogEntity.getVTableName())){
+                //clearLogEntity.setVTableName(clearLogEntity.getVTableName());
                 long vcount=databaseOperationService.deleteVtable(clearLogEntity,conditions,resultT);
                 if(!resultT.isSuccess()){
                     return;
