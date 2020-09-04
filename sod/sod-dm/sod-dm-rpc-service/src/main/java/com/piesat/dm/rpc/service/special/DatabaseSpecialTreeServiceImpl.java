@@ -8,6 +8,8 @@ import com.piesat.dm.dao.special.DatabaseSpecialTreeDao;
 import com.piesat.dm.entity.special.DatabaseSpecialTreeEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialTreeService;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialTreeDto;
+import com.piesat.dm.rpc.mapper.special.DatabaseSpecialTreeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
     @Autowired
     private DatabaseSpecialTreeDao databaseSpecialTreeDao;
     @Autowired
+    private DatabaseSpecialTreeMapper databaseSpecialTreeMapper;
+    @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
 
     @Override
@@ -37,7 +41,7 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
         return databaseSpecialTreeDao;
     }
     @Override
-    public Map<String, Object> saveTreeData(String tdbId, HttpServletRequest request) {
+    public Map<String, Object> saveTreeData(DatabaseSpecialTreeDto databaseSpecialTreeDto) {
         Map<String, Object> map = new HashMap<>();
         try {
             /*
@@ -46,7 +50,7 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
              * dminSpecialDbTreeDao.deleteRecordByTdbId(paraMap);
              */
             // 下面通过request取得传入的JSONObject对象对应字符串。
-            StringBuilder responseStrBuilder = new StringBuilder();
+            /*StringBuilder responseStrBuilder = new StringBuilder();
             BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
             String inputStr;
             while ((inputStr = streamReader.readLine()) != null) {
@@ -82,12 +86,12 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
                 }
                 // 下面修改资料树表中的信息。
                 databaseSpecialTreeDao.save(oneRecord);
-            }
-
+            }*/
+            DatabaseSpecialTreeEntity databaseSpecialTreeEntity = databaseSpecialTreeMapper.toEntity(databaseSpecialTreeDto);
+            databaseSpecialTreeDao.save(databaseSpecialTreeEntity);
             // 下面生成返回信息。
             map.put("returnCode", 0);
             map.put("returnMessage", "保存数据成功");
-            streamReader.close();
         } catch (Exception e) {
             e.printStackTrace();
             // 下面生成返回信息。
@@ -100,11 +104,11 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
     }
 
     @Override
-    public Map<String, Object> updateOneRecordByTdbId(HttpServletRequest request) {
+    public Map<String, Object> updateOneRecordByTdbId(DatabaseSpecialTreeDto databaseSpecialTreeDto) {
         Map<String, Object> map = new HashMap<>();
         try {
             // 下面通过request取得传入的JSONObject对象对应字符串。
-            StringBuilder responseStrBuilder = new StringBuilder();
+           /* StringBuilder responseStrBuilder = new StringBuilder();
             BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
             String inputStr;
             while ((inputStr = streamReader.readLine()) != null) {
@@ -133,14 +137,14 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
                 } else if (key.equals("SORT") == true) {
                     oneRecord.setSort(Integer.parseInt(value));
                 }
-            }
+            }*/
+            DatabaseSpecialTreeEntity databaseSpecialTreeEntity = databaseSpecialTreeMapper.toEntity(databaseSpecialTreeDto);
             // 下面修改资料树表中的信息。
-            databaseSpecialTreeDao.save(oneRecord);
-
+            //databaseSpecialTreeDao.save(databaseSpecialTreeEntity);
+            mybatisQueryMapper.updateSpecialTreeData(databaseSpecialTreeEntity.getSdbId(),databaseSpecialTreeEntity.getParentId(),databaseSpecialTreeEntity.getTypeId(),databaseSpecialTreeEntity.getTypeName());
             // 下面生成返回信息。
             map.put("returnCode", 0);
             map.put("returnMessage", "保存数据成功");
-            streamReader.close();
         } catch (Exception e) {
             e.printStackTrace();
             // 下面生成返回信息。
@@ -161,7 +165,8 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
             Map<String, String> paraMap = new HashMap<String, String>();
             paraMap.put("tdb_id", tdbId);
             paraMap.put("type_id", typeId);
-            databaseSpecialTreeDao.deleteById(tdbId);
+            DatabaseSpecialTreeEntity databaseSpecialTreeEntity = databaseSpecialTreeDao.findBySdbIdAndTypeId(tdbId, typeId);
+            databaseSpecialTreeDao.deleteById(databaseSpecialTreeEntity.getId());
             mybatisQueryMapper.delTreeUpdateTypeId(paraMap);
             // 下面生成返回信息。
             map.put("returnCode", 0);

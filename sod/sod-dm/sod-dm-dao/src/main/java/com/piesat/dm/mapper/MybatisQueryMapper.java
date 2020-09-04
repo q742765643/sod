@@ -105,6 +105,8 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> querySpecialReadWriteBySdbId(@Param("sdbId") String sdbId);
 
+    void updateSpecialTreeData(@Param("sdbId") String sdbId,@Param("parentId") String parentId,@Param("typeId") String typeId,@Param("typeName") String typeName);
+
     List<Map<String, Object>> getRecordSpecialByTdbId(@Param("sdbId") String sdbId, @Param("userId") String userId);
 
     List<Map<String, Object>> getAllOtherRecordByUserId(@Param("userId") String userId, @Param("useStatus") String useStatus);
