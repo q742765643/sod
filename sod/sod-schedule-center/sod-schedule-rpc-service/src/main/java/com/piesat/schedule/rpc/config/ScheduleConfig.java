@@ -68,12 +68,12 @@ public class ScheduleConfig implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments applicationArguments) throws Exception {
 
+        sendThread.init();
         scheduleThread.start();
         ThreadFactory timingPoolFactory = new ThreadFactoryBuilder().setNameFormat("worker-timing-pool-%d").build();
-        timingPool = Executors.newScheduledThreadPool(2, timingPoolFactory);
+        timingPool = Executors.newScheduledThreadPool(1, timingPoolFactory);
         timingPool.scheduleWithFixedDelay (()->{
             try {
-                sendThread.init();
                 List<BackupEntity> backupEntityList = backupDao.findAll();
                 List<BackUpDto> backUpDtoList = backupMapstruct.toDto(backupEntityList);
                 for (BackUpDto backUpDto : backUpDtoList) {
