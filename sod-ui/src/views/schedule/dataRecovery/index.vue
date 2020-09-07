@@ -327,6 +327,14 @@ export default {
     getTreeList() {
       this.loading = true;
       console.log(this.queryParams);
+      if (!this.queryParams.dataClassId) {
+        this.msgError("请选择资料名称");
+        return;
+      }
+      if (!this.queryParams.databaseId) {
+        this.msgError("请选择数据库名称");
+        return;
+      }
       getDataFileList(this.queryParams).then((res) => {
         // 第一级的pid为空
         this.treedata = newTeam(res.data, "");
@@ -490,7 +498,11 @@ export default {
     // 上传
     handleBefore() {
       if (!this.queryParams.databaseId) {
-        this.msgError("请选择数据库IP");
+        this.msgError("请选择数据库名称");
+        return;
+      }
+      if (!this.queryParams.dataClassId) {
+        this.msgError("请选择资料名称");
         return;
       }
       if (!this.queryParams.path) {
