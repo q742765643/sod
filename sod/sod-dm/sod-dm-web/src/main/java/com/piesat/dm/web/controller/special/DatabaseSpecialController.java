@@ -11,10 +11,7 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
+import com.piesat.dm.rpc.dto.special.*;
 import com.piesat.dm.rpc.service.special.DatabaseSpecialTreeServiceImpl;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
@@ -536,10 +533,10 @@ public class DatabaseSpecialController {
 
     @ApiOperation(value = "保存专题库资料树")
     @RequiresPermissions("dm:databaseSpecial:saveTreeData")
-    @GetMapping(value = "/saveTreeData")
-    public ResultT saveTreeData(String tdbId, HttpServletRequest request) {
+    @PostMapping(value = "/saveTreeData")
+    public  ResultT saveTreeData(@RequestBody DatabaseSpecialTreeDto databaseSpecialTreeDto){
         try {
-            Map<String, Object> map = this.databaseSpecialTreeService.saveTreeData(tdbId, request);
+            Map<String,Object> map =  this.databaseSpecialTreeService.saveTreeData(databaseSpecialTreeDto);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();
@@ -549,10 +546,10 @@ public class DatabaseSpecialController {
 
     @ApiOperation(value = "根据专题库ID号和分类ID修改对应分类名称、上级分类、排序")
     @RequiresPermissions("dm:databaseSpecial:updateOneRecordByTdbId")
-    @GetMapping(value = "/updateOneRecordByTdbId")
-    public ResultT updateOneRecordByTdbId(HttpServletRequest request) {
+    @PostMapping(value = "/updateOneRecordByTdbId")
+    public  ResultT updateOneRecordByTdbId(@RequestBody DatabaseSpecialTreeDto databaseSpecialTreeDto){
         try {
-            Map<String, Object> map = this.databaseSpecialTreeService.updateOneRecordByTdbId(request);
+            Map<String,Object> map =  this.databaseSpecialTreeService.updateOneRecordByTdbId(databaseSpecialTreeDto);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();

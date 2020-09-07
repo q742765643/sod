@@ -125,12 +125,12 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
             for(DatabaseDto databaseDto:databaseDtos){
                 if(databaseDto.getDatabaseDefine().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
                     Map<String,String> map=new HashMap<>();
-                    String adress=databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort();
-                    if(!vaules.contains(adress)) {
+                    String adress=databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort()+":"+databaseDto.getDatabaseDefine().getDatabaseInstance();
+                    if(!vaules.contains(adress)){
                         vaules.add(adress);
-                        map.put("KEY", databaseDto.getId());
-                        map.put("VAULE", databaseDto.getDatabaseDefine().getDatabaseIp() + ":" + databaseDto.getDatabaseDefine().getDatabasePort());
-                        map.put("parentId", databaseDto.getDatabaseDefine().getId());
+                        map.put("KEY",databaseDto.getId());
+                        map.put("VAULE",databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort()+":"+databaseDto.getDatabaseDefine().getDatabaseInstance());
+                        map.put("parentId",databaseDto.getDatabaseDefine().getId());
                         maps.add(map);
                     }
                 }

@@ -1,9 +1,6 @@
 package com.piesat.schedule.client.enums;
 
-import com.piesat.schedule.client.business.BaseBusiness;
-import com.piesat.schedule.client.business.CassandraBusiness;
-import com.piesat.schedule.client.business.GbaseBusiness;
-import com.piesat.schedule.client.business.XuguBusiness;
+import com.piesat.schedule.client.business.*;
 
 /**
  * @program: SyncMaster
@@ -20,7 +17,9 @@ public enum BusinessEnum {
     //ALI_DRDS("stdb", ""),
     //GBASE备份逻辑
     GBASE8A("gbase8a", new GbaseBusiness()),
-    CASSANDRA("cassandra",new CassandraBusiness());
+    CASSANDRA("cassandra",new CassandraBusiness()),
+    //postgresql逻辑
+    POSTGRESQL("postgresql",new PostgresqlBusiness());
 
     private String title;
     private BaseBusiness baseBusiness;

@@ -61,7 +61,7 @@
         LEFT JOIN t_sod_logic_define c ON a.logic_flag = c.logic_flag
         LEFT JOIN t_sod_data_table b ON (a.id = b.CLASS_LOGIC_ID AND b.DB_TABLE_TYPE = 'E')
         LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = a.DATA_CLASS_ID
-        LEFT JOIN T_SOD_DICT_DATA H ON (G.LABEL_KEY = H.DICT_VALUE AND H.dict_type = 'dataclass_label')
+        LEFT JOIN T_SOD_DICT_DATA HH ON (G.LABEL_KEY = HH.DICT_VALUE AND HH.dict_type = 'dataclass_label')
         <where>
             f.type = 2
             <if test="map.database_name != null and map.database_name  != ''">
@@ -101,7 +101,7 @@
             </if>
             <!-- 标签 -->
             <if test="map.label_name != null and map.label_name  != ''">
-                AND H.DICT_LABEL like '%${map.label_name}%'
+                AND HH.DICT_LABEL like '%${map.label_name}%'
             </if>
 
         </where>
@@ -657,6 +657,22 @@
         select  distinct a.class_name NAME,a.data_class_id ID,b.type_id PID from T_SOD_DATA_CLASS a,T_SOD_DATABASE_SPECIAL_READ_WRITE b
                   where a.data_class_id = b.data_class_id and b.sdb_id = #{sdbId} and b.examine_status = 1
     </select>
+
+    <update id="updateSpecialTreeData">
+        update t_sod_database_special_tree
+        set type_name=#{typeName}
+        <where>
+            <if test="sdbId != null and sdbId  != ''">
+                and sdb_id = #{sdbId}
+            </if>
+            <if test="typeId != null  and typeId  != ''">
+                and type_id = #{typeId}
+            </if>
+            <if test="parentId != null  and parentId  != ''">
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </update>
 
     <select id="getRecordSpecialByTdbId" resultType="java.util.Map">
         select  b.data_class_id,b.database_id,b.apply_authority,b.empower_authority,b.examine_status,b.failure_reason,d.data_service_name,d.table_name,e.class_name,

@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -104,31 +105,37 @@ public class DiSendService{
     }
     public void sendAddDi(String messge){
         try {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            requestFactory.setConnectTimeout(2*1000);
+            requestFactory.setReadTimeout(2*1000);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/json; charset=UTF-8"));
             headers.add("Accept", MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> httpEntity = new HttpEntity<>(messge, headers);
-            RestTemplate rst = new RestTemplate();
+            RestTemplate rst = new RestTemplate(requestFactory);
             ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskaddurl, httpEntity, String.class);
             log.info("di返回送信息:"+JSON.toJSONString(stringResponseEntity));
         } catch (Exception e) {
-            log.error(OwnException.get(e));
+            log.error("di发送信息异常:"+messge);
             e.printStackTrace();
         }
     }
     public void sendDeleteDi(String taskId){
         try {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            requestFactory.setConnectTimeout(2*1000);
+            requestFactory.setReadTimeout(2*1000);
             Map map=new HashMap();
             map.put("taskId",taskId);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/json; charset=UTF-8"));
             headers.add("Accept", MediaType.APPLICATION_JSON.toString());
             HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(map), headers);
-            RestTemplate rst = new RestTemplate();
+            RestTemplate rst = new RestTemplate(requestFactory);
             ResponseEntity<String> stringResponseEntity = rst.postForEntity(ditaskdelurl, httpEntity, String.class);
             log.info("di发送返回信息:"+JSON.toJSONString(stringResponseEntity));
         } catch (Exception e) {
-            log.error(OwnException.get(e));
+            log.error("di发送信息异常:"+taskId);
 
         }
     }
