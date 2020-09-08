@@ -37,7 +37,7 @@ spring:
       max-request-size: 1000000000
   datasource:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://10.1.100.31:5432/smdb?currentSchema=usr_sod
+      url: jdbc:postgresql://10.1.100.31:15433/smdb?currentSchema=usr_sod
       username: usr_sod
       password: sod@2020
       # 下面为连接池的补充设置，应用到上面所有数据源中
@@ -95,7 +95,7 @@ eureka:
 
 
 gbaseserver:
-  ip: 10.40.17.35
+  ip: 10.1.100.36
   user: sod
   pass: ENC(yzPRYcBqwhCLAk5Uf9d/Bg==)
 EIDI:

@@ -28,6 +28,8 @@ public class Test {
         System.out.println("mmd:"+mmd);
         String are = textEncryptor.encrypt("music#2020");
         System.out.println("are:"+are);
+        String are1 = textEncryptor.decrypt("HbaZNoUMJp0EsMMUFpNxiTUjZZvy9NKm");
+        System.out.println("are1:"+are1);
 
 
 
