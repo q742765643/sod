@@ -64,6 +64,14 @@ module.exports = {
           ["^" + process.env.VUE_APP_DM]: ""
         }
       },
+      // portal模块
+      [process.env.VUE_APP_PORTAL]: {
+        target: `http://127.0.0.1:28028/cmadaas/sod`,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^" + process.env.VUE_APP_PORTAL]: ""
+        }
+      },
       //system模块
       [process.env.VUE_APP_SYSTEM]: {
         target: `http://127.0.0.1:28028/cmadaas/sod`,

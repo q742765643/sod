@@ -29,4 +29,9 @@ public class DynManageDto extends BaseDto {
      * 发布状态
      */
     private String ispublished;
+
+    /**
+     * 序号
+     */
+    private String serialNumber;
 }

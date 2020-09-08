@@ -32,6 +32,12 @@
         </dependency>
         <dependency>
             <groupId>com.htht</groupId>
+            <artifactId>sod-portal-web</artifactId>
+            <version>${parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.htht</groupId>
             <artifactId>sod-system-web</artifactId>
             <version>${parent.version}</version>
             <scope>compile</scope>

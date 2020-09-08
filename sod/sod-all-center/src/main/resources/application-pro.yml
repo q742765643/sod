@@ -1,7 +1,7 @@
 server:
-  port: 8005
+  port: 28028
   servlet:
-    context-path: /
+    context-path: /cmadaas/sod/
   tomcat:
     remote-ip-header: x-forward-for
     uri-encoding: UTF-8
@@ -18,7 +18,7 @@ jasypt:
     password: HT95279527
 grpc:
   server:
-    port: 8006
+    port: 28228
   client:
     schedule-client-server:
       enableKeepAlive: true
@@ -42,7 +42,7 @@ spring:
   datasource:
     driver-class-name: com.xugu.cloudjdbc.Driver
     url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
-    username: ENC(YxpGRv4xpm1043WVImWDSw==)
+    username: USR_SOD
     password: ENC(bire96k+Qd6VvF2VwuJRtvzail6DL4s5)
     #url: jdbc:xugu://10.40.17.34:5138/USR_SOD1?char_set=utf8
     #username: USR_SOD

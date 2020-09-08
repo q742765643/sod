@@ -41,4 +41,10 @@ public class DynManageEntity extends BaseEntity {
     @Column(name="ISPUBLISHED")
     private String ispublished;
 
+    /**
+     * 序号
+     */
+    @Column(name="SERIAL_NUMBER")
+    private String serialNumber;
+
 }

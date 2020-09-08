@@ -10,10 +10,13 @@ import com.piesat.portal.entity.DynManageEntity;
 import com.piesat.portal.rpc.api.DynManageService;
 import com.piesat.portal.rpc.dto.DynManageDto;
 import com.piesat.portal.rpc.mapstruct.DynManageMapstruct;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,14 +47,18 @@ public class DynManageServiceImpl extends BaseService<DynManageEntity> implement
 
     @Override
     public DynManageDto saveDto(DynManageDto dynManageDto) {
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         DynManageEntity dynManageEntity = dynManageMapstruct.toEntity(dynManageDto);
+        dynManageEntity.setCreateBy(loginUser.getNickName());
         dynManageEntity = this.saveNotNull(dynManageEntity);
         return dynManageMapstruct.toDto(dynManageEntity);
     }
 
     @Override
     public DynManageDto updateDto(DynManageDto dynManageDto) {
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         DynManageEntity dynManageEntity=dynManageMapstruct.toEntity(dynManageDto);
+        dynManageEntity.setCreateBy(loginUser.getNickName());
         dynManageEntity = this.saveNotNull(dynManageEntity);
         return dynManageMapstruct.toDto(dynManageEntity);
     }
@@ -60,4 +67,11 @@ public class DynManageServiceImpl extends BaseService<DynManageEntity> implement
     public void deleteRecordByIds(List<String> ids) {
         this.deleteByIds(ids);
     }
+
+    @Override
+    public DynManageDto getDotById(String id) {
+        DynManageEntity dynManageEntity = this.getById(id);
+        return this.dynManageMapstruct.toDto(dynManageEntity);
+    }
+
 }

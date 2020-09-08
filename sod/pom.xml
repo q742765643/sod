@@ -27,6 +27,7 @@
         <module>sod-dm</module>
         <module>sod-system</module>
         <module>sod-schedule-center</module>
+        <module>sod-portal</module>
 
 
 <!--
