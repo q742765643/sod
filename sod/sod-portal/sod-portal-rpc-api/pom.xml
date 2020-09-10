@@ -16,12 +16,12 @@
             <artifactId>sod-project-grpc</artifactId>
             <version>${parent.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.htht</groupId>
             <artifactId>sod-util</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.htht</groupId>
             <artifactId>sod-portal-dao</artifactId>

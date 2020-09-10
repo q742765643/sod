@@ -12,7 +12,6 @@ import java.util.List;
 /**
  * 业务动态管理
  */
-@GrpcHthtService(server = GrpcConstant.PORTAL_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DynManageService {
 
     PageBean selectPageList(PageForm<DynManageDto> pageForm);
@@ -22,4 +21,8 @@ public interface DynManageService {
     DynManageDto updateDto(DynManageDto dynManageDto);
 
     public void deleteRecordByIds(List<String> ids);
+
+    DynManageDto getDotById(String id);
+
+    void delete(String id);
 }
