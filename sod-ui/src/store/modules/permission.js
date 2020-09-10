@@ -1,5 +1,9 @@
-import { constantRoutes } from '@/router'
-import { getRouters } from '@/api/menu'
+import {
+  constantRoutes
+} from '@/router'
+import {
+  getRouters
+} from '@/api/menu'
 import Layout from '@/layout/index'
 
 const permission = {
@@ -15,7 +19,9 @@ const permission = {
   },
   actions: {
     // 生成路由
-    GenerateRoutes({ commit }) {
+    GenerateRoutes({
+      commit
+    }) {
       return new Promise(resolve => {
         // 向后端请求路由数据
         getRouters().then(res => {
