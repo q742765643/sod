@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.portal.mapper.FileManageMapper">
+    <resultMap id="BaseResultMap" type="com.piesat.portal.entity.FileManageEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="CREATE_BY" jdbcType="VARCHAR" property="createBy" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="DEL_FLAG" jdbcType="VARCHAR" property="delFlag" />
+        <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="VERSION" jdbcType="INTEGER" property="version" />
+
+        <result column="FILE_TYPE" jdbcType="VARCHAR" property="fileType" />
+        <result column="FILE_CATEGORY" jdbcType="VARCHAR" property="fileCategory" />
+        <result column="FILE_NAME" jdbcType="VARCHAR" property="fileName" />
+        <result column="FILE_PATH" jdbcType="VARCHAR" property="filePath" />
+        <result column="FILE_SUFFIX" jdbcType="VARCHAR" property="fileSuffix" />
+        <result column="FILE_DESC" jdbcType="VARCHAR" property="fileDesc" />
+        <result column="DOWNLOADTIMES" jdbcType="INTEGER" property="downloadtimes" />
+        <result column="SERIAL_NUMBER" jdbcType="VARCHAR" property="serialNumber" />
+        <result column="SERIAL_NUMBER" jdbcType="VARCHAR" property="serialNumber" />
+        <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+        <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+    </resultMap>
+    <select id="selectPageList" resultMap="BaseResultMap">
+        select a.*,b.dict_label type_name,c.dict_label category_name  from T_SOD_PORTAL_FILE_MANAGE a
+          left join T_SOD_DICT_DATA b on a.FILE_TYPE = b.DICT_VALUE
+          left join T_SOD_DICT_DATA c on a.FILE_CATEGORY = c.DICT_VALUE
+        where 1=1
+        <if test="entity.fileName != null and entity.fileName != ''">
+            AND a.file_name like #{entity.fileName}
+        </if>
+        <if test="entity.fileType != null and entity.fileType != ''">
+            AND a.file_type = #{entity.fileType}
+        </if>
+    </select>
+
+</mapper>

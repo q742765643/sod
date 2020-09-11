@@ -149,6 +149,7 @@ serverfile:
 fileUpload:
   savaPath: /home/sod/file/upload
   httpPath: /upload
+  portal_file: /home/sod/file/upload/portal
 
 businessParameters:
   databaseUserDefaultPassword: Asd123
