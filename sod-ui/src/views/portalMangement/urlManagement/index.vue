@@ -1,14 +1,22 @@
 <template>
   <div class="app-container">
-    <!-- 用户反馈管理查询菜单 -->
+    <!-- 接口管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="反馈人:" prop="userName">
-        <el-input
-          clearable
-          size="small"
-          v-model.trim="queryParams.userName"
-          placeholder="请输入反馈人姓名"
-        />
+      <el-form-item label="接口名称:" prop="userName">
+        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="请输入接口名称" />
+      </el-form-item>
+      <el-form-item label="接口描述:" prop="userName">
+        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="请输入接口描述" />
+      </el-form-item>
+      <el-form-item clearable label="接口分类:" prop="userName">
+        <el-select v-model="queryParams.userName">
+          <el-option
+            :label="item"
+            :value="item"
+            v-for="(item,index) in urlClassify"
+            :key="index"
+          >{{item}}</el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -18,7 +26,15 @@
     <!-- 业务动态管理操作按钮 -->
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">回复</el-button>
+        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('export')"
+          icon="el-icon-upload2"
+        >批量导入</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
@@ -34,19 +50,16 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column prop="createBy" label="反馈人" width="100"></el-table-column>
-      <el-table-column prop="createTime" label="反馈时间" width="200" :show-overflow-tooltip="true">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="content" label="反馈内容" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="status" label="状态" width="160" :show-overflow-tooltip="true">
+      <el-table-column prop="createBy" label="接口名称"></el-table-column>
+      <el-table-column prop="createTime" label="接口描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="content" label="接口类别" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="status" label="请求类型" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span v-if="scope.row.status=='0'">未回复</span>
           <span v-if="scope.row.status=='1'">已回复</span>
         </template>
       </el-table-column>
+      <el-table-column prop="content" label="备注" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button
@@ -74,36 +87,36 @@
     />
     <!-- 弹窗-->
     <el-dialog
+      width="1100px"
       :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="msgFormDialog"
       v-dialogDrag
     >
-      <feedbackEdit
+      <urlEdit
         v-if="msgFormDialog"
         :handleObj="handleObj"
         @cancelDialog="cancelDialog"
         ref="myDialog"
-      ></feedbackEdit>
+      ></urlEdit>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  queryDataPage,
-  getById,
-  delSyncManage,
-} from "@/api/portalMangement/feedbackMangement";
-import feedbackEdit from "@/views/portalMangement/feedbackMangement/feedbackEdit";
+  saveDynManage,
+  editDynManage,
+} from "@/api/portalMangement/dynMangement";
+import urlEdit from "@/views/portalMangement/urlManagement/urlEdit";
 export default {
   components: {
-    feedbackEdit,
+    urlEdit,
   },
   data() {
     return {
       // 遮罩层
-      loading: true,
+      loading: false,
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -111,6 +124,7 @@ export default {
       },
       tableData: [],
       total: 0,
+      urlClassify: ["全部"],
       //已勾选记录
       multipleSelection: [],
       // 弹窗
@@ -121,7 +135,7 @@ export default {
   },
   /** 方法调用 */
   created() {
-    this.getList();
+    //this.getList();
   },
   methods: {
     /** 搜索按钮操作 */
@@ -133,26 +147,15 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
-    showDialog(type) {
-      this.dialogTitle = "编辑";
-      if (type == "edit") {
-        if (this.multipleSelection.length != 1) {
-          this.$message({
-            type: "error",
-            message: "请选择一条数据",
-          });
-          return;
-        }
-        getById({ id: this.multipleSelection[0].id }).then((res) => {
-          this.handleObj = res.data;
-          this.msgFormDialog = true;
-        });
+    showDialog(row) {
+      if (row.id) {
+        this.dialogTitle = "编辑";
+        this.handleObj = row;
       } else {
-        getById({ id: type.id }).then((res) => {
-          this.handleObj = res.data;
-          this.msgFormDialog = true;
-        });
+        this.dialogTitle = "新增";
+        this.handleObj = {};
       }
+      this.msgFormDialog = true;
     },
     deleteCell() {
       if (this.multipleSelection.length != 1) {
