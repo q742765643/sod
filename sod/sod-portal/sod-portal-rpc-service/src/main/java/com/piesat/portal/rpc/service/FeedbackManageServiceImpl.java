@@ -11,8 +11,10 @@ import com.piesat.portal.entity.FeedbackManageEntity;
 import com.piesat.portal.rpc.api.FeedbackManageService;
 import com.piesat.portal.rpc.dto.FeedbackManageDto;
 import com.piesat.portal.rpc.mapstruct.FeedbackManageMapstruct;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +42,9 @@ public class FeedbackManageServiceImpl extends BaseService<FeedbackManageEntity>
         if(StringUtils.isNotEmpty(feedbackManageDto.getUserId())){
             specificationBuilder.add("userId", SpecificationOperator.Operator.eq.toString(),feedbackManageDto.getUserId());
         }
+        if(StringUtils.isNotEmpty(feedbackManageDto.getStatus())){
+            specificationBuilder.add("status", SpecificationOperator.Operator.eq.toString(),feedbackManageDto.getStatus());
+        }
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<FeedbackManageEntity> feedbackManageEntities = (List<FeedbackManageEntity>) pageBean.getPageData();
         List<FeedbackManageDto> feedbackManageDtos = feedbackManageMapstruct.toDto(feedbackManageEntities);
@@ -51,5 +56,19 @@ public class FeedbackManageServiceImpl extends BaseService<FeedbackManageEntity>
     public FeedbackManageDto getDotById(String id) {
         FeedbackManageEntity feedbackManageEntity = this.getById(id);
         return this.feedbackManageMapstruct.toDto(feedbackManageEntity);
+    }
+
+    @Override
+    public FeedbackManageDto updateDto(FeedbackManageDto feedbackManageDto) {
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        FeedbackManageEntity feedbackManageEntity=feedbackManageMapstruct.toEntity(feedbackManageDto);
+        feedbackManageEntity.setUpdateBy(loginUser.getNickName());
+        feedbackManageEntity = this.saveNotNull(feedbackManageEntity);
+        return feedbackManageMapstruct.toDto(feedbackManageEntity);
+    }
+
+    @Override
+    public void deleteRecordByIds(List<String> ids) {
+        this.deleteByIds(ids);
     }
 }

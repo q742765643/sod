@@ -16,10 +16,16 @@ import javax.persistence.Table;
 public class FeedbackManageEntity extends BaseEntity {
 
     /**
-     * 用户ID
+     * 反馈人ID
      */
     @Column(name="USER_ID")
     private String userId;
+
+    /**
+     * 反馈人名称
+     */
+    @Column(name="USER_NAME")
+    private String userName;
 
     /**
      * 反馈内容

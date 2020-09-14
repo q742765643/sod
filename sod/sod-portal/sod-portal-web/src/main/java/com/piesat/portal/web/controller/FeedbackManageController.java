@@ -2,15 +2,19 @@ package com.piesat.portal.web.controller;
 
 import com.piesat.portal.rpc.api.FeedbackManageService;
 import com.piesat.portal.rpc.dto.FeedbackManageDto;
+import com.piesat.sso.client.annotation.Log;
+import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 业务动态管理
@@ -33,6 +37,16 @@ public class FeedbackManageController {
         return resultT;
     }
 
+    @PutMapping("/edit")
+    @ApiOperation(value = "编辑", notes = "编辑")
+    public ResultT<FeedbackManageDto> edit(@RequestBody FeedbackManageDto feedbackManageDto)
+    {
+        ResultT<FeedbackManageDto> resultT=new ResultT<>();
+        feedbackManageDto = this.feedbackManageService.updateDto(feedbackManageDto);
+        resultT.setData(feedbackManageDto);
+        return resultT;
+    }
+
 
     @ApiOperation(value = "根据id查询")
     @GetMapping(value = "/getById")
@@ -45,4 +59,31 @@ public class FeedbackManageController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据id删除")
+    @Log(title = "业务动态管理", businessType = BusinessType.DELETE)
+    @DeleteMapping(value = "/del")
+    public ResultT del(String id) {
+        try {
+            this.feedbackManageService.delete(id);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteByIds/{ids}")
+    @ApiOperation(value = "批量删除", notes = "批量删除")
+    public ResultT<String> remove(@PathVariable String[] ids)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        List<String> list=new ArrayList();
+        if(ids.length>0){
+            list= Arrays.asList(ids);
+            this.feedbackManageService.deleteRecordByIds(list);
+        }
+        return resultT;
+    }
+
 }

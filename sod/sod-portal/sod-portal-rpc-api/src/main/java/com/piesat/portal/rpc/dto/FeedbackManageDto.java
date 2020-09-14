@@ -14,6 +14,11 @@ public class FeedbackManageDto extends BaseDto {
     private String userId;
 
     /**
+     * 反馈人名称
+     */
+    private String userName;
+
+    /**
      * 反馈内容
      */
     private String content;
