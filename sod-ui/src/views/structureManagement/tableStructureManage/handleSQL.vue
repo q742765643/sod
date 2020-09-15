@@ -8,6 +8,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="12" class="btnColBox">
+          <el-radio-group v-model="radioTable" style="margin-right:4px;" @change="changeTableType">
+            <el-radio :label="0">键表</el-radio>
+            <el-radio :label="1">要素表</el-radio>
+          </el-radio-group>
           <el-button @click="createSql" size="small" type="primary" icon="el-icon-money" plain>生成SQL</el-button>
           <el-button
             @click="handleSaveSql"
@@ -51,45 +55,51 @@ import {
   getSql,
   saveSql,
   createTable,
-  existTable
+  existTable,
 } from "@/api/structureManagement/tableStructureManage/handleSQL";
 
 export default {
   name: "handleSQLDialog",
   props: {
     handleSQLObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
       activeNames: ["1"],
+      radioTable: 0,
       msgFormDialog: {
         createSql: "",
         insertSql: "",
         selectSql: "",
-        DATABASE_NAME_F: this.handleSQLObj.DATABASE_NAME_F
+        DATABASE_NAME_F: this.handleSQLObj.DATABASE_NAME_F,
       },
-      tableObj: ""
+      tableObj: "",
     };
   },
   created() {
     this.init();
   },
   methods: {
+    changeTableType(val) {
+      gcl({ classLogic: this.handleSQLObj.LOGIC_ID }).then((res) => {
+        this.tableObj = res.data[val];
+      });
+    },
     init() {
-      gcl({ classLogic: this.handleSQLObj.LOGIC_ID }).then(res => {
-        this.tableObj = res.data[0];
+      gcl({ classLogic: this.handleSQLObj.LOGIC_ID }).then((res) => {
+        this.tableObj = res.data[this.radioTable];
       });
     },
     handleChange() {},
     createSql() {
       let obj = {
         databaseId: this.handleSQLObj.DATABASE_ID,
-        tableId: this.tableObj.id
+        tableId: this.tableObj.id,
       };
       console.log(obj);
-      getSql(obj).then(res => {
+      getSql(obj).then((res) => {
         this.msgFormDialog.createSql = res.data.createSql;
         this.msgFormDialog.insertSql = res.data.insertSql;
         this.msgFormDialog.selectSql = res.data.selectSql;
@@ -100,7 +110,7 @@ export default {
       if (this.msgFormDialog.createSql == "") {
         this.$message({
           message: "CREATE不能为空",
-          type: "error"
+          type: "error",
         });
         return;
       }
@@ -108,17 +118,17 @@ export default {
       saveSql({
         databaseId: this.handleSQLObj.DATABASE_ID,
         tableName: this.tableObj.tableName,
-        tableSql: this.msgFormDialog.createSql
-      }).then(res => {
+        tableSql: this.msgFormDialog.createSql,
+      }).then((res) => {
         if (res.code == 200) {
           this.$message({
             message: "保存成功",
-            type: "success"
+            type: "success",
           });
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -127,52 +137,52 @@ export default {
       if (this.msgFormDialog.createSql == "") {
         this.$message({
           message: "CREATE不能为空",
-          type: "error"
+          type: "error",
         });
         return;
       }
       existTable({
         databaseId: this.handleSQLObj.DATABASE_ID,
-        tableName: this.tableObj.tableName
+        tableName: this.tableObj.tableName,
       })
-        .then(res => {
+        .then((res) => {
           if (res.data) {
             this.$message({
               message: "表已存在",
-              type: "error"
+              type: "error",
             });
             return;
           } else if (res.data == null) {
             this.$message({
               message: res.msg,
-              type: "error"
+              type: "error",
             });
           } else {
             createTable({
               databaseId: this.handleSQLObj.DATABASE_ID,
               tableName: this.tableObj.tableName,
-              tableSql: this.msgFormDialog.createSql
-            }).then(res => {
+              tableSql: this.msgFormDialog.createSql,
+            }).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   message: "创建成功",
-                  type: "success"
+                  type: "success",
                 });
               } else {
                 this.$message({
                   message: res.msg,
-                  type: "error"
+                  type: "error",
                 });
               }
             });
           }
         })
-        .catch(error => {});
+        .catch((error) => {});
     },
     trueSave() {},
 
-    trueDialog(formName) {}
-  }
+    trueDialog(formName) {},
+  },
 };
 </script>
 
