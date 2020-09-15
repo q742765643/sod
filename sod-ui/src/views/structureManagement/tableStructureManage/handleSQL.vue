@@ -9,8 +9,8 @@
         </el-col>
         <el-col :span="12" class="btnColBox">
           <el-radio-group v-model="radioTable" style="margin-right:4px;" @change="changeTableType">
-            <el-radio :label="0">键表</el-radio>
-            <el-radio :label="1">要素表</el-radio>
+            <el-radio label="K">键表</el-radio>
+            <el-radio label="E">要素表</el-radio>
           </el-radio-group>
           <el-button @click="createSql" size="small" type="primary" icon="el-icon-money" plain>生成SQL</el-button>
           <el-button
@@ -68,7 +68,7 @@ export default {
   data() {
     return {
       activeNames: ["1"],
-      radioTable: 0,
+      radioTable: "K",
       msgFormDialog: {
         createSql: "",
         insertSql: "",
@@ -84,27 +84,51 @@ export default {
   methods: {
     changeTableType(val) {
       gcl({ classLogic: this.handleSQLObj.LOGIC_ID }).then((res) => {
-        this.tableObj = res.data[val];
+        let data = res.data;
+        let indext = "";
+        data.forEach((element, index) => {
+          if (element.dbTableType == val) {
+            indext = index;
+            return;
+          }
+        });
+        this.tableObj = res.data[indext];
       });
     },
     init() {
       gcl({ classLogic: this.handleSQLObj.LOGIC_ID }).then((res) => {
-        this.tableObj = res.data[this.radioTable];
+        let data = res.data;
+        this.radioTable = data[0].dbTableType;
+        let indext = "";
+        data.forEach((element, index) => {
+          if (element.dbTableType == this.radioTable) {
+            indext = index;
+            return;
+          }
+        });
+        this.tableObj = res.data[indext];
       });
     },
     handleChange() {},
     createSql() {
-      let obj = {
-        databaseId: this.handleSQLObj.DATABASE_ID,
-        tableId: this.tableObj.id,
-      };
-      console.log(obj);
-      getSql(obj).then((res) => {
-        this.msgFormDialog.createSql = res.data.createSql;
-        this.msgFormDialog.insertSql = res.data.insertSql;
-        this.msgFormDialog.selectSql = res.data.selectSql;
-        this.activeNames = ["1"];
-      });
+      if (this.tableObj && this.tableObj.id) {
+        let obj = {
+          databaseId: this.handleSQLObj.DATABASE_ID,
+          tableId: this.tableObj.id,
+        };
+        console.log(obj);
+        getSql(obj).then((res) => {
+          this.msgFormDialog.createSql = res.data.createSql;
+          this.msgFormDialog.insertSql = res.data.insertSql;
+          this.msgFormDialog.selectSql = res.data.selectSql;
+          this.activeNames = ["1"];
+        });
+      } else {
+        this.$message({
+          message: "请重新选择表类型",
+          type: "error",
+        });
+      }
     },
     handleSaveSql() {
       if (this.msgFormDialog.createSql == "") {
