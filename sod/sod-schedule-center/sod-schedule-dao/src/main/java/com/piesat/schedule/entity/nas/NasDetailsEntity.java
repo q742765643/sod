@@ -16,26 +16,12 @@ public class NasDetailsEntity extends BaseEntity {
     private String userId;
     @Column(name="user_name", length=50)
     private String userName;
-    @Column(name="hard_threshold", length=50)
-    private BigDecimal hardThreshold;
-    @Column(name="soft_threshold", length=50)
-    private BigDecimal softThreshold;
-    @Column(name="recommended_threshold", length=50)
-    private BigDecimal recommendedThreshold;
     @Column(name="private_directory", length=255)
     private String privateDirectory;
-    @Column(name="ips", length=255)
-    private String  ips;
-    @Column(name="nas_vendor", length=50)
-    private String nasVendor;
+    @Column(name="ip", length=255)
+    private String  ip;
     @Column(name="is_docker", length=2)
     private String isDocker;
-    @Column(name="permission", length=10)
-    private String permission;
-    @Column(name="review_materials", length=255)
-    private String reviewMaterials;
-    @Column(name="review_materials_pdf", length=255)
-    private String reviewMaterialsPdf;
-    @Column(name="resource_status", length=2)
-    private String resourceStatus;
+    @Column(name="acl_status", length=2)
+    private String aclStatus;
 }

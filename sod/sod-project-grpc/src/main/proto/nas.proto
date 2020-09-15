@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_package = "cmadaas.dpl.grpc.nas";
+option java_outer_classname = "NasAccredit";
+option java_multiple_files = false;
+
+// 定义通用的 Grpc 服务
+service NasAccreditService {
+    // 处理请求
+    rpc handle ( NasRequest ) returns ( NasResponse ) {}
+}
+
+// 定义通用的 Grpc 请求体
+message NasRequest {
+    string permission = 1;
+    string path = 2;
+    string user = 3;
+}
+
+// 定义通用的 Grpc 响应体
+message NasResponse {
+    int32 code=1;
+    string messege = 2;
+}

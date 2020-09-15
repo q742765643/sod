@@ -1,37 +1,30 @@
 server:
-  port: 8005
+  port: 28028
   servlet:
-      context-path: /
+    context-path: /cmadaas/sod/
   tomcat:
-      remote-ip-header: x-forward-for
-      uri-encoding: UTF-8
-      max-threads: 10
-      background-processor-delay: 30
-      basedir: ${user.home}/tomcat/
-  max-http-header-size: 15360
-  #ssl:
-   #key-store: classpath:keystore.https
-   #key-store-password: qwe123
-   #keyStoreType: PKCS12
-   #keyAlias: htht
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 10
+    background-processor-delay: 30
+    basedir: ${user.home}/tomcat/
+    #ssl:
+    #key-store: classpath:keystore.https
+    #key-store-password: qwe123
+    #keyStoreType: PKCS12
+    #keyAlias: htht
 jasypt:
   encryptor:
-    password: HT9527
+    password: HT95279527
 grpc:
   server:
-    port: 8006
+    port: 28228
   client:
     schedule-client-server:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
 spring:
-  mvc:
-    favicon:
-      enabled: false
-  #aop:
-  #auto: true
-  #proxy-target-class: true
   application:
     name: schedule-server
   sleuth:
@@ -43,19 +36,19 @@ spring:
       charset: utf-8
       enabled: true
   servlet:
-     multipart:
+    multipart:
       max-file-size: 1000000000
       max-request-size: 1000000000
   datasource:
-      #driver-class-name: com.xugu.cloudjdbc.Driver
-      #url: jdbc:xugu://10.40.16.44:31293/babjbdb?char_set=utf8
-      #username: sod5
-      #password: 123456
-      driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://10.1.6.117:8000/sod
-      username: ENC(VuleeBWaRVMxyx8ZM3vVTg==)
-      password: ENC(7Lj+YULi4+TUYB/Xe8hhFQ==)
-      type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.xugu.cloudjdbc.Driver
+    #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
+    #username: ENC(YxpGRv4xpm1043WVImWDSw==)
+    #password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
+    url: jdbc:xugu://10.20.64.167:5138/BABJ_SMDB?ips=10.20.64.168,10.20.64.169&recv_mode=0&char_set=utf8
+    username: USR_SOD
+    password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
       # 下面为连接池的补充设置，应用到上面所有数据源中
       # 初始化大小，最小，最大
       initialSize: 1
@@ -71,32 +64,30 @@ spring:
       testWhileIdle: true
       testOnBorrow: true
       testOnReturn: true
+
   main:
-      allow-bean-definition-overriding: true
+    allow-bean-definition-overriding: true
   jpa:
     properties:
       hibernate:
         hbm2ddl:
+          #auto: validate
           auto: update
-        #dialect: com.xugu.dialect.XuguDialect5
-        dialect: com.piesat.common.jpa.dialect.MysqlDialect
+        dialect: com.piesat.common.jpa.dialect.XuguDialect
         format_sql: true
     show-sql: true
-    #database: mysql
     open-in-view: false
   redis:
-    host: 10.1.6.117
-    port: 8001
-    timeout: 5000
-    password:
-    #database: 1
+    host: 10.40.17.44
+    port: 18228
+    timeout: 50000
+    password: ENC(5jvCobFBdeuGb4WpOUBcWzA3U9uogwG0)
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
-  callSettersOnNulls:  true
+  callSettersOnNulls: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    call-setters-on-nulls: true
 #分页插件
 pagehelper:
   helper-dialect: mysql
@@ -106,63 +97,78 @@ pagehelper:
 
 eureka:
   instance:
-    hostname: desktop-2vav0fh
-
-    #prefer-ip-address: true
-    #instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    prefer-ip-address: true
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.1.6.117:8002/eureka/
+      defaultZone: http://10.40.17.44:28328/eureka/
 
-DITASKADDURL: http://10.20.67.109/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
-DITASKDELURL: http://10.20.67.109/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
 
 log:
-  path: D:/log
+  path: ../../logs
   level: INFO
 
+#数据库可视化部署节点
 mng:
-  ip: 10.40.16.17
+  ip: 10.40.17.44,10.40.17.45
 
+#公共元数据接口
 mmd:
   userName: dsmsys
-  password: nmic@100200
+  password: ENC(AlDOo637OgQ1iDRNQUoJCDTum0rjjw33)
+
+#归档系统接口
 are:
   userName: usr_music
-  password: music#2020
+  password: ENC(odKCJcYCq5dm43Fm2r6ikLKBI7ILGegx)
 
 serverfile:
-  dbfile: /home/sod/file/upload/dbfile
-  filePath: /home/sod/file/upload/filePath
-  dfcheck: /home/sod/file/upload/dfcheck
-  special: /home/sod/file/upload/special
-  cloud: /home/sod/file/upload/cloud
-  user: /home/sod/file/upload/user
+  dbfile: D:/cmadass/upload/dbfile
+  filePath: D:/cmadass/upload/filePath
+  dfcheck: D:/cmadass/upload/dfcheck
+  special: D:/cmadass/upload/special
+  cloud: D:/cmadass/upload/cloud
+  user: D:/cmadass/upload/user
+  #  dbfile: D:/file
+  #  filePath: D:/file
+  #  dfcheck: D:/file
+  #  special: D:/file
+  #  cloud: D:/file
+  #  user: D:/file
+
   static:
     template:
-      add-column: E:/sod/sod_all/static/字段模板.xlsx
-      clouddatabase-application: E:/sod/sod_all/static/云数据库申请表模板.docx
-      databaseuser-application: E:/sod/sod_all/static/大数据云平台存储账户申请模板.docx
-      dataregister-application: E:/sod/sod_all/static/个人数据注册上传模板.xlsx
-      topic-application: E:/sod/sod_all/static/专题库申请表模板.docx
-      table-export-standard: /home/sod/file/static/template_standard.ftl
+      add-column: D:/cmadass/static/字段模板.xlsx
+      clouddatabase-application: D:/cmadass/static/云数据库申请表模板.docx
+      databaseuser-application: D:/cmadass/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: D:/cmadass/static/个人数据注册上传模板.xlsx
+      topic-application: D:/cmadass/static/专题库申请表模板.docx
+      table-export-standard: D:/cmadass/static/template_standard.ftl
     database-client:
-      xugu-client: E:/sod/sod_all/static/虚谷数据库V9.0.zip
-      gbase-client: E:/sod/sod_all/static/GBaseDataStudio.zip
-      cassandra-client: E:/sod/sod_all/static/Dbeaver.zip
-
+      xugu-client: D:/cmadass/static/虚谷数据库V9.0.zip
+      gbase-client: D:/cmadass/static/GBaseDataStudio.zip
+      cassandra-client: D:/cmadass/static/Dbeaver.zip
 
 fileUpload:
-  savaPath: /zzj/upload
-  httpPath: D:/upload
-product:
-  enable: true
-debug: true
+  savaPath: D:/cmadass/upload
+  httpPath: /upload
+
 businessParameters:
-  databaseUserDefaultPassword: 111
+  databaseUserDefaultPassword: Asd123
 
 fidbDownloadUrl: http://10.40.17.34:8028/fileApi
 
+product:
+  enable: true
+
+#单位为秒
+session:
+  timeout: 7200
+
+#数据库系统用户
+database:
+  sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase
 

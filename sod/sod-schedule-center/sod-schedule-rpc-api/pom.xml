@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.4</version>
         </dependency>
         <!-- swagger-ui -->
        <!-- <dependency>
@@ -49,6 +49,12 @@
             <artifactId>sod-util</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.0.8.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

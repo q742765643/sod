@@ -62,8 +62,10 @@ public class FileUtil {
 
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for (File f : files) {
-                delFiles(f);
+            if(null!=files){
+                for (File f : files) {
+                    delFiles(f);
+                }
             }
         }
         return file.delete();

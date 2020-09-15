@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-context</artifactId>
@@ -88,7 +88,7 @@
             <version>${swagger.version}</version>-->
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-context</artifactId>
@@ -355,6 +355,12 @@
             <artifactId>connector-java</artifactId>
             <version>8.3.81.53</version>
             <classifier>bin</classifier>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.3.10</version>
         </dependency>
     </dependencies>
 
