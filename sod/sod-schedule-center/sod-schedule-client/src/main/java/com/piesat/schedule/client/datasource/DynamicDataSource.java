@@ -9,6 +9,9 @@ import com.piesat.schedule.client.vo.ConnectVo;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,18 +36,18 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         return dataSourceName;
     }
     public void selectDataSource(String dataSourceName) {
-        Object obj = _targetDataSources.get(dataSourceName);
        /* if (obj != null) {
             return;
         }*/
 
-        try {
-            DataSource dataSource = this.getDataSource(dataSourceName);
-            if (null != dataSource) {
-                this.setDataSource(dataSourceName, dataSource);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        DataSource dataSource = this.getDataSource(dataSourceName);
+        if (null != dataSource) {
+            this.setDataSource(dataSourceName, dataSource);
+        }
+
+        if(null==_targetDataSources.get(dataSourceName)){
+            throw new RuntimeException("数据库连接信息不正确!");
         }
 
 
@@ -56,6 +59,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
             return (DataSource) obj;
         }
         return null;
+
     }
 
     public ConnectVo getConnectVo(String dataSourceName) {
@@ -74,12 +78,35 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     }
 
     private void addTargetDataSource(String key, DataSource dataSource) {
+        if(null!=_targetDataSources.get(key)){
+            try {
+                DruidDataSource druidDataSource= (DruidDataSource) _targetDataSources.get(key);
+                druidDataSource.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         _targetDataSources.put(key, dataSource);
         this.setTargetDataSources(_targetDataSources);
     }
 
     private DataSource createDataSource(String driverClassName, String url,
                                         String username, String password) {
+        Connection connection = null;
+        try {    //排除连接不上的错误
+            Class.forName(driverClassName);
+            connection=DriverManager.getConnection(url, username, password);
+        } catch (Exception e) {
+            return null;
+        }finally {
+            if(null!=connection){
+                try {
+                    connection.close();
+                } catch (Exception e) {
+
+                }
+            }
+        }
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(url.replace("recv_mode=1","recv_mode=0"));
@@ -90,11 +117,17 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         dataSource.setPoolPreparedStatements(false);
         dataSource.setTestOnBorrow(true);
         dataSource.setTestOnReturn(true);
+        dataSource.setTestWhileIdle(true);
+        dataSource.setMaxWait(60000);
+        dataSource.setBreakAfterAcquireFailure(true);
+        dataSource.setFailFast(true);
+        dataSource.setConnectionErrorRetryAttempts(3);
         dataSource.setMaxOpenPreparedStatements(0);
+        dataSource.setRemoveAbandoned(true);
+        dataSource.setRemoveAbandonedTimeout(180);
+        dataSource.setLogAbandoned(true);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
-        if(url.indexOf("xugu")!=-1){
-            dataSource.setValidationQuery("select 1 ");
-        }
+        dataSource.setValidationQuery("select 1 ");
         return dataSource;
     }
 

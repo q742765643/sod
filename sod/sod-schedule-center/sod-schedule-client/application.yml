@@ -41,22 +41,22 @@ spring:
       username: USR_SOD
       password: ENC(zNhD62iMk8LDM+YXUWiz5cBtWMs/Lemd)
       type: com.alibaba.druid.pool.DruidDataSource
-      druid:
-        # 下面为连接池的补充设置，应用到上面所有数据源中
-        # 初始化大小，最小，最大
-        initialSize: 1
-        minIdle: 3
-        maxActive: 20
-        # 配置获取连接等待超时的时间
-        #maxWait: 60000
-        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-        timeBetweenEvictionRunsMillis: 60000
-        # 配置一个连接在池中最小生存的时间，单位是毫秒
-        #minEvictableIdleTimeMillis: 30000
-        validationQuery: select 'x'
-        testWhileIdle: true
-        testOnBorrow: true
-        testOnReturn: true
+    druid:
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      #       # 初始化大小，最小，最大
+      #             initialSize: 1
+      #                   minIdle: 3
+      #                         maxActive: 20
+      #                               # 配置获取连接等待超时的时间
+      #                                     #maxWait: 60000
+      #                                           # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      #                                                 timeBetweenEvictionRunsMillis: 60000
+      #                                                       # 配置一个连接在池中最小生存的时间，单位是毫秒
+      #                                                             #minEvictableIdleTimeMillis: 30000
+      #                                                                   validationQuery: select 'x'
+      #                                                                         testWhileIdle: true
+      #                                                                               testOnBorrow: true
+      #                                                                                     testOnReturn: true::::
   jpa:
     properties:
       hibernate:
@@ -69,9 +69,9 @@ spring:
     open-in-view: false
   redis:
      host: 10.40.17.44
-     port: 6379
+     port: 18228
      timeout: 5000
-     password: ENC(VAYNEyA+Ffd2tHqJn95mZA==)
+     password: ENC(5jvCobFBdeuGb4WpOUBcWzA3U9uogwG0)
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath:mapper/*.xml
@@ -95,9 +95,8 @@ eureka:
     service-url:
        defaultZone: http://10.40.17.44:28328/eureka/
 
-
 gbaseserver:
-  ip: 10.40.17.35
+  ip: 10.40.17.36
   user: sod
   pass: ENC(yzPRYcBqwhCLAk5Uf9d/Bg==)
 EIDI:

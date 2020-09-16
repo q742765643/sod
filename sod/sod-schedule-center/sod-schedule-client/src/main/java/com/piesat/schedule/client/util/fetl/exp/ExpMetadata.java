@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ExpMetadata {
-	
+
 	static{
 		try {
 			Class.forName("com.xugu.cloudjdbc.Driver");
@@ -298,7 +298,7 @@ public class ExpMetadata {
 			FetlUtil.closeSt(st);
 		}
 	}
-	
+
 	public void expSchema(BufferedWriter writer,Connection conn,String schemaName){
 		String sql_str = null;
 		Statement st = null;
@@ -315,13 +315,13 @@ public class ExpMetadata {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void expTable(BufferedWriter writer,Connection conn,String tableName,String schemaName) throws Exception{
 		String sql_str = null;
 		if (tableName == null) {
@@ -453,8 +453,8 @@ public class ExpMetadata {
 					} else {
 						outinfo += ";";
 					}
-					
-					
+
+
 					writer.write(outinfo + "\r\n");
 					writer.flush();
 					String idxstr = get_index(conn, otabid, osche, otab);
@@ -473,7 +473,7 @@ public class ExpMetadata {
 					if (ck_cons != null) {
 						writer.write(ck_cons.toString() + "\r\n");
 						writer.flush();
-					}	
+					}
 					writer.write("---end table---\r\n");
 					if(tableName != null){
 						String consstr = get_constraint(conn, otabid, osche, otab);
@@ -498,7 +498,7 @@ public class ExpMetadata {
 			FetlUtil.closePs(ps);
 		}
 	}
-	
+
 	public void expView(BufferedWriter writer, Connection conn,String viewName,String schemaName) throws Exception{
 		Statement st = null;
 		ResultSet rs = null;
@@ -525,14 +525,14 @@ public class ExpMetadata {
 			FetlUtil.closeSt(st);
 		}
 	}
-	
+
 	public void expSequence(BufferedWriter writer, Connection conn,String sequenceName,String schemaName) throws Exception{
 		Statement st = null;
 		ResultSet rs = null;
 		try{
 			String sql = "select seq_name, curr_val, min_val, max_val, step_val, is_cycle, cache_val from dba_sequences a, dba_schemas b where a.schema_id = b.schema_id and schema_name = '"+schemaName+"'";
 			if(sequenceName != null)
-				sql += " and seq_name = '" + sequenceName+"'"; 
+				sql += " and seq_name = '" + sequenceName+"'";
 			st = conn.createStatement();
 			rs = st.executeQuery(sql);
 			while(rs.next()){
@@ -557,7 +557,7 @@ public class ExpMetadata {
 			FetlUtil.closeSt(st);
 		}
 	}
-	
+
 	public void expTrigger(BufferedWriter writer, Connection conn,String triggerName, String schemaName) throws Exception{
 		Statement st = null;
 		ResultSet rs = null;
@@ -584,7 +584,7 @@ public class ExpMetadata {
 			FetlUtil.closeSt(st);
 		}
 	}
-	
+
 	public void expProcedure(BufferedWriter writer, Connection conn,String procedureName,String schemaName) throws Exception{
 		Statement st = null;
 		ResultSet rs = null;
@@ -611,7 +611,7 @@ public class ExpMetadata {
 			FetlUtil.closeSt(st);
 		}
 	}
-	
+
 	public void expPackage(BufferedWriter writer, Connection conn,String packName,String schemaName) throws Exception{
 		Statement st = null;
 		ResultSet rs = null;
@@ -643,7 +643,7 @@ public class ExpMetadata {
 			FetlUtil.closeSt(st);
 		}
 	}
-	
+
 	public void expUser(BufferedWriter writer, Connection conn,String userName) throws Exception{
 		LoadPermission loadPermission= new LoadPermission();
 		try {
@@ -654,9 +654,9 @@ public class ExpMetadata {
 			throw e;
 		}
 	}
-	
+
 	public void expRole(BufferedWriter writer, Connection conn,String roleName) throws Exception{
-		LoadPermission loadPermission= new LoadPermission();				
+		LoadPermission loadPermission= new LoadPermission();
 		try {
 			writer.write("---role "+ roleName +"---"+"\r\n");
 			writer.write(loadPermission.loadPermissionSql(conn, roleName) + "\r\n");
@@ -665,7 +665,7 @@ public class ExpMetadata {
 			throw e;
 		}
 	}
-	
+
 	public void expData(BufferedWriter writer, Connection conn, List<String> tableNames, File file,StringBuffer sb) throws Exception{
 		String path = file.getParentFile().getPath();
 		if(tableNames == null){
@@ -693,7 +693,7 @@ public class ExpMetadata {
 			}
 		}
 	}
-	
+
 	public void expData(BufferedWriter writer,Connection conn, String tableName,String path) throws Exception{
 
 		File expFile = new File(path +"/DATA_"+tableName+".exp");
@@ -703,13 +703,9 @@ public class ExpMetadata {
 		writer.write(expFile.getName()+"\r\n");
 		writer.write("---end data---\r\n");
 	}
-	
-	public String expData(String file,String tableName,List<String> cols,String where,String parentId) throws Exception {
-		Connection conn = null;
-		DynamicDataSource dynamicDataSource=SpringUtil.getBean(DynamicDataSource.class);
+
+	public String expData(String file,String tableName,List<String> cols,String where,Connection conn) throws Exception {
 		try {
-			DataSourceContextHolder.setDataSource(parentId);
-			conn=dynamicDataSource.getConnection();
 			StringBuffer sql = new StringBuffer();
 			StringBuffer sb = new StringBuffer();
 			if(cols == null || cols.size() == 0){
@@ -739,18 +735,9 @@ public class ExpMetadata {
 			log.error(OwnException.get(e));
 			throw e;
 
-		} finally{
-			DataSourceContextHolder.clearDataSource();
-			if(null!=conn){
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
-	
+
 	public String expData(String fileName,String tableName,String sql,String parentId) throws SQLException{
 		StringBuffer returnString = new StringBuffer();
 		sql += " limit 1";
@@ -787,18 +774,18 @@ public class ExpMetadata {
 			FetlUtil.closeConn(conn);
 		}
 	}
-	
+
 	public String expData(Connection conn, String tableName, String sql, File file) throws Exception{
 		DataOutputStream dos = null;
 		ByteArrayOutputStream tempData = null;
 		Statement st = null;
 		ResultSet rs = null;
 		ResultSetMetaData rsmd = null;
-		StringBuffer columns =  new StringBuffer(); 
+		StringBuffer columns =  new StringBuffer();
 		try{
 			dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file),64 * 1024));
 			tempData = new ByteArrayOutputStream(64 * 1024);
-			st = conn.createStatement(); 
+			st = conn.createStatement();
 			rs = st.executeQuery(sql);
 			rsmd = rs.getMetaData();
 			int fnum = rsmd.getColumnCount();
@@ -854,14 +841,12 @@ public class ExpMetadata {
 		}
 		return columns.toString();
 	}
-	
-	public String expMetaData(String parentId, Map<Type, List<String>> expInfo, String filepath) {
-		Connection conn = null;
+
+	public String expMetaData(Connection conn, Map<Type, List<String>> expInfo, String filepath) {
 		BufferedWriter writer = null;
 		StringBuffer sb = new StringBuffer();
-		DynamicDataSource dynamicDataSource=SpringUtil.getBean(DynamicDataSource.class);
 		try {
-			DataSourceContextHolder.setDataSource(parentId);
+
 			File file = new File(filepath);
 			//if (file.isDirectory()) {
 				//file=new File(file+"/index.sql");
@@ -874,7 +859,7 @@ public class ExpMetadata {
 				}
 				file = new File(filepath+ System.getProperty("file.separator") + db + "_metadata.sql");*/
 			//}
-			conn=dynamicDataSource.getConnection();
+
 			//conn = FetlUtil.get_conn(url+"&char_set=utf8");
 			writer = new BufferedWriter(new FileWriter(file, false));
 			if(expInfo == null){
@@ -888,7 +873,7 @@ public class ExpMetadata {
 			}else{
 				if (expInfo.containsKey(Type.ROLE)) {
 					List<String> roleNames = expInfo.get(Type.ROLE);
-					for(String roleName:roleNames){	
+					for(String roleName:roleNames){
 						try {
 							expRole(writer, conn, roleName);
 						} catch (Exception e) {
@@ -911,7 +896,7 @@ public class ExpMetadata {
 					if(schemas == null){
 //						expSequence(writer, conn, null);
 					}else{
-						for(String schema:schemas){	
+						for(String schema:schemas){
 							try {
 								expSchema(writer, conn, schema);
 							} catch (Exception e) {
@@ -1010,7 +995,7 @@ public class ExpMetadata {
 						}
 					}
 				}
-				
+
 	            if(expInfo.containsKey(Type.DATA)){
 	            	List<String> tableNames = expInfo.get(Type.DATA);
 	            	try {
@@ -1018,20 +1003,18 @@ public class ExpMetadata {
 	            	} catch (Exception e) {
 						sb.append(e.getMessage()).append("\n");
 					}
-	            }	          
+	            }
 			}
 		} catch (Exception e) {
 			sb.append(e.getMessage()).append("\n");
 			log.error(OwnException.get(e));
 		} finally {
-			FetlUtil.closeConn(conn);
 			FetlUtil.closeWriter(writer);
-			DataSourceContextHolder.clearDataSource();
 		}
 		return sb.toString();
 	}
-	
-	
+
+
 	static byte[] initBytes(byte[] bbs){
 		for (int i = 0; i < bbs.length; i++){
 			bbs[i] = 0;
@@ -1089,7 +1072,7 @@ public class ExpMetadata {
 			}
 			return ret;
 		}
-		
+
 		public static byte getZero(int i){
 			byte ret = 0x00;
 			switch (i)

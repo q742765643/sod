@@ -1,13 +1,17 @@
 package com.piesat.schedule.client.service.databse;
 
 import com.alibaba.fastjson.JSON;
+import com.piesat.common.grpc.config.SpringUtil;
+import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
+import com.piesat.schedule.client.datasource.DynamicDataSource;
 import com.piesat.schedule.client.util.ZipUtils;
 import com.piesat.schedule.client.util.fetl.exp.ExpMetadata;
 import com.piesat.schedule.client.util.fetl.imp.ImpMetaData;
 import com.piesat.schedule.client.util.fetl.type.Type;
+import com.piesat.schedule.client.util.fetl.util.FetlUtil;
 import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.RecoverMetaVo;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
@@ -19,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
 import java.util.*;
 
 /**
@@ -177,8 +182,14 @@ public class XuguService {
             }
 
         }
+        Connection conn = null;
+        DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
         try {
-            String reslut = exp.expMetaData(metaBackupEntity.getParentId(), expInfo, metadataVo.getIndexPath());
+            log.info("获取数据库连接开始");
+            DataSourceContextHolder.setDataSource(metaBackupEntity.getParentId());
+            conn=dynamicDataSource.getConnection();
+            log.info("获取数据库连接结束");
+            String reslut = exp.expMetaData(conn, expInfo, metadataVo.getIndexPath());
             if (reslut.length()>0) {
                 resultT.setErrorMessage(reslut);
             }
@@ -187,7 +198,7 @@ public class XuguService {
                     String path = metadataVo.getParentPath() + "/DATA_" + tableName + ".exp";
 
                     try {
-                        String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), metaBackupEntity.getParentId());
+                        String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), conn);
                         ZipUtils.writetxt(metadataVo.getIndexPath(), result, resultT);
                     } catch (Exception e) {
                        resultT.setErrorMessage("表数据{}备份失败",tableName);
@@ -197,7 +208,11 @@ public class XuguService {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            resultT.setErrorMessage("获取数据库连接异常:"+OwnException.get(e));
+            log.info("获取数据库连接异常");
+        }finally {
+            FetlUtil.closeConn(conn);
+            DataSourceContextHolder.clearDataSource();
         }
 
 
