@@ -161,7 +161,8 @@ public class MetaBackupHandler implements BaseHandler{
             metaBackupLogEntity.setHandleMsg(resultT.getProcessMsg().toString());
             metaBackupLogService.saveNotNull(metaBackupLogEntity);
         } catch (Exception e){
-            resultT.setErrorMessage("修改日志出错{}",OwnException.get(e));
+            metaBackupLogService.saveNotNull(metaBackupLogEntity);
+            //resultT.setErrorMessage("修改日志出错{}",OwnException.get(e));
             log.error("修改日志出错{}",OwnException.get(e));
         }
 

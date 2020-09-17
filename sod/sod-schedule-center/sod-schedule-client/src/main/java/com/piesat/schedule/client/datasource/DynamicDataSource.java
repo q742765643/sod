@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.client.vo.ConnectVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
@@ -24,10 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author: zzj
  * @create: 2020-02-07 10:09
  **/
+@Slf4j
 public class DynamicDataSource extends AbstractRoutingDataSource {
     public static Map<Object, Object> _targetDataSources = new ConcurrentHashMap<>();
-    public static Map<Object, ConnectVo> connectVoMap = new HashMap();
-    public static Map<String, String> type = new HashMap();
+    public static Map<Object, ConnectVo> connectVoMap = new ConcurrentHashMap();
+    public static Map<String, String> type = new ConcurrentHashMap();
     @Override
     protected Object determineCurrentLookupKey() {
         String dataSourceName = DataSourceContextHolder.getDataSource();
@@ -93,15 +95,18 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         this.setTargetDataSources(_targetDataSources);
     }
 
-    private DataSource createDataSource(String driverClassName, String url,
+    private  DataSource createDataSource(String driverClassName, String url,
                                         String username, String password) {
-        Connection connection = null;
+    /*    Connection connection = null;
         try {    //排除连接不上的错误
             Class.forName(driverClassName);
             connection=DriverManager.getConnection(url, username, password);
         } catch (Exception e) {
             return null;
         }finally {
+            if(connection==null){
+                return null;
+            }
             if(null!=connection){
                 try {
                     connection.close();
@@ -109,13 +114,13 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
 
                 }
             }
-        }
+        }*/
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(url.replace("recv_mode=1","recv_mode=0"));
         dataSource.setUsername(username);
         dataSource.setPassword(password);
-        dataSource.setMinIdle(3);
+        dataSource.setMinIdle(1);
         dataSource.setMaxActive(20);
         dataSource.setPoolPreparedStatements(false);
         dataSource.setTestOnBorrow(true);
@@ -147,7 +152,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         this.addTargetDataSource(dataSourceName, dataSource);
         //DataSourceContextHolder.setDataSource(dataSourceName);
     }
-    private DataSource getDataSource(String dataSourceName) {
+    private synchronized DataSource getDataSource(String dataSourceName) {
         DataSource dataSource=null;
         DatabaseService databaseService= SpringUtil.getBean(DatabaseService.class);
         List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
@@ -176,7 +181,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
                    connectVo.setUrl(databaseDto.getDatabaseDefine().getDatabaseUrl());
-                   if(null!=connectVoMap.get(parentId)){
+                   if(null!=connectVoMap.get(parentId)&&null!=_targetDataSources.get(parentId)){
                      ConnectVo yConnectVo=connectVoMap.get(parentId);
                      if(connectVo.getUrl().equals(yConnectVo.getUrl())
                              &&connectVo.getUserName().equals(yConnectVo.getUserName())
@@ -189,6 +194,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    connectVoMap.put(parentId, connectVo);
                    if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
                        if(!"".equals(userName)&&!"".equals(password)){
+                           log.info("========={}创建连接池===========",parentId);
                            String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
                            String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();
                            dataSource = this.createDataSource(

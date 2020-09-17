@@ -35,7 +35,33 @@ public class FetlUtil
 			return null;
 		}
 	}
-	
+	public static Connection get_connN(String parentId) {
+		Connection conn = null;
+		try {
+			Class.forName("com.xugu.cloudjdbc.Driver");
+			DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
+			ConnectVo connectVo=dynamicDataSource.getConnectVo(parentId);
+			String url="";
+
+			if(connectVo.getUrl().indexOf("?")!=-1){
+				if(connectVo.getUrl().indexOf("recv_mode")!=-1){
+					url=connectVo.getUrl().replace("recv_mode=0","recv_mode=1")+"&char_set=utf8";
+				}else {
+					url=connectVo.getUrl()+"&recv_mode=1&char_set=utf8";
+				}
+			}else{
+				url=connectVo.getUrl()+"?recv_mode=1&char_set=utf8";
+			}
+
+			conn = DriverManager.getConnection(url,connectVo.getUserName(),connectVo.getPassWord());
+
+			return conn;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static void closeConn(Connection con){
 		try{
 			if(con !=null){
@@ -45,7 +71,7 @@ public class FetlUtil
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void closeSt(Statement st){
 		try{
 			if(st !=null){
@@ -55,7 +81,7 @@ public class FetlUtil
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void closeRs(ResultSet rs){
 		try{
 			if(rs !=null){
@@ -65,7 +91,7 @@ public class FetlUtil
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void closePs(PreparedStatement ps){
 		try{
 			if(ps !=null){
@@ -75,7 +101,7 @@ public class FetlUtil
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void closeWriter(Writer writer){
 		try{
 			if(writer !=null){
@@ -112,7 +138,7 @@ public class FetlUtil
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static String replace(String objName, String schemaName, String sql){
 		String returnString = sql;
 		objName = objName.toUpperCase();

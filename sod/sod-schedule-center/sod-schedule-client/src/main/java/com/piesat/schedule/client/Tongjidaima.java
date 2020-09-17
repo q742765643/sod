@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class Tongjidaima {
         System.out.println(aaa[0]);
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName("com.xugu.cloudjdbc.Driver");
-        dataSource.setUrl("jdbc:xugu://10.20.64.167:5142/BABJ_MTDB?ips=10.20.64.168,10.20.64.169&amp;char_set=utf8");
+        dataSource.setUrl("jdbc:xugu://10.20.64.167:5142/BABJ_MTDB?ips=10.20.64.168,10.20.64.169&char_set=utf8");
         dataSource.setUsername("usr_mmd");
         dataSource.setPassword("mmd_sunsheen");
         dataSource.setMinIdle(3);
@@ -49,19 +50,41 @@ public class Tongjidaima {
         dataSource.setLogAbandoned(true);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
         dataSource.setValidationQuery("select 1 ");
-        for(int i=0;i<100;i++){
+     /*   for(int i=0;i<1;i++){
 
             Connection connection=null;
             try {
-                Thread.sleep(1000);
+                //Thread.sleep(1000);
                 connection=dataSource.getConnection();
             } catch (Exception throwables) {
                 if(connection==null){
                     System.out.println("ssss");
                 }
             }
+        }*/
+        Connection connection = null;
+        try {    //排除连接不上的错误
+            Class.forName("com.gbase.jdbc.Driver");
+            connection= DriverManager.getConnection("jdbc:gbase://10.20.64.29:5258/usr_sod?useOldAliasMetadataBehavior=true&rewriteBatchedStatements=true&connectTimeout=0&hostList=10.20.64.29,10.20.64.30,10.20.64.31&failoverEnable=true", "usr_mmd", "a");
+
+        } catch (Exception e) {
+            System.out.println(333);
+        }finally {
+            if(connection==null){
+              System.out.println(111);
+            }
+            if(null!=connection){
+                System.out.println(222);
+                try {
+                    connection.close();
+                } catch (Exception e) {
+
+                }
+            }
         }
 
+        dataSource.close();
+        dataSource=null;
         while (true){
 
         }

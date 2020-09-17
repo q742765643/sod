@@ -183,6 +183,7 @@ public class XuguService {
 
         }
         Connection conn = null;
+        Connection connData = null;
         DynamicDataSource dynamicDataSource= SpringUtil.getBean(DynamicDataSource.class);
         try {
             log.info("获取数据库连接开始");
@@ -194,11 +195,12 @@ public class XuguService {
                 resultT.setErrorMessage(reslut);
             }
             if (metadataVo.isExpData() && StringUtils.isNotNullString(metaBackupEntity.getConditions())) {
+                connData=FetlUtil.get_connN(metaBackupEntity.getParentId());
                 for (String tableName : metadataVo.getTable()) {
                     String path = metadataVo.getParentPath() + "/DATA_" + tableName + ".exp";
 
                     try {
-                        String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), conn);
+                        String result = exp.expData(path, tableName, new ArrayList<>(), metaBackupEntity.getConditions(), connData);
                         ZipUtils.writetxt(metadataVo.getIndexPath(), result, resultT);
                     } catch (Exception e) {
                        resultT.setErrorMessage("表数据{}备份失败",tableName);
@@ -211,8 +213,9 @@ public class XuguService {
             resultT.setErrorMessage("获取数据库连接异常:"+OwnException.get(e));
             log.info("获取数据库连接异常");
         }finally {
-            FetlUtil.closeConn(conn);
             DataSourceContextHolder.clearDataSource();
+            FetlUtil.closeConn(conn);
+            FetlUtil.closeConn(connData);
         }
 
 

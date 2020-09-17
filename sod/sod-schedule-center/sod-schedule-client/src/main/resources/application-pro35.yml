@@ -53,10 +53,14 @@ spring:
         timeBetweenEvictionRunsMillis: 60000
         # 配置一个连接在池中最小生存的时间，单位是毫秒
         #minEvictableIdleTimeMillis: 30000
-        validationQuery: select 'x'
+        validationQuery: select 1
         testWhileIdle: true
         testOnBorrow: true
         testOnReturn: true
+        maxWait: 60000
+        breakAfterAcquireFailure: true
+        failFast: true
+        connectionErrorRetryAttempts: 2
   jpa:
     properties:
       hibernate:
