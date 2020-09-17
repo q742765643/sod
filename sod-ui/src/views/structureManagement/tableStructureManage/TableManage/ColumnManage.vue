@@ -311,6 +311,7 @@
               v-model.trim="columnEditData.type"
               placeholder="请选择数据类型"
               style="width: 100%;"
+              @change="reseatNum"
             >
               <el-option
                 v-for="(item,index) in dataTypes"
@@ -536,7 +537,12 @@ export default {
             return;
           }
         });
-        if (flag) {
+        if (
+          flag &&
+          this.columnEditData.type != "datetime" &&
+          this.columnEditData.type != "int" &&
+          this.columnEditData.type != "double"
+        ) {
           callback(new Error("序号不能重复"));
         } else {
           callback();
@@ -612,6 +618,11 @@ export default {
     };
   },
   methods: {
+    reseatNum(val) {
+      if (val == "datetime" || val == "int" || val == "double") {
+        this.columnEditData.serialNumber = 0;
+      }
+    },
     handleExport() {
       exportTable().then((res) => {
         this.downloadfileCommon(res);
