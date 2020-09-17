@@ -537,12 +537,7 @@ export default {
             return;
           }
         });
-        if (
-          flag &&
-          this.columnEditData.type != "datetime" &&
-          this.columnEditData.type != "int" &&
-          this.columnEditData.type != "double"
-        ) {
+        if (flag) {
           callback(new Error("序号不能重复"));
         } else {
           callback();
@@ -620,7 +615,7 @@ export default {
   methods: {
     reseatNum(val) {
       if (val == "datetime" || val == "int" || val == "double") {
-        this.columnEditData.serialNumber = 0;
+        this.columnEditData.accuracy = 0;
       }
     },
     handleExport() {
