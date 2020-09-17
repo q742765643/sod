@@ -25,8 +25,10 @@ import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataclass.*;
+import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -85,6 +87,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataClassLabelService dataClassLabelService;
     @Autowired
     private DataClassUserService dataClassUserService;
+    @Autowired
+    private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -103,11 +107,24 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
+        List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
         if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
+                String databaseId = dataClassDto.getDataLogicList().get(0).getDatabaseId();
+            DatabaseEntity byId = this.databaseDao.findById(databaseId).orElse(null);
+            DatabaseSpecialReadWriteDto d = new DatabaseSpecialReadWriteDto();
+                d.setSdbId(byId.getTdbId());
+                d.setApplyAuthority(2);
+                d.setDatabaseId(databaseId);
+                d.setDataClassId(dataClassEntity.getDataClassId());
+                d.setTypeId("9999");
+                d.setEmpowerAuthority(2);
+                d.setExamineStatus(1);
+                d.setDataType(1);
+                d.setCreateTime(new DateTime());
+                this.databaseSpecialReadWriteService.saveDto(d);
         }
-        List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
         List<String> all = byDataClassId.stream().map(DataLogicDto::getId).collect(Collectors.toList());
         List<String> nnn = dataClassDto.getDataLogicList().stream().map(DataLogicDto::getId).collect(Collectors.toList());
         all.removeAll(nnn);
@@ -349,6 +366,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataClassLabelService.deleteByDataClassId(dataClassId);
         this.dataLogicDao.deleteByDataClassId(dataClassId);
         this.dataClassDao.deleteByDataClassId(dataClassId);
+        this.databaseSpecialReadWriteService.deleteByDataClassId(dataClassId);
     }
 
     @Override

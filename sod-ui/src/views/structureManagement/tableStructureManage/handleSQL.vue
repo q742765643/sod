@@ -101,11 +101,16 @@ export default {
         this.radioTable = data[0].dbTableType;
         let indext = "";
         data.forEach((element, index) => {
+          if (!element.dbTableType) {
+            element.dbTableType = "E";
+            this.radioTable = "E";
+          }
           if (element.dbTableType == this.radioTable) {
             indext = index;
             return;
           }
         });
+
         this.tableObj = res.data[indext];
       });
     },

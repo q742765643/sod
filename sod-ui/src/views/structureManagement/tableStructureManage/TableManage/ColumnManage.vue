@@ -311,6 +311,7 @@
               v-model.trim="columnEditData.type"
               placeholder="请选择数据类型"
               style="width: 100%;"
+              @change="reseatNum"
             >
               <el-option
                 v-for="(item,index) in dataTypes"
@@ -612,6 +613,11 @@ export default {
     };
   },
   methods: {
+    reseatNum(val) {
+      if (val == "datetime" || val == "int" || val == "double") {
+        this.columnEditData.accuracy = 0;
+      }
+    },
     handleExport() {
       exportTable().then((res) => {
         this.downloadfileCommon(res);

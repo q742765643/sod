@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface NewdataApplyService {
 
-    public PageBean selectPageList(PageForm<Map<String,Object>> pageForm);
+    public PageBean selectPageList(PageForm<Map<String, Object>> pageForm);
 
     NewdataApplyDto getDotById(String id);
 
@@ -29,13 +29,13 @@ public interface NewdataApplyService {
 
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto);
 
-    List<Map<String,Object>> getLogicInfo();
+    List<Map<String, Object>> getLogicInfo();
 
-    Map<String,Object> queryCheckByApplyId(String id);
+    Map<String, Object> queryCheckByApplyId(String id);
 
     ResultT<String> addGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto);
 
-    ResultT<String> updateGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto ,String old_data_class_id);
+    ResultT<String> updateGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto, String old_data_class_id);
 
     ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto);
 
@@ -47,11 +47,11 @@ public interface NewdataApplyService {
 
     PageBean getTableDataInfo(String tableId, String databaseId, int pageNum, int pageSize);
 
-    Map<String,Object> getArchiveInfo(String id);
+    Map<String, Object> getArchiveInfo(String id);
 
-    List<Map<String,Object>> getByUserIdAndApplyId(NewdataApplyDto newdataApplyDto);
+    List<Map<String, Object>> getByUserIdAndApplyId(NewdataApplyDto newdataApplyDto);
 
-    List<Map<String,Object>> getColumnByIdAndDDataId(NewdataApplyDto newdataApplyDto);
+    List<Map<String, Object>> getColumnByIdAndDDataId(NewdataApplyDto newdataApplyDto);
 
     void deleteById(String id);
 
@@ -59,7 +59,9 @@ public interface NewdataApplyService {
 
     Map<String, Object> getSchemaInfo(String physicId, String userId);
 
-    List<Map<String,Object>> getDataInfoByUserId(String userId,String dataClassId);
+    List<Map<String, Object>> getDataInfoByUserId(String userId, String dataClassId);
 
-    List<Map<String,Object>> getSpecialDBData(String sdbId);
+    List<Map<String, Object>> getSpecialDBData(String sdbId);
+
+    List<NewdataApplyDto> findByDataClassIdAndUserId(String dataClassId, String userId);
 }

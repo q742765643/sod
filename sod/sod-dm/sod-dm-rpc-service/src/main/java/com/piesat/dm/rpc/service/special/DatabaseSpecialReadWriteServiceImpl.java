@@ -50,19 +50,19 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
             paramMap.put("typeName", databaseSpecialReadWriteDto.getTypeName());
             paramMap.put("dataName", databaseSpecialReadWriteDto.getDataName());
             paramMap.put("tableName", databaseSpecialReadWriteDto.getTableName());
-            if(StringUtils.isNotNullString(databaseSpecialReadWriteDto.getApplyAuthorityString())){
-                if("只读".equals(databaseSpecialReadWriteDto.getApplyAuthorityString())){
+            if (StringUtils.isNotNullString(databaseSpecialReadWriteDto.getApplyAuthorityString())) {
+                if ("只读".equals(databaseSpecialReadWriteDto.getApplyAuthorityString())) {
                     paramMap.put("applyAuthority", 1);
-                }else{
+                } else {
                     paramMap.put("applyAuthority", 2);
                 }
             }
-            if(StringUtils.isNotNullString(databaseSpecialReadWriteDto.getExamineStatusString())){
-                if("拒绝".equals(databaseSpecialReadWriteDto.getExamineStatusString())){
+            if (StringUtils.isNotNullString(databaseSpecialReadWriteDto.getExamineStatusString())) {
+                if ("拒绝".equals(databaseSpecialReadWriteDto.getExamineStatusString())) {
                     paramMap.put("examineStatus", 3);
-                }else if(databaseSpecialReadWriteDto.getExamineStatusString().contains("已授权")){
+                } else if (databaseSpecialReadWriteDto.getExamineStatusString().contains("已授权")) {
                     paramMap.put("examineStatus", 2);
-                }else if(databaseSpecialReadWriteDto.getExamineStatusString().contains("待审核")){
+                } else if (databaseSpecialReadWriteDto.getExamineStatusString().contains("待审核")) {
                     paramMap.put("examineStatus", 1);
                 }
             }
@@ -78,14 +78,14 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
                     dto.setDDataId(map.get("D_DATA_ID") + "");
                     dto.setTableName(map.get("TABLE_NAME") + "");
                     dto.setDatabaseName(map.get("DATABASE_NAME") + "");
-                    if(map.get("FAILURE_REASON")!=null&&!"null".equals(map.get("FAILURE_REASON").toString())){
+                    if (map.get("FAILURE_REASON") != null && !"null".equals(map.get("FAILURE_REASON").toString())) {
                         dto.setFailureReason(map.get("FAILURE_REASON").toString());
-                    }else{
+                    } else {
                         dto.setFailureReason("");
                     }
-                    dto.setApplyAuthority( getInteger(map,"APPLY_AUTHORITY", 1));
-                    dto.setEmpowerAuthority(getInteger(map,"EMPOWER_AUTHORITY", 1));
-                    dto.setExamineStatus(getInteger(map,"EXAMINE_STATUS", 1));
+                    dto.setApplyAuthority(getInteger(map, "APPLY_AUTHORITY", 1));
+                    dto.setEmpowerAuthority(getInteger(map, "EMPOWER_AUTHORITY", 1));
+                    dto.setExamineStatus(getInteger(map, "EXAMINE_STATUS", 1));
                     resultList.add(dto);
                 }
             }
@@ -103,7 +103,7 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
             } catch (Exception e) {
                 return def;
             }
-        }else {
+        } else {
             return def;
         }
     }
@@ -157,15 +157,15 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     @Override
     @Transactional
     public void deleteRecords(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos) {
-        if(databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size()>0){
-            for(int i=0;i<databaseSpecialReadWriteDtos.size();i++){
+        if (databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0) {
+            for (int i = 0; i < databaseSpecialReadWriteDtos.size(); i++) {
                 Map<String, String> dataMap = new HashMap<String, String>();
                 dataMap.put("tdbId", databaseSpecialReadWriteDtos.get(i).getSdbId());
                 dataMap.put("dataClassId", databaseSpecialReadWriteDtos.get(i).getDataClassId());
                 dataMap.put("databaseId", databaseSpecialReadWriteDtos.get(i).getDatabaseId());
                 dataMap.put("userId", databaseSpecialReadWriteDtos.get(i).getUserId());
                 //撤销权限
-                databaseSpecialServiceImpl.cancelAuthority(dataMap.get("userId"),dataMap.get("databaseId"),dataMap.get("dataClassId"),null);
+                databaseSpecialServiceImpl.cancelAuthority(dataMap.get("userId"), dataMap.get("databaseId"), dataMap.get("dataClassId"), null);
                 // 下面将删除该条记录。
                 mybatisQueryMapper.deleteRecordByTdbId(dataMap);
                 mybatisQueryMapper.deleteDataAuthor(dataMap);
@@ -173,5 +173,10 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
         }
 
 
+    }
+
+    @Override
+    public void deleteByDataClassId(String dataclassId) {
+        this.databaseSpecialReadWriteDao.deleteByDataClassId(dataclassId);
     }
 }
