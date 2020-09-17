@@ -1,11 +1,15 @@
 package com.piesat.schedule.client;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +28,43 @@ public class Tongjidaima {
         String aa="aaaaa--sss";
         String[] aaa=aa.split("--");
         System.out.println(aaa[0]);
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setDriverClassName("com.xugu.cloudjdbc.Driver");
+        dataSource.setUrl("jdbc:xugu://10.20.64.167:5142/BABJ_MTDB?ips=10.20.64.168,10.20.64.169&amp;char_set=utf8");
+        dataSource.setUsername("usr_mmd");
+        dataSource.setPassword("mmd_sunsheen");
+        dataSource.setMinIdle(3);
+        dataSource.setMaxActive(20);
+        dataSource.setPoolPreparedStatements(false);
+        dataSource.setTestOnBorrow(true);
+        dataSource.setTestOnReturn(true);
+        dataSource.setTestWhileIdle(true);
+        dataSource.setMaxWait(60000);
+        dataSource.setBreakAfterAcquireFailure(true);
+        dataSource.setFailFast(true);
+        dataSource.setConnectionErrorRetryAttempts(0);
+        dataSource.setMaxOpenPreparedStatements(0);
+        dataSource.setRemoveAbandoned(true);
+        dataSource.setRemoveAbandonedTimeout(180);
+        dataSource.setLogAbandoned(true);
+        dataSource.setTimeBetweenEvictionRunsMillis(60000);
+        dataSource.setValidationQuery("select 1 ");
+        for(int i=0;i<100;i++){
+
+            Connection connection=null;
+            try {
+                Thread.sleep(1000);
+                connection=dataSource.getConnection();
+            } catch (Exception throwables) {
+                if(connection==null){
+                    System.out.println("ssss");
+                }
+            }
+        }
+
+        while (true){
+
+        }
         /*File file = new File("/zzj/git/hthtsod/sod");//需要统计行数的文件夹路径
         traverseFiles(file);//调用递归方法查看.java文件，用于统计行数
         System.out.println("所写文件个数："+j);

@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 @Slf4j
 public class ImpMetaData{
-	
+
 	static{
 		try {
 			Class.forName("com.xugu.cloudjdbc.Driver");
@@ -34,25 +34,25 @@ public class ImpMetaData{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private List<Integer> columnTypes = new ArrayList<>();
 	//private LinkedBlockingQueue<Runnable> task = null;
 	//private ThreadPoolExecutor pool = null;
-	
+
 	private int threadNum = 50;
 	private int commitCount = 1000;
 	private int taskRows = 30000;
 	private int taskNum = 50;
-	
+
 	public ImpMetaData(){}
-	
+
 	public ImpMetaData(int threadNum, int commitCount, int taskRows,int taskNum){
 		this.threadNum = threadNum;
 		this.commitCount = commitCount;
 		this.taskRows = taskRows;
 		this.taskNum = taskNum;
 	}
-	
+
 	public String impMetaData(String parentId, Map<Type, Set<String>> impInfo, String filepath) {
 		//Connection con = FetlUtil.get_conn(url+"&char_set=utf8");
 		Connection con=null;
@@ -66,7 +66,6 @@ public class ImpMetaData{
 		try{
 			DataSourceContextHolder.setDataSource(parentId);
 			con=dynamicDataSource.getConnection();
-			DruidDataSource dataSource= (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
 			st = con.createStatement();
 			File file  = new File(filepath);
 			br = new BufferedReader(new FileReader(file),64*1024);
@@ -88,7 +87,7 @@ public class ImpMetaData{
 //							if(database != null && !"null".equalsIgnoreCase(database)) {
 //								url = url.replace("SYSTEM", database);
 //							}
-							impDataReadFile(dataSource.getUrl(), fileName, tableName, columns,sb);
+							impDataReadFile(parentId, fileName, tableName, columns,sb);
 							continue;
 						}
 						if(line.equalsIgnoreCase("---end foreign key---")){
@@ -124,21 +123,21 @@ public class ImpMetaData{
 				Map<Type, Set<String>> newImpInfo = newMap(impInfo);
 				List<String> foreigns = new ArrayList<>();
 				while((line = br.readLine()) != null){
-			    	if (line.startsWith("---role") && newImpInfo.containsKey(Type.ROLE) && 
+			    	if (line.startsWith("---role") && newImpInfo.containsKey(Type.ROLE) &&
 			    		(newImpInfo.get(Type.ROLE) == null || newImpInfo.get(Type.ROLE).contains(line.substring(8, line.indexOf("-", 3))))) {
 			    		try {
 			    			execSql(sql,br,st,"---end role---");
 			    		} catch (Exception e) {
 							sb.append(e.getMessage()).append("\n");
 						}
-			    	} else if(line.startsWith("---user") && newImpInfo.containsKey(Type.USER) && 
+			    	} else if(line.startsWith("---user") && newImpInfo.containsKey(Type.USER) &&
 						(newImpInfo.get(Type.USER) == null || newImpInfo.get(Type.USER).contains(line.substring(8, line.indexOf("-", 3))))) {
 						try {
 				    		execSql(sql,br,st,"---end user---");
 				    	} catch (Exception e) {
 							sb.append(e.getMessage()).append("\n");
 						}
-			    	} else if (line.startsWith("---schema")&& newImpInfo.containsKey(Type.SCHEMA) && 
+			    	} else if (line.startsWith("---schema")&& newImpInfo.containsKey(Type.SCHEMA) &&
 						(newImpInfo.get(Type.SCHEMA) == null || newImpInfo.get(Type.SCHEMA).contains(line.substring(10, line.indexOf("-", 3))))) {
 			    		try {
 			    			execSql(sql,br,st,"---end schema---");
@@ -152,7 +151,7 @@ public class ImpMetaData{
 						} catch (Exception e) {
 							sb.append(e.getMessage()).append("\n");
 						}
-					} else if(line.startsWith("---table") && newImpInfo.containsKey(Type.TABLE) && 
+					} else if(line.startsWith("---table") && newImpInfo.containsKey(Type.TABLE) &&
 						(newImpInfo.get(Type.TABLE) == null || newImpInfo.get(Type.TABLE).contains(line.substring(9, line.indexOf("-", 3))))){
 						try {
 							execSql(sql,br,st,"---end table---");
@@ -197,7 +196,7 @@ public class ImpMetaData{
 						} catch (Exception e) {
 							sb.append(e.getMessage()).append("\n");
 						}
-					} else if(line.startsWith("---package") && newImpInfo.containsKey(Type.PACKAGE) && 
+					} else if(line.startsWith("---package") && newImpInfo.containsKey(Type.PACKAGE) &&
 						(newImpInfo.get(Type.PACKAGE) == null || newImpInfo.get(Type.PACKAGE).contains(line.substring(11, line.indexOf("-", 3))))){
 						try {
 							execSql(sql,br,st,"---end package---");
@@ -256,7 +255,7 @@ public class ImpMetaData{
 		}
 		return sb.toString();
  	}
-	
+
 	public void impDataReadFile(String parentId, String fileName, String tableName, String[] columns,StringBuffer sb) throws Exception{
 		LinkedBlockingQueue task = new LinkedBlockingQueue<Runnable>(taskNum);
 		ThreadPoolExecutor pool = new ThreadPoolExecutor(threadNum, threadNum, 10, TimeUnit.SECONDS, task);
@@ -330,8 +329,8 @@ public class ImpMetaData{
 			}
 		}
 	}
-	
-	
+
+
 	public String connetSqlString(String[] columns,String tableName){
 		this.columnTypes.clear();
 		StringBuffer column = new StringBuffer();
@@ -354,7 +353,7 @@ public class ImpMetaData{
 		column.append(value.toString());
 		return column.toString();
 	}
-	
+
 	public String connetSqlString2(String[] columns,String tableName,List<Integer> arr){
 		StringBuffer column = new StringBuffer();
 		StringBuffer value = new StringBuffer();
@@ -376,7 +375,7 @@ public class ImpMetaData{
 		column.append(value.toString());
 		return column.toString();
 	}
-	
+
 	public void execSql(StringBuffer sql, BufferedReader br,Statement st,String end) throws Exception{
 		sql.append(br.readLine());
 		String sqlPart = null;
@@ -390,7 +389,7 @@ public class ImpMetaData{
 					st.executeQuery(sql.toString());
 				} catch (SQLException e){
 					sql.setLength(0);
-					if(e.getErrorCode() != 7003 && e.getErrorCode() != 12008 && e.getErrorCode() != 21060) 
+					if(e.getErrorCode() != 7003 && e.getErrorCode() != 12008 && e.getErrorCode() != 21060)
 						throw e;
 				}
 				sql.setLength(0);
@@ -414,7 +413,7 @@ public class ImpMetaData{
 //			}
 //		}
 	}
-	
+
 	public Map<Type, Set<String>> newMap(Map<Type, Set<String>> impInfo){
 		Map<Type, Set<String>> newMap = new HashMap<>();
 		Iterator<Entry<Type, Set<String>>> it = impInfo.entrySet().iterator();
@@ -432,7 +431,7 @@ public class ImpMetaData{
 		}
 		return newMap;
 	}
-	
+
 	public enum signByte{
 		b0sign(0x03),b1sign(0x0c),b2sign(0x30),b3sign(0xc0);
 		private int val;
@@ -448,7 +447,7 @@ public class ImpMetaData{
 				case 1:
 					ret = (byte) b1sign.val;
 					break;
-				case 2: 
+				case 2:
 					ret = (byte) b2sign.val;
 					break;
 				case 3:

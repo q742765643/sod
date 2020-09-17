@@ -110,15 +110,17 @@ public class ClearHandler implements BaseHandler {
 
             BusinessEnum businessEnum = BusinessEnum.match(clearEntity.getDatabaseType(), null);
             BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
-            long count=baseBusiness.selectTableCount(clearEntity.getParentId(),clearEntity.getTableName(),clearVo.getConditions(),resultT);
-            if(!resultT.isSuccess()){
-                return;
-            }
-            clearVo.setCount(count);
-            if(count==0){
-                resultT.setSuccessMessage("清除条数为0条");
-                log.info("清除条数为0条");
-                return;
+            if(!"XUGU".equals(clearEntity.getDatabaseType().toUpperCase())){
+                long count=baseBusiness.selectTableCount(clearEntity.getParentId(),clearEntity.getTableName(),clearVo.getConditions(),resultT);
+                if(!resultT.isSuccess()){
+                    return;
+                }
+                clearVo.setCount(count);
+                if(count==0){
+                    resultT.setSuccessMessage("清除条数为0条");
+                    log.info("清除条数为0条");
+                    return;
+                }
             }
             clearLogEntity=this.insertClearLog(clearEntity,clearLogEntity,resultT);
             if(!resultT.isSuccess()){

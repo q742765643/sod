@@ -117,12 +117,28 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
             }
             map.put("cron",jobInfoDto.getJobCron());
             redisUtil.hmset(QUARTZ_HTHT_CRON+jobInfoDto.getId(),map,-1);
+
+            double score=0;
+            if(!redisUtil.hasKey(QUARTZ_HTHT_JOB)){
+                score=0;
+            }else{
+                score=redisUtil.zScore(QUARTZ_HTHT_JOB,jobInfoDto.getId());
+            }
             try {
+                Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
+                double x=score- nextValidTime.getTime();
+                if(x>3*28800000||score==0){
+                    redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+           /* try {
                 Date nextValidTime = new CronExpression(jobInfoDto.getJobCron()).getNextValidTimeAfter(new Date());
                 redisUtil.zsetAdd(QUARTZ_HTHT_JOB,jobInfoDto.getId(),nextValidTime.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
-            }
+            }*/
 
         }else{
             this.stop(jobInfoDto.getId());

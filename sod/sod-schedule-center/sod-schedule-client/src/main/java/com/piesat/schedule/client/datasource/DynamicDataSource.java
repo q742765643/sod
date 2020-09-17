@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @program: sod
@@ -24,9 +25,9 @@ import java.util.Set;
  * @create: 2020-02-07 10:09
  **/
 public class DynamicDataSource extends AbstractRoutingDataSource {
-    public static Map<Object, Object> _targetDataSources = new HashMap();
+    public static Map<Object, Object> _targetDataSources = new ConcurrentHashMap<>();
     public static Map<Object, ConnectVo> connectVoMap = new HashMap();
-
+    public static Map<String, String> type = new HashMap();
     @Override
     protected Object determineCurrentLookupKey() {
         String dataSourceName = DataSourceContextHolder.getDataSource();
@@ -47,12 +48,14 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         }
 
         if(null==_targetDataSources.get(dataSourceName)){
-            throw new RuntimeException("数据库连接信息不正确!");
+            if(!"CASSANDRA".equals(type.get(dataSourceName))){
+                throw new RuntimeException("数据库连接信息不正确!");
+            }
         }
 
 
     }
-    public  DataSource getDataSourceByMap(String dataSourceName){
+  /*  public  DataSource getDataSourceByMap(String dataSourceName){
         this.selectDataSource(dataSourceName);
         Object obj = _targetDataSources.get(dataSourceName);
         if (obj != null) {
@@ -60,7 +63,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         }
         return null;
 
-    }
+    }*/
 
     public ConnectVo getConnectVo(String dataSourceName) {
         this.selectDataSource(dataSourceName);
@@ -72,16 +75,16 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     }
     @Override
     public void setTargetDataSources(Map<Object, Object> targetDataSources) {
-        _targetDataSources = targetDataSources;
-        super.setTargetDataSources(_targetDataSources);
+        //_targetDataSources = targetDataSources;
+        super.setTargetDataSources(targetDataSources);
         afterPropertiesSet();
     }
 
-    private void addTargetDataSource(String key, DataSource dataSource) {
+    private synchronized void addTargetDataSource(String key, DataSource dataSource) {
         if(null!=_targetDataSources.get(key)){
             try {
-                DruidDataSource druidDataSource= (DruidDataSource) _targetDataSources.get(key);
-                druidDataSource.close();
+                ((DruidDataSource) _targetDataSources.get(key)).close();
+                _targetDataSources.remove(key);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -121,13 +124,22 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         dataSource.setMaxWait(60000);
         dataSource.setBreakAfterAcquireFailure(true);
         dataSource.setFailFast(true);
-        dataSource.setConnectionErrorRetryAttempts(3);
+        dataSource.setConnectionErrorRetryAttempts(0);
+        dataSource.setMaxOpenPreparedStatements(0);
+        //dataSource.setRemoveAbandoned(true);
+        //dataSource.setRemoveAbandonedTimeout(300);
+        //dataSource.setLogAbandoned(true);
+        dataSource.setTimeBetweenEvictionRunsMillis(60000);
+        dataSource.setValidationQuery("select 1 ");
+       /* dataSource.setBreakAfterAcquireFailure(true);
+        dataSource.setFailFast(true);
+        dataSource.setConnectionErrorRetryAttempts(0);
         dataSource.setMaxOpenPreparedStatements(0);
         dataSource.setRemoveAbandoned(true);
         dataSource.setRemoveAbandonedTimeout(180);
         dataSource.setLogAbandoned(true);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
-        dataSource.setValidationQuery("select 1 ");
+        dataSource.setValidationQuery("select 1 ");*/
         return dataSource;
     }
 
@@ -173,6 +185,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                          return null;
                      }
                    }
+                   type.put(parentId,databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase());
                    connectVoMap.put(parentId, connectVo);
                    if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
                        if(!"".equals(userName)&&!"".equals(password)){

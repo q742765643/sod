@@ -7,6 +7,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.schedule.client.annotation.HtJson;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
+import com.piesat.schedule.client.vo.ConnectVo;
 import com.piesat.schedule.client.vo.EiSendVo;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
@@ -184,9 +185,9 @@ public class EiSendUtil {
     public static void executeSqlException(String parentId, String sql, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
-            DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
-            resultT.setkObject("物理库URL:${" + dataSource.getUrl() + "}");
-            resultT.setkEvent("sql语句:${"+sql+"},物理库URL:${"+dataSource.getUrl()+"}"+"${"+resultT.getMsg()+"}");
+            ConnectVo connectVo = dynamicDataSource.getConnectVo(parentId);
+            resultT.setkObject("物理库URL:${" + connectVo.getUrl() + "}");
+            resultT.setkEvent("sql语句:${"+sql+"},物理库URL:${"+connectVo.getUrl()+"}"+"${"+resultT.getMsg()+"}");
 
             StringBuilder  eventTrag=new StringBuilder() ;
             eventTrag.append("1.表不存在\n").append("2.存储管理系统资料信息配置错误\n");
@@ -209,10 +210,10 @@ public class EiSendUtil {
     public static void executeSqlException(ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
-            DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap("primary");
-            if (null != dataSource) {
-                resultT.setkObject("物理库URL:${" + dataSource.getUrl() + "}");
-                resultT.setkEvent("物理库URL:${" + dataSource.getUrl() + "}" + "${" + resultT.getMsg() + "}");
+            ConnectVo connectVo = dynamicDataSource.getConnectVo("primary");
+            if (null != connectVo) {
+                resultT.setkObject("物理库URL:${" + connectVo.getUrl() + "}");
+                resultT.setkEvent("物理库URL:${" + connectVo.getUrl() + "}" + "${" + resultT.getMsg() + "}");
                 resultT.setEventTrag("1.数据库连接错误\n" +
                         "2.用户密码被修改");
                 resultT.setEventSuggest("1.查看存储管理数据库数据库连接是否正常\n" +
@@ -228,9 +229,9 @@ public class EiSendUtil {
     public static void partitionException(String parentId, String partition, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
-            DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
-            if (null != dataSource) {
-                resultT.setkObject("物理库URL:${" + dataSource.getUrl() + "}");
+            ConnectVo connectVo = dynamicDataSource.getConnectVo(parentId);
+            if (null != connectVo) {
+                resultT.setkObject("物理库URL:${" + connectVo.getUrl() + "}");
                 resultT.setkEvent("分区名称:${" + partition + "},${" + resultT.getMsg() + "}");
                 resultT.setEventTrag("1.虚谷加锁超时\n" +
                         "2.数据库链接异常");
@@ -256,9 +257,9 @@ public class EiSendUtil {
     public static void gbaseException(String parentId, String shell, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
-            DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
-            if (null != dataSource) {
-                resultT.setkObject("物理库URL:${" + dataSource.getUrl() + "}");
+            ConnectVo connectVo = dynamicDataSource.getConnectVo(parentId);
+            if (null != connectVo) {
+                resultT.setkObject("物理库URL:${" + connectVo.getUrl() + "}");
                 resultT.setkEvent("shell命令:${" + shell + "},${" + resultT.getMsg() + "}");
                 resultT.setEventTrag("1.路径错误\n" +
                         "2.GBASE客户端安装错误\n" +
@@ -274,9 +275,9 @@ public class EiSendUtil {
     public static void xuguException(String parentId, ResultT<String> resultT) {
         DynamicDataSource dynamicDataSource = SpringUtil.getBean(DynamicDataSource.class);
         try {
-            DruidDataSource dataSource = (DruidDataSource) dynamicDataSource.getDataSourceByMap(parentId);
-            resultT.setkObject("物理库URL:${" + dataSource.getUrl() + "}");
-            resultT.setkEvent(" 物理库URL:${" + dataSource.getUrl() + "}" + "${" + resultT.getMsg() + "}");
+            ConnectVo connectVo = dynamicDataSource.getConnectVo(parentId);
+            resultT.setkObject("物理库URL:${" + connectVo.getUrl() + "}");
+            resultT.setkEvent(" 物理库URL:${" + connectVo.getUrl() + "}" + "${" + resultT.getMsg() + "}");
             resultT.setEventTrag("1.表不存在\n" +
                     "2.存储管理系统资料信息配置错误\n" +
                     "3.数据库缺少必要字段\n" +
