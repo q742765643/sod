@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.datatable;
 
+import com.piesat.dm.core.enums.ColumnEnum;
 import com.piesat.dm.core.parser.ColumnSet;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingDto;
@@ -41,6 +42,14 @@ public class DatabaseSqlService {
                 throw new Exception("虚谷不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
+
+            int length = ColumnEnum.getLength(type.toUpperCase());
+            if (length == -1) {
+                accuracy = "";
+            } else if (StringUtils.isNotBlank(accuracy) && length == 0 && accuracy.contains(".")) {
+                accuracy = accuracy.split("\\.")[0];
+            }
+
             if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy)) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
@@ -166,12 +175,20 @@ public class DatabaseSqlService {
                 throw new Exception("gbase8a不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
+
+            int length = ColumnEnum.getLength(type.toUpperCase());
+            if (length == -1) {
+                accuracy = "";
+            } else if (length == 0 && accuracy.contains(".")) {
+                accuracy = accuracy.split("\\.")[0];
+            }
+
             if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy)) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";
             }
-            String isNull = ds.getIsNull() ? " NULL" : " NOT NULL";
+            String isNull = (ds.getIsNull() == null || ds.getIsNull()) ? " " : " NOT NULL";
             column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");

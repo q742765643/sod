@@ -111,19 +111,19 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
-                String databaseId = dataClassDto.getDataLogicList().get(0).getDatabaseId();
+            String databaseId = dataClassDto.getDataLogicList().get(0).getDatabaseId();
             DatabaseEntity byId = this.databaseDao.findById(databaseId).orElse(null);
             DatabaseSpecialReadWriteDto d = new DatabaseSpecialReadWriteDto();
-                d.setSdbId(byId.getTdbId());
-                d.setApplyAuthority(2);
-                d.setDatabaseId(databaseId);
-                d.setDataClassId(dataClassEntity.getDataClassId());
-                d.setTypeId("9999");
-                d.setEmpowerAuthority(2);
-                d.setExamineStatus(1);
-                d.setDataType(1);
-                d.setCreateTime(new DateTime());
-                this.databaseSpecialReadWriteService.saveDto(d);
+            d.setSdbId(byId.getTdbId());
+            d.setApplyAuthority(2);
+            d.setDatabaseId(databaseId);
+            d.setDataClassId(dataClassEntity.getDataClassId());
+            d.setTypeId("9999");
+            d.setEmpowerAuthority(2);
+            d.setExamineStatus(1);
+            d.setDataType(1);
+            d.setCreateTime(new DateTime());
+            this.databaseSpecialReadWriteService.saveDto(d);
         }
         List<String> all = byDataClassId.stream().map(DataLogicDto::getId).collect(Collectors.toList());
         List<String> nnn = dataClassDto.getDataLogicList().stream().map(DataLogicDto::getId).collect(Collectors.toList());
@@ -484,49 +484,28 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public String findByParentId(String parentId) {
-        List<DataClassEntity> byDDataId = this.dataClassDao.findByDDataId(parentId);
-        if (byDDataId == null || byDDataId.size() == 0 || byDDataId.get(0).getType() == 1) {
-            return "";
-        }
-        String pdataclassId = byDDataId.get(0).getParentId();
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeAndDataClassIdLikeOrderByDataClassIdDesc(pdataclassId, 2, "%M%");
-        List<DataClassDto> dataClassDtos = this.dataClassMapper.toDto(dataClassIdAsc);
-        if (pdataclassId.length() > 8) {
-            if (dataClassDtos.size() > 0) {
-                String dataClassId = dataClassDtos.get(0).getDataClassId();
-                String newId = dataClassId.substring(0, dataClassId.length() - 5);
+        if (parentId.contains("S")) {
+            String classId = parentId.replaceAll("S", "M");
+            String m = classId.substring(0, classId.indexOf("M") + 1);
+            List<DataClassEntity> cs = this.dataClassDao.findByTypeAndDataClassIdLikeOrderByDataClassIdDesc(2, m + "%");
+            if (cs.size() > 0) {
+                String dataClassId = cs.get(0).getDataClassId();
                 int no;
                 try {
                     int l = dataClassId.length() > 13 ? 3 : 4;
                     no = Integer.parseInt(dataClassId.substring(dataClassId.length() - l));
                 } catch (Exception e) {
-                    return newId + ".M";
+                    return m;
                 }
                 no++;
                 DecimalFormat df = new DecimalFormat("000");
                 String str = df.format(no);
-                return newId + ".M" + str;
+                return m + str;
             } else {
-                return pdataclassId + ".M001";
+                return m + "001";
             }
         } else {
-            if (dataClassDtos.size() > 0) {
-                String dataClassId = dataClassDtos.get(0).getDataClassId();
-                String newId = dataClassId.substring(0, dataClassId.length() - 5);
-                int no;
-                try {
-                    int l = dataClassId.length() > 13 ? 3 : 4;
-                    no = Integer.parseInt(dataClassId.substring(dataClassId.length() - l));
-                } catch (Exception e) {
-                    return newId + ".";
-                }
-                no++;
-                DecimalFormat df = new DecimalFormat("0000");
-                String str = df.format(no);
-                return newId + "." + str;
-            } else {
-                return pdataclassId + ".0001";
-            }
+            return parentId;
         }
     }
 

@@ -54,6 +54,10 @@ public class DataClassController {
     @Log(title = "资料分类管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataClassDto dataClassDto) {
+        String metaDataName = dataClassDto.getMetaDataName();
+        if (StringUtils.isBlank(metaDataName)) {
+            dataClassDto.setMetaDataName(dataClassDto.getClassName());
+        }
         DataClassDto byDataClassId = this.dataClassService.findByDataClassId(dataClassDto.getDataClassId());
         if (StringUtils.isEmpty(dataClassDto.getId()) && byDataClassId != null) {
             return ResultT.failed("存储编码已经存在！");
