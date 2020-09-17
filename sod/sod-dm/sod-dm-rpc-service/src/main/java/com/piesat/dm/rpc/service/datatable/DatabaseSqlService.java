@@ -41,12 +41,12 @@ public class DatabaseSqlService {
                 throw new Exception("虚谷不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
-            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)) {
+            if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy)) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";
             }
-            String isNull = ds.getIsNull() ? " NULL" : " NOT NULL";
+            String isNull = (ds.getIsNull() == null || ds.getIsNull()) ? " " : " NOT NULL";
             column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
@@ -58,8 +58,9 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
+        Integer d = 0;
         for (ShardingDto s : sharding) {
-            if ("D".equals(s.getShardingType())) {
+            if (d.equals(s.getShardingType())) {
                 dp_shard = s.getColumnName();
             }
         }
@@ -165,7 +166,7 @@ public class DatabaseSqlService {
                 throw new Exception("gbase8a不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
-            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)) {
+            if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy)) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";
@@ -300,12 +301,12 @@ public class DatabaseSqlService {
     }
 
     public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
-        if(schema.equals(schema.toUpperCase())){
-            schema="\""+schema+"\"";
+        if (schema.equals(schema.toUpperCase())) {
+            schema = "\"" + schema + "\"";
         }
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
-        StringBuffer comments=new StringBuffer();
+        StringBuffer comments = new StringBuffer();
         for (int i = 0; i < dataStructures.size(); i++) {
             TableColumnDto ds = dataStructures.get(i);
             eleCodes.add(ds.getDbEleCode());
@@ -316,7 +317,7 @@ public class DatabaseSqlService {
                 throw new Exception("postgresql不支持字段：" + type);
             }
             String accuracy = ds.getAccuracy();
-            if (StringUtils.isNotBlank(accuracy)&&!"0".equals(accuracy)&&type.toUpperCase().indexOf("INT")==-1) {
+            if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy) && type.toUpperCase().indexOf("INT") == -1) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
             } else {
                 accuracy = "";
@@ -326,7 +327,7 @@ public class DatabaseSqlService {
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
-            comments.append(" COMMENT ON COLUMN ").append(schema+"."+dataTable.getTableName()+"."+ds.getDbEleCode() +" IS '").append(ds.getEleName()).append("'").append(";\n");
+            comments.append(" COMMENT ON COLUMN ").append(schema + "." + dataTable.getTableName() + "." + ds.getDbEleCode() + " IS '").append(ds.getEleName()).append("'").append(";\n");
             if (i < dataStructures.size() - 1) {
                 column.append(",\n");
             }
@@ -386,13 +387,14 @@ public class DatabaseSqlService {
         }
         template = template.replace("${indexColumn}", indexColumn);
         if (!StringUtils.isEmpty(dataTable.getNameCn())) {
-            template = template.replace("${tableDescription}", "COMMENT ON TABLE "+schema + "." + dataTable.getTableName()+" IS '"+dataTable.getNameCn()+"';\n");
+            template = template.replace("${tableDescription}", "COMMENT ON TABLE " + schema + "." + dataTable.getTableName() + " IS '" + dataTable.getNameCn() + "';\n");
         }
         return template;
     }
+
     public String getPostgreSqlQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
-        if(schema.equals(schema.toUpperCase())){
-            schema="\""+schema+"\"";
+        if (schema.equals(schema.toUpperCase())) {
+            schema = "\"" + schema + "\"";
         }
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
@@ -408,9 +410,10 @@ public class DatabaseSqlService {
         sql.append("SELECT ").append(join).append(" FROM ").append(schema + "." + dataTable.getTableName());
         return sql.toString();
     }
+
     public String getPostgreSqlInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
-        if(schema.equals(schema.toUpperCase())){
-            schema="\""+schema+"\"";
+        if (schema.equals(schema.toUpperCase())) {
+            schema = "\"" + schema + "\"";
         }
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();

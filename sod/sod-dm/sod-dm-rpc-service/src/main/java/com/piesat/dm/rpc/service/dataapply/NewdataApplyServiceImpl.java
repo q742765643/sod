@@ -409,4 +409,10 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         List<Map<String, Object>> specialDBData = mybatisQueryMapper.getSpecialDBData(sdbId);
         return specialDBData;
     }
+
+    @Override
+    public List<NewdataApplyDto> findByDataClassIdAndUserId(String dataClassId, String userId) {
+        List<NewdataApplyEntity> newdataApplyEntitys = this.newdataApplyDao.findByDataClassIdAndUserId(dataClassId, userId);
+        return this.newdataApplyMapper.toDto(newdataApplyEntitys);
+    }
 }

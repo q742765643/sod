@@ -31,4 +31,6 @@ public interface DatabaseSpecialReadWriteService {
     Map<String, Object> changeDataStatus(String tdbId, String physical, String data_class_id);
 
     void deleteRecords(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos);
+
+    void deleteByDataClassId(String dataclassId);
 }

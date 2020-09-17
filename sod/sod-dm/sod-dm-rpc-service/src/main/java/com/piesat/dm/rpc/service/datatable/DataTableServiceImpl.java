@@ -18,8 +18,10 @@ import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
@@ -74,6 +76,8 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Autowired
     private TableForeignKeyDao tableForeignKeyDao;
     @Autowired
+    private NewdataApplyService newdataApplyService;
+    @Autowired
     private StorageConfigurationService storageConfigurationService;
     @Autowired
     private TableForeignKeyMapper tableForeignKeyMapper;
@@ -86,6 +90,18 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Override
     @Transactional
     public DataTableDto saveDto(DataTableDto dataTableDto) {
+        if (dataTableDto.getId() != null) {
+            DataTableDto dotById = this.getDotById(dataTableDto.getId());
+            String dataClassId = dataTableDto.getClassLogic().getDataClassId();
+            List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
+                    .findByDataClassIdAndUserId(dataClassId, dotById.getUserId());
+            if (NewdataApplyDtos.size()>0){
+                NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
+                newdataApplyDto.setTableName(dataTableDto.getTableName());
+                this.newdataApplyService.saveDto(newdataApplyDto);
+            }
+        }
+
         DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         dataTableEntity.setCreator(loginUser.getUserName());
@@ -364,9 +380,10 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
         DatabaseDcl database = null;
         try {
             database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            ResultT t = database.createTable(tableSqlDto.getTableSql(), tableSqlDto.getTableName(), tableSqlDto.getDelOld());
+            String tableName = databaseDto.getSchemaName() + "." + tableSqlDto.getTableName();
+            ResultT t = database.createTable(tableSqlDto.getTableSql(), tableName, tableSqlDto.getDelOld());
             database.closeConnect();
-            if (t.getCode()!=200){
+            if (t.getCode() != 200) {
                 return ResultT.failed(t.getMsg());
             }
         } catch (Exception e) {
