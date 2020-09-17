@@ -4,6 +4,7 @@ import com.piesat.dm.common.util.TemplateUtil;
 import com.piesat.dm.core.api.AbstractDatabaseDcl;
 import com.piesat.util.ResultT;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -254,7 +255,9 @@ public class Xugu extends AbstractDatabaseDcl {
         try {
             String[] sqlList = sql.split(";");
             for (String s : sqlList) {
-                stmt.execute(s);
+                if (StringUtils.isNotBlank(s)){
+                    stmt.execute(s);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @author yaya
@@ -22,7 +23,9 @@ public interface NewdataApplyDao extends BaseDao<NewdataApplyEntity> {
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update t_sod_newdata_apply p set p.d_data_id =?1, p.data_class_id=?2  where p.id = ?3",nativeQuery = true)
+    @Query(value = "update t_sod_newdata_apply p set p.d_data_id =?1, p.data_class_id=?2  where p.id = ?3", nativeQuery = true)
     int updateDDateIdAndDataClassId(String d_data_id, String data_class_id, String apply_id);
+
+    List<NewdataApplyEntity> findByDataClassIdAndUserId(String dataClassId, String userId);
 
 }
