@@ -90,7 +90,7 @@ public class DataTableController {
                 dataTableDto.setDbTableType("E");
                 dataTableDto.setUserId(newdataApplyDto.getUserId());
                 dataTableDto.setNameCn(dataClassDto.getClassName());
-                dataTableDto.setDataServiceName(dataClassDto.getMetaDataName());
+                dataTableDto.setDataServiceName(dataClassDto.getClassName());
                 dataTableDto.setTableName(newdataApplyDto.getTableName());
                 DataTableDto save = this.dataTableService.saveDto(dataTableDto);
                 list.add(save);
