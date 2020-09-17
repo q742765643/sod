@@ -984,7 +984,7 @@
         select
         b.DATA_CLASS_ID,d.DATA_SERVICE_NAME,ee.D_DATA_ID,
         b.APPLY_AUTHORITY,b.EMPOWER_AUTHORITY,f.logic_flag,
-        b.examine_status,b.failure_reason,c1.DATABASE_NAME,
+        b.examine_status,b.failure_reason,c1.DATABASE_NAME,c.DATABASE_NAME SPECIAL_DATABASE_NAME,
         d.TABLE_NAME,e.CLASS_NAME,b.DATABASE_ID
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATA_LOGIC f on b.data_class_id = f.data_class_id and f.database_id = b.DATABASE_ID
