@@ -2,6 +2,10 @@ package com.piesat.schedule.client;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
+import com.piesat.schedule.client.util.FileUtil;
+import com.piesat.schedule.client.util.Md5Utils;
+import com.piesat.schedule.client.util.ZipUtils;
+import com.piesat.util.ResultT;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
@@ -85,9 +89,19 @@ public class Tongjidaima {
 
         dataSource.close();
         dataSource=null;
+        ZipUtils.doCompress("/root/nas", "/root/nas.zip", new ResultT<>());
+        String a=Md5Utils.getFileMD5String("/root/nas.zip",new ResultT<>());
+        System.out.println(a);
+        try {
+            FileUtil.copyFile("/root/nas.zip", "/root/nas1.zip",new ResultT<>());
+            FileUtil.delFile(new File("/root/nas.zip"),new ResultT<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         while (true){
 
         }
+
         /*File file = new File("/zzj/git/hthtsod/sod");//需要统计行数的文件夹路径
         traverseFiles(file);//调用递归方法查看.java文件，用于统计行数
         System.out.println("所写文件个数："+j);
