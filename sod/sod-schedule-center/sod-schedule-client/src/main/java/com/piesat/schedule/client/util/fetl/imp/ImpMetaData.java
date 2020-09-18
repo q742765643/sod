@@ -325,7 +325,7 @@ public class ImpMetaData{
 				e.printStackTrace();
 			}
 			if(!"".equals(ex)){
-				sb.append(ex).append("\n");
+				sb.append(ex).append("\n").append("连接被关闭或者字段不匹配");
 			}
 		}
 	}
