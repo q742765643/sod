@@ -58,6 +58,9 @@ public class MoveController {
     @PostMapping
     public ResultT<String> add(@RequestBody MoveDto move)
     {
+        if(null==move.getIsAlarm()){
+            move.setIsAlarm("1");
+        }
         ResultT<String> resultT=new ResultT<>();
         moveService.saveMove(move);
         return resultT;
@@ -69,6 +72,9 @@ public class MoveController {
     @PutMapping
     public ResultT<String> edit(@RequestBody MoveDto move)
     {
+        if(null==move.getIsAlarm()){
+            move.setIsAlarm("1");
+        }
         ResultT<String> resultT=new ResultT<>();
         moveService.updateMove(move);
         return resultT;

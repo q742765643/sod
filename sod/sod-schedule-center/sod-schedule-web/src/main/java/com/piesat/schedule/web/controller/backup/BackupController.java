@@ -60,6 +60,9 @@ public class BackupController {
     @PostMapping
     public ResultT<String> add(@RequestBody BackUpDto backup)
     {
+        if(null==backup.getIsAlarm()){
+            backup.setIsAlarm("1");
+        }
         ResultT<String> resultT=new ResultT<>();
         backupService.saveBackup(backup);
         return resultT;
@@ -71,6 +74,9 @@ public class BackupController {
     @PutMapping
     public ResultT<String> edit(@RequestBody BackUpDto backup)
     {
+        if(null==backup.getIsAlarm()){
+            backup.setIsAlarm("1");
+        }
         ResultT<String> resultT=new ResultT<>();
         backupService.updateBackup(backup);
         return resultT;
