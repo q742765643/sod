@@ -289,7 +289,7 @@ public class ImpMetaData{
                     }
                     if(results.size()%50==0){
                        for(int i=0;i<results.size();i++) {
-						   boolean flag1 = results.get(i).get();
+						   results.get(i).get();
 						   results.clear();
 						   results=new ArrayList<>();
 					   }
@@ -315,12 +315,13 @@ public class ImpMetaData{
             }
 		} catch (Exception e) {
 			ex=e.getMessage();
+			log.error("恢复最终:"+OwnException.get(e));
 		} finally {
 			try {
 				if(null!=dis){
 					dis.close();
 				}
-				pool.shutdownNow();
+				pool.shutdown();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
