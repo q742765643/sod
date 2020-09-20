@@ -22,7 +22,14 @@ public class BlockThreadPool {
             pool.shutdownNow();
         }
     }
-
+    public void shutdown() {
+        if (pool != null) {
+            pool.shutdown();
+        }
+    }
+    public boolean isTerminated(){
+        return pool.isTerminated();
+    }
     private class CustomThreadFactory implements ThreadFactory {
         private AtomicInteger count = new AtomicInteger(0);
         @Override

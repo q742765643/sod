@@ -17,14 +17,16 @@ import com.piesat.schedule.client.util.fetl.util.FetlUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AnalysisData implements Callable<Boolean> {
+public class AnalysisData implements Runnable {
 	private String parentId;
 	private int commitCount;
 	private List<byte[]> data;
 	private List<Integer> columnTypes;
 	private String preSql;
 	private String tableName;
-	public AnalysisData(String parentId,String tableName,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
+	private String fileName;
+	public AnalysisData(String fileName,String parentId,String tableName,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
+        this.fileName=fileName;
 		this.parentId = parentId;
 		this.commitCount = commitCount;
 		this.data = data;
@@ -34,7 +36,7 @@ public class AnalysisData implements Callable<Boolean> {
 	}
 
 	@Override
-	public Boolean call() throws Exception {
+	public void run(){
         if(data != null && data.size() != 0){
         	Connection con = null;
 			int lineCount = 0;
@@ -120,18 +122,20 @@ public class AnalysisData implements Callable<Boolean> {
 						}
 					}*/
 				}
-				log.info("批量提交表数据{}恢复{}条",tableName,lineCount);
+				//log.info("批量提交表数据{}恢复{}条",tableName,lineCount);
 				ps.executeBatch();
 			} catch (SQLException e){
 				/*if(commitCount > 0) {
 					impData(ps,datas);
 					datas.clear();
 				}else {*/
+				ImpMetaData.errorMap.put(fileName,OwnException.get(e));
 				log.error("恢复第二步:"+OwnException.get(e));
 					//log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
 				//}
 				throw new RuntimeException(tableName+"恢复数据异常错误");
 			} catch (Exception e){
+				ImpMetaData.errorMap.put(fileName,OwnException.get(e));
 				log.error(OwnException.get(e));
 				throw new RuntimeException(tableName+"恢复数据异常错误");
 			} finally {
@@ -140,7 +144,6 @@ public class AnalysisData implements Callable<Boolean> {
 				FetlUtil.closeConn(con);
 			}
         }
-        return Boolean.TRUE;
 	}
 	public void impData(PreparedStatement ps, List<byte[][]> datas){
 		byte[][] rowData = new byte[datas.get(0).length][];

@@ -19,6 +19,7 @@ import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.datasource.DynamicDataSource;
+import com.piesat.schedule.client.util.BlockThreadPool;
 import com.piesat.schedule.client.util.fetl.type.Type;
 import com.piesat.schedule.client.util.fetl.util.FetlUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 @Slf4j
 public class ImpMetaData{
-
+	public static Map<String, String> errorMap = new ConcurrentHashMap();
 	static{
 		try {
 			Class.forName("com.xugu.cloudjdbc.Driver");
@@ -39,8 +40,8 @@ public class ImpMetaData{
 	//private LinkedBlockingQueue<Runnable> task = null;
 	//private ThreadPoolExecutor pool = null;
 
-	private int threadNum = 50;
-	private int commitCount = 1000;
+	private int threadNum = 60;
+	private int commitCount = 1500;
 	private int taskRows = 30000;
 	private int taskNum = 50;
 
@@ -257,13 +258,11 @@ public class ImpMetaData{
  	}
 
 	public void impDataReadFile(String parentId, String fileName, String tableName, String[] columns,StringBuffer sb) throws Exception{
-		LinkedBlockingQueue task = new LinkedBlockingQueue<Runnable>(taskNum);
-		ThreadPoolExecutor pool = new ThreadPoolExecutor(threadNum, threadNum, 10, TimeUnit.SECONDS, task);
+		BlockThreadPool pool = new BlockThreadPool(threadNum);
 		List<Integer> types = new ArrayList<>();
 		String restorSql = connetSqlString2(columns, tableName,types);
 		DataInputStream dis = null;
 		File file = new File(fileName);
-		List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
 		String ex="";
 		try {
 			if(file.exists()){
@@ -273,45 +272,19 @@ public class ImpMetaData{
                     byte[] data = new byte[dis.readInt()];
                     dis.read(data);
                     oneData.add(data);
-                    if(oneData.size() % 1000 == 0){
-                    /*	while(task.size() >= taskNum-5){
-                            try {
-                                Thread.sleep(3*1000);
-                            } catch (InterruptedException e) {
-                                continue;
-                            }
-                        }*/
-                        Future<Boolean> future = pool.submit(
-                            new AnalysisData(parentId,tableName,commitCount,oneData,restorSql,types)
+                    if(oneData.size() % commitCount == 0){
+                        pool.execute(
+                            new AnalysisData(fileName,parentId,tableName,commitCount,oneData,restorSql,types)
                         );
-                        results.add(future);
                         oneData = new ArrayList<byte[]>();
-                    }
-                    if(results.size()%50==0){
-                       for(int i=0;i<results.size();i++) {
-						   results.get(i).get();
-						   results.clear();
-						   results=new ArrayList<>();
-					   }
                     }
                 }
                 if(!oneData.isEmpty()){
-                /*	while(task.size() >= taskNum-5){
-                        try {
-                            Thread.sleep(3*1000);
-                        } catch (InterruptedException e) {
-                            continue;
-                        }
-                    }*/
-                    Future<Boolean> future = pool.submit(
-                            new AnalysisData(parentId,tableName,commitCount,oneData,restorSql,types)
+					pool.execute(
+                            new AnalysisData(fileName,parentId,tableName,commitCount,oneData,restorSql,types)
                     );
-                    results.add(future);
+
                 }
-                for(int i=0;i<results.size();i++){
-					results.get(i).get();
-				}
-                results.clear();
             }
 		} catch (Exception e) {
 			ex=e.getMessage();
@@ -322,9 +295,20 @@ public class ImpMetaData{
 					dis.close();
 				}
 				pool.shutdown();
+				while (true){
+					if(pool.isTerminated()){
+						log.info("所有的子线程都结束了！");
+						break;
+					}
+				}
+
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("恢复finally:"+OwnException.get(e));
 			}
+			if(null!=errorMap.get(fileName)){
+				sb.append(errorMap.get(fileName));
+			}
+			errorMap.remove(fileName);
 			if(!"".equals(ex)){
 				sb.append(ex).append("\n").append("连接被关闭或者字段不匹配");
 			}
