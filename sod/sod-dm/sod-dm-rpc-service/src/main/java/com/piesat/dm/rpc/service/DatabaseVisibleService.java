@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 数据库可视化接口服务类
@@ -185,13 +186,26 @@ public class DatabaseVisibleService {
 
 
     public ResultT getTable(String bizUserId, String dataclassId) {
-        List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
         List<DataAuthorityRecordDto> dataAuthorityRecordList = new ArrayList<>();
+        List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
+//        List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
+//        for (int i = 0; i < DataClassDtos.size(); i++) {
+//            DataClassDto dataClassDto = DataClassDtos.get(i);
+//            List<DataLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
+//            for (int j = 0; j < byDataClassId.size(); j++) {
+//                DataLogicEntity dataLogicEntity = byDataClassId.get(j);
+//                DataAuthorityRecordDto d = new DataAuthorityRecordDto();
+//                d.setDatabaseId(dataLogicEntity.getDatabaseId());
+//                d.setDataClassId(dataLogicEntity.getDataClassId());
+//                dataAuthorityRecordList.add(d);
+//            }
+//        }
         for (DataAuthorityApplyDto d : dataAuthorityApplyDto) {
             dataAuthorityRecordList.addAll(d.getDataAuthorityRecordList());
         }
         DataClassDto byDataClassId = dataClassService.findByDataClassId(dataclassId);
         JSONArray arr = new JSONArray();
+
         for (DataAuthorityRecordDto d : dataAuthorityRecordList) {
             if (d.getDataClassId().equals(dataclassId)) {
                 String databaseId = d.getDatabaseId();
@@ -327,11 +341,11 @@ public class DatabaseVisibleService {
                 List<DataTableEntity> dataTableEntityList = dataTableDao.findByClassLogicId(dl.getId());
                 for (DataTableEntity dt : dataTableEntityList) {
                     JSONObject tt = new JSONObject();
-                    tt.put("TABLE_NAME", dt.getTableName());
+                    tt.put("TABLE_NAME", de.getSchemaName() + "." + dt.getTableName());
                     tt.put("DATA_SERVICE_NAME", dt.getDataServiceName());
                     tt.put("D_DATA_ID", dataClassDto.getDDataId());
                     tt.put("CLASS_NAME", dataClassDto.getClassName());
-                    tt.put("PHYSICAL", de.getId());
+                    tt.put("PHYSICAL", de.getDatabaseDefine().getId());
                     tt.put("DATABASE_NAME", de.getDatabaseDefine().getDatabaseName() + "(" + de.getDatabaseName() + ")");
                     tt.put("DATA_CLASS_ID", dataClassDto.getDataClassId());
                     jrr.add(tt);

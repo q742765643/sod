@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.dataclass;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
@@ -90,4 +91,6 @@ public interface DataClassService {
      * @return
      */
     ResultT haveClassByDataId(String dataId);
+
+    List<DataClassDto> findByDataClassIdAndCreateBy(String dataclassId, String userId);
 }

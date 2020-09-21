@@ -484,9 +484,15 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public String findByParentId(String parentId) {
-        if (parentId.contains("S")) {
-            String classId = parentId.replaceAll("S", "M");
-            String m = classId.substring(0, classId.indexOf("M") + 1);
+        if (parentId.contains("S") || parentId.contains("Z.9999.9999")) {
+            String m = "";
+            if (parentId.contains("S")) {
+                String classId = parentId.replaceAll("S", "M");
+                m = classId.substring(0, classId.indexOf("M") + 1);
+            } else {
+                m = "Z.9999.9999.M";
+            }
+
             List<DataClassEntity> cs = this.dataClassDao.findByTypeAndDataClassIdLikeOrderByDataClassIdDesc(2, m + "%");
             if (cs.size() > 0) {
                 String dataClassId = cs.get(0).getDataClassId();
@@ -621,5 +627,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             }
         }
         return ResultT.success(false);
+    }
+
+    @Override
+    public List<DataClassDto> findByDataClassIdAndCreateBy(String dataclassId, String userId) {
+        List<DataClassEntity> byDataClassIdAndCreateBy = this.dataClassDao.findByDataClassIdAndCreateBy(dataclassId, userId);
+        return this.dataClassMapper.toDto(byDataClassIdAndCreateBy);
+
     }
 }
