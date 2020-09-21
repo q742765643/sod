@@ -2,20 +2,21 @@
   <div class="app-container">
     <!-- 接口管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="接口名称:" prop="userName">
-        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="请输入接口名称" />
+      <el-form-item label="接口名称:" prop="apiName">
+        <el-input clearable size="small" v-model.trim="queryParams.apiName" placeholder="请输入接口名称" />
       </el-form-item>
-      <el-form-item label="接口描述:" prop="userName">
-        <el-input clearable size="small" v-model.trim="queryParams.userName" placeholder="请输入接口描述" />
+      <el-form-item label="接口描述:" prop="apiDesc">
+        <el-input clearable size="small" v-model.trim="queryParams.apiDesc" placeholder="请输入接口描述" />
       </el-form-item>
-      <el-form-item clearable label="接口分类:" prop="userName">
-        <el-select v-model="queryParams.userName">
+      <el-form-item clearable label="接口分类:" prop="apiSys">
+        <el-select v-model="queryParams.apiSys">
+          <el-option label="全部" value></el-option>
           <el-option
-            :label="item"
-            :value="item"
+            :label="item.dictLabel"
+            :value="item.dictValue"
             v-for="(item,index) in urlClassify"
             :key="index"
-          >{{item}}</el-option>
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -36,9 +37,6 @@
           icon="el-icon-upload2"
         >批量导入</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" type="danger" icon="el-icon-delete" @click="deleteCell">删除</el-button>
-      </el-col>
     </el-row>
     <!-- 数据展示列表 -->
     <el-table
@@ -50,30 +48,21 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column prop="createBy" label="接口名称"></el-table-column>
-      <el-table-column prop="createTime" label="接口描述" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="content" label="接口类别" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="status" label="请求类型" :show-overflow-tooltip="true">
+      <el-table-column prop="apiName" label="接口名称"></el-table-column>
+      <el-table-column prop="apiDesc" label="接口描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="apiSys" label="接口分类" :formatter="getapiSys"></el-table-column>
+      <el-table-column prop="apiHttptype" label="请求类型" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <span v-if="scope.row.status=='0'">未回复</span>
-          <span v-if="scope.row.status=='1'">已回复</span>
+          <span v-if="scope.row.apiHttptype=='A'">GET/POST</span>
+          <span v-if="scope.row.apiHttptype=='G'">GET</span>
+          <span v-if="scope.row.apiHttptype=='P'">POST</span>
         </template>
       </el-table-column>
-      <el-table-column prop="content" label="备注" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <el-button
-            icon="el-icon-tickets"
-            size="mini"
-            type="text"
-            @click="showDialog(scope.row)"
-          >回复</el-button>
-          <el-button
-            icon="el-icon-tickets"
-            size="mini"
-            type="text"
-            @click="showDialog(scope.row)"
-          >删除</el-button>
+          <el-button icon="el-icon-edit" size="mini" type="text" @click="showDialog(scope.row)">编辑</el-button>
+          <el-button icon="el-icon-tickets" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -92,6 +81,7 @@
       :title="dialogTitle"
       :visible.sync="msgFormDialog"
       v-dialogDrag
+      top="5vh"
     >
       <urlEdit
         v-if="msgFormDialog"
@@ -104,10 +94,7 @@
 </template>
 
 <script>
-import {
-  saveDynManage,
-  editDynManage,
-} from "@/api/portalMangement/dynMangement";
+import { queryDataPage, delById } from "@/api/portalMangement/urlManagement";
 import urlEdit from "@/views/portalMangement/urlManagement/urlEdit";
 export default {
   components: {
@@ -120,11 +107,13 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userName: "",
+        apiName: "",
+        apiDesc: "",
+        apiSys: "",
       },
       tableData: [],
       total: 0,
-      urlClassify: ["全部"],
+      urlClassify: [],
       //已勾选记录
       multipleSelection: [],
       // 弹窗
@@ -135,9 +124,21 @@ export default {
   },
   /** 方法调用 */
   created() {
-    //this.getList();
+    this.getDicts("portal_api_mng").then((response) => {
+      this.urlClassify = response.data;
+    });
+    this.getList();
   },
   methods: {
+    getapiSys(row) {
+      let dictLabel;
+      this.urlClassify.forEach((element) => {
+        if (element.dictValue == row.apiSys) {
+          dictLabel = element.dictLabel;
+        }
+      });
+      return dictLabel;
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -157,43 +158,29 @@ export default {
       }
       this.msgFormDialog = true;
     },
-    deleteCell() {
-      if (this.multipleSelection.length != 1) {
-        this.$message({
-          type: "error",
-          message: "请选择一条数据",
-        });
-        return;
-      } else {
-        this.$confirm(
-          "确认要删除" + this.multipleSelection[0].title + "吗?",
-          "提示",
-          {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
-          }
-        )
-          .then(() => {
-            delSyncManage({ id: this.multipleSelection[0].id }).then(
-              (response) => {
-                if (response.code == 200) {
-                  this.$message({
-                    type: "success",
-                    message: "删除成功",
-                  });
-                  this.handleQuery();
-                } else {
-                  this.$message({
-                    type: "error",
-                    message: "删除失败",
-                  });
-                }
-              }
-            );
-          })
-          .catch(() => {});
-      }
+    deleteRow(row) {
+      this.$confirm("确认要删除" + row.apiName + "吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          delById({ id: row.id }).then((response) => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功",
+              });
+              this.handleQuery();
+            } else {
+              this.$message({
+                type: "error",
+                message: "删除失败",
+              });
+            }
+          });
+        })
+        .catch(() => {});
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;

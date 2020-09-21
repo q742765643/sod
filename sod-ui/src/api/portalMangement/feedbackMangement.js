@@ -19,3 +19,12 @@ export function getById(query) {
     params: query
   })
 }
+
+// 编辑
+export function editById(data) {
+  return request({
+    url: baseUrl + '/portal/feedbackManage/edit',
+    method: 'put',
+    data: data
+  })
+}
