@@ -159,7 +159,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="清除条数限制" prop="clearLimit">
+            <el-form-item label="清除条数频率" prop="clearLimit">
               <el-input v-model.trim="form.clearLimit" />
             </el-form-item>
           </el-col>

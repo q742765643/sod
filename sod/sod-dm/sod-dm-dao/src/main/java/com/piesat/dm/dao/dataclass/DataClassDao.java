@@ -17,6 +17,8 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
 
     List<DataClassEntity> findByDDataId(String dDataId);
 
+    List<DataClassEntity> findByDataClassIdAndCreateBy(String dataclassId,String userId);
+
     List<DataClassEntity> findByParentIdOrderByDataClassIdAsc(String parentId);
 
     List<DataClassEntity> findByParentIdOrderByDataClassIdDesc(String parentId);
@@ -26,4 +28,5 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
     List<DataClassEntity> findByTypeAndDataClassIdLikeOrderByDataClassIdDesc(int type, String dataclassId);
 
     List<DataClassEntity> findByDataClassIdInOrTypeOrderByDataClassIdAsc(List<String> classIds, Integer type);
+
 }

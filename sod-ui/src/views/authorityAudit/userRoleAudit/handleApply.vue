@@ -318,7 +318,7 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    finishStep(handleType) {
+    async finishStep(handleType) {
       let status;
       if (this.stepNum == 0 && handleType == 2) {
         status = 2;
@@ -353,15 +353,20 @@ export default {
           text: "正在审核中...",
           background: "rgba(0, 0, 0, 0.7)",
         });
-        editBase({ bizUserid: this.forId, checked: status }).then((res) => {
-          if (res.code == 200) {
-            this.msgSuccess("操作成功");
-            this.$emit("closeStep");
-            loading.close();
-          } else {
-            this.msgError(res.msg);
+        if (this.handleMsgObj.dbCreate != 1 && this.handleMsgObj.sodData != 1) {
+          await this.$refs.AccountRef.trueAdd();
+        }
+        await editBase({ bizUserid: this.forId, checked: status }).then(
+          (res) => {
+            if (res.code == 200) {
+              this.msgSuccess("操作成功");
+              this.$emit("closeStep");
+              loading.close();
+            } else {
+              this.msgError(res.msg);
+            }
           }
-        });
+        );
       }
     },
   },

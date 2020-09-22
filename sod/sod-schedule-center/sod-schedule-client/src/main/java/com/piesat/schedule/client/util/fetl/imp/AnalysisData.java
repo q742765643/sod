@@ -17,14 +17,16 @@ import com.piesat.schedule.client.util.fetl.util.FetlUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AnalysisData implements Callable<Boolean> {
+public class AnalysisData implements Runnable {
 	private String parentId;
 	private int commitCount;
 	private List<byte[]> data;
 	private List<Integer> columnTypes;
 	private String preSql;
 	private String tableName;
-	public AnalysisData(String parentId,String tableName,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
+	private String fileName;
+	public AnalysisData(String fileName,String parentId,String tableName,int commitCount,List<byte[]> data,String preSql,List<Integer> columnTypes){
+        this.fileName=fileName;
 		this.parentId = parentId;
 		this.commitCount = commitCount;
 		this.data = data;
@@ -32,9 +34,9 @@ public class AnalysisData implements Callable<Boolean> {
 		this.preSql = preSql;
 		this.tableName=tableName;
 	}
-	
+
 	@Override
-	public Boolean call() throws Exception {
+	public void run(){
         if(data != null && data.size() != 0){
         	Connection con = null;
 			int lineCount = 0;
@@ -120,17 +122,20 @@ public class AnalysisData implements Callable<Boolean> {
 						}
 					}*/
 				}
-				log.info("批量提交表数据{}恢复{}条",tableName,lineCount);
+				//log.info("批量提交表数据{}恢复{}条",tableName,lineCount);
 				ps.executeBatch();
 			} catch (SQLException e){
 				/*if(commitCount > 0) {
 					impData(ps,datas);
 					datas.clear();
 				}else {*/
-					log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
+				ImpMetaData.errorMap.put(fileName,OwnException.get(e));
+				log.error("恢复第二步:"+OwnException.get(e));
+					//log.error(e.getMessage()+"\nsql  : "+sql(preSql, rowData));
 				//}
 				throw new RuntimeException(tableName+"恢复数据异常错误");
 			} catch (Exception e){
+				ImpMetaData.errorMap.put(fileName,OwnException.get(e));
 				log.error(OwnException.get(e));
 				throw new RuntimeException(tableName+"恢复数据异常错误");
 			} finally {
@@ -139,8 +144,7 @@ public class AnalysisData implements Callable<Boolean> {
 				FetlUtil.closeConn(con);
 			}
         }
-        return Boolean.TRUE;
-	}	
+	}
 	public void impData(PreparedStatement ps, List<byte[][]> datas){
 		byte[][] rowData = new byte[datas.get(0).length][];
 		try {
@@ -194,7 +198,7 @@ public class AnalysisData implements Callable<Boolean> {
 //			    			}
 //							data100.clear();
 //						} else {
-//							log.error(e.getMessage()+" sql  : "+preSql);	
+//							log.error(e.getMessage()+" sql  : "+preSql);
 //						}
 //			    	}
 //			    }
@@ -206,11 +210,11 @@ public class AnalysisData implements Callable<Boolean> {
 //    				impData(ps,data,false);
 //    			}
 //			} else {
-//				log.error(e.getMessage()+" sql  : "+preSql);	
+//				log.error(e.getMessage()+" sql  : "+preSql);
 //			}
 //		}
 //	}
-	
+
 //	public void impData(PreparedStatement ps, byte[][] data, boolean flag){
 //		try{
 //			for(int i = 0; i < data.length;i++){
@@ -236,17 +240,17 @@ public class AnalysisData implements Callable<Boolean> {
 //							sb.append(new String(bb,"UTF-8")).append(" ");
 //						} catch (UnsupportedEncodingException e1) {
 //							e1.printStackTrace();
-//						} 
+//						}
 //					}else {
 //						sb.append("null").append(" ");
 //					}
 //				}
 //				log.error(e.getMessage()+"\nsql  : "+preSql +"\n"+" param : "+ sb.toString());
 //			}
-//		} 
+//		}
 //	}
-	
-	
+
+
 	public enum signByte{
 		b0sign(0x03),b1sign(0x0c),b2sign(0x30),b3sign(0xc0);
 		private int val;
@@ -262,7 +266,7 @@ public class AnalysisData implements Callable<Boolean> {
 				case 1:
 					ret =  b1sign.val;
 					break;
-				case 2: 
+				case 2:
 					ret =  b2sign.val;
 					break;
 				case 3:

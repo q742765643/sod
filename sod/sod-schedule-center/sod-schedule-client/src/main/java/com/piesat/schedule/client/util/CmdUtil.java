@@ -6,6 +6,7 @@ import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -46,6 +47,21 @@ public class CmdUtil {
 
         } catch (Exception e) {
             log.error(OwnException.get(e));
+        }finally {
+            if(null!=bufrIn){
+                try {
+                    bufrIn.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null!=bufrError){
+                try {
+                    bufrError.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return exitVal;
     }

@@ -157,6 +157,8 @@ serverfile:
 fileUpload:
   savaPath: /space/cmadaas/sod/src/sod/file/upload
   httpPath: /upload
+  portal_file: /upload
+
 
 businessParameters:
   databaseUserDefaultPassword: Asd123

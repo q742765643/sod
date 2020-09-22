@@ -331,11 +331,13 @@ public class DataBaseRecoverService {
         StringBuilder structure=new StringBuilder();
         ZipFile zipFile=null;
         InputStream in=null;
+        FileInputStream fileInputStream=null;
         ZipInputStream zin=null;
         try {
             zipFile=new ZipFile(path);
             Enumeration zipEnum = zipFile.entries();
-            in = new BufferedInputStream(new FileInputStream(path));
+            fileInputStream=new FileInputStream(path);
+            in = new BufferedInputStream(fileInputStream);
             zin = new ZipInputStream(in);
             while(zipEnum.hasMoreElements ()) {
                 ZipEntry ze = (ZipEntry) zipEnum.nextElement();
@@ -367,6 +369,13 @@ public class DataBaseRecoverService {
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
+            if(null!=fileInputStream){
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
                 if(in!=null){
                     in.close();
@@ -381,6 +390,7 @@ public class DataBaseRecoverService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
 
 

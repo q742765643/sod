@@ -95,7 +95,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             String dataClassId = dataTableDto.getClassLogic().getDataClassId();
             List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
                     .findByDataClassIdAndUserId(dataClassId, dotById.getUserId());
-            if (NewdataApplyDtos.size()>0){
+            if (NewdataApplyDtos.size() > 0) {
                 NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
                 newdataApplyDto.setTableName(dataTableDto.getTableName());
                 this.newdataApplyService.saveDto(newdataApplyDto);
@@ -347,15 +347,15 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
                 storageConfigurationDto.setStorageDefineIdentifier(1);
                 this.storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
             } else {
-                StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-                storageConfigurationDto.setClassLogicId(save.getClassLogic().getId());
-                storageConfigurationDto.setStorageDefineIdentifier(1);
-                storageConfigurationDto.setSyncIdentifier(2);
-                storageConfigurationDto.setCleanIdentifier(2);
-                storageConfigurationDto.setMoveIdentifier(2);
-                storageConfigurationDto.setBackupIdentifier(2);
-                storageConfigurationDto.setArchivingIdentifier(2);
-                this.storageConfigurationService.saveDto(storageConfigurationDto);
+                StorageConfigurationDto scd = new StorageConfigurationDto();
+                scd.setClassLogicId(save.getClassLogic().getId());
+                scd.setStorageDefineIdentifier(1);
+                scd.setSyncIdentifier(2);
+                scd.setCleanIdentifier(2);
+                scd.setMoveIdentifier(2);
+                scd.setBackupIdentifier(2);
+                scd.setArchivingIdentifier(2);
+                this.storageConfigurationService.saveDto(scd);
             }
 
             for (ShardingEntity se : shardingEntities) {
@@ -370,6 +370,14 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             }
 
         }
+        List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
+                .findByDataClassIdAndUserId(dataClassEntity.getDataClassId(), dataClassEntity.getCreateBy());
+        if (NewdataApplyDtos.size() > 0 && copys.size() > 0) {
+            NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
+            newdataApplyDto.setTableName(copys.get(0).getTableName());
+            this.newdataApplyService.saveDto(newdataApplyDto);
+        }
+
         return ResultT.success();
     }
 

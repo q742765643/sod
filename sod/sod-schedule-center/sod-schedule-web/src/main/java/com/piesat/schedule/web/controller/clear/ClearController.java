@@ -58,6 +58,9 @@ public class ClearController {
     @PostMapping
     public ResultT<String> add(@RequestBody ClearDto clear)
     {
+        if(null==clear.getIsAlarm()){
+            clear.setIsAlarm("1");
+        }
         ResultT<String> resultT=new ResultT<>();
         clearService.saveClear(clear);
         return resultT;
@@ -69,6 +72,9 @@ public class ClearController {
     @PutMapping
     public ResultT<String> edit(@RequestBody ClearDto clear)
     {
+        if(null==clear.getIsAlarm()){
+            clear.setIsAlarm("1");
+        }
         ResultT<String> resultT=new ResultT<>();
         clearService.updateClear(clear);
         return resultT;
