@@ -125,16 +125,29 @@ public class DataAuthorityApplyController {
         return resultT;
     }
 
-    @PostMapping(value = "/updateRecordCheck")
+    @PutMapping(value = "/updateRecordCheck")
     //@RequiresPermissions("dm:dataAuthorityApply:updateRecordCheck")
     @ApiOperation(value = "授权资料", notes = "授权资料")
     public ResultT updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
        return  dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
     }
 
-    @PostMapping(value = "/updateRecordCheckCancel")
+    @PutMapping(value = "/updateRecordCheckCancel")
     @ApiOperation(value = "拒绝授权/撤销已授权资料", notes = "拒绝授权/撤销已授权资料")
     public ResultT updateRecordCheckCancel(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
+        return dataAuthorityApplyService.updateRecordCheckCancel(dataAuthorityApplyDto);
+    }
+
+    @PostMapping(value = "/updateRecordCheckPortal")
+    //@RequiresPermissions("dm:dataAuthorityApply:updateRecordCheck")
+    @ApiOperation(value = "授权资料Portal", notes = "授权资料Portal")
+    public ResultT updateRecordCheckPortal(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
+        return  dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
+    }
+
+    @PostMapping(value = "/updateRecordCheckCancelPortal")
+    @ApiOperation(value = "拒绝授权/撤销已授权资料Portal", notes = "拒绝授权/撤销已授权资料Portal")
+    public ResultT updateRecordCheckCancelPortal(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
         return dataAuthorityApplyService.updateRecordCheckCancel(dataAuthorityApplyDto);
     }
 
