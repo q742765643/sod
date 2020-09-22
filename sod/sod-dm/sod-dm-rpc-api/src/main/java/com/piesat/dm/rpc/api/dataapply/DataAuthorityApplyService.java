@@ -66,4 +66,6 @@ public interface DataAuthorityApplyService {
     List<ReadAuthorityDto> getReadAuthority();
 
     List<DataAuthorityApplyDto> findByUserId(String userId);
+
+    void deleteByDataClassId(String dataclassId);
 }

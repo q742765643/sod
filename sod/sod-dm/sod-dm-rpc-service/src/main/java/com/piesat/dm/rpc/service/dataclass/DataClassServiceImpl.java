@@ -23,6 +23,7 @@ import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
@@ -89,6 +90,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataClassUserService dataClassUserService;
     @Autowired
     private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
+    @Autowired
+    private DataAuthorityApplyService dataAuthorityApplyService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -367,6 +370,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataLogicDao.deleteByDataClassId(dataClassId);
         this.dataClassDao.deleteByDataClassId(dataClassId);
         this.databaseSpecialReadWriteService.deleteByDataClassId(dataClassId);
+        this.dataAuthorityApplyService.deleteByDataClassId(dataClassId);
     }
 
     @Override

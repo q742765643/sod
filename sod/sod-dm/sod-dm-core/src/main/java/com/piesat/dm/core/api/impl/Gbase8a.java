@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 8a数据库管理
@@ -121,7 +122,7 @@ public class Gbase8a extends AbstractDatabaseDcl {
 
     @Override
     public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
-        String permission = ArrayUtils.toString(permissions, ",");
+        String permission = Arrays.stream(permissions).collect(Collectors.joining(","));
         try {
             stmt = connection.createStatement();
             String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM '" + identifier;
