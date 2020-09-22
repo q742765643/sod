@@ -126,6 +126,8 @@ serverfile:
   special: /home/sod/file/upload/special
   cloud: /home/sod/file/upload/cloud
   user: /home/sod/file/upload/user
+  sdkfile: /space/cmadaas/sod/src/sod/file/upload/sdkfile
+  portalfile: /space/cmadaas/sod/src/sod/file/upload/portalfile
 #  dbfile: D:/file
 #  filePath: D:/file
 #  dfcheck: D:/file
@@ -149,7 +151,6 @@ serverfile:
 fileUpload:
   savaPath: /home/sod/file/upload
   httpPath: /upload
-  portal_file: /home/sod/file/upload/portal
 
 businessParameters:
   databaseUserDefaultPassword: Asd123

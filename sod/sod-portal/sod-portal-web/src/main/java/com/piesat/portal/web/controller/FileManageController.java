@@ -37,7 +37,7 @@ public class FileManageController {
     @Autowired
     private FileManageService fileManageService;
 
-    @Value("${fileUpload.portal_file}")
+    @Value("${serverfile.portalfile}")
     private String fileAddress;
 
 

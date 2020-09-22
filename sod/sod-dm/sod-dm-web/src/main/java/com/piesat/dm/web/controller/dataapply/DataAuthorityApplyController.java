@@ -125,14 +125,14 @@ public class DataAuthorityApplyController {
         return resultT;
     }
 
-    @PutMapping(value = "/updateRecordCheck")
+    @PostMapping(value = "/updateRecordCheck")
     //@RequiresPermissions("dm:dataAuthorityApply:updateRecordCheck")
     @ApiOperation(value = "授权资料", notes = "授权资料")
     public ResultT updateRecordCheck(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
        return  dataAuthorityApplyService.updateRecordCheck(dataAuthorityApplyDto);
     }
 
-    @PutMapping(value = "/updateRecordCheckCancel")
+    @PostMapping(value = "/updateRecordCheckCancel")
     @ApiOperation(value = "拒绝授权/撤销已授权资料", notes = "拒绝授权/撤销已授权资料")
     public ResultT updateRecordCheckCancel(@RequestBody DataAuthorityApplyDto dataAuthorityApplyDto){
         return dataAuthorityApplyService.updateRecordCheckCancel(dataAuthorityApplyDto);
