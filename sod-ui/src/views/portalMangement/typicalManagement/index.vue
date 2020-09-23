@@ -1,22 +1,15 @@
 <template>
   <div class="app-container">
-    <!-- 接口管理 -->
+    <!-- 算法板块管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="接口名称:" prop="apiName">
-        <el-input clearable size="small" v-model.trim="queryParams.apiName" placeholder="请输入接口名称" />
+      <el-form-item prop="dataName" label="算法分类:">
+        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入分类名称" />
       </el-form-item>
-      <el-form-item label="接口描述:" prop="apiDesc">
-        <el-input clearable size="small" v-model.trim="queryParams.apiDesc" placeholder="请输入接口描述" />
-      </el-form-item>
-      <el-form-item clearable label="接口分类:" prop="apiSys">
-        <el-select v-model="queryParams.apiSys">
+      <el-form-item prop="isshow" label="是否显示:">
+        <el-select v-model="queryParams.isshow">
           <el-option label="全部" value></el-option>
-          <el-option
-            :label="item.dictLabel"
-            :value="item.dictValue"
-            v-for="(item,index) in urlClassify"
-            :key="index"
-          ></el-option>
+          <el-option label="是" value="Y"></el-option>
+          <el-option label="否" value="N"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -24,13 +17,10 @@
         <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-    <!-- 业务动态管理操作按钮 -->
+    <!-- 操作按钮 -->
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
         <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="handleExport" icon="el-icon-upload2">批量导入</el-button>
       </el-col>
     </el-row>
     <!-- 数据展示列表 -->
@@ -42,19 +32,18 @@
       ref="multipleTable"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column prop="apiName" label="接口名称"></el-table-column>
-      <el-table-column prop="apiDesc" label="接口描述" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="apiSys" label="接口分类" :formatter="getapiSys"></el-table-column>
-      <el-table-column prop="apiHttptype" label="请求类型" :show-overflow-tooltip="true">
+      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
+      <el-table-column prop="ddataId" label="分类编号"></el-table-column>
+      <el-table-column prop="dataName" label="分类名称"></el-table-column>
+      <el-table-column prop="icon" label="图标"></el-table-column>
+      <el-table-column prop="serialNumber" label="排序"></el-table-column>
+      <el-table-column prop="isshow" label="是否显示">
         <template slot-scope="scope">
-          <span v-if="scope.row.apiHttptype=='A'">GET/POST</span>
-          <span v-if="scope.row.apiHttptype=='G'">GET</span>
-          <span v-if="scope.row.apiHttptype=='P'">POST</span>
+          <span v-if="scope.row.isshow == 'Y'">是</span>
+          <span v-if="scope.row.isshow == 'N'">否</span>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
+      <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button icon="el-icon-edit" size="mini" type="text" @click="showDialog(scope.row)">编辑</el-button>
           <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
@@ -71,44 +60,33 @@
     />
     <!-- 弹窗-->
     <el-dialog
-      width="1100px"
+      width="600px"
       :close-on-click-modal="false"
       :title="dialogTitle"
       :visible.sync="msgFormDialog"
       v-dialogDrag
       top="5vh"
     >
-      <urlEdit
+      <handleTyp
         v-if="msgFormDialog"
         :handleObj="handleObj"
         @cancelDialog="cancelDialog"
         ref="myDialog"
-      ></urlEdit>
-    </el-dialog>
-
-    <!-- 批量导入弹窗-->
-    <el-dialog
-      width="600px"
-      :close-on-click-modal="false"
-      title="批量导入"
-      :visible.sync="exportFormDialog"
-      v-dialogDrag
-      top="5vh"
-    >
-      <urlExport v-if="exportFormDialog" @cancelDialog="cancelDialog" ref="myDialog"></urlExport>
+      ></handleTyp>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { queryDataPage, delById } from "@/api/portalMangement/urlManagement";
-import urlEdit from "@/views/portalMangement/urlManagement/urlEdit";
-import urlExport from "@/views/portalMangement/urlManagement/urlExport";
+import {
+  queryDataPage,
+  delById,
+} from "@/api/portalMangement/typicalManagement";
+import handleTyp from "@/views/portalMangement/typicalManagement/handleTyp";
 
 export default {
   components: {
-    urlEdit,
-    urlExport,
+    handleTyp,
   },
   data() {
     return {
@@ -117,39 +95,34 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        apiName: "",
-        apiDesc: "",
-        apiSys: "",
+        sdkType: "",
       },
       tableData: [],
       total: 0,
-      urlClassify: [],
+      SDKClassify: [],
       //已勾选记录
       multipleSelection: [],
       // 弹窗
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
-      exportFormDialog: false,
     };
   },
   /** 方法调用 */
   created() {
-    this.getDicts("portal_api_mng").then((response) => {
-      this.urlClassify = response.data;
+    this.getDicts("portal_sdk_mng").then((response) => {
+      this.SDKClassify = response.data;
     });
     this.getList();
   },
   methods: {
-    getapiSys(row) {
-      let dictLabel;
-      this.urlClassify.forEach((element) => {
-        if (element.dictValue == row.apiSys) {
-          dictLabel = element.dictLabel;
-        }
-      });
-      return dictLabel;
+    // table自增定义方法
+    table_index(index) {
+      return (
+        (this.queryParams.pageNum - 1) * this.queryParams.pageSize + index + 1
+      );
     },
+
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -169,12 +142,8 @@ export default {
       }
       this.msgFormDialog = true;
     },
-
-    handleExport() {
-      this.exportFormDialog = true;
-    },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.apiName + "吗?", "提示", {
+      this.$confirm("确认要删除" + row.ddataId + "吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
