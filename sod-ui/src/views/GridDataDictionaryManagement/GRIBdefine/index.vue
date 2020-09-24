@@ -410,7 +410,7 @@ export default {
         ids.push(element.id);
         eleCodeShorts.push(element.eleCodeShort);
       });
-      this.$confirm("是否删除" + eleCodeShorts.join(","), "提示", {
+      this.$confirm("是否删除" + eleCodeShorts.join(","), "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

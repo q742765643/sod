@@ -122,7 +122,7 @@ import {
   findMenu,
   getTableData,
   deleteByIds,
-  findById
+  findById,
 } from "@/api/dbDictMangement/fieldManagement";
 
 import handleTree from "@/views/dbDictMangement/fieldManagement/handleTree";
@@ -131,7 +131,7 @@ import handleDict from "@/views/dbDictMangement/fieldManagement/handleDict";
 export default {
   components: {
     handleTree,
-    handleDict
+    handleDict,
   },
   data() {
     return {
@@ -143,7 +143,7 @@ export default {
       menuType: "2", //字典类型
       defaultProps: {
         children: "children",
-        label: "keyCol"
+        label: "keyCol",
       },
 
       checkNode: {}, //选中高亮的节点
@@ -157,12 +157,12 @@ export default {
       queryParams: {
         keyCol: "",
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       // 弹窗 字典
       DictDialog: false,
       handleDictObj: {},
-      multipleSelection: []
+      multipleSelection: [],
     };
   },
   async created() {
@@ -171,7 +171,7 @@ export default {
   watch: {
     filterText(val) {
       this.$refs.elTree.filter(val);
-    }
+    },
   },
   methods: {
     // 树过滤
@@ -181,12 +181,12 @@ export default {
     },
     //初始化字典分组数据
     async getTreeData() {
-      await findMenu({ menu: this.menuType }).then(res => {
+      await findMenu({ menu: this.menuType }).then((res) => {
         res.success
           ? (this.treeData = res.data)
           : this.$notify.error({
               title: "错误",
-              message: res.msg
+              message: res.msg,
             });
       });
       if (this.treeData.length > 0) {
@@ -218,7 +218,7 @@ export default {
     //查询表格数据
     handleQuery() {
       this.loading = true;
-      getTableData(this.queryParams).then(res => {
+      getTableData(this.queryParams).then((res) => {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
         this.loading = false;
@@ -249,22 +249,22 @@ export default {
         this.$message({ message: "请选中需要删除的数据!", type: "warning" });
         return;
       }
-      this.$confirm("数据和类型都会被删除，确认删除", "提示", {
+      this.$confirm("数据和类型都会被删除，确认删除", "温馨提示", {
         cancelButtonText: "取消",
         confirmButtonText: "确定",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deleteByIds({ ids: this.checkNode.id }).then(res => {
+          deleteByIds({ ids: this.checkNode.id }).then((res) => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
             } else {
               this.$message({
                 type: "error",
-                message: res.msg
+                message: res.msg,
               });
             }
             this.getTreeData();
@@ -300,12 +300,12 @@ export default {
       if (this.multipleSelection.length != 1) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       this.handleGroup = this.treeData;
-      findById({ id: this.multipleSelection[0].id }).then(res => {
+      findById({ id: this.multipleSelection[0].id }).then((res) => {
         this.dialogTitle = "编辑字典";
         this.handleDictObj = res.data;
         this.DictDialog = true;
@@ -315,13 +315,13 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
       let flag = false;
       let nameArry = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         if (flag || element.canDelete == "N") {
           flag = true;
           nameArry.push(element.keyCol);
@@ -330,31 +330,31 @@ export default {
       if (flag) {
         this.$message({
           type: "error",
-          message: nameArry.join(",") + "只能修改，不能删除"
+          message: nameArry.join(",") + "只能修改，不能删除",
         });
         return;
       }
       if (!flag) {
-        this.$confirm("确认删除吗", "提示", {
+        this.$confirm("确认删除吗", "温馨提示", {
           cancelButtonText: "取消",
           confirmButtonText: "确定",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             let ids = [];
-            this.multipleSelection.forEach(element => {
+            this.multipleSelection.forEach((element) => {
               ids.push(element.id);
             });
-            deleteByIds({ ids: ids.join(",") }).then(res => {
+            deleteByIds({ ids: ids.join(",") }).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "删除成功"
+                  message: "删除成功",
                 });
               } else {
                 this.$message({
                   type: "error",
-                  message: res.msg
+                  message: res.msg,
                 });
               }
               this.handleQuery();
@@ -365,8 +365,8 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

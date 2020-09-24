@@ -1,34 +1,40 @@
 <template>
   <section class="dataDialog">
     <el-form :model="msgFormDialog" :rules="baseFormRules" ref="fromRef" label-width="120px">
-      <el-form-item prop="ddataId" label="应用级别:">
-        <el-select v-model="msgFormDialog.isshow">
-          <el-option label="国家级" value="C"></el-option>
-          <el-option label="省级" value="P"></el-option>
-          <el-option label="公有云" value="CC"></el-option>
+      <el-form-item prop="ddataId" label="部门类型:">
+        <el-select v-model="msgFormDialog.isshow" :disabled="handleDis">
+          <el-option label="国家级" value="01"></el-option>
+          <el-option label="非国家级" value="02"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="dataName" label="应用名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="dataName" label="部门编号:">
+        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="机构名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="dataName" label="部门名称:">
+        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="应用链接:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="dataName" label="上级部门:">
+        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="true" />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="排序:">
-        <el-input-number clearable size="small" v-model="msgFormDialog.serialNumber" />
+      <el-form-item prop="serialNumber" label="部门排序:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
       </el-form-item>
-      <el-form-item prop="isshow" label="是否显示:">
-        <el-select v-model="msgFormDialog.isshow">
-          <el-option label="是" value="Y"></el-option>
-          <el-option label="否" value="N"></el-option>
-        </el-select>
+      <el-form-item prop="serialNumber" label="部门级别:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="trueDialog('fromRef')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis">审 核</el-button>
       <el-button @click="cancelDialog()">取 消</el-button>
     </div>
   </section>

@@ -239,7 +239,7 @@ export default {
         this.$message({ message: "请选中需要删除的数据!", type: "error" });
         return;
       }
-      this.$confirm("数据和类型都会被删除，确认删除", "提示", {
+      this.$confirm("数据和类型都会被删除，确认删除", "温馨提示", {
         cancelButtonText: "取消",
         confirmButtonText: "确定",
         type: "warning",
@@ -302,7 +302,7 @@ export default {
         this.$message({ message: "请选中需要删除的数据!", type: "error" });
         return;
       }
-      this.$confirm("确认删除吗", "提示", {
+      this.$confirm("确认删除吗", "温馨提示", {
         cancelButtonText: "取消",
         confirmButtonText: "确定",
         type: "warning",

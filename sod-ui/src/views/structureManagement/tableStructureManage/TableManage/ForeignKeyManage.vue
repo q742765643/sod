@@ -72,7 +72,7 @@ import {
   findByTableId,
   foreignKeyList,
   foreignKeySave,
-  delByIdsKey
+  delByIdsKey,
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "ForeignKeyManage",
@@ -84,11 +84,11 @@ export default {
         tableId: "",
         keyColumn: "",
         eleColumn: "",
-        isReal: "true"
+        isReal: "true",
       },
       keyColumnData: [],
       elColumnData: [],
-      multipleSelection: []
+      multipleSelection: [],
     };
   },
   methods: {
@@ -97,7 +97,7 @@ export default {
     },
     // 根据键表ID查询键表字段
     getKeyColumnData() {
-      findByTableId({ tableId: this.keyTableInfo.id }).then(response => {
+      findByTableId({ tableId: this.keyTableInfo.id }).then((response) => {
         if (response.code == 200) {
           this.keyColumnData = response.data;
           this.formData.tableId = this.keyTableInfo.id;
@@ -106,7 +106,7 @@ export default {
     },
     // 根据要素表ID查询要素表字段
     getElColumnData() {
-      findByTableId({ tableId: this.elTableInfo.id }).then(response => {
+      findByTableId({ tableId: this.elTableInfo.id }).then((response) => {
         if (response.code == 200) {
           this.elColumnData = response.data;
         }
@@ -114,17 +114,17 @@ export default {
     },
     add() {
       this.formData.classLogicId = this.rowData.LOGIC_ID;
-      foreignKeySave(this.formData).then(response => {
+      foreignKeySave(this.formData).then((response) => {
         if (response.code == 200) {
           this.$message({
             message: "外键关联新增成功！",
-            type: "success"
+            type: "success",
           });
           this.getForeignKeyData();
         } else {
           this.$message({
             message: response.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -133,33 +133,33 @@ export default {
       if (this.multipleSelection.length == 0) {
         this.$message({
           message: "请选择一条数据",
-          type: "info"
+          type: "info",
         });
         return;
       } else {
         let ids = [];
         let keyColumns = [];
-        this.multipleSelection.forEach(element => {
+        this.multipleSelection.forEach((element) => {
           ids.push(element.id);
           keyColumns.push(element.keyColumn);
         });
-        this.$confirm("确认删除" + keyColumns.join(",") + "吗?", "提示", {
+        this.$confirm("确认删除" + keyColumns.join(",") + "吗?", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
-            delByIdsKey({ ids: ids.join(",") }).then(response => {
+            delByIdsKey({ ids: ids.join(",") }).then((response) => {
               if (response.code == 200) {
                 this.$message({
                   message: "外键关联删除成功！",
-                  type: "success"
+                  type: "success",
                 });
                 this.getForeignKeyData();
               } else {
                 this.$message({
                   message: response.msg,
-                  type: "error"
+                  type: "error",
                 });
               }
             });
@@ -169,12 +169,12 @@ export default {
     },
     // 根据LOGIC_ID查询外键关联
     getForeignKeyData() {
-      foreignKeyList({ logicId: this.rowData.LOGIC_ID }).then(response => {
+      foreignKeyList({ logicId: this.rowData.LOGIC_ID }).then((response) => {
         if (response.code == 200) {
           this.tableData = response.data;
         }
       });
-    }
+    },
   },
   mounted() {
     this.getForeignKeyData();
@@ -185,8 +185,8 @@ export default {
     },
     elTableInfo(val) {
       this.getElColumnData();
-    }
-  }
+    },
+  },
 };
 </script>
 

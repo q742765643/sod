@@ -303,7 +303,7 @@ import {
   updateUser,
   exportUser,
   resetUserPwd,
-  changeUserStatus
+  changeUserStatus,
 } from "@/api/system/user";
 import { treeselect } from "@/api/system/dept";
 import { listPost } from "@/api/system/post";
@@ -352,7 +352,7 @@ export default {
       form: {},
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "label",
       },
       // 查询参数
       queryParams: {
@@ -364,64 +364,64 @@ export default {
         deptId: undefined,
         params: {
           orderBy: {
-            createTime: "desc"
-          }
-        }
+            createTime: "desc",
+          },
+        },
       },
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" }
+          { required: true, message: "用户名称不能为空", trigger: "blur" },
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          { required: true, message: "用户昵称不能为空", trigger: "blur" },
         ],
         deptId: [
-          { required: true, message: "归属部门不能为空", trigger: "blur" }
+          { required: true, message: "归属部门不能为空", trigger: "blur" },
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" }
+          { required: true, message: "用户密码不能为空", trigger: "blur" },
         ],
         email: [
           {
             type: "email",
             message: "'请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
         phonenumber: [
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   watch: {
     // 根据名称筛选部门树
     deptName(val) {
       this.$refs.tree.filter(val);
-    }
+    },
   },
   created() {
     this.getList();
     this.getTreeselect();
-    this.getDicts("sys_normal_disable").then(response => {
+    this.getDicts("sys_normal_disable").then((response) => {
       this.statusOptions = response.data;
     });
-    this.getDicts("sys_user_sex").then(response => {
+    this.getDicts("sys_user_sex").then((response) => {
       this.sexOptions = response.data;
     });
-    this.getConfigKey("sys.user.initPassword").then(response => {
+    this.getConfigKey("sys.user.initPassword").then((response) => {
       this.initPassword = response.data;
     });
   },
   methods: {
     toggleSelection(rows) {
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           this.userList.forEach((element, index) => {
             if (element.id == row) {
               this.$refs.multipleTable.toggleRowSelection(this.userList[index]);
@@ -441,7 +441,7 @@ export default {
       this.handleQuery();
     },
     handleExport() {
-      exportUser(this.queryParams).then(res => {
+      exportUser(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -455,13 +455,13 @@ export default {
       }
       this.loading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(
-        response => {
+        (response) => {
           this.userList = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
           if (this.ids.length == 1) {
             let newArry = this.ids;
-            this.$nextTick(function() {
+            this.$nextTick(function () {
               this.toggleSelection(newArry);
             });
           }
@@ -470,7 +470,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeselect() {
-      treeselect().then(response => {
+      treeselect().then((response) => {
         this.deptOptions = response.data;
       });
     },
@@ -486,13 +486,13 @@ export default {
     },
     /** 查询岗位列表 */
     getPosts() {
-      listPost().then(response => {
+      listPost().then((response) => {
         this.postOptions = response.rows;
       });
     },
     /** 查询角色列表 */
     getRoles() {
-      optionselect().then(response => {
+      optionselect().then((response) => {
         this.roleOptions = response.data;
       });
     },
@@ -505,16 +505,16 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return changeUserStatus(row.id, row.status);
         })
         .then(() => {
           this.msgSuccess(text + "成功");
         })
-        .catch(function() {
+        .catch(function () {
           row.status = row.status === "0" ? "1" : "0";
         });
     },
@@ -537,7 +537,7 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
       };
       this.resetForm("form");
     },
@@ -554,8 +554,8 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id);
-      this.nickNames = selection.map(item => item.nickName);
+      this.ids = selection.map((item) => item.id);
+      this.nickNames = selection.map((item) => item.nickName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -578,7 +578,7 @@ export default {
       const id = row.id || this.ids;
       this.ids = [];
       this.ids.push(id);
-      getUser(id).then(response => {
+      getUser(id).then((response) => {
         this.form = response.data;
         this.form.postIds = response.data.postIds;
         this.form.roleIds = response.data.roleIds;
@@ -589,12 +589,12 @@ export default {
     },
     /** 重置密码按钮操作 */
     handleResetPwd(row) {
-      this.$prompt('请输入"' + row.userName + '"的新密码', "提示", {
+      this.$prompt('请输入"' + row.userName + '"的新密码', "温馨提示", {
         confirmButtonText: "确定",
-        cancelButtonText: "取消"
+        cancelButtonText: "取消",
       })
         .then(({ value }) => {
-          resetUserPwd(row.id, value).then(response => {
+          resetUserPwd(row.id, value).then((response) => {
             if (response.code === 200) {
               this.msgSuccess("修改成功，新密码是：" + value);
             } else {
@@ -605,11 +605,11 @@ export default {
         .catch(() => {});
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateUser(this.form).then(response => {
+            updateUser(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -619,7 +619,7 @@ export default {
               }
             });
           } else {
-            addUser(this.form).then(response => {
+            addUser(this.form).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -642,19 +642,19 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }
       )
-        .then(function() {
+        .then(function () {
           return delUser(ids);
         })
         .then(() => {
           this.getList();
           this.msgSuccess("删除成功");
         })
-        .catch(function() {});
-    }
-  }
+        .catch(function () {});
+    },
+  },
 };
 </script>
 

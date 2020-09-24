@@ -269,7 +269,7 @@ export default {
         return;
       }
       this.exportIcon = "el-icon-loading";
-      this.$alert("生成差异报告中,请稍后", "提示", {
+      this.$alert("生成差异报告中,请稍后", "温馨提示", {
         confirmButtonText: "确定",
         callback: (action) => {},
       });
@@ -336,7 +336,7 @@ export default {
       });
       this.$confirm(
         "确认要删除专题库" + databaseNames.join(",") + "吗?",
-        "提示",
+        "温馨提示",
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",

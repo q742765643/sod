@@ -1,24 +1,12 @@
 <template>
   <div class="app-container">
-    <!-- 数据板块管理 -->
+    <!--portal 系统管理 单位管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item clearable label="数据类别:" prop="module">
-        <el-select v-model="queryParams.module">
-          <el-option label="全部" value></el-option>
-          <el-option label="气象业务数据" value="1"></el-option>
-          <el-option label="地球科学数据" value="2"></el-option>
-          <el-option label="行业社会数据" value="3"></el-option>
-        </el-select>
+      <el-form-item prop="dataName" label="部门编号:">
+        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入部门编号" />
       </el-form-item>
-      <el-form-item prop="dataName" label="分类名称:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入分类名称" />
-      </el-form-item>
-      <el-form-item prop="isshow" label="是否显示:">
-        <el-select v-model="queryParams.isshow">
-          <el-option label="全部" value></el-option>
-          <el-option label="是" value="Y"></el-option>
-          <el-option label="否" value="N"></el-option>
-        </el-select>
+      <el-form-item prop="dataName" label="部门名称:">
+        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入部门名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -41,26 +29,20 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="ddataId" label="四级编码"></el-table-column>
-      <el-table-column prop="dataName" label="分类名称"></el-table-column>
-      <el-table-column prop="module" label="分类类别">
+      <el-table-column prop="ddataId" label="部门编号"></el-table-column>
+      <el-table-column prop="dataName" label="部门名称"></el-table-column>
+      <el-table-column prop="icon" label="部门类型"></el-table-column>
+      <el-table-column prop="serialNumber" label="上级部门"></el-table-column>
+      <el-table-column prop="isshow" label="排序"></el-table-column>
+      <el-table-column prop="serialNumber" label="部门级别"></el-table-column>
+      <el-table-column label="操作" width="300">
         <template slot-scope="scope">
-          <span v-if="scope.row.module == '1'">气象业务数据</span>
-          <span v-if="scope.row.module == '2'">地球科学数据</span>
-          <span v-if="scope.row.module == '3'">行业社会数据</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="icon" label="图标"></el-table-column>
-      <el-table-column prop="serialNumber" label="排序"></el-table-column>
-      <el-table-column prop="isshow" label="是否显示">
-        <template slot-scope="scope">
-          <span v-if="scope.row.isshow == 'Y'">是</span>
-          <span v-if="scope.row.isshow == 'N'">否</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150">
-        <template slot-scope="scope">
-          <el-button icon="el-icon-edit" size="mini" type="text" @click="showDialog(scope.row)">编辑</el-button>
+          <el-button
+            icon="el-icon-coordinate"
+            size="mini"
+            type="text"
+            @click="showDialog(scope.row)"
+          >编辑</el-button>
           <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -82,23 +64,23 @@
       v-dialogDrag
       top="5vh"
     >
-      <handleData
+      <handleDepart
         v-if="msgFormDialog"
         :handleObj="handleObj"
         @cancelDialog="cancelDialog"
         ref="myDialog"
-      ></handleData>
+      ></handleDepart>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { queryDataPage, delById } from "@/api/portalMangement/DataManagement";
-import handleData from "@/views/portalMangement/dataMangement/handleData";
+//import { queryDataPage, delById } from "@/api/portalMangement/userMangement";
+import handleDepart from "@/views/portalMangement/departMangement/handleDepart";
 
 export default {
   components: {
-    handleData,
+    handleDepart,
   },
   data() {
     return {
@@ -153,6 +135,43 @@ export default {
         this.handleObj = {};
       }
       this.msgFormDialog = true;
+    },
+    auditRow(row) {
+      this.$confirm("", "用户审核", {
+        distinguishCancelAndClose: true,
+        confirmButtonText: "通过",
+        cancelButtonText: "驳回",
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "执行了通过",
+          });
+          this.getList();
+        })
+        .catch((action) => {
+          this.$message({
+            type: "error",
+            message: "执行了驳回",
+          });
+          this.getList();
+        });
+    },
+    refreshPassword(row) {
+      this.$confirm("确定要继续当前操作码?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          delById({ id: row.id }).then((response) => {
+            this.$alert("重置密码成功，默认密码为123qweasdzxc", "温馨提示", {
+              confirmButtonText: "确定",
+              callback: (action) => {},
+            });
+          });
+        })
+        .catch(() => {});
     },
     deleteRow(row) {
       this.$confirm("确认要删除" + row.ddataId + "吗?", "温馨提示", {

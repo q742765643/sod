@@ -1,34 +1,73 @@
 <template>
   <section class="dataDialog">
     <el-form :model="msgFormDialog" :rules="baseFormRules" ref="fromRef" label-width="120px">
-      <el-form-item prop="ddataId" label="应用级别:">
-        <el-select v-model="msgFormDialog.isshow">
-          <el-option label="国家级" value="C"></el-option>
-          <el-option label="省级" value="P"></el-option>
-          <el-option label="公有云" value="CC"></el-option>
+      <el-form-item prop="ddataId" label="用户级别:">
+        <el-select v-model="msgFormDialog.isshow" :disabled="handleDis">
+          <el-option label="国家级" value="01"></el-option>
+          <el-option label="非国家级" value="02"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="dataName" label="应用名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="dataName" label="邮箱:">
+        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="机构名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="dataName" label="登录名:">
+        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="应用链接:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="dataName" label="姓名:">
+        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="排序:">
-        <el-input-number clearable size="small" v-model="msgFormDialog.serialNumber" />
+      <el-form-item prop="serialNumber" label="工作单位:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
       </el-form-item>
-      <el-form-item prop="isshow" label="是否显示:">
-        <el-select v-model="msgFormDialog.isshow">
-          <el-option label="是" value="Y"></el-option>
-          <el-option label="否" value="N"></el-option>
+      <el-form-item prop="serialNumber" label="职位:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
+      </el-form-item>
+      <el-form-item prop="serialNumber" label="职称:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
+      </el-form-item>
+      <el-form-item prop="serialNumber" label="手机:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
+      </el-form-item>
+      <el-form-item prop="serialNumber" label="办公电话:">
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+          :disabled="handleDis"
+        />
+      </el-form-item>
+      <el-form-item prop="serialNumber" label="用户状态:">
+        <el-select v-model="queryParams.isshow" :disabled="handleDis">
+          <el-option label="全部" value></el-option>
+          <el-option label="未审核" value="0"></el-option>
+          <el-option label="已激活" value="1"></el-option>
+          <el-option label="未激活" value="2"></el-option>
         </el-select>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="trueDialog('fromRef')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis == false">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis">审 核</el-button>
       <el-button @click="cancelDialog()">取 消</el-button>
     </div>
   </section>
@@ -112,7 +151,7 @@ export default {
             editById(this.msgFormDialog).then((res) => {
               this.$message({
                 type: "success",
-                message: "编辑成功",
+                message: "审核成功",
               });
               this.$emit("cancelDialog");
             });

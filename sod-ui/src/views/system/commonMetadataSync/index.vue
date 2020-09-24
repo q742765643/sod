@@ -202,14 +202,14 @@ import {
   recordPage,
   delRecord,
   delConfig,
-  syncDataNow
+  syncDataNow,
 } from "@/api/system/commonMetadataSync/index";
 import { getDictList } from "@/api/system/commonMetadataSync/select";
 //增加查看弹框
 import handleSod from "@/views/system/commonMetadataSync/handleTask";
 export default {
   components: {
-    handleSod
+    handleSod,
   },
   data() {
     return {
@@ -218,7 +218,7 @@ export default {
       loading: true,
       queryParams: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       tableData: [],
       total: 0,
@@ -237,11 +237,11 @@ export default {
         pageNum: 1,
         pageSize: 10,
         syncTableName: "",
-        runState: ""
+        runState: "",
       },
       logTableData: [], //同步表格数据
       logDataTotal: 0,
-      tableNames: []
+      tableNames: [],
     };
   },
   created() {
@@ -250,7 +250,7 @@ export default {
   },
   methods: {
     getTableNames() {
-      getDictList(this.queryParams).then(res => {
+      getDictList(this.queryParams).then((res) => {
         if (res.code == 200) {
           this.tableNames = res.data;
         }
@@ -276,7 +276,7 @@ export default {
     /** 查询列表 */
     getList() {
       this.loading = true;
-      pageList(this.queryParams).then(response => {
+      pageList(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -299,17 +299,17 @@ export default {
         lock: true,
         text: "执行同步任务中,请勿有其他操作！",
         spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
+        background: "rgba(0, 0, 0, 0.7)",
       });
 
       syncDataNow({
         ids: this.currentRow.id,
-        apiType: this.currentRow.apiType
-      }).then(res => {
+        apiType: this.currentRow.apiType,
+      }).then((res) => {
         if (res.code == 200) {
           this.$message({
             type: "success",
-            message: "同步成功"
+            message: "同步成功",
           });
           loading.close(); //关闭延迟加载
           this.syncDescList = res.data;
@@ -317,7 +317,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: res.msg
+            message: res.msg,
           });
           loading.close(); //关闭延迟加载
         }
@@ -329,23 +329,23 @@ export default {
         return;
       }
 
-      this.$confirm("数据删除后将无法恢复，确认删除?", "提示", {
+      this.$confirm("数据删除后将无法恢复，确认删除?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          delConfig({ ids: this.currentRow.id }).then(res => {
+          delConfig({ ids: this.currentRow.id }).then((res) => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               this.handleQuery();
             } else {
               this.$message({
                 type: "error",
-                message: "删除失败"
+                message: "删除失败",
               });
             }
           });
@@ -394,23 +394,23 @@ export default {
         ids.push(this.currentRow[row].id);
       }
       console.log(ids);
-      this.$confirm("数据删除后将无法恢复，确认删除?", "提示", {
+      this.$confirm("数据删除后将无法恢复，确认删除?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          delRecord({ ids: ids.join(",") }).then(res => {
+          delRecord({ ids: ids.join(",") }).then((res) => {
             if (res.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               this.resetQuery();
             } else {
               this.$message({
                 type: "error",
-                message: "删除失败"
+                message: "删除失败",
               });
             }
           });
@@ -448,14 +448,14 @@ export default {
         this.dateRange = [];
       }
       recordPage(this.addDateRange(this.rowlogForm, this.dateRange)).then(
-        response => {
+        (response) => {
           this.logTableData = response.data.pageData;
           this.logDataTotal = response.data.totalCount;
           this.loadingHis = false;
         }
       );
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

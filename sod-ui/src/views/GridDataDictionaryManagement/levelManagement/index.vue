@@ -280,7 +280,7 @@ export default {
         ids.push(element.id);
         levelNames.push(element.levelName);
       });
-      this.$confirm("是否删除" + levelNames.join(","), "提示", {
+      this.$confirm("是否删除" + levelNames.join(","), "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

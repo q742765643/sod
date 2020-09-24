@@ -41,11 +41,11 @@
 import handleSQL from "@/views/system/sqlTemplateMangement/handleSql";
 import {
   getAllSqlList, //获取模板数据
-  delTemplate //删除模板
+  delTemplate, //删除模板
 } from "@/api/system/sqlTemplateMangement";
 export default {
   components: {
-    handleSQL
+    handleSQL,
   },
   data() {
     return {
@@ -54,23 +54,23 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        user_fcst_ele: ""
+        user_fcst_ele: "",
       },
       sqlData: [
         {
           id: 65,
           databaseServer: "xugu",
           databaseName: "虚谷数据库",
-          template: "${tableName}"
-        }
+          template: "${tableName}",
+        },
       ],
       // 弹窗
       dialogTitle: "新增模板",
       handleDailyVisible: false,
       handleObj: {
         databaseServer: "",
-        template: ""
-      }
+        template: "",
+      },
     };
   },
   created() {
@@ -80,7 +80,7 @@ export default {
   methods: {
     //获取sql模板
     getSqlData() {
-      getAllSqlList().then(response => {
+      getAllSqlList().then((response) => {
         this.sqlData = response.data;
       });
     },
@@ -92,16 +92,16 @@ export default {
     },
     //删除数据库
     deleteSqlTemplate(item) {
-      this.$confirm("您确定要删除吗?", "提示", {
+      this.$confirm("您确定要删除吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          delTemplate({ ids: item.id }).then(response => {
+          delTemplate({ ids: item.id }).then((response) => {
             this.$message({
               type: "success",
-              message: "删除成功!"
+              message: "删除成功!",
             });
             this.getSqlData();
           });
@@ -118,8 +118,8 @@ export default {
     closeDialog() {
       this.getSqlData();
       this.handleDailyVisible = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style rel="stylesheet/scss" lang="scss">

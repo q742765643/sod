@@ -250,7 +250,7 @@ export default {
         ids.push(element.id);
         userFcstEles.push(element.userFcstEle);
       });
-      this.$confirm("是否删除" + userFcstEles.join(","), "提示", {
+      this.$confirm("是否删除" + userFcstEles.join(","), "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

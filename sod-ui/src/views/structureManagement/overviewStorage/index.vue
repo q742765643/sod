@@ -578,7 +578,7 @@ export default {
       this.dialogSetting = true;
     },
     deleteCell(row) {
-      this.$confirm("确认删除" + row.CLASS_NAME + "吗?", "提示", {
+      this.$confirm("确认删除" + row.CLASS_NAME + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -626,7 +626,7 @@ export default {
         settingObj.value = 3;
         this.$confirm(
           "取消该配置将会同步删除已配置的任务，是否确认删除?",
-          "提示",
+          "温馨提示",
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",

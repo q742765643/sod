@@ -150,7 +150,7 @@ export default {
       this.msgFormDialog = true;
     },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.sdkType + "吗?", "提示", {
+      this.$confirm("确认要删除" + row.sdkType + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

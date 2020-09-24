@@ -82,11 +82,11 @@ import {
   dataClassAll,
   databaseClass,
   logicClass,
-  datumTypeGetTree
+  datumTypeGetTree,
 } from "@/api/structureManagement/tableStructureManage/StructureClassify";
 import {
   delByClass,
-  enable
+  enable,
 } from "@/api/structureManagement/tableStructureManage/index";
 export default {
   props: { treeIdOfDR: String },
@@ -97,7 +97,7 @@ export default {
       //格式化tree数据
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       highlight: true,
       tabPosition: "left",
@@ -118,7 +118,7 @@ export default {
       showAll: "primary",
       myTreedata: [],
       whichTree: "资料分类树", //区分是哪颗树
-      defaultExpandedKeys: null
+      defaultExpandedKeys: null,
     };
   },
 
@@ -126,10 +126,10 @@ export default {
     // 监控资料分类树
     sourceTreeText(val) {
       this.$refs.elTree.filter(val);
-    }
+    },
   },
   mounted() {
-    enable().then(res => {
+    enable().then((res) => {
       if (res.data == "true") {
         this.tableStructureManageContral = true;
       } else {
@@ -153,23 +153,23 @@ export default {
       classBox[0].classList.remove("disActive");
       if (whichTree == "资料分类树") {
         this.sourceTreeOp = true;
-        await dataClassAll().then(response => {
+        await dataClassAll().then((response) => {
           this.treeData = response.data;
         });
       } else if (whichTree == "数据用途分类树") {
         this.publicTreeTextActive = true;
-        await logicClass().then(response => {
+        await logicClass().then((response) => {
           this.treeData = response.data;
         });
       } else if (whichTree == "数据库分类树") {
         this.publicTreeTextActive = true;
-        await databaseClass().then(response => {
+        await databaseClass().then((response) => {
           this.treeData = response.data;
         });
       } else if (whichTree == "公共元数据结构树") {
         classBox[0].classList.add("disActive");
         this.publicActive = true;
-        await datumTypeGetTree().then(response => {
+        await datumTypeGetTree().then((response) => {
           this.treeData = response.data;
         });
       }
@@ -231,7 +231,7 @@ export default {
       this.editNodeId = data.id;
 
       let treeIds = [];
-      this.myTreedata.forEach(single => {
+      this.myTreedata.forEach((single) => {
         if (single.disabled) {
           treeIds.push(single.id);
         }
@@ -253,7 +253,7 @@ export default {
       that.myTreedata.push({
         label: dataArr.label,
         id: dataArr.id,
-        disabled: dataArr.disabled
+        disabled: dataArr.disabled,
       });
       if (dataArr.children) {
         var child = dataArr.children;
@@ -277,18 +277,18 @@ export default {
     },
     // 删除资料分类
     deleteSourceNode() {
-      this.$confirm("确认删除该节点吗?", "提示", {
+      this.$confirm("确认删除该节点吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           console.log(this.editNodeId);
-          delByClass({ dataClassId: this.editNodeId }).then(response => {
+          delByClass({ dataClassId: this.editNodeId }).then((response) => {
             if (response.code == 200) {
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
               //刷新资料树
               this.initMethodsTree(this.whichTree);
@@ -329,8 +329,8 @@ export default {
       } else {
         this.sourceTreeOp = true;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -245,7 +245,7 @@ import {
   empowerDatabaseSpecial,
   saveBase,
   exportTable,
-  updateExamineStatus
+  updateExamineStatus,
 } from "@/api/authorityAudit/topicLibraryAudit";
 import { findByUserId } from "@/api/authorityAudit/userRoleAudit";
 export default {
@@ -253,8 +253,8 @@ export default {
 
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -264,11 +264,11 @@ export default {
       msgFormDialog: {},
       searchLibraryObj: {
         key: "typeName",
-        valueText: ""
+        valueText: "",
       },
       searchBaseLibraryObj: {
         key: "typeName",
-        valueText: ""
+        valueText: "",
       },
       baseTableLibraryData: [],
       tableLibraryData: [],
@@ -294,14 +294,14 @@ export default {
         require("@/assets/image/icon/h12.png"),
         require("@/assets/image/icon/h13.png"),
         require("@/assets/image/icon/h14.png"),
-        require("@/assets/image/icon/h15.png")
+        require("@/assets/image/icon/h15.png"),
       ],
       rules: {
         sdbName: [
-          { required: true, message: "请输入专题库名称", trigger: "blur" }
+          { required: true, message: "请输入专题库名称", trigger: "blur" },
         ],
-        uses: [{ required: true, message: "请输入用途", trigger: "blur" }]
-      }
+        uses: [{ required: true, message: "请输入用途", trigger: "blur" }],
+      },
     };
   },
   created() {
@@ -334,24 +334,26 @@ export default {
         this.$message({ type: "error", message: "文件不存在" });
         return;
       }
-      exportTable({ filePath: this.msgFormDialog.applyMaterial }).then(res => {
-        if (res.code) {
-          this.$message({ type: "warning", message: res.msg });
-        } else {
-          this.downloadfileCommon(res);
+      exportTable({ filePath: this.msgFormDialog.applyMaterial }).then(
+        (res) => {
+          if (res.code) {
+            this.$message({ type: "warning", message: res.msg });
+          } else {
+            this.downloadfileCommon(res);
+          }
         }
-      });
+      );
     },
     // 获取专题库基本信息|专题库授权
     initDetail() {
       // 基本信息
-      getById({ id: this.handleObj.id }).then(res => {
+      getById({ id: this.handleObj.id }).then((res) => {
         if (res.code == 200) {
           this.msgFormDialog = res.data;
         }
       });
       // 数据库授权
-      getAuthorityBySdbId({ sdbId: this.handleObj.id }).then(res => {
+      getAuthorityBySdbId({ sdbId: this.handleObj.id }).then((res) => {
         if (res.code == 200) {
           if (res.data && res.data.length > 0) {
             this.databaseList = res.data;
@@ -372,18 +374,18 @@ export default {
       });
     },
     trueDialog() {
-      saveBase(this.msgFormDialog).then(res => {
+      saveBase(this.msgFormDialog).then((res) => {
         if (res.code == 200) {
           this.$message({
             type: "success",
-            message: "保存成功"
+            message: "保存成功",
           });
           this.flagBase = true;
           this.activeName = "second";
         } else {
           this.$message({
             type: "error",
-            message: res.msg
+            message: res.msg,
           });
         }
       });
@@ -392,19 +394,19 @@ export default {
     cancleDialog() {
       let obj = {
         examineStatus: "3",
-        sdbId: this.handleObj.id
+        sdbId: this.handleObj.id,
       };
-      updateExamineStatus(obj).then(res => {
+      updateExamineStatus(obj).then((res) => {
         if (res.code == 200) {
           this.$emit("closedialog");
           this.$message({
             type: "success",
-            message: "拒绝成功"
+            message: "拒绝成功",
           });
         } else {
           this.$message({
             type: "error",
-            message: res.msg
+            message: res.msg,
           });
         }
       });
@@ -413,13 +415,13 @@ export default {
     searchLibraryFun() {
       let obj = {
         dataType: 1,
-        sdbId: this.handleObj.id
+        sdbId: this.handleObj.id,
       };
       if (this.searchLibraryObj.valueText) {
         obj[this.searchLibraryObj.key] = this.searchLibraryObj.valueText;
       }
       console.log(obj);
-      getSpecialDataList(obj).then(res => {
+      getSpecialDataList(obj).then((res) => {
         this.tableLibraryData = res.data;
       });
     },
@@ -427,7 +429,7 @@ export default {
     loadReadList() {
       let obj = {
         dataType: 2,
-        sdbId: this.handleObj.id
+        sdbId: this.handleObj.id,
       };
       if (this.searchBaseLibraryObj.valueText) {
         obj[
@@ -435,7 +437,7 @@ export default {
         ] = this.searchBaseLibraryObj.valueText;
       }
       console.log(obj);
-      getSpecialDataList(obj).then(res => {
+      getSpecialDataList(obj).then((res) => {
         this.baseTableLibraryData = res.data;
       });
     },
@@ -452,12 +454,12 @@ export default {
         });
       }); */
       let keyJson = ["createTable", "deleteTable", "tableDataAccess"];
-      listArry.forEach(element => {
+      listArry.forEach((element) => {
         let checkArry = element.checkList;
-        keyJson.forEach(kitem => {
+        keyJson.forEach((kitem) => {
           element[kitem] = 1;
         });
-        checkArry.forEach(item => {
+        checkArry.forEach((item) => {
           element[item] = 2;
         });
       });
@@ -469,7 +471,7 @@ export default {
       obj.simpleName = this.msgFormDialog.databaseSchema;
       obj.userId = this.msgFormDialog.userId;
       console.log(obj);
-      empowerDatabaseSpecial(obj).then(res => {
+      empowerDatabaseSpecial(obj).then((res) => {
         if (res.code == 200) {
           this.$message({ type: "success", message: "授权成功" });
           this.flagPower = true;
@@ -488,9 +490,9 @@ export default {
     updatePower(row, status) {
       row.examineStatus = status;
       if (status == "3") {
-        this.$prompt("请输入拒绝原因", "提示", {
+        this.$prompt("请输入拒绝原因", "温馨提示", {
           confirmButtonText: "确定",
-          cancelButtonText: "取消"
+          cancelButtonText: "取消",
         })
           .then(({ value }) => {
             row.failureReason = value;
@@ -503,7 +505,7 @@ export default {
     },
     editPowerOne(row) {
       console.log(row);
-      empowerDataOne(row).then(res => {
+      empowerDataOne(row).then((res) => {
         if (res.code == 200) {
           this.$message({ type: "success", message: "授权成功" });
           this.loadReadList();
@@ -517,12 +519,12 @@ export default {
       //判断是否勾选需要授权的资料
       if (this.multipleSelection.length > 0) {
         if (status == "3") {
-          this.$prompt("请输入拒绝原因", "提示", {
+          this.$prompt("请输入拒绝原因", "温馨提示", {
             confirmButtonText: "确定",
-            cancelButtonText: "取消"
+            cancelButtonText: "取消",
           })
             .then(({ value }) => {
-              this.multipleSelection.forEach(element => {
+              this.multipleSelection.forEach((element) => {
                 element.failureReason = value;
                 element.examineStatus = 3;
               });
@@ -530,7 +532,7 @@ export default {
             })
             .catch(() => {});
         } else {
-          this.multipleSelection.forEach(element => {
+          this.multipleSelection.forEach((element) => {
             element.examineStatus = 2;
           });
           this.editPowerBath();
@@ -542,7 +544,7 @@ export default {
     },
     editPowerBath() {
       console.log(this.multipleSelection);
-      empowerDataBatch(this.multipleSelection).then(res => {
+      empowerDataBatch(this.multipleSelection).then((res) => {
         if (res.code == 200) {
           this.$message({ type: "success", message: "授权成功" });
           this.loadReadList();
@@ -550,8 +552,8 @@ export default {
           this.$message({ type: "error", message: "授权失败" });
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
