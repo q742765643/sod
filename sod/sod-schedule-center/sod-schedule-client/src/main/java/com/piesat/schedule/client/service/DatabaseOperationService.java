@@ -101,7 +101,7 @@ public class DatabaseOperationService {
         Connection conn=null;
         try {
              conn= dynamicDataSource.getConnection();
-             String sql = "alter table " + tableName + " drop partition \"" + partName+"\" wait 120000";
+             String sql = "alter table " + tableName + " drop partition \""+ partName+"\" wait 120000";
              resultT.setSuccessMessage(sql);
              Statement getPartis = conn.createStatement();
              getPartis.execute(sql);
