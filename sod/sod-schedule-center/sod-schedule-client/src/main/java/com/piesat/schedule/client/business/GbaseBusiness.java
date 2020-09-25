@@ -272,6 +272,7 @@ public class GbaseBusiness extends BaseBusiness{
     public void recoverMeta(RecoverMetaVo recoverMetaVo, Map<Type, Set<String>> impInfo, MetaRecoverLogEntity recoverLogEntity, ResultT<String> resultT) {
         DataSourceContextHolder.setDataSource(recoverLogEntity.getParentId());
         try {
+            log.info("gbase 恢复进入");
             GbaseService gbaseService=SpringUtil.getBean(GbaseService.class);
             gbaseService.recoverMeta(recoverMetaVo,impInfo,recoverLogEntity,resultT);
         } catch (Exception e) {

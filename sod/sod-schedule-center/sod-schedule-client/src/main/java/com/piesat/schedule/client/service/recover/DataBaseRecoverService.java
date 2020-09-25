@@ -17,6 +17,7 @@ import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -37,12 +38,16 @@ import java.util.zip.ZipInputStream;
 public class DataBaseRecoverService {
     @Autowired
     private MetaRecoverLogService metaRecoverLogService;
+    @Value("${backup.temp-path}")
+    private String backupTempPath;
 
     public void recover(MetaRecoverLogEntity recoverLogEntity){
         ResultT<String> resultT=new ResultT();
         RecoverMetaVo recoverMetaVo=new RecoverMetaVo();
         recoverMetaVo.setStartTime(System.currentTimeMillis());
+        String copyPath="";
         try {
+            String unzipParent="";
             recoverLogEntity=this.insertMetaBackupLog(recoverLogEntity,resultT);
             if(!resultT.isSuccess()){
                 return;
@@ -52,7 +57,17 @@ public class DataBaseRecoverService {
             Map<Type, Set<String>> impInfo= this.toMap(recoverMetaVo,recoverLogEntity,resultT);
             File file=new File(recoverLogEntity.getStorageDirectory());
             String fileName=file.getName().substring(0,file.getName().lastIndexOf("."));
-            String unzipPath=file.getParentFile().getPath()+'/'+fileName;
+            if(backupTempPath.endsWith("/")){
+                unzipParent=backupTempPath+"recover/";
+            }else {
+                unzipParent=backupTempPath+"/recover/";
+            }
+            if(!new File(unzipParent).exists()){
+                new File(unzipParent).mkdirs();
+            }
+            copyPath=unzipParent+file.getName();
+            FileUtil.copyFile(recoverLogEntity.getStorageDirectory(),copyPath,resultT);
+            String unzipPath=unzipParent+fileName;
             recoverMetaVo.setUnzipPath(unzipPath);
             recoverMetaVo.setIndexPath(unzipPath+"/index.sql");
             resultT.setSuccessMessage("开始解压缩文件{}",recoverLogEntity.getStorageDirectory());
@@ -68,6 +83,7 @@ public class DataBaseRecoverService {
             log.error(OwnException.get(e));
         } finally {
             recoverMetaVo.setEndTime(System.currentTimeMillis());
+            FileUtil.delFile(new File(copyPath),resultT);
             FileUtil.delFile(new File(recoverMetaVo.getUnzipPath()),resultT);
             this.updateMetaRecoverLogEntity(recoverLogEntity,recoverMetaVo,resultT);
         }

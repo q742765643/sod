@@ -60,7 +60,7 @@ public class BackupController {
     @PostMapping
     public ResultT<String> add(@RequestBody BackUpDto backup)
     {
-        if(null==backup.getIsAlarm()){
+        if(null==backup.getIsAlarm()||"".equals(backup.getIsAlarm())){
             backup.setIsAlarm("1");
         }
         ResultT<String> resultT=new ResultT<>();
