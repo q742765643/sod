@@ -77,6 +77,7 @@ public class LoginController {
         ResultT<Map<String,Object>> resultT=new ResultT<>();
         Map<String,Object> map=new HashMap<>();
         try {
+            password = AESUtil.aesDecrypt(password).trim();
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
 
             String ycode= null;

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import CryptoJS from 'crypto-js'
 // 默认的 KEY 与 iv 如果没有给
-const KEY = CryptoJS.enc.Utf8.parse("1234567890123456")
+const KEY = CryptoJS.enc.Utf8.parse("1234567890123421")
 const IV = CryptoJS.enc.Utf8.parse('1234567890123456')
 
 /**
