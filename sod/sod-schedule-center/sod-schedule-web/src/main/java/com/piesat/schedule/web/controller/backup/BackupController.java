@@ -74,7 +74,7 @@ public class BackupController {
     @PutMapping
     public ResultT<String> edit(@RequestBody BackUpDto backup)
     {
-        if(null==backup.getIsAlarm()){
+        if(null==backup.getIsAlarm()||"".equals(backup.getIsAlarm())){
             backup.setIsAlarm("1");
         }
         ResultT<String> resultT=new ResultT<>();
