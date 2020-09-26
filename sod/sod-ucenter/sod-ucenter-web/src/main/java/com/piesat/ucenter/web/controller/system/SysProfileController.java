@@ -125,7 +125,7 @@ public class SysProfileController {
                 resultT.setErrorMessage("新密码不能与旧密码相同");
                 return resultT;
             }
-            Optional.ofNullable(userDto).filter(u -> !u.getUserType().equals("00")).ifPresent(u -> {
+            Optional.ofNullable(userDto).filter(u -> u.getUserType().equals("00")).ifPresent(u -> {
                 String newPasswordMd5 = new Md5Hash(newPassword, userName, 2).toString();
                 u.setPassword(newPasswordMd5);
             });
