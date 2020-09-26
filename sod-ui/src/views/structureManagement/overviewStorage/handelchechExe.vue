@@ -55,7 +55,7 @@ export default {
           if (res.code == 200) {
             this.$message({
               type: "success",
-              message: "执行成功"
+              message: "恢复任务提交成功"
             });
             this.$emit("handleMd5Cancel");
           }

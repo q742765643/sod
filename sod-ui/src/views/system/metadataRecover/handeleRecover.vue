@@ -124,7 +124,7 @@ export default {
         if (valid) {
           recover(this.msgFormDialog).then(response => {
             if (response.code === 200) {
-              this.msgSuccess("修改成功");
+              this.msgSuccess("元数据恢复任务提交成功");
               this.$emit("cancelHandle");
             } else {
               this.msgError(response.msg);

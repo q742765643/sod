@@ -1,5 +1,6 @@
 package com.piesat.schedule.web.controller.backup;
 
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.sso.client.annotation.Log;
@@ -116,6 +117,12 @@ public class BackupController {
     public void exportExcel(BackUpDto backUpDto){
          backupService.exportExcel(backUpDto);
 
+    }
+    @GetMapping(value = "/execute")
+    @RequiresPermissions("schedule:job:execute")
+    @ApiOperation(value = "立即执行接口", notes = "立即执行接口")
+    public ResultT<String> execute(String id){
+        return backupService.execute(id);
     }
 }
 
