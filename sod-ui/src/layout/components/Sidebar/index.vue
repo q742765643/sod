@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'has-logo':showLogo}">
+  <div :class="{ 'has-logo': showLogo }">
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
@@ -10,10 +10,11 @@
         :unique-opened="true"
         active-text-color="#fff"
         :collapse-transition="false"
-        :mode="aboutMenuPosition?'vertical':'horizontal'"
+        :mode="aboutMenuPosition ? 'vertical' : 'horizontal'"
       >
         <sidebar-item
           v-for="route in permission_routes"
+          v-show="route.name != 'portal后台管理'"
           :key="route.path"
           :item="route"
           :base-path="route.path"
