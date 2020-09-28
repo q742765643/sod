@@ -88,6 +88,7 @@ public class DatabaseSpecialEntity extends BaseEntity {
 
     /**
      * 使用状态
+     * 1未使用，2使用中，3废弃
      */
     @Column(name = "use_status")
     private String useStatus;

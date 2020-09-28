@@ -560,16 +560,18 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 LinkedHashMap<String, Object> gad = select.get(0);
                 String AREA_REGION_DESC = gad.get("AREA_REGION_DESC").toString();
                 String[] split = AREA_REGION_DESC.split(";");
-                int flagbegin = split[0].indexOf("[");
-                int flagend = split[0].indexOf("]");
-                int flagbegin1 = split[1].indexOf("[");
-                int flagend1 = split[1].indexOf("]");
-                String lat = split[0].substring(flagbegin + 1, flagend);
-                String lon = split[1].substring(flagbegin1 + 1, flagend1);
-                dataClassCoreInfo.setCWestbl(lon.split(",")[0]);
-                dataClassCoreInfo.setCEastbl(lon.split(",")[1]);
-                dataClassCoreInfo.setCSouthbl(lat.split(",")[1]);
-                dataClassCoreInfo.setCNorthbl(lat.split(",")[0]);
+                if(split.length>1){
+                    int flagbegin = split[0].indexOf("[");
+                    int flagend = split[0].indexOf("]");
+                    int flagbegin1 = split[1].indexOf("[");
+                    int flagend1 = split[1].indexOf("]");
+                    String lat = split[0].substring(flagbegin + 1, flagend);
+                    String lon = split[1].substring(flagbegin1 + 1, flagend1);
+                    dataClassCoreInfo.setCWestbl(lon.split(",")[0]);
+                    dataClassCoreInfo.setCEastbl(lon.split(",")[1]);
+                    dataClassCoreInfo.setCSouthbl(lat.split(",")[1]);
+                    dataClassCoreInfo.setCNorthbl(lat.split(",")[0]);
+                }
             }
         }
         dataClassCoreInfo.setCDatascal(dataClassCoreInfo.getCDatascal());

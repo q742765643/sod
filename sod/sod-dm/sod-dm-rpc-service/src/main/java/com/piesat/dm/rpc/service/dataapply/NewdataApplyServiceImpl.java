@@ -32,9 +32,11 @@ import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.dataapply.NewdataApplyMapper;
 import com.piesat.dm.rpc.mapper.dataapply.NewdataTableColumnMapper;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,7 +148,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         if(newdataApplyDto.getExamineStatus() != null){
             if(newdataApplyDto.getExamineStatus().intValue() == 2 || newdataApplyDto.getExamineStatus().intValue() == 3){
                 newdataApplyEntity.setExamineTime(new Date());
-                newdataApplyEntity.setExaminer("");
+                UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+                newdataApplyEntity.setExaminer(loginUser.getNickName());
             }
         }
         mybatisQueryMapper.updateNewdataApplyStatus(newdataApplyEntity);
