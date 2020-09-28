@@ -15,7 +15,7 @@
       <el-main class="elMain" id="right" v-show="otherMain">
         <div class="treeTitle">
           <i class="el-icon-s-home"></i>
-          {{tableName+'数据集信息'}}
+          {{ tableName + "数据集信息" }}
         </div>
         <div class="tableCon">
           <div class="tableTop">
@@ -43,7 +43,8 @@
                     type="primary"
                     icon="el-icon-search"
                     @click="searchFun('search')"
-                  >搜索</el-button>
+                    >搜索</el-button
+                  >
                 </el-form-item>
               </el-form>
             </div>
@@ -54,25 +55,29 @@
                 icon="el-icon-tickets"
                 @click="showMaterialList"
                 v-if="tableStructureManageContral"
-              >资料概览</el-button>
+                >资料概览</el-button
+              >
               <el-button
                 type="primary"
                 size="small"
                 icon="el-icon-plus"
                 @click="showMaterialSingle('新增资料')"
-              >新增资料</el-button>
+                >新增资料</el-button
+              >
               <el-button
                 type="primary"
                 size="small"
                 icon="el-icon-edit"
                 @click="showMaterialSingle('编辑资料')"
-              >编辑资料</el-button>
+                >编辑资料</el-button
+              >
               <el-button
                 type="danger"
                 size="small"
                 icon="el-icon-delete"
                 @click="deleteMaterialSingle"
-              >删除资料</el-button>
+                >删除资料</el-button
+              >
             </div>
           </div>
           <el-scrollbar wrap-class="scrollbar-wrapper">
@@ -84,21 +89,47 @@
               @current-change="handleCurrentChange"
               ref="singleTable"
             >
-              <el-table-column label="资料名称" prop="CLASS_NAME"></el-table-column>
-              <el-table-column label="四级编码" prop="D_DATA_ID" v-if="tableStructureManageContral"></el-table-column>
-              <el-table-column label="数据用途类型" prop="LOGIC_NAME"></el-table-column>
-              <el-table-column label="存储类型" prop="DICT_LABEL"></el-table-column>
-              <el-table-column label="数据库" prop="DATABASE_NAME_F"></el-table-column>
-              <el-table-column label="专题名" prop="DATABASE_NAME"></el-table-column>
+              <el-table-column
+                label="资料名称"
+                prop="CLASS_NAME"
+              ></el-table-column>
+              <el-table-column
+                label="四级编码"
+                prop="D_DATA_ID"
+                v-if="tableStructureManageContral"
+              ></el-table-column>
+              <el-table-column
+                label="数据用途类型"
+                prop="LOGIC_NAME"
+              ></el-table-column>
+              <el-table-column
+                label="存储类型"
+                prop="DICT_LABEL"
+              ></el-table-column>
+              <el-table-column
+                label="数据库"
+                prop="DATABASE_NAME_F"
+              ></el-table-column>
+              <el-table-column
+                label="专题名"
+                prop="DATABASE_NAME"
+              ></el-table-column>
               <el-table-column
                 label="描述代码"
                 prop="TABLE_DESC"
                 :show-overflow-tooltip="true"
-                v-if="this.treeRefreshData&&this.treeRefreshData.id&&this.treeRefreshData.id.substring(0,1) == 'F'"
+                v-if="
+                  this.treeRefreshData &&
+                  this.treeRefreshData.id &&
+                  this.treeRefreshData.id.substring(0, 1) == 'F'
+                "
               ></el-table-column>
               <el-table-column label="操作" width="320px">
                 <template slot-scope="scope">
-                  <el-button size="small" @click="showStructureManage(scope.row)">
+                  <el-button
+                    size="small"
+                    @click="showStructureManage(scope.row)"
+                  >
                     <i
                       class="btnRound blueRound"
                       v-if="scope.row.TABLECOUNT > scope.row.roundCount"
@@ -106,15 +137,23 @@
                     <i class="btnRound orangRound" v-else></i>
                     表结构管理
                   </el-button>
-                  <el-button size="small" @click="showSQLManage(scope.row)">SQL建表</el-button>
+                  <el-button size="small" @click="showSQLManage(scope.row)"
+                    >SQL建表</el-button
+                  >
                   <el-dropdown @command="handleCommand">
                     <el-button size="small">
                       复用表信息
                       <i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item :command="composeValue('copy',scope.row)">复制表信息</el-dropdown-item>
-                      <el-dropdown-item :command="composeValue('paste',scope.row)">粘贴表信息</el-dropdown-item>
+                      <el-dropdown-item
+                        :command="composeValue('copy', scope.row)"
+                        >复制表信息</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        :command="composeValue('paste', scope.row)"
+                        >粘贴表信息</el-dropdown-item
+                      >
                     </el-dropdown-menu>
                   </el-dropdown>
                 </template>
@@ -187,7 +226,11 @@
       width="80%"
       v-dialogDrag
     >
-      <handleSQL @cancelHandle="cancelHandle" v-if="handleSQLDialog" :handleSQLObj="handleSQLObj"></handleSQL>
+      <handleSQL
+        @cancelHandle="cancelHandle"
+        v-if="handleSQLDialog"
+        :handleSQLObj="handleSQLObj"
+      ></handleSQL>
     </el-dialog>
   </div>
 </template>
@@ -394,11 +437,15 @@ export default {
           message: "请选择一条数据",
         });
       } else {
-        this.$confirm("是否删除资料" + this.currentRow[0].CLASS_NAME, "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
+        this.$confirm(
+          "是否删除资料" + this.currentRow[0].CLASS_NAME,
+          "温馨提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
           .then(() => {
             delByClass({ dataClassId: this.currentRow[0].DATA_CLASS_ID }).then(
               (response) => {
@@ -474,7 +521,7 @@ export default {
         console.log(pasteObj);
         this.$confirm(
           "确认" + msg + "粘贴表结构(" + copyObj.CLASS_NAME + ")?",
-          "提示",
+          "温馨提示",
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",

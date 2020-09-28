@@ -229,7 +229,7 @@ import {
   update,
   demoDownload,
   exportData,
-  getBizDatabaseUser
+  getBizDatabaseUser,
 } from "@/api/authorityAudit/DBaccount";
 import { getUserByType } from "@/api/authorityAudit/cloudDBaudit";
 import { downloadTable } from "@/api/structureManagement/exportTable";
@@ -237,7 +237,7 @@ import {
   unstartnumValidation,
   englishAndNumValidation,
   ipUrlValidation,
-  ipUrlValidation2
+  ipUrlValidation2,
 } from "@/components/commonVaildate.js";
 
 var token = getToken();
@@ -246,8 +246,8 @@ export default {
 
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     const idValidate = (rule, value, callback) => {
@@ -256,7 +256,7 @@ export default {
       } else if (unstartnumValidation(value)) {
         callback(new Error("账户ID不能以数字开头"));
       } else if (this.handleObj.databaseUpId == undefined) {
-        ifUPExist({ databaseUPId: value }).then(res => {
+        ifUPExist({ databaseUPId: value }).then((res) => {
           if (res.ifExist == "YES") {
             console.log("重复");
             callback(new Error("数据库账号不能重复"));
@@ -284,9 +284,9 @@ export default {
         domains: [
           {
             value: "",
-            select: ""
-          }
-        ]
+            select: "",
+          },
+        ],
       },
       innerVisible: false,
       downUrl: "",
@@ -306,7 +306,7 @@ export default {
         userId: "", //用户ID
         databaseUpDesc: "", //UP账户描述
         applyMaterial: "",
-        pdfPath: ""
+        pdfPath: "",
       },
       palceholderIp: "指定IP样例:192.168.1.1",
       dataBaseBox: [],
@@ -319,15 +319,15 @@ export default {
             min: 1,
             max: 16,
             message: "账户ID长度不能超过16个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
 
         databaseUpIp: [
-          { required: true, message: "请输入IP地址", trigger: "blur" }
+          { required: true, message: "请输入IP地址", trigger: "blur" },
         ],
         applyDatabaseIdList: [
-          { required: true, message: "请选择数据库", trigger: "change" }
+          { required: true, message: "请选择数据库", trigger: "change" },
         ],
         databaseUpDesc: [
           { required: true, message: "请输入用途说明", trigger: "blur" },
@@ -335,17 +335,17 @@ export default {
             min: 1,
             max: 200,
             message: "用途说明长度不能超过50个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         userId: [
-          { required: true, message: "请选择关联用户", trigger: "change" }
+          { required: true, message: "请选择关联用户", trigger: "change" },
         ],
         applyMaterial: [
-          { required: true, message: "请选择申请材料", trigger: "blur" }
-        ]
+          { required: true, message: "请选择申请材料", trigger: "blur" },
+        ],
       },
-      dbFalg: true //是否显示穿梭框
+      dbFalg: true, //是否显示穿梭框
     };
   },
   async created() {
@@ -354,8 +354,8 @@ export default {
     if (this.handleObj.pageName == "业务用户审核") {
       getBizDatabaseUser({
         userId: this.handleObj.userName,
-        databaseUpId: this.handleObj.userName
-      }).then(res => {
+        databaseUpId: this.handleObj.userName,
+      }).then((res) => {
         if (res.data && this.handleObj.checked != "0") {
           res.data.applyDatabaseIdList = [];
           this.msgFormDialog = res.data;
@@ -402,14 +402,14 @@ export default {
   methods: {
     // 模板下载
     demoExport() {
-      demoDownload().then(res => {
+      demoDownload().then((res) => {
         this.downloadfileCommon(res);
       });
     },
     // 下载
     detailExport() {
       downloadTable({ filePath: this.msgFormDialog.applyMaterial }).then(
-        res => {
+        (res) => {
           this.downloadfileCommon(res);
         }
       );
@@ -421,7 +421,7 @@ export default {
       } else {
         this.$message({
           type: "error",
-          message: "当前没有可预览文件"
+          message: "当前没有可预览文件",
         });
       }
     },
@@ -435,7 +435,7 @@ export default {
     addDomain() {
       this.ipArryForm.domains.push({
         value: "",
-        key: Date.now()
+        key: Date.now(),
       });
     },
     ipcancelDialog(formName) {
@@ -446,7 +446,7 @@ export default {
       console.log(this.ipArryForm.domains);
       let ips = [];
       let arrys = this.ipArryForm.domains;
-      arrys.forEach(element => {
+      arrys.forEach((element) => {
         ips.push(element.value);
       });
       for (let i = 0; i < ips.length; i++) {
@@ -454,7 +454,7 @@ export default {
           if (!ipUrlValidation(ips[i]) && !ipUrlValidation2(ips[i])) {
             this.$message({
               type: "error",
-              message: "请输入正确IP地址"
+              message: "请输入正确IP地址",
             });
             return;
           }
@@ -502,7 +502,7 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`, {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           this.msgFormDialog.applyMaterial = "";
@@ -511,7 +511,7 @@ export default {
           console.log("已取消删除");
         });
     },
-    successUpload: function(response, file, fileList) {
+    successUpload: function (response, file, fileList) {
       this.msgFormDialog.pdfPath = response.data.pdfPath;
       this.msgFormDialog.applyMaterial = response.data.filePath;
     },
@@ -519,7 +519,7 @@ export default {
     // 关联用户
     userChange(selectUserId) {
       let obj = {};
-      obj = this.userBox.find(item => {
+      obj = this.userBox.find((item) => {
         //这里的userBox就是上面遍历的数据源
         return item.userName === selectUserId; //筛选出匹配数据
       });
@@ -528,7 +528,7 @@ export default {
     },
     // 获取数据库
     async getDBlist() {
-      await databaseList().then(response => {
+      await databaseList().then((response) => {
         var resdata = response.data;
         var dataList = [];
         for (var i = 0; i < resdata.length; i++) {
@@ -544,8 +544,8 @@ export default {
     // 获取所有用户信息
     async getUserAll() {
       await getUserByType({
-        userType: 11
-      }).then(res => {
+        userType: 11,
+      }).then((res) => {
         this.userBox = res.data;
       });
     },
@@ -563,7 +563,7 @@ export default {
         // this.isDisabled = true;
         this.isHide = true;
         this.isHideAdd = false;
-        await getById({ id: this.handleObj.id }).then(res => {
+        await getById({ id: this.handleObj.id }).then((res) => {
           if (res.code == 200) {
             let data = res.data;
             if (data.applyDatabaseId) {
@@ -595,11 +595,11 @@ export default {
         this.$message({
           message: "请上传申请材料",
           type: "error",
-          offset: 100
+          offset: 100,
         });
         return;
       } else {
-        this.$refs[formName].validate(valid => {
+        this.$refs[formName].validate((valid) => {
           if (valid) {
             if (this.isHideAdd) {
               this.trueAdd();
@@ -618,11 +618,11 @@ export default {
       }
     },
     trueAdd() {
-      this.$refs["ruleForm"].validate(valid => {
+      this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           let list = [];
-          this.dataBaseBox.forEach(element => {
-            this.msgFormDialog.applyDatabaseIdList.forEach(item => {
+          this.dataBaseBox.forEach((element) => {
+            this.msgFormDialog.applyDatabaseIdList.forEach((item) => {
               if (element.key == item) {
                 list.push(item);
               }
@@ -631,32 +631,32 @@ export default {
           this.msgFormDialog.applyDatabaseId = list.join(",");
           // 新增
           if (this.handleObj.pageName) {
-            addBzi(this.msgFormDialog).then(res => {
+            addBzi(this.msgFormDialog).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "增加成功"
+                  message: "增加成功",
                 });
                 this.$emit("handleDialogClose", true);
               } else {
                 this.$message({
                   type: "error",
-                  message: res.msg
+                  message: res.msg,
                 });
               }
             });
           } else {
-            addTable(this.msgFormDialog).then(res => {
+            addTable(this.msgFormDialog).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "增加成功"
+                  message: "增加成功",
                 });
                 this.$emit("handleDialogClose");
               } else {
                 this.$message({
                   type: "error",
-                  message: res.msg
+                  message: res.msg,
                 });
               }
             });
@@ -674,16 +674,16 @@ export default {
         this.$emit("handleDialogClose", false);
       } else {
         // 审核不通过
-        this.$refs[formName].validate(valid => {
+        this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$prompt("请输入拒绝原因", "提示", {
-              inputValidator: value => {
+            this.$prompt("请输入拒绝原因", "温馨提示", {
+              inputValidator: (value) => {
                 if (value.trim().length < 1 || value.trim().length > 15) {
                   return "拒绝原因长度限制1-15个字符";
                 }
               },
               confirmButtonText: "确定",
-              cancelButtonText: "取消"
+              cancelButtonText: "取消",
             })
               .then(({ value }) => {
                 this.auditMethods(value);
@@ -705,8 +705,8 @@ export default {
       this.msgFormDialog.failureReason = value;
 
       let list = [];
-      this.dataBaseBox.forEach(element => {
-        this.msgFormDialog.applyDatabaseIdList.forEach(item => {
+      this.dataBaseBox.forEach((element) => {
+        this.msgFormDialog.applyDatabaseIdList.forEach((item) => {
           if (element.key == item) {
             list.push(item);
           }
@@ -714,23 +714,23 @@ export default {
       });
       this.msgFormDialog.applyDatabaseId = list.join(",");
       // 审核
-      update(this.msgFormDialog).then(res => {
+      update(this.msgFormDialog).then((res) => {
         if (res.code == 200) {
           this.$message({
             type: "success",
-            message: "操作成功"
+            message: "操作成功",
           });
           this.$emit("handleDialogClose");
         } else {
           this.$message({
             type: "error",
-            message: res.msg
+            message: res.msg,
           });
         }
       });
       this.$emit("handleDialogClose");
-    }
-  }
+    },
+  },
 };
 </script>
 

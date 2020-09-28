@@ -21,4 +21,5 @@ public interface BackupService {
     public List<Map<String,Object>> findDatabase();
     public List<Map<String,Object>> findDataClassId(String dataBaseId,String dataClassId);
     public void exportExcel(BackUpDto backUpDto);
+    public ResultT<String> execute(String id);
 }

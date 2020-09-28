@@ -221,7 +221,7 @@ export default {
       } else {
         this.$confirm(
           "是否删除索引名称为" + this.indexItemSel[0].indexName + "的数据?",
-          "提示",
+          "温馨提示",
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",

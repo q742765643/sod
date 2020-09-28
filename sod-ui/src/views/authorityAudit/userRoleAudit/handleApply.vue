@@ -241,7 +241,7 @@ export default {
         this.msgError("请选择一条数据");
         return;
       } else {
-        this.$prompt("请输入拒绝原因", "提示", {
+        this.$prompt("请输入拒绝原因", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           inputValidator: (value) => {
@@ -290,7 +290,7 @@ export default {
             this.getList();
           } else {
             this.loading = false;
-            this.$alert(res.msg, "提示", {
+            this.$alert(res.msg, "温馨提示", {
               dangerouslyUseHTMLString: true,
             });
             this.getList();
@@ -307,7 +307,7 @@ export default {
             this.getList();
           } else {
             this.loading = false;
-            this.$alert(res.msg, "提示", {
+            this.$alert(res.msg, "温馨提示", {
               dangerouslyUseHTMLString: true,
             });
             this.getList();
@@ -322,7 +322,7 @@ export default {
       let status;
       if (this.stepNum == 0 && handleType == 2) {
         status = 2;
-        this.$prompt("请输入拒绝原因", "提示", {
+        this.$prompt("请输入拒绝原因", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           inputValidator: (value) => {

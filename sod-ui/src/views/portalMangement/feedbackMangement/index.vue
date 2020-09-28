@@ -164,7 +164,7 @@ export default {
       } else {
         this.$confirm(
           "确认要删除" + this.multipleSelection[0].title + "吗?",
-          "提示",
+          "温馨提示",
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",

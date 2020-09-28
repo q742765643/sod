@@ -609,4 +609,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
        return this.dataAuthorityApplyMapper.toDto(dalList);
     }
 
+    @Override
+    public void deleteByDataClassId(String dataclassId) {
+        this.dataAuthorityRecordDao.deleteByDataClassId(dataclassId);
+    }
+
 }

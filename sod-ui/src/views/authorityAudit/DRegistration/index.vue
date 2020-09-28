@@ -369,7 +369,7 @@ import {
   getDataClassify,
   getDataTable,
   databaseGet,
-  deleteById
+  deleteById,
 } from "@/api/authorityAudit/DRegistration/index";
 export default {
   components: {
@@ -380,7 +380,7 @@ export default {
     handleBackUp,
     handleSync,
     reviewDataRegister,
-    revieStepRegister
+    revieStepRegister,
   },
   data() {
     return {
@@ -397,9 +397,9 @@ export default {
             : this.$route.params.status,
         params: {
           orderBy: {
-            CREATE_TIME: "desc"
-          }
-        }
+            CREATE_TIME: "desc",
+          },
+        },
       }, //查询
       dbtypeselect: [], //数据分类下拉框
       tableData: [], //表格
@@ -421,13 +421,13 @@ export default {
       /* 数据注册审核 */
       handleReDialog: false,
       currentRow: {}, //当前行
-      currentRows: null
+      currentRows: null,
     };
   },
   created() {
     console.log(this.$route.params.status);
     // 查询数据分类
-    getDataClassify().then(response => {
+    getDataClassify().then((response) => {
       this.dbtypeselect = response.data;
     });
     this.getList();
@@ -461,7 +461,7 @@ export default {
     getList() {
       this.loading = true;
       console.log(this.queryParams);
-      getDataTable(this.queryParams).then(response => {
+      getDataTable(this.queryParams).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -480,7 +480,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         DDataId: "",
-        examineStatus: 1
+        examineStatus: 1,
       };
       this.getList();
     },
@@ -570,17 +570,17 @@ export default {
     },
     // 删除
     deleteList(row) {
-      this.$confirm("是否删除" + row.TYPE_NAME + "?", "提示", {
+      this.$confirm("是否删除" + row.TYPE_NAME + "?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          deleteById({ id: row.ID }).then(response => {
+          deleteById({ id: row.ID }).then((response) => {
             if (response.code == 200) {
               this.$message({
                 message: "删除成功",
-                type: "success"
+                type: "success",
               });
               this.handleQuery();
             }
@@ -599,15 +599,15 @@ export default {
         this.handleMsgObj.applyId = this.currentRow.ID;
         // 根据专题库id查寻
         await databaseGet({ id: this.currentRow.DATABASE_ID }).then(
-          response => {
+          (response) => {
             this.handleMsgObj.dataLogicList = [
               {
                 logicFlag: this.currentRow.LOGIC_FLAG, //数据用途
                 logicName: this.currentRow.LOGIC_NAME, //数据用途
                 databaseId: this.currentRow.DATABASE_ID, //专题库id
                 databaseName: response.data.databaseName, //专题库名称
-                databasePName: response.data.databaseDefine.databaseName //数据库名称
-              }
+                databasePName: response.data.databaseDefine.databaseName, //数据库名称
+              },
             ];
             this.reviewStep = true;
           }
@@ -635,8 +635,8 @@ export default {
       this.structureManageVisible = false;
       this.handleSyncDialog = false;
       this.getList();
-    }
-  }
+    },
+  },
 };
 </script>
 

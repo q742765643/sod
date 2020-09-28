@@ -30,12 +30,7 @@
         <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          size="small"
-          type="primary"
-          @click="showDialog('export')"
-          icon="el-icon-upload2"
-        >批量导入</el-button>
+        <el-button size="small" type="primary" @click="handleExport" icon="el-icon-upload2">批量导入</el-button>
       </el-col>
     </el-row>
     <!-- 数据展示列表 -->
@@ -62,7 +57,7 @@
       <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button icon="el-icon-edit" size="mini" type="text" @click="showDialog(scope.row)">编辑</el-button>
-          <el-button icon="el-icon-tickets" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
+          <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -90,15 +85,30 @@
         ref="myDialog"
       ></urlEdit>
     </el-dialog>
+
+    <!-- 批量导入弹窗-->
+    <el-dialog
+      width="600px"
+      :close-on-click-modal="false"
+      title="批量导入"
+      :visible.sync="exportFormDialog"
+      v-dialogDrag
+      top="5vh"
+    >
+      <urlExport v-if="exportFormDialog" @cancelDialog="cancelDialog" ref="myDialog"></urlExport>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { queryDataPage, delById } from "@/api/portalMangement/urlManagement";
 import urlEdit from "@/views/portalMangement/urlManagement/urlEdit";
+import urlExport from "@/views/portalMangement/urlManagement/urlExport";
+
 export default {
   components: {
     urlEdit,
+    urlExport,
   },
   data() {
     return {
@@ -120,6 +130,7 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
+      exportFormDialog: false,
     };
   },
   /** 方法调用 */
@@ -158,8 +169,12 @@ export default {
       }
       this.msgFormDialog = true;
     },
+
+    handleExport() {
+      this.exportFormDialog = true;
+    },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.apiName + "吗?", "提示", {
+      this.$confirm("确认要删除" + row.apiName + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -218,6 +233,7 @@ export default {
     },
     cancelDialog() {
       this.msgFormDialog = false;
+      this.exportFormDialog = false;
       if (this.dialogTitle.indexOf("新增") != -1) {
         this.handleQuery();
       } else {

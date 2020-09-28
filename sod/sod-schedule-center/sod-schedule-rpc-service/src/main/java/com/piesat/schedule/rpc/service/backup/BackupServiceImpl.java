@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
@@ -18,19 +19,26 @@ import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
+import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
+import com.piesat.schedule.rpc.api.backup.BackupLogService;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
+import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
+import com.piesat.schedule.rpc.rule.ExtractMessage;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.service.DiSendService;
+import com.piesat.schedule.rpc.vo.BackupVo;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
+import com.piesat.schedule.rpc.vo.ReplaceVo;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -45,6 +53,7 @@ import java.util.*;
  * @create: 2019-12-23 09:17
  **/
 @Service
+@Slf4j
 public class BackupServiceImpl extends BaseService<BackupEntity> implements BackupService {
     @Autowired
     private BackupDao backupDao;
@@ -68,6 +77,9 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     private DataLogicService dataLogicService;
     @GrpcHthtClient
     private StorageConfigurationService storageConfigurationService;
+    @Autowired
+    private BackupLogService backupLogService;
+    private static final String BACKUP_TIME="backupTime";
 
     @Override
     public BaseDao<BackupEntity> getBaseDao() {
@@ -293,6 +305,90 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         List<BackupEntity> entities = this.selectBackupList(backUpDto);
         ExcelUtil<BackupEntity> util = new ExcelUtil(BackupEntity.class);
         util.exportExcel(entities, "数据备份配置");
+    }
+
+    public ResultT<String> execute(String id){
+        ResultT resultT=new ResultT();
+        BackupEntity backupEntity=this.getById(id);
+        BackupVo backupVo = this.calculateBackupTime(backupEntity,System.currentTimeMillis(), resultT);
+        BackupLogDto backupLogDto=backupLogService.selectBackupLoByJobId(id);
+        if(null!=backupVo&&null!=backupLogDto){
+            if(backupVo.getBackupTime()==backupLogDto.getBackupTime()
+            &&"1".equals(backupLogDto.getHandleCode())){
+                resultT.setMessage("已有备份文件,请删除日志重新提交任务!");
+                return resultT;
+            }
+        }
+        try {
+            jobInfoService.execute(id);
+        } catch (Exception e) {
+            resultT.setErrorMessage("立即执行失败");
+        }
+        return resultT;
+    }
+    public BackupVo calculateBackupTime(BackupEntity backupEntity, long backupTime, ResultT<String> resultT) {
+        BackupVo backupVo = new BackupVo();
+        ReplaceVo replaceVo = new ReplaceVo();
+        replaceVo.setMsg(backupEntity.getConditions());
+        replaceVo.setDatabaseId(backupEntity.getParentId());
+        replaceVo.setDataClassId(backupEntity.getDataClassId());
+        replaceVo.setDdataId(backupEntity.getDdataId());
+        replaceVo.setBackupTime(backupTime);
+        ExtractMessage.getIndexOf(replaceVo, resultT);
+        Map<String, Long> map = this.calculateMistiming(replaceVo.getTimeSet(), backupTime, resultT);
+        backupVo.setBackupTime(map.get(BACKUP_TIME));
+        backupVo.setMistiming(map.get("mistiming"));
+        backupVo.setConditions(replaceVo.getMsg());
+        replaceVo.setMsg(backupEntity.getSecondConditions());
+        ExtractMessage.getIndexOf(replaceVo, resultT);
+        if (backupVo.getMistiming() > 0) {
+            Map<String, Long> mapHis = this.calculateMistiming(replaceVo.getTimeSet(), backupTime, resultT);
+            backupVo.setBackupTimeHis(mapHis.get(BACKUP_TIME));
+            backupVo.setSecondConditions(replaceVo.getMsg());
+        }
+
+
+        return backupVo;
+    }
+    public Map<String, Long> calculateMistiming(Set<Long> timeSet, long deafulBackupTime, ResultT<String> resultT) {
+        Map<String, Long> map = null;
+        try {
+            map = new HashMap<>();
+            long mistiming = 0;
+            long backupTime = 0;
+            if (timeSet.size() == 2) {
+                List<Long> timeList = new ArrayList<>();
+                for (long time : timeSet) {
+                    timeList.add(time);
+                }
+                long time1 = timeList.get(0);
+                long time2 = timeList.get(1);
+                if (time1 < time2) {
+                    backupTime = time1;
+                } else {
+                    backupTime = time2;
+                }
+                mistiming = Math.abs(time2 - time1);
+
+
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date(deafulBackupTime));
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                backupTime = calendar.getTime().getTime();
+            }
+            map.put("mistiming", mistiming);
+            map.put(BACKUP_TIME, backupTime);
+        } catch (Exception e) {
+            resultT.setErrorMessage("计算历史时次出错{}", OwnException.get(e));
+            log.error("计算历史时次出错{}",OwnException.get(e));
+            log.error(OwnException.get(e));
+
+        }
+        return map;
+
     }
 }
 

@@ -341,9 +341,11 @@ public class GbaseService {
             sql.append("@").append(serverIp).append(path).append("'");
             sql.append(" into table ").append(tableName);
             sql.append(" NULL_VALUE '\\\\N' DATETIME FORMAT '%Y-%m-%d %H:%i:%s.%f'   FIELDS TERMINATED BY ',' ");
+            log.info("开始执行gbase恢复:{}",sql);
             //gbaseOperationMapper.createGbaseUser(sql.toString());
             resultT.setSuccessMessage("恢复语句为:"+sql.toString());
             statement.execute(sql.toString());
+            log.info("开始执行gbase结束:{}","=======================");
         } catch (Exception e) {
             resultT.setErrorMessage("表{}数据恢复失败",tableName);
            log.error(OwnException.get(e));

@@ -1,7 +1,12 @@
 import request from '@/utils/request'
+import {
+  Encrypt
+} from '@/utils/htencrypt'
 const baseUrl = process.env.VUE_APP_UCENTER_API
 // 登录方法
 export function login(username, password, code, uuid) {
+  password = Encrypt(password)
+
   const data = {
     username,
     password,

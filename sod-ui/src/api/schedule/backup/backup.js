@@ -86,7 +86,7 @@ export function stopBackup(id) {
 }
 export function executeBackup(id) {
   return request({
-    url: baseUrl + '/schedule/job/execute',
+    url: baseUrl + '/schedule/backup/execute',
     method: 'get',
     params: {
       "id": id

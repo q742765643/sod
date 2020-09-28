@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 虚谷数据库管理
@@ -125,7 +126,7 @@ public class Xugu extends AbstractDatabaseDcl {
         String lockUserSql = TemplateUtil.rendering(LOCK_USER_SQL, model);
         try {
             stmt = connection.createStatement();
-            rs = stmt.executeQuery(lockUserSql);
+            stmt.execute(lockUserSql);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("禁用用户(" + identifier + ")失败！errInfo：" + e.getMessage());
@@ -147,16 +148,16 @@ public class Xugu extends AbstractDatabaseDcl {
         String permission = select ? SELECT_GRANT : ALL_GRANT;
         String sql = "GRANT " + permission + " ON " + resource + "." + tableName + " To " + identifier;
         stmt = connection.createStatement();
-        rs = stmt.executeQuery(sql);
+        stmt.execute(sql);
     }
 
     @Override
     public void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception {
-        String permission = ArrayUtils.toString(permissions, ",");
+        String permission = Arrays.stream(permissions).collect(Collectors.joining(","));
         String sql = "REVOKE " + permission + " ON " + resource + "." + tableName + " FROM " + identifier;
         try {
-            ps = connection.prepareStatement(sql);
-            ps.executeUpdate();
+            stmt = connection.createStatement();
+            stmt.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("撤销数据库授权失败！errInfo：" + e.getMessage());
@@ -229,8 +230,8 @@ public class Xugu extends AbstractDatabaseDcl {
             }
             if (num > 0) {
                 sql = "DROP SCHEMA " + schemaName;
-                ps = connection.prepareStatement(sql);
-                ps.executeUpdate();
+                stmt = connection.createStatement();
+                stmt.execute(sql);
             }
         } catch (SQLException e) {
             e.printStackTrace();

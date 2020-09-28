@@ -54,7 +54,7 @@ import {
   gridareaList,
   findByDataServiceId,
   allArea,
-  gridareaDel
+  gridareaDel,
 } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
   name: "gridEreaDefine",
@@ -65,28 +65,28 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        dataServiceId: this.rowData.DATA_CLASS_ID
+        dataServiceId: this.rowData.DATA_CLASS_ID,
       },
       total: 0,
       tableData: [],
       optionsArea: [],
       isEdit: false,
       multipleSelection: [],
-      selectArea: ""
+      selectArea: "",
     };
   },
 
   methods: {
     searchFun() {
       console.log(this.queryParams);
-      gridareaList(this.queryParams).then(res => {
+      gridareaList(this.queryParams).then((res) => {
         if (res.code == 200) {
           this.tableData = res.data.pageData;
           this.total = res.data.totalCount;
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -95,7 +95,7 @@ export default {
       this.multipleSelection = val;
     },
     getoptionsArea() {
-      allArea().then(response => {
+      allArea().then((response) => {
         this.optionsArea = response.data;
       });
     },
@@ -109,7 +109,7 @@ export default {
       if (!this.selectArea) {
         this.$message({
           message: "请选择一条数据新增",
-          type: "error"
+          type: "error",
         });
         return;
       }
@@ -120,17 +120,17 @@ export default {
       obj.areaRegionDesc = this.selectArea.split("&")[1];
       obj.dataServiceId = this.rowData.DATA_CLASS_ID;
       console.log(obj);
-      gridareaSave(obj).then(res => {
+      gridareaSave(obj).then((res) => {
         if (res.code == 200) {
           this.searchFun();
           this.$message({
             type: "success",
-            message: "新增成功"
+            message: "新增成功",
           });
         } else {
           this.$message({
             message: res.msg,
-            type: "error"
+            type: "error",
           });
         }
       });
@@ -138,34 +138,34 @@ export default {
     deleteArea() {
       let ids = [];
       let areaIds = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         ids.push(element.id);
         areaIds.push(element.areaId);
       });
       if (ids.length == 0) {
         this.$message({
           type: "error",
-          message: "请选择一条数据"
+          message: "请选择一条数据",
         });
         return;
       }
-      this.$confirm("确认删除" + areaIds.join(",") + "吗?", "提示", {
+      this.$confirm("确认删除" + areaIds.join(",") + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
-          gridareaDel({ ids: ids.join(",") }).then(res => {
+          gridareaDel({ ids: ids.join(",") }).then((res) => {
             if (res.code == 200) {
               this.searchFun();
               this.$message({
                 type: "success",
-                message: "删除成功"
+                message: "删除成功",
               });
             } else {
               this.$message({
                 message: res.msg,
-                type: "error"
+                type: "error",
               });
             }
           });
@@ -175,9 +175,9 @@ export default {
     forParent() {
       this.searchFun();
       this.getoptionsArea();
-    }
+    },
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 

@@ -3,12 +3,7 @@
     <!-- 业务动态管理查询菜单 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item label="标题:" prop="title">
-        <el-input
-          clearable
-          size="small"
-          v-model.trim="queryParams.title"
-          placeholder="请输入查询标题"
-        />
+        <el-input clearable size="small" v-model.trim="queryParams.title" placeholder="请输入查询标题" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -73,7 +68,6 @@
         ref="myDialog"
       ></dynEdit>
     </el-dialog>
-
   </div>
 </template>
 
@@ -81,7 +75,7 @@
 import {
   queryDataPage,
   getById,
-  delSyncManage
+  delSyncManage,
 } from "@/api/portalMangement/dynMangement";
 import dynEdit from "@/views/portalMangement/dynMangement/dynEdit";
 export default {
@@ -95,7 +89,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        title: ""
+        title: "",
       },
       tableData: [],
       total: 0,
@@ -105,7 +99,7 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
-    }
+    };
   },
   /** 方法调用 */
   created() {
@@ -126,7 +120,7 @@ export default {
         this.dialogTitle = "新增";
         this.handleObj = {};
         this.msgFormDialog = true;
-      }else{
+      } else {
         if (this.multipleSelection.length != 1) {
           this.$message({
             type: "error",
@@ -151,7 +145,7 @@ export default {
       } else {
         this.$confirm(
           "确认要删除" + this.multipleSelection[0].title + "吗?",
-          "提示",
+          "温馨提示",
           {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
@@ -159,24 +153,25 @@ export default {
           }
         )
           .then(() => {
-            delSyncManage({ id: this.multipleSelection[0].id }).then((response) => {
-              if (response.code == 200) {
-                this.$message({
-                  type: "success",
-                  message: "删除成功",
-                });
-                this.handleQuery();
-              } else {
-                this.$message({
-                  type: "error",
-                  message: "删除失败",
-                });
+            delSyncManage({ id: this.multipleSelection[0].id }).then(
+              (response) => {
+                if (response.code == 200) {
+                  this.$message({
+                    type: "success",
+                    message: "删除成功",
+                  });
+                  this.handleQuery();
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: "删除失败",
+                  });
+                }
               }
-            });
+            );
           })
           .catch(() => {});
       }
-
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -212,17 +207,16 @@ export default {
         });
       }
     },
-    cancelDialog(){
+    cancelDialog() {
       this.msgFormDialog = false;
       if (this.dialogTitle.indexOf("新增") != -1) {
         this.handleQuery();
       } else {
         this.getList();
       }
-    }
-  }
-}
-
+    },
+  },
+};
 </script>
 
 

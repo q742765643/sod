@@ -199,7 +199,7 @@ export default {
       } else {
         this.axios
           .get(interfaceObj.SpecialDB_validNameOrCode + "name=" + value)
-          .then(res => {
+          .then((res) => {
             if (res.data && res.data.returnCode == 0) {
               callback();
             } else {
@@ -217,7 +217,7 @@ export default {
       } else {
         this.axios
           .get(interfaceObj.SpecialDB_validNameOrCode + "code=" + value)
-          .then(res => {
+          .then((res) => {
             if (res.data && res.data.returnCode == 0) {
               callback();
             } else {
@@ -240,7 +240,7 @@ export default {
         database: [],
         dbSelect: [],
         filepath: "",
-        tableData: []
+        tableData: [],
       },
       filelist: [],
       sdbSelect: [],
@@ -262,65 +262,65 @@ export default {
         [require("@/assets/image/icon/h12.png"), 1],
         [require("@/assets/image/icon/h13.png"), 1],
         [require("@/assets/image/icon/h14.png"), 1],
-        [require("@/assets/image/icon/h15.png"), 1]
+        [require("@/assets/image/icon/h15.png"), 1],
       ],
       treenode: [],
       tableData: [],
       defaultProps: {
         children: "children",
-        label: "name"
+        label: "name",
       },
       tableSelsectData: [],
       rules: {
         name: [
           { min: 1, max: 20, message: "不超过20个字符", trigger: "blur" },
-          { required: true, validator: nameValidate, trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" },
         ],
         pname: [
           {
             min: 1,
             max: 6,
             message: "输入长度不能大于6个字符",
-            trigger: "blur"
+            trigger: "blur",
           },
-          { required: true, validator: pnameValidate, trigger: "blur" }
+          { required: true, validator: pnameValidate, trigger: "blur" },
         ],
         dbSelect: [
           {
             type: "array",
             required: true,
             message: "请选择数据库",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         use: [
           {
             required: true,
             message: "请填写专题库用途",
-            trigger: "blur"
+            trigger: "blur",
           },
           {
             min: 0,
             max: 100,
             message: "输入长度不能大于100个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         imageURL: [
           {
             required: true,
             message: "请选择图标",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
         filepath: [
           {
             required: true,
             message: "请上传文件",
-            trigger: "change"
-          }
-        ]
-      }
+            trigger: "change",
+          },
+        ],
+      },
     };
   },
   created() {
@@ -341,7 +341,7 @@ export default {
       this.popoverVisibale = false;
       this.ruleForm.imageURL = imageurl;
     },
-    successUpload: function(response, file, fileList) {
+    successUpload: function (response, file, fileList) {
       this.ruleForm.filepath = file.raw;
     },
     backStep() {
@@ -351,7 +351,7 @@ export default {
     },
     nextStep() {
       if (this.stepNum == 0) {
-        this.$refs["ruleForm"].validate(valid => {
+        this.$refs["ruleForm"].validate((valid) => {
           if (valid) {
             //alert("submit!");
             this.stepNum = this.stepNum + 1;
@@ -367,7 +367,7 @@ export default {
           this.ruleForm.tableData.push({
             DATA_CLASS_ID: item.id,
             LOGIC_ID: item.physicalDB.split(",")[0],
-            APPLY_AUTHORITY: "1"
+            APPLY_AUTHORITY: "1",
           });
         });
         this.stepNum = this.stepNum + 1;
@@ -375,7 +375,7 @@ export default {
       //this.stepNum = this.stepNum + 1;
     },
     getDatabase() {
-      this.axios.get(interfaceObj.SpecialDB_getPhysicDB).then(res => {
+      this.axios.get(interfaceObj.SpecialDB_getPhysicDB).then((res) => {
         //console.log(res);
         this.ruleForm.database = res.data.DS;
         console.log(this.ruleForm.database);
@@ -383,7 +383,7 @@ export default {
     },
     getDataByLogic() {
       let checkedNodes = this.$refs.treeZL.getCheckedNodes(true);
-      checkedNodes.forEach(element => {
+      checkedNodes.forEach((element) => {
         this.currentNodeArry.push(element.uid);
       });
       var getid = "";
@@ -395,7 +395,7 @@ export default {
       //console.log(getid);
       this.axios
         .get(interfaceObj.SpecialDB_getDataByLogics + getid)
-        .then(res => {
+        .then((res) => {
           let allData = res.data.data;
           let etreearray = [];
           let etreeobj = {};
@@ -439,16 +439,16 @@ export default {
     },
     deleteMuch() {
       if (this.tableSelsectData.length > 0) {
-        this.$confirm("确定选中数据都删除？", "提示", {
+        this.$confirm("确定选中数据都删除？", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning"
+          type: "warning",
         }).then(() => {
           this.tableSelsectData.forEach((value, index, array) => {
             this.$refs.treeZL.setChecked(value.uid, false);
           });
           this.tableData = this.tableData.filter(
-            item => !this.tableSelsectData.includes(item)
+            (item) => !this.tableSelsectData.includes(item)
           );
           console.log(this.tableData);
         });
@@ -461,10 +461,10 @@ export default {
       let url = interfaceObj.demoWordUrl + "专题库申请表模板.docx";
       this.axios
         .get(interfaceObj.download + "?filepath=" + url)
-        .then(data => {
+        .then((data) => {
           testExport(interfaceObj.download + "?filepath=" + url);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           testExport(interfaceObj.download + "?filepath=" + url);
         });
     },
@@ -482,8 +482,8 @@ export default {
       var getdid = [];
       debugger;
 
-      this.ruleForm.database.forEach(p => {
-        this.ruleForm.dbSelect.forEach(c => {
+      this.ruleForm.database.forEach((p) => {
+        this.ruleForm.dbSelect.forEach((c) => {
           if (p.name == c) {
             getdid.push(p.id);
           }
@@ -495,20 +495,20 @@ export default {
       const uid = this.$store.getters.getLoginUser.userId;
       this.axios
         .post(interfaceObj.SpecialDB_addSpecialDBApply + uid, formData)
-        .then(res => {
+        .then((res) => {
           if (res.data.returnCode == 0) {
             this.$message({
               showClose: true,
               message: "保存成功，请等待管理员审核",
-              type: "success"
+              type: "success",
             });
             this.$emit("closedialog");
           } else {
             this.$message.error("申请失败，请联管理员");
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

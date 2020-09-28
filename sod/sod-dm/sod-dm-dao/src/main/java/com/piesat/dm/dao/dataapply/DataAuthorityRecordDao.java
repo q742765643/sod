@@ -23,4 +23,6 @@ public interface DataAuthorityRecordDao extends BaseDao<DataAuthorityRecordEntit
 
     @Query(value="select distinct applyId from DataAuthorityRecordEntity")
     List<String> findAllApplyId();
+
+    void deleteByDataClassId(String dataclassId);
 }

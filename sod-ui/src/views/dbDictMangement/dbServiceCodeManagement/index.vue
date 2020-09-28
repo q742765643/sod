@@ -245,7 +245,7 @@ export default {
     },
     /**删除数据*/
     deleteSingleCode(row) {
-      this.$confirm("确定要删除吗?", "提示", {
+      this.$confirm("确定要删除吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -268,7 +268,7 @@ export default {
         this.$message.error("请选择需要删除的记录！");
         return;
       } else {
-        this.$confirm("确定要删除选中项吗?", "提示", {
+        this.$confirm("确定要删除选中项吗?", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",

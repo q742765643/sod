@@ -225,65 +225,21 @@
             >
               <el-table-column type="selection" width="50"></el-table-column>
               <el-table-column type="index" label="序号" width="55"></el-table-column>
-              <el-table-column prop="codeLang" label="编程语言" width="150">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.codeLang" size="small">
-                    <el-option value="Java" label="Java"></el-option>
-                    <el-option value="Python" label="Python"></el-option>
-                    <el-option value="C" label="C"></el-option>
-                    <el-option value="C++" label="C++"></el-option>
-                    <el-option value="Fortran" label="Fortran"></el-option>
-                    <el-option value="0" label="其他"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column prop="useType" label="调用方式" width="150">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.useType" size="small">
-                    <el-option value="client" label="客户端调用"></el-option>
-                    <el-option value="ws" label="Web Service"></el-option>
-                    <el-option value="rest" label="REST"></el-option>
-                    <el-option value="0" label="其他"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column prop="resType" label="返回值格式" width="100">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.resType" size="small">
-                    <el-option value="json" label="json"></el-option>
-                    <el-option value="html" label="html"></el-option>
-                    <el-option value="0" label="其他"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column prop="serialNumber" label="排序编号" width="150">
-                <template slot-scope="scope">
-                  <el-input-number v-model="scope.row.serialNumber" size="small" :min="0"></el-input-number>
-                </template>
-              </el-table-column>
-              <el-table-column prop="paramCode" label="参数示例" width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.paramCode" size="small" type="textarea"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column prop="useCode" label="调用示例" width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.useCode" size="small" type="textarea"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column prop="resCode" label="返回值示例" width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.resCode" size="small" type="textarea"></el-input>
-                </template>
-              </el-table-column>
+              <el-table-column prop="codeLang" label="编程语言" width="150"></el-table-column>
+              <el-table-column prop="useType" label="调用方式" width="150"></el-table-column>
+              <el-table-column prop="resType" label="返回值格式" width="100"></el-table-column>
+              <el-table-column prop="serialNumber" label="排序编号" width="150"></el-table-column>
+              <el-table-column prop="paramCode" label="参数示例" width="200"></el-table-column>
+              <el-table-column prop="useCode" label="调用示例" width="200"></el-table-column>
+              <el-table-column prop="resCode" label="返回值示例" width="200"></el-table-column>
               <el-table-column prop="address" label="操作" width="150">
                 <template slot-scope="scope">
                   <el-button
                     size="mini"
                     type="text"
-                    @click="handleDemoMsg('add')"
-                    icon="el-icon-plus"
-                  >新增</el-button>
+                    @click="handleDemoMsg(scope.row)"
+                    icon="el-icon-edit"
+                  >编辑</el-button>
                   <el-button
                     icon="el-icon-delete"
                     size="mini"
@@ -302,6 +258,60 @@
       <el-button type="primary" @click="trueDialog('fromRef')">确 定</el-button>
       <el-button @click="cancelDialog()">取 消</el-button>
     </div>
+    <!-- 弹窗-->
+    <el-dialog
+      width="600px"
+      append-to-body
+      :close-on-click-modal="false"
+      title="样例代码信息"
+      :visible.sync="exportDialog"
+      v-dialogDrag
+      top="5vh"
+    >
+      <el-form :model="exportFormDialog" ref="exportfromRef" label-width="120px">
+        <el-form-item label="编程语言">
+          <el-select v-model="exportFormDialog.codeLang" size="small">
+            <el-option value="Java" label="Java"></el-option>
+            <el-option value="Python" label="Python"></el-option>
+            <el-option value="C" label="C"></el-option>
+            <el-option value="C++" label="C++"></el-option>
+            <el-option value="Fortran" label="Fortran"></el-option>
+            <el-option value="0" label="其他"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="调用方式">
+          <el-select v-model="exportFormDialog.useType" size="small">
+            <el-option value="client" label="客户端调用"></el-option>
+            <el-option value="ws" label="Web Service"></el-option>
+            <el-option value="rest" label="REST"></el-option>
+            <el-option value="0" label="其他"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="返回值格式">
+          <el-select v-model="exportFormDialog.resType" size="small">
+            <el-option value="json" label="json"></el-option>
+            <el-option value="html" label="html"></el-option>
+            <el-option value="0" label="其他"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input-number v-model="exportFormDialog.serialNumber" size="small" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="参数示例">
+          <el-input v-model="exportFormDialog.paramCode" size="small" type="textarea"></el-input>
+        </el-form-item>
+        <el-form-item label="调用示例">
+          <el-input v-model="exportFormDialog.useCode" size="small" type="textarea"></el-input>
+        </el-form-item>
+        <el-form-item label="返回值示例">
+          <el-input v-model="exportFormDialog.resCode" size="small" type="textarea"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer" style="margin-top:20px;">
+        <el-button type="primary" @click="trueExportDialog('fromRef')">确 定</el-button>
+        <el-button @click="exportDialog=false">取 消</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -321,6 +331,10 @@ export default {
   },
   data() {
     return {
+      exportDialog: false,
+      exportFormDialog: {
+        serialNumber: 0,
+      },
       //编辑页面列
       msgFormDialog: {},
       urlClassify: [],
@@ -455,21 +469,16 @@ export default {
       }
     },
     /* 样例代码 */
-    handleDemoMsg(type) {
-      if (type == "add") {
-        this.apiCodeDtos.push({
-          codeLang: "Java",
-          useType: "client",
-          resType: "json",
-          serialNumber: 0,
-          paramCode: "",
-          useCode: "",
-          resCode: "",
-        });
+    handleDemoMsg(row) {
+      this.exportDialog = true;
+      if (row.codeLang) {
+        this.exportFormDialog = row;
       } else {
-        let row = type;
-        row.handleRow = true;
+        this.exportFormDialog = {
+          serialNumber: 0,
+        };
       }
+      this.exportDialog = true;
     },
     deleteDemoMsg(row, index) {
       // 判断多个删除或者单个删除

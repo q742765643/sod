@@ -241,7 +241,7 @@ export default {
 
     deleteCell() {
       if (this.multipleSelection.length > 0) {
-        this.$confirm("数据删除后将无法恢复,确认删除?", "提示", {
+        this.$confirm("数据删除后将无法恢复,确认删除?", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",

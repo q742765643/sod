@@ -291,7 +291,7 @@ export default {
         ids.push(element.id);
         areaIds.push(element.areaId);
       });
-      this.$confirm("是否删除" + areaIds.join(","), "提示", {
+      this.$confirm("是否删除" + areaIds.join(","), "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

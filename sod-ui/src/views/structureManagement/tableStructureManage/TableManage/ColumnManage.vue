@@ -755,7 +755,7 @@ export default {
           type: "error",
         });
       } else {
-        this.$confirm("确认要删除选中字段吗?", "提示", {
+        this.$confirm("确认要删除选中字段吗?", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
@@ -1142,7 +1142,7 @@ export default {
           });
           return;
         }
-        this.$confirm("是否插入" + length + "条质控字段", "提示", {
+        this.$confirm("是否插入" + length + "条质控字段", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",

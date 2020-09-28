@@ -138,15 +138,15 @@ import {
   getApplyInfoById,
   getRecordByApplyId,
   updateRecordCheck,
-  updateRecordCheckCancel
+  updateRecordCheckCancel,
 } from "@/api/authorityAudit/materialPower/index";
 import { formatDate } from "@/utils/index";
 export default {
   name: "handleMaterialDialog",
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     return {
@@ -160,13 +160,13 @@ export default {
       total: 0,
       AUTHORIZE_NUM: 0,
       AUTHORIZEF_NUM: 0,
-      multipleSelection: []
+      multipleSelection: [],
     };
   },
   async created() {
     this.queryParams.id = this.handleObj.id;
     if (this.handleObj.id) {
-      await getApplyInfoById({ id: this.handleObj.id }).then(res => {
+      await getApplyInfoById({ id: this.handleObj.id }).then((res) => {
         if (res.code == 200) {
           this.formBaseInfo = res.data;
           this.formBaseInfo.CREATE_TIME = formatDate(
@@ -201,14 +201,14 @@ export default {
     },
     getList(obj) {
       console.log(obj);
-      getRecordByApplyId(obj).then(res => {
+      getRecordByApplyId(obj).then((res) => {
         if (res.code == 200) {
           this.loading = false;
           this.tableData = res.data;
           this.AUTHORIZEF_NUM = 0;
           this.AUTHORIZE_NUM = 0;
           this.AUTHORIZEF_NUM0 = 0;
-          this.tableData.forEach(element => {
+          this.tableData.forEach((element) => {
             if (element.AUTHORIZE == 1) {
               this.AUTHORIZE_NUM++;
             } else if (element.AUTHORIZE == 2) {
@@ -251,14 +251,14 @@ export default {
         this.msgError("请选择一条数据");
         return;
       }
-      this.$prompt("请输入拒绝原因", "提示", {
+      this.$prompt("请输入拒绝原因", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        inputValidator: value => {
+        inputValidator: (value) => {
           if (value.trim().length < 1 || value.trim().length > 50) {
             return "拒绝原因长度限制1-50个字符";
           }
-        }
+        },
       })
         .then(({ value }) => {
           this.powerMethods(value);
@@ -270,7 +270,7 @@ export default {
       let obj = {};
       obj.userId = this.formBaseInfo.USER_ID;
       obj.dataAuthorityRecordList = [];
-      this.multipleSelection.forEach(element => {
+      this.multipleSelection.forEach((element) => {
         let cobj = {};
         cobj.id = element.ID;
         cobj.applyId = element.APPLY_ID;
@@ -289,43 +289,43 @@ export default {
       });
       console.log(obj);
       if (value) {
-        updateRecordCheckCancel(JSON.parse(JSON.stringify(obj))).then(res => {
+        updateRecordCheckCancel(JSON.parse(JSON.stringify(obj))).then((res) => {
           if (res.code == 200) {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: res.msg
+              message: res.msg,
             });
             this.handleQuery();
           } else {
             debugger;
             this.loading = false;
-            this.$alert(res.msg, "提示", {
-              dangerouslyUseHTMLString: true
+            this.$alert(res.msg, "温馨提示", {
+              dangerouslyUseHTMLString: true,
             });
             this.handleQuery();
           }
         });
       } else {
-        updateRecordCheck(JSON.parse(JSON.stringify(obj))).then(res => {
+        updateRecordCheck(JSON.parse(JSON.stringify(obj))).then((res) => {
           if (res.code == 200) {
             this.$message({
               type: "success",
               dangerouslyUseHTMLString: true,
-              message: res.msg
+              message: res.msg,
             });
             this.handleQuery();
           } else {
             this.loading = false;
-            this.$alert(res.msg, "提示", {
-              dangerouslyUseHTMLString: true
+            this.$alert(res.msg, "温馨提示", {
+              dangerouslyUseHTMLString: true,
             });
             this.handleQuery();
           }
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

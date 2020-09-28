@@ -326,6 +326,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
                 cc.setCreateTime(new Date());
                 cl.add(cc);
             }
+            dte.setUserId(dataClassEntity.getCreateBy());
             dte.setColumns(cl);
             Set<TableIndexEntity> tableIndexList = dte.getTableIndexList();
             Set<TableIndexEntity> til = new LinkedHashSet();
@@ -377,7 +378,6 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             newdataApplyDto.setTableName(copys.get(0).getTableName());
             this.newdataApplyService.saveDto(newdataApplyDto);
         }
-
         return ResultT.success();
     }
 

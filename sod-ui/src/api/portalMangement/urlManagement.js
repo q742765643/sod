@@ -44,3 +44,12 @@ export function delById(query) {
     params: query
   })
 }
+
+// 批量导入
+export function uploadApi(data) {
+  return request({
+    url: baseUrl + '/portal/apiManage/upload',
+    method: 'post',
+    data: data
+  })
+}
