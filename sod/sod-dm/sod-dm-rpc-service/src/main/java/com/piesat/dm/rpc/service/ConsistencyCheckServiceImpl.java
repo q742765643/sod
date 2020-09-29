@@ -16,6 +16,7 @@ import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.rpc.api.ConsistencyCheckService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -54,6 +55,8 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     private ShardingDao shardingDao;
     @Autowired
     private DatabaseInfo databaseInfo;
+    @Autowired
+    private TableColumnService tableColumnService;
 
     @Override
     public BaseDao<ConsistencyCheckEntity> getBaseDao() {
@@ -138,6 +141,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         return compileResult;
     }
 
+
     public void compareDifferences(String databaseId, String tableName, Map<String,Map<String,Object>> columnInfos, Map<String,Map<String,String>> indexAndShardings, Map<String,List<List<String>>> compileResult){
         //物理库数据表名	  存储编码	资料名称	  存储元数据中该表是否存在	存储元数据多余的字段   存储元数据缺失的字段  存储元数据类型需要修改的字段   存储元数据精度需要修改的字段   存储元数据和物理库非空设置不一致的字段   存储元数据和物理库主键设置不一致的字段
         //物理库数据表名   存储编码  资料名称  存储元数据中该表是否存在   存储元数据多余的索引   存储元数据缺失的索引  存储元数据需要修改的索引
@@ -199,7 +203,9 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                 }
                 if(!dbType.equalsIgnoreCase(columnDto.getType())){
                     if(!("decimal".equalsIgnoreCase(columnDto.getType()) && "NUMERIC".equalsIgnoreCase(dbType)) &&
-                            !("int".equalsIgnoreCase(columnDto.getType()) && "INTEGER".equalsIgnoreCase(dbType))){
+                            !("int".equalsIgnoreCase(columnDto.getType()) && "INTEGER".equalsIgnoreCase(dbType)) &&
+                            !("timestamp".equalsIgnoreCase(columnDto.getType()) && "DATETIME".equalsIgnoreCase(dbType)) &&
+                            !("NUMBER".equalsIgnoreCase(columnDto.getType()) && "NUMERIC".equalsIgnoreCase(dbType))){
                         if(StringUtils.isNotNullString(columnResult.get(6))){
                             columnResult.set(6,columnResult.get(6)+";"+columnDto.getDbEleCode()+":"+columnDto.getType()+"=>"+dbType);
                         }else{
@@ -208,12 +214,13 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                     }
                 }
                 if(!dbAcc.equalsIgnoreCase(columnDto.getAccuracy())){
-                    if(StringUtils.isNotNullString(columnResult.get(7))){
-                        columnResult.set(7,columnResult.get(7)+";"+columnDto.getDbEleCode()+":"+columnDto.getAccuracy()+"=>"+dbAcc);
-                    }else{
-                        columnResult.set(7,columnDto.getDbEleCode()+":"+columnDto.getAccuracy()+"=>"+dbAcc);
+                    if(!((null == columnDto.getAccuracy()) && "".equalsIgnoreCase(dbAcc))){
+                        if(StringUtils.isNotNullString(columnResult.get(7))){
+                            columnResult.set(7,columnResult.get(7)+";"+columnDto.getDbEleCode()+":"+columnDto.getAccuracy()+"=>"+dbAcc);
+                        }else{
+                            columnResult.set(7,columnDto.getDbEleCode()+":"+columnDto.getAccuracy()+"=>"+dbAcc);
+                        }
                     }
-
                 }
                 //判断为空设置是否一致
                 if((columnDto.getIsNull() && (Integer)columnOneInfo.get("is_nullable") == 0) || (!columnDto.getIsNull() && (Integer)columnOneInfo.get("is_nullable") == 1)){
@@ -342,6 +349,104 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
             shardingResults.add(shardingResult);
         }
     }
+
+    @Override
+    public void updateEleInfo(String databaseId) {
+        //获取数据库详细信息
+        DatabaseDto databaseDto = databaseService.getDotById(databaseId);
+        List<String> tableList = null;
+        DatabaseDcl database = null;
+        try {
+            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            tableList = (List<String>)database.queryAllTableName(databaseDto.getSchemaName()).getData();
+            for(String tableName:tableList){
+                //物理库表字段信息
+                Map<String,Map<String,Object>> columnInfos = (Map<String,Map<String,Object>>)database.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
+                updateEleSubInfo(databaseId,tableName.toUpperCase(),columnInfos);
+            }
+        }catch (Exception e){
+            if (database!=null){
+                database.closeConnect();
+            }
+            e.printStackTrace();
+        }finally {
+            if (database!=null){
+                database.closeConnect();
+            }
+        }
+    }
+
+    public void updateEleSubInfo(String databaseId, String tableName, Map<String,Map<String,Object>> columnInfos){
+        //元数据表信息
+        List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseIdAndTableName(databaseId, tableName);
+        if(dataTableList == null || dataTableList.size() == 0){
+            //元数据表缺失
+            return;
+        }
+        for(Map<String, Object> dataTable : dataTableList) {
+            DataTableDto dataTableDto = dataTableService.getDotById((String) dataTable.get("ID"));
+            //以元数据库字段为准，遍历元数据字段
+            Iterator<TableColumnDto> columnIterator = dataTableDto.getColumns().iterator();
+            List<TableColumnDto> columnList= IteratorUtils.toList(columnIterator);
+            for(TableColumnDto columnDto:columnList) {
+                boolean flag = false;
+                Map<String, Object> columnOneInfo = columnInfos.get(columnDto.getDbEleCode().toUpperCase());
+                //存储元数据多余字段
+                if(columnOneInfo == null){
+                    continue;
+                }
+                //判断类型和长度
+                String dbColumnType = ((String) columnOneInfo.get("column_type")).replace(",",".");// decimal(4,0)  varchar(200)  date
+                String dbType = "";
+                String dbAcc = "";
+                if(dbColumnType.indexOf("(") != -1){
+                    dbType = dbColumnType.substring(0,dbColumnType.indexOf("("));
+                    dbAcc = dbColumnType.substring(dbColumnType.indexOf("(") + 1, dbColumnType.length()-1);
+                }else{
+                    dbType = dbColumnType;
+                }
+                if(!dbType.equalsIgnoreCase(columnDto.getType())){
+                    if(!("decimal".equalsIgnoreCase(columnDto.getType()) && "NUMERIC".equalsIgnoreCase(dbType)) &&
+                            !("int".equalsIgnoreCase(columnDto.getType()) && "INTEGER".equalsIgnoreCase(dbType)) &&
+                            !("timestamp".equalsIgnoreCase(columnDto.getType()) && "DATETIME".equalsIgnoreCase(dbType)) &&
+                            !("NUMBER".equalsIgnoreCase(columnDto.getType()) && "NUMERIC".equalsIgnoreCase(dbType))){
+                        //字段类型不一致
+                        continue;
+                    }
+                }
+                if(!dbAcc.equalsIgnoreCase(columnDto.getAccuracy())){
+                    if(!((null == columnDto.getAccuracy()) && "".equalsIgnoreCase(dbAcc))){
+                        //System.out.println("精度修改（"+databaseId+":"+tableName+")原始字段"+columnDto.getAccuracy()+"应该修改为"+dbAcc );
+                        //根据数据库真实字段精度更新元数据库
+                        columnDto.setAccuracy(dbAcc);
+                        flag = true;
+                    }
+                }
+                //判断为空设置是否一致
+                if((columnDto.getIsNull() && (Integer)columnOneInfo.get("is_nullable") == 0) || (!columnDto.getIsNull() && (Integer)columnOneInfo.get("is_nullable") == 1)){
+                    //System.out.println("可空修改（"+databaseId+":"+tableName+")原始为"+columnDto.getIsNull()+"应该修改为相反的" );
+                    //根据数据库真实字段可空更新元数据库
+                    columnDto.setIsNull(!columnDto.getIsNull());
+                    flag = true;
+
+                }
+                if(flag){
+                    //更新
+                    try {
+                        tableColumnService.saveDto(columnDto);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+
 
 
 }

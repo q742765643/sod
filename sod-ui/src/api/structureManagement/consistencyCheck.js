@@ -66,3 +66,12 @@ export function downHistoryDfcheckFile(query) {
     responseType: "arraybuffer"
   })
 }
+
+
+export function updateEleInfo(data) {
+  return request({
+    url: baseUrl + '/dm/consistencyCheck/updateEleInfo',
+    method: 'post',
+    data: data,
+  })
+}

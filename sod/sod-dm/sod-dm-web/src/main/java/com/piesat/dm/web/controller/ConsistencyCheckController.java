@@ -408,4 +408,16 @@ public class ConsistencyCheckController {
         }
     }
 
+    @PostMapping(value = "/updateEleInfo")
+    @ApiOperation(value = "同步字段信息", notes = "同步字段信息")
+    public ResultT updateEleInfo(@RequestBody DatabaseDto databaseDto){
+        try {
+            this.consistencyCheckService.updateEleInfo(databaseDto.getId());
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }
