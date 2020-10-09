@@ -14,11 +14,7 @@
       >
         <sidebar-item
           v-for="route in permission_routes"
-<<<<<<< HEAD
           v-show="route.name != 'portal后台管理'"
-=======
-          v-show="route.name != 'portal后台管理'"
->>>>>>> be13d7a80c8a5eb42b5f4bcbb67d0059b7eb70df
           :key="route.path"
           :item="route"
           :base-path="route.path"
