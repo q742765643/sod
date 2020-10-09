@@ -418,7 +418,7 @@ export default {
         })
         .then(() => {
           this.getList();
-          this.msgSuccess("执行成功");
+          this.msgSuccess("数据任务提交成功");
         })
         .catch(function() {});
     },

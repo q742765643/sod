@@ -23,4 +23,6 @@ public interface ConsistencyCheckService {
     public void deleteRecordByIds(List<String> ids);
 
     Map<String, List<List<String>>>  downloadDfcheckFile(String databaseId);
+
+    void updateEleInfo(String databaseId);
 }

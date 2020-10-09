@@ -13,6 +13,7 @@ import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -29,6 +30,8 @@ import java.util.*;
 public class DataRecoverService {
     @Autowired
     private RecoverLogService recoverLogService;
+    @Value("${backup.temp-path}")
+    private String backupTempPath;
 
     public void recoverStructedData(RecoverLogEntity recoverLogEntity){
 
@@ -39,6 +42,7 @@ public class DataRecoverService {
         try {
             recoverLogEntity=this.insertRecoverLog(recoverLogEntity,resultT);
             for(String filePath:fileList){
+                log.info("gbase恢复文件{}",filePath);
                 resultT.setSuccessMessage("开始恢复文件{}",filePath);
                 this.toRecover(filePath,recoverLogEntity,resultT);
             }
@@ -52,19 +56,34 @@ public class DataRecoverService {
 
     public void toRecover(String filePath,RecoverLogEntity recoverLogEntity,ResultT<String> resultT){
         RecoverMetaVo recoverMetaVo=new RecoverMetaVo();
+        String copyPath="";
         try {
+            String unzipParent="";
             File file=new File(filePath);
             String fileName=file.getName().substring(0,file.getName().lastIndexOf("."));
-            String unzipPath=file.getParentFile().getPath()+'/'+fileName;
+
+            if(backupTempPath.endsWith("/")){
+                unzipParent=backupTempPath+"recover/";
+            }else {
+                unzipParent=backupTempPath+"/recover/";
+            }
+            if(!new File(unzipParent).exists()){
+                new File(unzipParent).mkdirs();
+            }
+            copyPath=unzipParent+file.getName();
+            FileUtil.copyFile(filePath,copyPath,resultT);
+            String unzipPath=unzipParent+fileName;
             recoverMetaVo.setUnzipPath(unzipPath);
             recoverMetaVo.setIndexPath(unzipPath+"/index.sql");
             ZipUtils.unZip(new File(filePath),unzipPath);
+            log.info("恢复文件判断数据库");
             BusinessEnum businessEnum = BusinessEnum.match(recoverLogEntity.getDatabaseType(), null);
             BaseBusiness baseBusiness = businessEnum.getBaseBusiness();
             baseBusiness.recoverStructedData(recoverMetaVo,recoverLogEntity,resultT);
         } catch (Exception e) {
             resultT.setErrorMessage(OwnException.get(e));
         }finally {
+            FileUtil.delFile(new File(copyPath),resultT);
             FileUtil.delFile(new File(recoverMetaVo.getUnzipPath()),resultT);
         }
     }

@@ -419,9 +419,15 @@ export default {
         .then(function() {
           return executeBackup(id);
         })
-        .then(() => {
+        .then(response => {
+          console.log(response)
           this.getList();
-          this.msgSuccess("执行成功");
+          if(undefined!=response&&null!=response.msg){
+            this.msgSuccess(response.msg);
+          }else {
+            this.msgSuccess("数据任务提交成功");
+          }
+
         })
         .catch(function() {});
     },

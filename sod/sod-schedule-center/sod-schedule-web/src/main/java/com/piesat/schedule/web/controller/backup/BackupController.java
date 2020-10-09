@@ -1,5 +1,6 @@
 package com.piesat.schedule.web.controller.backup;
 
+import com.piesat.common.utils.OwnException;
 import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.dto.backup.BackUpDto;
 import com.piesat.sso.client.annotation.Log;
@@ -60,7 +61,7 @@ public class BackupController {
     @PostMapping
     public ResultT<String> add(@RequestBody BackUpDto backup)
     {
-        if(null==backup.getIsAlarm()){
+        if(null==backup.getIsAlarm()||"".equals(backup.getIsAlarm())){
             backup.setIsAlarm("1");
         }
         ResultT<String> resultT=new ResultT<>();
@@ -74,7 +75,7 @@ public class BackupController {
     @PutMapping
     public ResultT<String> edit(@RequestBody BackUpDto backup)
     {
-        if(null==backup.getIsAlarm()){
+        if(null==backup.getIsAlarm()||"".equals(backup.getIsAlarm())){
             backup.setIsAlarm("1");
         }
         ResultT<String> resultT=new ResultT<>();
@@ -116,6 +117,12 @@ public class BackupController {
     public void exportExcel(BackUpDto backUpDto){
          backupService.exportExcel(backUpDto);
 
+    }
+    @GetMapping(value = "/execute")
+    @RequiresPermissions("schedule:job:execute")
+    @ApiOperation(value = "立即执行接口", notes = "立即执行接口")
+    public ResultT<String> execute(String id){
+        return backupService.execute(id);
     }
 }
 

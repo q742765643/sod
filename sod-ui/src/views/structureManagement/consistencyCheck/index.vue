@@ -20,6 +20,9 @@
         <el-button size="small" type="success" :icon="exportIcon" @click="handleExport">生成差异报告</el-button>
       </el-col>
       <el-col :span="1.5">
+        <el-button size="small" type="warning" icon="el-icon-refresh" @click="updateEleInfo">同步字段信息</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button
           size="small"
           v-hasPermi="['consistencyCheck:role:add']"
@@ -165,6 +168,7 @@ import {
   deleteByIds,
   exportTable,
   downHistoryDfcheckFile,
+  updateEleInfo
 } from "@/api/structureManagement/consistencyCheck";
 import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
@@ -279,6 +283,44 @@ export default {
         this.downloadfileCommon(res);
         this.exportIcon = "el-icon-download";
       });
+    },
+    updateEleInfo() {
+      if (this.currentRows.length != 1) {
+        this.$message({
+          type: "error",
+          message: "请选择一条数据",
+        });
+        return;
+      }
+      let obj = {};
+      obj.id = this.currentRows[0].databaseId;
+
+      this.$confirm(
+        "确认要根据物理库同步元数据字段可空/精度信息吗?",
+        "温馨提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          updateEleInfo(obj).then((response) => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "同步成功",
+              });
+              this.handleQuery();
+            } else {
+              this.$message({
+                type: "error",
+                message: "同步失败",
+              });
+            }
+          });
+        })
+        .catch(() => {});
     },
     getOptions() {
       getDatabaseName().then((response) => {
