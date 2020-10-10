@@ -52,6 +52,7 @@ public class DatabaseSpecialReadWriteDto extends BaseDto {
 
     /**
      * 审核状态
+     * 1：允许 2：禁止 3:待授权
      */
     private Integer examineStatus;
 
