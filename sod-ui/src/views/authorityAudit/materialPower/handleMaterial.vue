@@ -1,9 +1,20 @@
 <template>
-  <el-tabs v-model.trim="activeName" @tab-click="handleClick" class="handleMaterialDialog">
+  <el-tabs
+    v-model.trim="activeName"
+    @tab-click="handleClick"
+    class="handleMaterialDialog"
+  >
     <el-tab-pane label="基本信息" name="first">
-      <el-form :model="formBaseInfo" class="demo-form-inline" label-width="120px">
+      <el-form
+        :model="formBaseInfo"
+        class="demo-form-inline"
+        label-width="120px"
+      >
         <el-form-item label="用户名">
-          <el-input v-model.trim="formBaseInfo.USERREALNAME" readonly></el-input>
+          <el-input
+            v-model.trim="formBaseInfo.USERREALNAME"
+            readonly
+          ></el-input>
         </el-form-item>
         <el-form-item label="机构">
           <el-input v-model.trim="formBaseInfo.DEPARTMENT" readonly></el-input>
@@ -15,7 +26,10 @@
           <el-input v-model.trim="formBaseInfo.CREATE_TIME" readonly></el-input>
         </el-form-item>
         <el-form-item label="数据库账户名">
-          <el-input v-model.trim="formBaseInfo.DATABASE_UP_ID" readonly></el-input>
+          <el-input
+            v-model.trim="formBaseInfo.DATABASE_UP_ID"
+            readonly
+          ></el-input>
         </el-form-item>
 
         <el-row>
@@ -33,7 +47,11 @@
           <el-col :span="2">
             <el-form-item class="unitFormItem">
               <i
-                :class="passwordType === 'password' ? 'eye isEye' : 'el-icon-view isEye'"
+                :class="
+                  passwordType === 'password'
+                    ? 'eye isEye'
+                    : 'el-icon-view isEye'
+                "
                 @click="showPwd"
               ></i>
             </el-form-item>
@@ -43,13 +61,27 @@
     </el-tab-pane>
     <el-tab-pane label="数据读写权限" name="second">
       <el-alert
-        :title="'申请状态：已申请'+tableData.length+'种资料,涉及'+tableData.length+'张表的读写权限， 审核通过'+AUTHORIZE_NUM+'张表, 审核不通过'+AUTHORIZEF_NUM+'张表'"
+        :title="
+          '申请状态：已申请' +
+          tableData.length +
+          '种资料,涉及' +
+          tableData.length +
+          '张表的读写权限， 审核通过' +
+          AUTHORIZE_NUM +
+          '张表, 审核不通过' +
+          AUTHORIZEF_NUM +
+          '张表'
+        "
         type="success"
         :closable="false"
       ></el-alert>
       <el-form :model="queryParams" ref="queryForm" :inline="true">
         <el-form-item label="关键字查询">
-          <el-select size="small" v-model.trim="queryParams.searchSelect" @change="changeSearch">
+          <el-select
+            size="small"
+            v-model.trim="queryParams.searchSelect"
+            @change="changeSearch"
+          >
             <el-option label="资料分类" value="typeName"></el-option>
             <el-option label="资料名称" value="className"></el-option>
             <el-option label="表名称" value="tableName"></el-option>
@@ -60,17 +92,40 @@
           </el-select>
         </el-form-item>
         <el-form-item label>
-          <el-input size="small" v-model.trim="queryParams.searchInput" type="text"></el-input>
+          <el-input
+            size="small"
+            v-model.trim="queryParams.searchInput"
+            type="text"
+            clearable
+          ></el-input>
         </el-form-item>
 
         <el-form-item>
-          <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+          <el-button
+            size="small"
+            type="primary"
+            @click="handleQuery"
+            icon="el-icon-search"
+            >查询</el-button
+          >
         </el-form-item>
       </el-form>
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-          <el-button type="primary" icon="el-icon-thumb" size="mini" @click="handlePower">授权</el-button>
-          <el-button type="danger" icon="el-icon-close" size="mini" @click="handleRefused">拒绝</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-thumb"
+            size="mini"
+            @click="handlePower"
+            >授权</el-button
+          >
+          <el-button
+            type="danger"
+            icon="el-icon-close"
+            size="mini"
+            @click="handleRefused"
+            >拒绝</el-button
+          >
         </el-col>
       </el-row>
       <el-table
@@ -81,33 +136,53 @@
       >
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="TYPE_NAME" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="CLASS_NAME" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="TABLE_NAME" label="表名称" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="DATABASE_NAME" label="数据库" :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column prop="SPECIAL_DATABASE_NAME" label="专题名" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column
+          prop="TYPE_NAME"
+          label="资料分类"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          prop="CLASS_NAME"
+          label="资料名称"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          prop="TABLE_NAME"
+          label="表名称"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          prop="DATABASE_NAME"
+          label="数据库"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
+        <el-table-column
+          prop="SPECIAL_DATABASE_NAME"
+          label="专题名"
+          :show-overflow-tooltip="true"
+        ></el-table-column>
         <el-table-column prop="IS_ACCESS" label="权限" width="80px">
           <template slot-scope="scope">
-            <span v-if="scope.row.IS_ACCESS=='0'">受限</span>
+            <span v-if="scope.row.IS_ACCESS == '0'">受限</span>
             <span v-else>公开</span>
           </template>
         </el-table-column>
         <el-table-column prop="APPLY_AUTHORITY" label="申请状态" width="120px">
           <template slot-scope="scope">
-            <span v-if="scope.row.APPLY_AUTHORITY=='1'">读申请</span>
+            <span v-if="scope.row.APPLY_AUTHORITY == '1'">读申请</span>
             <span v-else>读写申请</span>
           </template>
         </el-table-column>
         <el-table-column prop="AUTHORIZE" label="审核状态" width="120px">
           <template slot-scope="scope">
-            <span v-if="scope.row.AUTHORIZE=='2'">
-              <i class="el-icon-circle-close" style="color:#F56C6C"></i>拒绝
+            <span v-if="scope.row.AUTHORIZE == '2'">
+              <i class="el-icon-circle-close" style="color: #f56c6c"></i>拒绝
             </span>
-            <span v-else-if="scope.row.AUTHORIZE=='1'">
-              <i class="el-icon-circle-check" style="color:#67C23A"></i>通过
+            <span v-else-if="scope.row.AUTHORIZE == '1'">
+              <i class="el-icon-circle-check" style="color: #67c23a"></i>通过
             </span>
             <span v-else>
-              <i class="el-icon-s-finance" style="color:#E6A23C"></i>待审核
+              <i class="el-icon-s-finance" style="color: #e6a23c"></i>待审核
             </span>
           </template>
         </el-table-column>
@@ -121,9 +196,11 @@
               popper-class="darkPopover"
               v-if="scope.row.CAUSE"
             >
-              <p>{{ scope.row.CAUSE}}</p>
+              <p>{{ scope.row.CAUSE }}</p>
               <div slot="reference" class="name-wrapper">
-                <el-button type="primary" size="mini" plain class="tagpointer">查看</el-button>
+                <el-button type="primary" size="mini" plain class="tagpointer"
+                  >查看</el-button
+                >
               </div>
             </el-popover>
           </template>

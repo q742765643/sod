@@ -1,15 +1,33 @@
 <template>
   <el-main>
-    <el-button-group style="padding: 8px;">
-      <el-button type="primary" size="small" icon="el-icon-plus" @click="addIndex">新增</el-button>
-      <el-button type="primary" size="small" icon="el-icon-edit" @click="editIndex">编辑</el-button>
-      <el-button type="primary" size="small" icon="el-icon-delete" @click="deleteIndex">删除</el-button>
+    <el-button-group style="padding: 8px">
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-plus"
+        @click="addIndex"
+        >新增</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-edit"
+        @click="editIndex"
+        >编辑</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-delete"
+        @click="deleteIndex"
+        >删除</el-button
+      >
     </el-button-group>
 
     <el-table
       :data="indexItem"
       border
-      @selection-change="res=>indexItemSel=res"
+      @selection-change="(res) => (indexItemSel = res)"
       ref="selectionTable"
       @row-click="handleClickTableRow"
     >
@@ -28,21 +46,30 @@
       v-dialogDrag
     >
       <div>
-        <el-form :model="indexForm" label-width="120px" ref="indexFormRef" :rules="indexRules">
+        <el-form
+          :model="indexForm"
+          label-width="120px"
+          ref="indexFormRef"
+          :rules="indexRules"
+        >
           <el-form-item label="索引名称" prop="indexName">
-            <el-input v-model.trim="indexForm.indexName" size="small"></el-input>
+            <el-input
+              clearable
+              v-model.trim="indexForm.indexName"
+              size="small"
+            ></el-input>
           </el-form-item>
           <el-form-item label="索引类型" prop="indexType">
             <el-select
               v-model.trim="indexForm.indexType"
               size="small"
               placeholder="请选择索引类型"
-              style="width: 100%;"
+              style="width: 100%"
             >
               <el-option
                 v-for="item in indexTypeOptions"
                 :key="item.dictValue"
-                :label="item.dictValue+'['+item.dictLabel+']'"
+                :label="item.dictValue + '[' + item.dictLabel + ']'"
                 :value="item.dictValue"
               ></el-option>
             </el-select>
@@ -54,12 +81,12 @@
               v-model.trim="indexForm.indexColumn"
               multiple
               placeholder="请选择索引字段"
-              style="width: 100%;"
+              style="width: 100%"
             >
               <el-option
                 v-for="item in columnData"
                 :key="item.dbEleCode"
-                :label="item.dbEleCode+'['+item.eleName+']'"
+                :label="item.dbEleCode + '[' + item.eleName + ']'"
                 :value="item.dbEleCode"
               ></el-option>
             </el-select>

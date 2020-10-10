@@ -3,7 +3,12 @@
     <!-- 查询条件 -->
     <el-form :model="queryParams" ref="materialForm" :inline="true">
       <el-form-item label="资料名称">
-        <el-input v-model.trim="queryParams.className" size="small" placeholder="资料名称"></el-input>
+        <el-input
+          clearable
+          v-model.trim="queryParams.className"
+          size="small"
+          placeholder="资料名称"
+        ></el-input>
       </el-form-item>
       <el-form-item label="是否发布">
         <el-select v-model.trim="queryParams.ifStopUse" size="small">
@@ -13,23 +18,49 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="small" icon="el-icon-search" @click="handleQuery">查询</el-button>
-        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
+        <el-button
+          type="primary"
+          size="small"
+          icon="el-icon-search"
+          @click="handleQuery"
+          >查询</el-button
+        >
+        <el-button
+          size="small"
+          type="success"
+          icon="el-icon-download"
+          @click="handleExport"
+          >导出</el-button
+        >
       </el-form-item>
     </el-form>
 
     <!-- 表格 -->
     <el-table border :data="tableData">
-      <el-table-column label="资料名称" prop="className" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="存储编码" prop="dataClassId" width="200"></el-table-column>
-      <el-table-column label="四级编码" prop="ddataId" width="200"></el-table-column>
+      <el-table-column
+        label="资料名称"
+        prop="className"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="存储编码"
+        prop="dataClassId"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        label="四级编码"
+        prop="ddataId"
+        width="200"
+      ></el-table-column>
       <el-table-column label="是否发布" prop="ifStopUse" width="80">
-        <template slot-scope="scope">{{scope.row.ifStopUse==true?'是':'否'}}</template>
+        <template slot-scope="scope">{{
+          scope.row.ifStopUse == true ? "是" : "否"
+        }}</template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -40,7 +71,7 @@
 <script>
 import {
   getBaseData,
-  exportTable
+  exportTable,
 } from "@/api/structureManagement/tableStructureManage/StructureMaterialList";
 
 //分页组件
@@ -53,10 +84,10 @@ export default {
         ifStopUse: "",
         pageNum: 1,
         pageSize: 10,
-        type: 2
+        type: 2,
       },
       total: 0,
-      tableData: []
+      tableData: [],
     };
   },
   created() {
@@ -64,7 +95,7 @@ export default {
   },
   methods: {
     handleExport() {
-      exportTable(this.queryParams).then(res => {
+      exportTable(this.queryParams).then((res) => {
         this.downloadfileCommon(res);
       });
     },
@@ -75,12 +106,12 @@ export default {
     },
     searchFun() {
       console.log(this.queryParams);
-      getBaseData(this.queryParams).then(res => {
+      getBaseData(this.queryParams).then((res) => {
         this.tableData = res.data.pageData;
         this.total = res.data.totalCount;
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

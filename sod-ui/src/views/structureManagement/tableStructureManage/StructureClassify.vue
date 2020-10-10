@@ -51,6 +51,7 @@
       <!-- 资料分类树/数据库用途分类树/数据库分类树/公共元数据库结构树 查询 -->
       <div class="usedTreeOp">
         <el-input
+          clearable
           placeholder="请输入"
           size="small"
           v-model.trim="sourceTreeText"
