@@ -348,16 +348,14 @@ export default {
     //新增，编辑资料树  或者  资料
     showMaterialSingle(operateType) {
       console.log(operateType);
-      if (operateType.title === "新增资料树节点") {
+      if (
+        operateType.title === "新增资料树节点" ||
+        operateType.title === "编辑资料树节点"
+      ) {
         this.materialSingleTitle = operateType.title;
         this.isSourceTree = true;
         this.editNodeId = operateType.editNodeId;
         this.whichTree = operateType.tree; //获取是哪棵树
-      } else if (operateType.title === "编辑资料树节点") {
-        this.materialSingleTitle = operateType.title;
-        this.isSourceTree = true;
-        this.editNodeId = operateType.editNodeId;
-        this.whichTree = operateType.tree;
       } else if (operateType === "新增资料") {
         this.materialSingleTitle = operateType;
         this.editMaterial = "";
@@ -641,9 +639,7 @@ export default {
         } else {
           this.$refs.classifyTree.initMethodsTree(this.whichTree);
         }
-        // this.searchFun("search");
       }
-      // this.$refs.classifyTree.initMethodsTree(this.whichTree);
       this.materialSingleVisible = false;
     },
     //关闭新增或编辑资料弹出层

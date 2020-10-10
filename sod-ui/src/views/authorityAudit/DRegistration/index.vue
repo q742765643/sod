@@ -6,7 +6,7 @@
         <el-select v-model.trim="queryParams.DDataId" placeholder>
           <el-option key="index" label="全部" value></el-option>
           <el-option
-            v-for="(item,index) in dbtypeselect"
+            v-for="(item, index) in dbtypeselect"
             :key="index"
             :label="item.CLASS_NAME"
             :value="item.DATA_CLASS_ID"
@@ -15,7 +15,10 @@
       </el-form-item>
 
       <el-form-item label="审核状态：">
-        <el-select v-model.trim="queryParams.examineStatus" @change="handleQuery">
+        <el-select
+          v-model.trim="queryParams.examineStatus"
+          @change="handleQuery"
+        >
           <!-- <el-option label="全部" value></el-option> -->
           <el-option label="待审核" :value="1"></el-option>
           <el-option label="通过" :value="2"></el-option>
@@ -25,8 +28,16 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh">重置</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+          >查询</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
@@ -37,7 +48,8 @@
           size="mini"
           @click="handleAddSync"
           v-hasPermi="['DRegistration:role:add']"
-        >增量同步元数据</el-button>
+          >增量同步元数据</el-button
+        >
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -52,11 +64,35 @@
       highlight-current-row
       @current-change="handleCurrentChange"
     >
-      <af-table-column type="index" :index="table_index" width="45" label=" "></af-table-column>
-      <af-table-column prop="TYPE_PNAME" label="数据分类" width="160" :show-overflow-tooltip="true"></af-table-column>
-      <af-table-column prop="D_DATA_ID" label="四级编码" width="160"></af-table-column>
-      <af-table-column prop="TYPE_NAME" label="数据名称" width="240" :show-overflow-tooltip="true"></af-table-column>
-      <af-table-column prop="WEB_USERNAME" label="申请人"></af-table-column>
+      <af-table-column
+        type="index"
+        :index="table_index"
+        width="45"
+        label=" "
+      ></af-table-column>
+      <af-table-column
+        prop="TYPE_PNAME"
+        label="数据分类"
+        width="160"
+        :show-overflow-tooltip="true"
+      ></af-table-column>
+      <af-table-column
+        prop="D_DATA_ID"
+        label="四级编码"
+        width="160"
+      ></af-table-column>
+      <af-table-column
+        prop="TYPE_NAME"
+        label="数据名称"
+        width="240"
+        :show-overflow-tooltip="true"
+      ></af-table-column>
+      <af-table-column
+        prop="WEB_USERNAME"
+        label="申请人"
+        width="100"
+        :show-overflow-tooltip="true"
+      ></af-table-column>
       <af-table-column prop="DEPT_NAME" label="机构"></af-table-column>
       <af-table-column prop="PHONENUMBER" label="联系方式"></af-table-column>
       <af-table-column
@@ -74,14 +110,14 @@
         prop="EXAMINE_STATUS"
         label="审核状态"
         width="100"
-        v-if="queryParams.examineStatus !=2 "
+        v-if="queryParams.examineStatus != 2"
       >
         <template slot-scope="scope">
-          <span v-if="scope.row.EXAMINE_STATUS==1">待审核</span>
-          <span v-if="scope.row.EXAMINE_STATUS==2">审核通过</span>
-          <span v-if="scope.row.EXAMINE_STATUS==3">审核不通过</span>
-          <span v-if="scope.row.EXAMINE_STATUS==4">删除申请中</span>
-          <span v-if="scope.row.EXAMINE_STATUS==5">已失效</span>
+          <span v-if="scope.row.EXAMINE_STATUS == 1">待审核</span>
+          <span v-if="scope.row.EXAMINE_STATUS == 2">审核通过</span>
+          <span v-if="scope.row.EXAMINE_STATUS == 3">审核不通过</span>
+          <span v-if="scope.row.EXAMINE_STATUS == 4">删除申请中</span>
+          <span v-if="scope.row.EXAMINE_STATUS == 5">已失效</span>
         </template>
       </af-table-column>
 
@@ -90,14 +126,21 @@
         prop="STORAGE_DEFINE_IDENTIFIER"
         label="存储构建"
         width="140"
-        v-if="queryParams.examineStatus===2"
+        v-if="queryParams.examineStatus === 2"
       >
         <template slot-scope="scope">
-          <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
+          <el-button
+            disabled
+            v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3"
+            size="mini"
+          >
             <i class="btnRound orangRound"></i>存储结构
           </el-button>
           <el-button v-else size="mini" @click="handledDBMethods(scope.row)">
-            <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
+            <i
+              class="btnRound blueRound"
+              v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 1"
+            ></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
         </template>
@@ -108,7 +151,7 @@
         prop="SYNC_IDENTIFIER"
         label="数据同步"
         width="140"
-        v-if="queryParams.examineStatus===2"
+        v-if="queryParams.examineStatus === 2"
       >
         <template slot-scope="scope">
           <el-button disabled v-if="scope.row.SYNC_IDENTIFIER == 3" size="mini">
@@ -122,11 +165,20 @@
       </af-table-column>
 
       <!-- 迁移 -->
-      <af-table-column prop="MOVE_ST" label="迁移" width="120" v-if="queryParams.examineStatus===2">
+      <af-table-column
+        prop="MOVE_ST"
+        label="迁移"
+        width="120"
+        v-if="queryParams.examineStatus === 2"
+      >
         <template slot-scope="scope">
           <!-- 迁移 -->
 
-          <el-button v-if="scope.row.MOVE_ST==1" size="mini" @click="handlMoveMethods(scope.row)">
+          <el-button
+            v-if="scope.row.MOVE_ST == 1"
+            size="mini"
+            @click="handlMoveMethods(scope.row)"
+          >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
@@ -142,12 +194,12 @@
         prop="CLEAR_ST"
         label="清除"
         min-width="130"
-        v-if="queryParams.examineStatus===2"
+        v-if="queryParams.examineStatus === 2"
       >
         <template slot-scope="scope">
           <!-- 清除 -->
           <el-button
-            v-if="scope.row.CLEAR_ST==1"
+            v-if="scope.row.CLEAR_ST == 1"
             size="mini"
             @click="handlClearShowMethods(scope.row)"
           >
@@ -162,10 +214,15 @@
       </af-table-column>
 
       <!-- 备份 -->
-      <af-table-column prop="BACKUP_ST" label="备份" width="120" v-if="queryParams.examineStatus===2">
+      <af-table-column
+        prop="BACKUP_ST"
+        label="备份"
+        width="120"
+        v-if="queryParams.examineStatus === 2"
+      >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.BACKUP_ST==1"
+            v-if="scope.row.BACKUP_ST == 1"
             size="mini"
             @click="handleBackUpMethods(scope.row)"
           >
@@ -184,11 +241,18 @@
         prop="ARCHIVING_IDENTIFIER"
         label="恢复"
         width="120"
-        v-if="queryParams.examineStatus===2"
+        v-if="queryParams.examineStatus === 2"
       >
         <template slot-scope="scope">
-          <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
-          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
+          <el-button
+            disabled
+            v-if="scope.row.ARCHIVING_IDENTIFIER == 3"
+            size="mini"
+            >恢复</el-button
+          >
+          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)"
+            >恢复</el-button
+          >
         </template>
       </af-table-column>
 
@@ -196,13 +260,13 @@
         prop="EXAMINE_STATUS"
         label="操作"
         width="80"
-        v-if="queryParams.examineStatus!==5"
+        v-if="queryParams.examineStatus !== 5"
       >
         <template slot-scope="scope">
           <el-button
             type="text"
             size="mini"
-            v-if="scope.row.EXAMINE_STATUS===1"
+            v-if="scope.row.EXAMINE_STATUS === 1"
             @click="examineData(scope.row)"
           >
             <i class="el-icon-s-management"></i>审核
@@ -210,13 +274,15 @@
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.EXAMINE_STATUS==2||scope.row.EXAMINE_STATUS==4"
+            v-if="
+              scope.row.EXAMINE_STATUS == 2 || scope.row.EXAMINE_STATUS == 4
+            "
             @click="deleteList(scope.row)"
           >
             <i class="el-icon-delete"></i>删除
           </el-button>
           <el-popover
-            v-if="scope.row.EXAMINE_STATUS===3"
+            v-if="scope.row.EXAMINE_STATUS === 3"
             placement="top-start"
             trigger="hover"
             :content="scope.row.REMARK"
@@ -230,7 +296,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -247,7 +313,10 @@
       :before-close="handleClose"
       top="0"
     >
-      <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
+      <StructureManageTable
+        v-if="structureManageVisible"
+        v-bind:parentRowData="rowData"
+      />
     </el-dialog>
     <!-- 数据同步 -->
     <el-dialog
@@ -286,7 +355,11 @@
       width="1200px"
       v-dialogDrag
     >
-      <handleMove @cancelHandle="handleClose" v-if="handleMoveDialog" :handleObj="handleMsgObj"></handleMove>
+      <handleMove
+        @cancelHandle="handleClose"
+        v-if="handleMoveDialog"
+        :handleObj="handleMsgObj"
+      ></handleMove>
     </el-dialog>
     <!-- 备份 -->
     <el-dialog
@@ -336,7 +409,12 @@
     </el-dialog>
 
     <!-- 存储资料审核步骤 -->
-    <el-dialog :close-on-click-modal="false" :visible.sync="reviewStep" fullscreen title="存储资料审核步骤">
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="reviewStep"
+      fullscreen
+      title="存储资料审核步骤"
+    >
       <revieStepRegister
         v-if="reviewStep"
         :handleObj="handleMsgObj"
