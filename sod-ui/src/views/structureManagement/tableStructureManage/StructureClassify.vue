@@ -1,17 +1,45 @@
 <template>
-  <el-aside class="asideTreeStructure elTreeAsideBox" id="left" style="width:250px;">
+  <el-aside
+    class="asideTreeStructure elTreeAsideBox"
+    id="left"
+    style="width: 250px"
+  >
     <el-tabs :tab-position="tabPosition" @tab-click="handleTabClick">
       <el-tab-pane label="资料分类树"></el-tab-pane>
-      <el-tab-pane label="数据用途分类树" v-if="tableStructureManageContral"></el-tab-pane>
-      <el-tab-pane label="数据库分类树" v-if="tableStructureManageContral"></el-tab-pane>
-      <el-tab-pane label="公共元数据结构树" v-if="tableStructureManageContral"></el-tab-pane>
+      <el-tab-pane
+        label="数据用途分类树"
+        v-if="tableStructureManageContral"
+      ></el-tab-pane>
+      <el-tab-pane
+        label="数据库分类树"
+        v-if="tableStructureManageContral"
+      ></el-tab-pane>
+      <el-tab-pane
+        label="公共元数据结构树"
+        v-if="tableStructureManageContral"
+      ></el-tab-pane>
     </el-tabs>
     <div class="classifyTree">
       <!-- 资料分类树操作 -->
       <el-button-group class="sourceTreeTopOp" v-show="sourceTreeOp">
-        <el-button type="primary" size="mini" icon="el-icon-plus" @click="showSourceDialog()"></el-button>
-        <el-button type="primary" size="mini" icon="el-icon-edit" @click="showSourceDialog('edit')"></el-button>
-        <el-button type="primary" size="mini" icon="el-icon-delete" @click="deleteSourceNode"></el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          icon="el-icon-plus"
+          @click="showSourceDialog()"
+        ></el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          icon="el-icon-edit"
+          @click="showSourceDialog('edit')"
+        ></el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          icon="el-icon-delete"
+          @click="deleteSourceNode"
+        ></el-button>
         <el-button
           class="sourceBtn"
           type="primary"
@@ -40,9 +68,21 @@
       <!-- 公共元数据结构 -->
       <div class="publicTreeOp" v-show="publicActive">
         <el-button-group>
-          <el-button :type="showAll" size="small" @click="handleShowTree('all')">显示全部</el-button>
-          <el-button :type="showNoCreat" size="small" @click="handleShowTree('noCreat')">显示未创建</el-button>
-          <el-button type="primary" icon="el-icon-search" size="small" @click="sourceTopSearch"></el-button>
+          <el-button :type="showAll" size="small" @click="handleShowTree('all')"
+            >显示全部</el-button
+          >
+          <el-button
+            :type="showNoCreat"
+            size="small"
+            @click="handleShowTree('noCreat')"
+            >显示未创建</el-button
+          >
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="small"
+            @click="sourceTopSearch"
+          ></el-button>
         </el-button-group>
       </div>
 
@@ -59,16 +99,23 @@
           ref="elTree"
         >
           <span
-            :class="data.haveClass?'hasClass custom-tree-node':'custom-tree-node'"
+            :class="
+              data.haveClass ? 'hasClass custom-tree-node' : 'custom-tree-node'
+            "
             slot-scope="{ node, data }"
           >
-            <span class="el-tree-node__label" v-if="whichTree == '数据用途分类树'||whichTree == '数据库分类树'">
+            <span
+              class="el-tree-node__label"
+              v-if="
+                whichTree == '数据用途分类树' || whichTree == '数据库分类树'
+              "
+            >
               <i :class="data.icon"></i>
               <span>{{ node.label }}</span>
             </span>
             <span class="el-tree-node__label" v-else>
               <i :class="data.icon"></i>
-              <span>{{node.label+'('+data.id+')'}}</span>
+              <span>{{ node.label + "(" + data.id + ")" }}</span>
             </span>
           </span>
         </el-tree>
@@ -184,6 +231,7 @@ export default {
 
     //左侧分类点击
     handleTabClick(tab, event) {
+      this.defaultExpandedKeys = null;
       this.sourceTreeText = "";
       this.sourceTreeOp = false;
       this.publicTreeTextActive = false;
