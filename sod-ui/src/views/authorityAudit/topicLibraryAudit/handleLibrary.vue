@@ -149,13 +149,13 @@
               <el-button
                 type="primary"
                 size="small"
-                @click="batchUpdatePower('2')"
+                @click="batchUpdatePower('1')"
                 icon="el-icon-thumb"
               >授权</el-button>
               <el-button
                 type="danger"
                 size="small"
-                @click="batchUpdatePower('3')"
+                @click="batchUpdatePower('2')"
                 icon="el-icon-close"
               >拒绝</el-button>
             </el-form-item>

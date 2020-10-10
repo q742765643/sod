@@ -184,6 +184,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //新增申请设置成待审
         dataAuthorityApplyEntity.setAuditStatus("01");
 
+        //保存
+        dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
+
         //读申请是否自动授权
         List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
         if(readAuthorityEntities != null && readAuthorityEntities.size()>0){
@@ -201,9 +204,6 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }
             }
         }
-
-        //保存
-        dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
         return dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntity);
     }
 
