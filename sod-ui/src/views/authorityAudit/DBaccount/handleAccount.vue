@@ -1,10 +1,16 @@
 <template>
   <section class="handleAccountDialog">
-    <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog" label-width="100px">
+    <el-form
+      :rules="rules"
+      ref="ruleForm"
+      :model="msgFormDialog"
+      label-width="100px"
+    >
       <el-row>
         <el-col :span="7" v-if="!handleObj.pageName">
           <el-form-item label="账户ID" prop="databaseUpId">
             <el-input
+              clearable
               size="small"
               v-model.trim="msgFormDialog.databaseUpId"
               :disabled="userDiasbled"
@@ -34,7 +40,9 @@
         </el-col>
         <el-col :span="3">
           <el-form-item class="unitFormItem">
-            <el-button size="small" type="primary" @click="showEditIp">编辑</el-button>
+            <el-button size="small" type="primary" @click="showEditIp"
+              >编辑</el-button
+            >
           </el-form-item>
         </el-col>
       </el-row>
@@ -61,7 +69,7 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="(item,index) in userBox"
+                v-for="(item, index) in userBox"
                 :key="index"
                 :label="item.webUsername"
                 :value="item.userName"
@@ -109,7 +117,7 @@
         <el-col :span="21">
           <el-form-item label="申请材料" class="fileInput">
             <label slot="label">
-              <i style="color:red;">*</i>&nbsp;申请材料
+              <i style="color: red">*</i>&nbsp;申请材料
             </label>
             <el-upload
               v-show="isHideAdd"
@@ -138,7 +146,8 @@
               type="success"
               @click="demoExport"
               icon="el-icon-document"
-            >模板下载</el-button>
+              >模板下载</el-button
+            >
             <el-button
               class="preViewBox"
               v-show="isHideAdd"
@@ -146,14 +155,15 @@
               type="success"
               @click="previewDocx"
               icon="el-icon-document"
-            >预览</el-button>
+              >预览</el-button
+            >
             <el-input
               size="small"
               type="text"
               disabled
               v-model.trim="msgFormDialog.applyMaterial"
               v-show="isHide"
-              style="width:80%;"
+              style="width: 80%"
             ></el-input>
             <el-button
               class="preViewBox2"
@@ -162,7 +172,8 @@
               type="success"
               @click="previewDocx"
               icon="el-icon-document"
-            >预览</el-button>
+              >预览</el-button
+            >
             <el-button
               class="reloaddemo"
               v-show="isHide"
@@ -170,7 +181,8 @@
               type="success"
               @click="detailExport"
               icon="el-icon-document"
-            >下载</el-button>
+              >下载</el-button
+            >
           </el-form-item>
         </el-col>
         <el-col :span="3"></el-col>
@@ -178,13 +190,27 @@
     </el-form>
 
     <!-- 确定取消 -->
-    <div slot="footer" class="dialog-footer" v-show="isHideAdd" v-if="!handleObj.pageName">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+    <div
+      slot="footer"
+      class="dialog-footer"
+      v-show="isHideAdd"
+      v-if="!handleObj.pageName"
+    >
+      <el-button type="primary" @click="trueDialog('ruleForm')"
+        >确 定</el-button
+      >
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
     <!-- 审核 -->
-    <div slot="footer" class="dialog-footer" v-show="isHide" v-if="!handleObj.pageName">
-      <el-button type="primary" @click="trueDialog('ruleForm')">通 过</el-button>
+    <div
+      slot="footer"
+      class="dialog-footer"
+      v-show="isHide"
+      v-if="!handleObj.pageName"
+    >
+      <el-button type="primary" @click="trueDialog('ruleForm')"
+        >通 过</el-button
+      >
       <el-button @click="cancelDialog('ruleForm')">不 通 过</el-button>
     </div>
     <el-dialog
@@ -196,12 +222,21 @@
       v-dialogDrag
     >
       <div class="ipDialog">
-        <el-alert title="范例(指定IP:192.168.1.1;IP段：192.168.1.%)" type="info" :closable="false"></el-alert>
-        <el-form :model="ipArryForm" label-width="30px" ref="ipform" style="margin-top:10px;">
+        <el-alert
+          title="范例(指定IP:192.168.1.1;IP段：192.168.1.%)"
+          type="info"
+          :closable="false"
+        ></el-alert>
+        <el-form
+          :model="ipArryForm"
+          label-width="30px"
+          ref="ipform"
+          style="margin-top: 10px"
+        >
           <el-form-item
-            v-for="(domain,index) in ipArryForm.domains"
+            v-for="(domain, index) in ipArryForm.domains"
             :key="domain.key"
-            :label="index+1+''"
+            :label="index + 1 + ''"
           >
             <el-input v-model.trim="domain.value" class="elInput"></el-input>
             <i class="el-icon-plus" @click="addDomain"></i>
@@ -209,7 +244,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="iptrueDialog('ipform')">确 定</el-button>
+          <el-button type="primary" @click="iptrueDialog('ipform')"
+            >确 定</el-button
+          >
           <el-button @click="ipcancelDialog('ipform')">取 消</el-button>
         </div>
       </div>

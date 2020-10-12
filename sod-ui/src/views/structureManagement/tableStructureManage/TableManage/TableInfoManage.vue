@@ -5,6 +5,7 @@
         <div :class="tableClass">
           <el-form-item label="表名称">
             <el-input
+              clearable
               :disabled="!isEdit"
               placeholder="表名称"
               size="small"
@@ -14,12 +15,15 @@
         </div>
         <div class="el-col el-col-3" v-if="isTableName">
           <el-form-item class="buttonCon">
-            <el-button type="primary" size="small" @click="help">帮助</el-button>
+            <el-button type="primary" size="small" @click="help"
+              >帮助</el-button
+            >
           </el-form-item>
         </div>
         <div class="el-col el-col-10">
           <el-form-item label="中文名称">
             <el-input
+              clearable
               :disabled="!isEdit"
               placeholder="中文名称"
               size="small"
@@ -29,7 +33,9 @@
         </div>
         <div class="el-col el-col-4">
           <el-form-item class="buttonCon">
-            <el-button v-if="!isEdit" type="primary" size="small" @click="edit">编辑</el-button>
+            <el-button v-if="!isEdit" type="primary" size="small" @click="edit"
+              >编辑</el-button
+            >
             <el-popover
               v-if="!isEdit"
               placement="bottom"
@@ -41,26 +47,26 @@
                 <ul>
                   <li>
                     <p>
-                      <span>{{'四级编码:'}}</span>
-                      <span>{{this.rowData.D_DATA_ID}}</span>
+                      <span>{{ "四级编码:" }}</span>
+                      <span>{{ this.rowData.D_DATA_ID }}</span>
                     </p>
                   </li>
                   <li>
                     <p>
-                      <span>{{'用途描述:'}}</span>
-                      <span>{{this.rowData.LOGIC_NAME}}</span>
+                      <span>{{ "用途描述:" }}</span>
+                      <span>{{ this.rowData.LOGIC_NAME }}</span>
                     </p>
                   </li>
                   <li>
                     <p>
-                      <span>{{'数据库名称:'}}</span>
-                      <span>{{this.rowData.DATABASE_NAME_F}}</span>
+                      <span>{{ "数据库名称:" }}</span>
+                      <span>{{ this.rowData.DATABASE_NAME_F }}</span>
                     </p>
                   </li>
                   <li>
                     <p>
-                      <span>{{'表类型:'}}</span>
-                      <span>{{this.rowData.DICT_LABEL}}</span>
+                      <span>{{ "表类型:" }}</span>
+                      <span>{{ this.rowData.DICT_LABEL }}</span>
                     </p>
                   </li>
                 </ul>
@@ -73,8 +79,12 @@
                 icon="el-icon-tickets"
               ></el-button>
             </el-popover>
-            <el-button v-if="isEdit" type="primary" size="small" @click="save">保存</el-button>
-            <el-button v-if="isEdit" type="primary" size="small" @click="cel">取消</el-button>
+            <el-button v-if="isEdit" type="primary" size="small" @click="save"
+              >保存</el-button
+            >
+            <el-button v-if="isEdit" type="primary" size="small" @click="cel"
+              >取消</el-button
+            >
           </el-form-item>
         </div>
       </div>
@@ -92,6 +102,7 @@
         <div class="el-col el-col-10">
           <el-form-item label="备注">
             <el-input
+              clearable
               :disabled="!isEdit"
               placeholder="备注"
               size="small"
@@ -106,7 +117,8 @@
               size="small"
               @click="baseMsgEdit"
               v-if="tableStructureManageContral"
-            >基础信息编辑</el-button>
+              >基础信息编辑</el-button
+            >
           </el-form-item>
         </div>
       </div>
@@ -121,7 +133,9 @@
       append-to-body
     >
       <div class="helpbox">
-        <h4 style="color:#F56C6C;">表名称如：nafp_for_ftm_[资料标识1]_[精度2]_[区域3]_[场类型4]_[加工过程类型5]</h4>
+        <h4 style="color: #f56c6c">
+          表名称如：nafp_for_ftm_[资料标识1]_[精度2]_[区域3]_[场类型4]_[加工过程类型5]
+        </h4>
         <p class="title">1.资料标识:</p>
         <span>资料标识表示资料的类别，应能方便的辨别资料的类型；</span>
         <p class="title">2.精度:</p>
@@ -129,14 +143,18 @@
         <p class="title">3.区域:</p>
         <span>区域表示资料的数据场标识的空间范围，如：GLB，CHN；</span>
         <p class="title">4.场类型:</p>
-        <span>数值模式产品按场类型（FIELD_TYPE）分为多种不同的产品，场类型的取值和对应含义如下表所示：</span>
+        <span
+          >数值模式产品按场类型（FIELD_TYPE）分为多种不同的产品，场类型的取值和对应含义如下表所示：</span
+        >
         <el-table border :data="tableData1" style="width: 100%">
           <el-table-column prop="code" label="代码值"></el-table-column>
           <el-table-column prop="means" label="含义"></el-table-column>
           <el-table-column prop="code2" label="代码值"></el-table-column>
           <el-table-column prop="means2" label="含义"></el-table-column>
         </el-table>
-        <span>当场类型为1时是预报产品，为其它时不是正常的预报产品。比如，EC低分的场类型为2的气温、位势高度等要素产品，其实是标准差产品，不是预报产品。</span>
+        <span
+          >当场类型为1时是预报产品，为其它时不是正常的预报产品。比如，EC低分的场类型为2的气温、位势高度等要素产品，其实是标准差产品，不是预报产品。</span
+        >
         <p class="title">5.加工过程类型:</p>
         <span>模式产品加工类型（GENPROCESS_TYPE字段）的含义如下：</span>
         <el-table border :data="tableData2" style="width: 100%">
@@ -147,9 +165,17 @@
           <el-table-column prop="code3" label="代码值"></el-table-column>
           <el-table-column prop="means3" label="含义"></el-table-column>
         </el-table>
-        <span>比如，当检索到GENPROCESS_TYPE=2时，是预报产品；GENPROCESS_TYPE=4时，是集合预报产品。</span>
-        <div slot="footer" class="dialog-footer" style="text-align:right;padding-bottom:20px;">
-          <el-button type="primary" @click="dialogVisible = false" size="small">确 定</el-button>
+        <span
+          >比如，当检索到GENPROCESS_TYPE=2时，是预报产品；GENPROCESS_TYPE=4时，是集合预报产品。</span
+        >
+        <div
+          slot="footer"
+          class="dialog-footer"
+          style="text-align: right; padding-bottom: 20px"
+        >
+          <el-button type="primary" @click="dialogVisible = false" size="small"
+            >确 定</el-button
+          >
         </div>
       </div>
     </el-dialog>
@@ -162,7 +188,11 @@
       :before-close="handleClose"
       append-to-body
     >
-      <handleBaseMsg @handleClose="handleClose" v-if="baseMsgEditDialog" :handleId="handleId"></handleBaseMsg>
+      <handleBaseMsg
+        @handleClose="handleClose"
+        v-if="baseMsgEditDialog"
+        :handleId="handleId"
+      ></handleBaseMsg>
     </el-dialog>
   </el-main>
 </template>

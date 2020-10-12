@@ -1,43 +1,94 @@
 <template>
   <el-main class="columnTemplate">
-    <el-button-group style="padding: 8px;">
+    <el-button-group style="padding: 8px">
       <el-button
         type="primary"
         size="small"
         icon="el-icon-c-scale-to-original"
         @click="getColumnTables"
         v-if="tableStructureManageContral"
-      >复用字段</el-button>
-      <el-button type="primary" size="small" icon="el-icon-plus" @click="columnAdd">新增</el-button>
-      <el-button type="primary" size="small" icon="el-icon-edit" @click="columnEdit">编辑</el-button>
-      <el-button type="primary" size="small" icon="el-icon-delete" @click="columnDelete">删除</el-button>
-      <el-button type="primary" size="small" icon="el-icon-document-copy" @click="columnCopy">复制</el-button>
-      <el-button type="primary" size="small" icon="el-icon-document-add" @click="columnPaste">粘贴</el-button>
+        >复用字段</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-plus"
+        @click="columnAdd"
+        >新增</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-edit"
+        @click="columnEdit"
+        >编辑</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-delete"
+        @click="columnDelete"
+        >删除</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-document-copy"
+        @click="columnCopy"
+        >复制</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-document-add"
+        @click="columnPaste"
+        >粘贴</el-button
+      >
       <el-button
         type="primary"
         size="small"
         icon="el-icon-s-order"
         @click="columnControl"
         v-if="tableStructureManageContral"
-      >质控字段</el-button>
+        >质控字段</el-button
+      >
     </el-button-group>
-    <el-button-group style="float: right;padding: 8px;">
-      <el-button type="primary" size="small" icon="el-icon-sort" @click="handleSort">排序</el-button>
-      <el-button type="primary" size="small" icon="el-icon-download" @click="exportCode('code')">导出</el-button>
-      <el-button type="primary" size="small" icon="el-icon-upload2" @click="importTelplate">导入</el-button>
+    <el-button-group style="float: right; padding: 8px">
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-sort"
+        @click="handleSort"
+        >排序</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-download"
+        @click="exportCode('code')"
+        >导出</el-button
+      >
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-upload2"
+        @click="importTelplate"
+        >导入</el-button
+      >
       <el-button
         type="primary"
         size="small"
         icon="el-icon-s-operation"
         @click="syncServe"
         v-if="tableStructureManageContral"
-      >同步服务名称</el-button>
+        >同步服务名称</el-button
+      >
     </el-button-group>
     <!-- <el-scrollbar wrap-class="scrollbar-wrapper"> -->
     <el-table
       :data="columnData"
       border
-      @selection-change="res=>selColumnData=res"
+      @selection-change="(res) => (selColumnData = res)"
       height="550"
       ref="selectionTable"
       @row-click="handleClickTableRow"
@@ -51,7 +102,12 @@
         v-if="tableStructureManageContral"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column label="字段编码" prop="celementCode" width="200px" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column
+        label="字段编码"
+        prop="celementCode"
+        width="200px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
       <el-table-column
         label="服务代码"
         prop="userEleCode"
@@ -59,10 +115,27 @@
         v-if="tableStructureManageContral"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column label="中文简称" prop="eleName" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="数据类型" prop="type" width="100px" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="数据精度" prop="accuracy" width="100px"></el-table-column>
-      <el-table-column label="要素单位" prop="unit" width="100px"></el-table-column>
+      <el-table-column
+        label="中文简称"
+        prop="eleName"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="数据类型"
+        prop="type"
+        width="100px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="数据精度"
+        prop="accuracy"
+        width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="要素单位"
+        prop="unit"
+        width="100px"
+      ></el-table-column>
       <el-table-column label="是否可空" prop="isNull" width="100px">
         <template slot-scope="scope">
           <span v-if="scope.row.isNull == true">是</span>
@@ -87,7 +160,11 @@
           <span v-else>否</span>
         </template>
       </el-table-column>
-      <el-table-column label="中文描述" prop="nameCn" width="100px"></el-table-column>
+      <el-table-column
+        label="中文描述"
+        prop="nameCn"
+        width="100px"
+      ></el-table-column>
       <el-table-column label="是否管理字段" prop="isManager" width="120px">
         <template slot-scope="scope">
           <span v-if="scope.row.isManager == true">是</span>
@@ -100,8 +177,16 @@
           <span v-else>否</span>
         </template>
       </el-table-column>-->
-      <el-table-column label="默认值" prop="defaultValue" width="100px"></el-table-column>
-      <el-table-column label="序号" prop="serialNumber" width="100px"></el-table-column>
+      <el-table-column
+        label="默认值"
+        prop="defaultValue"
+        width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="序号"
+        prop="serialNumber"
+        width="100px"
+      ></el-table-column>
     </el-table>
     <!-- </el-table-column> -->
     <el-dialog
@@ -119,6 +204,7 @@
               <el-form :inline="true">
                 <el-form-item label="数据源代码">
                   <el-input
+                    clearable
                     v-model.trim="searchMatedata.c_datatype"
                     placeholder="数据源代码"
                     size="small"
@@ -126,6 +212,7 @@
                 </el-form-item>
                 <el-form-item label="中文名称">
                   <el-input
+                    clearable
                     v-model.trim="searchMatedata.c_datum_level"
                     placeholder="中文名称"
                     size="small"
@@ -133,6 +220,7 @@
                 </el-form-item>
                 <el-form-item label="服务代码">
                   <el-input
+                    clearable
                     v-model.trim="searchMatedata.c_datumtype"
                     placeholder="服务代码"
                     size="small"
@@ -144,7 +232,8 @@
                     icon="el-icon-search"
                     size="small"
                     @click="searchFun('matedata')"
-                  >搜索</el-button>
+                    >搜索</el-button
+                  >
                 </el-form-item>
               </el-form>
             </div>
@@ -154,19 +243,62 @@
               height="320"
               @selection-change="handleSelectionMatedata"
             >
-              <el-table-column label="序号" type="index" width="50"></el-table-column>
+              <el-table-column
+                label="序号"
+                type="index"
+                width="50"
+              ></el-table-column>
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="数据源代码" prop="c_element_code"></el-table-column>
-              <el-table-column label="中文名称" prop="c_element_namech"></el-table-column>
-              <el-table-column label="英文名称" prop="c_element_name"></el-table-column>
-              <el-table-column label="数据类型" prop="c_datatype" width="70px"></el-table-column>
-              <el-table-column label="计量单位" prop="c_element_unit" width="80px"></el-table-column>
-              <el-table-column label="数据精度" prop="c_element_pre" width="70px"></el-table-column>
-              <el-table-column label="特征值" prop="c_charactervalue"></el-table-column>
-              <el-table-column label="状态" prop="c_status" width="60px"></el-table-column>
-              <el-table-column label="要素说明" prop="c_notes" width="70px"></el-table-column>
-              <el-table-column label="服务代码" prop="c_short_name"></el-table-column>
-              <el-table-column label="是否质控" prop="c_is_control" width="80px">
+              <el-table-column
+                label="数据源代码"
+                prop="c_element_code"
+              ></el-table-column>
+              <el-table-column
+                label="中文名称"
+                prop="c_element_namech"
+              ></el-table-column>
+              <el-table-column
+                label="英文名称"
+                prop="c_element_name"
+              ></el-table-column>
+              <el-table-column
+                label="数据类型"
+                prop="c_datatype"
+                width="70px"
+              ></el-table-column>
+              <el-table-column
+                label="计量单位"
+                prop="c_element_unit"
+                width="80px"
+              ></el-table-column>
+              <el-table-column
+                label="数据精度"
+                prop="c_element_pre"
+                width="70px"
+              ></el-table-column>
+              <el-table-column
+                label="特征值"
+                prop="c_charactervalue"
+              ></el-table-column>
+              <el-table-column
+                label="状态"
+                prop="c_status"
+                width="60px"
+              ></el-table-column>
+              <el-table-column
+                label="要素说明"
+                prop="c_notes"
+                width="70px"
+              ></el-table-column>
+              <el-table-column
+                label="服务代码"
+                prop="c_short_name"
+              ></el-table-column>
+              <el-table-column
+                label="是否质控"
+                prop="c_is_control"
+                width="80px"
+              >
                 <template slot-scope="scope">
                   <el-switch
                     v-model.trim="scope.row.switch"
@@ -183,7 +315,10 @@
                 <el-row>
                   <el-col :span="4">
                     <el-form-item label="字段分组">
-                      <el-select v-model.trim="searchMmdata.groupId" size="small">
+                      <el-select
+                        v-model.trim="searchMmdata.groupId"
+                        size="small"
+                      >
                         <el-option label="全部" value></el-option>
                         <el-option
                           v-for="item in AllManageGroup"
@@ -197,6 +332,7 @@
                   <el-col :span="6">
                     <el-form-item label="字段编码">
                       <el-input
+                        clearable
                         v-model.trim="searchMmdata.dbEleCode"
                         placeholder="字段编码"
                         size="small"
@@ -206,6 +342,7 @@
                   <el-col :span="6">
                     <el-form-item label="中文名称">
                       <el-input
+                        clearable
                         v-model.trim="searchMmdata.dbEleName"
                         placeholder="中文名称"
                         size="small"
@@ -215,6 +352,7 @@
                   <el-col :span="6">
                     <el-form-item label="服务代码">
                       <el-input
+                        clearable
                         v-model.trim="searchMmdata.userEleCode"
                         placeholder="服务代码"
                         size="small"
@@ -228,7 +366,8 @@
                       icon="el-icon-search"
                       size="small"
                       @click="searchFun('mmdata')"
-                    >搜索</el-button>
+                      >搜索</el-button
+                    >
                     <!-- <el-form-item label>
 
                     </el-form-item>-->
@@ -243,12 +382,28 @@
               @selection-change="handleSelectionMmdata"
             >
               <el-table-column type="selection" width="55"></el-table-column>
-              <el-table-column label="字段编码" prop="dbEleCode"></el-table-column>
-              <el-table-column label="服务代码" prop="userEleCode"></el-table-column>
-              <el-table-column label="中文名称" prop="dbEleName"></el-table-column>
-              <el-table-column label="字段短名" prop="eleName"></el-table-column>
+              <el-table-column
+                label="字段编码"
+                prop="dbEleCode"
+              ></el-table-column>
+              <el-table-column
+                label="服务代码"
+                prop="userEleCode"
+              ></el-table-column>
+              <el-table-column
+                label="中文名称"
+                prop="dbEleName"
+              ></el-table-column>
+              <el-table-column
+                label="字段短名"
+                prop="eleName"
+              ></el-table-column>
               <el-table-column label="类型" prop="type"></el-table-column>
-              <el-table-column label="字段精度" prop="data_precision" width="90px"></el-table-column>
+              <el-table-column
+                label="字段精度"
+                prop="data_precision"
+                width="90px"
+              ></el-table-column>
               <el-table-column label="是否可为空" prop="isNull" width="90px">
                 <template slot-scope="scope">
                   <span v-if="scope.row.isNull == true">是</span>
@@ -266,8 +421,14 @@
         </el-tabs>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="truePublic" size="small">确 定</el-button>
-        <el-button @click="dialogStatus.publicMatedataDialog = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="truePublic" size="small"
+          >确 定</el-button
+        >
+        <el-button
+          @click="dialogStatus.publicMatedataDialog = false"
+          size="small"
+          >取 消</el-button
+        >
       </span>
     </el-dialog>
     <el-dialog
@@ -287,22 +448,42 @@
       >
         <el-col :span="12">
           <el-form-item label="公共元数据字段" prop="dbEleCode">
-            <el-input placeholder="公共元数据字段" v-model.trim="columnEditData.dbEleCode" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="公共元数据字段"
+              v-model.trim="columnEditData.dbEleCode"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="字段编码" prop="celementCode">
-            <el-input placeholder="字段编码" v-model.trim="columnEditData.celementCode" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="字段编码"
+              v-model.trim="columnEditData.celementCode"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="服务代码" prop="userEleCode">
-            <el-input placeholder="服务代码" v-model.trim="columnEditData.userEleCode" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="服务代码"
+              v-model.trim="columnEditData.userEleCode"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文简称" prop="eleName">
-            <el-input placeholder="中文简称" v-model.trim="columnEditData.eleName" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="中文简称"
+              v-model.trim="columnEditData.eleName"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -310,11 +491,11 @@
             <el-select
               v-model.trim="columnEditData.type"
               placeholder="请选择数据类型"
-              style="width: 100%;"
+              style="width: 100%"
               @change="reseatNum"
             >
               <el-option
-                v-for="(item,index) in dataTypes"
+                v-for="(item, index) in dataTypes"
                 :key="index"
                 :label="item.dictLabel"
                 :value="item.dictValue"
@@ -324,12 +505,21 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="要素单位" prop="unit">
-            <el-input placeholder="要素单位" v-model.trim="columnEditData.unit" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="要素单位"
+              v-model.trim="columnEditData.unit"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="数据精度">
-            <el-input-number v-model.trim="columnEditData.accuracy" :min="0" size="small"></el-input-number>
+            <el-input-number
+              v-model.trim="columnEditData.accuracy"
+              :min="0"
+              size="small"
+            ></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -379,24 +569,42 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="默认值">
-            <el-input placeholder="默认值" v-model.trim="columnEditData.defaultValue" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="默认值"
+              v-model.trim="columnEditData.defaultValue"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="中文描述">
-            <el-input placeholder="中文描述" v-model.trim="columnEditData.nameCn" size="small"></el-input>
+            <el-input
+              clearable
+              placeholder="中文描述"
+              v-model.trim="columnEditData.nameCn"
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="序号" prop="serialNumber">
-            <el-input-number v-model.trim="columnEditData.serialNumber" size="small" :min="0"></el-input-number>
+            <el-input-number
+              v-model.trim="columnEditData.serialNumber"
+              size="small"
+              :min="0"
+            ></el-input-number>
           </el-form-item>
         </el-col>
         <div class="clear"></div>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="trueCode('formCodeName')" size="small">确 定</el-button>
-        <el-button @click="cancleCode('formCodeName')" size="small">取 消</el-button>
+        <el-button type="primary" @click="trueCode('formCodeName')" size="small"
+          >确 定</el-button
+        >
+        <el-button @click="cancleCode('formCodeName')" size="small"
+          >取 消</el-button
+        >
       </span>
     </el-dialog>
     <el-dialog
@@ -409,7 +617,11 @@
     >
       <div class="dragBox">
         <el-scrollbar wrap-class="scrollbar-wrapper">
-          <el-alert title="请拖动字段实现排序" type="success" :closable="false"></el-alert>
+          <el-alert
+            title="请拖动字段实现排序"
+            type="success"
+            :closable="false"
+          ></el-alert>
           <draggable
             class="list-group"
             tag="ul"
@@ -419,23 +631,29 @@
             @end="isDragging = false"
           >
             <transition-group type="transition" name="flip-list">
-              <li class="list-group-item" v-for="element in dragList" :key="element.celementCode">
+              <li
+                class="list-group-item"
+                v-for="element in dragList"
+                :key="element.celementCode"
+              >
                 <i
                   :class="
-                element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'
-              "
+                    element.fixed
+                      ? 'fa fa-anchor'
+                      : 'glyphicon glyphicon-pushpin'
+                  "
                   @click="element.fixed = !element.fixed"
                   aria-hidden="true"
                 ></i>
                 <el-row class="sortRow">
                   <el-col :span="4">
-                    <span>{{'序号:'}}{{ element.serialNumber }}</span>
+                    <span>{{ "序号:" }}{{ element.serialNumber }}</span>
                   </el-col>
                   <el-col :span="10">
-                    <span>{{'字段编码:'}}{{ element.celementCode }}</span>
+                    <span>{{ "字段编码:" }}{{ element.celementCode }}</span>
                   </el-col>
                   <el-col :span="10">
-                    <span>{{'中文简称:'}}{{ element.eleName }}</span>
+                    <span>{{ "中文简称:" }}{{ element.eleName }}</span>
                   </el-col>
                 </el-row>
               </li>
@@ -444,8 +662,12 @@
         </el-scrollbar>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="trueSort" size="small">确 定</el-button>
-        <el-button @click="dialogStatus.codeSortDialog = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="trueSort" size="small"
+          >确 定</el-button
+        >
+        <el-button @click="dialogStatus.codeSortDialog = false" size="small"
+          >取 消</el-button
+        >
       </span>
     </el-dialog>
     <el-dialog
@@ -467,7 +689,13 @@
           ></input-excel>
         </el-col>
         <el-col :span="12">
-          <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">模板下载</el-button>
+          <el-button
+            size="small"
+            type="success"
+            icon="el-icon-download"
+            @click="handleExport"
+            >模板下载</el-button
+          >
         </el-col>
       </el-row>
     </el-dialog>
@@ -1289,7 +1517,11 @@ export default {
           flagmsg = "要素单位不能为空";
           return;
         }
-        if (!element.serialNumber) {
+        if (
+          element.serialNumber == "" ||
+          element.serialNumber == null ||
+          element.serialNumber == undefined
+        ) {
           flag = true;
           flagmsg = "序号不能为空";
           return;

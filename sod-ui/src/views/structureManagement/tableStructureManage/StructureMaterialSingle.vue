@@ -33,7 +33,12 @@
               />
             </el-form-item>
             <el-form-item label="四级编码" prop="ddataId">
-              <el-input placeholder="请选择公共元数据" :readonly="true" v-model.trim="materialData.ddataId"></el-input>
+              <el-input
+                clearable
+                placeholder="请选择公共元数据"
+                :readonly="true"
+                v-model.trim="materialData.ddataId"
+              ></el-input>
             </el-form-item>
           </div>
         </div>
@@ -44,10 +49,15 @@
           </div>
           <div class="storageInfo">
             <el-form-item label="资料名称" prop="className">
-              <el-input placeholder="资料名称" v-model.trim="materialData.className"></el-input>
+              <el-input
+                clearable
+                placeholder="资料名称"
+                v-model.trim="materialData.className"
+              ></el-input>
             </el-form-item>
             <el-form-item label="存储编码" prop="dataClassId">
               <el-input
+                clearable
                 :disabled="isDisabledEdit"
                 placeholder="存储编码"
                 v-model.trim="materialData.dataClassId"
@@ -71,7 +81,10 @@
               />
             </el-form-item>
             <el-form-item label="类型" v-if="isSourceTree">
-              <el-input v-model.trim="materialData.typeText" :readonly="true"></el-input>
+              <el-input
+                v-model.trim="materialData.typeText"
+                :readonly="true"
+              ></el-input>
             </el-form-item>
             <el-form-item label="访问控制">
               <el-select v-model.trim="materialData.isAccess">
@@ -80,7 +93,10 @@
               </el-select>
             </el-form-item>
             <el-form-item label="排序" prop="serialNo">
-              <el-input-number v-model.trim="materialData.serialNo" :min="0"></el-input-number>
+              <el-input-number
+                v-model.trim="materialData.serialNo"
+                :min="0"
+              ></el-input-number>
               <!-- <el-input type="number" v-model.trim="materialData.serialNo" :min="0"></el-input> -->
             </el-form-item>
             <el-form-item label="是否发布" v-if="tableStructureManageContral">
@@ -92,7 +108,10 @@
                 <el-option :value="3" label="部分发布"></el-option>-->
               </el-select>
             </el-form-item>
-            <el-form-item label="基础信息配置" v-if="!isSourceTree&&tableStructureManageContral">
+            <el-form-item
+              label="基础信息配置"
+              v-if="!isSourceTree && tableStructureManageContral"
+            >
               <el-select v-model.trim="materialData.useBaseInfo">
                 <el-option :value="1" label="启用"></el-option>
                 <el-option :value="0" label="停用"></el-option>
@@ -109,19 +128,24 @@
               <el-checkbox-group v-model="materialData.labelKeyFrom">
                 <el-checkbox
                   :label="item.dictValue"
-                  v-for="(item,index) in dictdataTypes"
+                  v-for="(item, index) in dictdataTypes"
                   :key="index"
-                >{{item.dictLabel}}</el-checkbox>
+                  >{{ item.dictLabel }}</el-checkbox
+                >
               </el-checkbox-group>
             </el-form-item>
           </div>
         </div>
-        <div class="dictData" v-show="materialData.ifStopUse==3">
+        <div class="dictData" v-show="materialData.ifStopUse == 3">
           <div class="dictDataTitle">
             <i class="el-icon-price-tag"></i>数据权限
           </div>
           <div class="dictInfo">
-            <el-form-item label="数据权限" prop="labelKeyFrom" style="width:100%;">
+            <el-form-item
+              label="数据权限"
+              prop="labelKeyFrom"
+              style="width: 100%"
+            >
               <el-transfer
                 filterable
                 :filter-method="filterMethod"
@@ -145,14 +169,22 @@
           style="width: 98%"
         >
           <el-table-column prop="logicName" label="用途描述"></el-table-column>
-          <el-table-column prop="storageName" label="存储类型"></el-table-column>
-          <el-table-column prop="databasePName" label="数据库名称"></el-table-column>
+          <el-table-column
+            prop="storageName"
+            label="存储类型"
+          ></el-table-column>
+          <el-table-column
+            prop="databasePName"
+            label="数据库名称"
+          ></el-table-column>
           <el-table-column prop="databaseName" label="专题名"></el-table-column>
         </el-table>
       </div>
     </div>
     <div class="dialog-footer" slot="footer" v-if="!DRegistrationObj">
-      <el-button type="primary" @click="makeSureSave('materialForm')">确认</el-button>
+      <el-button type="primary" @click="makeSureSave('materialForm')"
+        >确认</el-button
+      >
       <el-button @click="cancleSave">取消</el-button>
     </div>
 

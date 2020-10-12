@@ -2,38 +2,79 @@
   <section class="handleLiberyDialog">
     <el-tabs type="border-card" v-model.trim="activeName">
       <el-tab-pane label="基本信息" name="first">
-        <el-form ref="ruleForm" :model="msgFormDialog" label-width="100px" :rules="rules">
+        <el-form
+          ref="ruleForm"
+          :model="msgFormDialog"
+          label-width="100px"
+          :rules="rules"
+        >
           <el-form-item label="图标" v-if="!handleObj.pageName">
-            <img v-if="sdbImg" :src="sdbImg" style="width:40px;" alt />
+            <img v-if="sdbImg" :src="sdbImg" style="width: 40px" alt />
           </el-form-item>
           <el-form-item label="专题库名称" prop="sdbName">
-            <el-input size="small" v-model.trim="msgFormDialog.sdbName"></el-input>
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="msgFormDialog.sdbName"
+            ></el-input>
           </el-form-item>
           <el-form-item label="用途" prop="uses">
-            <el-input size="small" v-model.trim="msgFormDialog.uses"></el-input>
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="msgFormDialog.uses"
+            ></el-input>
           </el-form-item>
           <el-form-item label="创建人" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userName"></el-input>
+            <el-input
+              clearable
+              size="small"
+              :disabled="true"
+              v-model.trim="msgFormDialog.userName"
+            ></el-input>
           </el-form-item>
           <el-form-item label="机构" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.department"></el-input>
+            <el-input
+              clearable
+              size="small"
+              :disabled="true"
+              v-model.trim="msgFormDialog.department"
+            ></el-input>
           </el-form-item>
           <el-form-item label="联系方式" v-if="!handleObj.pageName">
-            <el-input size="small" :disabled="true" v-model.trim="msgFormDialog.userPhone"></el-input>
+            <el-input
+              clearable
+              size="small"
+              :disabled="true"
+              v-model.trim="msgFormDialog.userPhone"
+            ></el-input>
           </el-form-item>
           <el-form-item label="申请材料" v-if="!handleObj.pageName">
-            <el-button size="small" type="success" @click="handleExport" icon="el-icon-document">下载</el-button>
+            <el-button
+              clearable
+              size="small"
+              type="success"
+              @click="handleExport"
+              icon="el-icon-document"
+              >下载</el-button
+            >
           </el-form-item>
           <el-form-item label="排序">
-            <el-input-number v-model.trim="msgFormDialog.sortNo" :min="0"></el-input-number>
+            <el-input-number
+              v-model.trim="msgFormDialog.sortNo"
+              :min="0"
+            ></el-input-number>
           </el-form-item>
           <div class="dialog-footer">
-            <el-button type="primary" @click="trueDialog('ruleForm')">保 存</el-button>
+            <el-button type="primary" @click="trueDialog('ruleForm')"
+              >保 存</el-button
+            >
             <el-button
               type="danger"
               @click="cancleDialog('ruleForm')"
               v-if="!handleObj.pageName"
-            >拒 绝</el-button>
+              >拒 绝</el-button
+            >
           </div>
         </el-form>
       </el-tab-pane>
@@ -42,16 +83,18 @@
           <el-row class="center">
             <el-col :span="24">
               <span>专题库名称:</span>
-              <span style="font-weight: bold">{{this.msgFormDialog.sdbName}}</span>
+              <span style="font-weight: bold">{{
+                this.msgFormDialog.sdbName
+              }}</span>
             </el-col>
           </el-row>
           <el-row class="center">
             <el-col :span="24">
               <span>专题库英文简称:</span>
-              <span>{{this.msgFormDialog.databaseSchema}}</span>
+              <span>{{ this.msgFormDialog.databaseSchema }}</span>
             </el-col>
           </el-row>
-          <el-table border :data="databaseList" stripe style="width: 100%;">
+          <el-table border :data="databaseList" stripe style="width: 100%">
             <el-table-column prop="databaseId" label="数据库"></el-table-column>
             <el-table-column label="权限">
               <template slot-scope="scope">
@@ -64,18 +107,23 @@
             </el-table-column>
           </el-table>
           <el-row>
-            <el-col style="text-align:center;margin-top:10px;">
+            <el-col style="text-align: center; margin-top: 10px">
               <el-button
                 type="primary"
                 size="small"
                 icon="el-icon-thumb"
                 @click="addPhysicsDefine"
-              >数据库授权</el-button>
+                >数据库授权</el-button
+              >
             </el-col>
           </el-row>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="专题库资料" name="third" v-if="!handleObj.pageName && flagPower">
+      <el-tab-pane
+        label="专题库资料"
+        name="third"
+        v-if="!handleObj.pageName && flagPower"
+      >
         <!-- 查询条件 -->
         <section class="searchCon">
           <el-form
@@ -92,7 +140,12 @@
               </el-select>
             </el-form-item>
             <el-form-item label>
-              <el-input size="small" v-model.trim="searchLibraryObj.valueText" type="text"></el-input>
+              <el-input
+                clearable
+                size="small"
+                v-model.trim="searchLibraryObj.valueText"
+                type="text"
+              ></el-input>
             </el-form-item>
             <el-form-item class="handleSearchBtn">
               <el-button
@@ -100,19 +153,44 @@
                 type="primary"
                 @click="searchLibraryFun"
                 icon="el-icon-search"
-              >查询</el-button>
+                >查询</el-button
+              >
             </el-form-item>
           </el-form>
         </section>
         <!-- 列表 -->
         <section class="loadTable">
-          <el-table border :data="tableLibraryData" style="width: 100%;">
-            <el-table-column type="index" label="序号" width="50"></el-table-column>
-            <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="ddataId" label="四级编码" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
+          <el-table border :data="tableLibraryData" style="width: 100%">
+            <el-table-column
+              type="index"
+              label="序号"
+              width="50"
+            ></el-table-column>
+            <el-table-column
+              prop="typeName"
+              label="资料分类"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="dataName"
+              label="资料名称"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="ddataId"
+              label="四级编码"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="tableName"
+              label="表名称"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="databaseName"
+              label="数据库"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
             <el-table-column
               prop="applyAuthority"
               label="申请权限"
@@ -122,7 +200,11 @@
           </el-table>
         </section>
       </el-tab-pane>
-      <el-tab-pane label="基础库资料" name="fourth" v-if="!handleObj.pageName && flagPower">
+      <el-tab-pane
+        label="基础库资料"
+        name="fourth"
+        v-if="!handleObj.pageName && flagPower"
+      >
         <!-- 查询条件 -->
         <section class="searchCon">
           <el-form
@@ -136,40 +218,83 @@
                 <el-option label="资料分类" value="typeName"></el-option>
                 <el-option label="资料名称" value="dataName"></el-option>
                 <el-option label="表名称" value="tableName"></el-option>
-                <el-option label="申请权限" value="applyAuthorityString"></el-option>
-                <el-option label="审核状态" value="examineStatusString"></el-option>
+                <el-option
+                  label="申请权限"
+                  value="applyAuthorityString"
+                ></el-option>
+                <el-option
+                  label="审核状态"
+                  value="examineStatusString"
+                ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label>
-              <el-input size="small" v-model.trim="searchBaseLibraryObj.valueText" type="text"></el-input>
+              <el-input
+                clearable
+                size="small"
+                v-model.trim="searchBaseLibraryObj.valueText"
+                type="text"
+              ></el-input>
             </el-form-item>
 
             <el-form-item class="handleSearchBtn">
-              <el-button size="small" type="primary" @click="loadReadList" icon="el-icon-search">查询</el-button>
+              <el-button
+                size="small"
+                type="primary"
+                @click="loadReadList"
+                icon="el-icon-search"
+                >查询</el-button
+              >
               <el-button
                 type="primary"
                 size="small"
                 @click="batchUpdatePower('1')"
                 icon="el-icon-thumb"
-              >授权</el-button>
+                >授权</el-button
+              >
               <el-button
                 type="danger"
                 size="small"
                 @click="batchUpdatePower('2')"
                 icon="el-icon-close"
-              >拒绝</el-button>
+                >拒绝</el-button
+              >
             </el-form-item>
           </el-form>
         </section>
         <!-- 列表 -->
         <section class="loadTable">
-          <el-table border :data="baseTableLibraryData" @selection-change="handleSelectionChange">
+          <el-table
+            border
+            :data="baseTableLibraryData"
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection" width="45"></el-table-column>
-            <el-table-column prop="typeName" label="资料分类" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="dataName" label="资料名称" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="ddataId" label="四级编码" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column prop="databaseName" label="数据库" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column
+              prop="typeName"
+              label="资料分类"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="dataName"
+              label="资料名称"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="ddataId"
+              label="四级编码"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="tableName"
+              label="表名称"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
+            <el-table-column
+              prop="databaseName"
+              label="数据库"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
             <el-table-column
               prop="applyAuthority"
               width="80px"
@@ -182,29 +307,43 @@
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="(scope.row.examineStatus == '1' && scope.row.applyAuthority == 1)||scope.row.examineStatus == '2' "
+                  v-if="
+                    (scope.row.examineStatus == '1' &&
+                      scope.row.applyAuthority == 1) ||
+                    scope.row.examineStatus == '2'
+                  "
                   type="success"
                   icon="el-icon-check"
-                >已授权</el-link>
+                  >已授权</el-link
+                >
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '1' && scope.row.applyAuthority == 2"
+                  v-if="
+                    scope.row.examineStatus == '1' &&
+                    scope.row.applyAuthority == 2
+                  "
                   type="warning"
                   icon="el-icon-s-finance"
-                >待审核</el-link>
+                  >待审核</el-link
+                >
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '3' "
+                  v-if="scope.row.examineStatus == '3'"
                   type="danger"
                   icon="el-icon-close"
-                >拒绝</el-link>
+                  >拒绝</el-link
+                >
               </template>
             </el-table-column>
             <el-table-column prop="examine_status" label="备注">
               <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top" v-if="scope.row.failureReason">
+                <el-popover
+                  trigger="hover"
+                  placement="top"
+                  v-if="scope.row.failureReason"
+                >
                   <p>{{ scope.row.failureReason }}</p>
                   <div slot="reference" class="name-wrapper">
                     <el-tag size="medium">查看</el-tag>
@@ -218,14 +357,16 @@
                   type="text"
                   size="mini"
                   icon="el-icon-thumb"
-                  @click="updatePower(scope.row,'2')"
-                >授权</el-button>
+                  @click="updatePower(scope.row, '2')"
+                  >授权</el-button
+                >
                 <el-button
                   type="text"
                   size="mini"
                   icon="el-icon-close"
-                  @click="updatePower(scope.row,'3')"
-                >拒绝</el-button>
+                  @click="updatePower(scope.row, '3')"
+                  >拒绝</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
