@@ -17,9 +17,12 @@
       <el-form-item label="图标" prop="icon">
         <el-upload
           class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
+          :action="upLoadUrl"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          :headers="myHeaders"
+          name="fileName"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -44,11 +47,13 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_PORTAL;
+import { getToken, createSign } from "@/utils/auth";
 import {
   getById,
   editById,
   homeDataSave,
 } from "@/api/portalMangement/DataManagement";
+var token = getToken();
 export default {
   name: "dataDialog",
   components: {},
@@ -61,7 +66,8 @@ export default {
     return {
       imageUrl: "",
       handleDis: false,
-      upLoadUrl: baseUrl + "/cmadaas/sod/portal/sdkManage/upload",
+      upLoadUrl: baseUrl + "/portal/fileManage/upload",
+      myHeaders: { Authorization: token },
       //编辑页面列
       msgFormDialog: {
         ddataId: "",
@@ -95,8 +101,16 @@ export default {
     }
   },
   methods: {
-    handleAvatarSuccess(res, file) {
+    handleAvatarSuccess(response, file, fileList) {
       this.imageUrl = URL.createObjectURL(file.raw);
+      this.msgFormDialog.icon = response.data.filePath;
+    },
+    beforeAvatarUpload(file){
+      const isPNG = file.type === 'image/png';
+      if (!isPNG) {
+        this.$message.error('上传图片只能是 PNG 格式!');
+      }
+      return isPNG;
     },
     onExceed() {
       this.$message({

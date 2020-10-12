@@ -50,7 +50,11 @@
           <span v-if="scope.row.module == '3'">行业社会数据</span>
         </template>
       </el-table-column>
-      <el-table-column prop="icon" label="图标"></el-table-column>
+      <el-table-column prop="icon" label="图标1">
+        <template slot-scope="scope">
+          <img style="width:20px;height:20px;" :src=baseCode+scope.row.icon />
+        </template>
+      </el-table-column>
       <el-table-column prop="serialNumber" label="排序"></el-table-column>
       <el-table-column prop="isshow" label="是否显示">
         <template slot-scope="scope">
@@ -118,6 +122,7 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
+      baseCode: "data:image/png;base64,",
     };
   },
   /** 方法调用 */

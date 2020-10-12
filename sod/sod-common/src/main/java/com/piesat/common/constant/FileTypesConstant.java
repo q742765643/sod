@@ -8,6 +8,6 @@ public class FileTypesConstant {
 
     public static final String[] ALLOW_TYPES = {"doc", "docx", "pdf", "jpg", "jpeg", "png", "gif"};
 
-    public static final String[] PORTAL_FILE_ALLOW_TYPES = {"doc", "docx", "pdf", "exe", "rpm", "gz", "zip"};
+    public static final String[] PORTAL_FILE_ALLOW_TYPES = {"doc", "docx", "pdf", "exe", "rpm", "gz", "zip", "png"};
 
 }

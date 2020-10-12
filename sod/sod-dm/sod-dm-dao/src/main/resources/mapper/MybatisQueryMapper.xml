@@ -1083,9 +1083,13 @@
     <select id="querySpecialByUserIdAndUseStatus" resultType="java.util.Map">
         select a.*, '' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b
           where a.user_id = b.user_name and a.USER_ID = #{userId} and a.USE_STATUS =#{useStatus}
-          or a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
         union
-        select a.*, 'WAITCHECK' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b where a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
+          select a.*, '' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b
+          where a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
+        <if test="useStatus != 3">
+          union
+          select a.*, 'WAITCHECK' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b where a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
+        </if>
     </select>
 
     <!-- 根据id删除资料申请记录 -->
