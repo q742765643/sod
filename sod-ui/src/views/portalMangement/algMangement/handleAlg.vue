@@ -8,11 +8,15 @@
         <el-input clearable size="small" v-model="msgFormDialog.algName" />
       </el-form-item>
       <el-form-item label="图标" prop="icon">
+        <img  v-show="handleDis" style="width:20px;height:20px;" :src=baseCode+baseIcon />
         <el-upload
           class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
+          :action="upLoadUrl"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          :headers="myHeaders"
+          name="fileName"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -37,11 +41,13 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_PORTAL;
+import { getToken, createSign } from "@/utils/auth";
 import {
   getById,
   editById,
   dplPlateSave,
 } from "@/api/portalMangement/algMangement";
+var token = getToken();
 export default {
   name: "dataDialog",
   components: {},
@@ -54,7 +60,10 @@ export default {
     return {
       imageUrl: "",
       handleDis: false,
-      upLoadUrl: baseUrl + "/cmadaas/sod/portal/sdkManage/upload",
+      upLoadUrl: baseUrl + "/portal/fileManage/upload",
+      myHeaders: { Authorization: token },
+      baseCode: "data:image/png;base64,",
+      baseIcon : "",
       //编辑页面列
       msgFormDialog: {
         classifyId: "",
@@ -84,12 +93,21 @@ export default {
       this.handleDis = true;
       getById({ id: this.handleObj.id }).then((res) => {
         this.msgFormDialog = res.data;
+        this.baseIcon = this.msgFormDialog.icon;
       });
     }
   },
   methods: {
-    handleAvatarSuccess(res, file) {
+    handleAvatarSuccess(response, file, fileList) {
       this.imageUrl = URL.createObjectURL(file.raw);
+      this.msgFormDialog.icon = response.data.filePath;
+    },
+    beforeAvatarUpload(file){
+      const isPNG = file.type === 'image/png';
+      if (!isPNG) {
+        this.$message.error('上传图片只能是 PNG 格式!');
+      }
+      return isPNG;
     },
     onExceed() {
       this.$message({

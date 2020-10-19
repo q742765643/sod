@@ -28,13 +28,13 @@ export function getById(query) {
 }
 
 // 编辑
-/* export function editById(data) {
+ export function editById(data) {
   return request({
-    url: baseUrl + '/portal/homeData/edit',
+    url: baseUrl + '/portal/typicalApp/edit',
     method: 'put',
     data: data
   })
-} */
+}
 
 // 删除
 export function delById(query) {

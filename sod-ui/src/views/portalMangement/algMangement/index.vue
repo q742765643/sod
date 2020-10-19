@@ -35,7 +35,11 @@
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="classifyId" label="分类编号"></el-table-column>
       <el-table-column prop="algName" label="分类名称"></el-table-column>
-      <el-table-column prop="icon" label="图标"></el-table-column>
+      <el-table-column prop="icon" label="图标">
+        <template slot-scope="scope">
+          <img style="width:20px;height:20px;" :src=baseCode+scope.row.icon />
+        </template>
+      </el-table-column>
       <el-table-column prop="serialNumber" label="排序"></el-table-column>
       <el-table-column prop="isshow" label="是否显示">
         <template slot-scope="scope">
@@ -103,6 +107,7 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
+      baseCode: "data:image/png;base64,",
     };
   },
   /** 方法调用 */

@@ -1,21 +1,21 @@
 <template>
   <section class="dataDialog">
     <el-form :model="msgFormDialog" :rules="baseFormRules" ref="fromRef" label-width="120px">
-      <el-form-item prop="ddataId" label="应用级别:">
-        <el-select v-model="msgFormDialog.isshow">
+      <el-form-item prop="classCode" label="应用类型:">
+        <el-select v-model="msgFormDialog.classCode">
           <el-option label="国家级" value="C"></el-option>
           <el-option label="省级" value="P"></el-option>
           <el-option label="公有云" value="CC"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="dataName" label="应用名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="appName" label="应用名称:">
+        <el-input clearable size="small" v-model="msgFormDialog.appName" />
       </el-form-item>
-      <el-form-item prop="dataName" label="机构名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="orgName" label="机构名称:">
+        <el-input clearable size="small" v-model="msgFormDialog.orgName" />
       </el-form-item>
-      <el-form-item prop="dataName" label="应用链接:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" />
+      <el-form-item prop="url" label="应用链接:">
+        <el-input clearable size="small" v-model="msgFormDialog.url" />
       </el-form-item>
       <el-form-item prop="serialNumber" label="排序:">
         <el-input-number clearable size="small" v-model="msgFormDialog.serialNumber" />
@@ -54,21 +54,26 @@ export default {
       handleDis: false,
       //编辑页面列
       msgFormDialog: {
-        ddataId: "",
-        dataName: "",
-        icon: "",
+        classCode: "",
+        appName: "",
+        orgName: "",
+        url: "",
         isshow: "Y",
         serialNumber: "1",
-        module: "1",
       },
       baseFormRules: {
-        ddataId: [
-          { required: true, message: "请输入四级编码", trigger: "blur" },
+        classCode: [
+          { required: true, message: "请选择应用级别", trigger: "blur" },
         ],
-        dataName: [
-          { required: true, message: "请输入分类名称 ", trigger: "blur" },
+        appName: [
+          { required: true, message: "请输入应用名称 ", trigger: "blur" },
         ],
-
+        orgName: [
+          { required: true, message: "请输入机构名称 ", trigger: "blur" },
+        ],
+        url: [
+          { required: true, message: "请输入应用连接 ", trigger: "blur" },
+        ],
         serialNumber: [
           { required: true, message: "请输入排序编号 ", trigger: "blur" },
         ],
@@ -85,26 +90,6 @@ export default {
     }
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    onExceed() {
-      this.$message({
-        type: "error",
-        message: "只能上传一个文件",
-      });
-    },
-    JarSuccess(res, file) {
-      if (res.code == 200) {
-        this.msgFormDialog.sdkJarUrl = res.url;
-      } else {
-        this.$message({
-          type: "error",
-          message: res.msg,
-        });
-      }
-    },
-
     trueDialog(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {

@@ -15,6 +15,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="图标" prop="icon">
+        <img  v-show="handleDis" style="width:20px;height:20px;" :src=baseCode+baseIcon />
         <el-upload
           class="avatar-uploader"
           :action="upLoadUrl"
@@ -68,6 +69,8 @@ export default {
       handleDis: false,
       upLoadUrl: baseUrl + "/portal/fileManage/upload",
       myHeaders: { Authorization: token },
+      baseCode: "data:image/png;base64,",
+      baseIcon : "",
       //编辑页面列
       msgFormDialog: {
         ddataId: "",
@@ -97,6 +100,7 @@ export default {
       this.handleDis = true;
       getById({ id: this.handleObj.id }).then((res) => {
         this.msgFormDialog = res.data;
+        this.baseIcon = this.msgFormDialog.icon;
       });
     }
   },

@@ -2,8 +2,8 @@
   <div class="app-container">
     <!-- 典型应用管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item prop="isshow" label="应用类型:">
-        <el-select v-model="queryParams.isshow">
+      <el-form-item prop="classCode" label="应用类型:">
+        <el-select v-model="queryParams.classCode">
           <el-option label="国家级" value="C"></el-option>
           <el-option label="省级" value="P"></el-option>
           <el-option label="公有云" value="CC"></el-option>
@@ -16,8 +16,8 @@
           <el-option label="否" value="N"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="dataName" label="应用名称:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入应用名称" />
+      <el-form-item prop="appName" label="应用名称:">
+        <el-input clearable size="small" v-model="queryParams.appName" placeholder="请输入应用名称" />
       </el-form-item>
       <el-form-item prop="dataName" label="所属机构:">
         <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入所属机构" />
@@ -43,9 +43,16 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="ddataId" label="应用名称"></el-table-column>
-      <el-table-column prop="dataName" label="机构名称"></el-table-column>
-      <el-table-column prop="icon" label="应用链接"></el-table-column>
+      <el-table-column prop="classCode" label="应用类型">
+        <template slot-scope="scope">
+          <span v-if="scope.row.classCode == 'C'">国家级</span>
+          <span v-if="scope.row.classCode == 'P'">省级</span>
+          <span v-if="scope.row.classCode == 'CC'">公有云</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="appName" label="应用名称"></el-table-column>
+      <el-table-column prop="orgName" label="机构名称"></el-table-column>
+      <el-table-column prop="url" label="应用链接"></el-table-column>
       <el-table-column prop="serialNumber" label="排序"></el-table-column>
       <el-table-column prop="isshow" label="是否显示">
         <template slot-scope="scope">
@@ -56,6 +63,7 @@
       <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button icon="el-icon-edit" size="mini" type="text" @click="showDialog(scope.row)">编辑</el-button>
+          <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -104,7 +112,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        sdkType: "",
+        appName: "",
       },
       tableData: [],
       total: 0,
@@ -152,7 +160,7 @@ export default {
       this.msgFormDialog = true;
     },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.ddataId + "吗?", "温馨提示", {
+      this.$confirm("确认要删除" + row.appName + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

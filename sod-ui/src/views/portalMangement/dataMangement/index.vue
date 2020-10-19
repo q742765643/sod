@@ -50,7 +50,7 @@
           <span v-if="scope.row.module == '3'">行业社会数据</span>
         </template>
       </el-table-column>
-      <el-table-column prop="icon" label="图标1">
+      <el-table-column prop="icon" label="图标">
         <template slot-scope="scope">
           <img style="width:20px;height:20px;" :src=baseCode+scope.row.icon />
         </template>
