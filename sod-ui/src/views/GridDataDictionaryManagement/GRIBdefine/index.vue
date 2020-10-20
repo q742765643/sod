@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
     <!-- grib参数定义 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      class="searchBox"
+    >
       <el-form-item label="GRIB版本:">
         <el-select v-model.number="queryParams.gribVersion">
           <el-option label="1" value="1"></el-option>
@@ -25,19 +30,39 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+          >查询</el-button
+        >
         <el-button type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
         </el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('add')"
+          icon="el-icon-plus"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('edit')"
+          icon="el-icon-edit"
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-upload
@@ -51,14 +76,28 @@
           :header="importHeaders"
           ref="upload"
         >
-          <el-button size="small" type="success" icon="el-icon-upload2">导入</el-button>
+          <el-button size="small" type="success" icon="el-icon-upload2"
+            >导入</el-button
+          >
         </el-upload>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" @click="tableExoprt()" icon="el-icon-download">导出</el-button>
+        <el-button
+          size="small"
+          type="success"
+          @click="tableExoprt()"
+          icon="el-icon-download"
+          >导出</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" @click="deleteCell" icon="el-icon-delete">删除</el-button>
+        <el-button
+          size="small"
+          type="danger"
+          @click="deleteCell"
+          icon="el-icon-delete"
+          >删除</el-button
+        >
       </el-col>
     </el-row>
 
@@ -71,7 +110,10 @@
       ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column prop="eleCodeShort" label="要素存储短名"></el-table-column>
+      <el-table-column
+        prop="eleCodeShort"
+        label="要素存储短名"
+      ></el-table-column>
       <el-table-column prop="subjectId" label="学科"></el-table-column>
       <el-table-column prop="classify" label="参数种类"></el-table-column>
       <el-table-column prop="parameterId" label="参数编码"></el-table-column>
@@ -87,7 +129,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -111,38 +153,67 @@
         class="gribdefineDialog"
       >
         <el-form-item label="要素存储短名:" prop="eleCodeShort">
-          <el-input v-model.trim="ruleForm.eleCodeShort" placeholder="请输入要素存储短名" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.eleCodeShort"
+            placeholder="请输入要素存储短名"
+          />
         </el-form-item>
         <el-form-item label="学科:" prop="subjectId">
-          <el-input v-model.trim.number="ruleForm.subjectId" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.subjectId"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="参数种类:" prop="classify">
-          <el-input v-model.trim.number="ruleForm.classify" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.classify"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="参数编码:" prop="parameterId">
-          <el-input v-model.trim.number="ruleForm.parameterId" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.parameterId"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="GRIB版本:" prop="gribVersion">
-          <el-select v-model.number="ruleForm.gribVersion">
+          <el-select clearable v-model.number="ruleForm.gribVersion">
             <el-option label="1" value="1"></el-option>
             <el-option label="2" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="是否为共有配置:" prop="publicConfig">
-          <el-select v-model.trim="ruleForm.publicConfig">
+          <el-select clearable v-model.trim="ruleForm.publicConfig">
             <el-option label="是" value="Y"></el-option>
             <el-option label="否" value="N"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="模板编号:" prop="templateId">
-          <el-input v-model.trim="ruleForm.templateId" placeholder="请输入模板ID" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.templateId"
+            placeholder="请输入模板ID"
+          />
         </el-form-item>
         <el-form-item label="模板说明:" prop="templateDesc">
-          <el-input type="textarea" v-model.trim="ruleForm.templateDesc" />
+          <el-input
+            clearable
+            type="textarea"
+            v-model.trim="ruleForm.templateDesc"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTrue('ruleForm')">确 定</el-button>
+        <el-button type="primary" @click="handleTrue('ruleForm')"
+          >确 定</el-button
+        >
         <el-button @click="resetForm('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>

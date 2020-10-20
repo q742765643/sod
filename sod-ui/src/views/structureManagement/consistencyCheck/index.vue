@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
     <!-- 一致性检查 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      class="searchBox"
+    >
       <el-form-item label="专题库名称：" prop="database_name">
         <el-input
           clearable
@@ -11,16 +16,36 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          icon="el-icon-search"
+          @click="handleQuery"
+          >查询</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="success" :icon="exportIcon" @click="handleExport">生成差异报告</el-button>
+        <el-button
+          size="small"
+          type="success"
+          :icon="exportIcon"
+          @click="handleExport"
+          >生成差异报告</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="warning" icon="el-icon-refresh" @click="updateEleInfo">同步字段信息</el-button>
+        <el-button
+          size="small"
+          type="warning"
+          icon="el-icon-refresh"
+          @click="updateEleInfo"
+          >同步字段信息</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -29,7 +54,8 @@
           type="primary"
           icon="el-icon-plus"
           @click="addReportData()"
-        >添加</el-button>
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -38,7 +64,8 @@
           type="danger"
           icon="el-icon-delete"
           @click="deleteData"
-        >删除</el-button>
+          >删除</el-button
+        >
       </el-col>
     </el-row>
 
@@ -51,12 +78,27 @@
       ref="singleTable"
       highlight-current-row
     >
-      <el-table-column type="index" label="序号" :index="table_index" width="50"></el-table-column>
+      <el-table-column
+        type="index"
+        label="序号"
+        :index="table_index"
+        width="50"
+      ></el-table-column>
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="databaseName" label="专题库名称"></el-table-column>
-      <el-table-column prop="databaseDto.databaseDefine.databaseType" label="数据库类型" width="120"></el-table-column>
-      <el-table-column prop="databaseDto.databaseDefine.databaseInstance" label="专题库实例"></el-table-column>
-      <el-table-column prop="databaseDto.schemaName" label="专题库模式"></el-table-column>
+      <el-table-column
+        prop="databaseDto.databaseDefine.databaseType"
+        label="数据库类型"
+        width="120"
+      ></el-table-column>
+      <el-table-column
+        prop="databaseDto.databaseDefine.databaseInstance"
+        label="专题库实例"
+      ></el-table-column>
+      <el-table-column
+        prop="databaseDto.schemaName"
+        label="专题库模式"
+      ></el-table-column>
       <!--<el-table-column prop="database_desc" label="专题库描述"></el-table-column>-->
       <el-table-column prop="address" label="操作" width="120">
         <template slot-scope="scope">
@@ -65,13 +107,14 @@
             size="small"
             type="text"
             @click="getHistoricalReport(scope.row)"
-          >历史报告列表</el-button>
+            >历史报告列表</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -87,7 +130,7 @@
       <el-form :rules="rules" ref="ruleForm" :model="msgFormDialog">
         <el-form-item label="数据库选择:" prop="databaseId">
           <el-select
-            style="width:80%;"
+            style="width: 80%"
             v-model.trim="msgFormDialog.databaseId"
             placeholder="请选择添加数据库"
             filterable
@@ -103,7 +146,9 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="addReportRecord('ruleForm')">确 定</el-button>
+        <el-button type="primary" @click="addReportRecord('ruleForm')"
+          >确 定</el-button
+        >
         <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>
@@ -118,16 +163,25 @@
       v-dialogDrag
     >
       <el-table
-        ref="singleTable"
+        ref="singleTableD"
         :data="historyData"
         highlight-current-row
         border
         stripe
         @sort-change="sortChange"
       >
-        <el-table-column type="index" label="序号" width="50" :index="table_index_history"></el-table-column>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="50"
+          :index="table_index_history"
+        ></el-table-column>
         <!--<el-table-column prop="database_id" label="检查ID"></el-table-column>-->
-        <el-table-column prop="fileName" label="报告名称" min-width="300"></el-table-column>
+        <el-table-column
+          prop="fileName"
+          label="报告名称"
+          min-width="300"
+        ></el-table-column>
         <el-table-column prop="createTime" label="生成时间" sortable="custom">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -140,19 +194,22 @@
               size="small"
               type="text"
               @click="downloadHischeckFile(scope1.row)"
-            >下载</el-button>
+              >下载</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
       <pagination
-        v-show="historyTotal>0"
+        v-show="historyTotal > 0"
         :total="historyTotal"
         :page.sync="historyObj.pageNum"
         :limit.sync="historyObj.pageSize"
         @pagination="getHistoryData"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="historyDialog=false">取消</el-button>
+        <el-button type="primary" @click="historyDialog = false"
+          >取消</el-button
+        >
       </div>
     </el-dialog>
   </div>
@@ -168,7 +225,7 @@ import {
   deleteByIds,
   exportTable,
   downHistoryDfcheckFile,
-  updateEleInfo
+  updateEleInfo,
 } from "@/api/structureManagement/consistencyCheck";
 import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {

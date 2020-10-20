@@ -1,13 +1,28 @@
 <template>
   <section class="handleTaskCommonDialog">
-    <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="100px">
+    <el-form
+      ref="ruleForm"
+      :rules="rules"
+      :model="msgFormDialog"
+      label-width="100px"
+    >
       <el-form-item prop="taskName" label="任务名称:">
-        <el-input size="small" v-model.trim="msgFormDialog.taskName" placeholder="请输入" />
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="msgFormDialog.taskName"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item prop="tableName" label="表名:">
-        <el-select size="small" filterable v-model.trim="msgFormDialog.tableName">
+        <el-select
+          clearable
+          size="small"
+          filterable
+          v-model.trim="msgFormDialog.tableName"
+        >
           <el-option
-            v-for="(item,index) in tableNames"
+            v-for="(item, index) in tableNames"
             :key="index"
             :label="item.dictValue"
             :value="item.dictValue"
@@ -15,26 +30,50 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="apiUrl" label="接口url:">
-        <el-input size="small" v-model.trim="msgFormDialog.apiUrl" placeholder="请输入" />
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="msgFormDialog.apiUrl"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item prop="apiType" label="同步类型:">
-        <el-select size="small" filterable v-model.trim="msgFormDialog.apiType">
+        <el-select
+          clearable
+          size="small"
+          filterable
+          v-model.trim="msgFormDialog.apiType"
+        >
           <el-option label="全量同步" value="1"></el-option>
           <el-option label="增量同步" value="2"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item prop="apiDataKey" label="接口关键字:">
-        <el-input size="small" v-model.trim="msgFormDialog.apiDataKey" placeholder="请输入" />
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="msgFormDialog.apiDataKey"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item prop="primaryKey" label="同步主键:">
-        <el-input size="small" v-model.trim="msgFormDialog.primaryKey" placeholder="请输入" />
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="msgFormDialog.primaryKey"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item prop="jobCron" label="执行策略:">
         <el-popover v-model.trim="cronPopover">
-          <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
+          <vueCron
+            @change="changeCron"
+            @close="closeCronPopover"
+            i18n="cn"
+          ></vueCron>
           <el-input
             slot="reference"
-            @click="cronPopover=true"
+            @click="cronPopover = true"
             v-model.trim="msgFormDialog.jobCron"
             placeholder="请输入定时策略"
           ></el-input>
@@ -42,7 +81,9 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm')"
+        >确 定</el-button
+      >
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
   </section>

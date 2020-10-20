@@ -1,15 +1,21 @@
 <template>
   <section class="handleClearDialog">
-    <el-form ref="ruleForm" :model="msgFormDialog" :rules="rules" label-width="120px">
+    <el-form
+      ref="ruleForm"
+      :model="msgFormDialog"
+      :rules="rules"
+      label-width="120px"
+    >
       <el-row>
         <el-col :span="12">
           <el-form-item label="物理库" prop="databaseId">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.databaseId"
               filterable
-              @change="selectByDatabaseIds($event,'')"
+              @change="selectByDatabaseIds($event, '')"
               placeholder="请选择物理库"
-              style="width:100%"
+              style="width: 100%"
             >
               <el-option
                 v-for="database in databaseOptions"
@@ -23,11 +29,12 @@
         <el-col :span="12">
           <el-form-item label="资料名称" prop="dataClassId">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.dataClassId"
               filterable
               @change="selectTable"
               placeholder="请选择资料"
-              style="width:100%"
+              style="width: 100%"
             >
               <el-option
                 v-for="dataClass in dataClassIdOptions"
@@ -41,6 +48,7 @@
         <el-col :span="24">
           <el-form-item label="近时备份条件" prop="conditions">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.conditions"
               placeholder="请选择近时备份条件"
               filterable
@@ -58,6 +66,7 @@
         <el-col :span="24">
           <el-form-item label="远时备份条件" prop="secondConditions">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.secondConditions"
               placeholder="请选择远时备份条件"
               filterable
@@ -75,6 +84,7 @@
         <el-col :span="24">
           <el-form-item label="存储目录" prop="storageDirectory">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.storageDirectory"
               placeholder="请选择"
               filterable
@@ -91,12 +101,16 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="表名" prop="tableName">
-            <el-input v-model.trim="msgFormDialog.tableName" disabled />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.tableName"
+              disabled
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="四级编码" prop="ddataId">
-            <el-input v-model.trim="msgFormDialog.ddataId" disabled />
+            <el-input clearable v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
 
@@ -107,32 +121,49 @@
                 v-for="dict in alarmOptions"
                 :key="dict.dictValue"
                 :label="dict.dictValue"
-              >{{dict.dictLabel}}</el-radio>
+                >{{ dict.dictLabel }}</el-radio
+              >
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input v-model.trim="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.executorTimeout"
+              placeholder="请输入超时时间单位为分钟"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="失败重试次数" prop="executorFailRetryCount">
-            <el-input v-model.trim="msgFormDialog.executorFailRetryCount" placeholder="请输入失败重试次数" />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.executorFailRetryCount"
+              placeholder="请输入失败重试次数"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="重试间隔时间" prop="retryInterval">
-            <el-input v-model.trim="msgFormDialog.retryInterval" placeholder="请输入重试间隔时间单位为分钟" />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.retryInterval"
+              placeholder="请输入重试间隔时间单位为分钟"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="执行策略" prop="jobCron">
             <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
+              <vueCron
+                @change="changeCron"
+                @close="closeCronPopover"
+                i18n="cn"
+              ></vueCron>
               <el-input
                 slot="reference"
-                @click="cronPopover=true"
+                @click="cronPopover = true"
                 v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
@@ -141,13 +172,24 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
-            <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.jobDesc"
+              type="textarea"
+              placeholder="请输入内容"
+            ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <div slot="footer" class="dialog-footer" v-if="handleObj.pageName != '数据注册审核'">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+    <div
+      slot="footer"
+      class="dialog-footer"
+      v-if="handleObj.pageName != '数据注册审核'"
+    >
+      <el-button type="primary" @click="trueDialog('ruleForm')"
+        >确 定</el-button
+      >
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
   </section>
@@ -161,14 +203,14 @@ import {
   findAllDataBase,
   getByDatabaseId,
   getByDatabaseIdAndClassId,
-  getNextTime
+  getNextTime,
 } from "@/api/schedule/backup/backup";
 export default {
   name: "handleClearDialog",
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     //校验是否为cron表达式
@@ -178,8 +220,8 @@ export default {
       } else {
         let flag = true;
         await getNextTime({
-          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.msgFormDialog.jobCron.split(" ?")[0] + " ?",
+        }).then((res) => {
           flag = false;
         });
         if (flag) {
@@ -211,49 +253,49 @@ export default {
         executorTimeout: "",
         executorFailRetryCount: "",
         retryInterval: "",
-        jobDesc: ""
+        jobDesc: "",
       },
       // 表单校验
       rules: {
         databaseId: [
-          { required: true, message: "物理库不能为空", trigger: "change" }
+          { required: true, message: "物理库不能为空", trigger: "change" },
         ],
         dataClassId: [
-          { required: true, message: "资料名称不能为空", trigger: "change" }
+          { required: true, message: "资料名称不能为空", trigger: "change" },
         ],
         storageDirectory: [
-          { required: true, message: "存储目录不能为空", trigger: "change" }
+          { required: true, message: "存储目录不能为空", trigger: "change" },
         ],
         jobCron: [
-          { required: true, validator: handleCronValidate, trigger: "blur" }
+          { required: true, validator: handleCronValidate, trigger: "blur" },
         ],
         executorTimeout: [
-          { required: true, message: "超时时间不能为空", trigger: "blur" }
+          { required: true, message: "超时时间不能为空", trigger: "blur" },
         ],
         executorFailRetryCount: [
-          { required: true, message: "重试次数不能为空", trigger: "blur" }
+          { required: true, message: "重试次数不能为空", trigger: "blur" },
         ],
         retryInterval: [
-          { required: true, message: "重试间隔时间不能为空", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "重试间隔时间不能为空", trigger: "blur" },
+        ],
+      },
     };
   },
 
   async created() {
-    this.getDicts("job_is_alarm").then(response => {
+    this.getDicts("job_is_alarm").then((response) => {
       this.alarmOptions = response.data;
     });
-    await findAllDataBase().then(response => {
+    await findAllDataBase().then((response) => {
       this.databaseOptions = response.data;
     });
-    await this.getDicts("backup_storage_directory").then(response => {
+    await this.getDicts("backup_storage_directory").then((response) => {
       this.storageDirectoryOptions = response.data;
     });
-    await this.getDicts("database_backup_near_where").then(response => {
+    await this.getDicts("database_backup_near_where").then((response) => {
       this.conditionsOptions = response.data;
     });
-    await this.getDicts("database_backup_far_where").then(response => {
+    await this.getDicts("database_backup_far_where").then((response) => {
       this.secondConditionsOptions = response.data;
     });
     // 匹配数据库和资料名称
@@ -272,7 +314,7 @@ export default {
 
     // 查看详情
     if (this.handleObj.id) {
-      await getBackup(this.handleObj.id).then(response => {
+      await getBackup(this.handleObj.id).then((response) => {
         this.selectByDatabaseIds(
           response.data.databaseId,
           response.data.dataClassId
@@ -295,15 +337,15 @@ export default {
         return;
       } else {
         getNextTime({
-          cronExpression: this.cronExpression.split(" ?")[0] + " ?"
-        }).then(res => {
+          cronExpression: this.cronExpression.split(" ?")[0] + " ?",
+        }).then((res) => {
           let times = res.data;
           let html = "";
-          times.forEach(element => {
+          times.forEach((element) => {
             html += "<p>" + element + "</p>";
           });
           this.$alert(html, "前5次执行时间", {
-            dangerouslyUseHTMLString: true
+            dangerouslyUseHTMLString: true,
           }).then(() => {
             this.CronPopover = false;
           });
@@ -318,13 +360,13 @@ export default {
       );
     },
     findTable(databaseId, dataClassId) {
-      getByDatabaseIdAndClassId(databaseId, dataClassId).then(response => {
+      getByDatabaseIdAndClassId(databaseId, dataClassId).then((response) => {
         this.msgFormDialog.ddataId = response.data.ddataId;
         this.msgFormDialog.tableName = response.data.tableName;
       });
     },
     async selectByDatabaseIds(databaseId, dataClassId) {
-      await getByDatabaseId(databaseId, dataClassId).then(response => {
+      await getByDatabaseId(databaseId, dataClassId).then((response) => {
         this.dataClassIdOptions = response.data;
         this.msgFormDialog.dataClassId = dataClassId;
       });
@@ -333,10 +375,10 @@ export default {
     trueDialog(formName) {
       this.msgFormDialog.triggerStatus = 1;
       console.log(this.msgFormDialog);
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.msgFormDialog.id != undefined) {
-            updateBackup(this.msgFormDialog).then(response => {
+            updateBackup(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 if (this.handleObj.pageName == "数据注册审核") {
@@ -349,7 +391,7 @@ export default {
               }
             });
           } else {
-            addBackup(this.msgFormDialog).then(response => {
+            addBackup(this.msgFormDialog).then((response) => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 if (this.handleObj.pageName == "数据注册审核") {
@@ -371,8 +413,8 @@ export default {
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
-    }
-  }
+    },
+  },
 };
 </script>
 

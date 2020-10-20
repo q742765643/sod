@@ -1,29 +1,64 @@
 <template>
   <div class="app-container">
     <!-- 区域类别管理 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      class="searchBox"
+    >
       <el-form-item label="区域标识:">
         <el-input clearable size="small" v-model.trim="queryParams.areaId" />
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+          >查询</el-button
+        >
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('add')"
+          icon="el-icon-plus"
+          >新增</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('edit')"
+          icon="el-icon-edit"
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
         <input-excel @getResult="getMyExcelData" btnText="导入"></input-excel>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="success" @click="tableExoprt()" icon="el-icon-download">导出</el-button>
+        <el-button
+          size="small"
+          type="success"
+          @click="tableExoprt()"
+          icon="el-icon-download"
+          >导出</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" @click="deleteCell" icon="el-icon-delete">删除</el-button>
+        <el-button
+          size="small"
+          type="danger"
+          @click="deleteCell"
+          icon="el-icon-delete"
+          >删除</el-button
+        >
       </el-col>
     </el-row>
 
@@ -45,7 +80,7 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -61,28 +96,59 @@
       highlight-current-row
       v-dialogDrag
     >
-      <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        label-width="130px"
+        ref="ruleForm"
+      >
         <el-form-item label="区域标识:" prop="areaId">
-          <el-input v-model.trim="ruleForm.areaId" placeholder="请输入区域标识" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.areaId"
+            placeholder="请输入区域标识"
+          />
         </el-form-item>
         <el-form-item label="开始纬度:" prop="startLat">
-          <el-input v-model.trim.number="ruleForm.startLat" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.startLat"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="结束纬度:" prop="endLat">
-          <el-input v-model.trim.number="ruleForm.endLat" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.endLat"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="开始经度:" prop="startLon">
-          <el-input v-model.trim.number="ruleForm.startLon" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.startLon"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="结束经度:" prop="endLon">
-          <el-input v-model.trim.number="ruleForm.endLon" type="number" placeholder="请输入结束经度" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.endLon"
+            type="number"
+            placeholder="请输入结束经度"
+          />
         </el-form-item>
         <el-form-item label="备注:" prop="areaDesc">
           <el-input type="textarea" v-model.trim="ruleForm.areaDesc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTrue('ruleForm')">确 定</el-button>
+        <el-button type="primary" @click="handleTrue('ruleForm')"
+          >确 定</el-button
+        >
         <el-button @click="resetForm('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>

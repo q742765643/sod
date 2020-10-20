@@ -11,7 +11,12 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-select v-model.trim="queryParams.status" placeholder="部门状态" clearable size="small">
+        <el-select
+          v-model.trim="queryParams.status"
+          placeholder="部门状态"
+          clearable
+          size="small"
+        >
           <el-option
             v-for="dict in statusOptions"
             :key="dict.dictValue"
@@ -27,8 +32,11 @@
           icon="el-icon-search"
           size="mini"
           @click="handleQuery"
-        >搜索</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+          >搜索</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
         <el-button
           class="filter-item"
           type="primary"
@@ -36,7 +44,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:dept:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -46,11 +55,20 @@
       :data="deptList"
       row-key="id"
       default-expand-all
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
       <el-table-column prop="deptName" label="部门名称"></el-table-column>
-      <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
-      <el-table-column prop="status" label="状态" :formatter="statusFormat" width="100"></el-table-column>
+      <el-table-column
+        prop="orderNum"
+        label="排序"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="状态"
+        :formatter="statusFormat"
+        width="100"
+      ></el-table-column>
       <el-table-column label="创建时间" prop="createTime" width="200">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -64,22 +82,25 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:dept:edit']"
-          >修改</el-button>
+            >修改</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-plus"
             @click="handleAdd(scope.row)"
             v-hasPermi="['system:dept:add']"
-          >新增</el-button>
+            >新增</el-button
+          >
           <el-button
-            v-if="scope.row.parentId !='0'"
+            v-if="scope.row.parentId != '0'"
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:dept:remove']"
-          >删除</el-button>
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -96,32 +117,59 @@
         <el-row>
           <el-col :span="24" v-if="form.parentId !== '0'">
             <el-form-item label="上级部门" prop="parentId">
-              <treeselect v-model.trim="form.parentId" :options="deptOptions" placeholder="选择上级部门" />
+              <treeselect
+                v-model.trim="form.parentId"
+                :options="deptOptions"
+                placeholder="选择上级部门"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model.trim="form.deptName" placeholder="请输入部门名称" />
+              <el-input
+                clearable
+                v-model.trim="form.deptName"
+                placeholder="请输入部门名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model.trim="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number
+                v-model.trim="form.orderNum"
+                controls-position="right"
+                :min="0"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="负责人" prop="leader">
-              <el-input v-model.trim="form.leader" placeholder="请输入负责人" maxlength="20" />
+              <el-input
+                clearable
+                v-model.trim="form.leader"
+                placeholder="请输入负责人"
+                maxlength="20"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="联系电话" prop="phone">
-              <el-input v-model.trim="form.phone" placeholder="请输入联系电话" maxlength="11" />
+              <el-input
+                clearable
+                v-model.trim="form.phone"
+                placeholder="请输入联系电话"
+                maxlength="11"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
-              <el-input v-model.trim="form.email" placeholder="请输入邮箱" maxlength="50" />
+              <el-input
+                clearable
+                v-model.trim="form.email"
+                placeholder="请输入邮箱"
+                maxlength="50"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -131,7 +179,8 @@
                   v-for="dict in statusOptions"
                   :key="dict.dictValue"
                   :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                  >{{ dict.dictLabel }}</el-radio
+                >
               </el-radio-group>
             </el-form-item>
           </el-col>

@@ -1,15 +1,21 @@
 <template>
   <section class="handleClearDialog">
-    <el-form ref="ruleForm" :model="msgFormDialog" :rules="rules" label-width="120px">
+    <el-form
+      ref="ruleForm"
+      :model="msgFormDialog"
+      :rules="rules"
+      label-width="120px"
+    >
       <el-row>
         <el-col :span="12">
           <el-form-item label="物理库" prop="databaseId">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.databaseId"
               filterable
-              @change="selectByDatabaseIds($event,'')"
+              @change="selectByDatabaseIds($event, '')"
               placeholder="请选择物理库"
-              style="width:100%"
+              style="width: 100%"
             >
               <el-option
                 v-for="database in databaseOptions"
@@ -23,11 +29,12 @@
         <el-col :span="12">
           <el-form-item label="资料名称" prop="dataClassId">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.dataClassId"
               filterable
               @change="selectTable"
               placeholder="请选择资料"
-              style="width:100%"
+              style="width: 100%"
             >
               <el-option
                 v-for="dataClass in dataClassIdOptions"
@@ -41,6 +48,7 @@
         <el-col :span="24">
           <el-form-item label="清除条件" prop="conditions">
             <el-select
+              clearable
               v-model.trim="msgFormDialog.conditions"
               placeholder="请选择清除条件"
               filterable
@@ -57,26 +65,38 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="表名" prop="tableName">
-            <el-input v-model.trim="msgFormDialog.tableName" disabled />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.tableName"
+              disabled
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="四级编码" prop="ddataId">
-            <el-input v-model.trim="msgFormDialog.ddataId" disabled />
+            <el-input clearable v-model.trim="msgFormDialog.ddataId" disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="清除限制频率" prop="clearLimit">
-            <el-input v-model.trim="msgFormDialog.clearLimit" placeholder="请输入清除限制频率单位为秒" />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.clearLimit"
+              placeholder="请输入清除限制频率单位为秒"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="执行策略" prop="jobCron">
             <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
+              <vueCron
+                @change="changeCron"
+                @close="closeCronPopover"
+                i18n="cn"
+              ></vueCron>
               <el-input
                 slot="reference"
-                @click="cronPopover=true"
+                @click="cronPopover = true"
                 v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
@@ -90,24 +110,36 @@
                 v-for="dict in alarmOptions"
                 :key="dict.dictValue"
                 :label="dict.dictValue"
-              >{{dict.dictLabel}}</el-radio>
+                >{{ dict.dictLabel }}</el-radio
+              >
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="超时时间" prop="executorTimeout">
-            <el-input v-model.trim="msgFormDialog.executorTimeout" placeholder="请输入超时时间单位为分钟" />
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.executorTimeout"
+              placeholder="请输入超时时间单位为分钟"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="备注">
-            <el-input v-model.trim="msgFormDialog.jobDesc" type="textarea" placeholder="请输入内容"></el-input>
+            <el-input
+              clearable
+              v-model.trim="msgFormDialog.jobDesc"
+              type="textarea"
+              placeholder="请输入内容"
+            ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm')"
+        >确 定</el-button
+      >
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
   </section>
