@@ -39,7 +39,7 @@ export function editById(data) {
 // 删除
 export function delById(query) {
   return request({
-    url: baseUrl + '/portal/apiManage/del',
+    url: baseUrl + '/portal/sdkManage/del',
     method: 'DELETE',
     params: query
   })

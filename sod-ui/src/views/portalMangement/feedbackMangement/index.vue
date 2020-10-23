@@ -10,6 +10,13 @@
           placeholder="请输入反馈人姓名"
         />
       </el-form-item>
+      <el-form-item label="反馈状态：">
+        <el-select v-model.trim="queryParams.status" placeholder="反馈状态" clearable size="small" style="width: 140px"  @change="handleQuery">
+          <el-option label="全部" value></el-option>
+          <el-option label="未回复" value="0"></el-option>
+          <el-option label="已回复" value="1"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
@@ -34,7 +41,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column prop="createBy" label="反馈人" width="100"></el-table-column>
+      <el-table-column prop="userName" label="反馈人" width="100"></el-table-column>
       <el-table-column prop="createTime" label="反馈时间" width="200" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -47,6 +54,7 @@
           <span v-if="scope.row.status=='1'">已回复</span>
         </template>
       </el-table-column>
+      <el-table-column prop="updateBy" label="回复人" width="100"></el-table-column>
       <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button

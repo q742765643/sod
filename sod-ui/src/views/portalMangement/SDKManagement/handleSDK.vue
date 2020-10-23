@@ -45,6 +45,8 @@
           :limit="1"
           :on-exceed="onExceed"
           :on-success="JarSuccess"
+          :headers="myHeaders"
+          name="fileName"
         >
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
@@ -60,11 +62,13 @@
         <el-upload
           v-show="!handleObj.id"
           class="upload-demo"
-          :action="upLoadUrl"
+          :action="upLoadUrlDoc"
           ref="upload"
           :limit="1"
           :on-exceed="onExceed"
           :on-success="DocSuccess"
+          :headers="myHeaders"
+          name="fileName"
         >
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
@@ -90,11 +94,13 @@
 
 <script>
 var baseUrl = process.env.VUE_APP_PORTAL;
+import { getToken, createSign } from "@/utils/auth";
 import {
   getById,
   editById,
   saveSdkManage,
-} from "@/api/portalMangement/feedbackMangement";
+} from "@/api/portalMangement/SDKManagement";
+var token = getToken();
 export default {
   name: "SDKDialog",
   components: {},
@@ -107,17 +113,20 @@ export default {
     return {
       handleDis: false,
       SDKClassify: [],
-      upLoadUrl: baseUrl + "/cmadaas/sod/portal/sdkManage/upload",
+      upLoadUrl: baseUrl + "/portal/sdkManage/uploadSdk",
+      upLoadUrlDoc: baseUrl + "/portal/sdkManage/uploadSdkDoc",
+      myHeaders: { Authorization: token },
       //编辑页面列
       msgFormDialog: {
         sdkType: "",
         sdkLang: "",
         sdkSys: "",
+        sdkJarName:"",
         sdkJarUrl: "",
+        sdkDocName:"",
         sdkDocUrl: "",
         sdkDesc: "",
         serialNumber: "",
-        id: "1",
       },
       baseFormRules: {
         sdkType: [
@@ -165,7 +174,8 @@ export default {
     },
     JarSuccess(res, file) {
       if (res.code == 200) {
-        this.msgFormDialog.sdkJarUrl = res.url;
+        this.msgFormDialog.sdkJarUrl = res.data.filePath;
+        this.msgFormDialog.sdkJarName = res.data.fileName;
       } else {
         this.$message({
           type: "error",
@@ -175,7 +185,8 @@ export default {
     },
     DocSuccess(res, file) {
       if (res.code == 200) {
-        this.msgFormDialog.sdkDocUrl = res.url;
+        this.msgFormDialog.sdkDocUrl = res.data.filePath;
+        this.msgFormDialog.sdkDocName = res.data.fileName;
       } else {
         this.$message({
           type: "error",

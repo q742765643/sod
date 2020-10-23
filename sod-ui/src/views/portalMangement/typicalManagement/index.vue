@@ -19,8 +19,8 @@
       <el-form-item prop="appName" label="应用名称:">
         <el-input clearable size="small" v-model="queryParams.appName" placeholder="请输入应用名称" />
       </el-form-item>
-      <el-form-item prop="dataName" label="所属机构:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入所属机构" />
+      <el-form-item prop="orgName" label="所属机构:">
+        <el-input clearable size="small" v-model="queryParams.orgName" placeholder="请输入所属机构" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -113,6 +113,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         appName: "",
+        orgName:"",
       },
       tableData: [],
       total: 0,
@@ -172,6 +173,7 @@ export default {
                 type: "success",
                 message: "删除成功",
               });
+              debugger
               this.handleQuery();
             } else {
               this.$message({

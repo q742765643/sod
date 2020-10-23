@@ -10,4 +10,7 @@ public class FileTypesConstant {
 
     public static final String[] PORTAL_FILE_ALLOW_TYPES = {"doc", "docx", "pdf", "exe", "rpm", "gz", "zip", "png"};
 
+    public static final String[] PORTAL_FILE_SDK_TYPES = {"msi", "rar", "zip", "bin", "gz", "jar", "tar"};
+
+    public static final String[] PORTAL_FILE_SDK_DOC_TYPES = {"pdf", "docx", "doc", "gz", "zip"};
 }

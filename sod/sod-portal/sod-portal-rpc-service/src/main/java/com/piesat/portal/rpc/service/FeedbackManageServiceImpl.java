@@ -17,6 +17,7 @@ import com.piesat.util.page.PageForm;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,8 +40,8 @@ public class FeedbackManageServiceImpl extends BaseService<FeedbackManageEntity>
     public PageBean selectPageList(PageForm<FeedbackManageDto> pageForm) {
         FeedbackManageDto feedbackManageDto = pageForm.getT();
         SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
-        if(StringUtils.isNotEmpty(feedbackManageDto.getUserId())){
-            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.toString(),feedbackManageDto.getUserId());
+        if(StringUtils.isNotEmpty(feedbackManageDto.getUserName())){
+            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(),feedbackManageDto.getUserName());
         }
         if(StringUtils.isNotEmpty(feedbackManageDto.getStatus())){
             specificationBuilder.add("status", SpecificationOperator.Operator.eq.toString(),feedbackManageDto.getStatus());
@@ -61,7 +62,9 @@ public class FeedbackManageServiceImpl extends BaseService<FeedbackManageEntity>
     @Override
     public FeedbackManageDto updateDto(FeedbackManageDto feedbackManageDto) {
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-        FeedbackManageEntity feedbackManageEntity=feedbackManageMapstruct.toEntity(feedbackManageDto);
+
+        FeedbackManageEntity feedbackManageEntity = this.getById(feedbackManageDto.getId());
+        feedbackManageEntity.setReply(feedbackManageDto.getReply());
         feedbackManageEntity.setUpdateBy(loginUser.getNickName());
         feedbackManageEntity = this.saveNotNull(feedbackManageEntity);
         return feedbackManageMapstruct.toDto(feedbackManageEntity);

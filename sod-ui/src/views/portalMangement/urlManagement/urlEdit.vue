@@ -165,7 +165,7 @@
               @selection-change="returnSelectionChange"
             >
               <el-table-column type="selection" width="50"></el-table-column>
-              <el-table-column type="index" label="序号" width="55"></el-table-column>
+              <el-table-column type="index"  label="序号" width="55"></el-table-column>
               <el-table-column prop="resName" label="返回值名称">
                 <template slot-scope="scope">
                   <el-input v-model="scope.row.resName" size="small"></el-input>
@@ -198,7 +198,7 @@
                     icon="el-icon-delete"
                     size="mini"
                     type="text"
-                    @click="deleteReturnMsg(scope.row,index)"
+                    @click="deleteReturnMsg(scope.row,scope.$index)"
                   >删除</el-button>
                 </template>
               </el-table-column>
@@ -225,9 +225,27 @@
             >
               <el-table-column type="selection" width="50"></el-table-column>
               <el-table-column type="index" label="序号" width="55"></el-table-column>
-              <el-table-column prop="codeLang" label="编程语言" width="150"></el-table-column>
-              <el-table-column prop="useType" label="调用方式" width="150"></el-table-column>
-              <el-table-column prop="resType" label="返回值格式" width="100"></el-table-column>
+              <el-table-column prop="codeLang" label="编程语言" width="150">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.codeLang == '0'">其他</span>
+                  <span v-if="scope.row.codeLang != '0'">{{scope.row.codeLang}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="useType" label="调用方式" width="150">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.useType == 'client'">客户端调用</span>
+                  <span v-if="scope.row.useType == 'ws'">Web Service</span>
+                  <span v-if="scope.row.useType == 'rest'">REST</span>
+                  <span v-if="scope.row.useType == '0'">其他</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="resType" label="返回值格式" width="100">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.resType == 'json'">json</span>
+                  <span v-if="scope.row.resType == 'html'">html</span>
+                  <span v-if="scope.row.resType == '0'">其他</span>
+                </template>
+              </el-table-column>
               <el-table-column prop="serialNumber" label="排序编号" width="150"></el-table-column>
               <el-table-column prop="paramCode" label="参数示例" width="200"></el-table-column>
               <el-table-column prop="useCode" label="调用示例" width="200"></el-table-column>
@@ -237,14 +255,14 @@
                   <el-button
                     size="mini"
                     type="text"
-                    @click="handleDemoMsg(scope.row)"
+                    @click="handleDemoMsg(scope.row,scope.$index)"
                     icon="el-icon-edit"
                   >编辑</el-button>
                   <el-button
                     icon="el-icon-delete"
                     size="mini"
                     type="text"
-                    @click="deleteDemoMsg(scope.row,index)"
+                    @click="deleteDemoMsg(scope.row,scope.$index)"
                   >删除</el-button>
                 </template>
               </el-table-column>
@@ -268,8 +286,8 @@
       v-dialogDrag
       top="5vh"
     >
-      <el-form :model="exportFormDialog" ref="exportfromRef" label-width="120px">
-        <el-form-item label="编程语言">
+      <el-form :model="exportFormDialog"  :rules="exportFormRules" ref="exportfromRef" label-width="120px">
+        <el-form-item label="编程语言" prop="codeLang">
           <el-select v-model="exportFormDialog.codeLang" size="small">
             <el-option value="Java" label="Java"></el-option>
             <el-option value="Python" label="Python"></el-option>
@@ -279,7 +297,7 @@
             <el-option value="0" label="其他"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="调用方式">
+        <el-form-item label="调用方式" prop="useType">
           <el-select v-model="exportFormDialog.useType" size="small">
             <el-option value="client" label="客户端调用"></el-option>
             <el-option value="ws" label="Web Service"></el-option>
@@ -287,14 +305,14 @@
             <el-option value="0" label="其他"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="返回值格式">
+        <el-form-item label="返回值格式" prop="resType">
           <el-select v-model="exportFormDialog.resType" size="small">
             <el-option value="json" label="json"></el-option>
             <el-option value="html" label="html"></el-option>
             <el-option value="0" label="其他"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="排序">
+        <el-form-item label="排序" prop="serialNumber">
           <el-input-number v-model="exportFormDialog.serialNumber" size="small" :min="0"></el-input-number>
         </el-form-item>
         <el-form-item label="参数示例">
@@ -308,8 +326,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="margin-top:20px;">
-        <el-button type="primary" @click="trueExportDialog('fromRef')">确 定</el-button>
-        <el-button @click="exportDialog=false">取 消</el-button>
+        <el-button type="primary" @click="trueExportDialog('exportfromRef')">确 定</el-button>
+        <el-button @click="cancelExportDialog('exportfromRef')">取 消</el-button>
       </div>
     </el-dialog>
   </section>
@@ -332,8 +350,14 @@ export default {
   data() {
     return {
       exportDialog: false,
-      exportFormDialog: {
+      exportFormDialog:{
+        codeLang:"",
+        useType:"",
+        resType:"",
         serialNumber: 0,
+        paramCode:"",
+        useCode:"",
+        resCode:"",
       },
       //编辑页面列
       msgFormDialog: {},
@@ -382,6 +406,20 @@ export default {
         ],
         serialNumber: [
           { required: true, message: "请输入排序 ", trigger: "blur" },
+        ],
+      },
+      exportFormRules:{
+        codeLang: [
+          { required: true, message: "请选择编程语言 ", trigger: "change" },
+        ],
+        useType: [
+          { required: true, message: "请选择调用方式 ", trigger: "change" },
+        ],
+        resType: [
+          { required: true, message: "请选择返回值格式 ", trigger: "change" },
+        ],
+        serialNumber: [
+          { required: true, message: "请输入排序 ",  trigger: "blur" },
         ],
       },
     };
@@ -456,7 +494,7 @@ export default {
     },
     deleteReturnMsg(row, index) {
       // 判断多个删除或者单个删除
-      if (index) {
+      if (index >= 0) {
         this.apiResDtos.splice(index, 1);
       } else {
         this.apiResDtos.forEach((pitem, pindex) => {
@@ -469,20 +507,16 @@ export default {
       }
     },
     /* 样例代码 */
-    handleDemoMsg(row) {
-      this.exportDialog = true;
-      if (row.codeLang) {
+    handleDemoMsg(row,index) {
+      if (row.codeLang) {//编辑
         this.exportFormDialog = row;
-      } else {
-        this.exportFormDialog = {
-          serialNumber: 0,
-        };
+        this.exportFormDialog.index = index;
       }
       this.exportDialog = true;
     },
     deleteDemoMsg(row, index) {
       // 判断多个删除或者单个删除
-      if (index) {
+      if (index!== undefined && index >=0) {
         this.apiCodeDtos.splice(index, 1);
       } else {
         this.apiCodeDtos.forEach((pitem, pindex) => {
@@ -548,6 +582,27 @@ export default {
     cancelDialog() {
       this.$emit("cancelDialog");
     },
+    trueExportDialog(formName){
+      //校验表单
+      this.$refs[formName].validate((valid) => {
+        let exportFormObject = {};
+        Object.assign(exportFormObject,this.exportFormDialog);
+        if (valid) {
+          if(exportFormObject.index !== undefined){//修改
+            this.apiCodeDtos.splice(exportFormObject.index, 1, exportFormObject);
+          }else{//添加
+            this.apiCodeDtos.push(exportFormObject);
+          }
+          this.exportDialog = false;
+          this.exportFormDialog = {};
+          this.$refs[formName].resetFields();
+        }
+      });
+    },
+    cancelExportDialog(formName){
+      this.$refs[formName].resetFields();
+      this.exportDialog = false;
+    }
   },
 };
 </script>

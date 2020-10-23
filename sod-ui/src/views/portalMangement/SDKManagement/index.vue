@@ -42,8 +42,24 @@
       <el-table-column prop="sdkType" label="SDK类型" :formatter="getapiSys"></el-table-column>
       <el-table-column prop="sdkLang" label="开发语言" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="sdkSys" label="操作系统"></el-table-column>
-      <el-table-column prop="sdkJarName" label="SDK包" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="sdkDocName" label="SDK文档" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="sdkJarName" label="SDK包" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <el-link
+            :underline="false"
+            type="primary"
+            @click="sdkJarDownload(scope.row)"
+          >{{scope.row.sdkJarName}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column prop="sdkDocName" label="SDK文档" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <el-link
+            :underline="false"
+            type="primary"
+            @click="sdkDocDownload(scope.row)"
+          >{{scope.row.sdkDocName}}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column prop="sdkDesc" label="SDK描述" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
         <template slot-scope="scope">
@@ -82,7 +98,7 @@
 <script>
 import { queryDataPage, delById } from "@/api/portalMangement/SDKManagement";
 import handleSDK from "@/views/portalMangement/SDKManagement/handleSDK";
-
+import { downloadTable } from "@/api/structureManagement/exportTable";
 export default {
   components: {
     handleSDK,
@@ -150,7 +166,7 @@ export default {
       this.msgFormDialog = true;
     },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.sdkType + "吗?", "温馨提示", {
+      this.$confirm("确认要删除吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -215,6 +231,16 @@ export default {
       } else {
         this.getList();
       }
+    },
+    sdkJarDownload(row){
+      downloadTable({ filePath: row.sdkJarUrl }).then((res) => {
+        this.downloadfileCommon(res);
+      });
+    },
+    sdkDocDownload(row){
+      downloadTable({ filePath: row.sdkDocUrl }).then((res) => {
+        this.downloadfileCommon(res);
+      });
     },
   },
 };

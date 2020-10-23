@@ -80,7 +80,9 @@ export default {
         algName: [
           { required: true, message: "请输入分类名称 ", trigger: "blur" },
         ],
-
+        icon: [
+          { required: true, message: "请选择图标 ", trigger: "blur" },
+        ],
         serialNumber: [
           { required: true, message: "请输入排序编号 ", trigger: "blur" },
         ],
