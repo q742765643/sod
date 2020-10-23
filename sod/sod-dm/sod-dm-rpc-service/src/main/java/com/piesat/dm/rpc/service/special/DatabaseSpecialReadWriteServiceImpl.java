@@ -127,13 +127,13 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     }
 
     @Override
-    public Map<String, Object> changeDataStatus(String tdbId, String physical, String data_class_id) {
+    public Map<String, Object> changeDataStatus(String tdbId, String database_id, String data_class_id) {
         Map<String, Object> map = new HashMap<>();
         try {
             // 下面定义Map对象。
             Map<String, String> dataMap = new HashMap<String, String>();
             dataMap.put("tdbId", tdbId);
-            dataMap.put("physical", physical);
+            dataMap.put("physical", database_id);
             dataMap.put("data_class_id", data_class_id);
 
             // 下面将一条记录存入数据库。

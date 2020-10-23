@@ -41,6 +41,7 @@ public class DatabaseSpecialReadWriteEntity extends BaseEntity {
 
     /**
      * 申请权限
+     * 1：读权限 2：写权限
      */
     @Column(name = "apply_authority")
     private Integer applyAuthority;

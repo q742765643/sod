@@ -508,9 +508,9 @@ public class DatabaseSpecialController {
     @ApiOperation(value = "修改资料申请状态")
     @RequiresPermissions("dm:databaseSpecial:changeDataStatus")
     @GetMapping(value = "/changeDataStatus")
-    public ResultT changeDataStatus(String tdbId, String physical, String data_class_id) {
+    public ResultT changeDataStatus(String tdbId, String database_id, String data_class_id) {
         try {
-            Map<String, Object> map = this.databaseSpecialReadWriteService.changeDataStatus(tdbId, physical, data_class_id);
+            Map<String, Object> map = this.databaseSpecialReadWriteService.changeDataStatus(tdbId, database_id, data_class_id);
             return ResultT.success(map);
         } catch (Exception e) {
             e.printStackTrace();

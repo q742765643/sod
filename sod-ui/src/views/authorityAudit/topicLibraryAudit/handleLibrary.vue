@@ -308,9 +308,7 @@
                   :underline="false"
                   size="small"
                   v-if="
-                    (scope.row.examineStatus == '1' &&
-                      scope.row.applyAuthority == 1) ||
-                    scope.row.examineStatus == '2'
+                    scope.row.examineStatus == '1'
                   "
                   type="success"
                   icon="el-icon-check"
@@ -320,8 +318,7 @@
                   :underline="false"
                   size="small"
                   v-if="
-                    scope.row.examineStatus == '1' &&
-                    scope.row.applyAuthority == 2
+                    scope.row.examineStatus == '3'
                   "
                   type="warning"
                   icon="el-icon-s-finance"
@@ -330,7 +327,7 @@
                 <el-link
                   :underline="false"
                   size="small"
-                  v-if="scope.row.examineStatus == '3'"
+                  v-if="scope.row.examineStatus == '2'"
                   type="danger"
                   icon="el-icon-close"
                   >拒绝</el-link
@@ -357,14 +354,14 @@
                   type="text"
                   size="mini"
                   icon="el-icon-thumb"
-                  @click="updatePower(scope.row, '2')"
+                  @click="updatePower(scope.row, '1')"
                   >授权</el-button
                 >
                 <el-button
                   type="text"
                   size="mini"
                   icon="el-icon-close"
-                  @click="updatePower(scope.row, '3')"
+                  @click="updatePower(scope.row, '2')"
                   >拒绝</el-button
                 >
               </template>
@@ -630,7 +627,7 @@ export default {
     //单个库的授权或拒绝
     updatePower(row, status) {
       row.examineStatus = status;
-      if (status == "3") {
+      if (status == "2") {
         this.$prompt("请输入拒绝原因", "温馨提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
@@ -659,7 +656,7 @@ export default {
     batchUpdatePower(status) {
       //判断是否勾选需要授权的资料
       if (this.multipleSelection.length > 0) {
-        if (status == "3") {
+        if (status == "2") {
           this.$prompt("请输入拒绝原因", "温馨提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
@@ -667,14 +664,14 @@ export default {
             .then(({ value }) => {
               this.multipleSelection.forEach((element) => {
                 element.failureReason = value;
-                element.examineStatus = 3;
+                element.examineStatus = 2;
               });
               this.editPowerBath();
             })
             .catch(() => {});
         } else {
           this.multipleSelection.forEach((element) => {
-            element.examineStatus = 2;
+            element.examineStatus = 1;
           });
           this.editPowerBath();
         }

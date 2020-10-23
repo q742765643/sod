@@ -1141,8 +1141,8 @@
     <!-- 下面根据专题库ID和存储编码来修改分类ID -->
     <update id="changeDataStatus" parameterType="java.util.Map">
    		update T_SOD_DATABASE_SPECIAL_READ_WRITE
-		set AUTHORIZE=3
-		where sdb_id=#{tdbId} and DATA_CLASS_ID=#{data_class_id} and LOGIC_ID=#{physical}
+		set examine_status=3
+		where sdb_id=#{tdbId} and DATA_CLASS_ID=#{data_class_id} and database_id=#{physical}
    	</update>
     <!-- 修改datauathor表中数据 -->
     <update id="changeDataAuthorStatus" parameterType="java.util.Map">
