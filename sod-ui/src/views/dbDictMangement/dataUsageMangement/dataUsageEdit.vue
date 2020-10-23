@@ -1,8 +1,14 @@
 <template>
   <section class="codeUseDialog">
-    <el-form :model="msgFormDialog" ref="fromRef" :rules="baseFormRules" label-width="120px">
+    <el-form
+      :model="msgFormDialog"
+      ref="fromRef"
+      :rules="baseFormRules"
+      label-width="120px"
+    >
       <el-form-item prop="logicFlag" label="数据用途ID:">
         <el-input
+          clearable
           size="small"
           :disabled="isDbIdDisable"
           v-model.trim="msgFormDialog.logicFlag"
@@ -10,10 +16,16 @@
         />
       </el-form-item>
       <el-form-item prop="logicName" label="用途描述:">
-        <el-input size="small" v-model.trim="msgFormDialog.logicName" placeholder="请输入" />
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="msgFormDialog.logicName"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item prop="storageType" label="表类型:">
         <el-select
+          clearable
           size="small"
           filterable
           v-model.trim="msgFormDialog.storageType"
@@ -30,6 +42,7 @@
       </el-form-item>
       <el-form-item prop="databaseId" label="数据库名称:">
         <el-select
+          clearable
           @change="$forceUpdate()"
           size="small"
           filterable
@@ -75,7 +88,7 @@ import {
   getAllStorageType,
   getDatabaseName,
   saveLogic,
-  editLogic
+  editLogic,
 } from "@/api/dbDictMangement/dataUsageMangement";
 import { english } from "@/components/commonVaildate.js";
 export default {
@@ -83,8 +96,8 @@ export default {
   components: {},
   props: {
     handleObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     var nameValidate = (rule, value, callback) => {
@@ -119,7 +132,7 @@ export default {
         storageType: [],
         logicDesc: "",
         databaseId: [],
-        serialNumber: ""
+        serialNumber: "",
       },
       //判断数据库是否已存在
       flag: false,
@@ -131,34 +144,34 @@ export default {
       dbNamesList: [],
       baseFormRules: {
         logicFlag: [
-          { required: true, validator: nameValidate, trigger: "blur" }
+          { required: true, validator: nameValidate, trigger: "blur" },
         ],
         logicName: [
-          { required: true, message: "请输入用途描述", trigger: "blur" }
+          { required: true, message: "请输入用途描述", trigger: "blur" },
         ],
 
         storageType: [
-          { required: true, validator: TypeValidate, trigger: "change" }
+          { required: true, validator: TypeValidate, trigger: "change" },
         ],
         databaseId: [
-          { required: true, validator: DBIdValidate, trigger: "change" }
+          { required: true, validator: DBIdValidate, trigger: "change" },
         ],
         serialNumber: [
-          { required: true, message: "请输入序号 ", trigger: "blur" }
+          { required: true, message: "请输入序号 ", trigger: "blur" },
         ],
         logicDesc: [
-          { required: true, message: "请输入用途描述 ", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "请输入用途描述 ", trigger: "blur" },
+        ],
+      },
     };
   },
   async created() {
     // 表类型
-    await getAllStorageType().then(res => {
+    await getAllStorageType().then((res) => {
       this.tableTypeList = res.data;
     });
     // 数据库
-    await getDatabaseName().then(res => {
+    await getDatabaseName().then((res) => {
       this.dbNamesList = res.data;
     });
     if (this.handleObj.id) {
@@ -171,18 +184,18 @@ export default {
   },
   methods: {
     trueDialog(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           let obj = this.msgFormDialog;
           obj.logicDatabaseEntityList = [];
-          obj.databaseId.forEach(element => {
+          obj.databaseId.forEach((element) => {
             let dObj = {};
             dObj.databaseId = element;
             obj.logicDatabaseEntityList.push(dObj);
           });
 
           obj.logicStorageTypesEntityList = [];
-          obj.storageType.forEach(element => {
+          obj.storageType.forEach((element) => {
             let dObj = {};
             dObj.storageType = element;
             obj.logicStorageTypesEntityList.push(dObj);
@@ -190,32 +203,32 @@ export default {
           console.log(obj);
 
           if (this.handleObj.id) {
-            editLogic(obj).then(res => {
+            editLogic(obj).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "编辑成功"
+                  message: "编辑成功",
                 });
                 this.$emit("cancelDialog");
               } else {
                 this.$message({
                   type: "error",
-                  message: res.msg
+                  message: res.msg,
                 });
               }
             });
           } else {
-            saveLogic(obj).then(res => {
+            saveLogic(obj).then((res) => {
               if (res.code == 200) {
                 this.$message({
                   type: "success",
-                  message: "增加成功"
+                  message: "增加成功",
                 });
                 this.$emit("cancelDialog");
               } else {
                 this.$message({
                   type: "error",
-                  message: res.msg
+                  message: res.msg,
                 });
               }
             });
@@ -230,8 +243,8 @@ export default {
     //取消按钮
     cancelDialog() {
       this.$emit("cancelDialog");
-    }
-  }
+    },
+  },
 };
 </script>
 

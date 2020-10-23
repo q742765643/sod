@@ -11,7 +11,12 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="visible">
-        <el-select v-model.trim="queryParams.visible" placeholder="请选择菜单状态" clearable size="small">
+        <el-select
+          v-model.trim="queryParams.visible"
+          placeholder="请选择菜单状态"
+          clearable
+          size="small"
+        >
           <el-option
             v-for="dict in visibleOptions"
             :key="dict.dictValue"
@@ -21,15 +26,24 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
         <el-button
           type="primary"
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:menu:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -39,27 +53,54 @@
       v-loading="loading"
       :data="menuList"
       row-key="id"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       ref="singleTable"
       highlight-current-row
       @current-change="handleCurrentChange"
     >
-      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column
+        prop="menuName"
+        label="菜单名称"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
       <el-table-column prop="icon" label="图标" width="100px">
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon" v-if="scope.row.icon" />
         </template>
       </el-table-column>
-      <el-table-column prop="orderNum" label="排序" width="60px"></el-table-column>
-      <el-table-column prop="perms" label="权限标识" width="130px" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="component" label="组件路径" width="180px" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="visible" label="可见" :formatter="visibleFormat" width="80px"></el-table-column>
+      <el-table-column
+        prop="orderNum"
+        label="排序"
+        width="60px"
+      ></el-table-column>
+      <el-table-column
+        prop="perms"
+        label="权限标识"
+        width="130px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        prop="component"
+        label="组件路径"
+        width="180px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        prop="visible"
+        label="可见"
+        :formatter="visibleFormat"
+        width="80px"
+      ></el-table-column>
       <el-table-column label="创建时间" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" class-name="small-padding fixed-width" width="200">
+      <el-table-column
+        label="操作"
+        class-name="small-padding fixed-width"
+        width="200"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -67,21 +108,24 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:menu:edit']"
-          >修改</el-button>
+            >修改</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-plus"
             @click="handleAdd(scope.row)"
             v-hasPermi="['system:menu:add']"
-          >新增</el-button>
+            >新增</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:menu:remove']"
-          >删除</el-button>
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -124,27 +168,44 @@
                 @show="$refs['iconSelect'].reset()"
               >
                 <IconSelect ref="iconSelect" @selected="selected" />
-                <el-input slot="reference" v-model.trim="form.icon" placeholder="点击选择图标" readonly>
+                <el-input
+                  slot="reference"
+                  v-model.trim="form.icon"
+                  placeholder="点击选择图标"
+                  readonly
+                >
                   <svg-icon
                     v-if="form.icon"
                     slot="prefix"
                     :icon-class="form.icon"
                     class="el-input__icon"
-                    style="height: 32px;width: 16px;"
+                    style="height: 32px; width: 16px"
                   />
-                  <i v-else slot="prefix" class="el-icon-search el-input__icon" />
+                  <i
+                    v-else
+                    slot="prefix"
+                    class="el-icon-search el-input__icon"
+                  />
                 </el-input>
               </el-popover>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model.trim="form.menuName" placeholder="请输入菜单名称" />
+              <el-input
+                clearable
+                v-model.trim="form.menuName"
+                placeholder="请输入菜单名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model.trim="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number
+                v-model.trim="form.orderNum"
+                controls-position="right"
+                :min="0"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -156,18 +217,33 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.menuType != 'F'" label="路由地址" prop="path">
-              <el-input v-model.trim="form.path" placeholder="请输入路由地址" />
+            <el-form-item
+              v-if="form.menuType != 'F'"
+              label="路由地址"
+              prop="path"
+            >
+              <el-input
+                clearable
+                v-model.trim="form.path"
+                placeholder="请输入路由地址"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType == 'C'">
             <el-form-item label="组件路径" prop="component">
-              <el-input v-model.trim="form.component" placeholder="请输入组件路径" />
+              <el-input
+                v-model.trim="form.component"
+                placeholder="请输入组件路径"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-if="form.menuType != 'M'" label="权限标识">
-              <el-input v-model.trim="form.perms" placeholder="请权限标识" maxlength="50" />
+              <el-input
+                v-model.trim="form.perms"
+                placeholder="请权限标识"
+                maxlength="50"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -177,7 +253,8 @@
                   v-for="dict in visibleOptions"
                   :key="dict.dictValue"
                   :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                  >{{ dict.dictLabel }}</el-radio
+                >
               </el-radio-group>
             </el-form-item>
           </el-col>

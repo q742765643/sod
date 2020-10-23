@@ -1,20 +1,30 @@
 <template>
   <section class="handleExport">
-    <el-form ref="ruleForm" :rules="rules" :model="msgFormDialog" label-width="140px">
+    <el-form
+      ref="ruleForm"
+      :rules="rules"
+      :model="msgFormDialog"
+      label-width="140px"
+    >
       <el-row>
         <el-col :span="10">
           <el-form-item label="任务名称" prop="taskName">
-            <el-input size="small" v-model.trim="msgFormDialog.taskName"></el-input>
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="msgFormDialog.taskName"
+            ></el-input>
           </el-form-item>
           <el-form-item label="数据库IP">
             <el-select
+              clearable
               size="small"
               filterable
               v-model.trim="msgFormDialog.databaseId"
               @change="findTree"
             >
               <el-option
-                v-for="(item,index) in ipList"
+                v-for="(item, index) in ipList"
                 :key="index"
                 :label="item.VAULE"
                 :value="item.KEY"
@@ -29,17 +39,26 @@
           </el-form-item>
           <el-form-item label="执行策略" prop="jobCron">
             <el-popover v-model.trim="cronPopover">
-              <vueCron @change="changeCron" @close="closeCronPopover" i18n="cn"></vueCron>
+              <vueCron
+                @change="changeCron"
+                @close="closeCronPopover"
+                i18n="cn"
+              ></vueCron>
               <el-input
                 slot="reference"
-                @click="cronPopover=true"
+                @click="cronPopover = true"
                 v-model.trim="msgFormDialog.jobCron"
                 placeholder="请输入定时策略"
               ></el-input>
             </el-popover>
           </el-form-item>
           <el-form-item label="存储目录">
-            <el-select size="small" filterable v-model.trim="msgFormDialog.storageDirectory">
+            <el-select
+              clearable
+              size="small"
+              filterable
+              v-model.trim="msgFormDialog.storageDirectory"
+            >
               <el-option
                 v-for="dict in storageDirectoryOptions"
                 :key="dict.dictValue"
@@ -65,12 +84,20 @@
         </el-col>
       </el-row>
       <el-form-item label="where条件" v-show="msgFormDialog.conditions">
-        <el-input size="small" v-model.trim="msgFormDialog.conditions" :disabled="true"></el-input>
+        <el-input
+          size="small"
+          v-model.trim="msgFormDialog.conditions"
+          :disabled="true"
+        ></el-input>
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
-      <el-button type="primary" @click="trueDialog('ruleForm','handExe')">手工执行元数据备份</el-button>
-      <el-button type="primary" @click="trueDialog('ruleForm','handtrue')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('ruleForm', 'handExe')"
+        >手工执行元数据备份</el-button
+      >
+      <el-button type="primary" @click="trueDialog('ruleForm', 'handtrue')"
+        >确 定</el-button
+      >
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
   </section>

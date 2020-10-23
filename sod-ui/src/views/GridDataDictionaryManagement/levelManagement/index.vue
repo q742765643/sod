@@ -1,27 +1,66 @@
 <template>
   <div class="app-container">
     <!-- 层次属性 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      class="searchBox"
+    >
       <el-form-item size="small" label="GRIB格式:" prop="gribVersion">
-        <el-input clearable v-model.trim="queryParams.gribVersion" placeholder="请输入GRIB格式" />
+        <el-input
+          clearable
+          v-model.trim="queryParams.gribVersion"
+          placeholder="请输入GRIB格式"
+        />
       </el-form-item>
       <el-form-item size="small" label="层次类型:" prop="levelType">
-        <el-input clearable v-model.trim="queryParams.levelType" placeholder="请输入层次类型" />
+        <el-input
+          clearable
+          v-model.trim="queryParams.levelType"
+          placeholder="请输入层次类型"
+        />
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+          >查询</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('add')"
+          icon="el-icon-plus"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('edit')"
+          icon="el-icon-edit"
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" @click="deleteCell" icon="el-icon-delete">删除</el-button>
+        <el-button
+          size="small"
+          type="danger"
+          @click="deleteCell"
+          icon="el-icon-delete"
+          >删除</el-button
+        >
       </el-col>
     </el-row>
 
@@ -38,13 +77,22 @@
       <el-table-column prop="levelType" label="层次类型"></el-table-column>
       <el-table-column prop="levelCode" label="层次代码"></el-table-column>
       <el-table-column prop="scaleDivisor" label="比例因子"></el-table-column>
-      <el-table-column prop="levelProperity" label="英文描述" width="360" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="levelName" label="中文描述" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column
+        prop="levelProperity"
+        label="英文描述"
+        width="360"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        prop="levelName"
+        label="中文描述"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
       <el-table-column prop="unit" label="单位"></el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -59,31 +107,53 @@
       width="45%"
       v-dialogDrag
     >
-      <el-form :model="ruleForm" :rules="rules" label-width="130px" ref="ruleForm">
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        label-width="130px"
+        ref="ruleForm"
+      >
         <el-form-item label="grib格式:" prop="gribVersion">
-          <el-input v-model.trim.number="ruleForm.gribVersion" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.gribVersion"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="层次类型:" prop="levelType">
-          <el-input v-model.trim.number="ruleForm.levelType" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.levelType"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="层次代码:" prop="levelCode">
-          <el-input v-model.trim="ruleForm.levelCode" />
+          <el-input clearable v-model.trim="ruleForm.levelCode" />
         </el-form-item>
         <el-form-item label="比例因子:" prop="scaleDivisor">
-          <el-input v-model.trim.number="ruleForm.scaleDivisor" type="number" placeholder="请输入数字" />
+          <el-input
+            clearable
+            v-model.trim.number="ruleForm.scaleDivisor"
+            type="number"
+            placeholder="请输入数字"
+          />
         </el-form-item>
         <el-form-item label="英文描述:" prop="levelProperity">
-          <el-input v-model.trim="ruleForm.levelProperity" />
+          <el-input clearable v-model.trim="ruleForm.levelProperity" />
         </el-form-item>
         <el-form-item label="中文描述:" prop="levelName">
-          <el-input v-model.trim="ruleForm.levelName" />
+          <el-input clearable v-model.trim="ruleForm.levelName" />
         </el-form-item>
         <el-form-item label="单位:" prop="unit">
-          <el-input v-model.trim="ruleForm.unit" />
+          <el-input clearable v-model.trim="ruleForm.unit" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTrue('ruleForm')">确 定</el-button>
+        <el-button type="primary" @click="handleTrue('ruleForm')"
+          >确 定</el-button
+        >
         <el-button @click="resetForm('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>

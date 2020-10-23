@@ -1,27 +1,62 @@
 <template>
   <div class="app-container">
     <!-- 服务代码定义 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      class="searchBox"
+    >
       <el-form-item label="格点要素服务代码:" prop="userFcstEle">
-        <el-input clearable size="small" v-model.trim="queryParams.userFcstEle" />
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.userFcstEle"
+        />
       </el-form-item>
       <el-form-item label="要素存储短名:" prop="dbFcstEle">
         <el-input clearable size="small" v-model.trim="queryParams.dbFcstEle" />
       </el-form-item>
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+          >查询</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">添加</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('add')"
+          icon="el-icon-plus"
+          >添加</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('edit')" icon="el-icon-edit">编辑</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="showDialog('edit')"
+          icon="el-icon-edit"
+          >编辑</el-button
+        >
       </el-col>
       <el-col :span="1.5">
-        <el-button size="small" type="danger" @click="deleteCell" icon="el-icon-delete">删除</el-button>
+        <el-button
+          size="small"
+          type="danger"
+          @click="deleteCell"
+          icon="el-icon-delete"
+          >删除</el-button
+        >
       </el-col>
     </el-row>
 
@@ -34,15 +69,22 @@
       ref="multipleTable"
     >
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column prop="userFcstEle" label="要素服务代码"></el-table-column>
+      <el-table-column
+        prop="userFcstEle"
+        label="要素服务代码"
+      ></el-table-column>
       <el-table-column prop="dbFcstEle" label="要素存储短名"></el-table-column>
       <el-table-column prop="eleName" label="中文名称"></el-table-column>
-      <el-table-column prop="elePropertyName" label="属性名(要素长名)" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column
+        prop="elePropertyName"
+        label="属性名(要素长名)"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
       <el-table-column prop="eleUnit" label="要素单位"></el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -57,25 +99,52 @@
       width="50%"
       v-dialogDrag
     >
-      <el-form :model="ruleForm" :rules="rules" label-width="150px" ref="ruleForm">
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        label-width="150px"
+        ref="ruleForm"
+      >
         <el-form-item label="要素服务代码:" prop="userFcstEle">
-          <el-input v-model.trim="ruleForm.userFcstEle" placeholder="请输入要素服务代码" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.userFcstEle"
+            placeholder="请输入要素服务代码"
+          />
         </el-form-item>
         <el-form-item label="要素存储短名:" prop="dbFcstEle">
-          <el-input v-model.trim="ruleForm.dbFcstEle" placeholder="请输入要素存储短名" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.dbFcstEle"
+            placeholder="请输入要素存储短名"
+          />
         </el-form-item>
         <el-form-item label="中文名称:" prop="eleName">
-          <el-input v-model.trim="ruleForm.eleName" placeholder="请输入中文名称" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.eleName"
+            placeholder="请输入中文名称"
+          />
         </el-form-item>
         <el-form-item label="属性名(要素长名):" prop="elePropertyName">
-          <el-input v-model.trim="ruleForm.elePropertyName" placeholder="请输入属性名(要素长名)" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.elePropertyName"
+            placeholder="请输入属性名(要素长名)"
+          />
         </el-form-item>
         <el-form-item label="要素单位:" prop="eleUnit">
-          <el-input v-model.trim="ruleForm.eleUnit" placeholder="请输入要素单位" />
+          <el-input
+            clearable
+            v-model.trim="ruleForm.eleUnit"
+            placeholder="请输入要素单位"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleTrue('ruleForm')">确 定</el-button>
+        <el-button type="primary" @click="handleTrue('ruleForm')"
+          >确 定</el-button
+        >
         <el-button @click="resetForm('ruleForm')">取 消</el-button>
       </div>
     </el-dialog>

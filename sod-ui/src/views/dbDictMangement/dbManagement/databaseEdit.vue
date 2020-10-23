@@ -11,6 +11,7 @@
         >
           <el-form-item prop="schemaName" label="模式名称:">
             <el-input
+              clearable
               size="small"
               v-model.trim="msgFormDialog.databaseDto.schemaName"
               placeholder="请输入数据库实例"
@@ -34,6 +35,7 @@
           </el-form-item>-->
           <el-form-item prop="id" label="数据库ID:">
             <el-input
+              clearable
               size="small"
               :disabled="isDbIdDisable"
               v-model.trim="msgFormDialog.id"
@@ -42,6 +44,7 @@
           </el-form-item>
           <el-form-item prop="databaseName" label="数据库名称:">
             <el-input
+              clearable
               size="small"
               v-model.trim="msgFormDialog.databaseName"
               placeholder="请输入数据库名称"
@@ -58,13 +61,14 @@
           </el-form-item>
           <el-form-item prop="databaseInstance" label="数据库实例:">
             <el-input
+              clearable
               size="small"
               v-model.trim="msgFormDialog.databaseInstance"
               placeholder="请输入数据库实例"
             />
           </el-form-item>
           <el-form-item prop="databaseType" label="数据库类型:">
-            <el-select v-model.trim="msgFormDialog.databaseType">
+            <el-select clearable v-model.trim="msgFormDialog.databaseType">
               <el-option
                 v-for="item in dictsList"
                 :key="item.dictValue"
@@ -75,13 +79,19 @@
           </el-form-item>
           <el-form-item prop="driverClassName" label="数据库驱动:">
             <el-input
+              clearable
               size="small"
               v-model.trim="msgFormDialog.driverClassName"
               placeholder="请输入数据库驱动"
             />
           </el-form-item>
           <el-form-item prop="databaseIp" label="数据库IP:">
-            <el-input size="small" v-model.trim="msgFormDialog.databaseIp" placeholder="请输入数据库IP" />
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="msgFormDialog.databaseIp"
+              placeholder="请输入数据库IP"
+            />
           </el-form-item>
           <el-form-item prop="databasePort" label="数据库端口:">
             <el-input-number
@@ -96,37 +106,63 @@
             <el-row>
               <el-col :span="20">
                 <el-input
+                  clearable
                   size="small"
                   v-model.trim="msgFormDialog.databaseUrl"
                   placeholder="请输入数据库访问地址"
                 />
               </el-col>
               <el-col :span="4" class="unitFormItem">
-                <el-button size="small" @click="checkParam()" type="primary" class="childBtn">测试连接</el-button>
+                <el-button
+                  size="small"
+                  @click="checkParam()"
+                  type="primary"
+                  class="childBtn"
+                  >测试连接</el-button
+                >
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item prop="upUrl" label="UP层访问地址:">
-            <el-input size="small" v-model.trim="msgFormDialog.upUrl" placeholder="请输入UP层访问地址" />
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="msgFormDialog.upUrl"
+              placeholder="请输入UP层访问地址"
+            />
           </el-form-item>
           <el-form-item prop="userDisplayControl" label="显示控制:">
-            <el-select v-model.trim="msgFormDialog.userDisplayControl" size="small">
+            <el-select
+              clearable
+              v-model.trim="msgFormDialog.userDisplayControl"
+              size="small"
+            >
               <el-option label="显示" :value="1"></el-option>
               <el-option label="不显示" :value="2"></el-option>
               <el-option label="前端不显示" :value="3"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="主备类型:">
-            <el-select v-model.trim="msgFormDialog.mainBakType" size="small">
+            <el-select
+              clearable
+              v-model.trim="msgFormDialog.mainBakType"
+              size="small"
+            >
               <el-option label="主库" :value="1"></el-option>
               <el-option label="备份库" :value="2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="应用场景:">
-            <el-input size="small" v-model.trim="msgFormDialog.databaseDesc" placeholder="请输入应用场景" />
+            <el-input
+              clearable
+              size="small"
+              v-model.trim="msgFormDialog.databaseDesc"
+              placeholder="请输入应用场景"
+            />
           </el-form-item>
           <el-form-item label="总容量:" prop="databaseCapacity">
             <el-input
+              clearable
               size="small"
               v-model.trim="msgFormDialog.databaseCapacity"
               placeholder="请输入总容量"
@@ -139,7 +175,13 @@
       <el-tab-pane label="存储信息" name="second">
         <el-row :gutter="10" class="handleTableBox">
           <el-col :span="1.5">
-            <el-button type="primary" size="small" @click="addPhysicsStorage" icon="el-icon-plus">添加</el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="addPhysicsStorage"
+              icon="el-icon-plus"
+              >添加</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -147,7 +189,8 @@
               size="small"
               @click="deletePhysicsStorage"
               icon="el-icon-delete"
-            >删除</el-button>
+              >删除</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -155,7 +198,8 @@
               size="small"
               @click="getPhysicsStorage"
               icon="el-icon-refresh"
-            >恢复</el-button>
+              >恢复</el-button
+            >
           </el-col>
         </el-row>
         <el-table
@@ -164,12 +208,20 @@
           stripe
           highlight-current-row
           @current-change="handleSelectionChange"
-          style="width: 100%;"
+          style="width: 100%"
         >
-          <el-table-column type="index" label="序号" width="50"></el-table-column>
+          <el-table-column
+            type="index"
+            label="序号"
+            width="50"
+          ></el-table-column>
           <el-table-column prop="databaseNode" label="节点列表">
             <template slot-scope="scope">
-              <el-input v-model.trim="scope.row.databaseNode" placeholder="请输入节点IP"></el-input>
+              <el-input
+                clearable
+                v-model.trim="scope.row.databaseNode"
+                placeholder="请输入节点IP"
+              ></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="nodeRole" label="节点角色">
@@ -182,7 +234,10 @@
           </el-table-column>
           <el-table-column prop="nodeState" label="状态">
             <template slot-scope="scope">
-              <el-select v-model.trim="scope.row.nodeState" placeholder="请选择">
+              <el-select
+                v-model.trim="scope.row.nodeState"
+                placeholder="请选择"
+              >
                 <el-option label="使用中" value="使用中"></el-option>
                 <el-option label="停止使用" value="停止使用"></el-option>
                 <el-option label="已废弃" value="已废弃"></el-option>
@@ -193,15 +248,28 @@
       </el-tab-pane>
       <el-tab-pane label="账户列表" name="three">
         <el-form>
-          <el-form-item class="manageBtn" style="float:right;">
-            <el-button type="primary" size="small" @click="addPhysicsUser" icon="el-icon-plus">添加</el-button>
+          <el-form-item class="manageBtn" style="float: right">
+            <el-button
+              type="primary"
+              size="small"
+              @click="addPhysicsUser"
+              icon="el-icon-plus"
+              >添加</el-button
+            >
             <el-button
               type="warning"
               size="small"
               @click="deletePhysicsUser"
               icon="el-icon-delete"
-            >删除</el-button>
-            <el-button type="primary" size="small" @click="getPhysicsUser" icon="el-icon-refresh">恢复</el-button>
+              >删除</el-button
+            >
+            <el-button
+              type="primary"
+              size="small"
+              @click="getPhysicsUser"
+              icon="el-icon-refresh"
+              >恢复</el-button
+            >
           </el-form-item>
         </el-form>
         <el-table
@@ -210,22 +278,38 @@
           stripe
           highlight-current-row
           @current-change="handleSelectionChange"
-          style="width: 100%;"
+          style="width: 100%"
         >
-          <el-table-column type="index" label="序号" width="50"></el-table-column>
+          <el-table-column
+            type="index"
+            label="序号"
+            width="50"
+          ></el-table-column>
           <el-table-column prop="userName" label="登录用户">
             <template slot-scope="scope">
-              <el-input v-model.trim="scope.row.userName" placeholder="请输入用户名"></el-input>
+              <el-input
+                clearable
+                v-model.trim="scope.row.userName"
+                placeholder="请输入用户名"
+              ></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="2" label="登录密码">
             <template slot-scope="scope">
-              <el-input show-password placeholder="请输入密码" v-model.trim="scope.row.passWord"></el-input>
+              <el-input
+                clearable
+                show-password
+                placeholder="请输入密码"
+                v-model.trim="scope.row.passWord"
+              ></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="3" label="开户目的">
             <template slot-scope="scope">
-              <el-input v-model.trim="scope.row.introduction"></el-input>
+              <el-input
+                clearable
+                v-model.trim="scope.row.introduction"
+              ></el-input>
             </template>
           </el-table-column>
           <el-table-column prop="3" label="是否管理账户">
@@ -239,17 +323,26 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="专题列表" name="four" v-if="handleMsgObj.id">
-        <el-table border :data="physicsSpecialList" stripe style="width: 100%;">
-          <el-table-column type="index" label="序号" width="50"></el-table-column>
+        <el-table border :data="physicsSpecialList" stripe style="width: 100%">
+          <el-table-column
+            type="index"
+            label="序号"
+            width="50"
+          ></el-table-column>
           <el-table-column prop="databaseName" label="专题名"></el-table-column>
           <el-table-column prop="schemaName" label="专题标识"></el-table-column>
-          <el-table-column prop="userName" label="关联web用户"></el-table-column>
+          <el-table-column
+            prop="userName"
+            label="关联web用户"
+          ></el-table-column>
         </el-table>
       </el-tab-pane>
     </el-tabs>
     <div slot="footer1" class="dialog-footer">
       <el-button @click="cancelDialog()">取 消</el-button>
-      <el-button type="primary" @click="trueDialog('msgFormDialog')">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('msgFormDialog')"
+        >确 定</el-button
+      >
     </div>
   </section>
 </template>
@@ -261,13 +354,13 @@ import {
   findByDatabaseDefineId,
   conStatus,
   findBaseByPId,
-  connStatus
+  connStatus,
 } from "@/api/dbDictMangement/dbManagement";
 import { getDicts } from "@/api/system/dict/data";
 import {
   EngNumLine,
   ipUrlValidation,
-  ipUrlValidation2
+  ipUrlValidation2,
 } from "@/components/commonVaildate.js";
 
 export default {
@@ -275,8 +368,8 @@ export default {
   components: {},
   props: {
     handleMsgObj: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
     var nameValidate = (rule, value, callback) => {
@@ -323,7 +416,7 @@ export default {
         databaseDto: {
           schemaName: "",
           databaseClassify: "物理库",
-          databaseName: "基础库"
+          databaseName: "基础库",
         },
 
         id: "",
@@ -341,7 +434,7 @@ export default {
         databaseDesc: "",
         databaseCapacity: 0,
         databaseNodesList: [], //存储信息
-        databaseAdministratorList: [] //账户信息
+        databaseAdministratorList: [], //账户信息
       },
       //默认site页
       activeName: "first",
@@ -353,42 +446,42 @@ export default {
       baseFormRules: {
         id: { required: true, validator: nameValidate, trigger: "blur" },
         databaseName: [
-          { required: true, message: "请输入数据库名称", trigger: "blur" }
+          { required: true, message: "请输入数据库名称", trigger: "blur" },
         ],
         serialNumber: [
           { required: true, message: "请输入显示序号", trigger: "blur" },
-          { type: "number", message: "显示序号必须为数字值" }
+          { type: "number", message: "显示序号必须为数字值" },
         ],
         databaseInstance: [
-          { required: true, message: "数据库实例", trigger: "blur" }
+          { required: true, message: "数据库实例", trigger: "blur" },
         ],
         databaseType: [
-          { required: true, message: "请输入数据库类型", trigger: "blur" }
+          { required: true, message: "请输入数据库类型", trigger: "blur" },
         ],
         driverClassName: [
-          { required: true, message: "请输入数据库驱动", trigger: "blur" }
+          { required: true, message: "请输入数据库驱动", trigger: "blur" },
         ],
         databaseIp: [
-          { required: true, validator: ipValidate, trigger: "blur" }
+          { required: true, validator: ipValidate, trigger: "blur" },
         ],
         databasePort: [
           { required: true, message: "请输入数据库端口", trigger: "blur" },
-          { type: "number", message: "数据库端口必须为数字值" }
+          { type: "number", message: "数据库端口必须为数字值" },
         ],
         databaseUrl: [
-          { required: true, message: "请输入数据库访问地址", trigger: "blur" }
+          { required: true, message: "请输入数据库访问地址", trigger: "blur" },
         ],
         upUrl: [
-          { required: true, message: "请输入UP层访问地址", trigger: "blur" }
+          { required: true, message: "请输入UP层访问地址", trigger: "blur" },
         ],
         databaseCapacity: [
           {
             required: true,
             validator: databaseCapacityValidate,
-            trigger: "blur"
-          }
-        ]
-      }
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   async created() {
@@ -410,7 +503,7 @@ export default {
   },
   methods: {
     async getDictsList() {
-      getDicts("sys_database_type").then(response => {
+      getDicts("sys_database_type").then((response) => {
         if (response.code == 200) {
           this.dictsList = response.data;
         }
@@ -419,7 +512,7 @@ export default {
     //添加或修改数据库基本信息的保存按钮
     async trueDialog(formName) {
       //验证基本信息页的必填项是否输入
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (!valid) {
           this.$message.error("请正确填写基本信息列表");
           return;
@@ -434,7 +527,7 @@ export default {
             return;
           }
           //验证存储信息列表的必填项是否输入
-          this.msgFormDialog.databaseNodesList.forEach(element => {
+          this.msgFormDialog.databaseNodesList.forEach((element) => {
             if (!element.databaseNode) {
               this.$message.error("请正确填写存储信息列表");
               flagInfo = true;
@@ -443,7 +536,7 @@ export default {
             this.$set(element, "databaseId", this.msgFormDialog.id);
           });
           //验证账户信息列表的必填项是否输入
-          this.msgFormDialog.databaseAdministratorList.forEach(element => {
+          this.msgFormDialog.databaseAdministratorList.forEach((element) => {
             if (!element.userName || !element.passWord) {
               this.$message.error("请正确填写账户信息列表");
               flagInfo = true;
@@ -477,7 +570,7 @@ export default {
             this.$message({ message: "数据库ID重复", type: "error" });
             return;
           }
-          databaseDefineSave(this.msgFormDialog).then(response => {
+          databaseDefineSave(this.msgFormDialog).then((response) => {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
               this.cancelDialog();
@@ -490,7 +583,7 @@ export default {
       });
     },
     formDetail(id, type) {
-      databaseDefineGet({ id: id }).then(response => {
+      databaseDefineGet({ id: id }).then((response) => {
         if (type == "repeat") {
           if (response.data) {
             this.flag = true;
@@ -502,7 +595,7 @@ export default {
             response.data.databaseDto = {
               schemaName: "",
               databaseClassify: "物理库",
-              databaseName: "基础库"
+              databaseName: "基础库",
             };
           }
           this.msgFormDialog = response.data;
@@ -520,7 +613,7 @@ export default {
     //测试数据库连接
     checkParam() {
       if (this.isDbIdDisable) {
-        conStatus({ id: this.msgFormDialog.id }).then(res => {
+        conStatus({ id: this.msgFormDialog.id }).then((res) => {
           if (res.data.checkConn == 1) {
             this.$message({ message: "连接正常", type: "success" });
           } else {
@@ -549,7 +642,7 @@ export default {
         }
         let flagInfo = false;
         //验证账户信息列表的必填项是否输入
-        this.msgFormDialog.databaseAdministratorList.forEach(element => {
+        this.msgFormDialog.databaseAdministratorList.forEach((element) => {
           if (!element.userName || !element.passWord) {
             this.$message.error("请正确填写账户信息列表");
             flagInfo = true;
@@ -577,7 +670,7 @@ export default {
           this.$message({ message: "数据库ID重复", type: "error" });
           return;
         }
-        connStatus(this.msgFormDialog).then(response => {
+        connStatus(this.msgFormDialog).then((response) => {
           this.$message({ message: "连接正常", type: "success" });
         });
       }
@@ -595,7 +688,7 @@ export default {
       this.msgFormDialog.databaseNodesList.push({
         databaseNode: "",
         nodeRole: "存储节点",
-        nodeState: "使用中"
+        nodeState: "使用中",
       });
     },
     //存储信息删除一行
@@ -626,7 +719,7 @@ export default {
         userName: "",
         passWord: "",
         introduction: "",
-        isManager: true
+        isManager: true,
       });
     },
     //账户列表页删除一行
@@ -645,7 +738,7 @@ export default {
     },
     //专题库信息查询页
     getPhysicsSpecial(id) {
-      findByDatabaseDefineId({ id: id }).then(res => {
+      findByDatabaseDefineId({ id: id }).then((res) => {
         if (res.code == 200) {
           this.physicsSpecialList = res.data;
         }
@@ -654,8 +747,8 @@ export default {
     //页签切换时间(将选中对象清掉)
     pageTasChange() {
       this.currentRow = null;
-    }
-  }
+    },
+  },
 };
 </script>
 

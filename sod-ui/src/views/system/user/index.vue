@@ -82,8 +82,16 @@
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="mini"
+              @click="handleQuery"
+              >搜索</el-button
+            >
+            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+              >重置</el-button
+            >
           </el-form-item>
         </el-form>
 
@@ -95,7 +103,8 @@
               size="mini"
               @click="handleAdd"
               v-hasPermi="['system:user:add']"
-            >新增</el-button>
+              >新增</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -105,7 +114,8 @@
               :disabled="single"
               @click="handleUpdate"
               v-hasPermi="['system:user:edit']"
-            >修改</el-button>
+              >修改</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -115,10 +125,17 @@
               :disabled="multiple"
               @click="handleDelete"
               v-hasPermi="['system:user:remove']"
-            >删除</el-button>
+              >删除</el-button
+            >
           </el-col>
           <el-col :span="1.5">
-            <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
+            <el-button
+              size="small"
+              type="success"
+              icon="el-icon-download"
+              @click="handleExport"
+              >导出</el-button
+            >
           </el-col>
         </el-row>
 
@@ -146,12 +163,21 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" prop="createTime" width="160" sortable="custom">
+          <el-table-column
+            label="创建时间"
+            prop="createTime"
+            width="160"
+            sortable="custom"
+          >
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="200" class-name="small-padding fixed-width">
+          <el-table-column
+            label="操作"
+            width="200"
+            class-name="small-padding fixed-width"
+          >
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -159,7 +185,8 @@
                 icon="el-icon-edit"
                 @click="handleUpdate(scope.row)"
                 v-hasPermi="['system:user:edit']"
-              >修改</el-button>
+                >修改</el-button
+              >
               <el-button
                 v-if="scope.row.id !== 1"
                 size="mini"
@@ -167,20 +194,22 @@
                 icon="el-icon-delete"
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['system:user:remove']"
-              >删除</el-button>
+                >删除</el-button
+              >
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-key"
                 @click="handleResetPwd(scope.row)"
                 v-hasPermi="['system:user:resetPwd']"
-              >重置</el-button>
+                >重置</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
 
         <pagination
-          v-show="total>0"
+          v-show="total > 0"
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
@@ -201,37 +230,68 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model.trim="form.nickName" placeholder="请输入用户昵称" />
+              <el-input
+                clearable
+                v-model.trim="form.nickName"
+                placeholder="请输入用户昵称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model.trim="form.deptId" :options="deptOptions" placeholder="请选择归属部门" />
+              <treeselect
+                v-model.trim="form.deptId"
+                :options="deptOptions"
+                placeholder="请选择归属部门"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="手机号码" prop="phonenumber">
-              <el-input v-model.trim="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
+              <el-input
+                clearable
+                v-model.trim="form.phonenumber"
+                placeholder="请输入手机号码"
+                maxlength="11"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
-              <el-input v-model.trim="form.email" placeholder="请输入邮箱" maxlength="50" />
+              <el-input
+                clearable
+                v-model.trim="form.email"
+                placeholder="请输入邮箱"
+                maxlength="50"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="用户名称" prop="userName">
-              <el-input v-model.trim="form.userName" placeholder="请输入用户名称" />
+              <el-input
+                clearable
+                v-model.trim="form.userName"
+                placeholder="请输入用户名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.id == undefined" label="用户密码" prop="password">
-              <el-input v-model.trim="form.password" placeholder="请输入用户密码" type="password" />
+            <el-form-item
+              v-if="form.id == undefined"
+              label="用户密码"
+              prop="password"
+            >
+              <el-input
+                clearable
+                v-model.trim="form.password"
+                placeholder="请输入用户密码"
+                type="password"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="用户性别">
-              <el-select v-model.trim="form.sex" placeholder="请选择">
+              <el-select clearable v-model.trim="form.sex" placeholder="请选择">
                 <el-option
                   v-for="dict in sexOptions"
                   :key="dict.dictValue"
@@ -248,7 +308,8 @@
                   v-for="dict in statusOptions"
                   :key="dict.dictValue"
                   :label="dict.dictValue"
-                >{{dict.dictLabel}}</el-radio>
+                  >{{ dict.dictLabel }}</el-radio
+                >
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -268,7 +329,12 @@
           </el-col>-->
           <el-col :span="12">
             <el-form-item label="角色">
-              <el-select v-model.trim="form.roleIds" multiple placeholder="请选择">
+              <el-select
+                clearable
+                v-model.trim="form.roleIds"
+                multiple
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="item in roleOptions"
                   :key="item.roleId"
@@ -281,7 +347,11 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input v-model.trim="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+              <el-input
+                v-model.trim="form.remark"
+                type="textarea"
+                placeholder="请输入内容"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
