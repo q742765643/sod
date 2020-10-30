@@ -417,6 +417,7 @@ export default {
           schemaName: "",
           databaseClassify: "物理库",
           databaseName: "基础库",
+          level:1
         },
 
         id: "",

@@ -17,5 +17,6 @@ public class MetaClearDto extends JobInfoDto{
     private String databaseName;
     private String conditions;
     private String databaseType;
+    private String partiOff;
 }
 

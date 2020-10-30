@@ -24,6 +24,7 @@ import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
@@ -94,6 +95,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private ReadAuthorityMapper readAuthorityMapper;
     @Autowired
     private DatabaseInfo databaseInfo;
+    @Autowired
+    private DataLogicService dataLogicService;
+
     @GrpcHthtClient
     private UserDao userDao;
     @Override
@@ -576,19 +580,67 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 	public List<Map<String, Object>> getApplyDataInfo(String userId) throws Exception {
 	    //获取userId的可用物理库
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(userId, "1");
-        List<Map<String,Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
         if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
             return  null;
         }
+        //查询所有不属于该用户的资料
+        List<Map<String,Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
+
+        //查询该用户已经申请使用的资料
+        List<Map<String, Object>> recordListByUserId = mybatisQueryMapper.getApplyRecordListByUserId(userId);
+
+        //查询可用物理库里已建的表
+        Map<String, List<String>> databaseTables = dataLogicService.getDatabaseTables(databaseUserDto.getExamineDatabaseId());
+
+
+        //剔除还没在物理库建表的资料
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
         for(int i=result.size()-1;i>-1;i--){
             Map<String, Object> map = result.get(i);
-            if(!databaseIds.contains((String)map.get("DATABASEID"))){
+            String databaseId = (String)map.get("DATABASEID");
+            String dataClassId = (String)map.get("DATACLASSID");
+            String tableName = (String)map.get("TABLENAME");
+
+            //资料所在的库没有权限的移除
+            if(!databaseIds.contains(databaseId)){
                 result.remove(map);
+                continue;
             }
+
+            //没建表的移除
+            List<String> tableList = databaseTables.get(databaseId);
+            if(tableList == null || tableList.size() ==0){
+                result.remove(map);
+                continue;
+            }
+            if("HADB".equalsIgnoreCase(databaseId) && !tableList.contains(tableName.toLowerCase())){
+                result.remove(map);
+                continue;
+            }
+            if(!"HADB".equalsIgnoreCase(databaseId) && !tableList.contains(tableName.toUpperCase())){
+                result.remove(map);
+                continue;
+            }
+
+            //已经申请过的移除
+            if(recordListByUserId != null && recordListByUserId.size()>0){
+                for(Map<String, Object> record : recordListByUserId){
+                    if(databaseId.equals((String)record.get("DATABASE_DEFINE_ID")) && dataClassId.equals((String)record.get("DATA_CLASS_ID"))){
+                        result.remove(map);
+                        break;
+                    }
+                }
+            }
+
         }
 		return result;
 	}
+
+    @Override
+    public List<Map<String, Object>> getApplyedFileDataInfo(String userId) {
+
+        return null;
+    }
 
     @Override
     public ReadAuthorityDto updateReadAuthority(ReadAuthorityDto readAuthorityDto) {

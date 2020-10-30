@@ -15,7 +15,7 @@
               v-model.trim="msgFormDialog.taskName"
             ></el-input>
           </el-form-item>
-          <el-form-item label="数据库IP">
+          <el-form-item label="数据库IP" prop="databaseId">
             <el-select
               clearable
               size="small"
@@ -62,6 +62,15 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-form-item label="是否删除分区" prop="partiOff">
+            <el-switch
+              v-model.trim="msgFormDialog.partiOff"
+              active-value="1"
+              inactive-value="0"
+              active-color="#13ce66"
+              inactive-color="#ccc"
+            ></el-switch>
+          </el-form-item>
           <el-form-item label="where条件" prop="conditions">
             <el-input
               clearable
@@ -142,6 +151,7 @@ export default {
         databaseId: "",
         jobCron: "0 0 2 * * ?",
         conditions: "",
+        partiOff:"1"
       },
       ipList: [],
       defaultProps: {
@@ -159,6 +169,7 @@ export default {
         jobCron: [
           { required: true, message: "请输入执行策略", trigger: "blur" },
         ],
+        partiOff: [{ required: true, message: "是否删除分区", trigger: "blur" }],
         conditions: [
           { required: true, message: "请输入where条件", trigger: "blur" },
         ],

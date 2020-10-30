@@ -1,11 +1,13 @@
 package com.piesat.schedule.client.handler.clear;
 
 import com.piesat.common.utils.OwnException;
+import com.piesat.schedule.client.business.XuguBusiness;
 import com.piesat.schedule.client.datasource.DataSourceContextHolder;
 import com.piesat.schedule.client.handler.base.BaseHandler;
 import com.piesat.schedule.client.service.DatabaseOperationService;
 import com.piesat.schedule.client.service.clear.MetaClearLogService;
 import com.piesat.schedule.client.util.ExtractMessage;
+import com.piesat.schedule.client.vo.ClearVo;
 import com.piesat.schedule.client.vo.MetadataVo;
 import com.piesat.schedule.client.vo.ReplaceVo;
 import com.piesat.schedule.entity.JobInfoEntity;
@@ -20,7 +22,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @program: sod
@@ -49,15 +53,26 @@ public class MetaClearHandler implements BaseHandler {
             metaClearLogEntity.setId(null);
             metaClearLogEntity.setJobId(metaClearEntity.getId());
             metaClearLogEntity.setTriggerTime(metaClearEntity.getTriggerLastTime());
-            ReplaceVo replaceVo = new ReplaceVo();
+
+            /*ReplaceVo replaceVo = new ReplaceVo();
             replaceVo.setMsg(metaClearEntity.getConditions());
             replaceVo.setBackupTime(metaClearEntity.getTriggerLastTime());
-            ExtractMessage.getIndexOf(replaceVo, resultT);
-            metaClearEntity.setConditions(replaceVo.getMsg());
-            resultT.setSuccessMessage("清除条件为{}",replaceVo.getMsg());
+            ExtractMessage.getIndexOf(replaceVo, resultT);*/
+            ClearVo clearVo = new ClearVo();
+            clearVo.setStartTime(System.currentTimeMillis());
+            this.calculateTime(clearVo,metaClearEntity,resultT);
+
+            resultT.setSuccessMessage("清除条件为{}",metaClearEntity.getConditions());
             metaClearLogEntity=this.insertMetaClearLog(metaClearLogEntity,resultT);
             metaClearLogEntity.setConditions(metaClearEntity.getConditions());
-            this.metaClearExecute(metaClearLogEntity,resultT);
+
+            if(metaClearEntity.getPartiOff() != null && metaClearEntity.getPartiOff().equals("1")){
+                //删分区
+                this.metaPartiClearExecute(metaClearLogEntity,clearVo,resultT);
+            }else{
+                //删数据
+                this.metaClearExecute(metaClearLogEntity,resultT);
+            }
         } catch (Exception e) {
             log.error(OwnException.get(e));
             resultT.setErrorMessage("清除失败,原因:{}",OwnException.get(e));
@@ -88,6 +103,27 @@ public class MetaClearHandler implements BaseHandler {
 
     }
 
+    public void metaPartiClearExecute(MetaClearLogEntity metaClearLogEntity, ClearVo clearVo,ResultT<String> resultT){
+        DataSourceContextHolder.setDataSource(metaClearLogEntity.getParentId());
+        String[] tableNames=metaClearLogEntity.getClearContent().split(",");
+        if(tableNames.length<=0){
+            resultT.setSuccessMessage("没有表需要进行清除");
+            return;
+        }
+        for(String tableName:tableNames){
+            resultT.setSuccessMessage("开始执行虚谷删除表{}分区",tableName);
+            try {
+                XuguBusiness xuguBusiness = new XuguBusiness();
+                xuguBusiness.deleteMetaParti(tableName,clearVo,metaClearLogEntity,resultT);
+            } catch (Exception e) {
+                resultT.setErrorMessage("执行虚谷删除表{}分区失败,原因:{}",tableName,OwnException.get(e));
+                log.error("执行虚谷删除分区失败:{}",OwnException.get(e));
+            }
+
+        }
+        DataSourceContextHolder.clearDataSource();
+    }
+
     public MetaClearLogEntity insertMetaClearLog( MetaClearLogEntity metaClearLogEntity, ResultT<String> resultT){
         try {
             metaClearLogEntity.setHandleCode("0");
@@ -116,6 +152,31 @@ public class MetaClearHandler implements BaseHandler {
         } catch (Exception e){
             resultT.setErrorMessage("修改日志出错{}",OwnException.get(e));
             log.error("修改日志出错{}",OwnException.get(e));
+        }
+
+    }
+
+    public void calculateTime(ClearVo clearVo,MetaClearEntity metaClearEntity, ResultT<String> resultT){
+        try {
+            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            ReplaceVo replaceVo = new ReplaceVo();
+            replaceVo.setMsg(metaClearEntity.getConditions());
+            replaceVo.setDatabaseId(metaClearEntity.getParentId());
+            replaceVo.setBackupTime(metaClearEntity.getTriggerLastTime());
+            ExtractMessage.getIndexOf(replaceVo, resultT);
+            clearVo.setConditions(replaceVo.getMsg());
+            metaClearEntity.setConditions(replaceVo.getMsg());
+            Set<Long> timeSet=replaceVo.getTimeSet();
+            if(timeSet.size()==1){
+                for (long time : timeSet) {
+                    clearVo.setClearTime(time);
+                    resultT.setSuccessMessage("资料删除时间为小于{}",format.format(time));
+                    log.info("资料删除时间为小于{}",format.format(time));
+                }
+            }
+        } catch (Exception e) {
+            resultT.setErrorMessage("计算清除时间失败,{}",OwnException.get(e));
+            log.error("计算清除时间失败,{}",OwnException.get(e));
         }
 
     }

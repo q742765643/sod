@@ -282,4 +282,24 @@ public class DataAuthorityApplyController {
         }
     }
 
+    /**
+     *  获取用户已经申请使用的文件索引库的资料
+     * @description
+     * @author wyj
+     * @date 2020年10月29日下午4:20:22
+     * @return
+     */
+    @ApiOperation(value="获取用户已经申请使用的文件索引库的资料")
+    //@RequiresPermissions("dm:dataAuthorityApply:getApplyedFileDataInfo")
+    @GetMapping(value = "/getApplyedFileDataInfo")
+    public ResultT getApplyedFileDataInfo(String userId) {
+        try {
+            List<Map<String,Object>> data = dataAuthorityApplyService.getApplyedFileDataInfo(userId);
+            return ResultT.success(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

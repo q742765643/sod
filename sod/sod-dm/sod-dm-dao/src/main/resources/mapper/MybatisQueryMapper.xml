@@ -714,9 +714,10 @@
             dt.table_name,
             da.user_id,
             da.create_time as "apply_time",
-            sdb.database_name as "schema_name",
-            sdb.schema_name as "schema_id",
-            sdd.database_name,
+            sdb.database_name as "special_name",
+            sdb.schema_name as "schema_name",
+            sdd.database_name as "database_name",
+            sdd.id as "database_define_id",
             sdc.class_name,
             tsu.web_username user_name
         from t_sod_data_authority_record dd
@@ -746,9 +747,45 @@
             dt.table_name,
             da.user_id,
             da.create_time as "apply_time",
+            sdd.database_name database_name,
+            sdd.id as "database_define_id",
+            sdb.schema_name as "schema_name",
+            sdb.database_name special_name,
+            sdc.class_name,
+            tsu.web_username web_username,
+            tsu.user_name biz_userid
+        from t_sod_data_authority_record dd
+                 left join t_sod_data_logic dl on dl.data_class_id = dd.data_class_id and dl.database_id = dd.database_id
+                 left join t_sod_data_table dt on dt.class_logic_id = dl.id
+                 left join t_sod_data_authority_apply da on dd.apply_id = da.id
+                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
+                 left join t_sod_user tsu on tsu.user_name = da.user_id
+        where
+            dt.user_id = #{userId}
+        order by
+            da.create_time desc,
+            dd.authorize asc
+    </select>
+
+    <select id="getApplyRecordListByUserId" resultType="java.util.Map" parameterType="String">
+        select
+            dd.id,
+            dd.apply_id,
+            dd.data_class_id,
+            dd.database_id,
+            dd.authorize,
+            dd.apply_authority,
+            dd.cause,
+            dt.name_cn,
+            dt.table_name,
+            da.user_id,
+            da.create_time as "apply_time",
             sdb.database_name as "schema_name",
             sdb.schema_name as "schema_id",
             sdd.database_name,
+            sdd.id as "database_define_id",
             sdc.class_name,
             tsu.web_username user_name
         from t_sod_data_authority_record dd
@@ -760,7 +797,7 @@
                  left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
                  left join t_sod_user tsu on tsu.user_name = dt.user_id
         where
-            dt.user_id = #{userId}
+            da.user_id = #{userId}
         order by
             da.create_time desc,
             dd.authorize asc
@@ -917,9 +954,8 @@
         b.d_data_id,b.class_name,c.class_name type_name,d.table_name,f.database_name
         FROM t_sod_database_special_read_write a
         INNER JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
-        INNER JOIN (SELECT class_name,d_data_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON
-        SUBSTR(b.d_data_id,0,1)
-        = c.d_data_id
+        INNER JOIN (SELECT class_name,d_data_id,data_class_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON
+        SUBSTR(b.d_data_id,0,1)= c.d_data_id and SUBSTR(b.d_data_id,0,1)= c.data_class_id
         INNER JOIN t_sod_data_table d ON a.data_class_id = d.data_service_id
         LEFT JOIN t_sod_database e ON a.database_id = e.id
         LEFT JOIN t_sod_database_define f ON e.DATABASE_DEFINE_ID = f.id
@@ -1310,10 +1346,11 @@
         select
         t1.data_class_id as "dataClassId",t4.id as "databaseId",
         t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】' as "dataName" ,
-        t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl"
+        t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl",t5.table_name as "tableName"
         from
         t_sod_data_class t1
         inner join t_sod_data_logic t2 on t1. data_class_id = t2.data_class_id
+        inner join t_sod_data_table t5 on t5.class_logic_id = t2.id
         inner join t_sod_database t3 on t2.database_id = t3.id
         inner join t_sod_database_define t4 on t3.database_define_id = t4.id and t4.user_display_control !=2
         <if test="userId != null and userId != ''">
@@ -1322,7 +1359,7 @@
         group by
         t1.data_class_id,t4.id,
         t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
-        t3.schema_name,t3.id,t1.is_access
+        t3.schema_name,t3.id,t1.is_access,t5.table_name
         order by
         dataName asc
     </select>

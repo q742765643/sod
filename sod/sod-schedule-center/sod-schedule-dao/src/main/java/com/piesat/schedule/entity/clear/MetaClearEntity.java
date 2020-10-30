@@ -38,5 +38,9 @@ public class MetaClearEntity extends JobInfoEntity{
     @Excel(name = "物理库类型")
     @Column(name="database_type", length=50)
     private String databaseType;
+
+    @Excel(name = "是否删除分区")
+    @Column(name="parti_off", length = 10)
+    private String partiOff;
 }
 

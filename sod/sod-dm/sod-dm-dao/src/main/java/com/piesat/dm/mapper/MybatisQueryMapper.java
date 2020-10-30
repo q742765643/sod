@@ -117,6 +117,8 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getRecordListByUserId(@Param("userId") String userId);
 
+    List<Map<String, Object>> getApplyRecordListByUserId(@Param("userId") String userId);
+
     DataClassBaseInfoEntity getDataClassBaseInfo(@Param("id") String id);
 
     List<CmccElementEntity> queryCmccElements(DatumTableEntity datumTableEntity);

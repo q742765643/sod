@@ -83,6 +83,12 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
+    public List<DatabaseDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds) {
+        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseDefineIdIn(databaseDefineIds);
+        return this.databaseMapper.toDto(databaseEntityList);
+    }
+
+    @Override
     public List<DatabaseDto> findByDatabaseDefineId(String id) {
         List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseDefine_Id(id);
         return this.databaseMapper.toDto(databaseEntityList);

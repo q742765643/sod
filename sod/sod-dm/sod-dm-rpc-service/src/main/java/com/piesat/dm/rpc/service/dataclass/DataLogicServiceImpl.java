@@ -252,7 +252,13 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                     //剔除掉物理库中不存在得资料
                     String database_define_id = dataTable.get("DATABASE_DEFINE_ID") == null ? null : (String)dataTable.get("DATABASE_DEFINE_ID") ;
                     String table_name = dataTable.get("TABLE_NAME") == null ? null : (String)dataTable.get("TABLE_NAME") ;
-                    if(databaseTables.get(database_define_id) != null && !databaseTables.get(database_define_id).contains(table_name.toUpperCase())){
+                    if(databaseTables.get(database_define_id) == null){
+                        continue;
+                    }
+                    if("HADB".equalsIgnoreCase(database_define_id) && !databaseTables.get(database_define_id).contains(table_name.toLowerCase())){
+                        continue;
+                    }
+                    if(!"HADB".equalsIgnoreCase(database_define_id) && !databaseTables.get(database_define_id).contains(table_name.toUpperCase())){
                         continue;
                     }
 
@@ -303,10 +309,12 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
             return map;
     }
 
+    @Override
     public Map<String,List<String>> getDatabaseTables(String logics){
         HashMap<String, List<String>> map = new HashMap<>();
         if(StringUtils.isNotEmpty(logics)){
-            List<DatabaseDto> databaseDtos = databaseService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
+            //List<DatabaseDto> databaseDtos = databaseService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
+            List<DatabaseDto> databaseDtos = databaseService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
             for(int i=0;i<databaseDtos.size();i++){
                 DatabaseDcl databaseDcl = null;
                 try {
@@ -321,7 +329,13 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                 try{
                     ResultT resultT = databaseDcl.queryAllTableName(databaseDtos.get(i).getSchemaName());
                     if(resultT.isSuccess() && resultT.getData() != null){
-                        map.put(databaseDtos.get(i).getDatabaseDefine().getId(),(List<String>)resultT.getData());
+                        List<String> tableList = map.get(databaseDtos.get(i).getDatabaseDefine().getId());
+                        if(tableList != null){
+                            tableList.addAll((List<String>)resultT.getData());
+                            map.put(databaseDtos.get(i).getDatabaseDefine().getId(),tableList);
+                        }else{
+                            map.put(databaseDtos.get(i).getDatabaseDefine().getId(),(List<String>)resultT.getData());
+                        }
                     }
                     databaseDcl.closeConnect();
                 }catch (Exception e){

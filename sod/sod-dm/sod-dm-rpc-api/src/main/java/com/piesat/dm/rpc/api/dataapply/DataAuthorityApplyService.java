@@ -61,6 +61,8 @@ public interface DataAuthorityApplyService {
      */
     List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
 
+    List<Map<String,Object>> getApplyedFileDataInfo(String userId);
+
     ReadAuthorityDto updateReadAuthority(ReadAuthorityDto readAuthorityDto);
 
     List<ReadAuthorityDto> getReadAuthority();

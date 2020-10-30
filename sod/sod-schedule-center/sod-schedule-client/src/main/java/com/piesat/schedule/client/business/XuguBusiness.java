@@ -22,6 +22,7 @@ import com.piesat.schedule.client.vo.StrategyVo;
 import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.ClearLogEntity;
+import com.piesat.schedule.entity.clear.MetaClearLogEntity;
 import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.schedule.entity.recover.RecoverLogEntity;
 import com.piesat.util.ResultT;
@@ -187,6 +188,59 @@ public class XuguBusiness extends BaseBusiness{
         }
 
     }
+
+    /**
+     * 删除xugu元数据库分区
+     * @param tableName
+     * @param clearVo
+     * @param metaClearLogEntity
+     * @param resultT
+     * @throws Exception
+     */
+    public void deleteMetaParti(String tableName, ClearVo clearVo, MetaClearLogEntity metaClearLogEntity, ResultT<String> resultT) throws Exception {
+        String schemaName=tableName.split("\\.")[0];
+        String table=tableName.split("\\.")[1];
+        DatabaseOperationService databaseOperationService= SpringUtil.getBean(DatabaseOperationService.class);
+        List<Map<String,Object>> partList=databaseOperationService.selectXuguPartition(schemaName,table);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        int m=0;
+        if(partList!=null&&!partList.isEmpty()){
+            for(Map<String,Object> map:partList){
+                String partiName= (String) map.get("PARTI_NAME");
+                String partiVal = (String) map.get("PARTI_VAL");
+                long time = sdf.parse(partiVal.replace("'", "")).getTime();
+                if(time>clearVo.getClearTime()){
+                    break;
+                }
+                int loopNum=0;
+                while (true){
+                    loopNum++;
+                    try {
+                        databaseOperationService.deletePartition(tableName,partiName,resultT);
+                        resultT.setSuccessMessage("删除表{},分区{}成功",tableName,partiName);
+                        log.info("删除表{},分区{}成功",tableName,partiName);
+                        m++;
+                        break;
+                    } catch (Exception e) {
+                        if(loopNum>3){
+                            resultT.setErrorMessage("删除表{},分区{}异常;错误原因{}",tableName,partiName,OwnException.get(e));
+                            log.error("删除表{},分区{}异常;错误原因{}",tableName,partiName,OwnException.get(e));
+                            resultT.setEiCode(ReturnCodeEnum.ReturnCodeEnum_12_ERROR.getKey());
+                            EiSendUtil.partitionException(partiName,metaClearLogEntity.getParentId(),resultT);
+                            break;
+                        }
+                    }
+                    Thread.sleep(18000);
+                }
+
+            }
+        }
+        if(m>0){
+            clearVo.setCount(m);
+        }
+
+    }
+
     @Override
     public List<TreeVo> findMeta(String parentId){
         DataSourceContextHolder.setDataSource(parentId);
