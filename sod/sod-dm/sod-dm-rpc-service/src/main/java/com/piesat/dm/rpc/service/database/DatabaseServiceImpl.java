@@ -39,6 +39,9 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
 
     @Override
     public DatabaseDto saveDto(DatabaseDto databaseDto) {
+        if ("基础库".equals(databaseDto.getDatabaseName())) {
+            databaseDto.setLevel(1);
+        }
         DatabaseEntity databaseEntity = this.databaseMapper.toEntity(databaseDto);
         databaseEntity = this.saveNotNull(databaseEntity);
         return this.databaseMapper.toDto(databaseEntity);
@@ -51,8 +54,8 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public List<Map<String,Object>> getDatabaseName() {
-       // String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME,d.database_type DATABASE_TYPE  from T_SOD_DATABASE t inner join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id and d.user_display_control != '2'";
+    public List<Map<String, Object>> getDatabaseName() {
+        // String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME,d.database_type DATABASE_TYPE  from T_SOD_DATABASE t inner join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id and d.user_display_control != '2'";
         List<Map<String, Object>> list = mybatisQueryMapper.getDatabaseName();
         return list;
     }
@@ -71,14 +74,14 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify,List<String> ids) {
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseClassifyAndIdIn(databaseClassify,ids);
+    public List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify, List<String> ids) {
+        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseClassifyAndIdIn(databaseClassify, ids);
         return this.databaseMapper.toDto(databaseEntityList);
     }
 
     @Override
     public List<DatabaseDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify, List<String> databaseDefineIds) {
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseClassifyAndDatabaseDefineIdIn(databaseClassify,databaseDefineIds);
+        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseClassifyAndDatabaseDefineIdIn(databaseClassify, databaseDefineIds);
         return this.databaseMapper.toDto(databaseEntityList);
     }
 
@@ -98,9 +101,9 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public List<DatabaseDto> findByDatabaseClassify(String databaseClassify) {
         List<DatabaseEntity> databaseEntities = this.databaseDao.findByDatabaseClassify(databaseClassify);
         //闲时优化
-        if(databaseEntities != null && databaseEntities.size()>0){
-            for(int i=databaseEntities.size()-1;i>-1;i--){
-                if(databaseEntities.get(i).getDatabaseDefine().getUserDisplayControl().intValue() != 1){
+        if (databaseEntities != null && databaseEntities.size() > 0) {
+            for (int i = databaseEntities.size() - 1; i > -1; i--) {
+                if (databaseEntities.get(i).getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
                     databaseEntities.remove(databaseEntities.get(i));
                 }
             }
@@ -111,13 +114,13 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     @Override
     public List<Map<String, Object>> findByUserIdAndDatabaseDefineId(String userId, String databaseDefineId) {
         //由于框架bug导致带union的sql报错，暂时分开写
-        List<Map<String,Object>> resultList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         List<Map<String, Object>> byUserIdAndDatabaseDefineId1 = this.mybatisQueryMapper.findByUserIdAndDatabaseDefineId1(userId, databaseDefineId);
-        if(byUserIdAndDatabaseDefineId1 != null){
+        if (byUserIdAndDatabaseDefineId1 != null) {
             resultList.addAll(byUserIdAndDatabaseDefineId1);
         }
         List<Map<String, Object>> byUserIdAndDatabaseDefineId2 = this.mybatisQueryMapper.findByUserIdAndDatabaseDefineId2(userId, databaseDefineId);
-        if(byUserIdAndDatabaseDefineId2 != null){
+        if (byUserIdAndDatabaseDefineId2 != null) {
             resultList.addAll(byUserIdAndDatabaseDefineId2);
         }
         return resultList;
@@ -125,7 +128,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
 
     @Override
     public List<Map<String, Object>> getDatabaseList(String ifDisplay) {
-        String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME  from T_SOD_DATABASE t, T_SOD_DATABASE_DEFINE d WHERE t.DATABASE_DEFINE_ID = d.id AND d.user_display_control in("+ifDisplay+")";
+        String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME  from T_SOD_DATABASE t, T_SOD_DATABASE_DEFINE d WHERE t.DATABASE_DEFINE_ID = d.id AND d.user_display_control in(" + ifDisplay + ")";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }

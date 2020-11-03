@@ -65,6 +65,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yaya
@@ -386,14 +387,13 @@ public class GrpcService {
         int un = 0;
         for (ServiceCodeDto sc : serviceCodeDtos) {
             for (TableColumnDto tc : tableColumnDtoList) {
-                if (sc.getDbEleCode().equals(tc.getCElementCode()) && !sc.getUserEleCode().equals(tc.getUserEleCode())) {
+                if (sc.getDbEleCode().equals(tc.getCElementCode()) && !sc.getUserEleCode().equalsIgnoreCase(tc.getUserEleCode())) {
                     tc.setUserEleCode(sc.getUserEleCode());
-                    this.tableColumnDao.save(this.tableColumnMapper.toEntity(tc));
+                    this.tableColumnDao.saveNotNull(this.tableColumnMapper.toEntity(tc));
                     un++;
                 }
             }
         }
-
         return un;
     }
 

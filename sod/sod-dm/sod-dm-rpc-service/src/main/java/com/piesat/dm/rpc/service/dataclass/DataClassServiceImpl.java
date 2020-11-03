@@ -25,6 +25,7 @@ import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
@@ -92,6 +93,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DatabaseSpecialReadWriteService databaseSpecialReadWriteService;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
+    @Autowired
+    private NewdataTableColumnService newdataTableColumnService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -356,6 +359,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     @Transactional
     public void deleteByDataClassId(String dataClassId) {
+        DataClassDto dataClass = this.findByDataClassId(dataClassId);
         List<DataLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
         for (DataLogicEntity dl : dll) {
             List<DataTableEntity> dts = this.dataTableDao.findByClassLogic_Id(dl.getId());
@@ -371,6 +375,13 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataClassDao.deleteByDataClassId(dataClassId);
         this.databaseSpecialReadWriteService.deleteByDataClassId(dataClassId);
         this.dataAuthorityApplyService.deleteByDataClassId(dataClassId);
+        List<NewdataApplyDto> newDataApplyDtoList = this.newdataApplyService.findByDataClassIdAndUserId(dataClassId, dataClass.getCreateBy());
+        if (newDataApplyDtoList != null) {
+            newDataApplyDtoList.forEach(e -> {
+                this.newdataApplyService.deleteById(e.getId());
+                this.newdataTableColumnService.deleteByApplyId(e.getId());
+            });
+        }
     }
 
     @Override
@@ -564,7 +575,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 LinkedHashMap<String, Object> gad = select.get(0);
                 String AREA_REGION_DESC = gad.get("AREA_REGION_DESC").toString();
                 String[] split = AREA_REGION_DESC.split(";");
-                if(split.length>1){
+                if (split.length > 1) {
                     int flagbegin = split[0].indexOf("[");
                     int flagend = split[0].indexOf("]");
                     int flagbegin1 = split[1].indexOf("[");

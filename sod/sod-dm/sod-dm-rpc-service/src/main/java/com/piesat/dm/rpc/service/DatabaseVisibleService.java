@@ -123,7 +123,9 @@ public class DatabaseVisibleService {
         String[] split = dbIds.split(",");
         JSONObject jo = new JSONObject();
         for (String id : split) {
-            if (!databaseId.equals(id)) continue;
+            if (!databaseId.equals(id)) {
+                continue;
+            }
             DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
             if (dotById != null) {
                 jo.put("DATABASE_IP", dotById.getDatabaseIp());
@@ -188,18 +190,18 @@ public class DatabaseVisibleService {
     public ResultT getTable(String bizUserId, String dataclassId) {
         List<DataAuthorityRecordDto> dataAuthorityRecordList = new ArrayList<>();
         List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
-//        List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
-//        for (int i = 0; i < DataClassDtos.size(); i++) {
-//            DataClassDto dataClassDto = DataClassDtos.get(i);
-//            List<DataLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
-//            for (int j = 0; j < byDataClassId.size(); j++) {
-//                DataLogicEntity dataLogicEntity = byDataClassId.get(j);
-//                DataAuthorityRecordDto d = new DataAuthorityRecordDto();
-//                d.setDatabaseId(dataLogicEntity.getDatabaseId());
-//                d.setDataClassId(dataLogicEntity.getDataClassId());
-//                dataAuthorityRecordList.add(d);
-//            }
-//        }
+        List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
+        for (int i = 0; i < DataClassDtos.size(); i++) {
+            DataClassDto dataClassDto = DataClassDtos.get(i);
+            List<DataLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
+            for (int j = 0; j < byDataClassId.size(); j++) {
+                DataLogicEntity dataLogicEntity = byDataClassId.get(j);
+                DataAuthorityRecordDto d = new DataAuthorityRecordDto();
+                d.setDatabaseId(dataLogicEntity.getDatabaseId());
+                d.setDataClassId(dataLogicEntity.getDataClassId());
+                dataAuthorityRecordList.add(d);
+            }
+        }
         for (DataAuthorityApplyDto d : dataAuthorityApplyDto) {
             dataAuthorityRecordList.addAll(d.getDataAuthorityRecordList());
         }

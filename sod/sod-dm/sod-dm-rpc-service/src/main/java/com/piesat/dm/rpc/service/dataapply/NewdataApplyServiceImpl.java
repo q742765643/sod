@@ -371,7 +371,9 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         //删除portal申请时携带的字段信息
         newdataTableColumnService.deleteByApplyId(id);
         //删除申请信息
-        this.delete(id);
+        if(this.exists(id)){
+            this.delete(id);
+        }
     }
     @Override
     public void delApply(String applyId, String dDataId) {

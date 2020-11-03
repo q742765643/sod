@@ -311,7 +311,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         databaseSpecialEntity.setUseStatus("2");
         databaseSpecialEntity = this.saveNotNull(databaseSpecialEntity);
 
-        /*if (StringUtils.isNotEmpty(database_id)) {
+        this.databaseSpecialAuthorityDao.deleteBySdbId(databaseSpecialEntity.getId());
+
+        if (StringUtils.isNotEmpty(database_id)) {
             String[] split = database_id.split(",");
             for (String databaseId : split) {
                 DatabaseSpecialAuthorityEntity dsa = new DatabaseSpecialAuthorityEntity();
@@ -323,7 +325,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 dsa.setCreateTime(new Date());
                 this.databaseSpecialAuthorityDao.saveNotNull(dsa);
             }
-        }*/
+        }
 
 
         if (StringUtils.isNotEmpty(databaseSpecialReadWriteList)) {
