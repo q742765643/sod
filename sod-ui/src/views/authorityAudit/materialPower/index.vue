@@ -62,6 +62,7 @@
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
       <el-table-column prop="userName" label="用户名"></el-table-column>
+      <el-table-column prop="userId" label="业务用户"></el-table-column>
       <el-table-column prop="department" label="机构"></el-table-column>
       <el-table-column prop="telephone" label="联系方式"></el-table-column>
       <el-table-column prop="createTime" label="申请时间" sortable="custom">

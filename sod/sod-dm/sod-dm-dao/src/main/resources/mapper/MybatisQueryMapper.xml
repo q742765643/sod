@@ -1501,4 +1501,56 @@
             </if>
         </where>
     </select>
+
+    <!--用户申请的文件索引库的资料-->
+    <select id="getApplyedRecodeFileDataInfo" resultType="java.util.Map" parameterType="String">
+        select
+            dd.data_class_id,
+            dd.database_id,
+            dd.authorize,
+            dd.apply_authority,
+            dt.name_cn,
+            dt.table_name,
+            da.user_id,
+            sdb.database_name as "special_name",
+            sdb.schema_name,
+            sdd.database_name  as "database_name",
+            sdd.id as "database_define_id",
+            sdc.class_name
+        from t_sod_data_authority_record dd
+                 left join t_sod_data_logic dl on dl.data_class_id = dd.data_class_id and dl.database_id = dd.database_id
+                 left join t_sod_data_table dt on dt.class_logic_id = dl.id
+                 left join t_sod_data_authority_apply da on dd.apply_id = da.id
+                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
+        where
+            da.user_id=#{userId} and sdd.id='FIDB' and dd.authorize = '1'
+        order by
+            da.create_time desc,
+            dd.authorize asc
+    </select>
+    <!--用户申请的文件索引库的资料-->
+    <select id="getSpecialReadWriteFileDataInfo" resultType="java.util.Map" parameterType="String">
+        select a.data_class_id,
+               a.database_id,
+               a.examine_status as "authorize",
+               a.apply_authority,
+               dt.name_cn,
+               dt.table_name,
+               b.user_id,
+               sdb.database_name as "special_name",
+               sdb.schema_name,
+               sdd.database_name  as "database_name",
+               sdd.id as "database_define_id",
+               sdc.class_name
+        from usr_sod.T_SOD_DATABASE_SPECIAL_READ_WRITE a
+                 left join usr_sod.T_SOD_DATABASE_SPECIAL b on b.id = a.sdb_ID
+                 left join usr_sod.t_sod_data_logic dl on dl.data_class_id = a.data_class_id and dl.database_id = a.database_id
+                 left join usr_sod.t_sod_data_table dt on dt.class_logic_id = dl.id
+                 left join usr_sod.t_sod_database sdb on a.database_id = sdb.id
+                 left join usr_sod.t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join usr_sod.t_sod_data_class sdc on substr ( a.data_class_id, 1,1 ) = sdc.data_class_id
+        where b.USER_ID=#{userId} and b.USE_STATUS ='2' AND a.EXAMINE_STATUS='1' and sdd.id='FIDB'
+    </select>
 </mapper>

@@ -638,8 +638,29 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public List<Map<String, Object>> getApplyedFileDataInfo(String userId) {
-
-        return null;
+        ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
+        List<Map<String, Object>> recodeFileDataInfo = mybatisQueryMapper.getApplyedRecodeFileDataInfo(userId);
+        List<Map<String, Object>> specialReadWriteFileDataInfo = mybatisQueryMapper.getSpecialReadWriteFileDataInfo(userId);
+        if(recodeFileDataInfo != null && recodeFileDataInfo.size()>0){
+            arrayList.addAll(recodeFileDataInfo);
+        }
+        for(int i=0;i<arrayList.size();i++){
+            Map<String, Object> recordOne = arrayList.get(i);
+            if(specialReadWriteFileDataInfo != null && specialReadWriteFileDataInfo.size()>0){
+                for(int j=specialReadWriteFileDataInfo.size()-1;j>-1;j--){
+                    Map<String, Object> readWriteOne = specialReadWriteFileDataInfo.get(j);
+                    if(recordOne.get("DATABASE_ID").equals(readWriteOne.get("DATABASE_ID")) &&
+                            recordOne.get("DATA_CLASS_ID").equals(readWriteOne.get("DATA_CLASS_ID")) &&
+                            recordOne.get("TABLE_NAME").equals(readWriteOne.get("TABLE_NAME"))
+                    ){
+                        specialReadWriteFileDataInfo.remove(readWriteOne);
+                        break;
+                    }
+                }
+            }
+        }
+        arrayList.addAll(specialReadWriteFileDataInfo);
+        return arrayList;
     }
 
     @Override

@@ -225,4 +225,8 @@ public interface MybatisQueryMapper {
     List<Map<String,Object>>  getByDatabaseDefineId(@Param("id")String id);
 
     List<GridAreaEntity> getAreaByPage(@Param("map") Map<String, String> map);
+
+    List<Map<String,Object>>  getApplyedRecodeFileDataInfo(@Param("userId") String userId);
+
+    List<Map<String,Object>>  getSpecialReadWriteFileDataInfo(@Param("userId") String userId);
 }
