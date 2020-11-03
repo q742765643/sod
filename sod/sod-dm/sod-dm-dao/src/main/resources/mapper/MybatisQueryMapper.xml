@@ -214,7 +214,7 @@
     </select>
 
     <select id="getTableInfoByClassId" resultType="java.util.Map">
-        select a.*,c.logic_name from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = b.id
+        select a.*,c.logic_name,b.database_id from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = b.id
                                          left join T_SOD_LOGIC_DEFINE c on b.logic_flag = c.logic_flag
                                           where b.data_class_id=#{dataClassId}
     </select>
