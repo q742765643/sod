@@ -30,7 +30,7 @@ public class Test {
         System.out.println("are:"+are);
         String are1 = textEncryptor.decrypt("HbaZNoUMJp0EsMMUFpNxiTUjZZvy9NKm");
         System.out.println("are1:"+are1);
-        String pp = textEncryptor.encrypt("Gddaas@2019");
+        String pp = textEncryptor.encrypt("Pnmicxg2019");
         System.out.println("pp:"+pp);
 
     }
