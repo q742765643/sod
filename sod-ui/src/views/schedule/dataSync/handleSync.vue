@@ -272,8 +272,8 @@
             <el-form-item label="DI/EI发送" prop="diOff">
               <el-switch
                 v-model.trim="msgFormDialog.diOff"
-                active-value="1"
-                inactive-value="0"
+                active-value="0"
+                inactive-value="1"
                 active-color="#13ce66"
                 inactive-color="#ccc"
               ></el-switch>
