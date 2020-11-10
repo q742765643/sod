@@ -78,7 +78,7 @@
     	delete from ${tableName}
     </update>-->
     <delete id="clearTable" parameterType="java.lang.String">
-    	delete from ${tableName}
+    	TRUNCATE TABLE ${tableName}
     </delete>
 
     <!-- 插入一行数据 -->
