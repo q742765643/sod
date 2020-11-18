@@ -292,14 +292,17 @@ public class DataAuthorityApplyController {
     @ApiOperation(value="获取用户已经申请使用的文件索引库的资料")
     //@RequiresPermissions("dm:dataAuthorityApply:getApplyedFileDataInfo")
     @GetMapping(value = "/getApplyedFileDataInfo")
-    public ResultT getApplyedFileDataInfo(String userId) {
+    public ResultT getApplyedFileDataInfo(String userId, int pageNum, int pageSize) {
+        ResultT<PageBean> resultT = new ResultT<>();
         try {
-            List<Map<String,Object>> data = dataAuthorityApplyService.getApplyedFileDataInfo(userId);
-            return ResultT.success(data);
+            PageForm pageForm = new PageForm<>(pageNum, pageSize);
+            PageBean pageBean = dataAuthorityApplyService.getApplyedFileDataInfo(userId,pageForm);
+            resultT.setData(pageBean);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+        return  resultT;
     }
 
 }

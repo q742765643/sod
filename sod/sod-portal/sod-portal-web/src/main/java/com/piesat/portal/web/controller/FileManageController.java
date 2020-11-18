@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -134,6 +134,68 @@ public class FileManageController {
         fileManageDto= this.fileManageService.updateDto(fileManageDto);
         resultT.setData(fileManageDto);
         return resultT;
+    }
+
+    @ApiOperation(value="根据id下载文件",notes="根据id下载文件")
+    @GetMapping(value="/downloadById")
+    public void downloadById(HttpServletRequest request, HttpServletResponse response) {
+        String id = request.getParameter("id");
+        FileManageDto fileManageDto = this.fileManageService.getDotById(id);
+        String fullPath = fileManageDto.getFilePath();
+        File file = new File(fullPath);
+        String fileName = file.getName();
+
+        if(file.exists()){
+            try {
+                String userAgent = request.getHeader("User-Agent");
+                if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
+                    //IE浏览器处理
+                    fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                } else {
+                    fileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+                    // 非IE浏览器的处理：
+//                    fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+                }
+                // 以流的形式下载文件。
+                InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+                byte[] buffer = new byte[inputStream.available()];
+                inputStream.read(buffer);
+                inputStream.close();
+                // 清空response
+                //response.reset();
+                // 设置response的Header
+                response.addHeader("Content-Disposition", "attachment;filename=" + new String(fileName));
+                response.addHeader("Content-Length", "" + file.length());
+                OutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
+                response.setContentType("application/octet-stream");
+                outputStream.write(buffer);
+                outputStream.flush();
+                outputStream.close();
+
+                //更新文件下载次数
+                Integer downloadTimes = fileManageDto.getDownloadtimes();
+                if(null == downloadTimes){
+                    downloadTimes = 1;
+                } else{
+                    fileManageDto.setDownloadtimes(downloadTimes+1);
+                    fileManageDto= this.fileManageService.updateDto(fileManageDto);
+                }
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }else{
+            try {
+                response.setContentType("text/html; charset=UTF-8"); //转码
+                PrintWriter out = response.getWriter();
+                out.flush();
+                out.println("<script defer='defer' type='text/javascript'>");
+                out.println("alert('文件不存在或已经被删除！');");
+//                out.println("window.location='/AnnualStatistics/downloadList';");
+                out.println("</script>");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

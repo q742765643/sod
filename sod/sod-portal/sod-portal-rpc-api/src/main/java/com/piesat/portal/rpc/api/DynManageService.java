@@ -25,4 +25,6 @@ public interface DynManageService {
     DynManageDto getDotById(String id);
 
     void delete(String id);
+
+    List<DynManageDto> findByPublish(DynManageDto dynManageDto);
 }

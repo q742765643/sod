@@ -17,3 +17,11 @@ export function update(data) {
     data: data
   })
 }
+
+export function getByClassId(query) {
+  return request({
+    url: baseUrl + '/dm/onlineTime/getByClassId',
+    method: 'get',
+    params: query
+  })
+}

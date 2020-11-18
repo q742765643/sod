@@ -36,4 +36,14 @@ public class DataOnlineTimeDto {
      * 0:未使用，1：使用中
      */
     private Integer using;
+
+    /**
+     * 最小阈值
+     */
+    private Date boundBeginTime;
+
+    /**
+     * 最大阈值
+     */
+    private Date boundEndTime;
 }

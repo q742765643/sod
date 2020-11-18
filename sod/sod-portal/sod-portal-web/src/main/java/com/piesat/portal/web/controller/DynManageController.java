@@ -38,6 +38,22 @@ public class DynManageController {
         return resultT;
     }
 
+    @GetMapping("/findByPublish")
+    @ApiOperation(value = "根据发布状态查询", notes = "根据发布状态查询")
+    public ResultT<List<DynManageDto>> findByPublish(DynManageDto dynManageDto) {
+        ResultT<List<DynManageDto>> resultT = new ResultT<>();
+        List<DynManageDto> result = dynManageService.findByPublish(dynManageDto);
+        int num = 8;
+        if(result != null && result.size()>0){
+            if(result.size()<num){
+                num = result.size();
+            }
+            result = result.subList(0, num);
+        }
+        resultT.setData(result);
+        return resultT;
+    }
+
     @Log(title = "业务动态管理", businessType = BusinessType.INSERT)
     @PostMapping(value="/saveDynManage")
     @ApiOperation(value="新增业务动态管理（portal）",notes="新增业务动态管理（portal）")

@@ -74,4 +74,11 @@ public class DynManageServiceImpl extends BaseService<DynManageEntity> implement
         return this.dynManageMapstruct.toDto(dynManageEntity);
     }
 
+    @Override
+    public List<DynManageDto> findByPublish(DynManageDto dynManageDto) {
+        List<DynManageEntity> entities = this.dynManageDao.findByIspublished(dynManageDto.getIspublished());
+        List<DynManageDto> manageDtos = dynManageMapstruct.toDto(entities);
+        return manageDtos;
+    }
+
 }

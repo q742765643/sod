@@ -48,6 +48,9 @@ public class FileManageServiceImpl extends BaseService<FileManageEntity> impleme
         if(StringUtils.isNotBlank(fileManageEntity.getFileName())){
             fileManageEntity.setFileName("%"+fileManageEntity.getFileName()+"%");
         }
+        if(StringUtils.isNotBlank(fileManageEntity.getFileDesc())){
+            fileManageEntity.setFileDesc("%"+fileManageEntity.getFileDesc()+"%");
+        }
 
         List<FileManageEntity> fileManageEntities = fileManageMapper.selectPageList(fileManageEntity);
         PageInfo<FileManageEntity> pageInfo = new PageInfo<>(fileManageEntities);
@@ -62,6 +65,7 @@ public class FileManageServiceImpl extends BaseService<FileManageEntity> impleme
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         FileManageEntity fileManageEntity = fileManageMapstruct.toEntity(fileManageDto);
         fileManageEntity.setCreateBy(loginUser.getNickName());
+        fileManageEntity.setDownloadtimes(0);
         fileManageEntity = this.saveNotNull(fileManageEntity);
         return fileManageMapstruct.toDto(fileManageEntity);
     }
@@ -74,9 +78,7 @@ public class FileManageServiceImpl extends BaseService<FileManageEntity> impleme
 
     @Override
     public FileManageDto updateDto(FileManageDto fileManageDto) {
-        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         FileManageEntity fileManageEntity = fileManageMapstruct.toEntity(fileManageDto);
-        fileManageEntity.setCreateBy(loginUser.getNickName());
         fileManageEntity = this.saveNotNull(fileManageEntity);
         return fileManageMapstruct.toDto(fileManageEntity);
     }

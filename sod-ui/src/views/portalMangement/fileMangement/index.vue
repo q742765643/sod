@@ -52,7 +52,7 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="fileDesc" label="文件描述" width="300"></el-table-column>
+      <el-table-column prop="fileDesc" label="文件描述" width="300" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="address" label="操作" width="150" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <el-button

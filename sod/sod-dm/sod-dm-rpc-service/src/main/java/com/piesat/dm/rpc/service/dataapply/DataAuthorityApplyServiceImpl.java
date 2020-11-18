@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.service.dataapply;
 
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
@@ -55,7 +56,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.*;
+
 
 /**
  * @author yaya
@@ -637,8 +640,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 	}
 
     @Override
-    public List<Map<String, Object>> getApplyedFileDataInfo(String userId) {
-        ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
+    public PageBean getApplyedFileDataInfo(String userId,PageForm pageForm) {
+        List<Map<String, Object>> arrayList = new ArrayList<Map<String, Object>>();
         List<Map<String, Object>> recodeFileDataInfo = mybatisQueryMapper.getApplyedRecodeFileDataInfo(userId);
         List<Map<String, Object>> specialReadWriteFileDataInfo = mybatisQueryMapper.getSpecialReadWriteFileDataInfo(userId);
         if(recodeFileDataInfo != null && recodeFileDataInfo.size()>0){
@@ -660,7 +663,20 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }
         }
         arrayList.addAll(specialReadWriteFileDataInfo);
-        return arrayList;
+
+        //分页
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(arrayList);
+        int pages = arrayList.size() % pageForm.getPageSize() == 0 ? arrayList.size() / pageForm.getPageSize() : arrayList.size() / pageForm.getPageSize() + 1;
+        pageInfo.setPages(pages);
+        int fromIndex = (pageForm.getCurrentPage() - 1) * pageForm.getPageSize();
+        if (pageForm.getCurrentPage() < pageInfo.getPages()) {
+            arrayList = arrayList.subList(fromIndex, fromIndex + pageForm.getPageSize());
+
+        } else if (Integer.valueOf(pageForm.getCurrentPage()).equals(Integer.valueOf(pageInfo.getPages()))) {
+            arrayList = arrayList.subList(fromIndex, arrayList.size());
+        }
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), arrayList);
+        return pageBean;
     }
 
     @Override

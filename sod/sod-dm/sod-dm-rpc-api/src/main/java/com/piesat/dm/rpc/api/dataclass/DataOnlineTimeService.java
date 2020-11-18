@@ -7,6 +7,7 @@ import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,5 +27,7 @@ public interface DataOnlineTimeService {
     void update(DataOnlineTimeDto dataOnlineTimeDto);
 
     DataOnlineTimeDto findByDataClassId(String dataClassId);
+
+    Map<String,Object> getByClassId(String dataClassId);
 
 }

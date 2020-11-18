@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,5 +110,15 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
     public DataOnlineTimeDto findByDataClassId(String dataClassId) {
         DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeDao.findByDataClassId(dataClassId);
         return this.dataOnlineTimeMapper.toDto(dataOnlineTimeEntity);
+    }
+
+    @Override
+    public Map<String, Object> getByClassId(String dataClassId) {
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String,Object>> onLineTimeByClassId = mybatisQueryMapper.onLineTimeByClassId(dataClassId);
+        DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeDao.findByDataClassId(dataClassId);
+        result.put("distinctDataBaseInfo",onLineTimeByClassId);
+        result.put("dataOnlineTime",dataOnlineTimeEntity);
+        return result;
     }
 }

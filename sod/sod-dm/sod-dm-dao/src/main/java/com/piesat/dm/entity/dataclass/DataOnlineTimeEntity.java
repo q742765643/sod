@@ -48,4 +48,16 @@ public class DataOnlineTimeEntity extends BaseEntity {
      */
     @Column(name = "is_use", length = 1)
     private Integer isUse;
+
+    /**
+     * 最小阈值
+     */
+    @Column(name = "bound_begin_time")
+    private Date boundBeginTime;
+
+    /**
+     * 最大阈值
+     */
+    @Column(name = "bound_end_time")
+    private Date boundEndTime;
 }

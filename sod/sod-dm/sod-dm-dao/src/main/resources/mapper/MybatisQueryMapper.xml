@@ -175,7 +175,7 @@
 
 
     <!--在线时间检索条件分页查询-->
-    <select id="onLineList" parameterType="java.util.Map" resultType="java.util.Map">
+    <!--<select id="onLineList" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT AA.DATA_CLASS_ID DATA_CLASS_ID,AA.D_DATA_ID
         D_DATA_ID,AA.IF_STOP_USE,AA.CLASS_NAME,CC.BEGIN_TIME,CC.END_TIME,CC.RECORD_COUNT
         FROM T_SOD_DATA_CLASS AA
@@ -197,7 +197,33 @@
                 AND AA.D_DATA_ID like '%${map.d_data_id}%'
             </if>
         </where>
+    </select>-->
+    <select id="onLineList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT  BB.DATA_CLASS_ID DATA_CLASS_ID,EE.D_DATA_ID D_DATA_ID,EE.CLASS_NAME,
+        min(BEGIN_TIME) BEGIN_TIME,max(END_TIME) END_TIME,max(RECORD_COUNT) RECORD_COUNT,EE.IF_STOP_USE FROM
+        usr_sod.T_SOD_TABLEDATA_STATISTICS AA INNER JOIN
+        (SELECT DATA_CLASS_ID,C.database_id,A.TABLE_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM
+        usr_sod.T_SOD_TABLEDATA_STATISTICS A
+        LEFT JOIN usr_sod.T_SOD_DATA_TABLE B ON A.TABLE_ID = B.ID
+        LEFT JOIN usr_sod.T_SOD_DATA_LOGIC C ON B.class_logic_id = C.ID
+        WHERE C.DATA_CLASS_ID IS NOT NULL
+        GROUP BY C.DATA_CLASS_ID,C.DATABASE_ID,A.TABLE_ID order by  C.DATA_CLASS_ID) BB
+        on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
+        INNER JOIN usr_sod.T_SOD_DATABASE CC on AA.DATABASE_ID = CC.ID
+        INNER JOIN usr_sod.T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
+        INNER JOIN usr_sod.T_SOD_DATA_CLASS EE on BB.DATA_CLASS_ID = EE.DATA_CLASS_ID
+        <where>
+            <if test="map.class_name != null and map.class_name != ''">
+                EE.CLASS_NAME like '%${map.class_name}%'
+            </if>
+            <if test="map.d_data_id != null and map.d_data_id != ''">
+                AND EE.D_DATA_ID like '%${map.d_data_id}%'
+            </if>
+        </where>
+        group by BB.DATA_CLASS_ID,EE.D_DATA_ID,EE.IF_STOP_USE,EE.CLASS_NAME
     </select>
+
+
 
     <select id="getOnlineTime" resultType="java.util.Map">
         select
@@ -212,6 +238,22 @@
             c.DATA_CLASS_ID = #{classDataId} and a.statistic_date >= #{statisticDate} and
             dd.id in ('STDB','HADB','FIDB') order by a.statistic_date desc;
     </select>
+
+    <select id="onLineTimeByClassId" resultType="java.util.Map">
+        SELECT  BEGIN_TIME,END_TIME,RECORD_COUNT,DATA_CLASS_ID,STATISTIC_TIME,DD.DATABASE_NAME FROM
+            T_SOD_TABLEDATA_STATISTICS AA
+            INNER JOIN
+                (SELECT DATA_CLASS_ID,C.database_id,A.TABLE_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM
+                    T_SOD_TABLEDATA_STATISTICS A
+                        LEFT JOIN T_SOD_DATA_TABLE B ON A.TABLE_ID = B.ID
+                        LEFT JOIN T_SOD_DATA_LOGIC C ON B.class_logic_id = C.ID
+                 WHERE C.DATA_CLASS_ID IS NOT NULL and C.DATA_CLASS_ID = #{dataClassId}
+                 GROUP BY C.DATA_CLASS_ID,C.DATABASE_ID,A.TABLE_ID order by  C.DATA_CLASS_ID) BB
+                on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
+             INNER JOIN T_SOD_DATABASE CC on AA.DATABASE_ID = CC.ID
+             INNER JOIN T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
+    </select>
+
 
     <select id="getTableInfoByClassId" resultType="java.util.Map">
         select a.*,c.logic_name,b.database_id from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = b.id
@@ -1509,6 +1551,7 @@
             dd.database_id,
             dd.authorize,
             dd.apply_authority,
+            sdn.dir_norm,
             dt.name_cn,
             dt.table_name,
             da.user_id,
@@ -1519,6 +1562,7 @@
             sdc.class_name
         from t_sod_data_authority_record dd
                  left join t_sod_data_logic dl on dl.data_class_id = dd.data_class_id and dl.database_id = dd.database_id
+                 left join t_sod_dataclass_norm sdn on sdn.id = dd.data_class_id
                  left join t_sod_data_table dt on dt.class_logic_id = dl.id
                  left join t_sod_data_authority_apply da on dd.apply_id = da.id
                  left join t_sod_database sdb on dd.database_id = sdb.id
@@ -1536,6 +1580,7 @@
                a.database_id,
                a.examine_status as "authorize",
                a.apply_authority,
+               sdn.dir_norm,
                dt.name_cn,
                dt.table_name,
                b.user_id,
@@ -1544,13 +1589,14 @@
                sdd.database_name  as "database_name",
                sdd.id as "database_define_id",
                sdc.class_name
-        from usr_sod.T_SOD_DATABASE_SPECIAL_READ_WRITE a
-                 left join usr_sod.T_SOD_DATABASE_SPECIAL b on b.id = a.sdb_ID
-                 left join usr_sod.t_sod_data_logic dl on dl.data_class_id = a.data_class_id and dl.database_id = a.database_id
-                 left join usr_sod.t_sod_data_table dt on dt.class_logic_id = dl.id
-                 left join usr_sod.t_sod_database sdb on a.database_id = sdb.id
-                 left join usr_sod.t_sod_database_define sdd on sdb.database_define_id = sdd.id
-                 left join usr_sod.t_sod_data_class sdc on substr ( a.data_class_id, 1,1 ) = sdc.data_class_id
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE a
+                 left join T_SOD_DATABASE_SPECIAL b on b.id = a.sdb_ID
+                 left join t_sod_data_logic dl on dl.data_class_id = a.data_class_id and dl.database_id = a.database_id
+                 left join t_sod_dataclass_norm sdn on sdn.id = a.data_class_id
+                 left join t_sod_data_table dt on dt.class_logic_id = dl.id
+                 left join t_sod_database sdb on a.database_id = sdb.id
+                 left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join t_sod_data_class sdc on substr ( a.data_class_id, 1,1 ) = sdc.data_class_id
         where b.USER_ID=#{userId} and b.USE_STATUS ='2' AND a.EXAMINE_STATUS='1' and sdd.id='FIDB'
     </select>
 </mapper>

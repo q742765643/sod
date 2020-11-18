@@ -16,6 +16,7 @@
           <el-option label="Java" value="Java"></el-option>
           <el-option label="Python" value="Python"></el-option>
           <el-option label="Fortran" value="Fortran"></el-option>
+          <el-option label="CS" value="CS"></el-option>
           <el-option label="C/C++" value="C/C++"></el-option>
           <el-option label="C#" value="C#"></el-option>
           <el-option label="其他" value="其他"></el-option>
@@ -78,7 +79,6 @@
       </el-form-item>
       <el-form-item prop="serialNumber" label="排序:">
         <el-input-number
-          :disabled="handleDis"
           clearable
           size="small"
           v-model="msgFormDialog.serialNumber"
@@ -142,7 +142,7 @@ export default {
           { required: true, message: "请上传SDK包", trigger: "change" },
         ],
         sdkDocUrl: [
-          { required: true, message: "请上传SDK文档 ", trigger: "change" },
+          { required: false, message: "请上传SDK文档 ", trigger: "change" },
         ],
         sdkDesc: [
           { required: true, message: "请输入SDK描述 ", trigger: "blur" },

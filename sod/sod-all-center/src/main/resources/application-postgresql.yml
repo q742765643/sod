@@ -132,6 +132,8 @@ serverfile:
   special: /CMADAAS/EXCHANGE/SOD/SOD_FILES/special
   cloud: /CMADAAS/EXCHANGE/SOD/SOD_FILES/cloud
   user: /CMADAAS/EXCHANGE/SOD/SOD_FILES/user
+  sdkfile: /CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile
+  portalfile: /CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/portalfile
   #  dbfile: D:/file
   #  filePath: D:/file
   #  dfcheck: D:/file

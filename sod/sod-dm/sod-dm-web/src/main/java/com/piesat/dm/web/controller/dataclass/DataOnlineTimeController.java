@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,5 +54,17 @@ public class DataOnlineTimeController {
         ResultT<String> resultT=new ResultT<>();
         dataOnlineTimeService.update(dataOnlineTimeDto);
         return resultT;
+    }
+
+    @ApiOperation(value = "根据DATA_CLASS_ID查询不同库里的最新数据")
+    @GetMapping(value = "/getByClassId")
+    public ResultT getByClassId(String data_class_id) {
+        try {
+            Map<String,Object> result = this.dataOnlineTimeService.getByClassId(data_class_id);
+            return ResultT.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }

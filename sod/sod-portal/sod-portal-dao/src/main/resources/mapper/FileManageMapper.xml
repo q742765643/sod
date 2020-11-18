@@ -30,9 +30,16 @@
         <if test="entity.fileName != null and entity.fileName != ''">
             AND a.file_name like #{entity.fileName}
         </if>
+        <if test="entity.fileDesc != null and entity.fileDesc != ''">
+            AND a.file_desc like #{entity.fileDesc}
+        </if>
         <if test="entity.fileType != null and entity.fileType != ''">
             AND a.file_type = #{entity.fileType}
         </if>
+        <if test="entity.fileCategory != null and entity.fileCategory != ''">
+            AND a.file_category = #{entity.fileCategory}
+        </if>
+        order by SERIAL_NUMBER
     </select>
 
 </mapper>

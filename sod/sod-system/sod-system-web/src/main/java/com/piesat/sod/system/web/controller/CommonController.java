@@ -7,11 +7,17 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.piesat.common.constant.FileTypesConstant;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -92,4 +98,43 @@ public class CommonController {
             }
         }
 	}
+
+    @ApiOperation(value="文件预览",notes="文件预览")
+    @GetMapping(value="/api/com/previewPdf")
+    public ResponseEntity<InputStreamResource> previewPDF(HttpServletRequest request){
+        try {
+            String filePath = request.getParameter("filePath");
+            FileSystemResource file = new FileSystemResource(filePath);
+
+
+            File resultFile = file.getFile();
+            String suffix = filePath.substring(filePath.indexOf(".")+1);
+
+            boolean b = Arrays.stream(FileTypesConstant.PORTAL_OFFICE_TYPES).anyMatch(e -> e.equalsIgnoreCase(suffix));
+            if(b){
+                //resultFile = office2pdf(file.getFile());
+            }
+
+            FileSystemResource previewFile = new FileSystemResource(resultFile);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            if(Arrays.stream(FileTypesConstant.PORTAL_IMG_TYPES).anyMatch(e -> e.equalsIgnoreCase(suffix))){
+                headers.add("Content-Type", "image/"+suffix.substring(1));
+            }
+            headers.add("Content-Disposition", String.format("inline; filename=\"%s\"", new String( previewFile.getFilename().getBytes("UTF8"), "ISO8859-1")));
+            headers.add("Pragma", "no-cache");
+            headers.add("Expires", "0");
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentLength(previewFile.contentLength())
+//	                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .body(new InputStreamResource(previewFile.getInputStream()));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

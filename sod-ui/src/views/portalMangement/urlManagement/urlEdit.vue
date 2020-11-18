@@ -67,11 +67,11 @@
             <el-table border :data="publictableData" row-key="id">
               <el-table-column type="index" label="序号" width="55"></el-table-column>
               <el-table-column prop="paramName" label="参数名称"></el-table-column>
-              <el-table-column prop="desc" label="参数描述"></el-table-column>
+              <el-table-column prop="paramDesc" label="参数描述"></el-table-column>
               <el-table-column prop="paramType" label="参数类型"></el-table-column>
-              <el-table-column prop="need" label="是否必填">
+              <el-table-column prop="isneed" label="是否必填">
                 <template slot-scope="scope">
-                  <span v-if="scope.row.need=='Y'">是</span>
+                  <span v-if="scope.row.isneed=='Y'">是</span>
                   <span v-else>否</span>
                 </template>
               </el-table-column>
@@ -367,15 +367,15 @@ export default {
         {
           paramType: "String",
           paramName: "interfaceId",
-          desc: "接口名称",
-          need: "Y",
+          paramDesc: "接口名称",
+          isneed: "Y",
           orders: "1",
         },
         {
           paramType: "String",
           paramName: "userId",
-          desc: "接口账户id",
-          need: "Y",
+          paramDesc: "接口账户id",
+          isneed: "Y",
           orders: "1",
         },
       ],
