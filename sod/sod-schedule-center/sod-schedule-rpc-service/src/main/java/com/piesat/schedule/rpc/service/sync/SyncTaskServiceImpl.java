@@ -347,7 +347,6 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                 sti.setColumnName(sourceTableFilter[i]);
                 sti.setFilterValues(syncTaskDto.getSourceTableFilterText()[i]);
                 sti.setColumnOper(syncTaskDto.getColumnOper()[i]);
-
                 sti = syncFilterDao.saveNotNull(sti);
                 if (!"".equals(filterRecordIds)) {
                     filterRecordIds += ",";
@@ -355,7 +354,6 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                 if (StringUtils.isNotNullString(String.valueOf(sti.getId()))) {
                     filterRecordIds += sti.getId();
                 }
-
             }
         }
         return filterRecordIds;
@@ -625,34 +623,25 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         List<SyncMappingEntity> syncMappingEntitys = syncMappingDao.findAllByIdIn(mappingKIds);
 
         //源表过滤字段
-        String sourceTableFilter = "";
-        String columnOper = "";
-        String sourceTableFilterText = "";
         SyncMappingEntity syncMappingEntit = syncMappingEntitys.get(0);
         String filterIds = syncMappingEntit.getSourceTableId();
-        if (StringUtils.isNotNullString(filterIds)) {
-            for (int i = 0; i < filterIds.split(",").length; i++) {
-                SyncFilterEntity syncFilterEntity = syncFilterDao.findById(Integer.valueOf(filterIds.split(",")[i]));
-                if (StringUtils.isNotNullString(sourceTableFilter)) {
-                    sourceTableFilter = "," + syncFilterEntity.getColumnName();
-                    columnOper = "," + syncFilterEntity.getColumnOper();
-                    sourceTableFilterText = "," + syncFilterEntity.getFilterValues();
-
-                } else {
-                    sourceTableFilter = syncFilterEntity.getColumnName();
-                    columnOper = syncFilterEntity.getColumnOper();
-                    sourceTableFilterText = syncFilterEntity.getFilterValues();
+        if (StringUtils.isNotEmpty(filterIds)) {
+            String[] filterIdStrs = filterIds.split(",");
+            int length = filterIdStrs.length;
+            String[] sourceTableFilterArray = new String[length];
+            String[] columnOperArray = new String[length];
+            String[] sourceTableFilterTextArray = new String[length];
+            for (int i = 0; i < filterIdStrs.length; i++) {
+                SyncFilterEntity syncFilterEntity = syncFilterDao.findById(Integer.valueOf(filterIdStrs[i]));
+                if (syncFilterEntity!=null){
+                    sourceTableFilterArray[i] = syncFilterEntity.getColumnName();
+                    columnOperArray[i] = syncFilterEntity.getColumnOper();
+                    sourceTableFilterTextArray[i] = syncFilterEntity.getFilterValues();
                 }
             }
-        }
-        if (StringUtils.isNotNullString(sourceTableFilter)) {
-            syncTaskEntity.setSourceTableFilter(sourceTableFilter.split(","));
-        }
-        if (StringUtils.isNotNullString(columnOper)) {
-            syncTaskEntity.setColumnOper(columnOper.split(","));
-        }
-        if (StringUtils.isNotNullString(sourceTableFilterText)) {
-            syncTaskEntity.setSourceTableFilterText(sourceTableFilterText.split(","));
+            syncTaskEntity.setSourceTableFilter(sourceTableFilterArray);
+            syncTaskEntity.setColumnOper(columnOperArray);
+            syncTaskEntity.setSourceTableFilterText(sourceTableFilterTextArray);
         }
 
         SyncTaskDto syncTaskDto = syncTaskMapstruct.toDto(syncTaskEntity);
