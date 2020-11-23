@@ -35,6 +35,12 @@ public class AddressUtils
         }
         JSONObject obj = JSONObject.parseObject(rspStr);
         JSONObject data = obj.getObject("data", JSONObject.class);
+
+        if (data == null)
+        {
+            log.error("获取地理位置异常 {}", ip);
+            return address;
+        }
         String region = data.getString("region");
         String city = data.getString("city");
         address = region + " " + city;
