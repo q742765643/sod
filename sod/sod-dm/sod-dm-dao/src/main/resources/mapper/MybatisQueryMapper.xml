@@ -1030,7 +1030,7 @@
         t_sod_data_table d
         inner join T_SOD_DATA_LOGIC c on d.class_logic_id = c.id
         inner join t_sod_data_class t on substr(c.data_class_id,0,1)=t.data_class_id
-        inner join t_sod_data_class t2 on c.data_class_id = t2.data_class_id
+        inner join t_sod_data_class t2 on c.data_class_id = t2.data_class_id  and t2.if_stop_use !='false'
         inner join t_sod_database db on db.id = c.database_id
         where db.database_define_id in
         <foreach collection="list" item="e" separator="," open="(" close=")">
