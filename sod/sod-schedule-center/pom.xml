@@ -17,6 +17,7 @@
         <module>sod-schedule-rpc-service</module>
         <module>sod-schedule-web</module>
         <module>sod-schedule-client</module>
+        <module>sod-schedule-client-sync</module>
     </modules>
 
 </project>
