@@ -50,6 +50,7 @@ import java.io.Reader;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 资料分类
@@ -359,7 +360,11 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     @Transactional
     public void deleteByDataClassId(String dataClassId) {
+        logger.info("根据dataClassId删除资料:"+dataClassId);
         DataClassDto dataClass = this.findByDataClassId(dataClassId);
+        if (dataClass==null){
+            logger.info("根据dataClassId删除资料,查出资料为null:"+dataClassId );
+        }
         List<DataLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
         for (DataLogicEntity dl : dll) {
             List<DataTableEntity> dts = this.dataTableDao.findByClassLogic_Id(dl.getId());
@@ -375,13 +380,16 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataClassDao.deleteByDataClassId(dataClassId);
         this.databaseSpecialReadWriteService.deleteByDataClassId(dataClassId);
         this.dataAuthorityApplyService.deleteByDataClassId(dataClassId);
-        List<NewdataApplyDto> newDataApplyDtoList = this.newdataApplyService.findByDataClassIdAndUserId(dataClassId, dataClass.getCreateBy());
-        if (newDataApplyDtoList != null) {
-            newDataApplyDtoList.forEach(e -> {
-                this.newdataApplyService.deleteById(e.getId());
-                this.newdataTableColumnService.deleteByApplyId(e.getId());
-            });
+        if (dataClass != null) {
+            List<NewdataApplyDto> newDataApplyDtoList = this.newdataApplyService.findByDataClassIdAndUserId(dataClassId, dataClass.getCreateBy());
+            if (newDataApplyDtoList != null) {
+                newDataApplyDtoList.forEach(e -> {
+                    this.newdataApplyService.deleteById(e.getId());
+                    this.newdataTableColumnService.deleteByApplyId(e.getId());
+                });
+            }
         }
+
     }
 
     @Override
