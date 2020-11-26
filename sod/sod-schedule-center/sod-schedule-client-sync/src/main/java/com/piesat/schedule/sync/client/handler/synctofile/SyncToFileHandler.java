@@ -69,7 +69,7 @@ public class SyncToFileHandler implements BaseHandler {
             resultT.setSuccessMessage("任务补做：");
         } else {
             long l = System.currentTimeMillis();
-            endTime = new Date(l - se.getBufferTime());
+            endTime = new Date(l - se.getBufferTime() * 60 * 1000);
             se.setEndTime(endTime);
         }
         BeanUtils.copyProperties(se, syncLog);
@@ -128,11 +128,11 @@ public class SyncToFileHandler implements BaseHandler {
             syncDir += File.separator + f.getName();
             try {
                 FileUtils.copyFile(f, new File(syncDir));
-                resultT.setSuccessMessage("文件复制成功{}->{}", old_path, syncDir);
+                resultT.setSuccessMessage("文件同步成功{}->{}", old_path, syncDir);
                 f.delete();
             } catch (IOException e) {
-                log.error("复制文件出错：由{}到{}，错误：{}", f.getPath(), syncDir, OwnException.get(e));
-                resultT.setErrorMessage("复制文件出错：由{}到{}，错误：{}", f.getPath(), syncDir, OwnException.get(e));
+                log.error("同步文件出错：由{}到{}，错误：{}", f.getPath(), syncDir, OwnException.get(e));
+                resultT.setErrorMessage("同步文件出错：由{}到{}，错误：{}", f.getPath(), syncDir, OwnException.get(e));
             }
         } else if (se.getTransferType().equalsIgnoreCase(TypeConstants.FTP)) {
             SftpConfig fc = new SftpConfig(se.getFtpIp(), se.getFtpPort(), se.getFtpUser(), se.getFtpPwd());

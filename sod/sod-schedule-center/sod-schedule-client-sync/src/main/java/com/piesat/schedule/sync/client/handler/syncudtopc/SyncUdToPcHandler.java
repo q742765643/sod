@@ -66,7 +66,7 @@ public class SyncUdToPcHandler implements BaseHandler {
             resultT.setSuccessMessage("任务补做：");
         } else {
             long l = System.currentTimeMillis();
-            endTime = new Date(l - se.getBufferTime());
+            endTime = new Date(l - se.getBufferTime() * 60 * 1000);
             se.setEndTime(endTime);
         }
 
