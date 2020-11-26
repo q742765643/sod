@@ -27,5 +27,4 @@ public interface NewdataApplyDao extends BaseDao<NewdataApplyEntity> {
     int updateDDateIdAndDataClassId(String d_data_id, String data_class_id, String apply_id);
 
     List<NewdataApplyEntity> findByDataClassIdAndUserId(String dataClassId, String userId);
-
 }

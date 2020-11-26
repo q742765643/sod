@@ -9,9 +9,11 @@ import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
+import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.dataclass.LogicDatabaseDao;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 数据库类型定义
@@ -54,6 +57,8 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     private DatabaseDefineMapper databaseDefineMapper;
     @Autowired
     private LogicDatabaseDao logicDatabaseDao;
+    @Autowired
+    private DataLogicDao dataLogicDao;
 
     @Override
     public BaseDao<DatabaseDefineEntity> getBaseDao() {
@@ -64,11 +69,11 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     @Transactional
     public DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto) {
         DatabaseDto databaseDto = databaseDefineDto.getDatabaseDto();
-        if (StringUtils.isEmpty(databaseDto.getId())){
+        if (StringUtils.isEmpty(databaseDto.getId())) {
             databaseDto.setCreateTime(new Date());
             databaseDto.setStopUse(false);
         }
-        if (StringUtils.isEmpty(databaseDefineDto.getId())){
+        if (StringUtils.isEmpty(databaseDefineDto.getId())) {
             databaseDefineDto.setCreateTime(new Date());
         }
         DatabaseDefineEntity databaseDefineEntity = this.databaseDefineMapper.toEntity(databaseDefineDto);
@@ -117,7 +122,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "serialNumber");
         PageBean page = this.getPage(ssb.generateSpecification(), new PageForm(pageNum, pageSize), sort);
-        List<DatabaseDefineEntity> pageData = (List<DatabaseDefineEntity>)page.getPageData();
+        List<DatabaseDefineEntity> pageData = (List<DatabaseDefineEntity>) page.getPageData();
         page.setPageData(this.databaseDefineMapper.toDto(pageData));
         return page;
     }
@@ -130,17 +135,17 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         DatabaseDcl db = null;
         try {
             db = DatabaseUtil.getPubDatabase(database, databaseInfo);
-            if (db!=null){
+            if (db != null) {
                 db.closeConnect();
                 dotById.setCheckConn(1);
-            }else {
+            } else {
                 dotById.setCheckConn(2);
             }
         } catch (Exception e) {
             dotById.setCheckConn(2);
 //            e.printStackTrace();
-        }finally {
-            if (db!=null){
+        } finally {
+            if (db != null) {
                 db.closeConnect();
             }
         }
@@ -153,17 +158,17 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         DatabaseDcl db = null;
         try {
             db = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
-            if (db!=null){
+            if (db != null) {
                 db.closeConnect();
                 return ResultT.success();
-            }else {
+            } else {
                 return ResultT.failed();
             }
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
-        }finally {
-            if (db!=null){
+        } finally {
+            if (db != null) {
                 db.closeConnect();
             }
         }
@@ -176,11 +181,11 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     }
 
     @Override
-    public void exportExcel(String id,String databaseName) {
-        List<DatabaseDefineDto> dtoList = this.export(id,databaseName);
-        List<DatabaseDefineEntity> entities=databaseDefineMapper.toEntity(dtoList);
-        ExcelUtil<DatabaseDefineEntity> util=new ExcelUtil(DatabaseDefineEntity.class);
-        util.exportExcel(entities,"数据库");
+    public void exportExcel(String id, String databaseName) {
+        List<DatabaseDefineDto> dtoList = this.export(id, databaseName);
+        List<DatabaseDefineEntity> entities = databaseDefineMapper.toEntity(dtoList);
+        ExcelUtil<DatabaseDefineEntity> util = new ExcelUtil(DatabaseDefineEntity.class);
+        util.exportExcel(entities, "数据库");
     }
 
     @Override
@@ -194,7 +199,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
         DatabaseDefineEntity databaseDefineEntity = this.getById(id);
         DatabaseDefineDto databaseDefineDto = this.databaseDefineMapper.toDto(databaseDefineEntity);
         List<DatabaseEntity> databaseEntities = this.databaseDao.findByDatabaseDefine_IdAndDatabaseName(id, "基础库");
-        if (databaseEntities.size()>0){
+        if (databaseEntities.size() > 0) {
             DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntities).get(0);
             databaseDefineDto.setDatabaseDto(databaseDto);
         }
@@ -203,13 +208,25 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
 
     @Transactional
     @Override
-    public void delByIds(String ids) {
+    public ResultT delByIds(String ids) {
         String[] split = ids.split(",");
-        for (String id:split) {
-//            this.databaseDefineDao.deleteById(id);
+        for (int i = 0; i < split.length; i++) {
+            String id = split[i];
+            List<DatabaseEntity> databases = this.databaseDao.findByDatabaseDefine_Id(id);
+            for (int j = 0; j < databases.size(); j++) {
+                DatabaseEntity database = databases.get(j);
+                List<DataLogicEntity> logicList = this.dataLogicDao.findByDatabaseId(database.getId());
+                if (logicList.size() > 0) {
+                    return ResultT.failed("数据库存在资料，请先删除相关资料，如存储编码为：" + logicList.get(0).getDataClassId());
+                }
+            }
+        }
+
+        for (String id : split) {
             this.databaseDao.deleteByDatabaseDefine_Id(id);
             this.logicDatabaseDao.deleteByDatabaseId(id);
         }
         this.deleteByIds(Arrays.asList(split));
+        return ResultT.success();
     }
 }

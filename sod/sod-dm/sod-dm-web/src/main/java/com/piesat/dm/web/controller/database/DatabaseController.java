@@ -76,7 +76,7 @@ public class DatabaseController {
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
-            this.databaseService.delete(id);
+            this.databaseService.deleteById(id);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

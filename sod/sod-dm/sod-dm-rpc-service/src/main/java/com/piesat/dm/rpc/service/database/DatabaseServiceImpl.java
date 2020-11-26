@@ -3,11 +3,14 @@ package com.piesat.dm.rpc.service.database;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
+import com.piesat.util.ResultT;
 import net.sf.saxon.expr.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +31,10 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     private DatabaseDao databaseDao;
     @Autowired
     private DatabaseMapper databaseMapper;
-
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private DataLogicDao dataLogicDao;
 
     @Override
     public BaseDao<DatabaseEntity> getBaseDao() {
@@ -137,6 +141,16 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public DatabaseDto getDotById(String id) {
         DatabaseEntity databaseEntity = this.getById(id);
         return this.databaseMapper.toDto(databaseEntity);
+    }
+
+    @Override
+    public ResultT deleteById(String id) {
+        List<DataLogicEntity> logicList = this.dataLogicDao.findByDatabaseId(id);
+        if (logicList.size() > 0) {
+            return ResultT.failed("数据库存在资料，请先删除相关资料，如存储编码为：" + logicList.get(0).getDataClassId());
+        }
+        this.delete(id);
+        return ResultT.success();
     }
 
 }

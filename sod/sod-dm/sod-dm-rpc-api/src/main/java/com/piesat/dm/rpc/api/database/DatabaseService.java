@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.database;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public interface DatabaseService {
     DatabaseDto getDotById(String id);
 
     void delete(String id);
+
+    ResultT deleteById(String id);
 
     List<DatabaseDto> all();
 

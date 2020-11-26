@@ -28,7 +28,7 @@ public class SyncFilterEntity {
     /**
      * 列名对应的过滤值
      */
-    @Column(name="filter_values", length = 50)
+    @Column(name="filter_values", columnDefinition="TEXT")
     private String filterValues;
 
     /**

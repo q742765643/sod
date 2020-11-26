@@ -23,7 +23,7 @@ public interface DatabaseDefineService {
 
     void delete(String id);
 
-    void delByIds(String ids);
+    ResultT delByIds(String ids);
 
     List<DatabaseDefineDto> all();
 

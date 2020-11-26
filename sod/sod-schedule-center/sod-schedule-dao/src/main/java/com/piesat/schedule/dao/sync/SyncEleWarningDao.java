@@ -13,4 +13,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SyncEleWarningDao extends BaseDao<SyncEleWarningEntity> {
+    /**
+     * delete by taskId
+     * @param taskId
+     */
+    void deleteByTaskId(String taskId);
 }
