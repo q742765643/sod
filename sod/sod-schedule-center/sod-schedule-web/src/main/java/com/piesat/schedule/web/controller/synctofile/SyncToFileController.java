@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2020年 10月28日 17:12:20
  */
 @RestController
-@Api(value="结构化转文件同步",tags = {"结构化转文件同步"})
+@Api(value = "结构化转文件同步", tags = {"结构化转文件同步"})
 @RequestMapping("/schedule/synctofile")
 public class SyncToFileController {
     @Autowired
@@ -27,11 +27,10 @@ public class SyncToFileController {
     @RequiresPermissions("schedule:synctofile:list")
     @ApiOperation(value = "分页查询结构化转文件同步任务", notes = "分页查询结构化转文件同步任务")
     @GetMapping("/list")
-    public ResultT<PageBean<SyncToFileDto>> list(SyncToFileDto syncToFile, int pageNum, int pageSize)
-    {
-        ResultT<PageBean<SyncToFileDto>> resultT=new ResultT<>();
-        PageForm<SyncToFileDto> pageForm=new PageForm<>(pageNum,pageSize,syncToFile);
-        PageBean pageBean=syncToFileService.selectSyncToFileList(pageForm);
+    public ResultT<PageBean<SyncToFileDto>> list(SyncToFileDto syncToFile, int pageNum, int pageSize) {
+        ResultT<PageBean<SyncToFileDto>> resultT = new ResultT<>();
+        PageForm<SyncToFileDto> pageForm = new PageForm<>(pageNum, pageSize, syncToFile);
+        PageBean pageBean = syncToFileService.selectSyncToFileList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -39,23 +38,22 @@ public class SyncToFileController {
     @RequiresPermissions("schedule:synctofile:query")
     @ApiOperation(value = "根据ID查询结构化转文件同步任务", notes = "根据ID查询结构化转文件同步任务")
     @GetMapping(value = "/{syncToFileId}")
-    public ResultT<SyncToFileDto> getInfo(@PathVariable String syncToFileId)
-    {
-        ResultT<SyncToFileDto> resultT=new ResultT<>();
-        SyncToFileDto syncToFileDto= syncToFileService.findSyncToFileById(syncToFileId);
+    public ResultT<SyncToFileDto> getInfo(@PathVariable String syncToFileId) {
+        ResultT<SyncToFileDto> resultT = new ResultT<>();
+        SyncToFileDto syncToFileDto = syncToFileService.findSyncToFileById(syncToFileId);
         resultT.setData(syncToFileDto);
         return resultT;
     }
+
     @RequiresPermissions("schedule:synctofile:add")
     @ApiOperation(value = "添加结构化转文件同步任务", notes = "添加结构化转文件同步任务")
     @Log(title = "交换系统同步任务管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public ResultT<String> add(@RequestBody SyncToFileDto syncToFile)
-    {
-        if(null==syncToFile.getIsAlarm()||"".equals(syncToFile.getIsAlarm())){
+    public ResultT<String> add(@RequestBody SyncToFileDto syncToFile) {
+        if (null == syncToFile.getIsAlarm() || "".equals(syncToFile.getIsAlarm())) {
             syncToFile.setIsAlarm("1");
         }
-        ResultT<String> resultT=new ResultT<>();
+        ResultT<String> resultT = new ResultT<>();
         syncToFileService.saveSyncToFile(syncToFile);
         return resultT;
     }
@@ -64,15 +62,15 @@ public class SyncToFileController {
     @ApiOperation(value = "修改结构化转文件同步任务", notes = "修改结构化转文件同步任务")
     @Log(title = "结构化转文件同步任务管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public ResultT<String> edit(@RequestBody SyncToFileDto syncToFile)
-    {
-        if(null==syncToFile.getIsAlarm()||"".equals(syncToFile.getIsAlarm())){
+    public ResultT<String> edit(@RequestBody SyncToFileDto syncToFile) {
+        if (null == syncToFile.getIsAlarm() || "".equals(syncToFile.getIsAlarm())) {
             syncToFile.setIsAlarm("1");
         }
-        ResultT<String> resultT=new ResultT<>();
+        ResultT<String> resultT = new ResultT<>();
         syncToFileService.updateSyncToFile(syncToFile);
         return resultT;
     }
+
     /**
      * 删除用户
      */
@@ -80,9 +78,8 @@ public class SyncToFileController {
     @ApiOperation(value = "删除结构化转文件同步任务", notes = "删除结构化转文件同步任务")
     @Log(title = "结构化转文件同步任务管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{syncToFileIds}")
-    public  ResultT<String> remove(@PathVariable String[] syncToFileIds)
-    {
-        ResultT<String> resultT=new ResultT<>();
+    public ResultT<String> remove(@PathVariable String[] syncToFileIds) {
+        ResultT<String> resultT = new ResultT<>();
         syncToFileService.deleteSyncToFileIds(syncToFileIds);
         return resultT;
     }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2020年 10月28日 17:12:20
  */
 @RestController
-@Api(value="交换系统同步",tags = {"交换系统同步"})
+@Api(value = "交换系统同步", tags = {"交换系统同步"})
 @RequestMapping("/schedule/synces")
 public class SyncEsController {
     @Autowired
@@ -27,11 +27,10 @@ public class SyncEsController {
     @RequiresPermissions("schedule:synces:list")
     @ApiOperation(value = "分页查询交换系统同步任务", notes = "分页查询交换系统同步任务")
     @GetMapping("/list")
-    public ResultT<PageBean<SyncEsDto>> list(SyncEsDto syncEs, int pageNum, int pageSize)
-    {
-        ResultT<PageBean<SyncEsDto>> resultT=new ResultT<>();
-        PageForm<SyncEsDto> pageForm=new PageForm<>(pageNum,pageSize,syncEs);
-        PageBean pageBean=syncEsService.selectSyncEsList(pageForm);
+    public ResultT<PageBean<SyncEsDto>> list(SyncEsDto syncEs, int pageNum, int pageSize) {
+        ResultT<PageBean<SyncEsDto>> resultT = new ResultT<>();
+        PageForm<SyncEsDto> pageForm = new PageForm<>(pageNum, pageSize, syncEs);
+        PageBean pageBean = syncEsService.selectSyncEsList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -39,23 +38,22 @@ public class SyncEsController {
     @RequiresPermissions("schedule:synces:query")
     @ApiOperation(value = "根据ID查询交换系统同步任务", notes = "根据ID查询交换系统同步任务")
     @GetMapping(value = "/{syncEsId}")
-    public ResultT<SyncEsDto> getInfo(@PathVariable String syncEsId)
-    {
-        ResultT<SyncEsDto> resultT=new ResultT<>();
-        SyncEsDto syncEsDto= syncEsService.findSyncEsById(syncEsId);
+    public ResultT<SyncEsDto> getInfo(@PathVariable String syncEsId) {
+        ResultT<SyncEsDto> resultT = new ResultT<>();
+        SyncEsDto syncEsDto = syncEsService.findSyncEsById(syncEsId);
         resultT.setData(syncEsDto);
         return resultT;
     }
+
     @RequiresPermissions("schedule:synces:add")
     @ApiOperation(value = "添加交换系统同步任务", notes = "添加交换系统同步任务")
     @Log(title = "交换系统同步任务管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public ResultT<String> add(@RequestBody SyncEsDto syncEs)
-    {
-        if(null==syncEs.getIsAlarm()||"".equals(syncEs.getIsAlarm())){
+    public ResultT<String> add(@RequestBody SyncEsDto syncEs) {
+        if (null == syncEs.getIsAlarm() || "".equals(syncEs.getIsAlarm())) {
             syncEs.setIsAlarm("1");
         }
-        ResultT<String> resultT=new ResultT<>();
+        ResultT<String> resultT = new ResultT<>();
         syncEsService.saveSyncEs(syncEs);
         return resultT;
     }
@@ -64,15 +62,15 @@ public class SyncEsController {
     @ApiOperation(value = "修改交换系统同步任务", notes = "修改交换系统同步任务")
     @Log(title = "交换系统同步任务管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public ResultT<String> edit(@RequestBody SyncEsDto syncEs)
-    {
-        if(null==syncEs.getIsAlarm()||"".equals(syncEs.getIsAlarm())){
+    public ResultT<String> edit(@RequestBody SyncEsDto syncEs) {
+        if (null == syncEs.getIsAlarm() || "".equals(syncEs.getIsAlarm())) {
             syncEs.setIsAlarm("1");
         }
-        ResultT<String> resultT=new ResultT<>();
+        ResultT<String> resultT = new ResultT<>();
         syncEsService.updateSyncEs(syncEs);
         return resultT;
     }
+
     /**
      * 删除用户
      */
@@ -80,9 +78,8 @@ public class SyncEsController {
     @ApiOperation(value = "删除交换系统同步任务", notes = "删除交换系统同步任务")
     @Log(title = "交换系统同步任务管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{syncEsIds}")
-    public  ResultT<String> remove(@PathVariable String[] syncEsIds)
-    {
-        ResultT<String> resultT=new ResultT<>();
+    public ResultT<String> remove(@PathVariable String[] syncEsIds) {
+        ResultT<String> resultT = new ResultT<>();
         syncEsService.deleteSyncEsIds(syncEsIds);
         return resultT;
     }
