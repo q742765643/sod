@@ -30,7 +30,7 @@ public class SyncDarLogDto extends JobInfoLogDto {
      * 单位
      */
     private String unit;
-    private String transferType;
+
     private String fileName;
     private Integer isEnd;
 }

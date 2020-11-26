@@ -64,15 +64,6 @@ public class SyncDarEntity extends JobInfoEntity{
      */
     @Column(name="unit")
     private String unit;
-    @Column(name="transfer_type")
-    private String transferType;
-    @Column(name="ftp_ip")
-    private String ftpIp;
-    @Column(name="ftp_port")
-    private int ftpPort;
-    @Column(name="ftp_user")
-    private String ftpUser;
-    @Column(name="ftp_pwd")
-    private String ftpPwd;
+
 }
 

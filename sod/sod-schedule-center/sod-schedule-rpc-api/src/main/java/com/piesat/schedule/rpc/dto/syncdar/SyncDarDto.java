@@ -31,9 +31,4 @@ public class SyncDarDto extends JobInfoDto {
      * 单位
      */
     private String unit;
-    private String transferType;
-    private String ftpIp;
-    private int ftpPort;
-    private String ftpUser;
-    private String ftpPwd;
 }
