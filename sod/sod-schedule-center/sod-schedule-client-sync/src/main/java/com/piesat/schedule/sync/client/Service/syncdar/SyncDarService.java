@@ -7,6 +7,8 @@ import com.piesat.schedule.entity.syncdar.SyncDarEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * @author cwh
  * @date 2020年 11月06日 16:19:49
@@ -18,5 +20,9 @@ public class SyncDarService extends BaseService<SyncDarEntity> {
     @Override
     public BaseDao<SyncDarEntity> getBaseDao() {
         return this.syncDarDao;
+    }
+
+    public void updateLastTime(Date lastTime, String id) {
+        this.syncDarDao.updateLastTime(lastTime, id);
     }
 }

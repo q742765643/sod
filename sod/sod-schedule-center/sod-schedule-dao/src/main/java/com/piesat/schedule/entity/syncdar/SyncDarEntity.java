@@ -50,10 +50,15 @@ public class SyncDarEntity extends JobInfoEntity{
     private String vTableName;
     @Column(name="last_time")
     private Date lastTime;
-    @Column(name="start_time")
-    private Date startTime;
+    @Column(name="end_time")
+    private Date endTime;
     @Column(name="buffer_time")
     private long bufferTime;
+    /**
+     * 时间字段
+     */
+    @Column(name = "time_column")
+    private String timeColumn;
     /**
      * 频率
      */

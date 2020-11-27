@@ -4,6 +4,7 @@ import com.jcraft.jsch.*;
 import com.piesat.common.utils.OwnException;
 import com.piesat.util.ResultT;
 import com.piesat.schedule.sync.client.vo.SftpConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -16,6 +17,7 @@ import java.util.Vector;
  * @author cwh
  * @date 2020年 11月16日 11:57:54
  */
+@Slf4j
 public class SftpUtil {
     private SftpConfig stfpConfig;
 
@@ -72,7 +74,7 @@ public class SftpUtil {
         }
 
         if (session == null) {
-//            log.error(host + " session is null");
+            log.error(host + " session is null");
         }
 
 //        Properties config = new Properties();
@@ -103,7 +105,7 @@ public class SftpUtil {
                 }
             }
         } catch (JSchException e) {
-//            log.error("disconnect failure. msg:{}", e.getMessage());
+            log.error("disconnect failure. msg:{}", e.getMessage());
             System.out.println(e.getMessage());
         }
     }
@@ -120,7 +122,7 @@ public class SftpUtil {
                     .toArray(String[]::new);
             try {
                 sftp.cd(dirPath);
-//                log.info("Change directory {}", dirPath);
+                log.info("Change directory {}", dirPath);
             } catch (Exception ex) {
                 for (String dir : dirs) {
                     if (dir == null || dir.isEmpty() || "..".equals(dir) || ".".equals(dir)) {
@@ -128,20 +130,20 @@ public class SftpUtil {
                     }
                     try {
                         sftp.cd(dir);
-//                        log.info("Change directory {}", dir);
+                        log.info("Change directory {}", dir);
                     } catch (Exception e) {
                         try {
                             sftp.mkdir(dir);
-//                            log.info("Create directory {}", dir);
+                            log.info("Create directory {}", dir);
                         } catch (SftpException e1) {
-//                            log.error("Create directory failure, directory:{}", dir, e1);
+                            log.error("Create directory failure, directory:{}", dir, e1);
                             System.out.println(e1.getMessage());
                         }
                         try {
                             sftp.cd(dir);
-//                            log.info("Change directory {}", dir);
+                            log.info("Change directory {}", dir);
                         } catch (SftpException e1) {
-//                            log.error("Change directory failure, directory:{}", dir, e1);
+                            log.error("Change directory failure, directory:{}", dir, e1);
                             System.out.println(e1.getMessage());
                         }
                     }
@@ -181,7 +183,7 @@ public class SftpUtil {
                 }
             }
         } catch (SftpException e) {
-//            log.error("Get files failure. TargetPath: {}", targetPath, e);
+            log.error("Get files failure. TargetPath: {}", targetPath, e);
             System.out.println(e.getMessage());
         }
         return ret;
@@ -200,7 +202,6 @@ public class SftpUtil {
                 return false;
             }
             sftp.cd(stfpConfig.getRoot());
-//            log.info("Change path to {}", stfpConfig.getRoot());
 
             int index = targetPath.lastIndexOf(File.separator);
             String fileDir = "";
@@ -212,14 +213,14 @@ public class SftpUtil {
 
             boolean dirs = this.createDirs(fileDir);
             if (!dirs) {
-//                log.error("Remote path error. path:{}", targetPath);
+                log.error("Remote path error. path:{}", targetPath);
                 throw new Exception("Upload File failure");
             }
 
             sftp.put(inputStream, fileName, ChannelSftp.OVERWRITE);
             return true;
         } catch (Exception e) {
-//            log.error("Upload file failure. TargetPath: {}", targetPath, e);
+            log.error("Upload file failure. TargetPath: {}", targetPath, e);
             resultT.setErrorMessage("上传到文件{}失败，错误： {}", targetPath, OwnException.get(e));
             System.out.println(e.getMessage());
             return false;
@@ -227,7 +228,7 @@ public class SftpUtil {
             try {
                 inputStream.close();
             } catch (IOException ex) {
-//                log.error("InputStream close failure. TargetPath: {}", targetPath, ex);
+                log.error("InputStream close failure. TargetPath: {}", targetPath, ex);
                 System.out.println(ex.getMessage());
             }
         }
@@ -243,7 +244,8 @@ public class SftpUtil {
         try {
             return this.uploadFile(targetPath, new FileInputStream(file), resultT);
         } catch (FileNotFoundException ex) {
-//            log.error("update file failure. TargetPath: {}", targetPath, ex);
+            resultT.setErrorMessage("update file failure. TargetPath: {},error :{}", targetPath, OwnException.get(ex));
+            log.error("update file failure. TargetPath: {}", targetPath, ex);
             return false;
         }
     }

@@ -46,10 +46,10 @@ public class SyncDarLogEntity extends JobInfoLogEntity {
     @Excel(name = "要素表名")
     @Column(name="v_table_name", length=50)
     private String vTableName;
-    @Column(name="last_time")
-    private Date lastTime;
-    @Column(name="start_time")
-    private Date startTime;
+    @Column(name="begin_time")
+    private Date beginTime;
+    @Column(name="end_time")
+    private Date endTime;
     @Column(name="buffer_time")
     private long bufferTime;
     /**

@@ -2,6 +2,7 @@ package com.piesat.schedule.sync.client.handler.synctofile;
 
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.OwnException;
+import com.piesat.schedule.constant.HandleConstant;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.entity.synctofile.SyncToFileEntity;
 import com.piesat.schedule.entity.synctofile.SyncToFileLogEntity;
@@ -55,6 +56,7 @@ public class SyncToFileHandler implements BaseHandler {
         SyncComVo syncComVo = new SyncComVo();
         syncComVo.setStartTime(System.currentTimeMillis());
         SyncToFileEntity se = (SyncToFileEntity) jobInfoEntity;
+        this.syncTempPath += File.separator + HandleConstant.SYNCTOFILE;
         this.syncExecute(syncComVo, se, resultT);
     }
 

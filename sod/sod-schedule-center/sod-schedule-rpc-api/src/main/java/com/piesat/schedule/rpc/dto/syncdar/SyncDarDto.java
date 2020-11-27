@@ -21,8 +21,9 @@ public class SyncDarDto extends JobInfoDto {
     private String tableName;
     private String vTableName;
     private Date lastTime;
-    private Date startTime;
+    private Date endTime;
     private long bufferTime;
+    private String timeColumn;
     /**
      * 频率
      */
