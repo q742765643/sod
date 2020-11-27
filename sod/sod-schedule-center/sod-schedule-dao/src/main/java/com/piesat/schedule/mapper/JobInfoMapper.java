@@ -27,6 +27,12 @@ public interface JobInfoMapper {
 
     public List<String> selectMoveDataClassId(@Param("dataBaseId") String dataBaseId);
 
+    public List<String> selectToFileDataClassId(@Param("dataBaseId") String dataBaseId);
+
+    public List<String> selectUdToPcDataClassId(@Param("dataBaseId") String dataBaseId);
+
+    public List<String> selectDarDataClassId(@Param("dataBaseId") String dataBaseId);
+
     public void updateTriggerStatus(@Param("triggerStatus")int triggerStatus, @Param("id")String id);
 
 

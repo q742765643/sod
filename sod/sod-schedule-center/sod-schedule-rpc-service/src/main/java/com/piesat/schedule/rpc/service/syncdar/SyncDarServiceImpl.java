@@ -7,6 +7,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.schedule.dao.syncdar.SyncDarDao;
 import com.piesat.schedule.entity.syncdar.SyncDarEntity;
+import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.syncdar.SyncDarService;
 import com.piesat.schedule.rpc.dto.syncdar.SyncDarDto;
@@ -21,8 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author cwh
@@ -39,6 +39,8 @@ public class SyncDarServiceImpl extends BaseService<SyncDarEntity> implements Sy
     private JobInfoService jobInfoService;
     @Autowired
     private DataBaseService dataBaseService;
+    @Autowired
+    private JobInfoMapper jobInfoMapper;
 
     @Override
     public BaseDao<SyncDarEntity> getBaseDao() {
@@ -120,6 +122,26 @@ public class SyncDarServiceImpl extends BaseService<SyncDarEntity> implements Sy
             logger.error(e.getMessage());
         }
         jobInfoService.stopByIds(Arrays.asList(syncDarIds));
+    }
+
+    @Override
+    public List<Map<String, Object>> findDataClassId(String dataBaseId, String dataClassId) {
+        List<Map<String, Object>> dataClassIds = new ArrayList<>();
+
+        List<Map<String, Object>> mapList = dataBaseService.getByDatabaseId(dataBaseId);
+        List<String> isHave = jobInfoMapper.selectDarDataClassId(dataBaseId);
+        for (Map<String, Object> map : mapList) {
+            String dataClass = (String) map.get("DATA_CLASS_ID");
+            String className = (String) map.get("CLASS_NAME");
+            if (!isHave.contains(dataClass) || dataClass.equals(dataClassId)) {
+                LinkedHashMap<String, Object> dataClassIdMap = new LinkedHashMap<>();
+                dataClassIdMap.put("KEY", dataClass);
+                dataClassIdMap.put("VALUE", className);
+                dataClassIds.add(dataClassIdMap);
+            }
+        }
+
+        return dataClassIds;
     }
 
 }

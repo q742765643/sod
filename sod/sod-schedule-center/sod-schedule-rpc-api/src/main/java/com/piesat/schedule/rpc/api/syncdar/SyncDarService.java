@@ -4,6 +4,9 @@ import com.piesat.schedule.rpc.dto.syncdar.SyncDarDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author cwh
  * @date 2020年 10月28日 14:59:13
@@ -39,5 +42,7 @@ public interface SyncDarService {
      * @param syncDarIds
      */
     void deleteSyncDarIds(String[] syncDarIds);
+
+    List<Map<String,Object>> findDataClassId(String dataBaseId, String dataClassId);
 
 }

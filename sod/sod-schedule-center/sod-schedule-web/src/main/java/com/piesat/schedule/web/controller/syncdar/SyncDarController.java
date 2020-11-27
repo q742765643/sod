@@ -13,6 +13,9 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author cwh
  * @date 2020年 10月28日 17:12:20
@@ -81,6 +84,15 @@ public class SyncDarController {
     public ResultT<String> remove(@PathVariable String[] syncDarIds) {
         ResultT<String> resultT = new ResultT<>();
         syncDarService.deleteSyncDarIds(syncDarIds);
+        return resultT;
+    }
+
+    @ApiOperation(value = "查询需要同步资料列表", notes = "查询需要同步资料列表")
+    @GetMapping("/findDataClassId")
+    public ResultT findDataClassId(String databaseId,String dataClassId){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=syncDarService.findDataClassId(databaseId,dataClassId);
+        resultT.setData(mapList);
         return resultT;
     }
 }

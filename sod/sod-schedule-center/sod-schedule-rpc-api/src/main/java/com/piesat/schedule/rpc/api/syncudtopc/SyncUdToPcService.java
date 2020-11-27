@@ -5,6 +5,9 @@ import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author cwh
  * @date 2020年 10月28日 15:01:11
@@ -40,5 +43,7 @@ public interface SyncUdToPcService {
      * @param syncUdToPcIds
      */
     void deleteSyncUdToPcIds(String[] syncUdToPcIds);
+
+    List<Map<String,Object>> findDataClassId(String dataBaseId, String dataClassId);
 
 }
