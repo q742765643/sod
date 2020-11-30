@@ -1,5 +1,6 @@
 package com.piesat.dm.web.controller.datatable;
 
+import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -9,8 +10,11 @@ import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
+import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.dm.rpc.service.GrpcService;
+import com.piesat.sod.system.rpc.api.ServiceCodeService;
+import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -22,10 +26,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 表信息
@@ -47,6 +48,8 @@ public class DataTableController {
     private NewdataApplyService newdataApplyService;
     @Autowired
     private GrpcService grpcService;
+    @GrpcHthtClient
+    private ServiceCodeService serviceCodeService;
 
     @ApiOperation(value = "新增")
     @RequiresPermissions("dm:dataTable:add")
@@ -77,6 +80,7 @@ public class DataTableController {
     public ResultT addApply(String classLogicIds, String applyId) {
         try {
             NewdataApplyDto newdataApplyDto = this.newdataApplyService.getDotById(applyId);
+
             String[] ids = classLogicIds.split(",");
             List<DataTableDto> list = new ArrayList<>();
             for (String id : ids) {

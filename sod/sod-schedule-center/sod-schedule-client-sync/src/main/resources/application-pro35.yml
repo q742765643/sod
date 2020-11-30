@@ -1,0 +1,113 @@
+server:
+  port: 8158
+  servlet:
+      context-path: /
+tomcat:
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 10
+    background-processor-delay: 30
+    basedir: ${user.home}/tomcat/
+
+grpc:
+  server:
+    port: 18058
+  client:
+    schedule-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+spring:
+  #aop:
+  #auto: true
+  #proxy-target-class: true
+  application:
+    name: schedule-client-sync
+  sleuth:
+    sampler:
+      probability: 1
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  servlet:
+     multipart:
+      max-file-size: 1000000000
+      max-request-size: 1000000000
+  datasource:
+      driver-class-name: com.xugu.cloudjdbc.Driver
+      url: jdbc:xugu://10.20.64.167:31380/BABJ_SMDB?recv_mode=0&char_set=utf8
+      username: USR_SOD
+      password: ENC(dScYmr3jeCq8R+D9qpdhzUgnVYBXONSm)
+      type: com.alibaba.druid.pool.DruidDataSource
+      druid:
+        # 下面为连接池的补充设置，应用到上面所有数据源中
+        # 初始化大小，最小，最大
+        initialSize: 1
+        minIdle: 3
+        maxActive: 20
+        # 配置获取连接等待超时的时间
+        #maxWait: 60000
+        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        timeBetweenEvictionRunsMillis: 60000
+        # 配置一个连接在池中最小生存的时间，单位是毫秒
+        #minEvictableIdleTimeMillis: 30000
+        validationQuery: select 1
+        testWhileIdle: true
+        testOnBorrow: true
+        testOnReturn: true
+        maxWait: 60000
+        breakAfterAcquireFailure: true
+        failFast: true
+        connectionErrorRetryAttempts: 2
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        dialect: com.piesat.common.jpa.dialect.XuguDialect
+        format_sql: true
+    show-sql: true
+    #database: mysql
+    open-in-view: false
+  redis:
+     host: 10.40.17.44
+     port: 56379
+     timeout: 5000
+     password: ENC(VAYNEyA+Ffd2tHqJn95mZA==)
+mybatis:
+  type-aliases-package: com.piesat.*.entity
+  mapper-locations: classpath:mapper/*.xml
+  callSettersOnNulls:  true
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    #instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+       defaultZone: http://10.40.17.44:58328/eureka/
+sync:
+  temp-path: D:\save
+EIDI:
+  URL: http://10.20.67.13911/store/openapi/v2/logs/push_batch?apikey=e10adc3949ba59abbe56e057f2gg88dd
+TRANSFER:
+  URL: http://127.0.0.1:2999911/transfer
+log:
+  path: ../logs
+  level: INFO
+
+jasypt:
+  encryptor:
+    password: HT95279527

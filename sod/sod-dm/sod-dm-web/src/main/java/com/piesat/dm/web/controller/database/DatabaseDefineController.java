@@ -89,8 +89,7 @@ public class DatabaseDefineController {
     @DeleteMapping(value = "/delByIds")
     public ResultT delByIds(String ids) {
         try {
-            this.databaseDefineService.delByIds(ids);
-            return ResultT.success();
+            return this.databaseDefineService.delByIds(ids);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

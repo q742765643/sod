@@ -17,4 +17,5 @@ public interface NewdataTableColumnDao extends BaseDao<NewdataTableColumnEntity>
     List<NewdataTableColumnEntity> findByApplyId(String applyId);
     @Transactional
     void deleteByApplyId(String applyId);
+
 }

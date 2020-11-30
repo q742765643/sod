@@ -721,4 +721,5 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         SyncTaskEntity byId = this.getById(taskId);
         getStatusById(byId, "stop");
     }
+
 }
