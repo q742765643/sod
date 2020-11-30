@@ -28,6 +28,11 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.htht</groupId>
+            <artifactId>sod-ucenter-rpc-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <!--解决idea打包没有xml-->
