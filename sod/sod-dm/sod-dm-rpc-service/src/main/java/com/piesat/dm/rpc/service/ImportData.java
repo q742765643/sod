@@ -27,6 +27,10 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.portal.dao.DepartManageDao;
+import com.piesat.portal.dao.UserManageDao;
+import com.piesat.portal.entity.DepartManageEntity;
+import com.piesat.portal.entity.UserManageEntity;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
 import com.piesat.schedule.dao.clear.ClearDao;
@@ -195,6 +199,12 @@ public class ImportData {
     @GrpcHthtClient
     private UserDao userDao;
 
+    @Autowired
+    private UserManageDao userManageDao;
+
+    @Autowired
+    private DepartManageDao departManageDao;
+
 
     public void implDataClass() {
         importDataClassData();
@@ -237,9 +247,11 @@ public class ImportData {
         importAreaDefine();*/
         //importGridEEle();
         //executeBackUpMove();
-        importBackUp();
+        //importBackUp();
         //executeBackUpMove();
 
+        //importPortalUser2();
+        //importPortalDepart();
     }
 
 
@@ -2572,4 +2584,100 @@ public class ImportData {
         }
     }
 
+    public void importPortalUser2() {
+
+        String sql = "select * from ts_user";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+
+            String user_name = toString(m.get("USER_NAME"));
+            String login_name = toString(m.get("LOGIN_NAME"));
+            String password = toString(m.get("PASSWORD"));
+            String phone = toString(m.get("PHONE"));
+            String fixedphone = toString(m.get("FIXEDPHONE"));
+            String sex = toString(m.get("SEX"));
+            String email = toString(m.get("EMAIL"));
+            String last_login_time = toString(m.get("LAST_LOGIN_TIME"));
+            String deptunicode = toString(m.get("DEPTUNICODE"));
+            String ischeck = toString(m.get("ISCHECK"));
+            String post = toString(m.get("POST"));
+            String job_title = toString(m.get("JOB_TITLE"));
+            String picpath = toString(m.get("PICPATH"));
+            String user_level = toString(m.get("USER_LEVEL"));
+            String user_act = toString(m.get("USER_ACT"));
+            String cert_code = toString(m.get("CERT_CODE"));
+            String status = toString(m.get("STATUS"));
+            String g_code = toString(m.get("G_CODE"));
+            String id_card = toString(m.get("ID_CARD"));
+            String open_type = toString(m.get("OPEN_TYPE"));
+
+
+
+            UserManageEntity userManageEntity = new UserManageEntity();
+            userManageEntity.setCertCode(cert_code);
+            userManageEntity.setDeptunicode(deptunicode);
+            userManageEntity.setEmail(email);
+            userManageEntity.setFixedphone(fixedphone);
+            userManageEntity.setGCode(g_code);
+            userManageEntity.setIdCard(id_card);
+            userManageEntity.setIscheck(ischeck);
+            userManageEntity.setJobTitle(job_title);
+            if (StringUtils.isNotEmpty(last_login_time)) {
+                Date date = DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, last_login_time);
+                userManageEntity.setLastLoginTime(date);
+            }
+            userManageEntity.setLoginName(login_name);
+            userManageEntity.setOpenType(open_type);
+            userManageEntity.setPassword(password);
+            userManageEntity.setPhone(phone);
+            userManageEntity.setPicpath(picpath);
+            userManageEntity.setPost(post);
+            userManageEntity.setSex(sex);
+            userManageEntity.setUserName(user_name);
+            userManageEntity.setStatus(status);
+            userManageEntity.setUserLevel(user_level);
+            userManageEntity.setUserAct(user_act);
+
+            userManageDao.saveNotNull(userManageEntity);
+        }
+
+    }
+
+
+    public void importPortalDepart(){
+
+        String sql = "select * from TS_DEPARTMENT";
+        List<Map> list = CodeDOM.getList(sql);
+        for (Map<String, Object> m : list) {
+            String deptunicode = toString(m.get("DEPTUNICODE"));
+            String deptcode = toString(m.get("DEPTCODE"));
+            String deptname = toString(m.get("DEPTNAME"));
+            String depttype = toString(m.get("DEPTTYPE"));
+            String parentCode = toString(m.get("PARENT_CODE"));
+            String status = toString(m.get("STATUS"));
+            String orders = toString(m.get("ORDERS"));
+            Integer serialNumber = 0;
+            if(StringUtils.isNotBlank(orders)){
+                serialNumber = Integer.valueOf(orders);
+            }
+            String deptLevel = toString(m.get("DEPT_LEVEL"));
+            String deptDscr = toString(m.get("DEPT_DSCR"));
+
+            DepartManageEntity departManageEntity = new DepartManageEntity();
+            departManageEntity.setDeptunicode(deptunicode);
+            departManageEntity.setDeptcode(deptcode);
+            departManageEntity.setDeptname(deptname);
+            departManageEntity.setDepttype(depttype);
+            departManageEntity.setParentCode(parentCode);
+            departManageEntity.setStatus(status);
+            departManageEntity.setSerialNumber(serialNumber);
+            departManageEntity.setDeptLevel(deptLevel);
+            departManageEntity.setDeptDscr(deptDscr);
+
+
+            departManageDao.saveNotNull(departManageEntity);
+
+        }
+
+    }
 }

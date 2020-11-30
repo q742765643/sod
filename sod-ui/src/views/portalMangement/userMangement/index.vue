@@ -2,25 +2,25 @@
   <div class="app-container">
     <!--portal 系统管理 用户管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item prop="dataName" label="用户姓名:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入用户姓名" />
+      <el-form-item prop="userName" label="用户姓名:">
+        <el-input clearable size="small" v-model="queryParams.userName" placeholder="请输入用户姓名" />
       </el-form-item>
-      <el-form-item prop="dataName" label="登录名:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入登录名" />
+      <el-form-item prop="loginName" label="登录名:">
+        <el-input clearable size="small" v-model="queryParams.loginName" placeholder="请输入登录名" />
       </el-form-item>
-      <el-form-item prop="isshow" label="用户级别:">
+      <!--<el-form-item prop="isshow" label="用户级别:">
         <el-select v-model="queryParams.isshow">
           <el-option label="全部" value></el-option>
           <el-option label="国家级" value="01"></el-option>
           <el-option label="非国家级" value="02"></el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item prop="isshow" label="用户状态:">
-        <el-select v-model="queryParams.isshow">
+      </el-form-item>-->
+      <el-form-item prop="ischeck" label="用户状态:">
+        <el-select v-model="queryParams.ischeck">
           <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>
-          <el-option label="已激活" value="1"></el-option>
-          <el-option label="未激活" value="2"></el-option>
+          <el-option label="已审核" value="1"></el-option>
+          <el-option label="已驳回" value="2"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -43,15 +43,24 @@
       ref="multipleTable"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="ddataId" label="登录名"></el-table-column>
-      <el-table-column prop="dataName" label="用户姓名"></el-table-column>
-      <el-table-column prop="icon" label="用户级别"></el-table-column>
-      <el-table-column prop="serialNumber" label="部门"></el-table-column>
-      <el-table-column prop="isshow" label="邮箱地址"></el-table-column>
-      <el-table-column prop="serialNumber" label="电话号码"></el-table-column>
-      <el-table-column prop="serialNumber" label="注册时间"></el-table-column>
-      <el-table-column prop="serialNumber" label="状态"></el-table-column>
+      <el-table-column type="index" label="序号" width="80" :index="table_index"></el-table-column>
+      <el-table-column prop="loginName" label="登录名" width="120"></el-table-column>
+      <el-table-column prop="userName" label="用户姓名" width="120"></el-table-column>
+      <el-table-column prop="deptunicode" label="部门"></el-table-column>
+      <el-table-column prop="email" label="邮箱地址"></el-table-column>
+      <el-table-column prop="phone" label="电话号码"></el-table-column>
+     <!-- <el-table-column prop="lastLoginTime" label="最后登录时间">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
+        </template>
+      </el-table-column>-->
+      <el-table-column prop="ischeck" label="状态">
+        <template slot-scope="scope">
+          <span v-if="scope.row.ischeck=='0'">未审核</span>
+          <span v-if="scope.row.ischeck=='1'">已审核</span>
+          <span v-if="scope.row.ischeck=='2'">已驳回</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="320">
         <template slot-scope="scope">
           <el-button
@@ -104,7 +113,7 @@
 </template>
 
 <script>
-//import { queryDataPage, delById } from "@/api/portalMangement/userMangement";
+import { queryDataPage, delById, editById,resetPwd } from "@/api/portalMangement/userMangement";
 import handleUser from "@/views/portalMangement/userMangement/handleUser";
 
 export default {
@@ -118,11 +127,12 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        sdkType: "",
+        userName: "",
+        loginName:"",
+        ischeck:"",
       },
       tableData: [],
       total: 0,
-      SDKClassify: [],
       //已勾选记录
       multipleSelection: [],
       // 弹窗
@@ -133,9 +143,6 @@ export default {
   },
   /** 方法调用 */
   created() {
-    this.getDicts("portal_sdk_mng").then((response) => {
-      this.SDKClassify = response.data;
-    });
     this.getList();
   },
   methods: {
@@ -172,18 +179,44 @@ export default {
         cancelButtonText: "驳回",
       })
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "执行了通过",
+          let obj = {
+            id: row.id,
+            ischeck: '1',
+          };
+          editById(obj).then((response) => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "审核通过成功",
+              });
+              this.handleQuery();
+            } else {
+              this.$message({
+                type: "error",
+                message: "审核通过失败",
+              });
+            }
           });
-          this.getList();
         })
         .catch((action) => {
-          this.$message({
-            type: "error",
-            message: "执行了驳回",
+          let obj = {
+            id: row.id,
+            ischeck: '2',
+          };
+          editById(obj).then((response) => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "驳回成功",
+              });
+              this.handleQuery();
+            } else {
+              this.$message({
+                type: "error",
+                message: "驳回失败",
+              });
+            }
           });
-          this.getList();
         });
     },
     refreshPassword(row) {
@@ -193,17 +226,25 @@ export default {
         type: "warning",
       })
         .then(() => {
-          delById({ id: row.id }).then((response) => {
-            this.$alert("重置密码成功，默认密码为123qweasdzxc", "温馨提示", {
-              confirmButtonText: "确定",
-              callback: (action) => {},
-            });
+          resetPwd({ id: row.id,password:'123qweasdzxc' }).then((response) => {
+            if (response.code == 200) {
+              this.$alert("重置密码成功，默认密码为123qweasdzxc", "温馨提示", {
+                confirmButtonText: "确定",
+                callback: (action) => {},
+              });
+            }else{
+              this.$alert("重置密码失败", "温馨提示", {
+                confirmButtonText: "确定",
+                callback: (action) => {},
+              });
+            }
+
           });
         })
         .catch(() => {});
     },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.ddataId + "吗?", "温馨提示", {
+      this.$confirm("确认要删除" + row.userName + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

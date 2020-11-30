@@ -1,73 +1,73 @@
 <template>
   <section class="dataDialog">
     <el-form :model="msgFormDialog" :rules="baseFormRules" ref="fromRef" label-width="120px">
-      <el-form-item prop="ddataId" label="用户级别:">
+      <!--<el-form-item prop="ddataId" label="用户级别:">
         <el-select v-model="msgFormDialog.isshow" :disabled="handleDis">
           <el-option label="国家级" value="01"></el-option>
           <el-option label="非国家级" value="02"></el-option>
         </el-select>
+      </el-form-item>-->
+      <el-form-item prop="email" label="邮箱:">
+        <el-input clearable size="small" v-model="msgFormDialog.email" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="邮箱:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
+      <el-form-item prop="loginName" label="登录名:">
+        <el-input clearable size="small" v-model="msgFormDialog.loginName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="登录名:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
+      <el-form-item prop="userName" label="姓名:">
+        <el-input clearable size="small" v-model="msgFormDialog.userName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="dataName" label="姓名:">
-        <el-input clearable size="small" v-model="msgFormDialog.dataName" :disabled="handleDis" />
-      </el-form-item>
-      <el-form-item prop="serialNumber" label="工作单位:">
-        <el-input-number
+      <el-form-item prop="deptunicode" label="工作单位:">
+        <el-input
           clearable
           size="small"
-          v-model="msgFormDialog.serialNumber"
+          v-model="msgFormDialog.deptunicode"
           :disabled="handleDis"
         />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="职位:">
-        <el-input-number
+      <el-form-item prop="post" label="职位:">
+        <el-input
           clearable
           size="small"
-          v-model="msgFormDialog.serialNumber"
+          v-model="msgFormDialog.post"
           :disabled="handleDis"
         />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="职称:">
-        <el-input-number
+      <el-form-item prop="jobTitle" label="职称:">
+        <el-input
           clearable
           size="small"
-          v-model="msgFormDialog.serialNumber"
+          v-model="msgFormDialog.jobTitle"
           :disabled="handleDis"
         />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="手机:">
-        <el-input-number
+      <el-form-item prop="phone" label="手机:">
+        <el-input
           clearable
           size="small"
-          v-model="msgFormDialog.serialNumber"
+          v-model="msgFormDialog.phone"
           :disabled="handleDis"
         />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="办公电话:">
-        <el-input-number
+      <el-form-item prop="fixedphone" label="办公电话:">
+        <el-input
           clearable
           size="small"
-          v-model="msgFormDialog.serialNumber"
+          v-model="msgFormDialog.fixedphone"
           :disabled="handleDis"
         />
       </el-form-item>
       <el-form-item prop="serialNumber" label="用户状态:">
-        <el-select v-model="queryParams.isshow" :disabled="handleDis">
+        <el-select v-model="msgFormDialog.ischeck" :disabled="handleDis">
           <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>
-          <el-option label="已激活" value="1"></el-option>
-          <el-option label="未激活" value="2"></el-option>
+          <el-option label="已审核" value="1"></el-option>
+          <el-option label="已驳回" value="2"></el-option>
         </el-select>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis == false">确 定</el-button>
-      <el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis">审 核</el-button>
+      <!--<el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis == false">确 定</el-button>
+      <el-button type="primary" @click="trueDialog('fromRef')" v-if="handleDis">审 核</el-button>-->
       <el-button @click="cancelDialog()">取 消</el-button>
     </div>
   </section>
@@ -78,7 +78,7 @@ import {
   getById,
   editById,
   typicalAppSave,
-} from "@/api/portalMangement/typicalManagement";
+} from "@/api/portalMangement/userMangement";
 export default {
   name: "dataDialog",
   components: {},
@@ -93,23 +93,19 @@ export default {
       handleDis: false,
       //编辑页面列
       msgFormDialog: {
-        ddataId: "",
-        dataName: "",
-        icon: "",
-        isshow: "Y",
-        serialNumber: "1",
-        module: "1",
+        email: "",
+        ischeck: "",
+        loginName: "",
+        userName: "",
+        deptunicode:"",
+        post:"",
+        jobTitle: "",
+        phone:"",
+        fixedphone:"",
       },
       baseFormRules: {
-        ddataId: [
-          { required: true, message: "请输入四级编码", trigger: "blur" },
-        ],
-        dataName: [
-          { required: true, message: "请输入分类名称 ", trigger: "blur" },
-        ],
-
-        serialNumber: [
-          { required: true, message: "请输入排序编号 ", trigger: "blur" },
+        loginName: [
+          { required: true, message: "请输入登录名", trigger: "blur" },
         ],
       },
     };

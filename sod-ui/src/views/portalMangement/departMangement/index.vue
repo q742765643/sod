@@ -2,11 +2,11 @@
   <div class="app-container">
     <!--portal 系统管理 单位管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item prop="dataName" label="部门编号:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入部门编号" />
+      <el-form-item prop="deptcode" label="部门编号:">
+        <el-input clearable size="small" v-model="queryParams.deptcode" placeholder="请输入部门编号" />
       </el-form-item>
-      <el-form-item prop="dataName" label="部门名称:">
-        <el-input clearable size="small" v-model="queryParams.dataName" placeholder="请输入部门名称" />
+      <el-form-item prop="deptname" label="部门名称:">
+        <el-input clearable size="small" v-model="queryParams.deptname" placeholder="请输入部门名称" />
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
@@ -28,13 +28,26 @@
       ref="multipleTable"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="ddataId" label="部门编号"></el-table-column>
-      <el-table-column prop="dataName" label="部门名称"></el-table-column>
-      <el-table-column prop="icon" label="部门类型"></el-table-column>
-      <el-table-column prop="serialNumber" label="上级部门"></el-table-column>
-      <el-table-column prop="isshow" label="排序"></el-table-column>
-      <el-table-column prop="serialNumber" label="部门级别"></el-table-column>
+      <el-table-column type="index" label="序号" width="70" :index="table_index"></el-table-column>
+      <el-table-column prop="deptcode" label="部门编号" width="150"></el-table-column>
+      <el-table-column prop="deptname" label="部门名称"></el-table-column>
+      <el-table-column prop="depttype" label="部门类型">
+        <template slot-scope="scope">
+          <span v-if="scope.row.depttype=='01'">机构</span>
+          <span v-if="scope.row.depttype=='02'">部门</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="parentName" label="上级部门"></el-table-column>
+     <!-- <el-table-column prop="serialNumber" label="排序"></el-table-column>-->
+      <el-table-column prop="deptLevel" label="部门级别">
+        <template slot-scope="scope">
+          <span v-if="scope.row.deptLevel=='01'">国家级</span>
+          <span v-if="scope.row.deptLevel=='02'">直属单位</span>
+          <span v-if="scope.row.deptLevel=='03'">省级</span>
+          <span v-if="scope.row.deptLevel=='04'">市级</span>
+          <span v-if="scope.row.deptLevel=='05'">县级</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="300">
         <template slot-scope="scope">
           <el-button
@@ -75,7 +88,7 @@
 </template>
 
 <script>
-//import { queryDataPage, delById } from "@/api/portalMangement/userMangement";
+import { queryDataPage,getById,delById } from "@/api/portalMangement/departMangement";
 import handleDepart from "@/views/portalMangement/departMangement/handleDepart";
 
 export default {
@@ -89,7 +102,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        sdkType: "",
+        deptcode: "",
+        deptname:"",
       },
       tableData: [],
       total: 0,
@@ -157,24 +171,8 @@ export default {
           this.getList();
         });
     },
-    refreshPassword(row) {
-      this.$confirm("确定要继续当前操作码?", "温馨提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          delById({ id: row.id }).then((response) => {
-            this.$alert("重置密码成功，默认密码为123qweasdzxc", "温馨提示", {
-              confirmButtonText: "确定",
-              callback: (action) => {},
-            });
-          });
-        })
-        .catch(() => {});
-    },
     deleteRow(row) {
-      this.$confirm("确认要删除" + row.ddataId + "吗?", "温馨提示", {
+      this.$confirm("确认要删除" + row.deptname + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
