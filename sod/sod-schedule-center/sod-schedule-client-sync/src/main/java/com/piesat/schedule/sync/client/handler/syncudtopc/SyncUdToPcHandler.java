@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * @date 2020年 10月29日 14:12:00
  */
 @Slf4j
-@Service("syncUdToPcHandler")
+@Service("syncudtopcHandler")
 public class SyncUdToPcHandler implements BaseHandler {
     @Autowired
     private SyncUdToPcLogService syncUdToPcLogService;

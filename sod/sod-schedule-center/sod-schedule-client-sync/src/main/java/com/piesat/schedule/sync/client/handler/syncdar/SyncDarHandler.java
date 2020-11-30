@@ -41,7 +41,7 @@ import java.util.List;
  * @date 2020年 10月29日 14:12:00
  */
 @Slf4j
-@Service("syncDarHandler")
+@Service("syncdarHandler")
 public class SyncDarHandler implements BaseHandler {
 
     @Autowired
