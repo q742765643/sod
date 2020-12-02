@@ -40,6 +40,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         return new Date();
     }
 
+    public static String getDateTimeStr(final Date date){return parseDateToStr(YYYY_MM_DD_HH_MM_SS, date);};
     /**
      * 获取当前日期, 默认格式为yyyy-MM-dd
      *
