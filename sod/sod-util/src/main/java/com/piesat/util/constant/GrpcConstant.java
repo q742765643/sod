@@ -12,6 +12,7 @@ public class GrpcConstant {
     public static final String SYSTEM_SERVER="schedule-server";
     public static final String SCHEDULE_SERVER="schedule-server";
     public static final String SCHEDULE_CLIENT_SERVER="schedule-client-server";
+    public static final String SCHEDULE_CLIENT_SYNC="schedule-client-sync";
 
 
 }

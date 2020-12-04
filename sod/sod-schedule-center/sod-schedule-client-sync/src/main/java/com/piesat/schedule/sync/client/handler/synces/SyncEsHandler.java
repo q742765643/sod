@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  * @date 2020年 10月29日 14:12:00
  */
 @Slf4j
-@Service("syncEsHandler")
+@Service("syncesHandler")
 public class SyncEsHandler implements BaseHandler {
 
     @Autowired
