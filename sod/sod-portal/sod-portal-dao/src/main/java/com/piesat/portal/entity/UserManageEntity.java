@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -15,6 +16,10 @@ import java.util.Date;
 @Table(name = "T_SOD_PORTAL_USER")
 @Entity
 public class UserManageEntity extends BaseEntity {
+
+    @Id
+    @Column(length = 50)
+    private String id;
 
     /**
      * 真实姓名

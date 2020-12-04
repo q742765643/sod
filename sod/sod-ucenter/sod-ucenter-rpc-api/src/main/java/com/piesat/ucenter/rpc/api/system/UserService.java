@@ -108,4 +108,6 @@ public interface UserService {
     List<UserDto> getBizUserByName(String userName);
 
     ResultT editPwd(UserDto user);
+
+    public void delBizUser(String bizUserid);
 }

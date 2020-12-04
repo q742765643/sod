@@ -640,7 +640,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 	}
 
     @Override
-    public PageBean getApplyedFileDataInfo(String userId,PageForm pageForm) {
+    public List<Map<String, Object>> getApplyedFileDataInfo(String userId) {
         List<Map<String, Object>> arrayList = new ArrayList<Map<String, Object>>();
         List<Map<String, Object>> recodeFileDataInfo = mybatisQueryMapper.getApplyedRecodeFileDataInfo(userId);
         List<Map<String, Object>> specialReadWriteFileDataInfo = mybatisQueryMapper.getSpecialReadWriteFileDataInfo(userId);
@@ -665,7 +665,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         arrayList.addAll(specialReadWriteFileDataInfo);
 
         //分页
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(arrayList);
+        /*PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(arrayList);
         int pages = arrayList.size() % pageForm.getPageSize() == 0 ? arrayList.size() / pageForm.getPageSize() : arrayList.size() / pageForm.getPageSize() + 1;
         pageInfo.setPages(pages);
         int fromIndex = (pageForm.getCurrentPage() - 1) * pageForm.getPageSize();
@@ -676,7 +676,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             arrayList = arrayList.subList(fromIndex, arrayList.size());
         }
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), arrayList);
-        return pageBean;
+        return pageBean;*/
+        return arrayList;
     }
 
     @Override
@@ -701,6 +702,24 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     public void deleteByDataClassId(String dataclassId) {
         this.dataAuthorityRecordDao.deleteByDataClassId(dataclassId);
+    }
+
+    @Override
+    public void deleteByUserId(String userId) {
+        List<DataAuthorityApplyEntity> dalList = this.dataAuthorityApplyDao.findByUserId(userId);
+        if(dalList != null && dalList.size()>0){
+            for(int i=0;i<dalList.size();i++){
+                DataAuthorityApplyEntity dataAuthorityApplyEntity = dalList.get(i);
+                Set<DataAuthorityRecordEntity> dataAuthorityRecordList = dataAuthorityApplyEntity.getDataAuthorityRecordList();
+                if(dataAuthorityRecordList != null){
+                    for(Iterator<DataAuthorityRecordEntity> iterator = dataAuthorityRecordList.iterator();iterator.hasNext();){
+                        DataAuthorityRecordEntity t = (DataAuthorityRecordEntity) iterator.next();
+                        this.dataAuthorityRecordDao.delete(t);
+                    }
+                }
+                this.dataAuthorityApplyDao.delete(dataAuthorityApplyEntity);
+            }
+        }
     }
 
 }

@@ -16,6 +16,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
@@ -66,6 +67,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     private DatabaseSpecialService databaseSpecialService;
     @GrpcHthtClient
     private DataAuthorityApplyService dataAuthorityApplyService;
+    @GrpcHthtClient
+    private DataClassService dataClassService;
 
     @Override
     public BaseDao<UserEntity> getBaseDao() {
@@ -613,5 +616,16 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         user.setPassword(user.getPassword());
         this.saveNotNull(this.userMapstruct.toEntity(user));
         return ResultT.success();
+    }
+
+    @Override
+    @Transactional
+    public void delBizUser(String bizUserid) {
+        UserEntity userEntity = userDao.findByUserName(bizUserid);
+        userRoleDao.deleteByUserId(userEntity.getId());
+        this.delete(userEntity.getId());
+
+        //删除业务用户所关联的数据
+        dataClassService.deleteByBizUserId(bizUserid);
     }
 }

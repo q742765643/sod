@@ -93,4 +93,6 @@ public interface DataClassService {
     ResultT haveClassByDataId(String dataId);
 
     List<DataClassDto> findByDataClassIdAndCreateBy(String dataclassId, String userId);
+
+    void deleteByBizUserId(String bizUserid);
 }

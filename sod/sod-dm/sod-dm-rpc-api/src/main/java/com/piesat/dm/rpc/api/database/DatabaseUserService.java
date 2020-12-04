@@ -115,4 +115,6 @@ public interface DatabaseUserService {
     ResultT changePassword(String id, String oldPwd, String newPwd);
 
     ResultT updateBizPwd(String bizUserId, String ids, String newPwd);
+
+    List<DatabaseUserDto> getByUserId(String userId);
 }

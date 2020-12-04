@@ -61,7 +61,7 @@ public interface DataAuthorityApplyService {
      */
     List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
 
-    PageBean getApplyedFileDataInfo(String userId,PageForm pageForm);
+    List<Map<String, Object>> getApplyedFileDataInfo(String userId);
 
     ReadAuthorityDto updateReadAuthority(ReadAuthorityDto readAuthorityDto);
 
@@ -70,4 +70,6 @@ public interface DataAuthorityApplyService {
     List<DataAuthorityApplyDto> findByUserId(String userId);
 
     void deleteByDataClassId(String dataclassId);
+
+    void deleteByUserId(String userId);
 }

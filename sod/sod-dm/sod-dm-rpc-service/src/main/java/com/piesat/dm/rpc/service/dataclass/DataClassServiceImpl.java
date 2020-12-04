@@ -26,10 +26,14 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
+import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
+import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
@@ -96,6 +100,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataAuthorityApplyService dataAuthorityApplyService;
     @Autowired
     private NewdataTableColumnService newdataTableColumnService;
+    @Autowired
+    private DatabaseSpecialService databaseSpecialService;
+    @Autowired
+    private DatabaseUserService databaseUserService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -659,5 +667,32 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         List<DataClassEntity> byDataClassIdAndCreateBy = this.dataClassDao.findByDataClassIdAndCreateBy(dataclassId, userId);
         return this.dataClassMapper.toDto(byDataClassIdAndCreateBy);
 
+    }
+
+    @Override
+    public void deleteByBizUserId(String bizUserid) {
+        //删除业务用户注册资料
+        List<NewdataApplyDto> newdataApplyDtos = this.newdataApplyService.findByUserId(bizUserid);
+        if(newdataApplyDtos != null && newdataApplyDtos.size()>0){
+            for(int i=0;i<newdataApplyDtos.size();i++){
+                newdataApplyService.deleteById(newdataApplyDtos.get(i).getId());
+            }
+        }
+        //专题库
+        List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.findByUserId(bizUserid);
+        if(databaseSpecialDtos != null && databaseSpecialDtos.size()>0){
+            for(int i=0;i<databaseSpecialDtos.size();i++){
+                databaseSpecialService.deleteById(databaseSpecialDtos.get(i).getId());
+            }
+        }
+        //数据库访问账户
+        List<DatabaseUserDto> databaseUserDtos = this.databaseUserService.getByUserId(bizUserid);
+        if(databaseUserDtos != null && databaseUserDtos.size()>0){
+            for(int i=0;i<databaseUserDtos.size();i++){
+                this.databaseUserService.deleteById(databaseUserDtos.get(i).getId());
+            }
+        }
+        //资料访问权限
+        dataAuthorityApplyService.deleteByUserId(bizUserid);
     }
 }

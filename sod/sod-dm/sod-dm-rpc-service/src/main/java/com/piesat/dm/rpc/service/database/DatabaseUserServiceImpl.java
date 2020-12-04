@@ -819,5 +819,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return ResultT.success();
     }
 
+    @Override
+    public List<DatabaseUserDto> getByUserId(String userId) {
+        List<DatabaseUserEntity> databaseUserEntities = this.databaseUserDao.findByUserId(userId);
+        return this.databaseUserMapper.toDto(databaseUserEntities);
+    }
+
 
 }

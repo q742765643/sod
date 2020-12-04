@@ -420,4 +420,10 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         List<NewdataApplyEntity> newdataApplyEntitys = this.newdataApplyDao.findByDataClassIdAndUserId(dataClassId, userId);
         return this.newdataApplyMapper.toDto(newdataApplyEntitys);
     }
+
+    @Override
+    public List<NewdataApplyDto> findByUserId(String userId) {
+        List<NewdataApplyEntity> newdataApplyEntities = this.newdataApplyDao.findByUserId(userId);
+        return this.newdataApplyMapper.toDto(newdataApplyEntities);
+    }
 }
