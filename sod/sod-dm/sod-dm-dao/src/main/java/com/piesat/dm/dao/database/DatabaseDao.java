@@ -50,4 +50,7 @@ public interface DatabaseDao extends BaseDao<DatabaseEntity> {
     List<DatabaseEntity> findByDatabaseDefine_UserDisplayControl(int use);
 
     void deleteByTdbId(String sdbId);
+
+    List<DatabaseEntity> findByDatabaseName(String databaseName);
+
 }

@@ -46,4 +46,6 @@ public interface DatabaseService {
     List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
 
     List<Map<String, Object>> getDatabaseList(String ifDisplay);
+
+    List<DatabaseDto> findByDatabaseName(String databaseName);
 }

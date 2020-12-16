@@ -64,6 +64,12 @@ public class FileManageEntity extends BaseEntity {
     @Column(name="SERIAL_NUMBER")
     private String serialNumber;
 
+    /**
+     * svn路径
+     */
+    @Column(name="SVN_DIR", length = 1000)
+    private String svnDir;
+
     @Transient
     private String typeName;
 

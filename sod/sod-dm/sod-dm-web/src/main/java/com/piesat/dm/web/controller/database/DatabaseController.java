@@ -170,5 +170,17 @@ public class DatabaseController {
         }
     }
 
+    @ApiOperation(value = "根据名称查询")
+    @GetMapping(value = "/findByDatabaseName")
+    public ResultT findByDatabaseName(String databaseName) {
+        try {
+            List<DatabaseDto> all = this.databaseService.findByDatabaseName(databaseName);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 
 }

@@ -48,6 +48,11 @@ public class FileManageDto extends BaseDto {
      */
     private String serialNumber;
 
+    /**
+     * svn路径
+     */
+    private String svnDir;
+
 
     private String typeName;
 
