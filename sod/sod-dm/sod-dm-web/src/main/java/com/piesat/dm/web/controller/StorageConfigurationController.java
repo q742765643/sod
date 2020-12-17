@@ -5,7 +5,7 @@ import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.StorageConfigParam;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -130,46 +130,46 @@ public class StorageConfigurationController {
     @GetMapping(value = "/exportTable",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ApiOperation(value = "导出", notes = "导出")
     @ResponseBody
-    public byte[] exportTable_1(StorageConfigurationDto storageConfigurationDto, HttpServletRequest request, HttpServletResponse response) {
+    public byte[] exportTable_1(AdvancedConfigDto advancedConfigDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();
-        if (storageConfigurationDto.getDatabaseDto() != null) {
-            if (storageConfigurationDto.getDatabaseDto().getDatabaseDefine() != null) {
-                if (StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
-                    map.put("database_name", storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+        if (advancedConfigDto.getDatabaseDto() != null) {
+            if (advancedConfigDto.getDatabaseDto().getDatabaseDefine() != null) {
+                if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
+                    map.put("database_name", advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
                 }
             }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseName())) {
-                map.put("special_database_name", storageConfigurationDto.getDatabaseDto().getDatabaseName());
+            if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseName())) {
+                map.put("special_database_name", advancedConfigDto.getDatabaseDto().getDatabaseName());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())) {
-                map.put("class_name", storageConfigurationDto.getDataClassDto().getClassName());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getClassName())) {
+                map.put("class_name", advancedConfigDto.getDataClassDto().getClassName());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())) {
-                map.put("parent_id", storageConfigurationDto.getDataClassDto().getDataClassId());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getDataClassId())) {
+                map.put("parent_id", advancedConfigDto.getDataClassDto().getDataClassId());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDDataId())) {
-                map.put("d_data_id", storageConfigurationDto.getDataClassDto().getDDataId());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getDDataId())) {
+                map.put("d_data_id", advancedConfigDto.getDataClassDto().getDDataId());
             }
         }
-        if (storageConfigurationDto.getLogicDefineDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())) {
-                map.put("logic_name", storageConfigurationDto.getLogicDefineDto().getLogicName());
+        if (advancedConfigDto.getLogicDefineDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getLogicDefineDto().getLogicName())) {
+                map.put("logic_name", advancedConfigDto.getLogicDefineDto().getLogicName());
             }
         }
-        if (storageConfigurationDto.getDataTableDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())) {
-                map.put("table_name", storageConfigurationDto.getDataTableDto().getTableName());
+        if (advancedConfigDto.getDataTableDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataTableDto().getTableName())) {
+                map.put("table_name", advancedConfigDto.getDataTableDto().getTableName());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())) {
-                map.put("data_class_id", storageConfigurationDto.getDataClassDto().getDataClassId());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getDataClassId())) {
+                map.put("data_class_id", advancedConfigDto.getDataClassDto().getDataClassId());
             }
         }
         Map<String, Object> headAndData = storageConfigurationService.exportTable(map);
@@ -178,46 +178,46 @@ public class StorageConfigurationController {
 
     @GetMapping(value = "/exportTable_1")
     @ApiOperation(value = "导出", notes = "导出")
-    public void exportTable(StorageConfigurationDto storageConfigurationDto, HttpServletRequest request, HttpServletResponse response) {
+    public void exportTable(AdvancedConfigDto advancedConfigDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();
-        if (storageConfigurationDto.getDatabaseDto() != null) {
-            if (storageConfigurationDto.getDatabaseDto().getDatabaseDefine() != null) {
-                if (StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
-                    map.put("database_name", storageConfigurationDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+        if (advancedConfigDto.getDatabaseDto() != null) {
+            if (advancedConfigDto.getDatabaseDto().getDatabaseDefine() != null) {
+                if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
+                    map.put("database_name", advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
                 }
             }
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDatabaseDto().getDatabaseName())) {
-                map.put("special_database_name", storageConfigurationDto.getDatabaseDto().getDatabaseName());
+            if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseName())) {
+                map.put("special_database_name", advancedConfigDto.getDatabaseDto().getDatabaseName());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getClassName())) {
-                map.put("class_name", storageConfigurationDto.getDataClassDto().getClassName());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getClassName())) {
+                map.put("class_name", advancedConfigDto.getDataClassDto().getClassName());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())) {
-                map.put("parent_id", storageConfigurationDto.getDataClassDto().getDataClassId());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getDataClassId())) {
+                map.put("parent_id", advancedConfigDto.getDataClassDto().getDataClassId());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDDataId())) {
-                map.put("d_data_id", storageConfigurationDto.getDataClassDto().getDDataId());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getDDataId())) {
+                map.put("d_data_id", advancedConfigDto.getDataClassDto().getDDataId());
             }
         }
-        if (storageConfigurationDto.getLogicDefineDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getLogicDefineDto().getLogicName())) {
-                map.put("logic_name", storageConfigurationDto.getLogicDefineDto().getLogicName());
+        if (advancedConfigDto.getLogicDefineDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getLogicDefineDto().getLogicName())) {
+                map.put("logic_name", advancedConfigDto.getLogicDefineDto().getLogicName());
             }
         }
-        if (storageConfigurationDto.getDataTableDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataTableDto().getTableName())) {
-                map.put("table_name", storageConfigurationDto.getDataTableDto().getTableName());
+        if (advancedConfigDto.getDataTableDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataTableDto().getTableName())) {
+                map.put("table_name", advancedConfigDto.getDataTableDto().getTableName());
             }
         }
-        if (storageConfigurationDto.getDataClassDto() != null) {
-            if (StringUtils.isNotNullString(storageConfigurationDto.getDataClassDto().getDataClassId())) {
-                map.put("data_class_id", storageConfigurationDto.getDataClassDto().getDataClassId());
+        if (advancedConfigDto.getDataClassDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataClassDto().getDataClassId())) {
+                map.put("data_class_id", advancedConfigDto.getDataClassDto().getDataClassId());
             }
         }
         Map<String, Object> headAndData = storageConfigurationService.exportTable(map);

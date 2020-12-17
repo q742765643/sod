@@ -10,20 +10,17 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.clear.ClearDao;
-import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
-import com.piesat.schedule.entity.clear.ClearEntity;
-import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
-import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.service.DiSendService;
@@ -138,10 +135,10 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         clearEntity=this.saveNotNull(clearEntity);
         diSendService.sendClear(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
-        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
-        for (DataLogicDto dl : dataLogic) {
-            StorageConfigurationDto scd = new StorageConfigurationDto();
-            scd.setClassLogicId(dl.getId());
+        List<DataClassLogicDto> dataLogic = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
+        for (DataClassLogicDto dl : dataLogic) {
+            AdvancedConfigDto scd = new AdvancedConfigDto();
+            scd.setTableId(dl.getTableId());
             scd.setBackupIdentifier(1);
             scd.setBackupId(clearEntity.getId());
             this.storageConfigurationService.updateDataAuthorityConfig(scd);

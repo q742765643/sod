@@ -13,13 +13,13 @@ import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
-import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.backup.BackupLogService;
@@ -157,10 +157,10 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         backupEntity = this.saveNotNull(backupEntity);
         diSendService.sendBackup(backupEntity);
         jobInfoService.start(backupMapstruct.toDto(backupEntity));
-        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(backupEntity.getDataClassId(), backupEntity.getDatabaseId(), backupEntity.getTableName());
-        for (DataLogicDto dl : dataLogic) {
-            StorageConfigurationDto scd = new StorageConfigurationDto();
-            scd.setClassLogicId(dl.getId());
+        List<DataClassLogicDto> dataLogic = this.dataLogicService.getDataLogic(backupEntity.getDataClassId(), backupEntity.getDatabaseId(), backupEntity.getTableName());
+        for (DataClassLogicDto dl : dataLogic) {
+            AdvancedConfigDto scd = new AdvancedConfigDto();
+            scd.setTableId(dl.getTableId());
             scd.setBackupIdentifier(1);
             scd.setBackupId(backupEntity.getId());
             this.storageConfigurationService.updateDataAuthorityConfig(scd);

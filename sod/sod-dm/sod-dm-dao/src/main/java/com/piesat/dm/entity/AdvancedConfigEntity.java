@@ -1,53 +1,47 @@
-package com.piesat.dm.rpc.dto;
+package com.piesat.dm.entity;
 
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
-import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
+import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author yaya
  * @description TODO
- * @date 2020/2/9 13:48
+ * @date 2020/2/6 13:05
  */
 @Data
-public class StorageConfigurationDto {
+@Entity
+@Table(name = "T_SOD_ADVANCED_CONFIG")
+public class AdvancedConfigEntity extends BaseEntity {
 
-    private String classLogicId;
-//    /**
-//     * 逻辑库ID
-//     */
-//    private String logicId;
-//
-//    /**
-//     * 物理库ID
-//     */
-//    private String databaseId;
-//
-//    /**
-//     * 资料存储编码
-//     */
-//    private String dataClassId;
+    /**
+     * table_id
+     */
+    @Column(name = "table_id", length = 255, unique=true)
+    private String tableId;
 
     /**
      * 存储结构创建标识
      * 1：已创建，2：未创建
      */
+    @Column(name = "storage_define_identifier")
     private Integer storageDefineIdentifier;
 
     /**
      * 数据同步配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
+    @Column(name = "sync_identifier")
     private Integer syncIdentifier;
 
     /**
-     * 数移清除配置标识符
+     * 数据清除配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
+    @Column(name = "clean_identifier")
     private Integer cleanIdentifier;
 
 
@@ -55,46 +49,45 @@ public class StorageConfigurationDto {
      * 数据迁移配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
+    @Column(name = "move_identifier")
     private Integer moveIdentifier;
 
     /**
      * 数据备份配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
+    @Column(name = "backup_identifier")
     private Integer backupIdentifier;
 
     /**
      * 数据归档配置标识符
      * 1：已创建，2：未创建，3：不需配置
      */
+    @Column(name = "archiving_identifier")
     private Integer archivingIdentifier;
 
     /**
      * 同步任务ID
      */
+    @Column(name = "sync_id", length = 60)
     private String syncId;
 
     /**
-     * 迁移清楚任务ID
+     * 清楚任务ID
      */
+    @Column(name = "clear_id", length = 60)
     private String clearId;
 
     /**
      * 迁移任务ID
      */
+    @Column(name = "move_id", length = 60)
     private String moveId;
 
     /**
      * 备份任务ID
      */
+    @Column(name = "backup_id", length = 60)
     private String backupId;
-
-
-    private DataClassDto dataClassDto;
-    private LogicDefineDto logicDefineDto;
-    private DatabaseDto databaseDto;
-    private DataLogicDto dataLogicDto;
-    private DataTableDto dataTableDto;
-    private TableColumnDto tableColumnDto;
 
 }

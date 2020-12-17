@@ -56,6 +56,16 @@ public class DatabaseUserDto extends BaseDto {
     private String applyDatabaseId;
 
     /**
+     * 删除数据库账户
+     */
+    private String dropDatabaseId;
+
+    /**
+     * 新增创建用户的数据库id
+     */
+    private String createDatabaseIds;
+
+    /**
      * 申请材料pdf
      */
     private String pdfPath;

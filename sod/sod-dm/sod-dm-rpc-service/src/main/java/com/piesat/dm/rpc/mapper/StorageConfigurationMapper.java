@@ -1,8 +1,8 @@
 package com.piesat.dm.rpc.mapper;
 
 import com.piesat.common.jpa.BaseMapper;
-import com.piesat.dm.entity.StorageConfigurationEntity;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.entity.AdvancedConfigEntity;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Service;
@@ -14,5 +14,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface StorageConfigurationMapper extends BaseMapper<StorageConfigurationDto, StorageConfigurationEntity> {
+public interface StorageConfigurationMapper extends BaseMapper<AdvancedConfigDto, AdvancedConfigEntity> {
 }

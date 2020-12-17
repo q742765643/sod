@@ -21,7 +21,7 @@ public enum ColumnEnum {
     private String name;
     private int length;
 
-    private ColumnEnum(String name, int length) {
+    ColumnEnum(String name, int length) {
         this.name = name;
         this.length = length;
     }

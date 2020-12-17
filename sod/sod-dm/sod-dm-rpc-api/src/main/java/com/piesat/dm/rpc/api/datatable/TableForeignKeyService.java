@@ -25,5 +25,6 @@ public interface TableForeignKeyService {
 
     List<TableForeignKeyDto> all();
 
-    List<TableForeignKeyDto> findByClassLogicId(String classLogicId);
+    List<TableForeignKeyDto> findByTableId(String tableId);
+
 }

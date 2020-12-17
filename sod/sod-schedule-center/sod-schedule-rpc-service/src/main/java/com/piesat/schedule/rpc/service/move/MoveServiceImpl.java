@@ -10,19 +10,17 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.move.MoveDao;
-import com.piesat.schedule.entity.clear.ClearEntity;
 import com.piesat.schedule.entity.move.MoveEntity;
-import com.piesat.schedule.entity.move.MoveLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.move.MoveDto;
-import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.service.DiSendService;
@@ -137,10 +135,10 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         diSendService.sendMove(moveEntity);
         jobInfoService.start(moveMapstruct.toDto(moveEntity));
         String tableName = moveEntity.getTableName();
-        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), tableName.contains(".")?tableName.substring(tableName.indexOf(".")+1):tableName);
-        for (DataLogicDto dl : dataLogic) {
-            StorageConfigurationDto scd = new StorageConfigurationDto();
-            scd.setClassLogicId(dl.getId());
+        List<DataClassLogicDto> dataLogic = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), tableName.contains(".")?tableName.substring(tableName.indexOf(".")+1):tableName);
+        for (DataClassLogicDto dl : dataLogic) {
+            AdvancedConfigDto scd = new AdvancedConfigDto();
+            scd.setTableId(dl.getTableId());
             scd.setMoveIdentifier(1);
             scd.setMoveId(moveEntity.getId());
             this.storageConfigurationService.updateDataAuthorityConfig(scd);

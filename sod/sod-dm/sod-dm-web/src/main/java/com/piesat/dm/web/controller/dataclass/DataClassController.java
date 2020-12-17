@@ -107,29 +107,7 @@ public class DataClassController {
     public ResultT findByClassId(String id) {
         try {
             DataClassDto dataClassDto = this.dataClassService.findByDataClassId(id);
-            List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(id);
-            List<DatabaseDto> all = this.databaseService.all();
-            List<LogicDefineDto> allLogicDefine = this.grpcService.getAllLogicDefine();
-            for (DataLogicDto dl : byDataClassId) {
-                for (LogicDefineDto ld : allLogicDefine) {
-                    if (dl.getLogicFlag().equals(ld.getLogicFlag())) {
-                        dl.setLogicName(ld.getLogicName());
-                        for (DatabaseDto ldd : all) {
-                            if (dl.getDatabaseId().equals(ldd.getId())) {
-                                dl.setDatabaseName(ldd.getDatabaseName());
-                                dl.setDatabasePId(ldd.getDatabaseDefine().getId());
-                                dl.setDatabasePName(ldd.getDatabaseDefine().getDatabaseName());
-                            }
-                        }
-                        List<LogicStorageTypesDto> logicStorageTypesEntityList = ld.getLogicStorageTypesEntityList();
-                        for (LogicStorageTypesDto ls : logicStorageTypesEntityList) {
-                            if (dl.getStorageType().equals(ls.getStorageType())) {
-                                dl.setStorageName(ls.getStorageName());
-                            }
-                        }
-                    }
-                }
-            }
+            List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(id);
             dataClassDto.setDataLogicList(byDataClassId);
             List<DataClassLabelDto> dataClassLabels = this.dataClassLabelService.findByDataClassId(dataClassDto.getDataClassId());
             dataClassDto.setDataClassLabelList(dataClassLabels);

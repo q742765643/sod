@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "T_SOD_STORAGE_CONFIGURATION")
-public class StorageConfigurationEntity extends BaseEntity {
+public class StorageConfigurationEntity1 extends BaseEntity {
 
     /**
      * T_SOD_DATA_LOGIC表id

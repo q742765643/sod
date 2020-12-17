@@ -1,8 +1,10 @@
 package com.piesat.dm.rpc.api.dataapply;
 
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.util.ResultT;
@@ -33,13 +35,9 @@ public interface NewdataApplyService {
 
     Map<String, Object> queryCheckByApplyId(String id);
 
-    ResultT<String> addGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto);
 
-    ResultT<String> updateGroup(DataClassDto dataClassDto, NewdataApplyDto newdataApplyDto, String old_data_class_id);
 
-    ResultT<String> addOrUpdateDataTable(DataTableDto dataTableDto);
-
-    List<DataTableDto> getDataTableByType(DataLogicDto dataLogicDto);
+    List<DataTableInfoDto> getDataTableByType(DataClassLogicDto dataLogicDto);
 
     ResultT<String> addDataStructure(TableColumnDto tableColumnDto);
 

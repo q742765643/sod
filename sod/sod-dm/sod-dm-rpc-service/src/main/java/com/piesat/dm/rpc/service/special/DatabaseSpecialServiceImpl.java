@@ -1,6 +1,5 @@
 package com.piesat.dm.rpc.service.special;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
@@ -12,7 +11,6 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.core.api.DatabaseDcl;
-import com.piesat.dm.core.api.impl.Cassandra;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
@@ -27,15 +25,13 @@ import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.special.*;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
-import com.piesat.dm.rpc.dto.dataapply.CloudDatabaseApplyDto;
-import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
@@ -51,20 +47,9 @@ import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
-import com.piesat.util.GetAllUserInfo;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.RequestContext;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -72,10 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -505,7 +487,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 if (examineStatus == 1) {
                     failureReason = "-";
                 }
-                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
 
                 if (!"RADB".equals(databaseId)) {
                     if (databaseSpecialReadWriteDto.getExamineStatus() == 1) {//授权
@@ -718,8 +699,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         } else if (Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)) {//南大
                             databaseVO = new Gbase8a(url, username, password);
                         }
-                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
-                        for (DataTableEntity dataTableEntity : dataTableList) {
+                        List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(dataClassId, databaseId);
+                        for (DataTableInfoEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();
                             //默认读权限
                             boolean select = true;
@@ -786,9 +767,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         } else if (Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)) {//南大
                             databaseVO = new Gbase8a(url, username, password);
                         }
-                        List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(dataClassId, databaseId);
+                        List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(dataClassId, databaseId);
                         String[] permissions = {"SELECT", "UPDATE", "INSERT", "DELETE"};
-                        for (DataTableEntity dataTableEntity : dataTableList) {
+                        for (DataTableInfoEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();
                             databaseVO.deletePermissions(permissions, databaseEntity.getSchemaName(),
                                     tableName, databaseUserEntity.getDatabaseUpId(), null, null);

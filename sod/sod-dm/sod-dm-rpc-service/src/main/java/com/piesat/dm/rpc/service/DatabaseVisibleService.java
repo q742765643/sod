@@ -12,8 +12,8 @@ import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.DatabaseSpecialDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
+import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialEntity;
@@ -28,19 +28,15 @@ import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.sso.client.util.Base64Util;
-import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.api.system.UserService;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 数据库可视化接口服务类
@@ -193,11 +189,12 @@ public class DatabaseVisibleService {
         List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
         for (int i = 0; i < DataClassDtos.size(); i++) {
             DataClassDto dataClassDto = DataClassDtos.get(i);
-            List<DataLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
+            List<DataClassLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
             for (int j = 0; j < byDataClassId.size(); j++) {
-                DataLogicEntity dataLogicEntity = byDataClassId.get(j);
+                DataClassLogicEntity dataLogicEntity = byDataClassId.get(j);
+                DataTableInfoEntity dataTableInfo = this.dataTableDao.getOne(dataLogicEntity.getTableId());
                 DataAuthorityRecordDto d = new DataAuthorityRecordDto();
-                d.setDatabaseId(dataLogicEntity.getDatabaseId());
+                d.setDatabaseId(dataTableInfo.getDatabaseId());
                 d.setDataClassId(dataLogicEntity.getDataClassId());
                 dataAuthorityRecordList.add(d);
             }
@@ -212,25 +209,22 @@ public class DatabaseVisibleService {
             if (d.getDataClassId().equals(dataclassId)) {
                 String databaseId = d.getDatabaseId();
                 DatabaseDto dotById = databaseService.getDotById(databaseId);
-                List<DataLogicEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDatabaseIdAndDataClassId(databaseId, d.getDataClassId());
-                for (DataLogicEntity dl : byDatabaseIdAndDataClassId) {
-                    List<DataTableDto> byClassLogicId = dataTableService.getByClassLogicId(dl.getId());
-                    for (DataTableDto dt : byClassLogicId) {
-                        JSONObject jo = new JSONObject();
-                        jo.put("TABLE_NAME", dotById.getSchemaName() + "." + dt.getTableName());
-                        jo.put("DATA_SERVICE_NAME", dt.getDataServiceName());
-                        jo.put("D_DATA_ID", byDataClassId.getDDataId());
-                        jo.put("STORAGE_TYPE", dl.getStorageType());
-                        JSONArray aaa = new JSONArray();
-                        JSONObject bbb = new JSONObject();
-                        bbb.put("SCHEMA_NAME", dotById.getSchemaName());
-                        bbb.put("DATABASE_ID", dotById.getDatabaseDefine().getId());
-                        bbb.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
-                        aaa.add(bbb);
-                        jo.put("DATABASE", aaa);
-                        arr.add(jo);
-                    }
-
+                List<DataClassLogicEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
+                for (DataClassLogicEntity dl : byDatabaseIdAndDataClassId) {
+                    DataTableInfoDto dt = dataTableService.getDotById(dl.getTableId());
+                    JSONObject jo = new JSONObject();
+                    jo.put("TABLE_NAME", dotById.getSchemaName() + "." + dt.getTableName());
+                    jo.put("DATA_SERVICE_NAME", dt.getNameCn());
+                    jo.put("D_DATA_ID", byDataClassId.getDDataId());
+                    jo.put("STORAGE_TYPE", dt.getStorageType());
+                    JSONArray aaa = new JSONArray();
+                    JSONObject bbb = new JSONObject();
+                    bbb.put("SCHEMA_NAME", dotById.getSchemaName());
+                    bbb.put("DATABASE_ID", dotById.getDatabaseDefine().getId());
+                    bbb.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
+                    aaa.add(bbb);
+                    jo.put("DATABASE", aaa);
+                    arr.add(jo);
                 }
 
             }
@@ -245,21 +239,26 @@ public class DatabaseVisibleService {
             tableName = tableName.substring(tableName.lastIndexOf(".") + 1);
         }
         JSONObject jo = new JSONObject();
-        List<DataTableEntity> byTableName = dataTableDao.findByTableName(tableName);
-        if (byTableName != null) {
-            DataTableEntity dataTableEntity = byTableName.get(0);
-            String dataClassId = dataTableEntity.getClassLogic().getDataClassId();
+        List<DataTableInfoEntity> byTableName = dataTableDao.findByTableName(tableName);
+        if (byTableName != null && byTableName.size() > 0) {
+            DataTableInfoEntity dataTableEntity = byTableName.get(0);
+            List<DataClassLogicEntity> dataClassLogic;
+            dataClassLogic = this.dataLogicDao.findByTableId(dataTableEntity.getId());
+            if (dataClassLogic==null||dataClassLogic.size()==0){
+                dataClassLogic = this.dataLogicDao.findBySubTableId(dataTableEntity.getId());
+            }
+            String dataClassId = dataClassLogic.get(0).getDataClassId();
             DataClassDto dataClassDto = dataClassService.findByDataClassId(dataClassId);
             JSONObject table_info = new JSONObject();
             table_info.put("D_DATA_ID", dataClassDto.getDDataId());
             table_info.put("DATA_CLASS_ID", dataClassId);
-            table_info.put("DATA_SERVICE_ID", dataTableEntity.getDataServiceId());
+            table_info.put("DATA_SERVICE_ID", dataClassId);
             if (StringUtils.isEmpty(schemaName)) {
                 table_info.put("TABLE_NAME", dataTableEntity.getTableName());
             } else {
                 table_info.put("TABLE_NAME", schemaName + "." + dataTableEntity.getTableName());
             }
-            table_info.put("DATA_SERVICE_NAME", dataTableEntity.getDataServiceName());
+            table_info.put("DATA_SERVICE_NAME", dataTableEntity.getNameCn());
             jo.put("table_info", table_info);
             JSONArray table_structure = new JSONArray();
             for (TableColumnEntity c : dataTableEntity.getColumns()) {
@@ -337,22 +336,24 @@ public class DatabaseVisibleService {
         JSONArray jrr = new JSONArray();
         List<DatabaseEntity> databaseEntityList = databaseDao.findByTdbId(ds.getId());
         for (DatabaseEntity de : databaseEntityList) {
-            List<DataLogicEntity> dataLogicEntityList = dataLogicDao.findByDatabaseId(de.getId());
-            for (DataLogicEntity dl : dataLogicEntityList) {
-                DataClassDto dataClassDto = dataClassService.findByDataClassId(dl.getDataClassId());
-                List<DataTableEntity> dataTableEntityList = dataTableDao.findByClassLogicId(dl.getId());
-                for (DataTableEntity dt : dataTableEntityList) {
-                    JSONObject tt = new JSONObject();
-                    tt.put("TABLE_NAME", de.getSchemaName() + "." + dt.getTableName());
-                    tt.put("DATA_SERVICE_NAME", dt.getDataServiceName());
-                    tt.put("D_DATA_ID", dataClassDto.getDDataId());
-                    tt.put("CLASS_NAME", dataClassDto.getClassName());
-                    tt.put("PHYSICAL", de.getDatabaseDefine().getId());
-                    tt.put("DATABASE_NAME", de.getDatabaseDefine().getDatabaseName() + "(" + de.getDatabaseName() + ")");
-                    tt.put("DATA_CLASS_ID", dataClassDto.getDataClassId());
-                    jrr.add(tt);
+            List<DataTableInfoEntity> DataTableInfoList = this.dataTableDao.findByDatabaseId(de.getId());
+            for (DataTableInfoEntity dt : DataTableInfoList) {
+                List<DataClassLogicEntity> dataLogicEntityList = dataLogicDao.findByTableId(de.getId());
+                if (dataLogicEntityList.size() < 1) {
+                    continue;
                 }
+                DataClassDto dataClassDto = dataClassService.findByDataClassId(dataLogicEntityList.get(0).getDataClassId());
+                JSONObject tt = new JSONObject();
+                tt.put("TABLE_NAME", de.getSchemaName() + "." + dt.getTableName());
+                tt.put("DATA_SERVICE_NAME", dataClassDto.getClassName());
+                tt.put("D_DATA_ID", dataClassDto.getDDataId());
+                tt.put("CLASS_NAME", dataClassDto.getClassName());
+                tt.put("PHYSICAL", de.getDatabaseDefine().getId());
+                tt.put("DATABASE_NAME", de.getDatabaseDefine().getDatabaseName() + "(" + de.getDatabaseName() + ")");
+                tt.put("DATA_CLASS_ID", dataClassDto.getDataClassId());
+                jrr.add(tt);
             }
+
         }
         jo.put("dataList", jrr);
         jo.put("returnCode", 0);

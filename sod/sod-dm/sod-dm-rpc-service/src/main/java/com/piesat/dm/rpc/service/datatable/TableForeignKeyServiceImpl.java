@@ -20,7 +20,7 @@ import java.util.List;
  * @date 2019年 12月09日 14:07:13
  */
 @Service
-public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEntity> implements TableForeignKeyService {
+public class TableForeignKeyServiceImpl extends BaseService<TableForeignKeyEntity> implements TableForeignKeyService {
     @Autowired
     private TableForeignKeyDao tableForeignKeyDao;
     @Autowired
@@ -45,8 +45,8 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
     }
 
     @Override
-    public List<TableForeignKeyDto> findByClassLogicId(String classLogicId) {
-        List<TableForeignKeyEntity> all = this.tableForeignKeyDao.findByClassLogicId(classLogicId);
+    public List<TableForeignKeyDto> findByTableId(String tableId) {
+        List<TableForeignKeyEntity> all = this.tableForeignKeyDao.findByTableIdOrSubTableId(tableId, tableId);
         return this.tableForeignKeyMapper.toDto(all);
     }
 

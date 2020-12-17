@@ -26,6 +26,9 @@ public class TableDataStatisticsEntity extends BaseEntity {
     @Column(name = "table_id", length = 255)
     private String tableId;
 
+    /**
+     * 统计日期
+     */
     @Column(name = "statistic_date", length = 255)
     private Date statisticDate;
 
@@ -35,9 +38,15 @@ public class TableDataStatisticsEntity extends BaseEntity {
     @Column(name = "end_time", length = 255)
     private Date endTime;
 
+    /**
+     * 总量
+     */
     @Column(name = "record_count", length = 255)
     private Double recordCount;
 
+    /**
+     * 日增量
+     */
     @Column(name = "day_total", length = 255)
     private int dayTotal;
 

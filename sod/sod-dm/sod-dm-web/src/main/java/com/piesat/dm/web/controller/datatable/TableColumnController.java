@@ -7,6 +7,7 @@ import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnList;
 import com.piesat.dm.rpc.service.GrpcService;
@@ -53,12 +54,6 @@ public class TableColumnController {
     public ResultT save(@RequestBody TableColumnDto tableColumnDto) {
         try {
             TableColumnDto save = this.tableColumnService.saveDto(tableColumnDto);
-            DataTableDto dataTable = dataTableService.getDotById(save.getTableId());
-            DataLogicDto dataLogic = dataTable.getClassLogic();
-            if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {
-                dataLogic.setIsComplete(true);
-                dataLogicService.saveDto(dataLogic);
-            }
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,12 +149,6 @@ public class TableColumnController {
     public ResultT saveDtoList(@RequestBody TableColumnList tableColumnList) {
         try {
             List<TableColumnDto> save = this.tableColumnService.saveDtoList(tableColumnList.getTableColumnList());
-            DataTableDto dataTable = dataTableService.getDotById(save.get(0).getTableId());
-            DataLogicDto dataLogic = dataTable.getClassLogic();
-            if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {
-                dataLogic.setIsComplete(true);
-                dataLogicService.saveDto(dataLogic);
-            }
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

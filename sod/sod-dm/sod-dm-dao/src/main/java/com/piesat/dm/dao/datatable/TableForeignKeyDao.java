@@ -13,7 +13,11 @@ import java.util.List;
  * @date 2019年 12月09日 14:08:41
  */
 public interface TableForeignKeyDao extends BaseDao<TableForeignKeyEntity> {
-    List<TableForeignKeyEntity> findByClassLogicId(String classLogicId);
+
+    List<TableForeignKeyEntity> findByTableId(String tableId);
+
+    List<TableForeignKeyEntity> findByTableIdOrSubTableId(String tableId,String subTableId);
+
     @Transactional
     int deleteByIdIn(List<String> ids);
 }

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Data
 @Table(name = "T_SOD_DATA_LOGIC")
 @Entity
-public class DataLogicEntity extends BaseEntity {
+public class DataLogicEntity1 extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**

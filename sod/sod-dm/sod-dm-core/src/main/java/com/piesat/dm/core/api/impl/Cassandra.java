@@ -5,12 +5,10 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.piesat.dm.core.api.DatabaseDcl;
-import com.piesat.dm.core.model.Column;
+import com.piesat.dm.core.model.ColumnVo;
 import com.piesat.util.ResultT;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,8 +42,6 @@ public class Cassandra implements DatabaseDcl {
                     } else {
                         instance = cluster.connect();
                     }
-                    // 也可以针对一个特定的keyspace获取一个session
-                    // instance = cluster.connect("mycas");
                 }
             } catch (Exception e) {
                 closeConnect();
@@ -94,10 +90,6 @@ public class Cassandra implements DatabaseDcl {
 
     @Override
     public void addUser(String identifier, String password, String[] ips) throws Exception {
-//        int userNum = getUserNum(identifier);
-//        if (userNum > 0) {
-//            throw new Exception("数据库用户已经存在!");
-//        }
         String cql = "CREATE USER " + identifier + " WITH PASSWORD '" + password + "' NOSUPERUSER";
         instance.execute(cql);
     }
@@ -136,8 +128,6 @@ public class Cassandra implements DatabaseDcl {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-
-
     }
 
     @Override
@@ -288,7 +278,7 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
-    public ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn) {
+    public ResultT updateColumn(String schema, String tableName, ColumnVo oldColumn, ColumnVo newColumn) {
         return null;
     }
 

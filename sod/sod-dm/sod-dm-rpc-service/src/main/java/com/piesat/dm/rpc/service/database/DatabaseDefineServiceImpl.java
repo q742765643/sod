@@ -9,16 +9,14 @@ import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseDefineDao;
-import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.dataclass.LogicDatabaseDao;
+import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.entity.dataclass.LogicDefineEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
@@ -31,11 +29,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 数据库类型定义
@@ -58,7 +54,7 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
     @Autowired
     private LogicDatabaseDao logicDatabaseDao;
     @Autowired
-    private DataLogicDao dataLogicDao;
+    private DataTableDao dataTableDao;
 
     @Override
     public BaseDao<DatabaseDefineEntity> getBaseDao() {
@@ -215,9 +211,9 @@ public class DatabaseDefineServiceImpl extends BaseService<DatabaseDefineEntity>
             List<DatabaseEntity> databases = this.databaseDao.findByDatabaseDefine_Id(id);
             for (int j = 0; j < databases.size(); j++) {
                 DatabaseEntity database = databases.get(j);
-                List<DataLogicEntity> logicList = this.dataLogicDao.findByDatabaseId(database.getId());
+                List<DataTableInfoEntity> logicList = this.dataTableDao.findByDatabaseId(database.getId());
                 if (logicList.size() > 0) {
-                    return ResultT.failed("数据库存在资料，请先删除相关资料，如存储编码为：" + logicList.get(0).getDataClassId());
+                    return ResultT.failed("数据库存在资料，请先删除相关资料，如表名为：" + logicList.get(0).getTableName());
                 }
             }
         }

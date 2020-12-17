@@ -17,17 +17,19 @@ import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.dao.datatable.TableIndexDao;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
-import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -37,7 +39,6 @@ import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
-import com.xugu.cloudjdbc.Clob;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +46,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.Reader;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 资料分类
@@ -96,6 +94,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataAuthorityApplyService dataAuthorityApplyService;
     @Autowired
     private NewdataTableColumnService newdataTableColumnService;
+    @Autowired
+    private StorageConfigurationService storageConfigurationService;
+
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -114,7 +115,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             dataClassDto.setCreateBy(loginUser.getUserName());
         }
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
-        List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
+        List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
         if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
@@ -132,14 +133,41 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             d.setCreateTime(new DateTime());
             this.databaseSpecialReadWriteService.saveDto(d);
         }
-        List<String> all = byDataClassId.stream().map(DataLogicDto::getId).collect(Collectors.toList());
-        List<String> nnn = dataClassDto.getDataLogicList().stream().map(DataLogicDto::getId).collect(Collectors.toList());
+        List<DataClassLogicDto> dataLogicList = dataClassDto.getDataLogicList();
+
+        List<String> all = byDataClassId.stream().map(DataClassLogicDto::getId).collect(Collectors.toList());
+        List<String> nnn = new ArrayList<>();
+        boolean isNotNull = dataLogicList != null;
+        if (isNotNull) {
+            nnn = dataLogicList.stream().map(DataClassLogicDto::getId).collect(Collectors.toList());
+        }
         all.removeAll(nnn);
         for (String d : all) {
             dataLogicService.onlyDeleteById(d);
         }
         dataClassEntity = this.saveNotNull(dataClassEntity);
-        List<DataLogicDto> dataLogicDtos = this.dataLogicService.saveList(dataClassDto.getDataLogicList());
+        List<DataClassLogicDto> dataLogicDtos = null;
+        if (isNotNull) {
+            dataLogicDtos = this.dataLogicService.saveList(dataLogicList);
+            for (DataClassLogicDto d:dataLogicDtos) {
+                List<AdvancedConfigDto> sc = this.storageConfigurationService.findByTableId(d.getTableId());
+                if (sc != null && sc.size() > 0) {
+                    AdvancedConfigDto advancedConfigDto = sc.get(0);
+                    advancedConfigDto.setStorageDefineIdentifier(1);
+                    this.storageConfigurationService.updateDataAuthorityConfig(advancedConfigDto);
+                } else {
+                    AdvancedConfigDto advancedConfigDto = new AdvancedConfigDto();
+                    advancedConfigDto.setTableId(d.getTableId());
+                    advancedConfigDto.setStorageDefineIdentifier(1);
+                    advancedConfigDto.setSyncIdentifier(2);
+                    advancedConfigDto.setCleanIdentifier(2);
+                    advancedConfigDto.setMoveIdentifier(2);
+                    advancedConfigDto.setBackupIdentifier(2);
+                    advancedConfigDto.setArchivingIdentifier(2);
+                    this.storageConfigurationService.saveDto(advancedConfigDto);
+                }
+            }
+        }
 
         this.dataClassLabelService.deleteByDataClassId(dataClassDto.getDataClassId());
         List<DataClassLabelDto> dataClassLabelList = dataClassDto.getDataClassLabelList();
@@ -360,20 +388,24 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     @Transactional
     public void deleteByDataClassId(String dataClassId) {
-        logger.info("根据dataClassId删除资料:"+dataClassId);
+        logger.info("根据dataClassId删除资料:" + dataClassId);
         DataClassDto dataClass = this.findByDataClassId(dataClassId);
-        if (dataClass==null){
-            logger.info("根据dataClassId删除资料,查出资料为null:"+dataClassId );
+        if (dataClass == null) {
+            logger.info("根据dataClassId删除资料,查出资料为null:" + dataClassId);
         }
-        List<DataLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
-        for (DataLogicEntity dl : dll) {
-            List<DataTableEntity> dts = this.dataTableDao.findByClassLogic_Id(dl.getId());
-            for (DataTableEntity dt : dts) {
+        List<DataClassLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
+        for (DataClassLogicEntity dl : dll) {
+            List<DataTableInfoEntity> dts  = new ArrayList<>();
+            dts.add(this.dataTableDao.getOne(dl.getTableId()));
+            if (StringUtils.isNotBlank(dl.getSubTableId())){
+                dts.add(this.dataTableDao.getOne(dl.getSubTableId()));
+            }
+            for (DataTableInfoEntity dt : dts) {
                 this.shardingDao.deleteByTableId(dt.getId());
                 this.tableColumnDao.deleteByTableId(dt.getId());
                 this.tableIndexDao.deleteByTableId(dt.getId());
+                this.dataTableDao.deleteById(dt.getId());
             }
-            this.dataTableDao.deleteByClassLogic_Id(dl.getId());
         }
         this.dataClassLabelService.deleteByDataClassId(dataClassId);
         this.dataLogicDao.deleteByDataClassId(dataClassId);
@@ -646,7 +678,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public ResultT haveClassByDataId(String dataId) {
         List<DataClassEntity> dataClassEntities = this.dataClassDao.findByDDataId(dataId);
         if (dataClassEntities.size() > 0) {
-            List<DataLogicDto> dataLogicDto = this.dataLogicService.findByDataClassId(dataClassEntities.get(0).getDataClassId());
+            List<DataClassLogicDto> dataLogicDto = this.dataLogicService.findByDataClassId(dataClassEntities.get(0).getDataClassId());
             if (dataLogicDto.size() > 0) {
                 return ResultT.success(true);
             }
@@ -658,6 +690,5 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public List<DataClassDto> findByDataClassIdAndCreateBy(String dataclassId, String userId) {
         List<DataClassEntity> byDataClassIdAndCreateBy = this.dataClassDao.findByDataClassIdAndCreateBy(dataclassId, userId);
         return this.dataClassMapper.toDto(byDataClassIdAndCreateBy);
-
     }
 }

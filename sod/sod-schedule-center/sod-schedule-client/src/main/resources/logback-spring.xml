@@ -32,7 +32,7 @@
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
-            <MaxFileSize>50MB</MaxFileSize>
+            <MaxFileSize>10MB</MaxFileSize>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -55,7 +55,7 @@
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
-            <MaxFileSize>50MB</MaxFileSize>
+            <MaxFileSize>10MB</MaxFileSize>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -78,7 +78,7 @@
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
-            <MaxFileSize>50MB</MaxFileSize>
+            <MaxFileSize>10MB</MaxFileSize>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -101,7 +101,7 @@
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
             <!--日志文件最大的大小-->
-            <MaxFileSize>50MB</MaxFileSize>
+            <MaxFileSize>10MB</MaxFileSize>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">

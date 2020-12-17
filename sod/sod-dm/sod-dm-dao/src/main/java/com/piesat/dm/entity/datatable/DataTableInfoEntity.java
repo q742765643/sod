@@ -1,7 +1,6 @@
 package com.piesat.dm.entity.datatable;
 
 import com.piesat.common.jpa.entity.BaseEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,64 +14,55 @@ import java.util.Set;
  * @date 2019年 11月20日 17:04:53
  */
 @Data
-@Table(name = "T_SOD_DATA_TABLE")
+@Table(name = "T_SOD_DATA_TABLE_INFO")
 @Entity
-public class DataTableEntity extends BaseEntity {
+public class DataTableInfoEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * class_logic_id
+     * 数据库id
      */
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinColumn(name = "class_logic_id")
-    private DataLogicEntity classLogic;
+    @Column(name = "database_id", length = 255)
+    private String databaseId;
 
     /**
-     * data_service_id
+     * 表存储类型
      */
-    @Column(name = "data_service_id", length = 255)
-    private String dataServiceId;
-
+    @Column(name = "storage_type", length = 255)
+    private String storageType;
 
     /**
-     * table_name
+     * 表名
      */
     @Column(name = "table_name", length = 255)
     private String tableName;
 
-
     /**
-     * db_table_type
+     * 表子类型（键表、要素表）
      */
-    @Column(name = "db_table_type", length = 36)
-    private String dbTableType;
+    @Column(name = "table_type", length = 36)
+    private String tableType;
 
     /**
-     * table_desc
+     * 表描述
      */
     @Column(name = "table_desc", length = 255)
     private String tableDesc;
 
     /**
-     * data_service_name
-     */
-    @Column(name = "data_service_name", length = 255)
-    private String dataServiceName;
-
-    /**
-     * name_cn
+     * 中文名
      */
     @Column(name = "name_cn", length = 255)
     private String nameCn;
 
     /**
-     * creator
+     * 创建人
      */
     @Column(name = "creator", length = 255)
     private String creator;
 
     /**
-     * user_id
+     * 申请人
      */
     @Column(name = "user_id", length = 255)
     private String userId;

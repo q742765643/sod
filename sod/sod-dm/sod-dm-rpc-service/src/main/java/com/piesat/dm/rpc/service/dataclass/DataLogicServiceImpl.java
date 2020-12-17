@@ -7,12 +7,10 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
-import com.piesat.dm.entity.database.DatabaseEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
@@ -20,9 +18,9 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
@@ -39,7 +37,7 @@ import java.util.*;
  * @date 2019年 11月22日 16:32:48
  */
 @Service
-public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implements DataLogicService {
+public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> implements DataLogicService {
     @Autowired
     private DataLogicDao dataLogicDao;
     @Autowired
@@ -50,8 +48,6 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
     private DataTableService dataTableService;
-    @Autowired
-    private DatabaseDao databaseDao;
     @Autowired
     private DataClassDao dataClassDao;
 
@@ -66,63 +62,35 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
 
 
     @Override
-    public BaseDao<DataLogicEntity> getBaseDao() {
+    public BaseDao<DataClassLogicEntity> getBaseDao() {
         return dataLogicDao;
     }
 
     @Override
     @Transactional
-    public DataLogicDto saveDto(DataLogicDto dataLogicDto) {
-        boolean isAdd = false;
-        if (StringUtils.isEmpty(dataLogicDto.getId())) {
-            isAdd = true;
-        }
+    public DataClassLogicDto saveDto(DataClassLogicDto dataLogicDto) {
         dataLogicDto.setCreateTime(new Date());
-        DataLogicEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
+        DataClassLogicEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
         dataLogicEntity = this.dataLogicDao.saveNotNull(dataLogicEntity);
-        if (isAdd) {
-            StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-            storageConfigurationDto.setClassLogicId(dataLogicEntity.getId());
-            storageConfigurationDto.setStorageDefineIdentifier(2);
-            storageConfigurationDto.setSyncIdentifier(2);
-            storageConfigurationDto.setCleanIdentifier(2);
-            storageConfigurationDto.setMoveIdentifier(2);
-            storageConfigurationDto.setBackupIdentifier(2);
-            storageConfigurationDto.setArchivingIdentifier(2);
-            storageConfigurationService.saveDto(storageConfigurationDto);
-        }
         return this.dataLogicMapper.toDto(dataLogicEntity);
     }
 
     @Override
     @Transactional
-    public List<DataLogicDto> saveList(List<DataLogicDto> dataLogicList) {
-        List<DataLogicEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
-        for (DataLogicEntity d : dataLogicEntities) {
-            boolean isAdd = false;
+    public List<DataClassLogicDto> saveList(List<DataClassLogicDto> dataLogicList) {
+        List<DataClassLogicEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
+        for (DataClassLogicEntity d : dataLogicEntities) {
             if (StringUtils.isEmpty(d.getId())) {
-                isAdd = true;
                 d.setCreateTime(new Date());
             }
             d = this.dataLogicDao.saveNotNull(d);
-            if (isAdd) {
-                StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-                storageConfigurationDto.setClassLogicId(d.getId());
-                storageConfigurationDto.setStorageDefineIdentifier(2);
-                storageConfigurationDto.setSyncIdentifier(2);
-                storageConfigurationDto.setCleanIdentifier(2);
-                storageConfigurationDto.setMoveIdentifier(2);
-                storageConfigurationDto.setBackupIdentifier(2);
-                storageConfigurationDto.setArchivingIdentifier(2);
-                storageConfigurationService.saveDto(storageConfigurationDto);
-            }
         }
         return this.dataLogicMapper.toDto(dataLogicEntities);
     }
 
     @Override
-    public List<DataLogicDto> all() {
-        List<DataLogicEntity> all = this.getAll();
+    public List<DataClassLogicDto> all() {
+        List<DataClassLogicEntity> all = this.getAll();
         return this.dataLogicMapper.toDto(all);
     }
 
@@ -149,38 +117,44 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
         this.dataLogicDao.deleteByDataClassId(dataClassId);
     }
 
-    @Override
-    public List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto) {
-        List<DataLogicEntity> byDataClassIdAndLogicFlagAndStorageType = dataLogicDao.findByDataClassIdAndLogicFlagAndStorageType(dataLogicDto.getDataClassId(), dataLogicDto.getLogicFlag(), dataLogicDto.getStorageType());
-        return this.dataLogicMapper.toDto(byDataClassIdAndLogicFlagAndStorageType);
-    }
 
     @Override
-    public List<DataLogicDto> findByDataClassId(String dataClassId) {
-        List<DataLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
+    public List<DataClassLogicDto> findByDataClassId(String dataClassId) {
+        List<DataClassLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
         return this.dataLogicMapper.toDto(byDataClassId);
     }
 
     @Override
-    public List<DataLogicDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
-        List<DataLogicEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
+    public List<DataClassLogicDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
+        List<DataClassLogicEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
         return this.dataLogicMapper.toDto(dataLogic);
     }
 
     @Override
-    public DataLogicDto getDotById(String id) {
-        DataLogicEntity dataLogicEntity = this.getById(id);
+    public List<DataClassLogicDto> findByTableId(String tableId) {
+        List<DataClassLogicEntity> byTableId = this.dataLogicDao.findByTableId(tableId);
+        return this.dataLogicMapper.toDto(byTableId);
+    }
+
+    @Override
+    public DataClassLogicDto getDotById(String id) {
+        DataClassLogicEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);
     }
 
     @Override
     @Transactional
     public void deleteById(String id) {
-        DataLogicDto dotById = this.getDotById(id);
-        dataTableService.deleteByClassLogicId(dotById.getId());
+        DataClassLogicDto dataClassLogic = this.getDotById(id);
+        if (dataClassLogic!=null){
+            this.dataTableService.delete(dataClassLogic.getTableId());
+            if (StringUtils.isNotEmpty(dataClassLogic.getSubTableId())){
+                this.dataTableService.delete(dataClassLogic.getSubTableId());
+            }
+        }
         this.delete(id);
-        String dataClassId = dotById.getDataClassId();
-        List<DataLogicDto> byDataClassId = this.findByDataClassId(dataClassId);
+        String dataClassId = dataClassLogic.getDataClassId();
+        List<DataClassLogicDto> byDataClassId = this.findByDataClassId(dataClassId);
         if (byDataClassId==null||byDataClassId.size()==0){
             this.dataClassDao.deleteByDataClassId(dataClassId);
         }
@@ -189,8 +163,13 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
     @Override
     @Transactional
     public void onlyDeleteById(String id) {
-        DataLogicDto dotById = this.getDotById(id);
-        dataTableService.deleteByClassLogicId(dotById.getId());
+        DataClassLogicDto dataClassLogic = this.getDotById(id);
+        if (dataClassLogic!=null){
+            this.dataTableService.delete(dataClassLogic.getTableId());
+            if (StringUtils.isNotEmpty(dataClassLogic.getSubTableId())){
+                this.dataTableService.delete(dataClassLogic.getSubTableId());
+            }
+        }
         this.delete(id);
     }
 

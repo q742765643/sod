@@ -97,7 +97,6 @@ public class Select2File {
                     }
                 }
                 rs.close();
-                rs = null;
                 dos.flush();
             log.info("表 "+tableName+" 共导出："+rows+" 条数据");
         } catch (Exception e) {

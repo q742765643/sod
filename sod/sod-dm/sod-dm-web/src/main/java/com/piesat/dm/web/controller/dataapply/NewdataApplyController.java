@@ -18,6 +18,7 @@ import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataTableColumnDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.*;
 import com.piesat.dm.rpc.service.GrpcService;
@@ -289,92 +290,12 @@ public class NewdataApplyController {
         return ResultT.success(listBYIn);
     }
 
-    /*@ApiOperation(value="保存申请资料配置接口",notes="保存申请资料配置接口")
-    @PostMapping(value="/addGroup")
-    public ResultT<String> addGroup(@RequestBody DataClassDto dataClassDto, HttpServletRequest request) {
-        NewdataApplyDto newdataApplyDto = new NewdataApplyDto();
-        newdataApplyDto.setId(request.getParameter("applyId"));
-        newdataApplyDto.setDDataId(request.getParameter("dDataId"));
-        newdataApplyDto.setDataClassId(request.getParameter("dataClassId"));
 
-        String[] dataclasslogics = request.getParameterValues("dataclasslogic");
-        for(String dataclasslogic : dataclasslogics){
-            JSONObject parse = JSONObject.parseObject(dataclasslogic);
-            DataLogicDto dataLogicDto = new DataLogicDto();
-            dataLogicDto.setLogicFlag((String)parse.get("logicId"));
-            dataLogicDto.setDatabaseId((String)parse.get("databaseId"));
-            dataLogicDto.setStorageType((String)parse.get("storageType"));
-            dataLogicDto.setDataClassId((String)parse.get("dataClassId"));
-            newdataApplyDto.getDataLogicDtoList().add(dataLogicDto);
-        }
-        return newdataApplyService.addGroup(dataClassDto, newdataApplyDto);
-    }*/
-
-    /*@ApiOperation(value="更新申请资料配置接口",notes="更新申请资料配置接口")
-    @PostMapping(value="/updateGroup")
-    public ResultT<String> updateGroup(@RequestBody DataClassDto dataClassDto, HttpServletRequest request) {
-        NewdataApplyDto newdataApplyDto = new NewdataApplyDto();
-        newdataApplyDto.setId(request.getParameter("applyId"));
-        newdataApplyDto.setDDataId(request.getParameter("dDataId"));
-        newdataApplyDto.setDataClassId(request.getParameter("dataClassId"));
-
-        String[] dataclasslogics = request.getParameterValues("dataclasslogic");
-        for(String dataclasslogic : dataclasslogics){
-            JSONObject parse = JSONObject.parseObject(dataclasslogic);
-            DataLogicDto dataLogicDto = new DataLogicDto();
-            dataLogicDto.setLogicFlag((String)parse.get("logicId"));
-            dataLogicDto.setDatabaseId((String)parse.get("databaseId"));
-            dataLogicDto.setStorageType((String)parse.get("storageType"));
-            dataLogicDto.setDataClassId((String)parse.get("dataClassId"));
-            newdataApplyDto.getDataLogicDtoList().add(dataLogicDto);
-        }
-
-        String  old_data_class_id = request.getParameter("old_data_class_id");
-        return newdataApplyService.updateGroup(dataClassDto, newdataApplyDto, old_data_class_id);
-    }*/
-
-
-    /*@GetMapping("/getDbDataById/{id}")
-    @ApiOperation(value = "根据物理库id获取物理库信息", notes = "根据物理库id获取物理库信息")
-    public  ResultT<DatabaseDefineDto> getDbDataById(@PathVariable String id){
-        DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
-        return ResultT.success(databaseDefineDto);
-    }*/
-
-
-    /**
-     * 一个表应该对应多个classLogic？
-     * @return
-     */
-    /*@ApiOperation(value="更新或添加数据表接口",notes="更新或添加数据表接口")
-    @PostMapping(value="/addOrUpdateDataTable")
-    public ResultT<String> addOrUpdateDataTable(@RequestBody DataTableDto dataTableDto, HttpServletRequest request){
-       return newdataApplyService.addOrUpdateDataTable(dataTableDto);
-    }*/
-
-    //addDataStructure
-    /*@ApiOperation(value="添加表结构接口",notes="添加表结构接口")
-    @PostMapping("/addDataStructure")
-    public ResultT<String> addDataStructure(@RequestBody TableColumnDto tableColumnDto) {
-        return this.newdataApplyService.addDataStructure(tableColumnDto);
-    }*/
-
-    /*@ApiOperation(value="修改表结构接口",notes="添加表结构接口")
-    @PostMapping("/updateDataStructure")
-    public ResultT<String> updateDataStructure(@RequestBody TableColumnDto tableColumnDto) {
-        return this.newdataApplyService.updateDataStructure(tableColumnDto);
-    }*/
-
-    /*@ApiOperation(value="根据物理库id获取表信息",notes="根据物理库id获取表信息")
-    @PostMapping("getTableByPhysicsId/{databaseId}")
-    public ResultT<String> getTableByPhysicsId(@PathVariable String databaseId) {
-        return this.newdataApplyService.getTableByPhysicsId(databaseId);
-    }*/
 
     @ApiOperation(value="根据存储编码、物理库获取表信息",notes="根据存储编码、物理库获取表信息")
     @PostMapping("/getDataTableByType")
-    public ResultT<List<DataTableDto>> getDataTableByType(@RequestBody DataLogicDto dataLogicDto){
-        List<DataTableDto> dataTableByType = newdataApplyService.getDataTableByType(dataLogicDto);
+    public ResultT<List<DataTableInfoDto>> getDataTableByType(@RequestBody DataClassLogicDto dataLogicDto){
+        List<DataTableInfoDto> dataTableByType = newdataApplyService.getDataTableByType(dataLogicDto);
         return ResultT.success(dataTableByType);
     }
 

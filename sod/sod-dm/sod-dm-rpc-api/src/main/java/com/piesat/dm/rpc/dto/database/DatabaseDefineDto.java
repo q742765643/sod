@@ -1,9 +1,14 @@
 package com.piesat.dm.rpc.dto.database;
 
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
+import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.model.UserInfo;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 数据库类型定义
@@ -118,4 +123,25 @@ public class DatabaseDefineDto {
     private Set<DatabaseNodesDto> databaseNodesList;
 
     private DatabaseDto databaseDto;
+
+    public ConnectVo getCoreInfo() {
+        List<DatabaseAdministratorDto> managerUsers =
+                this.databaseAdministratorList.stream()
+                        .filter(DatabaseAdministratorDto::getIsManager)
+                        .collect(Collectors.toList());
+        if (managerUsers.size() == 0) {
+            return null;
+        }
+        DatabaseAdministratorDto d = managerUsers.get(0);
+        ConnectVo u = new ConnectVo();
+        u.setPid(this.id);
+        u.setDatabaseType(DatabaseTypesEnum.match(this.databaseType));
+        u.setUrl(this.databaseUrl);
+        u.setClassName(this.driverClassName);
+        u.setPort(Integer.getInteger(this.databasePort));
+        u.setIp(this.databaseIp);
+        u.setUserName(d.getUserName());
+        u.setPassWord(d.getPassWord());
+        return u;
+    }
 }

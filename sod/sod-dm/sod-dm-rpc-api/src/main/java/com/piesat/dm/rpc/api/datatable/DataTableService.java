@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.datatable;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
 import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.util.ResultT;
@@ -19,17 +20,15 @@ import java.util.Map;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DataTableService {
-    DataTableDto saveDto(DataTableDto dataTableDto);
+    DataTableInfoDto saveDto(DataTableInfoDto dataTableDto);
 
-    DataTableDto getDotById(String id);
+    DataTableInfoDto getDotById(String id);
 
     void delete(String id);
 
-    void deleteByClassLogicId(String classLogicId);
+    List<DataTableInfoDto> all();
 
-    List<DataTableDto> all();
-
-    List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+    List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
 
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
@@ -39,10 +38,7 @@ public interface DataTableService {
 
     List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId);
 
-    List<DataTableDto> getByClassLogicId(String classLogic);
-
-
-    int updateById(DataTableDto dataTableDto);
+    List<DataTableInfoDto> getByClassLogicId(String classLogic);
 
     ResultT getOverview(String databaseId,String dataClassId);
 
@@ -56,5 +52,4 @@ public interface DataTableService {
 
     ResultT existTable(TableSqlDto tableSqlDto);
 
-    List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName,String databaseId,String dataclassId);
 }

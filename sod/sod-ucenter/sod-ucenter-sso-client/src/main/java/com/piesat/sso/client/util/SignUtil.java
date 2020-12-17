@@ -153,6 +153,8 @@ public class SignUtil {
         }
     }
 
+
+
     public static void signParam(WrapperedRequest request) throws Exception {
         Map<String, String[]> param = request.getParameterMap();
         String token = request.getHeader("authorization");

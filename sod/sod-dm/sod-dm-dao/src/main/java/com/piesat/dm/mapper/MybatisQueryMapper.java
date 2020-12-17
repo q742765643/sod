@@ -1,17 +1,20 @@
 package com.piesat.dm.mapper;
 
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
-import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.entity.datatable.*;
+import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
+import com.piesat.dm.entity.datatable.GridAreaEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
-import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 联表查询Mapper
@@ -125,7 +128,7 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getLogicByDdataId(@Param("dDataId") String dDataId);
 
-    List<DataLogicEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
+    List<DataClassLogicEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
 
     List<Map<String, Object>> getDataTypeList(@Param("dataClassIds") String dataClassIds);
 

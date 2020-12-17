@@ -1,7 +1,7 @@
 package com.piesat.dm.dao;
 
 import com.piesat.common.jpa.BaseDao;
-import com.piesat.dm.entity.StorageConfigurationEntity;
+import com.piesat.dm.entity.AdvancedConfigEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  * @date 2020/2/9 15:31
  */
 @Repository
-public interface StorageConfigurationDao extends BaseDao<StorageConfigurationEntity> {
+public interface StorageConfigurationDao extends BaseDao<AdvancedConfigEntity> {
 
-    List<StorageConfigurationEntity> findByClassLogicId(String id);
+    List<AdvancedConfigEntity> findByTableId(String id);
 }

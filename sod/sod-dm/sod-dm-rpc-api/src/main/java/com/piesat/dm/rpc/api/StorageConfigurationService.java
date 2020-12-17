@@ -1,6 +1,6 @@
 package com.piesat.dm.rpc.api;
 
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
@@ -14,11 +14,11 @@ import java.util.Map;
  */
 public interface StorageConfigurationService {
 
-    public PageBean selectPageList(PageForm<Map<String,String>> pageForm);
+    PageBean selectPageList(PageForm<Map<String,String>> pageForm);
 
-    public PageBean storageFieldList(PageForm<Map<String,String>> pageForm);
+    PageBean storageFieldList(PageForm<Map<String,String>> pageForm);
 
-    StorageConfigurationDto saveDto(StorageConfigurationDto storageConfigurationDto);
+    AdvancedConfigDto saveDto(AdvancedConfigDto advancedConfigDto);
 
     Map<String,Object> exportTable(Map<String,String> map);
 
@@ -26,7 +26,7 @@ public interface StorageConfigurationService {
 
     void deleteByDataClassId(String dataClassId);
 
-    void updateDataAuthorityConfig(StorageConfigurationDto storageConfigurationDto);
+    void updateDataAuthorityConfig(AdvancedConfigDto advancedConfigDto);
 
-    List<StorageConfigurationDto> findByClassLogicId(String id);
+    List<AdvancedConfigDto> findByTableId(String id);
 }

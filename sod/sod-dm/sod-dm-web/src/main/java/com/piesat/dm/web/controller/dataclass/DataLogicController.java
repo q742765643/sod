@@ -1,7 +1,7 @@
 package com.piesat.dm.web.controller.dataclass;
 
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -11,8 +11,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +31,7 @@ public class DataLogicController {
     @RequiresPermissions("dm:dataLogic:add")
     @Log(title = "数据用途管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save (@RequestBody DataLogicDto dataLogicDto){
+    public ResultT save (@RequestBody DataClassLogicDto dataLogicDto){
         try {
             dataLogicDto = this.dataLogicService.saveDto(dataLogicDto);
             return ResultT.success(dataLogicDto);
@@ -48,7 +46,7 @@ public class DataLogicController {
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            DataLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
+            DataClassLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
             return ResultT.success(dataLogicDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,7 +73,7 @@ public class DataLogicController {
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
-            List<DataLogicDto> all = this.dataLogicService.all();
+            List<DataClassLogicDto> all = this.dataLogicService.all();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +99,7 @@ public class DataLogicController {
     @GetMapping(value = "/findByDataClassId")
     public ResultT findByDataClassId(String dataClassId) {
         try {
-            List<DataLogicDto> all = this.dataLogicService.findByDataClassId(dataClassId);
+            List<DataClassLogicDto> all = this.dataLogicService.findByDataClassId(dataClassId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

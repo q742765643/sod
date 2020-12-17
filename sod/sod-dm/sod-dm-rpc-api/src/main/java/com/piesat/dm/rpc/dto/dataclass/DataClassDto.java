@@ -90,7 +90,7 @@ public class DataClassDto {
 
     private String createBy;
 
-    private List<DataLogicDto> dataLogicList;
+    private List<DataClassLogicDto> dataLogicList;
 
     private List<DataClassLabelDto> dataClassLabelList;
 

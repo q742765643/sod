@@ -5,12 +5,12 @@ import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.StorageConfigurationDao;
-import com.piesat.dm.entity.StorageConfigurationEntity;
+import com.piesat.dm.entity.AdvancedConfigEntity;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.mapper.StorageConfigurationMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -28,7 +28,7 @@ import java.util.Map;
  * @date 2020/2/9 15:28
  */
 @Service
-public class StorageConfigurationServiceImpl extends BaseService<StorageConfigurationEntity> implements StorageConfigurationService {
+public class StorageConfigurationServiceImpl extends BaseService<AdvancedConfigEntity> implements StorageConfigurationService {
     @Autowired
     private StorageConfigurationDao storageConfigurationDao;
     @Autowired
@@ -41,7 +41,7 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     private DataClassService dataClassService;
 
     @Override
-    public BaseDao<StorageConfigurationEntity> getBaseDao() {
+    public BaseDao<AdvancedConfigEntity> getBaseDao() {
         return storageConfigurationDao;
     }
 
@@ -66,10 +66,10 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     }
 
     @Override
-    public StorageConfigurationDto saveDto(StorageConfigurationDto storageConfigurationDto) {
-        StorageConfigurationEntity storageConfigurationEntity = this.storageConfigurationMapper.toEntity(storageConfigurationDto);
-        storageConfigurationEntity = this.storageConfigurationDao.saveNotNull(storageConfigurationEntity);
-        return this.storageConfigurationMapper.toDto(storageConfigurationEntity);
+    public AdvancedConfigDto saveDto(AdvancedConfigDto advancedConfigDto) {
+        AdvancedConfigEntity advancedConfigEntity = this.storageConfigurationMapper.toEntity(advancedConfigDto);
+        advancedConfigEntity = this.storageConfigurationDao.saveNotNull(advancedConfigEntity);
+        return this.storageConfigurationMapper.toDto(advancedConfigEntity);
     }
 
     @Override
@@ -113,13 +113,13 @@ public class StorageConfigurationServiceImpl extends BaseService<StorageConfigur
     }
 
     @Override
-    public void updateDataAuthorityConfig(StorageConfigurationDto storageConfigurationDto) {
-        StorageConfigurationEntity storageConfigurationEntity = this.storageConfigurationMapper.toEntity(storageConfigurationDto);
-        this.mybatisModifyMapper.updateDataAuthorityConfig(storageConfigurationEntity);
+    public void updateDataAuthorityConfig(AdvancedConfigDto advancedConfigDto) {
+        AdvancedConfigEntity advancedConfigEntity = this.storageConfigurationMapper.toEntity(advancedConfigDto);
+        this.mybatisModifyMapper.updateDataAuthorityConfig(advancedConfigEntity);
     }
 
     @Override
-    public List<StorageConfigurationDto> findByClassLogicId(String id) {
-        return this.storageConfigurationMapper.toDto(this.storageConfigurationDao.findByClassLogicId(id));
+    public List<AdvancedConfigDto> findByTableId(String id) {
+        return this.storageConfigurationMapper.toDto(this.storageConfigurationDao.findByTableId(id));
     }
 }

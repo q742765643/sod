@@ -50,7 +50,7 @@
 
     </dependencies>
     <build>
-        <finalName>cmadaas_sod_webadmin</finalName>
+        <finalName>cmadaas_sod_server</finalName>
 
         <!--解决idea打包没有xml-->
         <resources>
@@ -64,7 +64,7 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-              <!--  <excludes>
+                <!--<excludes>
                     <exclude>application*.yml</exclude>
                     <exclude>logback-spring.xml</exclude>
                 </excludes>-->

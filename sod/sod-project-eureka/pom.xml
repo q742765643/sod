@@ -91,9 +91,9 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <excludes>
+                <!--<excludes>
                     <exclude>application*.yml</exclude>
-                </excludes>
+                </excludes>-->
             </resource>
         </resources>
         <plugins>

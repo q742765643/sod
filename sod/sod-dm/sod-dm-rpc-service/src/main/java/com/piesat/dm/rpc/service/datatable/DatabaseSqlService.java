@@ -2,10 +2,7 @@ package com.piesat.dm.rpc.service.datatable;
 
 import com.piesat.dm.core.enums.ColumnEnum;
 import com.piesat.dm.core.parser.ColumnSet;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
-import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
-import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
+import com.piesat.dm.rpc.dto.datatable.*;
 import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,7 @@ public class DatabaseSqlService {
     private final String[] indexTypes = {"BTREE", "INDEX", "RTREE", "IDX", "TREE"};
     private final String[] uniqueType = {"UNIQUE", "UK", "PK", "唯一索引"};
 
-    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -125,7 +122,7 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getXuGuQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getXuGuQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
@@ -141,7 +138,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getXuGuInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getXuGuInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
@@ -161,7 +158,7 @@ public class DatabaseSqlService {
     }
 
 
-    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -223,7 +220,7 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getGbaseQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getGbaseQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
@@ -239,7 +236,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getGbaseInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getGbaseInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
@@ -258,7 +255,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
         List<String> key_columns = new ArrayList<>();
         StringBuffer columns = new StringBuffer();
         for (TableColumnDto ds : dataStructures) {
@@ -282,7 +279,7 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getCassandraQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getCassandraQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
@@ -298,7 +295,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getCassandraInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getCassandraInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
@@ -317,7 +314,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
@@ -409,7 +406,7 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getPostgreSqlQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getPostgreSqlQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
@@ -428,7 +425,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getPostgreSqlInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getPostgreSqlInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }

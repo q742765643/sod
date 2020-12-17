@@ -16,10 +16,7 @@ import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.entity.*;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
-import com.piesat.dm.entity.datatable.CmccElementEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
-import com.piesat.dm.entity.datatable.DatumTableEntity;
-import com.piesat.dm.entity.datatable.ShardingEntity;
+import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
@@ -33,6 +30,7 @@ import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.mapper.*;
@@ -137,10 +135,10 @@ public class GrpcService {
         //删除配置
         if ("3".equals(value)) {
             //获取策略配置
-            StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).get();
+            AdvancedConfigEntity storage = this.storageConfigurationDao.findById(id).get();
             if (column.equals("storage_define_identifier")) {
                 //删除存储结构
-                dataLogicService.deleteById(storage.getClassLogicId());
+//                dataLogicService.deleteById(storage.getClassLogicId());
             } else if (column.equals("sync_identifier")) {
                 //删除同步配置
                 String task_id = storage.getSyncId();
@@ -184,7 +182,7 @@ public class GrpcService {
 
     @Transactional
     public ResultT deleteById(String id) {
-        StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).orElse(null);
+        AdvancedConfigEntity storage = this.storageConfigurationDao.findById(id).orElse(null);
         if (storage == null) {
             return ResultT.failed("概览信息未配置");
         }
@@ -196,12 +194,12 @@ public class GrpcService {
             }
         }
         //删除存储结构
-        if (StringUtils.isNotEmpty(storage.getClassLogicId())) {
-            DataLogicDto dotById = dataLogicService.getDotById(storage.getClassLogicId());
-            if (dotById != null) {
-                dataLogicService.deleteById(storage.getClassLogicId());
-            }
-        }
+//        if (StringUtils.isNotEmpty(storage.getClassLogicId())) {
+//            DataLogicDto dotById = dataLogicService.getDotById(storage.getClassLogicId());
+//            if (dotById != null) {
+//                dataLogicService.deleteById(storage.getClassLogicId());
+//            }
+//        }
         //删除迁移清楚
         if (StringUtils.isNotNullString(storage.getClearId())) {
             ClearDto clearById = clearService.findClearById(storage.getClearId());
@@ -340,8 +338,8 @@ public class GrpcService {
 
     public ResultT getSql(String tableId, String databaseId) {
         List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
-        DataTableEntity dataTableEntity = this.dataTableDao.findById(tableId).get();
-        DataTableDto dataTableDto = this.dataTableMapper.toDto(dataTableEntity);
+        DataTableInfoEntity dataTableEntity = this.dataTableDao.findById(tableId).get();
+        DataTableInfoDto dataTableDto = this.dataTableMapper.toDto(dataTableEntity);
         List<TableColumnDto> TableColumnDtos = new ArrayList<TableColumnDto>(dataTableDto.getColumns());
         List<TableIndexDto> TableIndexDtos = new ArrayList<TableIndexDto>(dataTableDto.getTableIndexList());
         Optional<DatabaseEntity> databaseEntity = this.databaseDao.findById(databaseId);

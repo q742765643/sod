@@ -6,10 +6,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.dao.datatable.*;
-import com.piesat.dm.entity.datatable.DataTableEntity;
-import com.piesat.dm.entity.datatable.ShardingEntity;
-import com.piesat.dm.entity.datatable.TableColumnEntity;
-import com.piesat.dm.entity.datatable.TableIndexEntity;
+import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
 import com.piesat.dm.rpc.service.GrpcService;
@@ -18,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -390,20 +386,19 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
             for (String data_class_id : data_class_id_Array) {
                 Map<String, Object> dataMaps = new HashMap<String, Object>();
 
-                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id, database_id);
+                List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(data_class_id, database_id);
 
                 List<Map<String, Object>> KV = new ArrayList<Map<String, Object>>();
 
-                for (DataTableEntity dataTable : dataTableList) {
+                for (DataTableInfoEntity dataTable : dataTableList) {
                     Map<String, Object> dataMap = new HashMap<String, Object>();
 
                     String table_id = dataTable.getId();
                     String table_name = dataTable.getTableName();
-                    String data_service_name = dataTable.getDataServiceName();
                     List<TableColumnEntity> tableColumnList = tableColumnDao.findByTableId(table_id);
 
                     dataMap.put("titles", titles++);
-                    dataMap.put("cnName", data_service_name);
+                    dataMap.put("cnName", dataTable.getNameCn());
                     if(table_name==null){
                         dataMap.put("tableName", " ");
                     }else{

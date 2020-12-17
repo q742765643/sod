@@ -69,7 +69,6 @@ public class ComMetadataSyncCfgEntity extends JobInfoEntity{
 
 	/**
 	 * 来源
-	 */
 	@Column(name="SOURCE",length=200)
 	private String source;
 

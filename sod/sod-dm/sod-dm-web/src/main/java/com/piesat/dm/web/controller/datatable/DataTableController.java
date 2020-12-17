@@ -7,11 +7,9 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
-import com.piesat.dm.rpc.dto.datatable.SampleData;
-import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
-import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
+import com.piesat.dm.rpc.dto.datatable.*;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
 import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
@@ -55,17 +53,15 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:add")
     @Log(title = "表信息管理(新增表信息)", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save(@RequestBody DataTableDto dataTableDto) {
+    public ResultT save(@RequestBody DataTableInfoDto dataTableDto) {
         try {
             String id = dataTableDto.getId();
             if (StringUtils.isNotBlank(id)) {
-                DataTableDto dot = this.dataTableService.getDotById(id);
+                DataTableInfoDto dot = this.dataTableService.getDotById(id);
                 dataTableDto.setColumns(dot.getColumns());
                 dataTableDto.setTableIndexList(dot.getTableIndexList());
             }
-            DataLogicDto dataLogicDto = dataLogicService.getDotById(dataTableDto.getClassLogic().getId());
-            dataTableDto.setClassLogic(dataLogicDto);
-            DataTableDto save = this.dataTableService.saveDto(dataTableDto);
+            DataTableInfoDto save = this.dataTableService.saveDto(dataTableDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,26 +73,25 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:addApply")
     @Log(title = "表信息管理（新增申请表信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/addApply")
-    public ResultT addApply(String classLogicIds, String applyId) {
+    public ResultT addApply(String classLogicIds, String applyId,String storageType,String databaseId) {
         try {
             NewdataApplyDto newdataApplyDto = this.newdataApplyService.getDotById(applyId);
 
             String[] ids = classLogicIds.split(",");
-            List<DataTableDto> list = new ArrayList<>();
+            List<DataTableInfoDto> list = new ArrayList<>();
             for (String id : ids) {
-                DataLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
+                DataClassLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
                 DataClassDto dataClassDto = this.dataClassService.findByDataClassId(dataLogicDto.getDataClassId());
-                DataTableDto dataTableDto = new DataTableDto();
-                dataTableDto.setClassLogic(dataLogicDto);
+                DataTableInfoDto dataTableDto = new DataTableInfoDto();
+                dataTableDto.setDatabaseId(databaseId);
+                dataTableDto.setStorageType(storageType);
                 dataTableDto.setColumns(newdataApplyDto.toTableColumn());
                 dataTableDto.setCreateTime(new Date());
-                dataTableDto.setDataServiceId(dataClassDto.getDataClassId());
-                dataTableDto.setDbTableType("E");
+                dataTableDto.setTableType("E");
                 dataTableDto.setUserId(newdataApplyDto.getUserId());
                 dataTableDto.setNameCn(dataClassDto.getClassName());
-                dataTableDto.setDataServiceName(dataClassDto.getClassName());
                 dataTableDto.setTableName(newdataApplyDto.getTableName());
-                DataTableDto save = this.dataTableService.saveDto(dataTableDto);
+                DataTableInfoDto save = this.dataTableService.saveDto(dataTableDto);
                 list.add(save);
             }
             return ResultT.success(list);
@@ -112,7 +107,7 @@ public class DataTableController {
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            DataTableDto dataTableDto = this.dataTableService.getDotById(id);
+            DataTableInfoDto dataTableDto = this.dataTableService.getDotById(id);
             return ResultT.success(dataTableDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -152,7 +147,7 @@ public class DataTableController {
     @GetMapping(value = "/dc")
     public ResultT getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         try {
-            List<DataTableDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
+            List<DataTableInfoDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
             return ResultT.success(r);
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +160,7 @@ public class DataTableController {
     @GetMapping(value = "/gcl")
     public ResultT getByClassLogicId(String classLogic) {
         try {
-            List<DataTableDto> r = this.dataTableService.getByClassLogicId(classLogic);
+            List<DataTableInfoDto> r = this.dataTableService.getByClassLogicId(classLogic);
             return ResultT.success(r);
         } catch (Exception e) {
             e.printStackTrace();

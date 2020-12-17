@@ -82,6 +82,7 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger.version}</version>
         </dependency>
+
         <dependency>
            <!-- <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -362,8 +363,13 @@
             <artifactId>hutool-all</artifactId>
             <version>5.3.10</version>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>com.github.dadiyang</groupId>
+            <artifactId>equator</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+    </dependencies>
     <build>
         <!--解决idea打包没有xml-->
         <resources>

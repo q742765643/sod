@@ -1,6 +1,7 @@
 package com.piesat.dm.rpc.dto.dataapply;
 
 import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.util.BaseDto;
@@ -52,7 +53,7 @@ public class NewdataApplyDto extends BaseDto {
      * 数据库ID
      */
     private String databaseId;
-    private List<DataLogicDto> dataLogicDtoList;
+    private List<DataClassLogicDto> dataLogicDtoList;
 
     /**
      * 数据采集频次

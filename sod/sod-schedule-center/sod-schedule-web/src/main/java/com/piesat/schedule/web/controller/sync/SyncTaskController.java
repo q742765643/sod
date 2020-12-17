@@ -9,6 +9,7 @@ import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
 import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
@@ -221,12 +222,12 @@ public class SyncTaskController {
         String sourceVTableId = syncTaskDto.getSourceVTableId();
         if(StringUtils.isNotNullString(targetVTableId)){
             //获取目标表值表信息
-            DataTableDto targetVTable = dataTableService.getDotById(targetVTableId);
+            DataTableInfoDto targetVTable = dataTableService.getDotById(targetVTableId);
 
             //键值表外键
             String linkKeys = "";
-            if(targetVTable.getClassLogic() != null){
-                List<TableForeignKeyDto> tableForeignKeyDtos = tableForeignKeyService.findByClassLogicId(targetVTable.getClassLogic().getId());
+
+                List<TableForeignKeyDto> tableForeignKeyDtos = tableForeignKeyService.findByTableId(targetVTable.getId());
                 if(tableForeignKeyDtos != null && tableForeignKeyDtos.size()>0){
                     linkKeys = "<" + targetVTable.getTableName() + ">";
                     for(int i = 0;i < tableForeignKeyDtos.size();i++){
@@ -235,7 +236,7 @@ public class SyncTaskController {
                     }
                     linkKeys += "</" + targetVTable.getTableName() + ">";
                 }
-            }
+
             syncTaskDto.getSlaveRelation().put("sourceVTableId", sourceVTableId);
             syncTaskDto.getSlaveRelation().put("targetVTableId", targetVTableId);
             syncTaskDto.getSlaveRelation().put("linkKey", linkKeys);
