@@ -130,7 +130,7 @@ public class AESUtil {
         String jiemi =aesDecrypt(data).trim();
         System.out.println("解密："+jiemi);
 
-        String jiemi1 =aesDecrypt("8rdeD7IPdkZWcdl/CvzNHQ==").trim();
+        String jiemi1 =aesDecrypt("6sVSKLEVmdpOe0JiU9UMQg").trim();
         System.out.println("解密1："+jiemi1);
 
 
