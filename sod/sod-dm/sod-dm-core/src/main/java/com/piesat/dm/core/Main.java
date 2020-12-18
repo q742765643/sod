@@ -31,13 +31,14 @@ public class Main {
 
         IndexVo i = new IndexVo();
         t.setSchema("USR_SOD");
-        t.setTableName("TEST");
+        t.setTableName("TEST1");
         t.setPartiColumn("D_DATETIME");
         List<ColumnVo> l = new ArrayList<>();
         ColumnVo c2 = new ColumnVo();
         c2.setColumnName("D_DATA_ID");
-        c2.setIsNull("NOT NULL");
-        c2.setPrecision("(6,0)");
+        c2.setIsNull(true);
+//        c2.setPrecision(6);
+        c2.setLength(8);
         c2.setComment("测试");
         c2.setType("VARCHAR");
         c2.setDef("hahahahahaha");
@@ -45,28 +46,35 @@ public class Main {
         l.add(c2);
         c2 = new ColumnVo();
         c2.setColumnName("D_DATETIME");
-        c2.setIsNull("NOT NULL");
+        c2.setIsNull(false);
         c2.setComment("测试");
-        c2.setType("D_DATETIME");
-        c2.setDef("HHHHHHH");
+        c2.setType("DATETIME");
+//        c2.setDef("HHHHHHH");
         c2.format();
         l.add(c2);
         c2 = new ColumnVo();
         c2.setColumnName("D_IYMDHM");
-        c2.setIsNull("NOT NULL");
+        c2.setIsNull(true);
         c2.setComment("测试");
-        c2.setType("D_DATETIME");
-        c2.setDef("HHHHHHH");
+        c2.setType("DATETIME");
+//        c2.setDef("HHHHHHH");
         c2.format();
         l.add(c2);
         List<IndexVo> l1 = new ArrayList<>();
-        i.setIndexType("CREATE UNIQUE INDEX");
+        i.setIndexType1("UNIQUE");
+        i.setIndexType2("BTREE");
         i.setIndexName("CESHI");
-        i.setIndexComment("D_IYMDHM,D_UPDATE_TIME");
+        i.setIndexComment("D_IYMDHM,D_DATETIME");
         l1.add(i);
         t.setColumnVos(l);
         t.setIndexVos(l1);
         AuzFactory.createTableSql(t,r);
+        System.out.println(r.getData());
+
+        AuzFactory.insertTableSql(t,r);
+        System.out.println(r.getData());
+
+        AuzFactory.queryTableSql(t,r);
         System.out.println(r.getData());
 
             Map<String,Boolean> map = new HashMap<>();
@@ -77,8 +85,8 @@ public class Main {
             map.put("BFDB",false);
         String s1 = JSON.toJSONString(map);
         JSONObject jsonObject = JSON.parseObject("{\"STDB\":true,\"HADB\":true,\"FIDB\":true,\"RADB\":true}");
-        System.out.println(jsonObject);
-        System.out.println(s1);
+//        System.out.println(jsonObject);
+//        System.out.println(s1);
         if (true) {
             return;
         }

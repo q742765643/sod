@@ -10,5 +10,6 @@ import lombok.Data;
 public class IndexVo {
     private String indexName;
     private String indexComment;
-    private String indexType;
+    private String indexType1;
+    private String indexType2;
 }

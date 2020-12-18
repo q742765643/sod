@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * @date 2019年 11月20日 17:06:14
  */
 @Data
-@Table(name = "T_SOD_DATA_TABLE_COLUMN")
+@Table(name = "T_SOD_DATA_TABLE_COLUMNS")
 @Entity
 public class TableColumnEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
@@ -92,7 +92,7 @@ public class TableColumnEntity extends BaseEntity {
      * 英文单位
      * unit
      */
-    @Column(name = "unit", length = 36)
+    @Column(name = "unit", length = 136)
     private String unit;
 
     /**

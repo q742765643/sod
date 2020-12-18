@@ -3,6 +3,8 @@ package com.piesat.dm.core.model;
 import com.piesat.dm.core.constants.Constants;
 import lombok.Data;
 
+import java.util.Arrays;
+
 /**
  * 字段
  *
@@ -19,7 +21,11 @@ public class ColumnVo {
     /**
      * 精度
      */
-    private String precision;
+    private Integer precision;
+    /**
+     * 长度
+     */
+    private Integer length;
     /**
      * "" 或者 "DEFAULT '*'"
      */
@@ -27,11 +33,11 @@ public class ColumnVo {
     /**
      * "" 或者 "NOT NULL"
      */
-    private String isNull;
+    private Boolean isNull;
     private String comment;
 
-    public void format(){
-        if (!Constants.D_DATETIME.equals(type)){
+    public void format() {
+        if (!Arrays.asList(Constants.TIME_TYPES).contains(type.toUpperCase())) {
             def = Constants.APOSTROPHE + def + Constants.APOSTROPHE;
         }
     }

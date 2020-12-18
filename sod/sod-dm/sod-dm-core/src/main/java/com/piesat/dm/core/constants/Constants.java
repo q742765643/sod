@@ -20,6 +20,7 @@ public class Constants {
     public static final String MAX = "MAX(%s) ";
     public static final String ZERO = "0";
     public static final String PERCENT = "%";
+    public static final String[] TIME_TYPES = new String[]{"DATE","DATETIME","TIMESTAMP"};
 
     public static final String LT = " < ";
     public static final String LE = " <= ";
@@ -30,5 +31,13 @@ public class Constants {
 
     public static final String FIELD_LENGTH = "(%s, %s)";
     public static final String FIELD_LENGTH_ONLY = "(%s)";
+
+    /**
+     * 索引类型
+     */
+    public static final String UNIQUE  = "UNIQUE";
+    public static final String INDEX = "INDEX";
+    public static final String FULLTEXT = "FULLTEXT";
+    public static final String PRIMARY_KEY = "PRIMARY_KEY";
 
 }

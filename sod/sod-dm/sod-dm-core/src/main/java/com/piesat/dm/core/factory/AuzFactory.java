@@ -63,6 +63,27 @@ public class AuzFactory {
             resultT.setErrorMessage("生成sql出错！");
             resultT.setData(OwnException.get(e));
         }
+    }
 
+    public static void insertTableSql(TableVo tableVo, ResultT<String> resultT) {
+        try {
+            String template = StringUtils.isNotEmpty(tableVo.getTemplate()) ? tableVo.getTemplate() : SqlTemplate.INSERT_TABLE_DISTRIBUTED;
+            String sql = TemplateUtil.rendering(template, tableVo);
+            resultT.setData(sql);
+        } catch (Exception e) {
+            resultT.setErrorMessage("生成sql出错！");
+            resultT.setData(OwnException.get(e));
+        }
+    }
+
+    public static void queryTableSql(TableVo tableVo, ResultT<String> resultT) {
+        try {
+            String template = StringUtils.isNotEmpty(tableVo.getTemplate()) ? tableVo.getTemplate() : SqlTemplate.QUERY_TABLE_DISTRIBUTED;
+            String sql = TemplateUtil.rendering(template, tableVo);
+            resultT.setData(sql);
+        } catch (Exception e) {
+            resultT.setErrorMessage("生成sql出错！");
+            resultT.setData(OwnException.get(e));
+        }
     }
 }

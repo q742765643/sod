@@ -34,14 +34,42 @@ public class SqlTemplate {
      * 默认建表模板
      */
     public static final String CREATE_TABLE_DISTRIBUTED =
-            "CREATE TABLE IF NOT EXISTS \"${schema}\".\"${tableName}\"\n" +
+            "CREATE TABLE \"${schema}\".\"${tableName}\"\n" +
             "(\n" +
             "<#list columnVos as columnVo>\n" +
-            "  <#if columnVo_has_next>  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.precision??> ${columnVo.precision}</#if><#if columnVo.isNull??> ${columnVo.isNull}</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if>,\n<#else>" +
-            "  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.precision??> ${columnVo.precision}</#if><#if columnVo.isNull??> ${columnVo.isNull}</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if> \n</#if>" +
+            "  <#if columnVo_has_next>  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>.${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> IS NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if>,\n<#else>" +
+            "  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>.${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> IS NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if> \n</#if>" +
             "</#list>\n" +
             " )<#if partiColumn?default(\"\")?length gt 1 >partition by range(${partiColumn}) interval 1 day partitions(\"PART1\" values less than ('1950-01-01 00:00:00'))</#if>;\n" +
             "<#list indexVos as indexVo>\n" +
-            "${indexVo.indexType} ${indexVo.indexName} ON \"${schema}\".\"${tableName}\" (${indexVo.indexComment});\n" +
+            "CREATE<#if indexVo.indexType1?? > ${indexVo.indexType1}</#if> INDEX ${indexVo.indexName} ON \"${schema}\".\"${tableName}\" (${indexVo.indexComment}) <#if indexVo.indexType2?default(\"\")?length gt 1 > INDEXTYPE IS ${indexVo.indexType2}</#if>;\n" +
             "</#list>";
+
+    /**
+     * 默认插入模板
+     */
+    public static final String INSERT_TABLE_DISTRIBUTED = "INSERT INTO \"${schema}\".\"${tableName}\"\n" +
+            "(\n" +
+            "<#list columnVos as columnVo>\n" +
+            "  <#if columnVo_has_next>  \"${columnVo.columnName}\",\n<#else>" +
+            "  \"${columnVo.columnName}\" \n</#if>" +
+            "</#list>\n" +
+            " ) VALUES \n" +
+            "(\n" +
+            "<#list columnVos as columnVo>\n" +
+            "  <#if columnVo_has_next>  *,\n<#else>" +
+            "  * \n</#if>" +
+            "</#list>\n" +
+            " )";
+
+    /**
+     * 默认查询模板
+     */
+    public static final String QUERY_TABLE_DISTRIBUTED = "SELECT \n" +
+            "<#list columnVos as columnVo>\n" +
+            "  <#if columnVo_has_next>  \"${columnVo.columnName}\",\n<#else>" +
+            "  \"${columnVo.columnName}\" \n</#if>" +
+            "</#list>\n" +
+            " FROM \n" +
+            "\"${schema}\".\"${tableName}\"";
 }
