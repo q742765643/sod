@@ -543,7 +543,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             String m = "";
             if (parentId.contains("S")) {
                 String classId = parentId.replaceAll("S", "M");
-                m = classId.substring(0, classId.indexOf("M") + 1);
+                m = classId.substring(0, classId.indexOf(".M") + 2);
             } else {
                 m = "Z.9999.9999.M";
             }
@@ -569,6 +569,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             return parentId;
         }
     }
+
 
     @Override
     public List<Map<String, Object>> getLogicByDdataId(String dDataId) {
