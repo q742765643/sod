@@ -782,6 +782,7 @@ export default {
       if (this.handleObj.sourceDBId) {
         this.msgFormDialog.sourceDatabaseId = this.handleObj.sourceDBId;
       }
+      debugger;
       // 源表过滤字段回显
       this.stableFilterForm = {
         domains: [],
@@ -962,7 +963,6 @@ export default {
     },
     //获取目标表字段信息
     async queryTargetColumn(selectTargetTableID, tname) {
-      debugger;
       if (!selectTargetTableID) {
         return;
       }
@@ -1079,7 +1079,6 @@ export default {
                     this.targetColumnDetail[i].celementCode ==
                     mItem.targetColumn_
                   ) {
-                    debugger;
                     var sourceColumnObj = this.findStatusKTable(
                       mItem.sourceColumn_,
                       "K",
@@ -1181,7 +1180,6 @@ export default {
       }
       if (this.handleObj.slaveRelation && this.targetChangeFlag === 0) {
         this.handleObj.slaveRelation.mapping.forEach((mItem, i) => {
-          debugger;
           //获取源表字段的信息
           var sourceColumnObj = this.findStatusKTable(
             mItem.sourceColumn_,
@@ -1392,7 +1390,6 @@ export default {
           accuType.indexOf(sourceColumnObj.type) > -1
         )
       ) {
-        debugger;
         if (sourceColumnObj.type) {
           tabColStatusObj.msg =
             "字段类型不一致【目标表：" +
@@ -1445,7 +1442,6 @@ export default {
       });
     },
     findStatusKTable(column_name, kAndE, SAndT, targetTableId) {
-      debugger;
       if (SAndT == "source" && kAndE == "K") {
         var columnInfo = this.sourceColumnDetail.find(function (obj) {
           return obj.dbEleCode === column_name;
