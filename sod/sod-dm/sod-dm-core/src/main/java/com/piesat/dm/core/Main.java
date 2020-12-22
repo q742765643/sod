@@ -76,7 +76,6 @@ public class Main {
 
         AuzFactory.queryTableSql(t,r);
         System.out.println(r.getData());
-
             Map<String,Boolean> map = new HashMap<>();
             Map<String,Object> m = new HashMap<>();
             m.put("status",true);

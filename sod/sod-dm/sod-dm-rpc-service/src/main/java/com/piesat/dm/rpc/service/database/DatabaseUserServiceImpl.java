@@ -1,6 +1,5 @@
 package com.piesat.dm.rpc.service.database;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
@@ -11,7 +10,6 @@ import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.constants.Constants;
-import com.piesat.dm.core.factory.Actuator;
 import com.piesat.dm.core.factory.AuzDatabase;
 import com.piesat.dm.core.factory.AuzFactory;
 import com.piesat.dm.core.model.ConnectVo;
@@ -26,6 +24,7 @@ import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseAuthorizedService;
 import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.database.DbUserAlterLogService;
@@ -95,6 +94,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     private UserDao userDao;
     @Autowired
     private DatabaseDefineDao databaseDefineDao;
+    @Autowired
+    private DatabaseAuthorizedService databaseAuthorizedService;
     @Value("${mng.ip}")
     private String mngIp;
     @Value("${database.sys-users}")
@@ -203,7 +204,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String upId = dotById1.getDatabaseUpId().toLowerCase();
         if (!sysIdList.contains(upId) && StringUtils.isNotBlank(dotById1.getExamineDatabaseId())) {
             String[] needEmpowerIdArr = dotById1.getExamineDatabaseId().split(",");
-            this.tryDropDbUser(needEmpowerIdArr,upId,new ResultT());
+            this.tryDropDbUser(needEmpowerIdArr, upId, new ResultT());
         }
         this.delete(id);
     }
@@ -558,7 +559,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
 
                 //下面取得资料信息。
-                List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(data_class_id, database_id);
+                List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(data_class_id, database_id);
                 //下面根据物理库ID取得物理库对应详细信息。
                 //DataBasePhysics databasephysics = dataBasePhysicsDao.queryDataBasePhysicsByDbIds(database_id);
                 //获取数据库管理账户
@@ -810,6 +811,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (!velUsername(principal, resultT)) {
             return;
         }
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         String whitelist = principal.getDatabaseUpIp();
         whitelist = StringUtils.isNotBlank(whitelist) ? whitelist + Constants.COMMA + mngIp : Constants.PERCENT;
         //数据库用户信息
@@ -824,9 +826,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (StringUtils.isNotBlank(e_databaseIdStr)) {
             e_databaseIds = Arrays.stream(e_databaseIdStr.split(Constants.COMMA)).collect(Collectors.toList());
         }
-        DbUserAlterLogDto dl = new DbUserAlterLogDto();
-        dl.setStatus(true);
-        StringBuilder sb = new StringBuilder();
+        List<DatabaseAuthorizedDto> list = new ArrayList<>();
         //各个数据库新增用户
         for (String databaseId : databaseIds) {
             if (e_databaseIds.contains(databaseId)) {
@@ -834,8 +834,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
             ResultT<String> r = new ResultT();
             ConnectVo connectVo = connectInfo.get(databaseId);
-            if (connectVo == null){
-                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1,databaseId));
+            if (connectVo == null) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             AuzDatabase factory = getFactory(databaseId, connectVo, r);
             factory.doCreateUser(u, r);
@@ -845,16 +845,29 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     , connectVo.getIp()
                     , u.getUserName()
                     , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
-            sb.append(log);
-            dl.setStatus(dl.getStatus() ? r.isSuccess() : false);
+
+            DatabaseAuthorizedDto da = new DatabaseAuthorizedDto();
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(u.getUserName());
+            da.setStatus(r.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_CREATE);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
+            list.add(databaseAuthorizedDto);
+            DbUserAlterLogDto dl = new DbUserAlterLogDto();
+            dl.setAuthorizeId(databaseAuthorizedDto.getId());
+            dl.setStatus(r.isSuccess());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_CREATE);
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
         }
-        dl.setLog(String.valueOf(sb));
-        dl.setOpeType(ConstantsMsg.OPE_CREATE);
+
         principal.setExamineDatabaseId(e_databaseIds.stream().collect(Collectors.joining(Constants.COMMA)));
-        this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-        dl.setUpdateBy(loginUser.getWebUserId());
-        this.dbUserAlterLogService.saveDto(dl);
+        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        databaseUserDto.setList(list);
+        resultT.setData(databaseUserDto);
     }
 
     /**
@@ -875,36 +888,53 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             e_databaseIds = Arrays.stream(e_databaseIdStr.split(Constants.COMMA)).collect(Collectors.toList());
         }
         DbUserAlterLogDto dl = new DbUserAlterLogDto();
-        dl.setStatus(true);
-        StringBuilder sb = new StringBuilder();
-        tryDropDbUser(new String[]{databaseId},principal.getUserName(),resultT);
+        tryDropDbUser(new String[]{databaseId}, principal.getUserName(), resultT);
         if (resultT.isSuccess()) {
             e_databaseIds.remove(databaseId);
             principal.setExamineDatabaseId(e_databaseIds.stream().collect(Collectors.joining(Constants.COMMA)));
-            this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+            DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+            principal = this.databaseUserMapper.toDto(save);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            if (databaseAuthorizedDto != null) {
+                this.dbUserAlterLogService.deleteByAuthorizeId(databaseAuthorizedDto.getId());
+            }
+            this.databaseAuthorizedService.delete(principal.getUserName(), databaseId);
+        } else {
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            String log = String.format(ConstantsMsg.MSG5
+                    , databaseId
+                    , principal.getUserName()
+                    , resultT.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(principal.getUserName());
+            da.setStatus(resultT.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_CREATE);
+            da = this.databaseAuthorizedService.saveDto(da);
+            List<DatabaseAuthorizedDto> list = new ArrayList<>();
+            list.add(da);
+            dl.setStatus(resultT.isSuccess());
+            dl.setAuthorizeId(da.getId());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_DROP);
+            UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
+            principal.setList(list);
+            resultT.setData(principal);
         }
-        String log = String.format(ConstantsMsg.MSG5
-                , databaseId
-                , principal.getUserName()
-                , resultT.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
-        sb.append(log);
-        dl.setStatus(dl.getStatus() ? resultT.isSuccess() : false);
-        dl.setLog(String.valueOf(sb));
-        dl.setOpeType(ConstantsMsg.OPE_DROP);
-        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-        dl.setUpdateBy(loginUser.getWebUserId());
-        this.dbUserAlterLogService.saveDto(dl);
+
     }
 
-    public void tryDropDbUser(String[] databaseIds,String userName,ResultT resultT){
+    public void tryDropDbUser(String[] databaseIds, String userName, ResultT resultT) {
         UserInfo u = new UserInfo();
         u.setUserName(userName);
         Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
         for (int i = 0; i < databaseIds.length; i++) {
             String databaseId = databaseIds[i];
             ConnectVo connectVo = connectInfo.get(databaseId);
-            if (connectVo == null){
-                resultT.setErrorMessage(String.format(ConstantsMsg.MSG2_1,databaseId));
+            if (connectVo == null) {
+                resultT.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             AuzDatabase factory = getFactory(databaseId, connectVo, resultT);
             factory.dropUser(u, resultT);
@@ -923,6 +953,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (!velUsername(principal, resultT)) {
             return;
         }
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         UserInfo u = new UserInfo();
         u.setUserName(principal.getUserName());
         u.setPassword(principal.getDatabaseUpPassword());
@@ -935,15 +966,14 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             resultT.setErrorMessage(ConstantsMsg.MSG2);
             return;
         }
-        DbUserAlterLogDto dl = new DbUserAlterLogDto();
-        dl.setStatus(true);
-        StringBuilder sb = new StringBuilder();
+
+        List<DatabaseAuthorizedDto> list = new ArrayList<>();
         Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
         for (String databaseId : databaseIds) {
             ResultT r = new ResultT();
             ConnectVo connectVo = connectInfo.get(databaseId);
-            if (connectVo == null){
-                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1,databaseId));
+            if (connectVo == null) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             AuzDatabase factory = getFactory(databaseId, connectVo, r);
             factory.alterPwd(u, r);
@@ -952,15 +982,29 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     , connectVo.getIp()
                     , u.getUserName()
                     , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
-            sb.append(log);
-            dl.setStatus(dl.getStatus() ? r.isSuccess() : false);
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            if (da == null) {
+                da = new DatabaseAuthorizedDto();
+            }
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(u.getUserName());
+            da.setStatus(r.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
+            list.add(databaseAuthorizedDto);
+            DbUserAlterLogDto dl = new DbUserAlterLogDto();
+            dl.setAuthorizeId(databaseAuthorizedDto.getId());
+            dl.setStatus(r.isSuccess());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
         }
-        this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-        dl.setLog(String.valueOf(sb));
-        dl.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
-        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-        dl.setUpdateBy(loginUser.getWebUserId());
-        this.dbUserAlterLogService.saveDto(dl);
+        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        databaseUserDto.setList(list);
+        resultT.setData(databaseUserDto);
     }
 
     /**
@@ -974,6 +1018,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         if (!velUsername(principal, resultT)) {
             return;
         }
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         String whitelist = principal.getDatabaseUpIp();
         whitelist = StringUtils.isNotBlank(whitelist) ? whitelist + Constants.COMMA + mngIp : Constants.PERCENT;
         UserInfo u = new UserInfo();
@@ -987,15 +1032,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             resultT.setErrorMessage(ConstantsMsg.MSG2);
             return;
         }
-        DbUserAlterLogDto dl = new DbUserAlterLogDto();
-        dl.setStatus(true);
-        StringBuilder sb = new StringBuilder();
+        List<DatabaseAuthorizedDto> list = new ArrayList<>();
         Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
         for (String databaseId : databaseIds) {
             ResultT r = new ResultT();
             ConnectVo connectVo = connectInfo.get(databaseId);
-            if (connectVo == null){
-                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1,databaseId));
+            if (connectVo == null) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             AuzDatabase factory = getFactory(databaseId, connectVo, r);
             factory.alterWhitelist(u, r);
@@ -1004,15 +1047,29 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     , connectVo.getIp()
                     , u.getUserName()
                     , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
-            sb.append(log);
-            dl.setStatus(dl.getStatus() ? r.isSuccess() : false);
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            if (da == null) {
+                da = new DatabaseAuthorizedDto();
+            }
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(u.getUserName());
+            da.setStatus(r.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
+            list.add(databaseAuthorizedDto);
+            DbUserAlterLogDto dl = new DbUserAlterLogDto();
+            dl.setAuthorizeId(databaseAuthorizedDto.getId());
+            dl.setStatus(r.isSuccess());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
         }
-        this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-        dl.setLog(String.valueOf(sb));
-        dl.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
-        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-        dl.setUpdateBy(loginUser.getWebUserId());
-        this.dbUserAlterLogService.saveDto(dl);
+        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        databaseUserDto.setList(list);
+        resultT.setData(databaseUserDto);
     }
 
     /**

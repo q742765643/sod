@@ -104,5 +104,9 @@ public class DataClassEntity extends BaseEntity {
     @Column(name = "use_base_info", columnDefinition="integer DEFAULT 1 ")
     private Integer useBaseInfo;
 
-
+    /**
+     * 备注
+     */
+    @Column(name = "remark")
+    private String remark;
 }

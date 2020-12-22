@@ -17,11 +17,13 @@
         left join T_SOD_DICT_DATA F ON E.STORAGE_TYPE = F.dict_value
         left join T_SOD_DATA_TABLE H on B.id = H.CLASS_LOGIC_ID and db_table_type = 'E'
         WHERE
-        F.dict_type = 'sys_storage_type' AND
-        A.data_class_id in
+        F.dict_type = 'sys_storage_type'
+        <if test="classIds!=null and classIds.size()>0" >
+        AND A.data_class_id in
         <foreach collection="classIds" index="index" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+        </if>
         <if test="className != null and className != ''">
             AND class_name like CONCAT('%',#{className},'%')
         </if>
@@ -794,8 +796,8 @@
         INNER JOIN t_sod_logic_define c ON  c.logic_flag = b.logic_flag WHERE a.d_data_id = #{dDataId}
     </select>
 
-    <select id="getDataLogic" resultType="DataClassLogicEntity" parameterType="String">
-        SELECT a.id id,a.data_class_id dataClassId,b.storage_type storageType,b.database_id
+    <select id="getDataLogic" resultType="DataTableInfoEntity" parameterType="String">
+        SELECT b.id,b.storage_type storageType,b.database_id
         databaseId,a.version,a.create_time
         FROM T_SOD_DATACLASS_TABLE a INNER JOIN T_SOD_DATA_TABLE_INFO b ON a.table_id = b.id
         <where>

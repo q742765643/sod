@@ -20,7 +20,7 @@ import java.util.Map;
  * @author cwh
  * @date 2019年 11月25日 14:18:09
  */
-@Api(tags = "数据用途管理")
+@Api(tags = "资料和表关系")
 @RequestMapping("/dm/dataLogic")
 @RestController
 public class DataLogicController {

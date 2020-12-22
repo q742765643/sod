@@ -19,6 +19,7 @@ public class AuthorityVo {
     public AuthorityVo(String schema,String tableName,String userName,DbaEnum dbaEnum){
         this.schema = schema;
         this.tableName = tableName;
+        this.userName = userName;
         this.dbaEnum = dbaEnum;
     }
 

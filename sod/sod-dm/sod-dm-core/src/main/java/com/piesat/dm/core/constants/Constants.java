@@ -11,6 +11,7 @@ public class Constants {
     public static final String SPACE = " ";
     public static final String COMMA = ",";
     public static final String SEMICOLON = ";";
+    public static final String LEFT_BRACKET = "(";
     public static final String ASC = "ASC";
     public static final String DESC = "DESC";
     public static final String D_DATETIME = "D_DATETIME";

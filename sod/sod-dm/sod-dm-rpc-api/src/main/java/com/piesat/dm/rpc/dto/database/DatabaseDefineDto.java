@@ -138,7 +138,7 @@ public class DatabaseDefineDto {
         u.setDatabaseType(DatabaseTypesEnum.match(this.databaseType));
         u.setUrl(this.databaseUrl);
         u.setClassName(this.driverClassName);
-        u.setPort(Integer.getInteger(this.databasePort));
+        u.setPort(Integer.valueOf(this.databasePort));
         u.setIp(this.databaseIp);
         u.setUserName(d.getUserName());
         u.setPassWord(d.getPassWord());

@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.api.dataclass;
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public interface DataLogicService {
 
     List<DataClassLogicDto> findByDataClassId(String dataClassId);
 
-    List<DataClassLogicDto> getDataLogic(String dataclassId,String databaseId,String tableName);
+    List<DataTableInfoDto> getDataLogic(String dataclassId, String databaseId, String tableName);
 
     List<DataClassLogicDto> findByTableId(String tableId);
 

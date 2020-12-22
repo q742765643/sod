@@ -304,7 +304,7 @@ public class ImportData {
     }
 
     @Transactional
-    public void importTableData(String oldId, DataClassLogicEntity newId) {
+    public void importTableData(String oldId, DataClassAndTableEntity newId) {
         String sql = "select * from DMIN_DATA_ID_TABLE where CLASS_LOGIC_ID = '" + oldId + "'";
         List<Map> list = CodeDOM.getList(sql);
 //        for (Map<String, Object> m : list) {

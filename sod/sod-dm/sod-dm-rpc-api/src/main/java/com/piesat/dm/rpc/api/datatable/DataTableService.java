@@ -28,7 +28,7 @@ public interface DataTableService {
 
     List<DataTableInfoDto> all();
 
-    List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+    List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId);
 
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
@@ -40,16 +40,47 @@ public interface DataTableService {
 
     List<DataTableInfoDto> getByClassLogicId(String classLogic);
 
-    ResultT getOverview(String databaseId,String dataClassId);
+    ResultT getOverview(String databaseId, String dataClassId);
 
     ResultT getSampleData(SampleData sampleData) throws Exception;
 
-    List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId,String tableName);
+    List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId, String tableName);
 
-    ResultT paste(String copyId,String pasteId);
+    ResultT paste(String copyId, String pasteId);
 
     ResultT createTable(TableSqlDto tableSqlDto);
 
     ResultT existTable(TableSqlDto tableSqlDto);
+
+    /**
+     * 按物理库查询要素表
+     *
+     * @param databaseId
+     * @return
+     */
+    List<DataTableInfoDto> findETable(String databaseId);
+
+    /**
+     * 根据tableId查询相关的键表要素表
+     *
+     * @param tableId
+     * @return
+     */
+    List<Map<String, Object>> findTables(String tableId);
+
+    /**
+     * 获取关联表信息
+     * @param tableId
+     * @return
+     */
+    List<Map<String, Object>> getRelatedTables(String tableId);
+
+    /**
+     * 对比字段信息
+     *
+     * @param dataTableInfoDto
+     * @param resultT
+     */
+    void contrastColumns(DataTableInfoDto dataTableInfoDto, ResultT resultT);
 
 }

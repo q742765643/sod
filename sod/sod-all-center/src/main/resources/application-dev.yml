@@ -171,6 +171,7 @@ fidbDownloadUrl: http://10.40.17.34:8028/fileApi
 
 product:
   enable: true
+  mmdneed: true
 
 #单位为秒
 session:

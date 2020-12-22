@@ -6,7 +6,7 @@ package com.piesat.dm.common.constants;
  */
 public class ConstantsMsg {
 
-    public static final String MSG1 = "【%s】为数据库内部用户，禁止操作！";
+    public static final String MSG1 = "【%s】为数据库内部用户或模式，禁止操作！";
     public static final String MSG2 = "数据库账户不存在或账户未被授权！";
     public static final String MSG2_1 = "数据库【%s】管理账户缺失，或存管数据库未配置！";
     public static final String MSG3 = "数据库【%s】未对本账户授权！";

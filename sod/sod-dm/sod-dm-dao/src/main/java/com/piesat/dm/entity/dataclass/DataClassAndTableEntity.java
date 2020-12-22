@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Data
 @Table(name = "T_SOD_DATACLASS_TABLE")
 @Entity
-public class DataClassLogicEntity extends BaseEntity {
+public class DataClassAndTableEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**

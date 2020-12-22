@@ -699,7 +699,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         } else if (Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)) {//南大
                             databaseVO = new Gbase8a(url, username, password);
                         }
-                        List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(dataClassId, databaseId);
+                        List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(dataClassId, databaseId);
                         for (DataTableInfoEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();
                             //默认读权限
@@ -767,7 +767,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         } else if (Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId)) {//南大
                             databaseVO = new Gbase8a(url, username, password);
                         }
-                        List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(dataClassId, databaseId);
+                        List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(dataClassId, databaseId);
                         String[] permissions = {"SELECT", "UPDATE", "INSERT", "DELETE"};
                         for (DataTableInfoEntity dataTableEntity : dataTableList) {
                             String tableName = dataTableEntity.getTableName();

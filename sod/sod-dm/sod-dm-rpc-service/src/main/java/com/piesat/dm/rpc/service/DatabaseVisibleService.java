@@ -12,7 +12,7 @@ import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.DatabaseSpecialDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
-import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
@@ -189,9 +189,9 @@ public class DatabaseVisibleService {
         List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
         for (int i = 0; i < DataClassDtos.size(); i++) {
             DataClassDto dataClassDto = DataClassDtos.get(i);
-            List<DataClassLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
+            List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
             for (int j = 0; j < byDataClassId.size(); j++) {
-                DataClassLogicEntity dataLogicEntity = byDataClassId.get(j);
+                DataClassAndTableEntity dataLogicEntity = byDataClassId.get(j);
                 DataTableInfoEntity dataTableInfo = this.dataTableDao.getOne(dataLogicEntity.getTableId());
                 DataAuthorityRecordDto d = new DataAuthorityRecordDto();
                 d.setDatabaseId(dataTableInfo.getDatabaseId());
@@ -209,8 +209,8 @@ public class DatabaseVisibleService {
             if (d.getDataClassId().equals(dataclassId)) {
                 String databaseId = d.getDatabaseId();
                 DatabaseDto dotById = databaseService.getDotById(databaseId);
-                List<DataClassLogicEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
-                for (DataClassLogicEntity dl : byDatabaseIdAndDataClassId) {
+                List<DataClassAndTableEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
+                for (DataClassAndTableEntity dl : byDatabaseIdAndDataClassId) {
                     DataTableInfoDto dt = dataTableService.getDotById(dl.getTableId());
                     JSONObject jo = new JSONObject();
                     jo.put("TABLE_NAME", dotById.getSchemaName() + "." + dt.getTableName());
@@ -242,7 +242,7 @@ public class DatabaseVisibleService {
         List<DataTableInfoEntity> byTableName = dataTableDao.findByTableName(tableName);
         if (byTableName != null && byTableName.size() > 0) {
             DataTableInfoEntity dataTableEntity = byTableName.get(0);
-            List<DataClassLogicEntity> dataClassLogic;
+            List<DataClassAndTableEntity> dataClassLogic;
             dataClassLogic = this.dataLogicDao.findByTableId(dataTableEntity.getId());
             if (dataClassLogic==null||dataClassLogic.size()==0){
                 dataClassLogic = this.dataLogicDao.findBySubTableId(dataTableEntity.getId());
@@ -338,7 +338,7 @@ public class DatabaseVisibleService {
         for (DatabaseEntity de : databaseEntityList) {
             List<DataTableInfoEntity> DataTableInfoList = this.dataTableDao.findByDatabaseId(de.getId());
             for (DataTableInfoEntity dt : DataTableInfoList) {
-                List<DataClassLogicEntity> dataLogicEntityList = dataLogicDao.findByTableId(de.getId());
+                List<DataClassAndTableEntity> dataLogicEntityList = dataLogicDao.findByTableId(de.getId());
                 if (dataLogicEntityList.size() < 1) {
                     continue;
                 }

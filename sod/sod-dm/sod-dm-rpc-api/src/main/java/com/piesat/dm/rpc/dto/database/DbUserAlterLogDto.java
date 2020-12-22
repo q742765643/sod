@@ -12,6 +12,9 @@ import javax.persistence.Column;
  */
 @Data
 public class DbUserAlterLogDto extends BaseDto {
+
+    private String authorizeId;
+
     private String log;
 
     private String opeType;

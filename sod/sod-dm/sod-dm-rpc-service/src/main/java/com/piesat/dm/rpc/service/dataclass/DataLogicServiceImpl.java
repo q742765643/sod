@@ -10,7 +10,8 @@ import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
-import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
@@ -18,10 +19,11 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
-import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
+import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +39,15 @@ import java.util.*;
  * @date 2019年 11月22日 16:32:48
  */
 @Service
-public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> implements DataLogicService {
+public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> implements DataLogicService {
     @Autowired
     private DataLogicDao dataLogicDao;
     @Autowired
     private StorageConfigurationService storageConfigurationService;
     @Autowired
     private DataLogicMapper dataLogicMapper;
+    @Autowired
+    private DataTableMapper dataTableMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
@@ -62,7 +66,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> impl
 
 
     @Override
-    public BaseDao<DataClassLogicEntity> getBaseDao() {
+    public BaseDao<DataClassAndTableEntity> getBaseDao() {
         return dataLogicDao;
     }
 
@@ -70,7 +74,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> impl
     @Transactional
     public DataClassLogicDto saveDto(DataClassLogicDto dataLogicDto) {
         dataLogicDto.setCreateTime(new Date());
-        DataClassLogicEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
+        DataClassAndTableEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
         dataLogicEntity = this.dataLogicDao.saveNotNull(dataLogicEntity);
         return this.dataLogicMapper.toDto(dataLogicEntity);
     }
@@ -78,8 +82,8 @@ public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> impl
     @Override
     @Transactional
     public List<DataClassLogicDto> saveList(List<DataClassLogicDto> dataLogicList) {
-        List<DataClassLogicEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
-        for (DataClassLogicEntity d : dataLogicEntities) {
+        List<DataClassAndTableEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
+        for (DataClassAndTableEntity d : dataLogicEntities) {
             if (StringUtils.isEmpty(d.getId())) {
                 d.setCreateTime(new Date());
             }
@@ -90,7 +94,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> impl
 
     @Override
     public List<DataClassLogicDto> all() {
-        List<DataClassLogicEntity> all = this.getAll();
+        List<DataClassAndTableEntity> all = this.getAll();
         return this.dataLogicMapper.toDto(all);
     }
 
@@ -120,25 +124,25 @@ public class DataLogicServiceImpl extends BaseService<DataClassLogicEntity> impl
 
     @Override
     public List<DataClassLogicDto> findByDataClassId(String dataClassId) {
-        List<DataClassLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
+        List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
         return this.dataLogicMapper.toDto(byDataClassId);
     }
 
     @Override
-    public List<DataClassLogicDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
-        List<DataClassLogicEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
-        return this.dataLogicMapper.toDto(dataLogic);
+    public List<DataTableInfoDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
+        List<DataTableInfoEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
+        return this.dataTableMapper.toDto(dataLogic);
     }
 
     @Override
     public List<DataClassLogicDto> findByTableId(String tableId) {
-        List<DataClassLogicEntity> byTableId = this.dataLogicDao.findByTableId(tableId);
+        List<DataClassAndTableEntity> byTableId = this.dataLogicDao.findByTableId(tableId);
         return this.dataLogicMapper.toDto(byTableId);
     }
 
     @Override
     public DataClassLogicDto getDotById(String id) {
-        DataClassLogicEntity dataLogicEntity = this.getById(id);
+        DataClassAndTableEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);
     }
 

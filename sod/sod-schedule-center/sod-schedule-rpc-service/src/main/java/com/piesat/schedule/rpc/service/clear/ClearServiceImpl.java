@@ -14,6 +14,7 @@ import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.entity.clear.ClearEntity;
@@ -135,10 +136,10 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         clearEntity=this.saveNotNull(clearEntity);
         diSendService.sendClear(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
-        List<DataClassLogicDto> dataLogic = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
-        for (DataClassLogicDto dl : dataLogic) {
+        List<DataTableInfoDto> dataTable = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
+        for (DataTableInfoDto dl : dataTable) {
             AdvancedConfigDto scd = new AdvancedConfigDto();
-            scd.setTableId(dl.getTableId());
+            scd.setTableId(dl.getId());
             scd.setBackupIdentifier(1);
             scd.setBackupId(clearEntity.getId());
             this.storageConfigurationService.updateDataAuthorityConfig(scd);

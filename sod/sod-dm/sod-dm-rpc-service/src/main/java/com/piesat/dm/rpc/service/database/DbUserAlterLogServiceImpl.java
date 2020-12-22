@@ -47,4 +47,9 @@ public class DbUserAlterLogServiceImpl extends BaseService<DbUserAlterLogEntity>
         List<DbUserAlterLogEntity> all = this.getAll();
         return this.dbUserAlterLogMapper.toDto(all);
     }
+
+    @Override
+    public void deleteByAuthorizeId(String id) {
+        this.dbUserAlterLogDao.deleteByAuthorizeId(id);
+    }
 }

@@ -22,6 +22,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -239,8 +240,12 @@ public class DataClassController {
     @GetMapping(value = "/getListBYIn")
     public ResultT getListBYIn(String stringList, String className, String dDataId) {
         try {
-            String[] split = stringList.split(",");
-            List<Map<String, Object>> all = this.dataClassService.getListBYIn(Arrays.asList(split), className, dDataId);
+            List<String> l = new ArrayList<>();
+            if (StringUtils.isNotEmpty(stringList)) {
+                String[] split = stringList.split(",");
+                l = Arrays.asList(split);
+            }
+            List<Map<String, Object>> all = this.dataClassService.getListBYIn(l, className, dDataId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

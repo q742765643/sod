@@ -3,8 +3,9 @@ package com.piesat.dm.mapper;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.entity.datatable.GridAreaEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
@@ -128,7 +129,7 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getLogicByDdataId(@Param("dDataId") String dDataId);
 
-    List<DataClassLogicEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
+    List<DataTableInfoEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
 
     List<Map<String, Object>> getDataTypeList(@Param("dataClassIds") String dataClassIds);
 

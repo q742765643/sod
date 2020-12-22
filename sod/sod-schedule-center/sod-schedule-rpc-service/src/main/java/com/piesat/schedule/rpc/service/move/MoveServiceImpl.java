@@ -14,6 +14,7 @@ import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.move.MoveDao;
 import com.piesat.schedule.entity.move.MoveEntity;
@@ -135,10 +136,10 @@ public class MoveServiceImpl extends BaseService<MoveEntity> implements MoveServ
         diSendService.sendMove(moveEntity);
         jobInfoService.start(moveMapstruct.toDto(moveEntity));
         String tableName = moveEntity.getTableName();
-        List<DataClassLogicDto> dataLogic = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), tableName.contains(".")?tableName.substring(tableName.indexOf(".")+1):tableName);
-        for (DataClassLogicDto dl : dataLogic) {
+        List<DataTableInfoDto> dataTable = this.dataLogicService.getDataLogic(moveEntity.getDataClassId(), moveEntity.getDatabaseId(), tableName.contains(".")?tableName.substring(tableName.indexOf(".")+1):tableName);
+        for (DataTableInfoDto dl : dataTable) {
             AdvancedConfigDto scd = new AdvancedConfigDto();
-            scd.setTableId(dl.getTableId());
+            scd.setTableId(dl.getId());
             scd.setMoveIdentifier(1);
             scd.setMoveId(moveEntity.getId());
             this.storageConfigurationService.updateDataAuthorityConfig(scd);

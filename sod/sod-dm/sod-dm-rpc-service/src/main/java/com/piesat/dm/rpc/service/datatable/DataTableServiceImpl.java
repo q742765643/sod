@@ -5,7 +5,16 @@ import com.piesat.common.MapUtil;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.common.constants.Constants;
+import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.enums.DbaEnum;
+import com.piesat.dm.core.factory.Actuator;
+import com.piesat.dm.core.factory.AuzDatabase;
+import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.model.AuthorityVo;
+import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
@@ -13,11 +22,12 @@ import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.*;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -73,7 +83,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Autowired
     private NewdataApplyService newdataApplyService;
     @Autowired
-    private StorageConfigurationService storageConfigurationService;
+    private DatabaseService databaseService;
     @Autowired
     private TableForeignKeyMapper tableForeignKeyMapper;
 
@@ -87,7 +97,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     public DataTableInfoDto saveDto(DataTableInfoDto dataTableDto) {
         if (dataTableDto.getId() != null) {
             DataTableInfoDto dotById = this.getDotById(dataTableDto.getId());
-            List<DataClassLogicEntity> dataClassLogic = this.dataLogicDao.findByTableId(dataTableDto.getId());
+            List<DataClassAndTableEntity> dataClassLogic = this.dataLogicDao.findByTableId(dataTableDto.getId());
             if (dataClassLogic.size()>0){
                 String dataClassId = dataClassLogic.get(0).getDataClassId();
                 List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
@@ -127,7 +137,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
 
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
-        String sql = "select A.* ,B.data_class_id from T_SOD_DATA_TABLE_INFO A,T_SOD_DATACLASS_TABLE B where ( A.id=B.table_id or A.id = B.SUB_TABLE_ID ) and B.database_id ='" + databaseId + "'";
+        String sql = "select A.* from T_SOD_DATA_TABLE_INFO A,T_SOD_DATACLASS_TABLE B where ( A.id=B.table_id or A.id = B.SUB_TABLE_ID ) and A.database_id ='" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         List<Map<String, Object>> maps = MapUtil.transformMapList(list);
         return maps;
@@ -229,7 +239,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
                 map.put("primaryKey", primaryKey.get(0).getDbEleCode());
             }
             map.put("database", this.databaseMapper.toDto(databaseEntity));
-            List<DataClassLogicEntity> dataClassTable = this.dataLogicDao.findByTableId(keyTable.getId());
+            List<DataClassAndTableEntity> dataClassTable = this.dataLogicDao.findByTableId(keyTable.getId());
             if (dataClassTable.size() < 1) {
                 return ResultT.failed("没有对应资料");
             }
@@ -268,7 +278,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Transactional
     public ResultT paste(String copyId, String pasteId) {
         List<DataTableInfoEntity> copys = this.dataTableDao.getByClassLogicId(copyId);
-        DataClassLogicEntity paste = this.dataLogicDao.getOne(pasteId);
+        DataClassAndTableEntity paste = this.dataLogicDao.getOne(pasteId);
         List<DataTableInfoEntity> pDataTableEntitys = this.dataTableDao.getByClassLogicId(pasteId);
         for (DataTableInfoEntity pd : pDataTableEntitys) {
             this.shardingDao.deleteByTableId(pd.getId());
@@ -380,5 +390,47 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             }
         }
     }
+
+    @Override
+    public List<DataTableInfoDto> findETable(String databaseId) {
+        List<DataTableInfoEntity> byDatabaseId = this.dataTableDao.findByDatabaseIdAndTableType(databaseId, Constants.TABLE_TYPE_E);
+        return this.dataTableMapper.toDto(byDatabaseId);
+    }
+
+    @Override
+    public List<Map<String, Object>> findTables(String tableId) {
+        List<Map<String, Object>> tables = this.dataTableDao.getTables(tableId);
+        return tables;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRelatedTables(String tableId) {
+        List<Map<String, Object>> tables = this.dataTableDao.getRelatedTables(tableId);
+        return tables;
+    }
+
+    @Override
+    public void contrastColumns(DataTableInfoDto dataTableInfoDto, ResultT resultT) {
+        DatabaseDto databaseDto = databaseService.getDotById(dataTableInfoDto.getDatabaseId());
+        ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
+        AuthorityVo a = new AuthorityVo(databaseDto.getSchemaName(),dataTableInfoDto.getTableName(), null, null);
+        AuzFactory af = new AuzFactory(coreInfo.getPid(),coreInfo,coreInfo.getDatabaseType(),resultT);
+        AuzDatabase actuator = (AuzDatabase)af.getActuator(true);
+        List<Map<String, Object>> c = null;
+        List<Map<String, Object>> i = null;
+        ResultT<List<Map<String, Object>>> r = new ResultT<>();
+        actuator.columnInfo(a,r);
+        if (r.isSuccess()){
+            c = r.getData();
+        }
+        r = new ResultT<>();
+        actuator.indexInfo(a,r);
+        if (r.isSuccess()){
+            i = r.getData();
+        }
+        dataTableInfoDto.contrast(c,i,null);
+        resultT.setData(dataTableInfoDto);
+    }
+
 
 }

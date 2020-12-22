@@ -386,7 +386,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
             for (String data_class_id : data_class_id_Array) {
                 Map<String, Object> dataMaps = new HashMap<String, Object>();
 
-                List<DataTableInfoEntity> dataTableList = dataTableDao.getByclassIdAndDatabaseId(data_class_id, database_id);
+                List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(data_class_id, database_id);
 
                 List<Map<String, Object>> KV = new ArrayList<Map<String, Object>>();
 

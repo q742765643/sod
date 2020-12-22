@@ -38,4 +38,10 @@ public interface DbUserAlterLogService {
      * @return
      */
     List<DbUserAlterLogDto> all();
+
+    /**
+     * 删除
+     * @param id
+     */
+    void deleteByAuthorizeId(String id);
 }

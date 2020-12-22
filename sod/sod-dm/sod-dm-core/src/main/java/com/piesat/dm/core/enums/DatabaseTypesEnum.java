@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 
 public enum DatabaseTypesEnum {
-    XUGU("XUGU"),GBASE("GBASE"),CASSANDRA("CASSANDRA"),POSTGRESQL("POSTGRESQL");
+    XUGU("XUGU"),GBASE("GBASE8A"),CASSANDRA("CASSANDRA"),POSTGRESQL("POSTGRESQL");
 
     /**
      * 数据库名称

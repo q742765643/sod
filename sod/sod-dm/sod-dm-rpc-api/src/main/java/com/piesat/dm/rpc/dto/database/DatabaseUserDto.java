@@ -4,6 +4,7 @@ import com.piesat.util.BaseDto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 数据库管理账户
@@ -122,4 +123,6 @@ public class DatabaseUserDto extends BaseDto {
     private String tutorPhone;
 
     private String phonenumber;
+
+    private List<DatabaseAuthorizedDto> list;
 }

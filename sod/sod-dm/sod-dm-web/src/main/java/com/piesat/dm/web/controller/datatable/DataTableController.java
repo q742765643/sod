@@ -76,7 +76,6 @@ public class DataTableController {
     public ResultT addApply(String classLogicIds, String applyId,String storageType,String databaseId) {
         try {
             NewdataApplyDto newdataApplyDto = this.newdataApplyService.getDotById(applyId);
-
             String[] ids = classLogicIds.split(",");
             List<DataTableInfoDto> list = new ArrayList<>();
             for (String id : ids) {
@@ -108,7 +107,9 @@ public class DataTableController {
     public ResultT get(String id) {
         try {
             DataTableInfoDto dataTableDto = this.dataTableService.getDotById(id);
-            return ResultT.success(dataTableDto);
+            ResultT r = new ResultT();
+            this.dataTableService.contrastColumns(dataTableDto,r);
+            return r;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -307,4 +308,44 @@ public class DataTableController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "根据tableId查询相关的键表要素表")
+    @RequiresPermissions("dm:dataTable:findTables")
+    @GetMapping(value = "/findTables")
+    public ResultT findTables(String tableId) {
+        try {
+            List<Map<String, Object>> tables = this.dataTableService.findTables(tableId);
+            return ResultT.success(tables);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据tableId查询相关的表")
+    @RequiresPermissions("dm:dataTable:getRelatedTables")
+    @GetMapping(value = "/getRelatedTables")
+    public ResultT getRelatedTables(String tableId) {
+        try {
+            List<Map<String, Object>> tables = this.dataTableService.getRelatedTables(tableId);
+            return ResultT.success(tables);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据物理库id查询所有要素表")
+    @RequiresPermissions("dm:dataTable:findETable")
+    @GetMapping(value = "/findETable")
+    public ResultT findETable(String databaseId) {
+        try {
+            List<DataTableInfoDto> eTable = this.dataTableService.findETable(databaseId);
+            return ResultT.success(eTable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 }

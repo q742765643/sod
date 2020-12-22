@@ -16,6 +16,10 @@ import javax.persistence.Table;
 @Table(name = "T_SOD_DBUSER_ALTER_LOG")
 @Entity
 public class DbUserAlterLogEntity extends BaseEntity {
+
+    @Column(name = "authorize_id")
+    private String authorizeId;
+
     @Column(name = "log", columnDefinition = "TEXT", nullable = true)
     private String log;
 

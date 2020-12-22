@@ -23,6 +23,9 @@ public class ProductController {
     @Value("${product.enable}")
     private String enable;
 
+    @Value("${product.mmdneed}")
+    private String mmdneed;
+
     @ApiOperation(value = "产品配置启用")
     @RequiresPermissions("dm:product:enable")
     @GetMapping(value = "/enable")
@@ -31,6 +34,21 @@ public class ProductController {
             ResultT r = new ResultT();
             r.isSuccess();
             r.setData(enable);
+            return r;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "公共元数据是否必须")
+    @RequiresPermissions("dm:product:mmdneed")
+    @GetMapping(value = "/mmdneed")
+    public ResultT mmdneed() {
+        try {
+            ResultT r = new ResultT();
+            r.isSuccess();
+            r.setData(mmdneed);
             return r;
         } catch (Exception e) {
             e.printStackTrace();

@@ -20,7 +20,7 @@ import com.piesat.dm.dao.datatable.TableIndexDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.StorageConfigurationService;
@@ -376,6 +376,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId) {
+        if (StringUtils.isNotBlank(className)||StringUtils.isNotBlank(dDataId)){
+            classIds = null;
+        }
         return this.mybatisQueryMapper.getDataClassListBYIn(classIds, StringUtils.isNotBlank(className) ? "%" + className + "%" : null, StringUtils.isNotBlank(dDataId) ? "%" + dDataId + "%" : null);
     }
 
@@ -392,20 +395,6 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         DataClassDto dataClass = this.findByDataClassId(dataClassId);
         if (dataClass == null) {
             logger.info("根据dataClassId删除资料,查出资料为null:" + dataClassId);
-        }
-        List<DataClassLogicEntity> dll = this.dataLogicDao.findByDataClassId(dataClassId);
-        for (DataClassLogicEntity dl : dll) {
-            List<DataTableInfoEntity> dts  = new ArrayList<>();
-            dts.add(this.dataTableDao.getOne(dl.getTableId()));
-            if (StringUtils.isNotBlank(dl.getSubTableId())){
-                dts.add(this.dataTableDao.getOne(dl.getSubTableId()));
-            }
-            for (DataTableInfoEntity dt : dts) {
-                this.shardingDao.deleteByTableId(dt.getId());
-                this.tableColumnDao.deleteByTableId(dt.getId());
-                this.tableIndexDao.deleteByTableId(dt.getId());
-                this.dataTableDao.deleteById(dt.getId());
-            }
         }
         this.dataClassLabelService.deleteByDataClassId(dataClassId);
         this.dataLogicDao.deleteByDataClassId(dataClassId);

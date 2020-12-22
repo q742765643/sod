@@ -128,7 +128,7 @@ public abstract class AuzBase extends Actuator {
      * @param authorityVo
      * @param resultT
      */
-    public abstract void columnInfo(AuthorityVo authorityVo, ResultT<List> resultT);
+    public abstract void columnInfo(AuthorityVo authorityVo, ResultT<List<Map<String, Object>>> resultT);
 
     /**
      * 索引信息
@@ -136,6 +136,6 @@ public abstract class AuzBase extends Actuator {
      * @param authorityVo
      * @param resultT
      */
-    public abstract void indexInfo(AuthorityVo authorityVo, ResultT<List> resultT);
+    public abstract void indexInfo(AuthorityVo authorityVo, ResultT<List<Map<String, Object>>> resultT);
 
 }

@@ -4,7 +4,9 @@ import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.piesat.common.utils.OwnException;
+import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
+import com.piesat.dm.core.parser.ManagerUser;
 import com.piesat.dm.core.template.TemplateCassandra;
 import com.piesat.dm.core.template.TemplateGbase;
 import com.piesat.dm.core.template.TemplatePostgreSql;
@@ -44,6 +46,8 @@ public class Actuator {
     public String ALTER_RENAME_COLUMN = "ALTER TABLE ${schema}.${tableName} RENAME COLUMN ${oldColumnName} TO ${columnName}";
     public String QUERY_COLUMN = "SELECT TABLE_SCHEMA,TABLE_NAME,UPPER(COLUMN_NAME) COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' AND TABLE_SCHEMA = '${schema}'";
     public String QUERY_INDEX = "SELECT * FROM INFORMATION_SCHEMA.INDEX WHERE TABLE_NAME = '${tableName}' AND SCHEMA_NAME = '${schema}'";
+
+    public String[] sysUsers =  ManagerUser.sysUser.split(Constants.COMMA);
 
     public DatabaseTypesEnum databaseType;
 

@@ -6,24 +6,19 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
-import com.piesat.dm.core.api.impl.Gbase8a;
-import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.ConsistencyCheckDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.entity.ConsistencyCheckEntity;
-import com.piesat.dm.entity.dataclass.DataClassLogicEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.rpc.api.ConsistencyCheckService;
-import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.*;
-import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
@@ -177,7 +172,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         }
         for (Map<String, Object> dataTable : dataTableList) {
             String tableId = (String) dataTable.get("ID");
-            List<DataClassLogicEntity> dataClassLogics = dataLogicDao.findByTableIdOrSubTableId(tableId, tableId);
+            List<DataClassAndTableEntity> dataClassLogics = dataLogicDao.findByTableIdOrSubTableId(tableId, tableId);
             String dataClassId = "";
             if (dataClassLogics.size() > 0) {
                 dataClassId = dataClassLogics.get(0).getDataClassId();
