@@ -123,10 +123,11 @@ export function getBizUserByName(query) {
 }
 
 // 根据id查询关联表信息
-export function dataTableGet() {
+export function dataTableGet(query) {
   return request({
     url: baseUrl + '/dm/dataTable/get',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }
 

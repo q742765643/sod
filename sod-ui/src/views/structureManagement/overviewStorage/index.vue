@@ -1,34 +1,103 @@
 <template>
   <div class="app-container overviewStorage">
     <!-- 存储结构概览 -->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
-      <el-form-item label="四级编码:" prop="DDataId">
-        <el-input clearable size="small" v-model.trim="queryParams.DDataId" placeholder="请输入数据库" />
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      class="searchBox"
+    >
+      <el-form-item label="表中文名:" prop="tableNameCn">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.tableNameCn"
+          placeholder="请输入表中文名"
+        />
       </el-form-item>
-      <el-form-item label="资料名称:" prop="className">
+      <el-form-item label="表名称:" prop="tableName">
+        <el-input
+          clearable
+          size="small"
+          v-model.trim="queryParams.tableName"
+          placeholder="请输入表名称"
+        />
+      </el-form-item>
+      <el-form-item label="数据库" prop="databasePid">
+        <el-select
+          filterable
+          v-model="queryParams.databasePid"
+          placeholder="请选择"
+          @change="handleFindSpec"
+        >
+          <el-option
+            v-for="(citem, cindex) in DatabaseDefineList"
+            :key="cindex"
+            :label="citem.databaseName"
+            :value="citem.id"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="专题库" prop="databaseId">
+        <el-select
+          filterable
+          v-model="queryParams.databaseId"
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="(citem, cindex) in specialList"
+            :key="cindex"
+            :label="citem.databaseName"
+            :value="citem.id"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="关联资料:" prop="className">
         <el-input
           clearable
           size="small"
           v-model.trim="queryParams.className"
-          placeholder="请输入资料名称"
+          placeholder="请输入关联资料"
         />
       </el-form-item>
-      <el-form-item label="表名称:" prop="tableName">
-        <el-input clearable size="small" v-model.trim="queryParams.tableName" placeholder="请输入表名称" />
-      </el-form-item>
+
       <el-form-item>
-        <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
-        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
-        <el-button size="small" type="text" @click="superClick">
+        <el-button
+          size="small"
+          type="primary"
+          @click="handleQuery"
+          icon="el-icon-search"
+          >查询</el-button
+        >
+        <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right"
+          >重置</el-button
+        >
+        <!--   <el-button size="small" type="text" @click="superClick">
           <i class="el-icon-share"></i>高级搜索
-        </el-button>
+        </el-button> -->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          icon="el-icon-plus"
+          @click="handleTable('add')"
+          >新增</el-button
+        >
       </el-col>
+      <!-- <el-col :span="1.5">
+        <el-button
+          size="small"
+          type="success"
+          icon="el-icon-download"
+          @click="handleExport"
+          >导出</el-button
+        >
+      </el-col> -->
     </el-row>
 
     <el-table
@@ -39,50 +108,60 @@
       ref="singleTable"
       highlight-current-row
       @current-change="handleCurrentChange"
+      class="afTable"
     >
-      <af-table-column prop="CLASS_NAME" label="资料名称">
+      <af-table-column prop="NAME_CN" label="表中文名">
         <template slot-scope="scope">
-          <span>{{scope.row.CLASS_NAME}}</span>
+          <span>{{ scope.row.NAME_CN }}</span>
         </template>
       </af-table-column>
       <af-table-column prop="TABLE_NAME" label="表名称">
         <template slot-scope="scope">
-          <span>{{scope.row.TABLE_NAME}}</span>
-        </template>
-      </af-table-column>
-      <af-table-column prop="DATA_CLASS_ID" label="存储编码">
-        <template slot-scope="scope">
-          <span>{{scope.row.DATA_CLASS_ID}}</span>
-        </template>
-      </af-table-column>
-      <af-table-column prop="D_DATA_ID" label="四级编码">
-        <template slot-scope="scope">
-          <span>{{scope.row.D_DATA_ID}}</span>
-        </template>
-      </af-table-column>
-      <af-table-column prop="LOGIC_NAME" label="数据用途">
-        <template slot-scope="scope">
-          <span>{{scope.row.LOGIC_NAME}}</span>
+          <span>{{ scope.row.TABLE_NAME }}</span>
         </template>
       </af-table-column>
       <af-table-column prop="DATABASE_NAME" label="数据库">
         <template slot-scope="scope">
-          <span>{{scope.row.DATABASE_NAME}}</span>
+          <span>{{ scope.row.DATABASE_NAME }}</span>
         </template>
       </af-table-column>
-      <af-table-column prop="SPECIAL_DATABASE_NAME" label="专题名">
+      <af-table-column prop="DATABASE_P_NAME" label="专题名">
         <template slot-scope="scope">
-          <span>{{scope.row.SPECIAL_DATABASE_NAME}}</span>
+          <span>{{ scope.row.DATABASE_P_NAME }}</span>
         </template>
       </af-table-column>
+      <af-table-column prop="DICT_LABEL" label="表类型">
+        <template slot-scope="scope">
+          <span>{{ scope.row.DICT_LABEL }}</span>
+        </template>
+      </af-table-column>
+      <af-table-column prop="D_DATA_ID" label="关联资料">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-view"
+            @click="showLinkMateria(scope.row)"
+            >查看</el-button
+          >
+        </template>
+      </af-table-column>
+
       <af-table-column label="参数配置">
         <template slot-scope="scope">
           <!-- 存储结构 -->
-          <el-button disabled v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3" size="mini">
+          <el-button
+            disabled
+            v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3"
+            size="mini"
+          >
             <i class="btnRound orangRound"></i>存储结构
           </el-button>
           <el-button v-else size="mini" @click="handledDBMethods(scope.row)">
-            <i class="btnRound blueRound" v-if="scope.row.STORAGE_DEFINE_IDENTIFIER==1"></i>
+            <i
+              class="btnRound blueRound"
+              v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 1"
+            ></i>
             <i class="btnRound orangRound" v-else></i>存储结构
           </el-button>
           <!-- 数据同步 -->
@@ -95,7 +174,11 @@
           </el-button>
           <!-- 迁移 -->
 
-          <el-button v-if="scope.row.MOVE_ST===1" size="mini" @click="handlMoveMethods(scope.row)">
+          <el-button
+            v-if="scope.row.MOVE_ST === 1"
+            size="mini"
+            @click="handlMoveMethods(scope.row)"
+          >
             <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
             <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
             <i class="btnRound orangRound" v-else></i>迁移
@@ -103,7 +186,7 @@
 
           <!-- 清除 -->
           <el-button
-            v-if="scope.row.CLEAR_ST===1"
+            v-if="scope.row.CLEAR_ST === 1"
             size="mini"
             @click="handlClearMethods(scope.row)"
           >
@@ -114,7 +197,7 @@
 
           <!-- 备份 -->
           <el-button
-            v-if="scope.row.BACKUP_ST===1"
+            v-if="scope.row.BACKUP_ST === 1"
             size="mini"
             @click="handleBackUpMethods(scope.row)"
           >
@@ -124,8 +207,15 @@
           </el-button>
 
           <!-- 恢复 -->
-          <el-button disabled v-if="scope.row.ARCHIVING_IDENTIFIER==3" size="mini">恢复</el-button>
-          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)">恢复</el-button>
+          <el-button
+            disabled
+            v-if="scope.row.ARCHIVING_IDENTIFIER == 3"
+            size="mini"
+            >恢复</el-button
+          >
+          <el-button v-else size="mini" @click="handlRecoverMethods(scope.row)"
+            >恢复</el-button
+          >
         </template>
       </af-table-column>
       <af-table-column label="操作" width="140px">
@@ -135,14 +225,21 @@
             size="mini"
             icon="el-icon-setting"
             @click="settingCell(scope.row)"
-          >配置</el-button>
-          <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
+            >配置</el-button
+          >
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            @click="deleteCell(scope.row)"
+            >删除</el-button
+          >
         </template>
       </af-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -173,15 +270,23 @@
       :before-close="handleClose"
     >
       <el-checkbox-group v-model.trim="checkSetList">
-        <el-checkbox label="数据同步" border @change="changeSetting($event,'SYNC_IDENTIFIER','数据同步')"></el-checkbox>
         <el-checkbox
-          v-for="(item,index) in checkBoxList"
+          label="数据同步"
+          border
+          @change="changeSetting($event, 'SYNC_IDENTIFIER', '数据同步')"
+        ></el-checkbox>
+        <el-checkbox
+          v-for="(item, index) in checkBoxList"
           :key="index"
           :label="item.label"
           border
-          @change="changeSetting($event,item.value,item.label)"
+          @change="changeSetting($event, item.value, item.label)"
         ></el-checkbox>
-        <el-checkbox label="恢复" border @change="changeSetting($event,'ARCHIVING_IDENTIFIER','恢复')"></el-checkbox>
+        <el-checkbox
+          label="恢复"
+          border
+          @change="changeSetting($event, 'ARCHIVING_IDENTIFIER', '恢复')"
+        ></el-checkbox>
       </el-checkbox-group>
     </el-dialog>
 
@@ -201,19 +306,6 @@
       />
     </el-dialog>
 
-    <!-- 表结构管理 存储结构 -->
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="`表结构管理(${structureManageTitle})`"
-      :visible.sync="structureManageVisible"
-      width="100%"
-      :fullscreen="true"
-      :before-close="handleClose"
-      top="0"
-      class="scrollDialog"
-    >
-      <StructureManageTable v-if="structureManageVisible" v-bind:parentRowData="rowData" />
-    </el-dialog>
     <!-- 迁移清除 结构化数据清除进度 -->
     <el-dialog
       :close-on-click-modal="false"
@@ -238,7 +330,11 @@
       :before-close="handleClose"
       v-dialogDrag
     >
-      <handleMove @cancelHandle="handleClose" v-if="handleMoveDialog" :handleObj="handleMsgObj"></handleMove>
+      <handleMove
+        @cancelHandle="handleClose"
+        v-if="handleMoveDialog"
+        :handleObj="handleMsgObj"
+      ></handleMove>
     </el-dialog>
     <!-- 备份 -->
     <el-dialog
@@ -271,6 +367,55 @@
         ref="myHandleServer"
       />
     </el-dialog>
+
+    <!-- 表新增编辑 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="dialogMsgTitle"
+      :visible.sync="tableVisible"
+      width="700px"
+      v-dialogDrag
+    >
+      <handleTable
+        v-if="tableVisible"
+        :handleObj="handleMsgObj"
+        @cancelHandle="handleTableDialog"
+      />
+    </el-dialog>
+    <!-- 表结构管理 存储结构 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="`表结构管理(${structureManageTitle + dialogMsgTitle})`"
+      :visible.sync="structureManageVisible"
+      width="100%"
+      :fullscreen="true"
+      :before-close="handleClose"
+      top="0"
+      class="scrollDialog"
+    >
+      <StructureManageTable
+        v-if="structureManageVisible"
+        v-bind:parentRowData="rowData"
+        :tableBaseInfo="tableBaseInfo"
+      />
+    </el-dialog>
+    <!-- 关联资料查看 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      title="关联资料查看"
+      :visible.sync="linkMateriaVisible"
+      width="72%"
+      v-dialogDrag
+    >
+      <el-table :data="linkMateriaTableData" style="width: 100%">
+        <el-table-column prop="CLASS_NAME" label="资料名" align="center">
+        </el-table-column>
+        <el-table-column prop="DATA_CLASS_ID" label="四级编码" align="center">
+        </el-table-column>
+        <el-table-column prop="D_DATA_ID" label="存储编码" align="center">
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -280,14 +425,19 @@ import {
   updateColumnValue,
   deleteColumnValue,
   exportTable,
+  getClassByTableId,
 } from "@/api/structureManagement/overviewStorage";
+import {
+  getCanShowDatabaseDefineList,
+  findByDatabaseDefineId,
+} from "@/api/structureManagement/materialManage/index";
 import { getSyncInfo } from "@/api/schedule/dataSync";
 // 高级搜索
 import SuperSearch from "@/components/superSearch";
 // 数据恢复
 import DataRecovery from "@/views/structureManagement/overviewStorage/handleDataRecovery";
 //表结构管理--弹出层
-import StructureManageTable from "@/views/structureManagement/tableStructureManage/TableManage/StructureManageTable";
+import StructureManageTable from "@/views/structureManagement/overviewStorage/TableManage/StructureManageTable";
 // 迁移配置信息
 import handleMove from "@/views/schedule/move/handleMove";
 // 迁移清除 结构化数据清除配置
@@ -296,6 +446,9 @@ import handleClear from "@/views/schedule/clear/handleClear";
 import handleBackUp from "@/views/schedule/backup/handleBackUp";
 // 数据同步
 import handleSync from "@/views/schedule/dataSync/handleSync";
+//表新增编辑
+import handleTable from "@/views/structureManagement/overviewStorage/handleTable";
+
 export default {
   components: {
     SuperSearch,
@@ -305,9 +458,17 @@ export default {
     handleClear,
     handleBackUp,
     handleSync,
+    handleTable,
   },
   data() {
     return {
+      linkMateriaTableData: [],
+      linkMateriaVisible: false,
+      tableBaseInfo: {},
+      tableVisible: false,
+      dataLogicList: [],
+      DatabaseDefineList: [],
+      specialList: [],
       checkBoxList: [],
       checkSetList: [],
       // 遮罩层
@@ -315,9 +476,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        logicName: "",
-        DDataId: "",
+        databaseId: "",
+        databasePid: "",
         tableName: "",
+        tableNameCn: "",
         className: "",
       },
       total: 0,
@@ -351,9 +513,43 @@ export default {
     };
   },
   created() {
+    getCanShowDatabaseDefineList().then((res) => {
+      this.DatabaseDefineList = res.data;
+    });
     this.getList();
   },
   methods: {
+    showLinkMateria(row) {
+      getClassByTableId({ tableId: row.ID }).then((res) => {
+        this.linkMateriaVisible = true;
+        this.linkMateriaTableData = res.data;
+      });
+    },
+    // 新增/编辑
+    handleTable(info) {
+      if (info == "add") {
+        this.handleMsgObj = {};
+        this.dialogMsgTitle = "新增";
+      } else {
+        this.dialogMsgTitle = "编辑";
+      }
+      this.tableVisible = true;
+    },
+    //切换数据库查询专题库
+    handleFindSpec(val) {
+      this.queryParams.databaseId = "";
+      findByDatabaseDefineId({ id: val }).then((res) => {
+        this.specialList = res.data;
+      });
+    },
+    handleTableDialog(info) {
+      if (info) {
+        this.structureManageTitle = "";
+        this.structureManageVisible = true;
+        this.tableBaseInfo = info;
+      }
+      this.tableVisible = false;
+    },
     handleCurrentChange(val) {
       this.currentRow = val;
     },
@@ -423,7 +619,7 @@ export default {
     // 存储结构
     handledDBMethods(row) {
       this.rowData = row;
-      this.structureManageTitle = row.CLASS_NAME;
+      this.structureManageTitle = row.TABLE_NAME;
       this.structureManageVisible = true;
     },
     // 数据同步
@@ -578,7 +774,7 @@ export default {
       this.dialogSetting = true;
     },
     deleteCell(row) {
-      this.$confirm("确认删除" + row.CLASS_NAME + "吗?", "温馨提示", {
+      this.$confirm("确认删除" + row.TABLE_NAME + "吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -616,6 +812,7 @@ export default {
       this.handleMoveDialog = false;
       this.structureManageVisible = false;
       this.handleSyncDialog = false;
+      this.tableVisible = false;
       this.getList();
     },
     changeSetting(checked, column, label) {
@@ -664,7 +861,7 @@ export default {
   .searchBox {
     margin-bottom: 20px;
   }
-  .el-table {
+  .el-table.afTable {
     font-size: 12px;
     .el-button--mini {
       padding: 6px;
@@ -679,6 +876,9 @@ export default {
     }
     th {
       text-align: left;
+    }
+    th.is-center {
+      text-align: center;
     }
   }
 }

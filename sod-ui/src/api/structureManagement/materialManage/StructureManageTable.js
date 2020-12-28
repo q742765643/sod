@@ -37,15 +37,23 @@ export function getByTableId(query) {
 // 新增分库分表
 export function shardingSaves(data) {
   return request({
-    url: baseUrl + '/dm/sharding/saves',
+    url: baseUrl + '/dm/sharding/save',
     method: 'post',
     data: data
   })
 }
-// 根据logicid查询外键关联
-export function foreignKeyList(query) {
+//根据id查询分表
+export function shardingGet(query) {
   return request({
-    url: baseUrl + '/dm/foreignKey/findByClassLogicId',
+    url: baseUrl + '/dm/sharding/get',
+    method: 'get',
+    params: query
+  })
+}
+// 根据logicid查询外键关联
+export function foreignKeyByTableId(query) {
+  return request({
+    url: baseUrl + '/dm/foreignKey/findByTableId',
     method: 'get',
     params: query
   })
