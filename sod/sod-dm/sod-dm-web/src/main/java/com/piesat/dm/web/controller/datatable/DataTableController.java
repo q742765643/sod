@@ -10,6 +10,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.*;
+import com.piesat.dm.rpc.dto.datatable.vo.TableInfoVo;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
 import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
@@ -17,6 +18,8 @@ import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +76,7 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:addApply")
     @Log(title = "表信息管理（新增申请表信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/addApply")
-    public ResultT addApply(String classLogicIds, String applyId,String storageType,String databaseId) {
+    public ResultT addApply(String classLogicIds, String applyId, String storageType, String databaseId) {
         try {
             NewdataApplyDto newdataApplyDto = this.newdataApplyService.getDotById(applyId);
             String[] ids = classLogicIds.split(",");
@@ -108,7 +111,9 @@ public class DataTableController {
         try {
             DataTableInfoDto dataTableDto = this.dataTableService.getDotById(id);
             ResultT r = new ResultT();
-            this.dataTableService.contrastColumns(dataTableDto,r);
+            if (dataTableDto != null) {
+                this.dataTableService.contrastColumns(dataTableDto, r);
+            }
             return r;
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,7 +203,7 @@ public class DataTableController {
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
     @PostMapping(value = "/sample")
-    public ResultT getSampleData(@RequestBody SampleData sampleData) {
+    public ResultT getSampleData(SampleData sampleData) {
         try {
             return this.dataTableService.getSampleData(sampleData);
         } catch (Exception e) {
@@ -226,18 +231,6 @@ public class DataTableController {
     public ResultT getOverview(String databaseId, String dataClassId) {
         try {
             return this.dataTableService.getOverview(databaseId, dataClassId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
-    @ApiOperation(value = "查询sql信息")
-    @RequiresPermissions("dm:dataTable:getSql")
-    @GetMapping(value = "/getSql")
-    public ResultT getSql(String tableId, String databaseId) {
-        try {
-            return this.grpcService.getSql(tableId, databaseId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -286,7 +279,7 @@ public class DataTableController {
     public ResultT createTable(@RequestBody TableSqlDto tableSqlDto) {
         try {
             ResultT resultT = this.dataTableService.existTable(tableSqlDto);
-            if (resultT.getCode()==1||resultT.getData().equals(true)){
+            if (resultT.getCode() == 1 || resultT.getData().equals(true)) {
                 return ResultT.failed("数据库已经存在表结构!");
             }
             return this.dataTableService.createTable(tableSqlDto);
@@ -340,7 +333,7 @@ public class DataTableController {
     @GetMapping(value = "/findETable")
     public ResultT findETable(String databaseId) {
         try {
-            List<DataTableInfoDto> eTable = this.dataTableService.findETable(databaseId);
+            List<Map<String, Object>> eTable = this.dataTableService.findETable(databaseId);
             return ResultT.success(eTable);
         } catch (Exception e) {
             e.printStackTrace();
@@ -348,4 +341,54 @@ public class DataTableController {
         }
     }
 
+
+    @GetMapping("/getPageTableInfo")
+    @ApiOperation(value = "条件分页查询")
+    @RequiresPermissions("dm:dataTable:getPageTableInfo")
+    public ResultT<PageBean> getPageTableInfo(TableInfoVo tableInfoVo,
+                                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String, String> map = tableInfoVo.getMap();
+        PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = this.dataTableService.getPageTableInfo(pageForm);
+        return ResultT.success(pageBean);
+    }
+
+
+    @ApiOperation(value = "查询表数据量")
+    @RequiresPermissions("dm:dataTable:countTable")
+    @GetMapping(value = "/countTable")
+    public ResultT countTable(TableSqlDto tableSqlDto) {
+        try {
+            long l = this.dataTableService.countTable(tableSqlDto);
+            return ResultT.success(l);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询表sql")
+    @RequiresPermissions("dm:dataTable:getSql")
+    @GetMapping(value = "/getSql")
+    public ResultT getSql(String tableId) {
+        try {
+            return this.dataTableService.getSql(tableId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据子表类型查询")
+    @RequiresPermissions("dm:dataTable:findBySubType")
+    @GetMapping(value = "/findBySubType")
+    public ResultT findBySubType(String tableType, String storageType) {
+        try {
+            return ResultT.success(this.dataTableService.findBySubType(tableType, storageType));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }

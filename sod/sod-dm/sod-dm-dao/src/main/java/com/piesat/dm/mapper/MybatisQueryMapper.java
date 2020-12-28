@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @Component
 public interface MybatisQueryMapper {
-    List<Map<String, Object>> getDataClassListBYIn(@Param("classIds") List<String> classIds, @Param("className") String className, @Param("dDataId") String dDataId);
+    List<Map<String, Object>> getDataClassListBYIn(@Param("classIds") List<String> classIds, @Param("className") String className, @Param("dDataId") String dDataId, @Param("dataclassId") String dataclassId);
 
     List<Map<String, Object>> getDataLogicByDatabaseId(String databaseId);
 
@@ -235,4 +235,11 @@ public interface MybatisQueryMapper {
     List<Map<String,Object>>  getSpecialReadWriteFileDataInfo(@Param("userId") String userId);
 
     List<Map<String,Object>> onLineTimeByClassId(@Param("dataClassId")String dataClassId);
+
+    /**
+     * 分页条件查询表信息
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> getPageTableInfo(@Param("map") Map<String, String> map);
 }

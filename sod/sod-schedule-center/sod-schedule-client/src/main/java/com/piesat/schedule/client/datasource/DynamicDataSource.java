@@ -2,7 +2,7 @@ package com.piesat.schedule.client.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.client.vo.ConnectVo;
@@ -10,10 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -158,8 +154,8 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     }
     private synchronized DataSource getDataSource(String dataSourceName) {
         DataSource dataSource=null;
-        DatabaseService databaseService= SpringUtil.getBean(DatabaseService.class);
-        List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
+        SchemaService schemaService = SpringUtil.getBean(SchemaService.class);
+        List<DatabaseDto> databaseDtos= schemaService.findByLevel(1);
         boolean flag=false;
         for(DatabaseDto databaseDto:databaseDtos){
                String parentId=databaseDto.getDatabaseDefine().getId();

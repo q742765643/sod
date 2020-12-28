@@ -27,7 +27,7 @@ import com.piesat.dm.entity.dataapply.DataAuthorityRecordEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -78,7 +78,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
     private DataAuthorityRecordDao dataAuthorityRecordDao;
     @Autowired
@@ -260,7 +260,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         List<String> databaseIds = Arrays.asList(examineDatabaseId.split(Constants.COMMA));
         //为每个数据表进行授权
         for (DataAuthorityRecordDto dataAuthorityRecordDto : dataAuthorityRecordList) {
-            DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+            DatabaseDto databaseDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
             if (!databaseIds.contains(databaseDto.getDatabaseDefine().getId())) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG3, databaseDto.getDatabaseDefine().getDatabaseName()));
                 continue;
@@ -274,6 +274,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             AuzFactory af = new AuzFactory(coreInfo.getPid(),coreInfo,coreInfo.getDatabaseType(),r);
             AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
             actuator.grantTable(a,r);
+            actuator.close();
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
         }
         return r;
@@ -292,7 +293,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //用户up账户对应的可用物理库
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
 
-        DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+        DatabaseDto databaseDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
         if (!databaseIds.contains(databaseDto.getDatabaseDefine().getId())) {
             return ResultT.failed("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName() + "的访问权限" + "<br/>");
@@ -345,7 +346,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
             if (dataAuthorityRecordDto.getAuthorize() != null && dataAuthorityRecordDto.getAuthorize().intValue() == 1) {//已授权资料，撤销授权
                 //获取物理库信息
-                DatabaseDto databaseDto = databaseService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+                DatabaseDto databaseDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
                 DatabaseDcl databaseDcl = null;
                 try {
                     databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);

@@ -145,6 +145,13 @@ public class AuzDatabase extends AuzBase {
     }
 
     @Override
+    public Boolean existTable(AuthorityVo authorityVo, ResultT<String> resultT) {
+        authorityVo.format(this.databaseType);
+        String sql = TemplateUtil.rendering(QUERY_COLUMN, authorityVo);
+        return this.exeQuery(sql);
+    }
+
+    @Override
     public void columnInfo(AuthorityVo authorityVo, ResultT<List<Map<String, Object>>> resultT) {
         authorityVo.format(this.databaseType);
         String sql = TemplateUtil.rendering(QUERY_COLUMN, authorityVo);
@@ -157,5 +164,7 @@ public class AuzDatabase extends AuzBase {
         String sql = TemplateUtil.rendering(QUERY_INDEX, authorityVo);
         resultT.setData(this.exeQuery(sql, resultT));
     }
+
+
 
 }

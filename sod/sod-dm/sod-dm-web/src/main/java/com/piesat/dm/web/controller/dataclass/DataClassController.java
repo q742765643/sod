@@ -3,12 +3,11 @@ package com.piesat.dm.web.controller.dataclass;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassLabelService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataClassUserService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
@@ -46,7 +45,7 @@ public class DataClassController {
     @Autowired
     private DataClassUserService dataClassUserService;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
     private GrpcService grpcService;
 
@@ -238,14 +237,14 @@ public class DataClassController {
     @ApiOperation(value = "根据目录查询资料")
     @RequiresPermissions("dm:dataClass:getListBYIn")
     @GetMapping(value = "/getListBYIn")
-    public ResultT getListBYIn(String stringList, String className, String dDataId) {
+    public ResultT getListBYIn(String stringList, String className, String dDataId, String dataclassId) {
         try {
             List<String> l = new ArrayList<>();
             if (StringUtils.isNotEmpty(stringList)) {
                 String[] split = stringList.split(",");
                 l = Arrays.asList(split);
             }
-            List<Map<String, Object>> all = this.dataClassService.getListBYIn(l, className, dDataId);
+            List<Map<String, Object>> all = this.dataClassService.getListBYIn(l, className, dDataId, dataclassId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -335,6 +334,12 @@ public class DataClassController {
     @ApiOperation(value = "是否存在四级编码对应资料", notes = "是否存在四级编码对应资料")
     public ResultT<Boolean> haveClassByDataId(String dataId) {
         return this.dataClassService.haveClassByDataId(dataId);
+    }
+
+    @GetMapping("/getClassByTableId")
+    @ApiOperation(value = "根据tableId查询相关资料", notes = "根据tableId查询相关资料")
+    public ResultT getClassByTableId(String tableId) {
+        return this.dataClassService.getClassByTableId(tableId);
     }
 
 }

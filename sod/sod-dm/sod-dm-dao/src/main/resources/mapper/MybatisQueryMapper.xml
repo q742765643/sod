@@ -8,21 +8,19 @@
         A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,
         E.STORAGE_TYPE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
         DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,F.DICT_LABEL,B.table_Id,B.sub_Table_Id,E.table_name
-        ,H.TABLE_DESC
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATACLASS_TABLE B on A.data_class_id = B.data_class_id
         left join T_SOD_DATA_TABLE_INFO E on B.table_Id = E.id
         left join T_SOD_DATABASE C on E.database_id=C.id
         left join T_SOD_DATABASE_DEFINE D on C.database_define_id = D.id
-        left join T_SOD_DICT_DATA F ON E.STORAGE_TYPE = F.dict_value
-        left join T_SOD_DATA_TABLE H on B.id = H.CLASS_LOGIC_ID and db_table_type = 'E'
+        left join T_SOD_DICT_DATA F ON E.STORAGE_TYPE = F.dict_value AND F.dict_type = 'sys_storage_type'
         WHERE
-        F.dict_type = 'sys_storage_type'
-        <if test="classIds!=null and classIds.size()>0" >
-        AND A.data_class_id in
-        <foreach collection="classIds" index="index" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        A.TYPE = 2
+        <if test="classIds!=null and classIds.size()>0">
+            AND A.data_class_id in
+            <foreach collection="classIds" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
         </if>
         <if test="className != null and className != ''">
             AND class_name like CONCAT('%',#{className},'%')
@@ -30,13 +28,18 @@
         <if test="dDataId != null and dDataId != ''">
             AND upper(A.d_data_id) like CONCAT('%',upper(#{dDataId}),'%')
         </if>
+        <if test="dataclassId != null and dataclassId != ''">
+            AND upper(A.DATA_CLASS_ID) like CONCAT('%',upper(#{dataclassId}),'%')
+        </if>
         ORDER BY A.D_DATA_ID,A.DATA_CLASS_ID
     </select>
     <!--根据物理库查询dataLogic（MAP）-->
     <select id="getDataLogicByDatabaseId" parameterType="String" resultType="java.util.Map">
-         SELECT C.*,B.D_DATA_ID,B.CLASS_NAME,B.META_DATA_NAME
+        SELECT C.*, B.D_DATA_ID, B.CLASS_NAME, B.META_DATA_NAME
         FROM T_SOD_DATACLASS_TABLE A
-        LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID LEFT JOIN T_SOD_DATA_TABLE_INFO C ON A.TABLE_ID = C.ID WHERE C.DATABASE_ID = #{databaseId}
+                 LEFT JOIN T_SOD_DATA_CLASS B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID
+                 LEFT JOIN T_SOD_DATA_TABLE_INFO C ON A.TABLE_ID = C.ID
+        WHERE C.DATABASE_ID = #{databaseId}
     </select>
 
     <!--查询存储结构概览-->
@@ -137,26 +140,37 @@
 
     <!--修改存储结构概览状态-->
     <update id="updateStorageConfigurationStatus">
-        update T_SOD_ADVANCED_CONFIG set  ${column} = ${value} where  id = #{id}
+        update T_SOD_ADVANCED_CONFIG
+        set ${column} = ${value}
+        where id = #{id}
     </update>
 
     <select id="findStorageConfigurationByDataClassId" resultType="java.util.Map">
-        select a.*,c.database_id,b.data_class_id
-        from T_SOD_ADVANCED_CONFIG a,T_SOD_DATACLASS_TABLE b,T_SOD_DATA_TABLE_INFO c
-        where a.table_id = b.table_id and b.table_id = c.id and b.data_class_id = #{dataClassId}
+        select a.*, c.database_id, b.data_class_id
+        from T_SOD_ADVANCED_CONFIG a,
+             T_SOD_DATACLASS_TABLE b,
+             T_SOD_DATA_TABLE_INFO c
+        where a.table_id = b.table_id
+          and b.table_id = c.id
+          and b.data_class_id = #{dataClassId}
     </select>
 
     <delete id="deleteStorageConfigurationByDataClassId">
-        delete from T_SOD_ADVANCED_CONFIG where table_id in(select table_id from T_SOD_DATACLASS_TABLE where data_class_id = #{dataClassId});
+        delete
+        from T_SOD_ADVANCED_CONFIG
+        where table_id in (select table_id from T_SOD_DATACLASS_TABLE where data_class_id = #{dataClassId});
     </delete>
 
     <select id="getByDatabaseIdAndTableName" resultType="java.util.Map">
-        select * from  T_SOD_DATA_TABLE_INFO a  where a.table_name=#{tableName} and a.database_id = #{databaseId}
+        select *
+        from T_SOD_DATA_TABLE_INFO a
+        where a.table_name = #{tableName}
+          and a.database_id = #{databaseId}
     </select>
 
 
     <select id="onLineList" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT  BB.DATA_CLASS_ID DATA_CLASS_ID,EE.D_DATA_ID D_DATA_ID,EE.CLASS_NAME,
+        SELECT BB.DATA_CLASS_ID DATA_CLASS_ID,EE.D_DATA_ID D_DATA_ID,EE.CLASS_NAME,
         min(BEGIN_TIME) BEGIN_TIME,max(END_TIME) END_TIME,max(RECORD_COUNT) RECORD_COUNT,EE.IF_STOP_USE FROM
         usr_sod.T_SOD_TABLEDATA_STATISTICS AA INNER JOIN
         (SELECT C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM
@@ -164,7 +178,7 @@
         LEFT JOIN usr_sod.T_SOD_DATA_TABLE_INFO B ON A.TABLE_ID = B.ID
         LEFT JOIN usr_sod.T_SOD_DATACLASS_TABLE C ON (B.ID = C.TABLE_ID OR B.ID = C.SUB_TABLE_ID)
         WHERE C.DATA_CLASS_ID IS NOT NULL
-        GROUP BY C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID order by  C.DATA_CLASS_ID) BB
+        GROUP BY C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID order by C.DATA_CLASS_ID) BB
         on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
         INNER JOIN usr_sod.T_SOD_DATABASE CC on AA.DATABASE_ID = CC.ID
         INNER JOIN usr_sod.T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
@@ -181,62 +195,77 @@
     </select>
 
 
-
     <select id="getOnlineTime" resultType="java.util.Map">
-        select
-            min(BEGIN_TIME) as "BEGIN_TIME",max(END_TIME) as "END_TIME"
-        from
-            T_SOD_TABLEDATA_STATISTICS a
-                left join T_SOD_DATA_TABLE_INFO  b on a.TABLE_ID = b.id
-                left join T_SOD_DATABASE d on B.database_id = d.id
-                left join T_SOD_DATABASE_DEFINE dd on d.database_define_id = dd.id
-        where
-            c.DATA_CLASS_ID = #{classDataId} and a.statistic_date >= #{statisticDate} and
-            dd.id in ('STDB','HADB','FIDB') order by a.statistic_date desc;
+        select min(BEGIN_TIME) as "BEGIN_TIME",
+               max(END_TIME)   as "END_TIME"
+        from T_SOD_TABLEDATA_STATISTICS a
+                 left join T_SOD_DATA_TABLE_INFO b on a.TABLE_ID = b.id
+                 left join T_SOD_DATABASE d on B.database_id = d.id
+                 left join T_SOD_DATABASE_DEFINE dd on d.database_define_id = dd.id
+        where c.DATA_CLASS_ID = #{classDataId}
+          and a.statistic_date >= #{statisticDate}
+          and dd.id in ('STDB', 'HADB', 'FIDB')
+        order by a.statistic_date desc;
     </select>
 
     <select id="onLineTimeByClassId" resultType="java.util.Map">
-        SELECT  BEGIN_TIME,END_TIME,RECORD_COUNT,DATA_CLASS_ID,STATISTIC_TIME,DD.DATABASE_NAME FROM
-            T_SOD_TABLEDATA_STATISTICS AA
-            INNER JOIN
-                (SELECT DATA_CLASS_ID,B.database_id,A.TABLE_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM
-                    T_SOD_TABLEDATA_STATISTICS A
-                        LEFT JOIN T_SOD_DATA_TABLE_INFO B ON A.TABLE_ID = B.ID
-                        LEFT JOIN T_SOD_DATACLASS_TABLE C ON (B.ID = C.TABLE_ID OR B.ID = C.SUB_TABLE_ID)
-                 WHERE C.DATA_CLASS_ID IS NOT NULL and C.DATA_CLASS_ID = #{dataClassId}
-                 GROUP BY C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID order by  C.DATA_CLASS_ID) BB
-                on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
-             INNER JOIN T_SOD_DATABASE CC on AA.DATABASE_ID = CC.ID
-             INNER JOIN T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
+        SELECT BEGIN_TIME, END_TIME, RECORD_COUNT, DATA_CLASS_ID, STATISTIC_TIME, DD.DATABASE_NAME
+        FROM T_SOD_TABLEDATA_STATISTICS AA
+                 INNER JOIN
+             (SELECT DATA_CLASS_ID, B.database_id, A.TABLE_ID, MAX(STATISTIC_TIME) STATISTIC_TIME
+              FROM T_SOD_TABLEDATA_STATISTICS A
+                       LEFT JOIN T_SOD_DATA_TABLE_INFO B ON A.TABLE_ID = B.ID
+                       LEFT JOIN T_SOD_DATACLASS_TABLE C ON (B.ID = C.TABLE_ID OR B.ID = C.SUB_TABLE_ID)
+              WHERE C.DATA_CLASS_ID IS NOT NULL
+                and C.DATA_CLASS_ID = #{dataClassId}
+              GROUP BY C.DATA_CLASS_ID, B.DATABASE_ID, A.TABLE_ID
+              order by C.DATA_CLASS_ID) BB
+             on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
+                 INNER JOIN T_SOD_DATABASE CC on AA.DATABASE_ID = CC.ID
+                 INNER JOIN T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
     </select>
 
 
     <select id="getTableInfoByClassId" resultType="java.util.Map">
-        select a.*  from T_SOD_DATA_TABLE_INFO a left join T_SOD_DATACLASS_TABLE b on (a.id = b.table_id or a.id = b.sub_table_id)
-                                          where b.data_class_id=#{dataClassId}
+        select a.*
+        from T_SOD_DATA_TABLE_INFO a
+                 left join T_SOD_DATACLASS_TABLE b on (a.id = b.table_id or a.id = b.sub_table_id)
+        where b.data_class_id = #{dataClassId}
     </select>
 
     <select id="getInfoByUserIdMysql" resultType="java.util.Map">
-        select distinct b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE_INFO a
-                left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
-                left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
-                left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where id is not null and a.user_id=#{userId}
+        select distinct b.data_class_id as "id", c.data_class_id as "pId", b.class_name as "name"
+        from T_SOD_DATA_TABLE_INFO a
+                 left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
+                 left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
+                 left join T_SOD_DATA_CLASS c on substr(b.data_class_id, 1, 1) = c.data_class_id and c.type = 1
+        where id is not null
+          and a.user_id = #{userId}
         union
-        select distinct c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE_INFO a
-                left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
-                left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
-                left join T_SOD_DATA_CLASS c on substr(b.data_class_id,1,1) = c.data_class_id and c.type = 1 where id is not null and a.user_id=#{userId}
+        select distinct c.data_class_id as "id", c.parent_id as "pId", c.class_name as "name"
+        from T_SOD_DATA_TABLE_INFO a
+                 left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
+                 left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
+                 left join T_SOD_DATA_CLASS c on substr(b.data_class_id, 1, 1) = c.data_class_id and c.type = 1
+        where id is not null
+          and a.user_id = #{userId}
     </select>
     <select id="getInfoByUserId" resultType="java.util.Map">
-        select distinct b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE_INFO a
-                  left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
-                  left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
-                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where id is not null and a.user_id=#{userId} or b.create_by =#{userId}
+        select distinct b.data_class_id as "id", c.data_class_id as "pId", b.class_name as "name"
+        from T_SOD_DATA_TABLE_INFO a
+                 left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
+                 left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
+                 left join T_SOD_DATA_CLASS c on substr(b.data_class_id, 0, 1) = c.data_class_id and c.type = 1
+        where id is not null and a.user_id = #{userId}
+           or b.create_by = #{userId}
         union
-        select distinct c.data_class_id as "id",c.parent_id as "pId",c.class_name as "name" from T_SOD_DATA_TABLE_INFO a
-                  left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
-                  left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
-                  left join T_SOD_DATA_CLASS c on substr(b.data_class_id,0,1) = c.data_class_id and c.type = 1 where id is not null and a.user_id=#{userId} or b.create_by =#{userId}
+        select distinct c.data_class_id as "id", c.parent_id as "pId", c.class_name as "name"
+        from T_SOD_DATA_TABLE_INFO a
+                 left join T_SOD_DATACLASS_TABLE d on a.id = d.table_id
+                 left join T_SOD_DATA_CLASS b on d.data_class_id = b.data_class_id
+                 left join T_SOD_DATA_CLASS c on substr(b.data_class_id, 0, 1) = c.data_class_id and c.type = 1
+        where id is not null and a.user_id = #{userId}
+           or b.create_by = #{userId}
     </select>
     <!--<select id="getInfoByUserId1" resultType="java.util.Map">
         select distinct b.data_class_id as "id",c.data_class_id as "pId",b.class_name as "name" from T_SOD_DATA_TABLE a
@@ -264,84 +293,184 @@
 
 
     <select id="getLogicClassTree" resultType="java.util.Map">
-        SELECT LOGIC_NAME as NAME,CONCAT('0-',LOGIC_FLAG) ID,'0' PID,'1' as TYPE,'0' METADATAID FROM  T_SOD_LOGIC_DEFINE
-            UNION
-        SELECT DISTINCT CLASS_NAME as NAME, CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) ID,CONCAT(PARENT_ID,  CONCAT('-', LOGIC_FLAG)) PID, '1' as TYPE, '0' METADATAID
-        FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID =  SUBSTR(B.DATA_CLASS_ID,0,1)
-            UNION
-        SELECT D.CLASS_NAME as NAME, CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) ID, CONCAT(D.PARENT_ID,  CONCAT('-', C.LOGIC_FLAG)) PID,'1' as TYPE,'0' METADATAID
-        FROM (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A
-            INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D where C.PARENT_ID = D.DATA_CLASS_ID
-            UNION
-        SELECT F.CLASS_NAME as NAME, CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) ID, CONCAT(F.PARENT_ID,  CONCAT('-', E.LOGIC_FLAG)) PID,'1' as TYPE,'0' METADATAID  FROM
-        (SELECT D.CLASS_NAME,D.DATA_CLASS_ID,D.PARENT_ID,C.LOGIC_FLAG FROM
-        (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B  ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D
-        where C.PARENT_ID = D.DATA_CLASS_ID) E,T_SOD_DATA_CLASS F  where E.PARENT_ID = F.DATA_CLASS_ID
-            UNION
-        SELECT CLASS_NAME as NAME,A.DATA_CLASS_ID ID,CONCAT(PARENT_ID,CONCAT('-',LOGIC_FLAG)) PID,
-        '2' as TYPE,'0' METADATAID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE TYPE = 2
+        SELECT LOGIC_NAME as NAME, CONCAT('0-', LOGIC_FLAG) ID, '0' PID, '1' as TYPE, '0' METADATAID
+        FROM T_SOD_LOGIC_DEFINE
+        UNION
+        SELECT DISTINCT CLASS_NAME as                                    NAME,
+                        CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) ID,
+                        CONCAT(PARENT_ID, CONCAT('-', LOGIC_FLAG))       PID,
+                        '1'        as                                    TYPE,
+                        '0'                                              METADATAID
+        FROM T_SOD_DATA_CLASS A
+                 INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = SUBSTR(B.DATA_CLASS_ID, 0, 1)
+        UNION
+        SELECT D.CLASS_NAME as                                    NAME,
+               CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) ID,
+               CONCAT(D.PARENT_ID, CONCAT('-', C.LOGIC_FLAG))     PID,
+               '1'          as                                    TYPE,
+               '0'                                                METADATAID
+        FROM (SELECT CLASS_NAME, A.DATA_CLASS_ID, LOGIC_FLAG, PARENT_ID
+              FROM T_SOD_DATA_CLASS A
+                       INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,
+             T_SOD_DATA_CLASS D
+        where C.PARENT_ID = D.DATA_CLASS_ID
+        UNION
+        SELECT F.CLASS_NAME as                                    NAME,
+               CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) ID,
+               CONCAT(F.PARENT_ID, CONCAT('-', E.LOGIC_FLAG))     PID,
+               '1'          as                                    TYPE,
+               '0'                                                METADATAID
+        FROM (SELECT D.CLASS_NAME, D.DATA_CLASS_ID, D.PARENT_ID, C.LOGIC_FLAG
+              FROM (SELECT CLASS_NAME, A.DATA_CLASS_ID, LOGIC_FLAG, PARENT_ID
+                    FROM T_SOD_DATA_CLASS A
+                             INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,
+                   T_SOD_DATA_CLASS D
+              where C.PARENT_ID = D.DATA_CLASS_ID) E,
+             T_SOD_DATA_CLASS F
+        where E.PARENT_ID = F.DATA_CLASS_ID
+        UNION
+        SELECT CLASS_NAME as                              NAME,
+               A.DATA_CLASS_ID                            ID,
+               CONCAT(PARENT_ID, CONCAT('-', LOGIC_FLAG)) PID,
+               '2'        as                              TYPE,
+               '0'                                        METADATAID
+        FROM T_SOD_DATA_CLASS A
+                 INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID
+        WHERE TYPE = 2
     </select>
     <select id="getLogicClassTreePostgresql" resultType="java.util.Map">
-        SELECT LOGIC_NAME as NAME,CONCAT('0-',LOGIC_FLAG) ID,'0' PID,'1' as TYPE,'0' METADATAID FROM  T_SOD_LOGIC_DEFINE
+        SELECT LOGIC_NAME as NAME, CONCAT('0-', LOGIC_FLAG) ID, '0' PID, '1' as TYPE, '0' METADATAID
+        FROM T_SOD_LOGIC_DEFINE
         UNION
-        SELECT DISTINCT CLASS_NAME as NAME, CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) ID,CONCAT(PARENT_ID,  CONCAT('-', LOGIC_FLAG)) PID, '1' as TYPE, '0' METADATAID
-        FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID =  SUBSTR(B.DATA_CLASS_ID,1,1)
+        SELECT DISTINCT CLASS_NAME as                                    NAME,
+                        CONCAT(A.DATA_CLASS_ID, CONCAT('-', LOGIC_FLAG)) ID,
+                        CONCAT(PARENT_ID, CONCAT('-', LOGIC_FLAG))       PID,
+                        '1'        as                                    TYPE,
+                        '0'                                              METADATAID
+        FROM T_SOD_DATA_CLASS A
+                 INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = SUBSTR(B.DATA_CLASS_ID, 1, 1)
         UNION
-        SELECT D.CLASS_NAME as NAME, CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) ID, CONCAT(D.PARENT_ID,  CONCAT('-', C.LOGIC_FLAG)) PID,'1' as TYPE,'0' METADATAID
-        FROM (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A
-        INNER JOIN T_SOD_DATA_LOGIC B ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D where C.PARENT_ID = D.DATA_CLASS_ID
+        SELECT D.CLASS_NAME as                                    NAME,
+               CONCAT(D.DATA_CLASS_ID, CONCAT('-', C.LOGIC_FLAG)) ID,
+               CONCAT(D.PARENT_ID, CONCAT('-', C.LOGIC_FLAG))     PID,
+               '1'          as                                    TYPE,
+               '0'                                                METADATAID
+        FROM (SELECT CLASS_NAME, A.DATA_CLASS_ID, LOGIC_FLAG, PARENT_ID
+              FROM T_SOD_DATA_CLASS A
+                       INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,
+             T_SOD_DATA_CLASS D
+        where C.PARENT_ID = D.DATA_CLASS_ID
         UNION
-        SELECT F.CLASS_NAME as NAME, CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) ID, CONCAT(F.PARENT_ID,  CONCAT('-', E.LOGIC_FLAG)) PID,'1' as TYPE,'0' METADATAID  FROM
-        (SELECT D.CLASS_NAME,D.DATA_CLASS_ID,D.PARENT_ID,C.LOGIC_FLAG FROM
-        (SELECT CLASS_NAME,A.DATA_CLASS_ID,LOGIC_FLAG,PARENT_ID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B  ON  A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,T_SOD_DATA_CLASS D
-        where C.PARENT_ID = D.DATA_CLASS_ID) E,T_SOD_DATA_CLASS F  where E.PARENT_ID = F.DATA_CLASS_ID
+        SELECT F.CLASS_NAME as                                    NAME,
+               CONCAT(F.DATA_CLASS_ID, CONCAT('-', E.LOGIC_FLAG)) ID,
+               CONCAT(F.PARENT_ID, CONCAT('-', E.LOGIC_FLAG))     PID,
+               '1'          as                                    TYPE,
+               '0'                                                METADATAID
+        FROM (SELECT D.CLASS_NAME, D.DATA_CLASS_ID, D.PARENT_ID, C.LOGIC_FLAG
+              FROM (SELECT CLASS_NAME, A.DATA_CLASS_ID, LOGIC_FLAG, PARENT_ID
+                    FROM T_SOD_DATA_CLASS A
+                             INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID) C,
+                   T_SOD_DATA_CLASS D
+              where C.PARENT_ID = D.DATA_CLASS_ID) E,
+             T_SOD_DATA_CLASS F
+        where E.PARENT_ID = F.DATA_CLASS_ID
         UNION
-        SELECT CLASS_NAME as NAME,A.DATA_CLASS_ID ID,CONCAT(PARENT_ID,CONCAT('-',LOGIC_FLAG)) PID,
-        '2' as TYPE,'0' METADATAID FROM T_SOD_DATA_CLASS A INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID WHERE TYPE = 2
+        SELECT CLASS_NAME as                              NAME,
+               A.DATA_CLASS_ID                            ID,
+               CONCAT(PARENT_ID, CONCAT('-', LOGIC_FLAG)) PID,
+               '2'        as                              TYPE,
+               '0'                                        METADATAID
+        FROM T_SOD_DATA_CLASS A
+                 INNER JOIN T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID
+        WHERE TYPE = 2
     </select>
 
     <select id="getDatabaseTree" resultType="java.util.Map">
-        SELECT * FROM (SELECT CONCAT(ID,'-P') ID,'999' PID,DATABASE_NAME NAME,'' DATA_CLASS_ID,1 TYPE,true isParent FROM
-        T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1 ORDER BY SERIAL_NUMBER) A
+        SELECT *
+        FROM (SELECT CONCAT(ID, '-P') ID, '999' PID, DATABASE_NAME NAME, '' DATA_CLASS_ID, 1 TYPE, true isParent
+              FROM T_SOD_DATABASE_DEFINE
+              WHERE USER_DISPLAY_CONTROL = 1
+              ORDER BY SERIAL_NUMBER) A
         UNION
-        SELECT * FROM (SELECT ID ID,CONCAT(DATABASE_DEFINE_ID,'-P') PID,
-        CONCAT(CONCAT(CONCAT(DATABASE_NAME,'('),SCHEMA_NAME),')') NAME,'' DATA_CLASS_ID,1 TYPE,true isParent FROM
-        T_SOD_DATABASE WHERE STOP_USE = false AND DATABASE_DEFINE_ID IN
-        (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1) ORDER BY ID) B
+        SELECT *
+        FROM (SELECT ID                                                           ID,
+                     CONCAT(DATABASE_DEFINE_ID, '-P')                             PID,
+                     CONCAT(CONCAT(CONCAT(DATABASE_NAME, '('), SCHEMA_NAME), ')') NAME,
+                     ''                                                           DATA_CLASS_ID,
+                     1                                                            TYPE,
+                     true                                                         isParent
+              FROM T_SOD_DATABASE
+              WHERE STOP_USE = false
+                AND DATABASE_DEFINE_ID IN
+                    (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1)
+              ORDER BY ID) B
     </select>
     <select id="getDatabaseTreePostgresql" resultType="java.util.Map">
-        SELECT * FROM (SELECT CONCAT(ID,'-P') ID,'999' PID,DATABASE_NAME as NAME,'' DATA_CLASS_ID,1 as TYPE,true isParent FROM
-        T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1 ORDER BY ID) A
+        SELECT *
+        FROM (SELECT CONCAT(ID, '-P') ID, '999' PID, DATABASE_NAME as NAME, '' DATA_CLASS_ID, 1 as TYPE, true isParent
+              FROM T_SOD_DATABASE_DEFINE
+              WHERE USER_DISPLAY_CONTROL = 1
+              ORDER BY ID) A
         UNION
-        SELECT * FROM (SELECT ID ID,CONCAT(DATABASE_DEFINE_ID,'-P') PID,
-        CONCAT(CONCAT(CONCAT(DATABASE_NAME,'('),SCHEMA_NAME),')') as NAME,'' DATA_CLASS_ID,1 as TYPE,true isParent FROM
-        T_SOD_DATABASE WHERE STOP_USE = false AND DATABASE_DEFINE_ID IN
-        (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1) ORDER BY ID) B
+        SELECT *
+        FROM (SELECT ID                                                              ID,
+                     CONCAT(DATABASE_DEFINE_ID, '-P')                                PID,
+                     CONCAT(CONCAT(CONCAT(DATABASE_NAME, '('), SCHEMA_NAME), ')') as NAME,
+                     ''                                                              DATA_CLASS_ID,
+                     1                                                            as TYPE,
+                     true                                                            isParent
+              FROM T_SOD_DATABASE
+              WHERE STOP_USE = false
+                AND DATABASE_DEFINE_ID IN
+                    (SELECT ID FROM T_SOD_DATABASE_DEFINE WHERE USER_DISPLAY_CONTROL = 1)
+              ORDER BY ID) B
     </select>
 
     <select id="getDatabaseClassTree" resultType="java.util.Map" parameterType="String">
-        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END id,CLASS_NAME name,
-        CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, #{id}) pId,DATA_CLASS_ID,TYPE  type,
-        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
+        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END id,
+                        CLASS_NAME                                                                name,
+                        CONCAT(CASE PARENT_ID WHEN 0 THEN '' ELSE PARENT_ID END, #{id})           pId,
+                        DATA_CLASS_ID,
+                        TYPE                                                                      type,
+                        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END                                 isParent
         FROM T_SOD_DATA_CLASS START WITH DATA_CLASS_ID IN
         (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATACLASS_TABLE A,T_SOD_DATA_TABLE_INFO B WHERE A.TABLE_ID = B.ID AND B.DATABASE_ID = #{id})
-        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID ORDER BY id
+        CONNECT BY PRIOR PARENT_ID = DATA_CLASS_ID
+        ORDER BY id
     </select>
 
     <select id="getDatabaseClassTreeMysql" resultType="java.util.Map">
-        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END ID,CLASS_NAME NAME,PARENT_ID,
-        CONCAT(CASE PARENT_ID WHEN '0' THEN '' ELSE PARENT_ID END, #{id}) PID,DATA_CLASS_ID,TYPE  TYPE,
-        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
-        FROM T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN
-        (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATACLASS_TABLE A,T_SOD_DATA_TABLE_INFO B WHERE A.TABLE_ID = B.ID AND B.DATABASE_ID = #{id})
-         ORDER BY id
+        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END ID,
+                        CLASS_NAME                                                                NAME,
+                        PARENT_ID,
+                        CONCAT(CASE PARENT_ID WHEN '0' THEN '' ELSE PARENT_ID END, #{id})         PID,
+                        DATA_CLASS_ID,
+                        TYPE                                                                      TYPE,
+                        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END                                 isParent
+        FROM T_SOD_DATA_CLASS
+        WHERE DATA_CLASS_ID IN
+              (SELECT DISTINCT DATA_CLASS_ID
+               FROM T_SOD_DATACLASS_TABLE A,
+                    T_SOD_DATA_TABLE_INFO B
+               WHERE A.TABLE_ID = B.ID
+                 AND B.DATABASE_ID = #{id})
+        ORDER BY id
     </select>
     <select id="getDatabaseClassTreePostgresql" resultType="java.util.Map">
-        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END ID,CLASS_NAME as NAME,PARENT_ID,
-        CONCAT(CASE PARENT_ID WHEN '0' THEN '' ELSE PARENT_ID END, #{id}) PID,DATA_CLASS_ID,TYPE  as TYPE,
-        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END isParent
-        FROM T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN
-        (SELECT DISTINCT DATA_CLASS_ID FROM T_SOD_DATACLASS_TABLE A,T_SOD_DATA_TABLE_INFO B WHERE A.TABLE_ID = B.ID AND B.DATABASE_ID = #{id})
+        SELECT DISTINCT CASE TYPE WHEN 2 THEN DATA_CLASS_ID ELSE CONCAT(DATA_CLASS_ID, #{id}) END ID,
+                        CLASS_NAME as                                                             NAME,
+                        PARENT_ID,
+                        CONCAT(CASE PARENT_ID WHEN '0' THEN '' ELSE PARENT_ID END, #{id})         PID,
+                        DATA_CLASS_ID,
+                        TYPE       as                                                             TYPE,
+                        CASE TYPE WHEN 1 THEN TRUE ELSE FALSE END                                 isParent
+        FROM T_SOD_DATA_CLASS
+        WHERE DATA_CLASS_ID IN
+              (SELECT DISTINCT DATA_CLASS_ID
+               FROM T_SOD_DATACLASS_TABLE A,
+                    T_SOD_DATA_TABLE_INFO B
+               WHERE A.TABLE_ID = B.ID
+                 AND B.DATABASE_ID = #{id})
         ORDER BY id
     </select>
     <select id="getDatabaseClassTreePMysql" resultType="java.util.Map">
@@ -485,17 +614,18 @@
     </select>
 
     <select id="queryNewdataApplyByApplyId" parameterType="String" resultType="java.util.Map">
-          select a.*, b.c_datum_code,b.c_datumtype,c.c_datum_code type_code,c.c_datumtype type_name
-          FROM t_sod_newdata_apply a
-          left join TAB_OMIN_CM_CC_DATUMTYPEINFO b on a.d_data_id = b.c_datum_code
-          left join TAB_OMIN_CM_CC_DATUMTYPEINFO c on SUBSTR(a.D_DATA_ID,1,1) = c.c_datum_code
-          WHERE a.id = #{id}
+        select a.*, b.c_datum_code, b.c_datumtype, c.c_datum_code type_code, c.c_datumtype type_name
+        FROM t_sod_newdata_apply a
+                 left join TAB_OMIN_CM_CC_DATUMTYPEINFO b on a.d_data_id = b.c_datum_code
+                 left join TAB_OMIN_CM_CC_DATUMTYPEINFO c on SUBSTR(a.D_DATA_ID, 1, 1) = c.c_datum_code
+        WHERE a.id = #{id}
     </select>
 
     <select id="queryDataAuthorityApplyById" resultType="java.util.Map" parameterType="String">
-        select a.*,b.database_up_id,b.database_up_password,b.examine_status
-        from t_sod_data_authority_apply a left join t_sod_database_user b on a.user_id = b.user_id and b.examine_status = '1'
-		where a.id = #{id}
+        select a.*, b.database_up_id, b.database_up_password, b.examine_status
+        from t_sod_data_authority_apply a
+                 left join t_sod_database_user b on a.user_id = b.user_id and b.examine_status = '1'
+        where a.id = #{id}
     </select>
 
 
@@ -609,12 +739,19 @@
     </update>
 
     <select id="getDataServiceMaxNum" resultType="Integer" parameterType="String">
-        select  nvl(max (num),0) from T_SOD_DATASERVICE_CONFIG where data_service_id = #{data_service_id} and num is not null
+        select nvl(max(num), 0)
+        from T_SOD_DATASERVICE_CONFIG
+        where data_service_id = #{data_service_id}
+          and num is not null
     </select>
 
     <select id="querySpecialReadWriteBySdbId" resultType="java.util.Map" parameterType="String">
-        select  distinct a.class_name NAME,a.data_class_id ID,b.type_id PID from T_SOD_DATA_CLASS a,T_SOD_DATABASE_SPECIAL_READ_WRITE b
-                  where a.data_class_id = b.data_class_id and b.sdb_id = #{sdbId} and b.examine_status = 1
+        select distinct a.class_name NAME, a.data_class_id ID, b.type_id PID
+        from T_SOD_DATA_CLASS a,
+             T_SOD_DATABASE_SPECIAL_READ_WRITE b
+        where a.data_class_id = b.data_class_id
+          and b.sdb_id = #{sdbId}
+          and b.examine_status = 1
     </select>
 
     <update id="updateSpecialTreeData">
@@ -634,15 +771,36 @@
     </update>
 
     <select id="getRecordSpecialByTdbId" resultType="java.util.Map">
-        select  b.data_class_id,b.database_id,b.apply_authority,b.empower_authority,b.examine_status,b.failure_reason,e.class_name data_service_name,d.table_name,e.class_name,
-                c.database_name,cc.database_name as special_database_name,
-                e.is_access,e.d_data_id
-        from T_SOD_DATABASE_SPECIAL_READ_WRITE b,T_SOD_DATABASE c,T_SOD_DATABASE_DEFINE cc,T_SOD_DATA_TABLE_INFO d,T_SOD_DATACLASS_TABLE f, T_SOD_DATA_CLASS e
-        where b.data_class_id = f.data_class_id and b.database_id = d.database_id and (f.table_id = d.id or f.sub_table_id = d.id)
-              and b.database_id=c.id and c.database_define_id=cc.id
-              and b.data_class_id=e.data_class_id
-              and b.sdb_id=#{sdbId} and b.data_class_id not in (select dar.data_class_id from T_SOD_DATA_AUTHORITY_APPLY daa
-	left join T_SOD_DATA_AUTHORITY_RECORD dar on daa.id=dar.apply_id and daa.user_id=#{user_id})
+        select b.data_class_id,
+               b.database_id,
+               b.apply_authority,
+               b.empower_authority,
+               b.examine_status,
+               b.failure_reason,
+               e.class_name        data_service_name,
+               d.table_name,
+               e.class_name,
+               c.database_name,
+               cc.database_name as special_database_name,
+               e.is_access,
+               e.d_data_id
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE b,
+             T_SOD_DATABASE c,
+             T_SOD_DATABASE_DEFINE cc,
+             T_SOD_DATA_TABLE_INFO d,
+             T_SOD_DATACLASS_TABLE f,
+             T_SOD_DATA_CLASS e
+        where b.data_class_id = f.data_class_id
+          and b.database_id = d.database_id
+          and (f.table_id = d.id or f.sub_table_id = d.id)
+          and b.database_id = c.id
+          and c.database_define_id = cc.id
+          and b.data_class_id = e.data_class_id
+          and b.sdb_id = #{sdbId}
+          and b.data_class_id not in (select dar.data_class_id
+                                      from T_SOD_DATA_AUTHORITY_APPLY daa
+                                               left join T_SOD_DATA_AUTHORITY_RECORD dar
+                                                         on daa.id = dar.apply_id and daa.user_id = #{user_id})
     </select>
 
     <!--根据用户ID从创建申请表取得其他用户创建并且没有被该用户引用的所有专题库信息-->
@@ -662,67 +820,98 @@
 
 
     <select id="getRecordListByUserIdMysql" resultType="java.util.Map" parameterType="String">
-        select
-            dd.id, dd.apply_id, dd.data_class_id, dd.database_id, dd.authorize, dd.apply_authority,
-            dd.cause, dt.name_cn, dt.table_name, da.user_id, da.create_time as "apply_time",
-            sdb.database_name as "special_name", sdb.schema_name as "schema_name",
-            sdd.database_name as "database_name", sdd.id as "database_define_id",
-            sdc.class_name, tsu.web_username user_name
+        select dd.id,
+               dd.apply_id,
+               dd.data_class_id,
+               dd.database_id,
+               dd.authorize,
+               dd.apply_authority,
+               dd.cause,
+               dt.name_cn,
+               dt.table_name,
+               da.user_id,
+               da.create_time    as "apply_time",
+               sdb.database_name as "special_name",
+               sdb.schema_name   as "schema_name",
+               sdd.database_name as "database_name",
+               sdd.id            as "database_define_id",
+               sdc.class_name,
+               tsu.web_username     user_name
         from t_sod_data_authority_record dd
-             left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
-             left join T_SOD_DATA_TABLE_INFO dt on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
-             left join t_sod_data_authority_apply da on dd.apply_id = da.id
-             left join t_sod_database sdb on dd.database_id = sdb.id
-             left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
-             left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
-             left join t_sod_user tsu on tsu.user_name = dt.user_id
-        where
-            dt.user_id = #{userId}
-        order by
-            da.create_time desc, dd.authorize asc
+                 left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
+                 left join T_SOD_DATA_TABLE_INFO dt
+                           on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
+                 left join t_sod_data_authority_apply da on dd.apply_id = da.id
+                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join t_sod_data_class sdc on substr(dd.data_class_id, 1, 1) = sdc.data_class_id
+                 left join t_sod_user tsu on tsu.user_name = dt.user_id
+        where dt.user_id = #{userId}
+        order by da.create_time desc, dd.authorize asc
     </select>
     <select id="getRecordListByUserId" resultType="java.util.Map" parameterType="String">
-         select
-            dd.id, dd.apply_id, dd.data_class_id, dd.database_id, dd.authorize, dd.apply_authority,
-            dd.cause, dt.name_cn, dt.table_name, da.user_id, da.create_time as "apply_time",
-            sdd.database_name database_name, sdd.id as "database_define_id",
-            sdb.schema_name as "schema_name", sdb.database_name special_name,
-            sdc.class_name, tsu.web_username web_username, tsu.user_name biz_userid
-       from t_sod_data_authority_record dd
-             left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
-             left join T_SOD_DATA_TABLE_INFO dt on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
-             left join t_sod_data_authority_apply da on dd.apply_id = da.id
-             left join t_sod_database sdb on dd.database_id = sdb.id
-             left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
-             left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
-             left join t_sod_user tsu on tsu.user_name = dt.user_id
-        where
-            dt.user_id = #{userId}
-        order by
-            da.create_time desc,
-            dd.authorize asc
+        select dd.id,
+               dd.apply_id,
+               dd.data_class_id,
+               dd.database_id,
+               dd.authorize,
+               dd.apply_authority,
+               dd.cause,
+               dt.name_cn,
+               dt.table_name,
+               da.user_id,
+               da.create_time  as "apply_time",
+               sdd.database_name  database_name,
+               sdd.id          as "database_define_id",
+               sdb.schema_name as "schema_name",
+               sdb.database_name  special_name,
+               sdc.class_name,
+               tsu.web_username   web_username,
+               tsu.user_name      biz_userid
+        from t_sod_data_authority_record dd
+                 left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
+                 left join T_SOD_DATA_TABLE_INFO dt
+                           on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
+                 left join t_sod_data_authority_apply da on dd.apply_id = da.id
+                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join t_sod_data_class sdc on substr(dd.data_class_id, 1, 1) = sdc.data_class_id
+                 left join t_sod_user tsu on tsu.user_name = dt.user_id
+        where dt.user_id = #{userId}
+        order by da.create_time desc,
+                 dd.authorize asc
     </select>
 
     <select id="getApplyRecordListByUserId" resultType="java.util.Map" parameterType="String">
-         select
-            dd.id, dd.apply_id, dd.data_class_id, dd.database_id, dd.authorize, dd.apply_authority,
-            dd.cause, dt.name_cn, dt.table_name, da.user_id, da.create_time as "apply_time",
-            sdb.database_name as "schema_name", sdb.schema_name as "schema_id",
-            sdd.database_name, sdd.id as "database_define_id", sdc.class_name,
-            tsu.web_username user_name
-       from t_sod_data_authority_record dd
-             left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
-             left join T_SOD_DATA_TABLE_INFO dt on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
-             left join t_sod_data_authority_apply da on dd.apply_id = da.id
-             left join t_sod_database sdb on dd.database_id = sdb.id
-             left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
-             left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
-             left join t_sod_user tsu on tsu.user_name = dt.user_id
-        where
-            da.user_id = #{userId}
-        order by
-            da.create_time desc,
-            dd.authorize asc
+        select dd.id,
+               dd.apply_id,
+               dd.data_class_id,
+               dd.database_id,
+               dd.authorize,
+               dd.apply_authority,
+               dd.cause,
+               dt.name_cn,
+               dt.table_name,
+               da.user_id,
+               da.create_time    as "apply_time",
+               sdb.database_name as "schema_name",
+               sdb.schema_name   as "schema_id",
+               sdd.database_name,
+               sdd.id            as "database_define_id",
+               sdc.class_name,
+               tsu.web_username     user_name
+        from t_sod_data_authority_record dd
+                 left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
+                 left join T_SOD_DATA_TABLE_INFO dt
+                           on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
+                 left join t_sod_data_authority_apply da on dd.apply_id = da.id
+                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+                 left join t_sod_data_class sdc on substr(dd.data_class_id, 1, 1) = sdc.data_class_id
+                 left join t_sod_user tsu on tsu.user_name = dt.user_id
+        where da.user_id = #{userId}
+        order by da.create_time desc,
+                 dd.authorize asc
     </select>
 
     <select id="getDataClassBaseInfo" resultType="DataClassBaseInfoEntity" parameterType="String">
@@ -792,8 +981,11 @@
 
 
     <select id="getLogicByDdataId" resultType="java.util.Map" parameterType="String">
-        SELECT a.d_data_id,b.data_class_id,c.logic_flag,c.logic_name,b.id FROM t_sod_data_class a INNER JOIN t_sod_data_logic b ON a.data_class_id = b.data_class_id
-        INNER JOIN t_sod_logic_define c ON  c.logic_flag = b.logic_flag WHERE a.d_data_id = #{dDataId}
+        SELECT a.d_data_id, b.data_class_id, c.logic_flag, c.logic_name, b.id
+        FROM t_sod_data_class a
+                 INNER JOIN t_sod_data_logic b ON a.data_class_id = b.data_class_id
+                 INNER JOIN t_sod_logic_define c ON c.logic_flag = b.logic_flag
+        WHERE a.d_data_id = #{dDataId}
     </select>
 
     <select id="getDataLogic" resultType="DataTableInfoEntity" parameterType="String">
@@ -816,59 +1008,95 @@
     </select>
 
     <select id="getDataTypeList" parameterType="String" resultType="java.util.Map">
-        select * from t_sod_data_class where data_class_id in
-        (select distinct leftb(data_class_id,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
+        select *
+        from t_sod_data_class
+        where data_class_id in
+              (select distinct leftb(data_class_id, 1) from t_sod_data_class where data_class_id in (${dataClassIds}))
     </select>
 
     <select id="getDataTypeListPostgresql" parameterType="String" resultType="java.util.Map">
-        select * from t_sod_data_class where data_class_id in
-        (select distinct SUBSTR(data_class_id,1,1) from t_sod_data_class where data_class_id in(${dataClassIds}))
+        select *
+        from t_sod_data_class
+        where data_class_id in
+              (select distinct SUBSTR(data_class_id, 1, 1)
+               from t_sod_data_class
+               where data_class_id in (${dataClassIds}))
     </select>
 
     <select id="findByDataServiceId" resultType="java.util.Map" parameterType="String">
-        select a.* from T_SOD_DATA_TABLE_INFO a,T_SOD_DATACLASS_TABLE b
-        where b.data_class_id in(${dataClassIds})
-        and (a.id = b.table_id or a.id = b.sub_table_id)
-        AND a.database_id=#{databaseId}
+        select a.*
+        from T_SOD_DATA_TABLE_INFO a,
+             T_SOD_DATACLASS_TABLE b
+        where b.data_class_id in (${dataClassIds})
+          and (a.id = b.table_id or a.id = b.sub_table_id)
+          AND a.database_id = #{databaseId}
     </select>
 
     <select id="findColumnByTableId" resultType="java.util.Map" parameterType="String">
-        select * from t_sod_data_table_column where table_id in(${tableId}) order by serial_number asc
+        select *
+        from t_sod_data_table_column
+        where table_id in (${tableId})
+        order by serial_number asc
     </select>
 
     <select id="findIndexByTableId" resultType="java.util.Map" parameterType="String">
-        select * from t_sod_data_table_index where table_id in(${tableId})
+        select *
+        from t_sod_data_table_index
+        where table_id in (${tableId})
     </select>
 
     <select id="findShardByTableId" resultType="java.util.Map" parameterType="String">
-        select * from t_sod_data_table_sharding where table_id in(${tableId})
+        select *
+        from t_sod_data_table_sharding
+        where table_id in (${tableId})
     </select>
 
     <select id="findByDatabaseDefine" resultType="java.util.Map" parameterType="String">
-        SELECT * FROM t_sod_database_define WHERE id=
-        (SELECT database_define_id FROM t_sod_database WHERE id=#{databaseId})
+        SELECT *
+        FROM t_sod_database_define
+        WHERE id =
+              (SELECT database_define_id FROM t_sod_database WHERE id = #{databaseId})
     </select>
 
     <select id="findByUserIdAndDatabaseDefineId1" resultType="java.util.Map" parameterType="String">
-        select a.id as "id",a.database_name || '【' || a.schema_name || '】' as "name",a.database_define_id as "physicId" from t_sod_database a
-        where a.database_classify = '物理库' and a.database_define_id = #{databaseDefineId}
+        select a.id                                           as "id",
+               a.database_name || '【' || a.schema_name || '】' as "name",
+               a.database_define_id                           as "physicId"
+        from t_sod_database a
+        where a.database_classify = '物理库'
+          and a.database_define_id = #{databaseDefineId}
     </select>
     <select id="findByUserIdAndDatabaseDefineId2" resultType="java.util.Map" parameterType="String">
-        select a.id as "id",a.database_name || '【' || a.schema_name || '】' as "name",a.database_define_id as "physicId" from t_sod_database a
-        left join t_sod_database_special b on a.tdb_id = b.id
-        where a.database_classify = '专题库' and b.EXAMINE_STATUS = '2' and b.USE_STATUS = '2' and a.database_define_id = #{databaseDefineId} and b.user_id = #{userId}
+        select a.id                                           as "id",
+               a.database_name || '【' || a.schema_name || '】' as "name",
+               a.database_define_id                           as "physicId"
+        from t_sod_database a
+                 left join t_sod_database_special b on a.tdb_id = b.id
+        where a.database_classify = '专题库'
+          and b.EXAMINE_STATUS = '2'
+          and b.USE_STATUS = '2'
+          and a.database_define_id = #{databaseDefineId}
+          and b.user_id = #{userId}
     </select>
 
     <select id="getSqlList" resultType="java.util.Map" parameterType="String">
-        SELECT M.id,M.data_service_id,M.data_service_name,M.table_name,N.table_sql FROM
-        (SELECT DISTINCT a.id,c.data_class_id data_service_id,c.class_name data_service_name,a.table_name,a.database_id
-        FROM T_SOD_DATA_TABLE_INFO a,T_SOD_DATACLASS_TABLE b,T_SOD_DATA_CLASS c
-        WHERE (a.ID = b.table_id or a.ID = b.sub_table_id) AND b.data_class_id = c.data_class_id AND a.data_service_id in(${dataClassIds})
-        AND b.database_id = #{databaseId}
-         )M
-        LEFT JOIN t_sod_data_table_sql N
-        ON M.database_id = N.database_id
-        AND M.table_name = N.table_name
+        SELECT M.id, M.data_service_id, M.data_service_name, M.table_name, N.table_sql
+        FROM (SELECT DISTINCT a.id,
+                              c.data_class_id data_service_id,
+                              c.class_name    data_service_name,
+                              a.table_name,
+                              a.database_id
+              FROM T_SOD_DATA_TABLE_INFO a,
+                   T_SOD_DATACLASS_TABLE b,
+                   T_SOD_DATA_CLASS c
+              WHERE (a.ID = b.table_id or a.ID = b.sub_table_id)
+                AND b.data_class_id = c.data_class_id
+                AND a.data_service_id in (${dataClassIds})
+                AND b.database_id = #{databaseId}
+             ) M
+                 LEFT JOIN t_sod_data_table_sql N
+                           ON M.database_id = N.database_id
+                               AND M.table_name = N.table_name
     </select>
     <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT DISTINCT
@@ -911,7 +1139,7 @@
         T_SOD_DATA_TABLE_INFO d
         inner join T_SOD_DATACLASS_TABLE c on d.id = c.table_id or d.id = c.sub_table_id
         inner join t_sod_data_class t on substr(c.data_class_id,0,1)=t.data_class_id
-        inner join t_sod_data_class t2 on c.data_class_id = t2.data_class_id  and t2.if_stop_use !='false'
+        inner join t_sod_data_class t2 on c.data_class_id = t2.data_class_id and t2.if_stop_use !='false'
         inner join t_sod_database db on db.id = d.database_id
         where db.database_define_id in
         <foreach collection="list" item="e" separator="," open="(" close=")">
@@ -926,7 +1154,8 @@
     </select>
     <select id="getGroupConcat" resultType="java.util.Map" parameterType="java.util.List">
         select A.DATA_CLASS_ID,A.D_DATA_ID,A.DATA_SERVICE_NAME,WM_CONCAT(A.parent_id) logic,A.DATABASE_ID FROM(
-        select DISTINCT n.DATA_CLASS_ID,t.D_DATA_ID,t.class_name DATA_SERVICE_NAME,dpd.database_define_id as parent_id,dpd.id as
+        select DISTINCT n.DATA_CLASS_ID,t.D_DATA_ID,t.class_name DATA_SERVICE_NAME,dpd.database_define_id as
+        parent_id,dpd.id as
         DATABASE_ID
         FROM T_SOD_DATA_TABLE_INFO m
         inner join T_SOD_DATACLASS_TABLE n on m.id = n.table_id or m.id = n.sub_table_id
@@ -949,7 +1178,8 @@
         d.TABLE_NAME,e.CLASS_NAME,b.DATABASE_ID
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATACLASS_TABLE f on b.data_class_id = f.data_class_id
-        inner join T_SOD_DATA_TABLE_INFO d on (d.id = f.table_id or d.id = f.sub_table_id) and d.database_id = b.DATABASE_ID
+        inner join T_SOD_DATA_TABLE_INFO d on (d.id = f.table_id or d.id = f.sub_table_id) and d.database_id =
+        b.DATABASE_ID
         inner join t_sod_database c on b.database_id = c.id
         inner join t_sod_database_define c1 on c.database_define_id = c1.id
         inner join t_sod_data_class e on substr(b.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
@@ -975,7 +1205,8 @@
         SPECIAL_DATABASE_NAME,c.ID SPECIAL_DATABASE_ID,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATACLASS_TABLE f on b.data_class_id = f.data_class_id
-        inner join T_SOD_DATA_TABLE_INFO d on (d.id = f.table_id or d.id = f.sub_table_id ) and b.database_id = d.database_id
+        inner join T_SOD_DATA_TABLE_INFO d on (d.id = f.table_id or d.id = f.sub_table_id ) and b.database_id =
+        d.database_id
         inner join t_sod_database c on b.database_id = c.id
         inner join t_sod_database_define c1 on c.database_define_id = c1.id
         inner join t_sod_data_class e on substr(b.DATA_CLASS_ID,0,1)=e.DATA_CLASS_ID
@@ -1041,13 +1272,16 @@
     </select>
     <select id="querySpecialByUserIdAndUseStatus" resultType="java.util.Map">
         select a.*, '' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b
-          where a.user_id = b.user_name and a.USER_ID = #{userId} and a.USE_STATUS =#{useStatus}
+        where a.user_id = b.user_name and a.USER_ID = #{userId} and a.USE_STATUS =#{useStatus}
         union
-          select a.*, '' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b
-          where a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS = #{useStatus})
+        select a.*, '' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b
+        where a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID =
+        #{userId} and USE_STATUS = #{useStatus})
         <if test="useStatus != 3">
-          union
-          select a.*, 'WAITCHECK' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b where a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID = #{userId} and USE_STATUS ='1' and examine_status='1')
+            union
+            select a.*, 'WAITCHECK' as cause,b.web_username,b.dept_name from T_SOD_DATABASE_SPECIAL a,t_sod_user b where
+            a.user_id = b.user_name and a.id in (select sdb_id from T_SOD_DATABASE_SPECIAL_ACCESS where USER_ID =
+            #{userId} and USE_STATUS ='1' and examine_status='1')
         </if>
     </select>
 
@@ -1064,15 +1298,16 @@
     </delete>
     <!-- 删除申请表中数据 -->
     <delete id="clearUselessApply">
-    		delete from T_SOD_DATA_AUTHORITY_APPLY a
-    			where not exists (select 1 from  T_SOD_DATA_AUTHORITY_RECORD b where a.id = b.apply_id)
+        delete
+        from T_SOD_DATA_AUTHORITY_APPLY a
+        where not exists(select 1 from T_SOD_DATA_AUTHORITY_RECORD b where a.id = b.apply_id)
     </delete>
     <!-- 查询资料分类 -->
     <select id="getDataCategory" resultType="java.util.Map">
-    		select DATA_CLASS_ID as "id", CLASS_NAME as "name"
-    		from T_SOD_DATA_CLASS
-    		where PARENT_CLASS_ID = '0'
-    		order by DATA_CLASS_ID asc
+        select DATA_CLASS_ID as "id", CLASS_NAME as "name"
+        from T_SOD_DATA_CLASS
+        where PARENT_CLASS_ID = '0'
+        order by DATA_CLASS_ID asc
     </select>
     <!-- 根据物理库获取schema -->
     <select id="getSchemaByPhysic" parameterType="java.lang.String" resultType="java.util.Map">
@@ -1099,14 +1334,19 @@
 
     <!-- 下面根据专题库ID和存储编码来修改分类ID -->
     <update id="changeDataStatus" parameterType="java.util.Map">
-   		update T_SOD_DATABASE_SPECIAL_READ_WRITE
-		set examine_status=3
-		where sdb_id=#{tdbId} and DATA_CLASS_ID=#{data_class_id} and database_id=#{physical}
-   	</update>
+        update T_SOD_DATABASE_SPECIAL_READ_WRITE
+        set examine_status=3
+        where sdb_id = #{tdbId}
+          and DATA_CLASS_ID = #{data_class_id}
+          and database_id = #{physical}
+    </update>
     <!-- 修改datauathor表中数据 -->
     <update id="changeDataAuthorStatus" parameterType="java.util.Map">
-    	update T_SOD_DATA_AUTHORITY_RECORD set AUTHORIZE = null
-    	where QTDB_ID = #{tdbId} and DATA_CLASS_ID=#{data_class_id} and DATABASE_ID = #{physical}
+        update T_SOD_DATA_AUTHORITY_RECORD
+        set AUTHORIZE = null
+        where QTDB_ID = #{tdbId}
+          and DATA_CLASS_ID = #{data_class_id}
+          and DATABASE_ID = #{physical}
     </update>
     <!-- 下面根据专题库ID号、资料存储编码和物理库ID删除对应专题库信息 -->
     <delete id="deleteRecordByTdbId" parameterType="Map">
@@ -1139,9 +1379,11 @@
     </delete>
     <!-- 专题库删除节点的同时 更新节点下的资料为未分类 -->
     <update id="delTreeUpdateTypeId" parameterType="java.util.Map">
-		update T_SOD_DATABASE_SPECIAL_READ_WRITE set type_id ='9999'
-		where sdb_id = #{tdb_id} and type_id = #{type_id}
-	</update>
+        update T_SOD_DATABASE_SPECIAL_READ_WRITE
+        set type_id ='9999'
+        where sdb_id = #{tdb_id}
+          and type_id = #{type_id}
+    </update>
     <!-- 下面根据专题库ID和存储编码来修改分类ID -->
     <update id="updateTypeIdByTdbId" parameterType="java.util.Map">
         update T_SOD_DATABASE_SPECIAL_READ_WRITE
@@ -1230,11 +1472,18 @@
     </insert>
     <!-- 根据用户id，查询该用户所有自建专题库下申请访问的资料(既包含申请访问资料，又包含私有资料) -->
     <select id="getSpecialAuthorizeList" parameterType="java.lang.String" resultType="java.util.Map">
-       select a.*,b.*,c.table_name
-       from T_SOD_DATABASE_SPECIAL_READ_WRITE a left join T_SOD_DATABASE_SPECIAL b on b.TDB_ID = a.TDB_ID left join (
-	   select * from t_sod_data_table aa left join T_SOD_DATA_LOGIC bb on aa.TABLE_ID=bb.TABLE_ID) c on (c.DATA_CLASS_ID = a.DATA_CLASS_ID
-	   and c.database_id = a.LOGIC_ID)
-	   where c.USER_ID=#{userId} and a.AUTHORIZE=1 AND b.USE_STATUS ='2' AND b.EXAMINE_STATUS='2'"
+        select a.*, b.*, c.table_name
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE a
+                 left join T_SOD_DATABASE_SPECIAL b on b.TDB_ID = a.TDB_ID
+                 left join (
+            select *
+            from t_sod_data_table aa
+                     left join T_SOD_DATA_LOGIC bb on aa.TABLE_ID = bb.TABLE_ID) c on (c.DATA_CLASS_ID = a.DATA_CLASS_ID
+            and c.database_id = a.LOGIC_ID)
+        where c.USER_ID = #{userId}
+          and a.AUTHORIZE = 1
+          AND b.USE_STATUS = '2'
+          AND b.EXAMINE_STATUS = '2' "
     </select>
     <update id="updateDataAuthorityStatus">
         update t_sod_data_authority_record
@@ -1252,17 +1501,16 @@
         </where>
     </update>
     <select id="getRecentOnlineTime" resultType="java.util.Map">
-			select
-				databegintime as "BEGIN_TIME", dataendtime as "END_TIME"
-			from
-				T_SOD_ARCHIVE_INFO
-			where
-				PRODUCTIONCODE = #{ctsCode}
+        select databegintime as "BEGIN_TIME",
+               dataendtime   as "END_TIME"
+        from T_SOD_ARCHIVE_INFO
+        where PRODUCTIONCODE = #{ctsCode}
     </select>
     <sql id="Base_Column_List">
-	    TDB_ID, TDB_NAME, TDB_IMG, UNIT_ID, USER_ID, APPLY_TIME, USES, APPLY_FILE_PATH, EXAMINER,
+        TDB_ID
+        , TDB_NAME, TDB_IMG, UNIT_ID, USER_ID, APPLY_TIME, USES, APPLY_FILE_PATH, EXAMINER,
 	    EXAMINE_STATUS, EXAMINE_TIME, CAUSE, USE_STATUS ,SORT_NO
-  	</sql>
+    </sql>
 
     <!-- 查询用户可申请资料 -->
     <select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
@@ -1288,14 +1536,21 @@
     </select>
 
     <select id="getDataClassInfo" resultType="java.util.LinkedHashMap">
-        SELECT * FROM  T_SOD_DATA_CLASS A WHERE A.DATA_CLASS_ID = #{dataClassId}
+        SELECT *
+        FROM T_SOD_DATA_CLASS A
+        WHERE A.DATA_CLASS_ID = #{dataClassId}
     </select>
     <select id="selectTabOmincmccTempele" resultType="java.util.LinkedHashMap">
-        SELECT * FROM  TAB_OMIN_CM_CC_TEMPELE A WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]>
-        'delete') and  A.C_COREMETA_ID = #{C_COREMETA_ID}
+        SELECT *
+        FROM TAB_OMIN_CM_CC_TEMPELE A
+        WHERE (A.C_OPT_TYPE is null or A.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')
+          and A.C_COREMETA_ID = #{C_COREMETA_ID}
     </select>
     <select id="selectGridAreaDefine" resultType="java.util.LinkedHashMap">
-       SELECT * FROM T_SOD_GRID_AREA a where a.data_service_id = #{dataClassId};
+        SELECT *
+        FROM T_SOD_GRID_AREA a
+        where a.data_service_id = #{dataClassId};
     </select>
 
     <select id="getDataclassTreeByClassIds" resultType="java.util.LinkedHashMap" parameterType="java.util.List">
@@ -1354,58 +1609,82 @@
 
     <!-- 获取专题库自建资料 -->
     <select id="getSpecialDBData" resultType="java.util.Map">
-        select
-            nvl(sna.id,(sdc.DATA_CLASS_ID||srw.SDB_ID)) as APPLY_ID,srw.SDB_ID,
-            sdc.class_name dataname,sdc.DATA_CLASS_ID ,sdb.id as SCHEMAID,sdc.D_DATA_ID,srw.database_id,
-            wm_concat(sdt.TABLE_NAME) as TABLE_NAME,sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
-            sdd.id PHYSICSID,sdd.DATABASE_NAME PHYSICNAME,sdc.is_access is_publish
-        from
-            T_SOD_DATABASE_SPECIAL_READ_WRITE srw
-            inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
-            inner join T_SOD_DATACLASS_TABLE sdl on sdc.data_class_id = sdl.data_class_id
-            inner join T_SOD_DATA_TABLE_INFO sdt on (sdt.id = sdl.table_id or sdt.id = sdl.sub_table_id) and srw.database_id = sdt.database_id
-            inner join T_SOD_DATABASE sdb on srw.database_id = sdb.id
-            inner join T_SOD_DATABASE_DEFINE sdd on sdb.database_define_id = sdd.id
-            left join T_SOD_NEWDATA_APPLY sna on sna.data_class_id = sdc.data_class_id
-        where srw.data_type = '1' and srw.sdb_id = #{sdbId}
-         group by
-            sna.id,
-            dataname,sdc.DATA_CLASS_ID ,srw.SDB_ID,srw.database_id,sdc.D_DATA_ID,sdb.id,
-            sdb.database_name,sdb.schema_name,
-            sdd.id,sdd.DATABASE_NAME,sdc.is_access
+        select nvl(sna.id, (sdc.DATA_CLASS_ID || srw.SDB_ID))     as APPLY_ID,
+               srw.SDB_ID,
+               sdc.class_name                                        dataname,
+               sdc.DATA_CLASS_ID,
+               sdb.id                                             as SCHEMAID,
+               sdc.D_DATA_ID,
+               srw.database_id,
+               wm_concat(sdt.TABLE_NAME)                          as TABLE_NAME,
+               sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
+               sdd.id                                                PHYSICSID,
+               sdd.DATABASE_NAME                                     PHYSICNAME,
+               sdc.is_access                                         is_publish
+        from T_SOD_DATABASE_SPECIAL_READ_WRITE srw
+                 inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
+                 inner join T_SOD_DATACLASS_TABLE sdl on sdc.data_class_id = sdl.data_class_id
+                 inner join T_SOD_DATA_TABLE_INFO sdt on (sdt.id = sdl.table_id or sdt.id = sdl.sub_table_id) and
+                                                         srw.database_id = sdt.database_id
+                 inner join T_SOD_DATABASE sdb on srw.database_id = sdb.id
+                 inner join T_SOD_DATABASE_DEFINE sdd on sdb.database_define_id = sdd.id
+                 left join T_SOD_NEWDATA_APPLY sna on sna.data_class_id = sdc.data_class_id
+        where srw.data_type = '1'
+          and srw.sdb_id = #{sdbId}
+        group by sna.id,
+                 dataname, sdc.DATA_CLASS_ID, srw.SDB_ID, srw.database_id, sdc.D_DATA_ID, sdb.id,
+                 sdb.database_name, sdb.schema_name,
+                 sdd.id, sdd.DATABASE_NAME, sdc.is_access
     </select>
 
     <select id="getDataClassTree" parameterType="String" resultType="DataClassEntity">
-        select distinct t.data_class_id dataClassId,parent_id parentId,class_name className
-        from t_sod_data_class t start with t.data_class_id in(
-        select data_class_id from T_SOD_DATACLASS_TABLE a,T_SOD_DATA_TABLE_INFO b where a.table_id = b.id and database_id=#{databaseId})
+        select distinct t.data_class_id dataClassId, parent_id parentId, class_name className
+        from t_sod_data_class t start
+        with t.data_class_id in (
+            select data_class_id from T_SOD_DATACLASS_TABLE a, T_SOD_DATA_TABLE_INFO b where a.table_id = b.id and database_id=#{databaseId})
         connect by t.data_class_id= prior t.parent_id
         order by t.data_class_id asc
     </select>
     <select id="getDataClassTreePostgresql" parameterType="String" resultType="DataClassEntity">
-       WITH RECURSIVE r AS (
-         select distinct t.data_class_id ,t.parent_id ,t.class_name
-	        from t_sod_data_class t where  t.data_class_id
-           in (
-	        select data_class_id from t_sod_data_logic where database_id=#{databaseId}
-	        )
-	        union
-           select  t.data_class_id ,t.parent_id ,t.class_name
-           from t_sod_data_class t,r  where t.data_class_id=r.parent_id
+        WITH RECURSIVE r AS (
+            select distinct t.data_class_id, t.parent_id, t.class_name
+            from t_sod_data_class t
+            where t.data_class_id
+                      in (
+                      select data_class_id from t_sod_data_logic where database_id = #{databaseId}
+                  )
+            union
+            select t.data_class_id, t.parent_id, t.class_name
+            from t_sod_data_class t,
+                 r
+            where t.data_class_id = r.parent_id
         )
-        select data_class_id dataClassId,parent_id parentId,class_name className from r  order by r.data_class_id asc
+        select data_class_id dataClassId, parent_id parentId, class_name className
+        from r
+        order by r.data_class_id asc
     </select>
     <select id="getArchive" parameterType="String" resultType="java.util.Map">
-        SELECT C.* FROM (SELECT A.C_DATUM_CODE,A.C_SOURSDATUM_CODE,LEVEL L FROM TAB_OMIN_CM_CC_DATUMTYPEHYP A
-		START WITH A.C_DATUM_CODE = #{ddataid}
-		CONNECT BY PRIOR A.C_SOURSDATUM_CODE = A.C_DATUM_CODE) B,T_SOD_ARCHIVE_INFO C
-		WHERE L = 2 AND B.C_SOURSDATUM_CODE = C.PRODUCTIONCODE
+        SELECT C.*
+        FROM (SELECT A.C_DATUM_CODE, A.C_SOURSDATUM_CODE, LEVEL L
+              FROM TAB_OMIN_CM_CC_DATUMTYPEHYP A
+                  START
+              WITH A.C_DATUM_CODE = #{ddataid}
+              CONNECT BY PRIOR A.C_SOURSDATUM_CODE = A.C_DATUM_CODE) B,
+             T_SOD_ARCHIVE_INFO C
+        WHERE L = 2
+          AND B.C_SOURSDATUM_CODE = C.PRODUCTIONCODE
     </select>
     <select id="getDatabaseName" resultType="java.util.Map">
-        select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME,d.database_type DATABASE_TYPE  from T_SOD_DATABASE t inner join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id and d.user_display_control != '2'
+        select t.id                                                  ID,
+               concat(concat(d.database_name, '_'), t.database_name) DATABASE_NAME,
+               d.database_type                                       DATABASE_TYPE
+        from T_SOD_DATABASE t
+                 inner join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id and d.user_display_control != '2'
     </select>
     <select id="getByDatabaseDefineId" parameterType="String" resultType="java.util.Map">
-      select *  from T_SOD_DATABASE t where t.DATABASE_DEFINE_ID=#{id}
+        select *
+        from T_SOD_DATABASE t
+        where t.DATABASE_DEFINE_ID = #{id}
     </select>
 
 
@@ -1425,39 +1704,103 @@
 
     <!--用户申请的文件索引库的资料-->
     <select id="getApplyedRecodeFileDataInfo" resultType="java.util.Map" parameterType="String">
-        select
-            dd.data_class_id, dd.database_id, dd.authorize, dd.apply_authority, sdn.dir_norm,
-            dt.name_cn, dt.table_name, da.user_id, sdb.database_name as "special_name",
-            sdb.schema_name, sdd.database_name  as "database_name", sdd.id as "database_define_id",
-            sdc.class_name
+        select dd.data_class_id,
+               dd.database_id,
+               dd.authorize,
+               dd.apply_authority,
+               sdn.dir_norm,
+               dt.name_cn,
+               dt.table_name,
+               da.user_id,
+               sdb.database_name as "special_name",
+               sdb.schema_name,
+               sdd.database_name as "database_name",
+               sdd.id            as "database_define_id",
+               sdc.class_name
         from t_sod_data_authority_record dd
                  left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
                  left join t_sod_dataclass_norm sdn on sdn.id = dd.data_class_id
-                 left join T_SOD_DATA_TABLE_INFO dt on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
+                 left join T_SOD_DATA_TABLE_INFO dt
+                           on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = dd.database_id
                  left join t_sod_data_authority_apply da on dd.apply_id = da.id
                  left join t_sod_database sdb on dd.database_id = sdb.id
                  left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
-                 left join t_sod_data_class sdc on substr ( dd.data_class_id, 1,1 ) = sdc.data_class_id
-        where
-            da.user_id=#{userId} and sdd.id='FIDB' and dd.authorize = '1'
-        order by
-            da.create_time desc,
-            dd.authorize asc
+                 left join t_sod_data_class sdc on substr(dd.data_class_id, 1, 1) = sdc.data_class_id
+        where da.user_id = #{userId}
+          and sdd.id = 'FIDB'
+          and dd.authorize = '1'
+        order by da.create_time desc,
+                 dd.authorize asc
     </select>
     <!--用户申请的文件索引库的资料-->
     <select id="getSpecialReadWriteFileDataInfo" resultType="java.util.Map" parameterType="String">
-        select a.data_class_id, a.database_id, a.examine_status as "authorize", a.apply_authority,
-               sdn.dir_norm, dt.name_cn, dt.table_name, b.user_id, sdb.database_name as "special_name",
-               sdb.schema_name, sdd.database_name  as "database_name", sdd.id as "database_define_id",
+        select a.data_class_id,
+               a.database_id,
+               a.examine_status  as "authorize",
+               a.apply_authority,
+               sdn.dir_norm,
+               dt.name_cn,
+               dt.table_name,
+               b.user_id,
+               sdb.database_name as "special_name",
+               sdb.schema_name,
+               sdd.database_name as "database_name",
+               sdd.id            as "database_define_id",
                sdc.class_name
         from T_SOD_DATABASE_SPECIAL_READ_WRITE a
                  left join T_SOD_DATABASE_SPECIAL b on b.id = a.sdb_ID
                  left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = a.data_class_id
                  left join t_sod_dataclass_norm sdn on sdn.id = a.data_class_id
-                 left join T_SOD_DATA_TABLE_INFO dt on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = a.database_id
+                 left join T_SOD_DATA_TABLE_INFO dt
+                           on (dt.id = dl.table_id or dt.id = dl.sub_table_id) and dt.database_id = a.database_id
                  left join t_sod_database sdb on a.database_id = sdb.id
                  left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
-                 left join t_sod_data_class sdc on substr ( a.data_class_id, 1,1 ) = sdc.data_class_id
-        where b.USER_ID=#{userId} and b.USE_STATUS ='2' AND a.EXAMINE_STATUS='1' and sdd.id='FIDB'
+                 left join t_sod_data_class sdc on substr(a.data_class_id, 1, 1) = sdc.data_class_id
+        where b.USER_ID = #{userId}
+          and b.USE_STATUS = '2'
+          AND a.EXAMINE_STATUS = '1'
+          and sdd.id = 'FIDB'
+    </select>
+
+    <select id="getPageTableInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT DISTINCT A.*,E.DICT_LABEL,D.DATABASE_NAME,F.DATABASE_NAME DATABASE_P_NAME,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = F.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
+        H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID
+        FROM T_SOD_DATA_TABLE_INFO A
+        LEFT JOIN T_SOD_DICT_DATA E ON A.STORAGE_TYPE = E.dict_value
+        LEFT JOIN T_SOD_DATACLASS_TABLE B ON A.ID = B.TABLE_ID
+        LEFT JOIN T_SOD_DATA_CLASS C ON B.DATA_CLASS_ID = C.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DATABASE D ON A.DATABASE_ID = D.ID
+        LEFT JOIN T_SOD_DATABASE_DEFINE F ON D.DATABASE_DEFINE_ID = F.ID
+        LEFT JOIN T_SOD_ADVANCED_CONFIG H ON H.TABLE_ID=A.ID
+        LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = C.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DICT_DATA HH ON (G.LABEL_KEY = HH.DICT_VALUE AND HH.DICT_TYPE = 'dataclass_label')
+        <where>
+            <if test="map.tableNameCn != null and map.tableNameCn  != ''">
+                A.NAME_CN LIKE '%${map.tableNameCn}%'
+            </if>
+            <if test="map.tableName != null and map.tableName  != ''">
+                AND A.TABLE_NAME LIKE '%${map.tableName}%'
+            </if>
+            <if test="map.databaseId != null and map.databaseId  != ''">
+                AND A.DATABASE_ID = #{map.databaseId}
+            </if>
+            <if test="map.databasePid != null and map.databasePid  != ''">
+                AND D.DATABASE_DEFINE_ID = #{map.databasePid}
+            </if>
+            <if test="map.className != null and map.className  != ''">
+                AND C.CLASS_NAME LIKE '%${map.className}%'
+            </if>
+            <if test="map.classId != null and map.classId  != ''">
+                AND C.DATA_CLASS_ID LIKE '%${map.classId}%'
+            </if>
+            <if test="map.dataId != null and map.dataId  != ''">
+                AND C.D_DATA_ID LIKE '%${map.dataId}%'
+            </if>
+        </where>
+        ORDER BY A.TABLE_NAME,A.DATABASE_ID,A.STORAGE_TYPE
     </select>
 </mapper>

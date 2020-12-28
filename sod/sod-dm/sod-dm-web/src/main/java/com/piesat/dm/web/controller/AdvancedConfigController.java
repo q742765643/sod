@@ -4,7 +4,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.StorageConfigParam;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
@@ -30,12 +30,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/dm/storageConfiguration")
 @Api(value = "存储结构概览", tags = {"存储结构概览"})
-public class StorageConfigurationController {
+public class AdvancedConfigController {
 
     @Autowired
     private DataClassService dataClassService;
     @Autowired
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
     @Autowired
     private GrpcService storageConfigurationGrpcService;
 
@@ -72,7 +72,7 @@ public class StorageConfigurationController {
         }
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
-        PageBean pageBean = storageConfigurationService.selectPageList(pageForm);
+        PageBean pageBean = advancedConfigService.selectPageList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -114,7 +114,7 @@ public class StorageConfigurationController {
 
         ResultT<PageBean> resultT = new ResultT<>();
         PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
-        PageBean pageBean = storageConfigurationService.storageFieldList(pageForm);
+        PageBean pageBean = advancedConfigService.storageFieldList(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -162,9 +162,9 @@ public class StorageConfigurationController {
                 map.put("logic_name", advancedConfigDto.getLogicDefineDto().getLogicName());
             }
         }
-        if (advancedConfigDto.getDataTableDto() != null) {
-            if (StringUtils.isNotNullString(advancedConfigDto.getDataTableDto().getTableName())) {
-                map.put("table_name", advancedConfigDto.getDataTableDto().getTableName());
+        if (advancedConfigDto.getDataTableInfoDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataTableInfoDto().getTableName())) {
+                map.put("table_name", advancedConfigDto.getDataTableInfoDto().getTableName());
             }
         }
         if (advancedConfigDto.getDataClassDto() != null) {
@@ -172,7 +172,7 @@ public class StorageConfigurationController {
                 map.put("data_class_id", advancedConfigDto.getDataClassDto().getDataClassId());
             }
         }
-        Map<String, Object> headAndData = storageConfigurationService.exportTable(map);
+        Map<String, Object> headAndData = advancedConfigService.exportTable(map);
         return ExportTableUtil.exportTableNew(request, response, (List<String>) headAndData.get("headList"), (List<List<String>>) headAndData.get("lists"), "存储数据概览导出");
     }
 
@@ -210,9 +210,9 @@ public class StorageConfigurationController {
                 map.put("logic_name", advancedConfigDto.getLogicDefineDto().getLogicName());
             }
         }
-        if (advancedConfigDto.getDataTableDto() != null) {
-            if (StringUtils.isNotNullString(advancedConfigDto.getDataTableDto().getTableName())) {
-                map.put("table_name", advancedConfigDto.getDataTableDto().getTableName());
+        if (advancedConfigDto.getDataTableInfoDto() != null) {
+            if (StringUtils.isNotNullString(advancedConfigDto.getDataTableInfoDto().getTableName())) {
+                map.put("table_name", advancedConfigDto.getDataTableInfoDto().getTableName());
             }
         }
         if (advancedConfigDto.getDataClassDto() != null) {
@@ -220,7 +220,7 @@ public class StorageConfigurationController {
                 map.put("data_class_id", advancedConfigDto.getDataClassDto().getDataClassId());
             }
         }
-        Map<String, Object> headAndData = storageConfigurationService.exportTable(map);
+        Map<String, Object> headAndData = advancedConfigService.exportTable(map);
         ExportTableUtil.exportTable(request, response, (List<String>) headAndData.get("headList"), (List<List<String>>) headAndData.get("lists"), "存储数据概览导出");
     }
 

@@ -46,7 +46,7 @@ public interface DataClassService {
 
     JSONArray getTree();
 
-    List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId);
+    List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId,String dataclassId);
 
     List<Map<String, Object>> getDataTypeList();
 
@@ -87,10 +87,12 @@ public interface DataClassService {
     /**
      * 是否存在资料
      *
-     * @param dDataId
+     * @param dataId
      * @return
      */
     ResultT haveClassByDataId(String dataId);
 
     List<DataClassDto> findByDataClassIdAndCreateBy(String dataclassId, String userId);
+
+    ResultT<List<Map<String,Object>>> getClassByTableId(String tableId);
 }

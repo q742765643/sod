@@ -14,5 +14,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface StorageConfigurationMapper extends BaseMapper<AdvancedConfigDto, AdvancedConfigEntity> {
+public interface AdvancedConfigMapper extends BaseMapper<AdvancedConfigDto, AdvancedConfigEntity> {
 }

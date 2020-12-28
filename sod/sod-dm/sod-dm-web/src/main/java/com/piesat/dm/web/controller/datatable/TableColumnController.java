@@ -5,8 +5,6 @@ import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnList;
@@ -63,9 +61,9 @@ public class TableColumnController {
 
     @ApiOperation(value = "批量添加")
     @PostMapping(value = "/saveColumns")
-    public ResultT saveColumns(@RequestBody DataTableDto dataTableDto) {
+    public ResultT saveColumns(@RequestBody DataTableInfoDto dataTableInfoDto) {
         try {
-            LinkedHashSet<TableColumnDto> columns = dataTableDto.getColumns();
+            LinkedHashSet<TableColumnDto> columns = dataTableInfoDto.getColumns();
             if (columns != null) {
                 for (TableColumnDto tableColumnDto : columns) {
                     this.tableColumnService.saveDto(tableColumnDto);

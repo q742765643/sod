@@ -12,7 +12,6 @@ import java.util.List;
  * @date 2020/2/9 15:31
  */
 @Repository
-public interface StorageConfigurationDao extends BaseDao<AdvancedConfigEntity> {
-
+public interface AdvancedConfigDao extends BaseDao<AdvancedConfigEntity> {
     List<AdvancedConfigEntity> findByTableId(String id);
 }

@@ -25,7 +25,7 @@ public class DatabaseSqlService {
     private final String[] indexTypes = {"BTREE", "INDEX", "RTREE", "IDX", "TREE"};
     private final String[] uniqueType = {"UNIQUE", "UK", "PK", "唯一索引"};
 
-    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -64,11 +64,9 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        Integer d = 0;
-        for (ShardingDto s : sharding) {
-            if (d.equals(s.getShardingType())) {
-                dp_shard = s.getColumnName();
-            }
+
+        for (PartingDto s : sharding) {
+                dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
         template = template.replace("${tableName}", schema + "." + dataTable.getTableName());
@@ -158,7 +156,7 @@ public class DatabaseSqlService {
     }
 
 
-    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -197,10 +195,8 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        for (ShardingDto s : sharding) {
-            if ("T".equals(s.getShardingType())) {
-                dp_shard = s.getColumnName();
-            }
+        for (PartingDto s : sharding) {
+                dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
         template = template.replace("${tableName}", schema + "." + dataTable.getTableName());
@@ -255,7 +251,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
         List<String> key_columns = new ArrayList<>();
         StringBuffer columns = new StringBuffer();
         for (TableColumnDto ds : dataStructures) {
@@ -314,7 +310,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
@@ -348,10 +344,8 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        for (ShardingDto s : sharding) {
-            if ("D".equals(s.getShardingType())) {
-                dp_shard = s.getColumnName();
-            }
+        for (PartingDto s : sharding) {
+                dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
         template = template.replace("${tableName}", schema + "." + dataTable.getTableName());

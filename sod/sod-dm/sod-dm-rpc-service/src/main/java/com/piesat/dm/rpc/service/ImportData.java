@@ -4,10 +4,10 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.UUID;
 import com.piesat.dm.common.codedom.CodeDOM;
-import com.piesat.dm.dao.StorageConfigurationDao;
+import com.piesat.dm.dao.AdvancedConfigDao;
 import com.piesat.dm.dao.dataapply.*;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.database.DatabaseDao;
-import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
@@ -16,14 +16,14 @@ import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.dao.datatable.*;
 import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.dataapply.*;
-import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.dataclass.*;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.entity.special.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.portal.dao.DepartManageDao;
@@ -96,11 +96,11 @@ public class ImportData {
     @Autowired
     private LogicDefineDao logicDefineDao;
     @Autowired
-    private DatabaseDefineDao databaseDefineDao;
-    @Autowired
     private DatabaseDao databaseDao;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaDao schemaDao;
+    @Autowired
+    private SchemaService schemaService;
     @Autowired
     private DataTableService dataTableService;
     @GrpcHthtClient
@@ -141,7 +141,7 @@ public class ImportData {
     @Autowired
     private NewdataTableColumnDao newdataTableColumnDao;
     @Autowired
-    private StorageConfigurationDao storageConfigurationDao;
+    private AdvancedConfigDao advancedConfigDao;
     @Autowired
     private DataAuthorityApplyDao dataAuthorityApplyDao;
     @Autowired
@@ -402,7 +402,7 @@ public class ImportData {
 //            sql = "select * from DMIN_SHARDING where TABLE_ID ='" + table_id + "'";
 //            List<Map> shardings = CodeDOM.getList(sql);
 //            for (Map<String, Object> sMap : shardings) {
-//                ShardingEntity se = new ShardingEntity();
+//                PartingEntity se = new PartingEntity();
 //                se.setTableId(dt.getId());
 //                String field = toString(sMap.get("FIELD"));
 //                se.setColumnName(field);
@@ -474,8 +474,8 @@ public class ImportData {
             SyncTaskEntity syncTaskEntity = new SyncTaskEntity();
 
             String target_database_id = this.toString(m.get("TARGET_DATABASE_ID"));
-            List<DatabaseEntity> databaseEntity = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", target_database_id);
-            target_database_id = databaseEntity.get(0).getId();
+            List<SchemaEntity> schemaEntity = schemaDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", target_database_id);
+            target_database_id = schemaEntity.get(0).getId();
 
             String source_table = this.toString(m.get("SOURCE_TABLE"));
             String sourceMappingIDs = "";
@@ -515,8 +515,8 @@ public class ImportData {
             syncTaskEntity.setDataFlowDirectionId(data_flow_direction_id);
 
             String source_database_id = this.toString(m.get("SOURCE_DATABASE_ID"));
-            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", source_database_id);
-            source_database_id = databaseEntity1.get(0).getId();
+            List<SchemaEntity> schemaEntity1 = schemaDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", source_database_id);
+            source_database_id = schemaEntity1.get(0).getId();
             syncTaskEntity.setSourceDatabaseId(source_database_id);
 
             //String target_database_id = this.toString(m.get("TARGET_DATABASE_ID"));
@@ -781,8 +781,8 @@ public class ImportData {
             String database_classify = toString(m.get("DATABASE_CLASSIFY"));
             String user_display_control = toString(m.get("USER_DISPLAY_CONTROL"));
             String tdb_id = toString(m.get("TDB_ID"));
-            DatabaseEntity de = new DatabaseEntity();
-            DatabaseDefineEntity dd = new DatabaseDefineEntity();
+            SchemaEntity de = new SchemaEntity();
+            DatabaseEntity dd = new DatabaseEntity();
             if (database_id.equals(parent_id)) {
                 sql = "select * from DMIN_DB_PHYSICS_CONNECTION where DATABASE_ID = '" + database_id + "'";
                 Map map = CodeDOM.getList(sql).get(0);
@@ -802,9 +802,9 @@ public class ImportData {
                 dd.setUserDisplayControl(Integer.parseInt(user_display_control));
                 dd.setSerialNumber(Integer.parseInt(serial_number));
                 dd.setCreateTime(new Date());
-                this.databaseDefineDao.save(dd);
+                this.databaseDao.save(dd);
             }
-            DatabaseDefineEntity one = this.databaseDefineDao.getOne(parent_id);
+            DatabaseEntity one = this.databaseDao.getOne(parent_id);
             de.setTdbId(tdb_id);
             de.setDatabaseName(database_name);
             de.setDatabaseClassify(database_classify);
@@ -813,7 +813,7 @@ public class ImportData {
             de.setDatabaseDefine(one);
             de.setStopUse(false);
             de.setCreateTime(new Date());
-            DatabaseEntity save = this.databaseDao.save(de);
+            SchemaEntity save = this.schemaDao.save(de);
             dataLogicDao.updateDatabaseId(save.getId(), database_id);
         }
     }
@@ -906,7 +906,7 @@ public class ImportData {
 //        for (Map<String, Object> m : list) {
 //
 //            String parent_id = toString(m.get("DATABASE_ID"));
-//            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", parent_id);
+//            List<SchemaEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", parent_id);
 //            String database_id = databaseEntity1.get(0).getId();
 //
 //            String data_class_id = toString(m.get("DATA_CLASS_ID"));
@@ -1026,7 +1026,7 @@ public class ImportData {
 //            String database_type = toString(m.get("DATABASE_TYPE"));
 //
 //            String physics_database = toString(m.get("PHYSICS_DATABASE"));
-//            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", physics_database);
+//            List<SchemaEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", physics_database);
 //            String database_id = databaseEntity1.get(0).getId();
 //
 //            String data_class_id = toString(m.get("DATA_CLASS_ID"));
@@ -1125,7 +1125,7 @@ public class ImportData {
 //        for (Map<String, Object> m : list) {
 //
 //            String physics_database = toString(m.get("PHYSICS_DATABASE"));
-//            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", physics_database);
+//            List<SchemaEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", physics_database);
 //            String database_id = databaseEntity1.get(0).getId();
 //
 //            String data_class_id = toString(m.get("DATA_CLASS_ID"));
@@ -1186,7 +1186,7 @@ public class ImportData {
 //            String database_type = toString(m.get("DATABASE_TYPE"));
 //
 //            String physics_database = toString(m.get("PHYSICS_DATABASE"));
-//            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", physics_database);
+//            List<SchemaEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", physics_database);
 //            String database_id = databaseEntity1.get(0).getId();
 //
 //            String data_class_id = toString(m.get("DATA_CLASS_ID"));
@@ -1429,11 +1429,11 @@ public class ImportData {
             databaseSpecialEntity = databaseSpecialDao.saveNotNull(databaseSpecialEntity);
 
             //更新数据库中的专题库id
-            List<DatabaseEntity> databaseEntities = databaseDao.findByTdbId(tdb_id);
+            List<SchemaEntity> databaseEntities = schemaDao.findByTdbId(tdb_id);
             if (databaseEntities != null && databaseEntities.size() > 0) {
-                for (DatabaseEntity databaseEntity : databaseEntities) {
-                    databaseEntity.setTdbId(databaseSpecialEntity.getId());
-                    databaseDao.saveNotNull(databaseEntity);
+                for (SchemaEntity schemaEntity : databaseEntities) {
+                    schemaEntity.setTdbId(databaseSpecialEntity.getId());
+                    schemaDao.saveNotNull(schemaEntity);
                 }
             }
 
@@ -1476,14 +1476,14 @@ public class ImportData {
 
                         if (data_type.intValue() == 2) {//引用资料
                             if (database_classify.equals("物理库")) {
-                                List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", logic_id);
-                                readWriteEntity.setDatabaseId(databaseEntity1.get(0).getId());
+                                List<SchemaEntity> schemaEntity1 = schemaDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", logic_id);
+                                readWriteEntity.setDatabaseId(schemaEntity1.get(0).getId());
                             } else {
-                                List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                                List<SchemaEntity> defineId = schemaDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                                 readWriteEntity.setDatabaseId(defineId.get(0).getId());
                             }
                         } else {//私有资料
-                            List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                            List<SchemaEntity> defineId = schemaDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                             readWriteEntity.setDatabaseId(defineId.get(0).getId());
                         }
                     }
@@ -1633,10 +1633,10 @@ public class ImportData {
                     String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
                     String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
                     if (database_classify.equals("物理库")) {
-                        List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
-                        database_id_new = databaseEntity1.get(0).getId();
+                        List<SchemaEntity> schemaEntity1 = schemaDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
+                        database_id_new = schemaEntity1.get(0).getId();
                     } else {
-                        List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                        List<SchemaEntity> defineId = schemaDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                         database_id_new = defineId.get(0).getId();
                     }
                 }
@@ -1746,10 +1746,10 @@ public class ImportData {
                         String  database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
                         String  parent_id = toString(databaseList.get(0).get("PARENT_ID"));
                         if(database_classify.equals("物理库")){
-                            List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id1);
+                            List<SchemaEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id1);
                             database_id_new = databaseEntity1.get(0).getId();
                         }else{
-                            List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                            List<SchemaEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                             database_id_new = defineId.get(0).getId();
                         }
                     }
@@ -1842,10 +1842,10 @@ public class ImportData {
                             String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
                             String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
                             if (database_classify.equals("物理库")) {
-                                List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
-                                database_id_new = databaseEntity1.get(0).getId();
+                                List<SchemaEntity> schemaEntity1 = schemaDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id);
+                                database_id_new = schemaEntity1.get(0).getId();
                             } else {
-                                List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                                List<SchemaEntity> defineId = schemaDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                                 database_id_new = defineId.get(0).getId();
                                 dataAuthorityRecordEntity.setQtdbId(defineId.get(0).getTdbId());
                             }
@@ -1927,10 +1927,10 @@ public class ImportData {
             String database_schema_name = toString(databaseList.get(0).get("DATABASE_SCHEMA_NAME"));
             String parent_id = toString(databaseList.get(0).get("PARENT_ID"));
             if (database_classify.equals("物理库")) {
-                List<DatabaseEntity> databaseEntity1 = databaseDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id_old);
-                database_id_new = databaseEntity1.get(0).getId();
+                List<SchemaEntity> schemaEntity1 = schemaDao.findByDatabaseClassifyAndDatabaseDefineId("物理库", database_id_old);
+                database_id_new = schemaEntity1.get(0).getId();
             } else {
-                List<DatabaseEntity> defineId = databaseDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
+                List<SchemaEntity> defineId = schemaDao.findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(database_classify, special_database_name, database_schema_name, parent_id);
                 database_id_new = defineId.get(0).getId();
             }
         }
@@ -2005,8 +2005,8 @@ public class ImportData {
             if (StringUtils.isNotEmpty(database_id)) {
                 String newDatabaseId = getNewDatabaseId(database_id);
                 metaBackupEntity.setDatabaseId(newDatabaseId);
-                Optional<DatabaseEntity> databaseEntity = databaseDao.findById(newDatabaseId);
-                DatabaseDto databaseDto = databaseService.getDotById(newDatabaseId);
+                Optional<SchemaEntity> databaseEntity = schemaDao.findById(newDatabaseId);
+                DatabaseDto databaseDto = schemaService.getDotById(newDatabaseId);
                 metaBackupEntity.setDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName());
                 metaBackupEntity.setDatabaseType(databaseDto.getDatabaseDefine().getDatabaseType());
                 metaBackupEntity.setParentId(databaseDto.getDatabaseDefine().getId());

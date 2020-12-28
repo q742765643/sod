@@ -2,48 +2,44 @@ package com.piesat.dm.rpc.api.database;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * 数据库基础库专题库
+ * 数据库类型定义
  *
  * @author cwh
- * @date 2019年 11月22日 15:31:30
+ * @date 2019年 11月22日 15:30:47
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DatabaseService {
-    DatabaseDto saveDto(DatabaseDto databaseDto);
+    DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto);
 
-    DatabaseDto getDotById(String id);
+    DatabaseDefineDto getDotById(String id);
 
     void delete(String id);
 
-    ResultT deleteById(String id);
+    ResultT delByIds(String ids);
 
-    List<DatabaseDto> all();
+    List<DatabaseDefineDto> all();
 
-    List<Map<String,Object>> getDatabaseName();
+    List<DatabaseDefineDto> export(String id, String databaseName);
 
-    List<Map<String,Object>> getByDatabaseDefineId(String id);
+    List<DatabaseDefineDto> findByType(String databaseType);
 
-    List<DatabaseDto> findByLevel(int level);
+    PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
 
-    List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify,List<String> ids);
+    DatabaseDefineDto conStatus(String id);
 
-    List<DatabaseDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify,List<String> databaseDefineIds);
+    ResultT connStatus(DatabaseDefineDto databaseDefineDto);
 
-    List<DatabaseDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds);
+    List<DatabaseDefineDto> findByIdIn(List<String> ids);
 
-    List<DatabaseDto> findByDatabaseDefineId(String id);
+    void exportExcel(String id,String databaseName);
 
-    List<DatabaseDto> findByDatabaseClassify(String databaseClassify);
-
-    List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
-
-    List<Map<String, Object>> getDatabaseList(String ifDisplay);
+    List<DatabaseDefineDto> getDatabaseDefineList();
 }

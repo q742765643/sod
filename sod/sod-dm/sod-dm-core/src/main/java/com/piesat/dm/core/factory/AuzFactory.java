@@ -32,14 +32,14 @@ public class AuzFactory {
                 con = CassandraSource.getConnection(pid, connectVo);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8,pid,OwnException.get(throwables)));
+                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid, OwnException.get(throwables)));
             }
         } else {
             try {
                 con = CommDataSource.getConnection(pid, connectVo);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8,pid,OwnException.get(throwables)));
+                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid, OwnException.get(throwables)));
             }
         }
         actuator = new AuzDatabase(databaseType, con);

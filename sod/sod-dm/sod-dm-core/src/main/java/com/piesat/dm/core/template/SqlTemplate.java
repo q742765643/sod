@@ -7,7 +7,7 @@ import com.piesat.dm.core.constants.Constants;
  * @date 2020年 12月04日 14:54:52
  */
 public class SqlTemplate {
-    public static final String HAVE_DATA = "SELECT * FROM ${schema}.${tableName} LIMIT 10";
+    public static final String SAMPLE_DATA = "SELECT * FROM ${schema}.${tableName} LIMIT 10";
     /**
      * 通用查询
      */
@@ -40,9 +40,9 @@ public class SqlTemplate {
             "  <#if columnVo_has_next>  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>.${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> IS NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if>,\n<#else>" +
             "  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>.${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> IS NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if> \n</#if>" +
             "</#list>\n" +
-            " )<#if partiColumn?default(\"\")?length gt 1 >partition by range(${partiColumn}) interval 1 day partitions(\"PART1\" values less than ('1950-01-01 00:00:00'))</#if>;\n" +
+            " )<#if partColumn?default(\"\")?length gt 1 >partition by range(${partColumn}) interval ${partDimension} ${partUnit} partitions(\"PART1\" values less than ('1950-01-01 00:00:00'))</#if>;\n" +
             "<#list indexVos as indexVo>\n" +
-            "CREATE<#if indexVo.indexType1?? > ${indexVo.indexType1}</#if> INDEX ${indexVo.indexName} ON \"${schema}\".\"${tableName}\" (${indexVo.indexComment}) <#if indexVo.indexType2?default(\"\")?length gt 1 > INDEXTYPE IS ${indexVo.indexType2}</#if>;\n" +
+            "CREATE<#if indexVo.indexType1?? > UNIQUE</#if> INDEX ${indexVo.indexName} ON \"${schema}\".\"${tableName}\" (${indexVo.indexComment}) <#if indexVo.indexType2?default(\"\")?length gt 1 > INDEXTYPE IS ${indexVo.indexType2}</#if>;\n" +
             "</#list>";
 
     /**

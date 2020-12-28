@@ -4,7 +4,7 @@ import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import lombok.Data;
 
@@ -80,7 +80,7 @@ public class AdvancedConfigDto {
     private LogicDefineDto logicDefineDto;
     private DatabaseDto databaseDto;
     private DataLogicDto dataLogicDto;
-    private DataTableDto dataTableDto;
+    private DataTableInfoDto dataTableInfoDto;
     private TableColumnDto tableColumnDto;
 
 }

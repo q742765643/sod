@@ -7,21 +7,17 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
-import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.backup.MetaBackupEntity;
-import com.piesat.schedule.entity.backup.MetaBackupLogEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.backup.MetaBackupService;
 import com.piesat.schedule.rpc.dto.backup.MetaBackupDto;
-import com.piesat.schedule.rpc.dto.backup.MetaBackupLogDto;
 import com.piesat.schedule.rpc.mapstruct.backup.MetaBackupMapstruct;
 import com.piesat.schedule.rpc.thread.ScheduleThread;
-import com.piesat.schedule.rpc.vo.DataRetrieval;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
@@ -51,7 +47,7 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     @GrpcHthtClient
     private ExecutorBiz executorBiz;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private DictDataService dictDataService;
 
@@ -117,7 +113,7 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
 
     @Override
     public List<TreeVo> findMeta(String databaseId){
-        DatabaseDto databaseDto= databaseService.getDotById(databaseId);
+        DatabaseDto databaseDto= schemaService.getDotById(databaseId);
         String parentId=databaseDto.getDatabaseDefine().getId();
         String databaseType=databaseDto.getDatabaseDefine().getDatabaseType();
         return executorBiz.findMeta(parentId,databaseType);
@@ -128,7 +124,7 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         List<Map<String,String>> maps=new ArrayList<>();
         List<String> vaules=new ArrayList<>();
         List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("database_metadata");
-        List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
+        List<DatabaseDto> databaseDtos= schemaService.findByLevel(1);
         for(DictDataDto dictDataDto:dictDataDtos){
             for(DatabaseDto databaseDto:databaseDtos){
                 if(databaseDto.getDatabaseDefine().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
@@ -148,7 +144,7 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         return maps;
     }
     public void getDataBase(MetaBackupEntity metaBackupEntity){
-        DatabaseDto databaseDto= databaseService.getDotById(metaBackupEntity.getDatabaseId());
+        DatabaseDto databaseDto= schemaService.getDotById(metaBackupEntity.getDatabaseId());
         String parentId=databaseDto.getDatabaseDefine().getId();
         String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
         metaBackupEntity.setDatabaseName(databaseName);

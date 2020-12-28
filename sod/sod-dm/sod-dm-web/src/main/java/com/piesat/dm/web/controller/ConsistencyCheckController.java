@@ -2,10 +2,9 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.FileUploadUtils;
-import com.piesat.dm.entity.ConsistencyCheckHistoryEntity;
 import com.piesat.dm.rpc.api.ConsistencyCheckHistoryService;
 import com.piesat.dm.rpc.api.ConsistencyCheckService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.dto.ConsistencyCheckDto;
 import com.piesat.dm.rpc.dto.ConsistencyCheckHistoryDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -45,7 +43,7 @@ public class ConsistencyCheckController {
     private ConsistencyCheckHistoryService consistencyCheckHistoryService;
 
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
 
     @Value("${serverfile.dfcheck}")
     private String fileAddress;
@@ -155,7 +153,7 @@ public class ConsistencyCheckController {
     @PostMapping(value = "/downloadDfcheckFile")
     @ApiOperation(value = "生成差异报告", notes = "生成差异报告")
     public void downloadDfcheckFile(@RequestBody DatabaseDto databaseDto, HttpServletResponse response){
-         databaseDto = databaseService.getDotById(databaseDto.getId());
+         databaseDto = schemaService.getDotById(databaseDto.getId());
 
         String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
                 +"元数据差异"+"_"+ DateUtils.dateTimeNow("yyyyMMddhhMMss")+".xls";

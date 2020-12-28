@@ -28,4 +28,9 @@ public class DataClassLogicDto extends BaseDto {
      * 数据库Id
      */
     private String databaseId;
+
+    /**
+     * 数据库类型id
+     */
+    private String databasePid;
 }

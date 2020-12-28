@@ -2,12 +2,13 @@ package com.piesat.dm.rpc.api.datatable;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
 import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public interface DataTableService {
      * @param databaseId
      * @return
      */
-    List<DataTableInfoDto> findETable(String databaseId);
+    List<Map<String, Object>> findETable(String databaseId);
 
     /**
      * 根据tableId查询相关的键表要素表
@@ -83,4 +84,31 @@ public interface DataTableService {
      */
     void contrastColumns(DataTableInfoDto dataTableInfoDto, ResultT resultT);
 
+    /**
+     * 分页查询
+     * @param pageForm
+     * @return
+     */
+    PageBean getPageTableInfo(PageForm<Map<String, String>> pageForm);
+
+    /**
+     * 单表数据量
+     * @param tableSqlDto
+     * @return
+     */
+    long countTable(TableSqlDto tableSqlDto);
+
+    /**
+     * 获取dbl sql语句
+     * @param tableId
+     * @return
+     */
+    ResultT getSql(String tableId);
+
+    /**
+     * 根据子表类型查询
+     * @param type
+     * @return
+     */
+    List<Map<String, Object>> findBySubType(String tableType,String storageType);
 }

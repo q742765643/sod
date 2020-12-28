@@ -3,22 +3,16 @@ package com.piesat.dm.rpc.service.datatable;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.core.api.DatabaseDcl;
-import com.piesat.dm.core.model.ColumnVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
-import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.datatable.TableColumnMapper;
-import com.piesat.dm.rpc.util.DatabaseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +35,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     @Autowired
     private DataTableService dataTableService;
     @Autowired
-    private DatabaseDao databaseDao;
+    private SchemaDao schemaDao;
     @Autowired
     private DatabaseInfo databaseInfo;
     @Autowired
@@ -81,7 +75,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
 //            newColumn.setType(tableColumnEntity.getType());
 //            DataTableInfoDto datatable = dataTableService.getDotById(tableColumnDto.getTableId());
 //            String databaseId = datatable.getDatabaseId();
-//            DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).get();
+//            SchemaEntity databaseEntity = this.databaseDao.findById(databaseId).get();
 //            DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
 //            DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
 //            try {

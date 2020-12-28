@@ -2,17 +2,13 @@ package com.piesat.schedule.rpc.service.policy;
 
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
-import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.*;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.DatumTypeInfoService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.schedule.dao.sync.SyncMappingDao;
 import com.piesat.schedule.dao.sync.SyncTaskDao;
@@ -33,11 +29,8 @@ import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.dto.move.MoveLogDto;
 import com.piesat.schedule.rpc.dto.policy.PolicyDto;
 import com.piesat.schedule.rpc.dto.policy.StrategyPolicyDto;
-import com.piesat.schedule.rpc.service.clear.ClearLogServiceImpl;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
-import com.piesat.util.page.PageBean;
-import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.support.CronSequenceGenerator;
@@ -66,7 +59,7 @@ public class StrategyPolicyService {
     @GrpcHthtClient
     private DataLogicService dataLogicService;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private DataTableService dataTableService;
     @GrpcHthtClient
@@ -103,7 +96,7 @@ public class StrategyPolicyService {
                 StrategyPolicyDto strategyPolicyDto=new StrategyPolicyDto();
                 strategyPolicyDto.setDataClassId(dataClassId);
                 List<PolicyDto> policyDtos=new ArrayList<>();
-                DatabaseDto databaseDto= databaseService.getDotById(dotById.getDatabaseId());
+                DatabaseDto databaseDto= schemaService.getDotById(dotById.getDatabaseId());
                 strategyPolicyDto.setDatabaseId(databaseDto.getId());
                 String parentId=databaseDto.getDatabaseDefine().getId();
                 String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
@@ -293,7 +286,7 @@ public class StrategyPolicyService {
                 return;
             }
             SyncTaskEntity syncTaskEntity=syncTaskEntities.get(0);
-            DatabaseDto databaseDto= databaseService.getDotById(syncTaskEntity.getSourceDatabaseId());
+            DatabaseDto databaseDto= schemaService.getDotById(syncTaskEntity.getSourceDatabaseId());
             policyDto.setSourceTable(soourceTableName);
             policyDto.setSourceRepository(databaseDto.getDatabaseDefine().getDatabaseName());
             String result=this.getStatusById(syncTaskEntity,"getallstatus");

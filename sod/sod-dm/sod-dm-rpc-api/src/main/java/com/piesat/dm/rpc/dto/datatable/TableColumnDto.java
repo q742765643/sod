@@ -125,4 +125,16 @@ public class TableColumnDto {
     private String delFlag;
 
     private Integer version;
+
+    public void setDbEleCode(String dbEleCode) {
+        this.dbEleCode = dbEleCode.trim();
+    }
+
+    public void setCElementCode(String cElementCode) {
+        this.cElementCode = cElementCode.trim();
+    }
+
+    public void setUserEleCode(String userEleCode) {
+        this.userEleCode = userEleCode.trim();
+    }
 }

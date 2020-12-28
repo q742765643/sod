@@ -9,18 +9,16 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
+import com.piesat.dm.rpc.dto.datatable.PartingDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.schedule.dao.sync.*;
 import com.piesat.schedule.entity.sync.*;
@@ -83,9 +81,9 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @GrpcHthtClient
     private DataLogicService dataLogicService;
     @GrpcHthtClient
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
 
 
     @Override
@@ -181,7 +179,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         List<SyncTaskDto> syncTaskDtos = syncTaskMapstruct.toDto(syncTaskEntities);
         //查询物理库名称
        /* for(SyncTaskDto syncTaskDto : syncTaskDtos){
-            DatabaseDto databaseDto = databaseService.getDotById(syncTaskDto.getSourceDatabaseId());
+            DatabaseDto databaseDto = schemaService.getDotById(syncTaskDto.getSourceDatabaseId());
             syncTaskDto.setSourceDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
         }*/
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), syncTaskDtos);
@@ -308,7 +306,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
                         advancedConfigDto.setTableId(dataLogicDto.getTableId());
                         advancedConfigDto.setSyncIdentifier(syncIdentifier);
                         advancedConfigDto.setSyncId(taskId);
-                        storageConfigurationService.updateDataAuthorityConfig(advancedConfigDto);
+                        advancedConfigService.updateDataAuthorityConfig(advancedConfigDto);
                     }
                 }
             }
@@ -392,8 +390,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         tti.setUniqueKeys(unique_index);
 
         //目标表分库分表键
-        List<ShardingDto> shardingDtos = shardingService.getDotByTableId(targetTableId);
-        String ttkeys = getPartitionKey(shardingDtos);
+        PartingDto partingDtos = shardingService.getDotByTableId(targetTableId);
+        String ttkeys = getPartitionKey(partingDtos);
         if (StringUtils.isNotNullString(ttkeys)) {
             tti.setIfpatitions("1");
             tti.setPartitionKeys(ttkeys);
@@ -478,19 +476,14 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     /**
      * 分库分表键
      *
-     * @param shardingDtos
+     * @param partingDto
      * @return
      */
-    public String getPartitionKey(List<ShardingDto> shardingDtos) {
+    public String getPartitionKey(PartingDto partingDto) {
         try {
             String partitionKey = "";//分库分表键，用逗号分隔
-            if (shardingDtos != null && shardingDtos.size() > 0) {
-                for (ShardingDto shard : shardingDtos) {
-                    partitionKey += shard.getColumnName() + ",";
-                }
-                if (partitionKey.length() > 0) {
-                    partitionKey = partitionKey.substring(0, partitionKey.length() - 1);
-                }
+            if (partingDto != null) {
+                    partitionKey += partingDto.getPartitions();
             }
             return partitionKey;
         } catch (Exception e) {

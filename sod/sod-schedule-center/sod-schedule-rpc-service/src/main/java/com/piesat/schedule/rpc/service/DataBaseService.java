@@ -3,7 +3,7 @@ package com.piesat.schedule.rpc.service;
 import com.alibaba.fastjson.JSON;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class DataBaseService
 {
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private DataTableService dataTableService;
     @GrpcHthtClient
@@ -34,12 +34,12 @@ public class DataBaseService
 
 
     public List<DatabaseDto> findAllDataBase(){
-        List<DatabaseDto> databaseDtos=databaseService.all();
+        List<DatabaseDto> databaseDtos= schemaService.all();
         return databaseDtos;
     }
 
     public DatabaseDto findDataBaseById(String dataBaseId){
-        DatabaseDto databaseDto=databaseService.getDotById(dataBaseId);
+        DatabaseDto databaseDto= schemaService.getDotById(dataBaseId);
         return databaseDto;
     }
 

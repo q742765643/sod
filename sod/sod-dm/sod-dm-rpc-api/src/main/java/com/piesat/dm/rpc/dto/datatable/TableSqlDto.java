@@ -18,7 +18,13 @@ public class TableSqlDto extends BaseDto {
 
     private Boolean delOld;
 
-    private String tableName ;
+    private String tableName;
 
-    private String tableSql ;
+    private String tableSql;
+
+    private String createSql;
+
+    private String querySql;
+
+    private String insertSql;
 }

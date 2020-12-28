@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库外键关联
@@ -25,6 +26,8 @@ public interface TableForeignKeyService {
 
     List<TableForeignKeyDto> all();
 
-    List<TableForeignKeyDto> findByTableId(String tableId);
+    List<Map<String, Object>> findByTableId(String tableId);
+
+    List<TableForeignKeyDto> findBySubOrTableId(String tableId);
 
 }

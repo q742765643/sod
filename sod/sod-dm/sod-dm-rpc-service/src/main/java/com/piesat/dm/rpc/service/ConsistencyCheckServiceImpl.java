@@ -12,10 +12,9 @@ import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.entity.ConsistencyCheckEntity;
 import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
-import com.piesat.dm.entity.datatable.ShardingEntity;
 import com.piesat.dm.rpc.api.ConsistencyCheckService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
@@ -47,7 +46,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     @Autowired
     private ConsistencyCheckMapper consistencyCheckMapper;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
     private DataTableService dataTableService;
     @Autowired
@@ -78,7 +77,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         List<ConsistencyCheckDto> consistencyCheckDtos = consistencyCheckMapper.toDto(consistencyCheckEntities);
         if (consistencyCheckDtos != null && consistencyCheckDtos.size() > 0) {
             for (ConsistencyCheckDto consistencyCheckDto : consistencyCheckDtos) {
-                DatabaseDto databaseDto = databaseService.getDotById(consistencyCheckDto.getDatabaseId());
+                DatabaseDto databaseDto = schemaService.getDotById(consistencyCheckDto.getDatabaseId());
                 consistencyCheckDto.setDatabaseDto(databaseDto);
             }
         }
@@ -107,7 +106,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     @Override
     public Map<String, List<List<String>>> downloadDfcheckFile(String databaseId) {
         //获取数据库详细信息
-        DatabaseDto databaseDto = databaseService.getDotById(databaseId);
+        DatabaseDto databaseDto = schemaService.getDotById(databaseId);
         List<String> tableList = null;
         Map<String, List<List<String>>> compileResult = new HashMap<String, List<List<String>>>();
         compileResult.put("columnResult", new ArrayList<List<String>>());
@@ -316,51 +315,51 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
             shardingResult.set(2, dataTableDto.getNameCn());
             shardingResult.set(3, "存在");
             //以元数据库分库分表为准，遍历元数据分库分表
-            List<ShardingEntity> shardingEntities = shardingDao.findByTableId(dataTableDto.getId());
-            Map<String, String> dbShardings = indexAndShardings.get("shardings");
-            List<String> dbShardingLists = new ArrayList<String>();
-            for (Map.Entry<String, String> entry : dbShardings.entrySet()) {
-                dbShardingLists.add(entry.getValue());
-            }
-            if (shardingEntities != null && shardingEntities.size() > 0) {
-                for (ShardingEntity shardingEntity : shardingEntities) {
-                    if (!dbShardingLists.contains(shardingEntity.getColumnName())) {
-                        //元数据多余的分库分表键
-                        if (StringUtils.isNotNullString(shardingResult.get(4))) {
-                            shardingResult.set(4, shardingResult.get(4) + ";" + shardingEntity.getColumnName());
-                        } else {
-                            shardingResult.set(4, shardingEntity.getColumnName());
-                        }
-                    }
-                }
-            }
-            //以物理库为基础，查找元数据库缺失的分库分表键
-            for (String dbSharding : dbShardingLists) {
-                boolean flag = false;
-                if (shardingEntities != null && shardingEntities.size() > 0) {
-                    for (ShardingEntity shardingEntity : shardingEntities) {
-                        if (dbSharding.equalsIgnoreCase(shardingEntity.getColumnName())) {
-                            flag = true;
-                            break;
-                        }
-                    }
-                }
-                if (!flag) {
-                    if (StringUtils.isNotNullString(shardingResult.get(5))) {
-                        shardingResult.set(5, shardingResult.get(5) + ";" + dbSharding);
-                    } else {
-                        shardingResult.set(5, dbSharding);
-                    }
-                }
-            }
-            shardingResults.add(shardingResult);
+//            List<PartingEntity> shardingEntities = shardingDao.findByTableId(dataTableDto.getId());
+//            Map<String, String> dbShardings = indexAndShardings.get("shardings");
+//            List<String> dbShardingLists = new ArrayList<String>();
+//            for (Map.Entry<String, String> entry : dbShardings.entrySet()) {
+//                dbShardingLists.add(entry.getValue());
+//            }
+//            if (shardingEntities != null && shardingEntities.size() > 0) {
+//                for (PartingEntity partingEntity : shardingEntities) {
+//                    if (!dbShardingLists.contains(partingEntity.getPartitions())) {
+//                        //元数据多余的分库分表键
+//                        if (StringUtils.isNotNullString(shardingResult.get(4))) {
+//                            shardingResult.set(4, shardingResult.get(4) + ";" + partingEntity.getPartitions());
+//                        } else {
+//                            shardingResult.set(4, partingEntity.getPartitions());
+//                        }
+//                    }
+//                }
+//            }
+//            //以物理库为基础，查找元数据库缺失的分库分表键
+//            for (String dbSharding : dbShardingLists) {
+//                boolean flag = false;
+//                if (shardingEntities != null && shardingEntities.size() > 0) {
+//                    for (PartingEntity partingEntity : shardingEntities) {
+//                        if (dbSharding.equalsIgnoreCase(partingEntity.getPartitions())) {
+//                            flag = true;
+//                            break;
+//                        }
+//                    }
+//                }
+//                if (!flag) {
+//                    if (StringUtils.isNotNullString(shardingResult.get(5))) {
+//                        shardingResult.set(5, shardingResult.get(5) + ";" + dbSharding);
+//                    } else {
+//                        shardingResult.set(5, dbSharding);
+//                    }
+//                }
+//            }
+//            shardingResults.add(shardingResult);
         }
     }
 
     @Override
     public void updateEleInfo(String databaseId) {
         //获取数据库详细信息
-        DatabaseDto databaseDto = databaseService.getDotById(databaseId);
+        DatabaseDto databaseDto = schemaService.getDotById(databaseId);
         List<String> tableList = null;
         DatabaseDcl database = null;
         try {

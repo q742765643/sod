@@ -390,7 +390,6 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
 
                     if ("1".equals(ce.getApiType())) {
                         comMetadataSyncMapper.insert1Row(param);
-
                     } else if ("2".equals(ce.getApiType()) &&
                             ("update".equals(getFiledValue(row, "C_FLOW_TYPE")) || "update".equals(getFiledValue(row, "C_OPT_TYPE")))) {
                         String pk = ce.getPrimaryKey();

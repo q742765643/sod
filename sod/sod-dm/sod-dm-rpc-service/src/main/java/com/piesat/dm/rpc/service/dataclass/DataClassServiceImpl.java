@@ -10,20 +10,18 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.tree.BaseParser;
 import com.piesat.dm.common.tree.TreeLevel;
-import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.dao.datatable.TableIndexDao;
-import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
-import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
@@ -32,7 +30,6 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -63,7 +60,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Autowired
     private DataClassMapper dataClassMapper;
     @Autowired
-    private DatabaseDao databaseDao;
+    private SchemaDao schemaDao;
     @Autowired
     private DataLogicDao dataLogicDao;
     @Autowired
@@ -95,7 +92,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Autowired
     private NewdataTableColumnService newdataTableColumnService;
     @Autowired
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
 
 
     @Override
@@ -119,19 +116,19 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         if (newdataApplyDto != null) {
             newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
             this.newdataApplyService.saveDto(newdataApplyDto);
-            String databaseId = dataClassDto.getDataLogicList().get(0).getDatabaseId();
-            DatabaseEntity byId = this.databaseDao.findById(databaseId).orElse(null);
-            DatabaseSpecialReadWriteDto d = new DatabaseSpecialReadWriteDto();
-            d.setSdbId(byId.getTdbId());
-            d.setApplyAuthority(2);
-            d.setDatabaseId(databaseId);
-            d.setDataClassId(dataClassEntity.getDataClassId());
-            d.setTypeId("9999");
-            d.setEmpowerAuthority(2);
-            d.setExamineStatus(1);
-            d.setDataType(1);
-            d.setCreateTime(new DateTime());
-            this.databaseSpecialReadWriteService.saveDto(d);
+//            String databaseId = dataClassDto.getDataLogicList().get(0).getDatabaseId();
+//            SchemaEntity byId = this.databaseDao.findById(databaseId).orElse(null);
+//            DatabaseSpecialReadWriteDto d = new DatabaseSpecialReadWriteDto();
+//            d.setSdbId(byId.getTdbId());
+//            d.setApplyAuthority(2);
+//            d.setDatabaseId(databaseId);
+//            d.setDataClassId(dataClassEntity.getDataClassId());
+//            d.setTypeId("9999");
+//            d.setEmpowerAuthority(2);
+//            d.setExamineStatus(1);
+//            d.setDataType(1);
+//            d.setCreateTime(new DateTime());
+//            this.databaseSpecialReadWriteService.saveDto(d);
         }
         List<DataClassLogicDto> dataLogicList = dataClassDto.getDataLogicList();
 
@@ -149,12 +146,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         List<DataClassLogicDto> dataLogicDtos = null;
         if (isNotNull) {
             dataLogicDtos = this.dataLogicService.saveList(dataLogicList);
-            for (DataClassLogicDto d:dataLogicDtos) {
-                List<AdvancedConfigDto> sc = this.storageConfigurationService.findByTableId(d.getTableId());
+            for (DataClassLogicDto d : dataLogicDtos) {
+                List<AdvancedConfigDto> sc = this.advancedConfigService.findByTableId(d.getTableId());
                 if (sc != null && sc.size() > 0) {
                     AdvancedConfigDto advancedConfigDto = sc.get(0);
                     advancedConfigDto.setStorageDefineIdentifier(1);
-                    this.storageConfigurationService.updateDataAuthorityConfig(advancedConfigDto);
+                    this.advancedConfigService.updateDataAuthorityConfig(advancedConfigDto);
                 } else {
                     AdvancedConfigDto advancedConfigDto = new AdvancedConfigDto();
                     advancedConfigDto.setTableId(d.getTableId());
@@ -164,7 +161,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                     advancedConfigDto.setMoveIdentifier(2);
                     advancedConfigDto.setBackupIdentifier(2);
                     advancedConfigDto.setArchivingIdentifier(2);
-                    this.storageConfigurationService.saveDto(advancedConfigDto);
+                    this.advancedConfigService.saveDto(advancedConfigDto);
                 }
             }
         }
@@ -244,9 +241,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getDatabaseClass() {
-        List<DatabaseEntity> databaseList = this.databaseDao.findByDatabaseDefine_UserDisplayControl(1);
+        List<SchemaEntity> databaseList = this.schemaDao.findByDatabaseDefine_UserDisplayControl(1);
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
-        for (DatabaseEntity db : databaseList) {
+        for (SchemaEntity db : databaseList) {
             if (!db.getStopUse()) {
                 List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTree(db.getId());
                 list.addAll(dataList);
@@ -266,9 +263,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getDatabaseClassMysql() {
-        List<DatabaseEntity> databaseList = this.databaseDao.findAll();
+        List<SchemaEntity> databaseList = this.schemaDao.findAll();
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
-        for (DatabaseEntity db : databaseList) {
+        for (SchemaEntity db : databaseList) {
             if (!db.getStopUse()) {
                 List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTreeMysql(db.getId());
                 list.addAll(dataList);
@@ -295,9 +292,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getDatabaseClassPostgresql() {
-        List<DatabaseEntity> databaseList = this.databaseDao.findByDatabaseDefine_UserDisplayControl(1);
+        List<SchemaEntity> databaseList = this.schemaDao.findByDatabaseDefine_UserDisplayControl(1);
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTreePostgresql();
-        for (DatabaseEntity db : databaseList) {
+        for (SchemaEntity db : databaseList) {
             if (!db.getStopUse()) {
                 List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTreePostgresql(db.getId());
                 list.addAll(dataList);
@@ -375,11 +372,11 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
-    public List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId) {
-        if (StringUtils.isNotBlank(className)||StringUtils.isNotBlank(dDataId)){
+    public List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId, String dataclassId) {
+        if (StringUtils.isNotBlank(className) || StringUtils.isNotBlank(dDataId) || StringUtils.isNotBlank(dataclassId)) {
             classIds = null;
         }
-        return this.mybatisQueryMapper.getDataClassListBYIn(classIds, StringUtils.isNotBlank(className) ? "%" + className + "%" : null, StringUtils.isNotBlank(dDataId) ? "%" + dDataId + "%" : null);
+        return this.mybatisQueryMapper.getDataClassListBYIn(classIds, StringUtils.isNotBlank(className) ? "%" + className + "%" : null, StringUtils.isNotBlank(dDataId) ? "%" + dDataId + "%" : null, StringUtils.isNotBlank(dataclassId) ? "%" + dataclassId + "%" : null);
     }
 
     @Override
@@ -630,11 +627,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public DataClassDto updateIsAllLine(DataClassDto dataClassDto) {
-        DataClassDto dataClassDto1 = this.findByDataClassId(dataClassDto.getDataClassId());
-        dataClassDto1.setIsAllLine(dataClassDto.getIsAllLine());
-        DataClassEntity dataClassEntity = dataClassMapper.toEntity(dataClassDto1);
-        dataClassEntity = this.saveNotNull(dataClassEntity);
-        return dataClassMapper.toDto(dataClassEntity);
+        DataClassDto d = this.findByDataClassId(dataClassDto.getDataClassId());
+        d.setIsAllLine(dataClassDto.getIsAllLine());
+        return dataClassMapper.toDto(this.saveNotNull(dataClassMapper.toEntity(d)));
     }
 
     @Override
@@ -680,5 +675,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public List<DataClassDto> findByDataClassIdAndCreateBy(String dataclassId, String userId) {
         List<DataClassEntity> byDataClassIdAndCreateBy = this.dataClassDao.findByDataClassIdAndCreateBy(dataclassId, userId);
         return this.dataClassMapper.toDto(byDataClassIdAndCreateBy);
+    }
+
+    @Override
+    public ResultT<List<Map<String, Object>>> getClassByTableId(String tableId) {
+        return ResultT.success(this.dataClassDao.getClassByTableId(tableId));
     }
 }

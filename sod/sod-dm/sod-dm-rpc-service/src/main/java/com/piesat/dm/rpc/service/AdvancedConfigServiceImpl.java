@@ -4,14 +4,14 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
-import com.piesat.dm.dao.StorageConfigurationDao;
+import com.piesat.dm.dao.AdvancedConfigDao;
 import com.piesat.dm.entity.AdvancedConfigEntity;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
-import com.piesat.dm.rpc.mapper.StorageConfigurationMapper;
+import com.piesat.dm.rpc.mapper.AdvancedConfigMapper;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,11 @@ import java.util.Map;
  * @date 2020/2/9 15:28
  */
 @Service
-public class StorageConfigurationServiceImpl extends BaseService<AdvancedConfigEntity> implements StorageConfigurationService {
+public class AdvancedConfigServiceImpl extends BaseService<AdvancedConfigEntity> implements AdvancedConfigService {
     @Autowired
-    private StorageConfigurationDao storageConfigurationDao;
+    private AdvancedConfigDao advancedConfigDao;
     @Autowired
-    private StorageConfigurationMapper storageConfigurationMapper;
+    private AdvancedConfigMapper advancedConfigMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
@@ -42,7 +42,7 @@ public class StorageConfigurationServiceImpl extends BaseService<AdvancedConfigE
 
     @Override
     public BaseDao<AdvancedConfigEntity> getBaseDao() {
-        return storageConfigurationDao;
+        return advancedConfigDao;
     }
 
     @Override
@@ -67,9 +67,9 @@ public class StorageConfigurationServiceImpl extends BaseService<AdvancedConfigE
 
     @Override
     public AdvancedConfigDto saveDto(AdvancedConfigDto advancedConfigDto) {
-        AdvancedConfigEntity advancedConfigEntity = this.storageConfigurationMapper.toEntity(advancedConfigDto);
-        advancedConfigEntity = this.storageConfigurationDao.saveNotNull(advancedConfigEntity);
-        return this.storageConfigurationMapper.toDto(advancedConfigEntity);
+        AdvancedConfigEntity advancedConfigEntity = this.advancedConfigMapper.toEntity(advancedConfigDto);
+        advancedConfigEntity = this.advancedConfigDao.saveNotNull(advancedConfigEntity);
+        return this.advancedConfigMapper.toDto(advancedConfigEntity);
     }
 
     @Override
@@ -114,12 +114,12 @@ public class StorageConfigurationServiceImpl extends BaseService<AdvancedConfigE
 
     @Override
     public void updateDataAuthorityConfig(AdvancedConfigDto advancedConfigDto) {
-        AdvancedConfigEntity advancedConfigEntity = this.storageConfigurationMapper.toEntity(advancedConfigDto);
+        AdvancedConfigEntity advancedConfigEntity = this.advancedConfigMapper.toEntity(advancedConfigDto);
         this.mybatisModifyMapper.updateDataAuthorityConfig(advancedConfigEntity);
     }
 
     @Override
     public List<AdvancedConfigDto> findByTableId(String id) {
-        return this.storageConfigurationMapper.toDto(this.storageConfigurationDao.findByTableId(id));
+        return this.advancedConfigMapper.toDto(this.advancedConfigDao.findByTableId(id));
     }
 }

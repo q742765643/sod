@@ -32,7 +32,7 @@ public class Main {
         IndexVo i = new IndexVo();
         t.setSchema("USR_SOD");
         t.setTableName("TEST1");
-        t.setPartiColumn("D_DATETIME");
+        t.setPartColumn("D_DATETIME");
         List<ColumnVo> l = new ArrayList<>();
         ColumnVo c2 = new ColumnVo();
         c2.setColumnName("D_DATA_ID");

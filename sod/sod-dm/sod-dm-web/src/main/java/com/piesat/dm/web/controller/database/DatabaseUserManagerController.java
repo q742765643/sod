@@ -6,11 +6,9 @@ import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.Doc2PDF;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
-import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.api.system.UserService;
@@ -20,7 +18,6 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import jdk.nashorn.internal.runtime.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -52,7 +49,7 @@ import java.util.*;
 public class DatabaseUserManagerController {
 
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
     private DatabaseUserService databaseUserService;
     @GrpcHthtClient
@@ -112,7 +109,7 @@ public class DatabaseUserManagerController {
     @GetMapping(value = "/databaseList")
     public ResultT databaseList() {
         try {
-            List<Map<String, Object>> allDatabaseDto = this.databaseService.getDatabaseList("1,3");
+            List<Map<String, Object>> allDatabaseDto = this.schemaService.getDatabaseList("1,3");
             return ResultT.success(allDatabaseDto);
         } catch (Exception e) {
             e.printStackTrace();

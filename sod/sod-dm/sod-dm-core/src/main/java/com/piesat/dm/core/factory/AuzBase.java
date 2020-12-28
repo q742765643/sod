@@ -123,6 +123,14 @@ public abstract class AuzBase extends Actuator {
     public abstract void dropTable(AuthorityVo authorityVo, ResultT<String> resultT);
 
     /**
+     * 表是否存在
+     * @param authorityVo
+     * @param resultT
+     * @return
+     */
+    public abstract Boolean existTable(AuthorityVo authorityVo, ResultT<String> resultT);
+
+    /**
      * 字段信息
      *
      * @param authorityVo
@@ -137,5 +145,6 @@ public abstract class AuzBase extends Actuator {
      * @param resultT
      */
     public abstract void indexInfo(AuthorityVo authorityVo, ResultT<List<Map<String, Object>>> resultT);
+
 
 }

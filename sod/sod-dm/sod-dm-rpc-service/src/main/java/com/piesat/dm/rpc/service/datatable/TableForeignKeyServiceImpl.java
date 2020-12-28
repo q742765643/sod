@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库外键关联
@@ -45,9 +46,14 @@ public class TableForeignKeyServiceImpl extends BaseService<TableForeignKeyEntit
     }
 
     @Override
-    public List<TableForeignKeyDto> findByTableId(String tableId) {
-        List<TableForeignKeyEntity> all = this.tableForeignKeyDao.findByTableIdOrSubTableId(tableId, tableId);
-        return this.tableForeignKeyMapper.toDto(all);
+    public List<Map<String, Object>> findByTableId(String tableId) {
+        return this.tableForeignKeyDao.findList(tableId);
+    }
+
+    @Override
+    public List<TableForeignKeyDto> findBySubOrTableId(String tableId) {
+        List<TableForeignKeyEntity> tableForeignKey = this.tableForeignKeyDao.findByTableIdOrSubTableId(tableId, tableId);
+        return this.tableForeignKeyMapper.toDto(tableForeignKey);
     }
 
     @Override

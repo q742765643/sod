@@ -21,7 +21,7 @@ public class ColumnVo {
     /**
      * 精度
      */
-    private Integer precision;
+    private String precision;
     /**
      * 长度
      */

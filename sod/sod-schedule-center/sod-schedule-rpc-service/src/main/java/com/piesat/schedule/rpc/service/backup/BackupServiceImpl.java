@@ -9,14 +9,12 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.backup.BackupDao;
@@ -71,13 +69,13 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     @Autowired
     private DiSendService diSendService;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private TableForeignKeyService tableForeignKeyService;
     @GrpcHthtClient
     private DataLogicService dataLogicService;
     @GrpcHthtClient
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
     @Autowired
     private BackupLogService backupLogService;
     private static final String BACKUP_TIME="backupTime";
@@ -164,7 +162,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
             scd.setTableId(dl.getId());
             scd.setBackupIdentifier(1);
             scd.setBackupId(backupEntity.getId());
-            this.storageConfigurationService.updateDataAuthorityConfig(scd);
+            this.advancedConfigService.updateDataAuthorityConfig(scd);
         }
     }
 

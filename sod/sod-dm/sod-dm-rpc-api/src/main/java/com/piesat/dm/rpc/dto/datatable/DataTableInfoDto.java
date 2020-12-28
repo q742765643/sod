@@ -2,8 +2,11 @@ package com.piesat.dm.rpc.dto.datatable;
 
 import com.alibaba.fastjson.JSON;
 import com.piesat.common.MapUtil;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
+import com.piesat.dm.core.model.ColumnVo;
+import com.piesat.dm.core.model.IndexVo;
 import com.piesat.dm.entity.datatable.TableColumnEntity;
 import com.piesat.dm.entity.datatable.TableIndexEntity;
 import com.piesat.util.BaseDto;
@@ -34,7 +37,14 @@ public class DataTableInfoDto extends BaseDto {
     private final String UK = "UK";
     private final String IDX = "IDX";
 
+    /**
+     * 数据库类型id
+     */
+    private String databasePid;
 
+    private String databaseType;
+
+    private String databaseName;
     /**
      * 数据库id
      */
@@ -78,41 +88,74 @@ public class DataTableInfoDto extends BaseDto {
 
     private LinkedHashSet<TableColumnDto> columns;
 
+
+    public List<ColumnVo> getColumnVo() {
+        return columns != null && columns.size() > 0 ? columns.stream().map(e -> {
+            ColumnVo c = new ColumnVo();
+            c.setColumnName(e.getDbEleCode());
+            c.setType(e.getType());
+            c.setLength(e.getLength());
+            c.setPrecision(e.getAccuracy());
+            c.setIsNull(e.getIsNull());
+            String eleName = StringUtils.isNotEmpty(e.getEleName()) ? e.getEleName().replace("'", "\"") : "";
+            String nameCn = StringUtils.isNotEmpty(e.getNameCn()) ? e.getNameCn().replace("'", "\"") : "";
+            nameCn = Constants.N.equals(nameCn)
+                    ? ""
+                    : Constants.LEFT_BRACKET + nameCn + Constants.RIGHT_BRACKET;
+            c.setComment(eleName + nameCn);
+            c.setDef(e.getDefaultValue());
+            return c;
+        }).collect(Collectors.toList()) : null;
+    }
+
+
     private LinkedHashSet<TableIndexDto> tableIndexList;
+
+    public List<IndexVo> getIndexVo() {
+        return tableIndexList != null && tableIndexList.size() > 0 ? tableIndexList.stream().map(e -> {
+            IndexVo i = new IndexVo();
+            i.setIndexName(e.getIndexName());
+            if (e.getIndexType().equalsIgnoreCase(UK)) {
+                e.setIndexType(UK);
+            }
+            i.setIndexComment(e.getIndexColumn());
+            return i;
+        }).collect(Collectors.toList()) : null;
+    }
 
     private List<TableColumnDto> realColumns;
 
     private List<TableIndexDto> realTableIndex;
 
-    public void contrast(List<Map<String, Object>> columnMap, List<Map<String, Object>> indexMap, DatabaseTypesEnum databaseType){
-        this.realColumns = columnMap == null ? null : MapUtil.transformMapList(columnMap).stream().map(e->{
+    public void contrast(List<Map<String, Object>> columnMap, List<Map<String, Object>> indexMap, DatabaseTypesEnum databaseType) {
+        this.realColumns = (columnMap == null || columnMap.size() == 0) ? null : MapUtil.transformMapList(columnMap).stream().map(e -> {
             TableColumnDto tc = new TableColumnDto();
             tc.setEleName(String.valueOf(e.get(COLUMN_NAME)));
             //NUMERIC(10,4)
             String type = String.valueOf(e.get(COLUMN_TYPE));
-            if (type.contains(Constants.LEFT_BRACKET)){
+            if (type.contains(Constants.LEFT_BRACKET)) {
                 String c_type = type.substring(0, type.indexOf(Constants.LEFT_BRACKET));
-                String la = type.substring(type.indexOf(Constants.LEFT_BRACKET)+1,type.length()-1);
-                if (la.contains(Constants.COMMA)){
+                String la = type.substring(type.indexOf(Constants.LEFT_BRACKET) + 1, type.length() - 1);
+                if (la.contains(Constants.COMMA)) {
                     String length = la.substring(0, la.indexOf(Constants.COMMA));
                     String accuracy = la.substring(la.indexOf(Constants.COMMA) + 1);
                     tc.setLength(Integer.valueOf(length));
                     tc.setAccuracy(accuracy);
-                }else {
+                } else {
                     tc.setLength(Integer.valueOf(la));
                 }
                 tc.setType(c_type);
-            }else {
+            } else {
                 tc.setType(type);
             }
             return tc;
         }).collect(Collectors.toList());
 
-        this.realTableIndex = indexMap == null ? null : MapUtil.transformMapList(indexMap).stream().map(e->{
+        this.realTableIndex = (indexMap == null || indexMap.size() == 0) ? null : MapUtil.transformMapList(indexMap).stream().map(e -> {
             TableIndexDto ti = new TableIndexDto();
-            if (e.get(NON_UNQIUE).equals(0)){
+            if (String.valueOf(e.get(NON_UNQIUE)).equals(Constants.ZERO)) {
                 ti.setIndexType(IDX);
-            }else {
+            } else {
                 ti.setIndexType(UK);
             }
             ti.setIndexName(String.valueOf(e.get(INDEX_NAME)));

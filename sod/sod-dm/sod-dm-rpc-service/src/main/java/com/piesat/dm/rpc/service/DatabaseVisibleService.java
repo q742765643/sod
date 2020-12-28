@@ -5,12 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.DatabaseSpecialDao;
-import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
 import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
@@ -19,8 +19,8 @@ import com.piesat.dm.entity.datatable.TableIndexEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
-import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
@@ -50,9 +50,9 @@ public class DatabaseVisibleService {
     private UserService userService;
 
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
-    private DatabaseDao databaseDao;
+    private SchemaDao schemaDao;
     @Autowired
     private DataAuthorityApplyService dataAuthorityApplyService;
     @Autowired
@@ -66,7 +66,7 @@ public class DatabaseVisibleService {
     @Autowired
     private DatabaseSpecialDao databaseSpecialDao;
     @Autowired
-    private DatabaseDefineService databaseDefineService;
+    private DatabaseService databaseService;
     @Autowired
     private DatabaseUserDao databaseUserDao;
 
@@ -84,7 +84,7 @@ public class DatabaseVisibleService {
         List<DatabaseDto> list = new ArrayList<>();
         JSONArray arr = new JSONArray();
         for (String id : split) {
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
+            DatabaseDefineDto dotById = this.databaseService.getDotById(id);
             if (dotById != null) {
                 JSONObject jo = new JSONObject();
                 jo.put("DATABASE_IP", dotById.getDatabaseIp());
@@ -122,7 +122,7 @@ public class DatabaseVisibleService {
             if (!databaseId.equals(id)) {
                 continue;
             }
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(id);
+            DatabaseDefineDto dotById = this.databaseService.getDotById(id);
             if (dotById != null) {
                 jo.put("DATABASE_IP", dotById.getDatabaseIp());
                 jo.put("MAINBAK_TYPE", dotById.getMainBakType());
@@ -208,7 +208,7 @@ public class DatabaseVisibleService {
         for (DataAuthorityRecordDto d : dataAuthorityRecordList) {
             if (d.getDataClassId().equals(dataclassId)) {
                 String databaseId = d.getDatabaseId();
-                DatabaseDto dotById = databaseService.getDotById(databaseId);
+                DatabaseDto dotById = schemaService.getDotById(databaseId);
                 List<DataClassAndTableEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
                 for (DataClassAndTableEntity dl : byDatabaseIdAndDataClassId) {
                     DataTableInfoDto dt = dataTableService.getDotById(dl.getTableId());
@@ -334,8 +334,8 @@ public class DatabaseVisibleService {
         dd.put("USE_STATUS", ds.getUseStatus());
         jo.put("specialDb", dd);
         JSONArray jrr = new JSONArray();
-        List<DatabaseEntity> databaseEntityList = databaseDao.findByTdbId(ds.getId());
-        for (DatabaseEntity de : databaseEntityList) {
+        List<SchemaEntity> schemaEntityList = schemaDao.findByTdbId(ds.getId());
+        for (SchemaEntity de : schemaEntityList) {
             List<DataTableInfoEntity> DataTableInfoList = this.dataTableDao.findByDatabaseId(de.getId());
             for (DataTableInfoEntity dt : DataTableInfoList) {
                 List<DataClassAndTableEntity> dataLogicEntityList = dataLogicDao.findByTableId(de.getId());

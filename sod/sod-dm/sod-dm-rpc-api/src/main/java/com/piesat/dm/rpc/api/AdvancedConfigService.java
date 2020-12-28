@@ -12,7 +12,7 @@ import java.util.Map;
  * @description TODO
  * @date 2020/2/9 15:28
  */
-public interface StorageConfigurationService {
+public interface AdvancedConfigService {
 
     PageBean selectPageList(PageForm<Map<String,String>> pageForm);
 

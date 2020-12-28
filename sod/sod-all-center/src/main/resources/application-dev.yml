@@ -68,6 +68,13 @@ spring:
       breakAfterAcquireFailure: true
       failFast: true
       connectionErrorRetryAttempts: 2
+      #druid recycle Druid的连接回收机制
+      #超过时间限制是否回收
+      removeAbandoned: true
+      #超时时间；单位为秒。180秒=3分钟
+      removeAbandonedTimeout: 180
+      #关闭abanded连接时输出错误日志
+      logAbandoned: true
 
   main:
     allow-bean-definition-overriding: true
@@ -89,9 +96,9 @@ spring:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
-  callSettersOnNulls: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
 #分页插件
 pagehelper:
   helper-dialect: mysql

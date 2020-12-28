@@ -14,23 +14,17 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
-import com.piesat.dm.rpc.dto.*;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataTableColumnDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.mapper.dataapply.NewdataApplyMapper;
 import com.piesat.dm.rpc.mapper.dataapply.NewdataTableColumnMapper;
@@ -68,7 +62,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     private DataLogicService dataLogicService;
 
     @Autowired
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
 
     @Autowired
     private DataTableService dataTableService;
@@ -76,7 +70,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Autowired
     private TableColumnService tableColumnService;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
     private ShardingService shardingService;
     @Autowired
@@ -251,7 +245,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
 
         if(StringUtils.isNotNullString(newdataApplyEntity.getDataClassId())){
             //删除存储策略
-            storageConfigurationService.deleteByDataClassId(newdataApplyEntity.getDataClassId());
+            advancedConfigService.deleteByDataClassId(newdataApplyEntity.getDataClassId());
             //删除表结构
             dataClassService.deleteByDataClassId(newdataApplyEntity.getDataClassId());
         }
