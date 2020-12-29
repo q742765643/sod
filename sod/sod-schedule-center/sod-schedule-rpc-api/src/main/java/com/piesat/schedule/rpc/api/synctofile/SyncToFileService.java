@@ -43,7 +43,10 @@ public interface SyncToFileService {
      * @param syncToFileIds
      */
     void deleteSyncToFileIds(String[] syncToFileIds);
+//    导出
+    public void exportExcel(SyncToFileDto syncToFileDto);
 
+    public List<Map<String,Object>> findDatabase();
     List<Map<String,Object>> findDataClassId(String dataBaseId, String dataClassId);
 
 }

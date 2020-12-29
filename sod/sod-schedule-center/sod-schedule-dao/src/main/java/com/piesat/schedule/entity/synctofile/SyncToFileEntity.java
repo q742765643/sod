@@ -79,5 +79,7 @@ public class SyncToFileEntity extends JobInfoEntity{
     private String ftpUser;
     @Column(name="ftp_pwd")
     private String ftpPwd;
+
+
 }
 

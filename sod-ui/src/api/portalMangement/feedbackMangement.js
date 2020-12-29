@@ -28,3 +28,17 @@ export function editById(data) {
     data: data
   })
 }
+//删除
+export function deleteId(data) {
+  return request({
+    url: baseUrl + '/portal/feedbackManage/del',
+    method: 'delete',
+    params: data
+  })
+}
+export function getDictDataByType(query) {
+  return request({
+    url: baseUrl + '/dm/yunDatabaseApply/getDictDataByType/' + query,
+    method: 'get',
+  })
+}

@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.schedule.dao.syncudtopc.SyncUdToPcLogDao;
 import com.piesat.schedule.entity.syncudtopc.SyncUdToPcLogEntity;
 import com.piesat.schedule.rpc.api.syncudtopc.SyncUdToPcLogService;
@@ -96,5 +97,44 @@ public class SyncUdToPcLogServiceImpl extends BaseService<SyncUdToPcLogEntity> i
     @Override
     public void deleteSyncUdToPcLogByIds(String[] syncUdToPcLogIds) {
         this.deleteByIds(Arrays.asList(syncUdToPcLogIds));
+    }
+
+    public List<SyncUdToPcLogEntity> selectSynctofileLogList(SyncUdToPcLogDto syncUdToPcLogDto){
+        SyncUdToPcLogEntity syncUdToPcLogEntity=syncUdToPcLogMapstruct.toEntity(syncUdToPcLogDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(syncUdToPcLogEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),syncUdToPcLogEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(syncUdToPcLogEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),syncUdToPcLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),syncUdToPcLogEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(syncUdToPcLogEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),syncUdToPcLogEntity.getProfileName());
+        }
+        if(null!=syncUdToPcLogEntity.getHandleCode()){
+            specificationBuilder.add("handleCode",SpecificationOperator.Operator.eq.name(),syncUdToPcLogEntity.getHandleCode());
+        }
+        if(StringUtils.isNotNullString(syncUdToPcLogEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),syncUdToPcLogEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) syncUdToPcLogEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) syncUdToPcLogEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) syncUdToPcLogEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) syncUdToPcLogEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
+        List<SyncUdToPcLogEntity> syncUdToPcLogEntitys=this.getAll(specification,sort);
+        return syncUdToPcLogEntitys;
+
+    }
+    @Override
+    public void exportExcel(SyncUdToPcLogDto syncUdToPcLogDto){
+        List<SyncUdToPcLogEntity> entities=this.selectSynctofileLogList(syncUdToPcLogDto);
+        ExcelUtil<SyncUdToPcLogEntity> util=new ExcelUtil(SyncUdToPcLogEntity.class);
+        util.exportExcel(entities,"数据同步日志");
     }
 }

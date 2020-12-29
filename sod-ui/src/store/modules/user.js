@@ -28,6 +28,9 @@ const user = {
     SET_NAME: (state, name) => {
       state.name = name
     },
+    SET_USERNAME: (state, userName) => {
+      state.userName = userName
+    },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
     },
@@ -92,6 +95,7 @@ const user = {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
           commit('SET_NAME', user.nickName)
+          commit('SET_USERNAME', user.userName)
           commit('SET_AVATAR', avatar)
           localStorage.setItem('userType', user.userType)
           resolve(res)
