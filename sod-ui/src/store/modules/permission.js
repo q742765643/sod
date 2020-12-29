@@ -25,7 +25,9 @@ const permission = {
       return new Promise(resolve => {
         // 向后端请求路由数据
         getRouters().then(res => {
-          const accessedRoutes = filterAsyncRouter(res.data)
+          console.log(res.data)
+          const accessedRoutes = filterAsyncRouter(res.data);
+          console.log(accessedRoutes)
           commit('SET_ROUTES', accessedRoutes)
           resolve(accessedRoutes)
         })

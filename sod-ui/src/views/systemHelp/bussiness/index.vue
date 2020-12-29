@@ -28,41 +28,31 @@
         </p>
         <ul class="stepUl">
           <li>
-            <span>
-              <i class="fa fa-file"></i> 资料申请
-            </span>
+            <span> <i class="fa fa-file"></i> 资料申请 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-address-book-o"></i> 存储结构管理
-            </span>
+            <span> <i class="fa fa-address-book-o"></i> 存储结构管理 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-retweet"></i> 数据同步配置
-            </span>
+            <span> <i class="fa fa-retweet"></i> 数据同步配置 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-database"></i> 数据迁移与清除配置
-            </span>
+            <span> <i class="fa fa-database"></i> 数据迁移与清除配置 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-files-o"></i> 数据备份与恢复配置
-            </span>
+            <span> <i class="fa fa-files-o"></i> 数据备份与恢复配置 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-clipboard"></i> 数据归档配置
-            </span>
+            <span> <i class="fa fa-clipboard"></i> 数据归档配置 </span>
           </li>
         </ul>
       </div>
       <el-card class="box-card">
         <el-row>
           <el-col :span="14" class="textBox">
-            <p>用户提交资料注册申请:管理员在数据存储管理系统中进行资料存储结构定义，并进行数据同步配置、数据迁移与清除配置、数据备份配置和数据归档配置。最后通知用户可以上传资料。</p>
+            <p>
+              用户提交资料注册申请:管理员在数据存储管理系统中进行资料存储结构定义，并进行数据同步配置、数据迁移与清除配置、数据备份配置和数据归档配置。最后通知用户可以上传资料。
+            </p>
           </el-col>
           <el-col :span="10" class="imgBox">
             <img src="@/assets/home/images/banner1.gif" alt />
@@ -77,34 +67,22 @@
         </p>
         <ul class="stepUl">
           <li>
-            <span>
-              <i class="fa fa-file"></i> 资料信息概览
-            </span>
+            <span> <i class="fa fa-file"></i> 资料信息概览 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-address-book-o"></i> 存储结构管理
-            </span>
+            <span> <i class="fa fa-address-book-o"></i> 存储结构管理 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-retweet"></i> 数据同步配置
-            </span>
+            <span> <i class="fa fa-retweet"></i> 数据同步配置 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-database"></i> 数据迁移与清除配置
-            </span>
+            <span> <i class="fa fa-database"></i> 数据迁移与清除配置 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-files-o"></i> 数据备份与恢复配置
-            </span>
+            <span> <i class="fa fa-files-o"></i> 数据备份与恢复配置 </span>
           </li>
           <li>
-            <span>
-              <i class="fa fa-clipboard"></i> 数据归档配置
-            </span>
+            <span> <i class="fa fa-clipboard"></i> 数据归档配置 </span>
           </li>
         </ul>
       </div>
@@ -114,9 +92,10 @@
             <img src="@/assets/home/images/banner2.gif" alt />
           </el-col>
           <el-col :span="14" class="textBox">
-            <p
-              style="padding-left:20px;"
-            >通过存储管理系统的资料信息概览页面，查看所有已有资料的表结构信息及表结构、同步、迁移、清除、备份恢复等功能是否配置、是否需要配置信息； 点击相应的功能键，弹出各个功能点的配置框，进行配置信息的修改和配置。</p>
+            <p style="padding-left: 20px">
+              通过存储管理系统的资料信息概览页面，查看所有已有资料的表结构信息及表结构、同步、迁移、清除、备份恢复等功能是否配置、是否需要配置信息；
+              点击相应的功能键，弹出各个功能点的配置框，进行配置信息的修改和配置。
+            </p>
           </el-col>
         </el-row>
       </el-card>
@@ -128,9 +107,7 @@
         </p>
         <ul class="stepUl stepUl2">
           <li>
-            <span>
-              <i class="fa fa-file"></i> 用户数据库访问账户申请
-            </span>
+            <span> <i class="fa fa-file"></i> 用户数据库访问账户申请 </span>
           </li>
           <li>
             <span>
@@ -152,7 +129,9 @@
       <el-card class="box-card">
         <el-row>
           <el-col :span="14" class="textBox">
-            <p>用户提交资料注册申请:管理员在数据存储管理系统中进行资料存储结构定义，并进行数据同步配置、数据迁移与清除配置、数据备份配置和数据归档配置。最后通知用户可以上传资料。</p>
+            <p>
+              用户提交资料注册申请:管理员在数据存储管理系统中进行资料存储结构定义，并进行数据同步配置、数据迁移与清除配置、数据备份配置和数据归档配置。最后通知用户可以上传资料。
+            </p>
           </el-col>
           <el-col :span="10" class="imgBox">
             <img src="@/assets/home/images/banner3.gif" alt />
@@ -167,9 +146,7 @@
         </p>
         <ul class="stepUl stepUl3">
           <li>
-            <span>
-              <i class="fa fa-file"></i> 用户提交存储资料使用申请
-            </span>
+            <span> <i class="fa fa-file"></i> 用户提交存储资料使用申请 </span>
           </li>
           <li>
             <span>
@@ -189,9 +166,11 @@
             <img src="@/assets/home/images/banner4.gif" alt />
           </el-col>
           <el-col :span="14" class="textBox">
-            <p
-              style="padding-left:20px;"
-            >用户从气象大数据云平台中提交存储资料使用申请。 管理员数据存储管理系统中对用户提交的申请进行审核，并利用相关业务存储资源管理工具进行资源分配和账号设置。 管理员将分配好的存储资源使用账号、密码等信息返回给用户。</p>
+            <p style="padding-left: 20px">
+              用户从气象大数据云平台中提交存储资料使用申请。
+              管理员数据存储管理系统中对用户提交的申请进行审核，并利用相关业务存储资源管理工具进行资源分配和账号设置。
+              管理员将分配好的存储资源使用账号、密码等信息返回给用户。
+            </p>
           </el-col>
         </el-row>
       </el-card>
@@ -203,7 +182,7 @@ import "font-awesome/css/font-awesome.css";
 export default {
   data() {
     return {
-      pageFlag: this.$route.params.pageFlag
+      pageFlag: this.$route.params.pageFlag,
     };
   },
   mounted() {
@@ -211,7 +190,7 @@ export default {
       document.querySelector("#" + this.pageFlag).scrollIntoView(true);
     }
   },
-  methods: {}
+  methods: {},
 };
 </script>
 <style lang="scss">
