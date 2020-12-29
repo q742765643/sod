@@ -92,7 +92,7 @@ export default {
   props: { rowData: Object, tableInfo: Object },
   data() {
     return {
-      activeNames: ["1"],
+      activeNames: ["1", "2", "3"],
       radioTable: "K",
       msgFormDialog: {
         createSql: "",

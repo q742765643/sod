@@ -10,14 +10,14 @@
       <el-table-column label="表中文名" prop="NAME_CN"></el-table-column>
       <el-table-column label="数据库" prop="DATABASE_NAME" width="200">
         <template slot-scope="scope">
-          <span v-if="scope.row.DATABASE_NAME">{{
-            scope.row.DATABASE_NAME
-          }}</span>
-          <span v-if="scope.row.DATABASE_NAME && scope.row.DATABASE_NAME_P"
-            >,</span
-          >
           <span v-if="scope.row.DATABASE_NAME_P">{{
             scope.row.DATABASE_NAME_P
+          }}</span>
+          <span v-if="scope.row.DATABASE_NAME && scope.row.DATABASE_NAME_P"
+            >-</span
+          >
+          <span v-if="scope.row.DATABASE_NAME">{{
+            scope.row.DATABASE_NAME
           }}</span>
         </template>
       </el-table-column>

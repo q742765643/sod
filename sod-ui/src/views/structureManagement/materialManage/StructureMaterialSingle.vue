@@ -132,17 +132,13 @@
               <el-collapse accordion>
                 <el-collapse-item>
                   <template slot="title">
-                    <el-checkbox-group
-                      v-model="materialData.labelKeyFrom"
-                      v-show="SelectDictdataTypes.length > 0"
-                    >
-                      <el-checkbox
-                        :label="item.dictValue"
+                    <p v-show="SelectDictdataTypes.length > 0">
+                      <span
                         v-for="(item, index) in SelectDictdataTypes"
                         :key="index"
-                        >{{ item.dictLabel }}</el-checkbox
+                        >{{ item.dictLabel }}</span
                       >
-                    </el-checkbox-group>
+                    </p>
                     <span v-show="SelectDictdataTypes.length == 0"
                       >请选择数据标签</span
                     >
@@ -190,9 +186,8 @@
       <!-- 关联表信息 -->
       <div class="editDataUse" v-if="!isSourceTree">
         <h4>关联表信息</h4>
-        <div class="editUseDiv" @click="showEditDataUse">点击编辑</div>
-        <div v-show="editDataUseVisible">
-          <el-form v-model="materialData.dataLogicList" label-width="120px">
+        <div class="linkInfo">
+          <el-form v-model="materialData.dataLogicList" label-width="90px">
             <el-row
               v-for="(item, index) in materialData.dataLogicList"
               :key="index"
@@ -232,7 +227,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="4">
-                <el-form-item label="表名称">
+                <el-form-item label="要素表名称">
                   <el-select
                     filterable
                     v-model="item.tableId"
@@ -249,7 +244,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="4" v-show="item.subTableId">
-                <el-form-item label="表名称">
+                <el-form-item label="键表名称">
                   <el-input
                     v-model="item.subTableNameCn"
                     class="elInput"
@@ -390,7 +385,6 @@ export default {
       tableStructureManageContral: false,
       labelWidth: "100px",
 
-      editDataUseVisible: false, //关联表信息弹出层控制
       isDisabledEdit: false,
       materialData: {
         ddataId: "",
@@ -644,7 +638,6 @@ export default {
             }
           }
         );
-        this.editDataUseVisible = true;
         console.log(this.materialData);
       }
     },
@@ -660,7 +653,19 @@ export default {
             response.data.dataClassLabelList.forEach((element) => {
               response.data.labelKeyFrom.push(element.labelKey);
             });
+            this.SelectDictdataTypes = [];
+            this.dictdataTypes.forEach((element) => {
+              response.data.dataClassLabelList.forEach((item) => {
+                if (item.labelKey == element.dictValue) {
+                  let obj = {
+                    dictLabel: element.dictLabel,
+                  };
+                  this.SelectDictdataTypes.push(obj);
+                }
+              });
+            });
           }
+
           if (!response.data.dataClassUserList) {
             response.data.dataClassUserList = [];
           } else {
@@ -673,7 +678,6 @@ export default {
             response.data.dataLogicList &&
             response.data.dataLogicList.length > 0
           ) {
-            this.editDataUseVisible = true;
             let logcList = response.data.dataLogicList;
             logcList.forEach(async (item, index) => {
               await this.handleFindSpec(item.databasePid, index, "edit");
@@ -761,9 +765,6 @@ export default {
     },
     // 显示关联表信息弹出层
     async showEditDataUse() {
-      if (this.editDataUseVisible) {
-        return;
-      }
       await getCanShowDatabaseDefineList().then((res) => {
         this.DatabaseDefineList = res.data;
       });

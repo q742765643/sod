@@ -8,96 +8,99 @@
     >
     </el-alert>
     <el-scrollbar wrap-class="scrollbar-wrapper">
+      <el-container class="structureManageTable">
+        <el-main id="box">
+          <el-form
+            v-if="
+              this.rowData.STORAGE_TYPE == 'ME_table' ||
+              this.rowData.STORAGE_TYPE == 'MK_table' ||
+              this.rowData.STORAGE_TYPE == 'NF_table'
+            "
+            v-model.trim="dirRule"
+            class="elementDir"
+            label-width="100px"
+          >
+            <el-row>
+              <el-col :span="20">
+                <el-form-item label="存储目录">
+                  <el-input
+                    :disabled="!isDirEdit"
+                    placeholder="存储目录"
+                    size="small"
+                    v-model.trim="dirRule.dirNorm"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                <el-form-item label class="buttonCon">
+                  <el-button
+                    v-if="!isDirEdit"
+                    type="primary"
+                    size="small"
+                    @click="editDir"
+                    >编辑</el-button
+                  >
+                  <el-button
+                    v-if="isDirEdit"
+                    type="primary"
+                    size="small"
+                    @click="saveDir"
+                    >保存</el-button
+                  >
+                  <el-button
+                    v-if="isDirEdit"
+                    type="primary"
+                    size="small"
+                    @click="celDir"
+                    >取消</el-button
+                  >
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <div class="el-main">
+            <div class="elementTableTitle">
+              <i id="el_table_flag" class="el-icon-postcard"></i>表信息
+            </div>
+            <table-info
+              class="floor"
+              :tableInfo="commonTableObj.tableInfo"
+              :rowData="rowData"
+              :tableBaseInfo="tableBaseInfo"
+              tableType="E"
+              v-on:reloadTableInfo="getTableInfo"
+              @findTips="findTips"
+            ></table-info>
+          </div>
+        </el-main>
+      </el-container>
       <el-tabs
         v-if="tabs.table.common"
         v-model.trim="tableActive"
         @tab-click="manageTabsClick"
       >
         <el-tab-pane label="基本信息" name="db">
-          <el-container class="structureManageTable">
-            <el-main id="box">
-              <el-form
-                v-if="
-                  this.rowData.STORAGE_TYPE == 'ME_table' ||
-                  this.rowData.STORAGE_TYPE == 'MK_table' ||
-                  this.rowData.STORAGE_TYPE == 'NF_table'
-                "
-                v-model.trim="dirRule"
-                class="elementDir"
-                label-width="100px"
-              >
-                <el-row>
-                  <el-col :span="20">
-                    <el-form-item label="存储目录">
-                      <el-input
-                        :disabled="!isDirEdit"
-                        placeholder="存储目录"
-                        size="small"
-                        v-model.trim="dirRule.dirNorm"
-                      ></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="4">
-                    <el-form-item label class="buttonCon">
-                      <el-button
-                        v-if="!isDirEdit"
-                        type="primary"
-                        size="small"
-                        @click="editDir"
-                        >编辑</el-button
-                      >
-                      <el-button
-                        v-if="isDirEdit"
-                        type="primary"
-                        size="small"
-                        @click="saveDir"
-                        >保存</el-button
-                      >
-                      <el-button
-                        v-if="isDirEdit"
-                        type="primary"
-                        size="small"
-                        @click="celDir"
-                        >取消</el-button
-                      >
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-              <div class="el-main">
-                <div class="elementTableTitle">
-                  <i id="el_table_flag" class="el-icon-postcard"></i>表信息
-                </div>
-                <table-info
-                  class="floor"
-                  :tableInfo="commonTableObj.tableInfo"
-                  :rowData="rowData"
-                  :tableBaseInfo="tableBaseInfo"
-                  tableType="E"
+          <el-collapse
+            class="collapseCon el-col el-col-24"
+            v-model="activeBaseCol"
+          >
+            <el-collapse-item class="floor" name="column">
+              <template slot="title">
+                <i id="el_field" class="el-icon-price-tag"></i>字段
+              </template>
+              <div>
+                <v-column
                   v-on:reloadTableInfo="getTableInfo"
-                  @findTips="findTips"
-                ></table-info>
-                <el-collapse class="collapseCon el-col el-col-24">
-                  <el-collapse-item class="floor">
-                    <template slot="title">
-                      <i id="el_field" class="el-icon-price-tag"></i>字段
-                    </template>
-                    <div>
-                      <v-column
-                        v-on:reloadTableInfo="getTableInfo"
-                        :rowData="rowData"
-                        :tableInfo="commonTableObj.tableInfo"
-                      ></v-column>
-                    </div>
-                  </el-collapse-item>
-                </el-collapse>
+                  :rowData="rowData"
+                  :tableInfo="commonTableObj.tableInfo"
+                ></v-column>
               </div>
-            </el-main>
-          </el-container>
+            </el-collapse-item>
+          </el-collapse>
         </el-tab-pane>
         <el-tab-pane label="约束分区" name="yueArea">
-          <el-collapse>
-            <el-collapse-item class="floor">
+          <el-collapse v-model="activeIndexCol">
+            <el-collapse-item class="floor" name="1">
               <template slot="title">
                 <i id="el_indexes" class="el-icon-price-tag"></i>索引
               </template>
@@ -105,7 +108,7 @@
                 <v-index :tableInfo="commonTableObj.tableInfo"></v-index>
               </div>
             </el-collapse-item>
-            <el-collapse-item class="floor">
+            <el-collapse-item class="floor" name="2">
               <template slot="title">
                 <i id="el_tableKey" class="el-icon-price-tag"></i>分区键
               </template>
@@ -165,19 +168,7 @@
       </el-tabs>
 
       <div v-show="tabs.table.ka" class="el-main">
-        <div class="elementTableTitle" style="margin-top: 4px">
-          <i id="el_table_flag" class="el-icon-postcard"></i>表信息
-        </div>
-        <table-info
-          class="floor"
-          :tableInfo="commonTableObj.tableInfo"
-          :rowData="rowData"
-          :tableBaseInfo="tableBaseInfo"
-          tableType="E"
-          v-on:reloadTableInfo="getTableInfo"
-          @findTips="findTips"
-        ></table-info>
-        <el-collapse class="collapseCon el-col el-col-24">
+        <el-collapse class="collapseCon el-col el-col-24" v-model="activeKaCol">
           <el-collapse-item name="keycode" class="floor">
             <template slot="title">
               <i id="ka_key_field" class="el-icon-price-tag"></i>主键字段
@@ -251,9 +242,13 @@ export default {
   props: { parentRowData: Object, tableBaseInfo: Object },
   data() {
     return {
-      tipsFlag: false,
+      tipsFlag: true,
       rowData: this.parentRowData,
       tableActive: "db",
+      activeKaCol: ["keycode", "elcode"],
+      activeBaseCol: ["column"],
+      activeIndexCol: ["1", "2"],
+
       dialogStatus: { publicMatedataDialog: false, columnDialog: false },
       keyObj: { tableInfo: {}, keyColumnData: [] },
       commonTableObj: { tableInfo: {}, ColumnData: [] },
@@ -456,6 +451,11 @@ export default {
   }
   .el-main {
     padding: 0 10px;
+  }
+  .structureManageTable {
+    .el-main {
+      padding: 0;
+    }
   }
   .elementTableTitle {
     box-sizing: border-box;
