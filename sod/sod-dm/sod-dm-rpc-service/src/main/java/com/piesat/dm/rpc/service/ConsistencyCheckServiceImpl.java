@@ -6,10 +6,8 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.factory.AuzDatabase;
 import com.piesat.dm.core.factory.AuzFactory;
-import com.piesat.dm.core.factory.CommData;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
@@ -22,13 +20,12 @@ import com.piesat.dm.rpc.api.ConsistencyCheckService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
-import com.piesat.dm.rpc.dto.*;
+import com.piesat.dm.rpc.dto.ConsistencyCheckDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.mapper.ConsistencyCheckMapper;
-import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -122,7 +119,6 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         ResultT<List<Map<String, Object>>> r = new ResultT();
         //获取数据库详细信息
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
-        List<String> tableList = null;
         Map<String, List<List<String>>> compileResult = new HashMap<String, List<List<String>>>();
         compileResult.put("columnResult", new ArrayList<List<String>>());
         compileResult.put("indexResult", new ArrayList<List<String>>());
@@ -133,8 +129,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
         actuator.allTables(a,r);
         if (r.isSuccess()){
-            List<Map<String, Object>> data = r.getData();
-            List<Map<String, Object>> maps = MapUtil.transformMapList(data);
+            List<Map<String, Object>> maps = MapUtil.transformMapList( r.getData());
             ResultT<List<Map<String, Object>>> column = new ResultT();
             ResultT<List<Map<String, Object>>> index = new ResultT();
             maps.stream().map(e->String.valueOf(e.get(table_name))).forEach(tableName->{
@@ -154,6 +149,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                 compareDifferences(databaseId, tableName.toUpperCase(), columnInfos, indexAndShardings, compileResult);
             });
         }
+        actuator.close();
         return compileResult;
     }
 
@@ -330,76 +326,34 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
             shardingResult.set(1, dataClassId);
             shardingResult.set(2, dataTableDto.getNameCn());
             shardingResult.set(3, "存在");
-            //以元数据库分库分表为准，遍历元数据分库分表
-//            List<PartingEntity> shardingEntities = shardingDao.findByTableId(dataTableDto.getId());
-//            Map<String, String> dbShardings = indexAndShardings.get("shardings");
-//            List<String> dbShardingLists = new ArrayList<String>();
-//            for (Map.Entry<String, String> entry : dbShardings.entrySet()) {
-//                dbShardingLists.add(entry.getValue());
-//            }
-//            if (shardingEntities != null && shardingEntities.size() > 0) {
-//                for (PartingEntity partingEntity : shardingEntities) {
-//                    if (!dbShardingLists.contains(partingEntity.getPartitions())) {
-//                        //元数据多余的分库分表键
-//                        if (StringUtils.isNotNullString(shardingResult.get(4))) {
-//                            shardingResult.set(4, shardingResult.get(4) + ";" + partingEntity.getPartitions());
-//                        } else {
-//                            shardingResult.set(4, partingEntity.getPartitions());
-//                        }
-//                    }
-//                }
-//            }
-//            //以物理库为基础，查找元数据库缺失的分库分表键
-//            for (String dbSharding : dbShardingLists) {
-//                boolean flag = false;
-//                if (shardingEntities != null && shardingEntities.size() > 0) {
-//                    for (PartingEntity partingEntity : shardingEntities) {
-//                        if (dbSharding.equalsIgnoreCase(partingEntity.getPartitions())) {
-//                            flag = true;
-//                            break;
-//                        }
-//                    }
-//                }
-//                if (!flag) {
-//                    if (StringUtils.isNotNullString(shardingResult.get(5))) {
-//                        shardingResult.set(5, shardingResult.get(5) + ";" + dbSharding);
-//                    } else {
-//                        shardingResult.set(5, dbSharding);
-//                    }
-//                }
-//            }
-//            shardingResults.add(shardingResult);
+
         }
     }
 
     @Override
     public void updateEleInfo(String databaseId) {
+        ResultT<List<Map<String, Object>>> r = new ResultT();
         //获取数据库详细信息
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
-        List<String> tableList = null;
-        DatabaseDcl database = null;
-        try {
-            database = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            tableList = (List<String>) database.queryAllTableName(schemaDto.getSchemaName()).getData();
-            for (String tableName : tableList) {
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
+        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
+        actuator.allTables(a,r);
+        if (r.isSuccess()){
+            List<Map<String, Object>> maps = MapUtil.transformMapList(r.getData());
+            ResultT<List<Map<String, Object>>> column = new ResultT();
+            maps.stream().map(e->String.valueOf(e.get(table_name))).forEach(tableName->{
+                actuator.columnInfo(a,column);
                 //物理库表字段信息
-                Map<String, Map<String, Object>> columnInfos = (Map<String, Map<String, Object>>) database.queryAllColumnInfo(schemaDto.getSchemaName(), tableName).getData();
+                Map<String, Map<String, Object>> columnInfos = null;
+                if (column.isSuccess()){
+                    columnInfos = column.getData().stream().collect(Collectors.toMap(k -> k.get(column_name).toString(), t -> t));
+                }
                 updateEleSubInfo(databaseId, tableName.toUpperCase(), columnInfos);
-            }
-        } catch (Exception e) {
-            if (database != null) {
-                database.closeConnect();
-            }
-            e.printStackTrace();
-        } finally {
-            if (database != null) {
-                database.closeConnect();
-            }
+            });
         }
+        actuator.close();
     }
 
     public void updateEleSubInfo(String databaseId, String tableName, Map<String, Map<String, Object>> columnInfos) {
