@@ -268,7 +268,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             if (StringUtils.isEmpty(dataAuthorityRecordDto.getTableName())) {
                 continue;
             }
-            ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
+            ConnectVo coreInfo = schemaDto.getConnectVo();
             DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.CREATE;
             AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(),dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
             AuzFactory af = new AuzFactory(coreInfo.getPid(),coreInfo,coreInfo.getDatabaseType(),r);

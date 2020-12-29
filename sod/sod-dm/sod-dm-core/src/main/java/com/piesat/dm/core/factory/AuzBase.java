@@ -146,5 +146,10 @@ public abstract class AuzBase extends Actuator {
      */
     public abstract void indexInfo(AuthorityVo authorityVo, ResultT<List<Map<String, Object>>> resultT);
 
-
+    /**
+     * 查询所有表
+     * @param authorityVo
+     * @param resultT
+     */
+    public abstract void allTables(AuthorityVo authorityVo,  ResultT<List<Map<String, Object>>> resultT);
 }

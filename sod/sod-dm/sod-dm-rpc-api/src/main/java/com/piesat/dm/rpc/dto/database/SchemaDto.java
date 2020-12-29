@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.database;
 
+import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import lombok.Data;
 
@@ -68,4 +69,8 @@ public class SchemaDto {
     private Integer level;
 
     private List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList;
+
+    public ConnectVo getConnectVo(){
+        return this.databaseDto.getCoreInfo();
+    }
 }

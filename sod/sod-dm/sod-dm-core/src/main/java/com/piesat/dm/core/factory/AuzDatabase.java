@@ -165,6 +165,12 @@ public class AuzDatabase extends AuzBase {
         resultT.setData(this.exeQuery(sql, resultT));
     }
 
+    @Override
+    public void allTables(AuthorityVo authorityVo,  ResultT<List<Map<String, Object>>> resultT) {
+        authorityVo.format(this.databaseType);
+        String sql = TemplateUtil.rendering(QUERY_TABLES, authorityVo);
+        resultT.setData(this.exeQuery(sql, resultT));
+    }
 
 
 }

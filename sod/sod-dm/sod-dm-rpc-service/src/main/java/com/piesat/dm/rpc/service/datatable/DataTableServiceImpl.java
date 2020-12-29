@@ -259,7 +259,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             r.setErrorMessage(ConstantsMsg.MSG10);
             return r;
         }
-        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
+        ConnectVo coreInfo = schemaDto.getConnectVo();
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         CommData actuator = (CommData) af.getActuator(false);
         SelectVo s = new SelectVo();
@@ -346,8 +346,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     public ResultT createTable(TableSqlDto tableSqlDto) {
         ResultT r = new ResultT();
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
-        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
-        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName(), null, null);
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         actuator.exe(tableSqlDto.getCreateSql(),r);
@@ -359,8 +359,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     public ResultT existTable(TableSqlDto tableSqlDto) {
         ResultT r = new ResultT();
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
-        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
-        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName(), null, null);
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         r.setData(actuator.existTable(a, r));
@@ -394,8 +394,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         }
         SchemaDto schemaDto = schemaService.getDotById(dataTableInfoDto.getDatabaseId());
         dataTableInfoDto.setDatabasePid(schemaDto.getDatabaseDto().getId());
-        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
-        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName(), null, null);
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), resultT);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         List<Map<String, Object>> c = null;
@@ -427,7 +427,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     public long countTable(TableSqlDto tableSqlDto) {
         ResultT<Map<CountEnum, String>> r = new ResultT();
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
-        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
+        ConnectVo coreInfo = schemaDto.getConnectVo();
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         CommData actuator = (CommData) af.getActuator(false);
         SelectVo s = new SelectVo();

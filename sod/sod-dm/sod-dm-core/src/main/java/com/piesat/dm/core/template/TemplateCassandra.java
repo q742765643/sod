@@ -13,5 +13,5 @@ public class TemplateCassandra {
     public static final String QUERY_INDEX = "SELECT KEYSPACE_NAME AS TABLE_SCHEMA,TABLE_NAME,INDEX_NAME,OPTIONS AS INDEX_COLUMN FROM SYSTEM_SCHEMA.INDEXES WHERE KEYSPACE_NAME = '${schema}' AND TABLE_NAME = '${tableName}' ";
     public static final String CREATE_SCHEMA = "CREATE KEYSPACE IF NOT EXISTS ${schema} WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 4}";
     public static final String GRANT_ANY_TABLE = "GRANT CREATE ON KEYSPACE ${grantStr} TO '${userName}' ";
-
+    public static final String QUERY_TABLES = "SELECT TABLE_NAME FROM SYSTEM_SCHEMA.TABLES WHERE KEYSPACE_NAME = '${schema}'";
 }

@@ -14,6 +14,8 @@ public class TemplatePostgreSql {
 
     public static final String GRANT_ANY_TABLE = "GRANT ${grantStr} ON ALL TABLES IN SCHEMA ${schema} To ${userName} ";
 
+    public static final String QUERY_TABLES = "SELECT TABLENAME AS TABLE_NAME FROM PG_TABLES WHERE SCHEMANAME = '${schema}'";
+
     public static final String QUERY_COLUMN =
             "SELECT TABLE_SCHEMA,TABLE_NAME,UPPER(COLUMN_NAME) COLUMN_NAME,UDT_NAME COLUMN_TYPE,IS_NULLABLE FROM " +
             "INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME= '${tableName}' AND TABLE_SCHEMA = '${schema}'";

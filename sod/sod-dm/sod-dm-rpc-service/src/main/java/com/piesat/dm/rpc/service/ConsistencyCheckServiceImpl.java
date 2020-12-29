@@ -1,11 +1,17 @@
 package com.piesat.dm.rpc.service;
 
+import com.piesat.common.MapUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.factory.AuzDatabase;
+import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.factory.CommData;
+import com.piesat.dm.core.model.AuthorityVo;
+import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.ConsistencyCheckDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
@@ -23,6 +29,7 @@ import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.mapper.ConsistencyCheckMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
+import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.commons.collections.IteratorUtils;
@@ -32,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author yaya
@@ -57,6 +65,12 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     private DatabaseInfo databaseInfo;
     @Autowired
     private TableColumnService tableColumnService;
+
+    private String table_name = "table_name";
+    private String column_name = "column_name";
+    private String index_name = "index_name";
+    private String index_column = "index_column";
+    private String indexs = "indexs";
 
     @Override
     public BaseDao<ConsistencyCheckEntity> getBaseDao() {
@@ -105,6 +119,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
 
     @Override
     public Map<String, List<List<String>>> downloadDfcheckFile(String databaseId) {
+        ResultT<List<Map<String, Object>>> r = new ResultT();
         //获取数据库详细信息
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
         List<String> tableList = null;
@@ -112,31 +127,32 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         compileResult.put("columnResult", new ArrayList<List<String>>());
         compileResult.put("indexResult", new ArrayList<List<String>>());
         compileResult.put("shardingResult", new ArrayList<List<String>>());
-
-        DatabaseDcl database = null;
-        try {
-            database = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            tableList = (List<String>) database.queryAllTableName(schemaDto.getSchemaName()).getData();
-            for (String tableName : tableList) {
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
+        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
+        actuator.allTables(a,r);
+        if (r.isSuccess()){
+            List<Map<String, Object>> data = r.getData();
+            List<Map<String, Object>> maps = MapUtil.transformMapList(data);
+            ResultT<List<Map<String, Object>>> column = new ResultT();
+            ResultT<List<Map<String, Object>>> index = new ResultT();
+            maps.stream().map(e->String.valueOf(e.get(table_name))).forEach(tableName->{
+                actuator.columnInfo(a,column);
+                actuator.indexInfo(a,index);
                 //物理库表字段信息
-                Map<String, Map<String, Object>> columnInfos = (Map<String, Map<String, Object>>) database.queryAllColumnInfo(schemaDto.getSchemaName(), tableName).getData();
+                Map<String, Map<String, Object>> columnInfos = null;
+                if (column.isSuccess()){
+                    columnInfos = column.getData().stream().collect(Collectors.toMap(k -> k.get(column_name).toString(), t -> t));
+                }
                 //物理库表索引和分库分表信息
-                Map<String, Map<String, String>> indexAndShardings = (Map<String, Map<String, String>>) database.queryAllIndexAndShardingInfo(schemaDto.getSchemaName(), tableName).getData();
+                Map<String, Map<String, String>> indexAndShardings = new HashMap<>();
+                if (index.isSuccess()){
+                    Map<String, String> m = index.getData().stream().collect(Collectors.toMap(k -> k.get(index_name).toString(), t -> t.get(index_column).toString()));
+                    indexAndShardings.put(indexs,m);
+                }
                 compareDifferences(databaseId, tableName.toUpperCase(), columnInfos, indexAndShardings, compileResult);
-            }
-        } catch (Exception e) {
-            if (database != null) {
-                database.closeConnect();
-            }
-            e.printStackTrace();
-        } finally {
-            if (database != null) {
-                database.closeConnect();
-            }
+            });
         }
         return compileResult;
     }

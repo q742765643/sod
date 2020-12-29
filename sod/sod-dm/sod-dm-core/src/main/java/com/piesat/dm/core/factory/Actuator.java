@@ -46,6 +46,7 @@ public class Actuator {
     public String ALTER_RENAME_COLUMN = "ALTER TABLE ${schema}.${tableName} RENAME COLUMN ${oldColumnName} TO ${columnName}";
     public String QUERY_COLUMN = "SELECT TABLE_SCHEMA,TABLE_NAME,UPPER(COLUMN_NAME) COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' AND TABLE_SCHEMA = '${schema}'";
     public String QUERY_INDEX = "SELECT * FROM INFORMATION_SCHEMA.INDEX WHERE TABLE_NAME = '${tableName}' AND SCHEMA_NAME = '${schema}'";
+    public String QUERY_TABLES = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '${schema}'";
 
     public String[] sysUsers =  ManagerUser.sysUser.split(Constants.COMMA);
 

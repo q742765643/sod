@@ -23,6 +23,15 @@ public class AuthorityVo {
         this.dbaEnum = dbaEnum;
     }
 
+    public AuthorityVo(String schema,String tableName){
+        this.schema = schema;
+        this.tableName = tableName;
+    }
+
+    public AuthorityVo(String schema){
+        this.schema = schema;
+    }
+
     public void setSchema(String schema) {
         this.schema = schema.toUpperCase();
     }
