@@ -409,5 +409,13 @@ public class UserController {
         return ResultT.success(userDtos);
     }
 
+    @GetMapping(value = "/delBizUser")
+    @ApiOperation(value = "删除业务用户", notes = "删除业务用户")
+    public ResultT delBizUser(String bizUserid)
+    {
+       this.userService.delBizUser(bizUserid);
+        return ResultT.success();
+    }
+
 
 }

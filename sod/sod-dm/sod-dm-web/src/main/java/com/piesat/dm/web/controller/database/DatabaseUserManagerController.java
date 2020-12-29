@@ -300,6 +300,7 @@ public class DatabaseUserManagerController {
     @RequiresPermissions("dm:databaseUser:addBzi")
     @PostMapping(value = "/addBzi")
     public ResultT saveBzi(@RequestBody DatabaseUserDto databaseUserDto) {
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         try {
             //默认待审核
             databaseUserDto.setExamineStatus("0");
@@ -322,6 +323,8 @@ public class DatabaseUserManagerController {
             ResultT b = this.databaseUserService.empower(save);
             if (b.getCode() == 200) {
                 save.setExamineStatus("1");
+                save.setExamineTime(new Date());
+                save.setExaminer(loginUser.getUserName());
                 DatabaseUserDto update = this.databaseUserService.mergeDto(save);
                 return ResultT.success(update);
             } else {

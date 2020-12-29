@@ -2,6 +2,7 @@ package com.piesat.portal.rpc.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.piesat.portal.rpc.dto.DepartManageDto;
+import com.piesat.portal.rpc.dto.MenuManageDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -39,6 +40,13 @@ public class PortalTreeSelect implements Serializable
         this.id = dept.getDeptunicode();
         this.label = dept.getDeptname();
         this.children = dept.getChildren().stream().map(PortalTreeSelect::new).collect(Collectors.toList());
+    }
+
+    public PortalTreeSelect(MenuManageDto menuManageDto)
+    {
+        this.id = menuManageDto.getId();
+        this.label = menuManageDto.getMenuName();
+        this.children = menuManageDto.getChildren().stream().map(PortalTreeSelect::new).collect(Collectors.toList());
     }
 
 }

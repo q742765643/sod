@@ -18,7 +18,7 @@
         <result column="FILE_DESC" jdbcType="VARCHAR" property="fileDesc" />
         <result column="DOWNLOADTIMES" jdbcType="INTEGER" property="downloadtimes" />
         <result column="SERIAL_NUMBER" jdbcType="VARCHAR" property="serialNumber" />
-        <result column="SERIAL_NUMBER" jdbcType="VARCHAR" property="serialNumber" />
+        <result column="SVN_DIR" jdbcType="VARCHAR" property="svnDir" />
         <result column="type_name" jdbcType="VARCHAR" property="typeName" />
         <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
     </resultMap>

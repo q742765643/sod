@@ -681,4 +681,31 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public ResultT<List<Map<String, Object>>> getClassByTableId(String tableId) {
         return ResultT.success(this.dataClassDao.getClassByTableId(tableId));
     }
+
+    @Override
+    public void deleteByBizUserId(String bizUserid) {
+        //删除业务用户注册资料
+        List<NewdataApplyDto> newdataApplyDtos = this.newdataApplyService.findByUserId(bizUserid);
+        if(newdataApplyDtos != null && newdataApplyDtos.size()>0){
+            for(int i=0;i<newdataApplyDtos.size();i++){
+                newdataApplyService.deleteById(newdataApplyDtos.get(i).getId());
+            }
+        }
+        //专题库
+        List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.findByUserId(bizUserid);
+        if(databaseSpecialDtos != null && databaseSpecialDtos.size()>0){
+            for(int i=0;i<databaseSpecialDtos.size();i++){
+                databaseSpecialService.deleteById(databaseSpecialDtos.get(i).getId());
+            }
+        }
+        //数据库访问账户
+        List<DatabaseUserDto> databaseUserDtos = this.databaseUserService.getByUserId(bizUserid);
+        if(databaseUserDtos != null && databaseUserDtos.size()>0){
+            for(int i=0;i<databaseUserDtos.size();i++){
+                this.databaseUserService.deleteById(databaseUserDtos.get(i).getId());
+            }
+        }
+        //资料访问权限
+        dataAuthorityApplyService.deleteByUserId(bizUserid);
+    }
 }

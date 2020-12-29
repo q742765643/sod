@@ -145,4 +145,6 @@ public interface DatabaseUserService {
      */
     void alterWhitelist(DatabaseUserDto principal, ResultT resultT);
 
+
+    List<DatabaseUserDto> getByUserId(String userId);
 }

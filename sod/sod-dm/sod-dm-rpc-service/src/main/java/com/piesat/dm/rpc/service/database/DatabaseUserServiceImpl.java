@@ -925,6 +925,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         }
 
     }
+    @Override
+    public List<DatabaseUserDto> getByUserId(String userId) {
+        List<DatabaseUserEntity> databaseUserEntities = this.databaseUserDao.findByUserId(userId);
+        return this.databaseUserMapper.toDto(databaseUserEntities);
+    }
+
 
     public void tryDropDbUser(String[] databaseIds, String userName, ResultT resultT) {
         UserInfo u = new UserInfo();

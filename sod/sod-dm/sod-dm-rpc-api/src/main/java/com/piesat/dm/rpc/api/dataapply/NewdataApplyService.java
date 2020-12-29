@@ -59,4 +59,6 @@ public interface NewdataApplyService {
     List<Map<String, Object>> getSpecialDBData(String sdbId);
 
     List<NewdataApplyDto> findByDataClassIdAndUserId(String dataClassId, String userId);
+
+    List<NewdataApplyDto> findByUserId(String userId);
 }

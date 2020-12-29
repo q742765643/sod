@@ -2585,7 +2585,7 @@ public class ImportData {
         String sql = "select * from ts_user";
         List<Map> list = CodeDOM.getList(sql);
         for (Map<String, Object> m : list) {
-
+            String user_id = toString(m.get("USER_ID"));
             String user_name = toString(m.get("USER_NAME"));
             String login_name = toString(m.get("LOGIN_NAME"));
             String password = toString(m.get("PASSWORD"));
@@ -2610,6 +2610,7 @@ public class ImportData {
 
 
             UserManageEntity userManageEntity = new UserManageEntity();
+            userManageEntity.setId(user_id);
             userManageEntity.setCertCode(cert_code);
             userManageEntity.setDeptunicode(deptunicode);
             userManageEntity.setEmail(email);

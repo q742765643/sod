@@ -65,9 +65,16 @@
         <el-input
           size="small"
           type="text"
-          disabled
           v-model.trim="msgFormDialog.fileName"
           v-show="isHide"
+          style="width:80%;"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="svnDir" label="SVN地址:" v-show="isHideSvn">
+        <el-input
+          size="small"
+          type="text"
+          v-model.trim="msgFormDialog.svnDir"
           style="width:80%;"
         ></el-input>
       </el-form-item>
@@ -124,11 +131,13 @@
           fileDesc: "",
           filePath: "",
           fileSuffix : "",
+          svnDir : "",
         },
         //文件类型是否可编辑
         isDisabled: false,
         isHideAdd: true,
         isHide: false,
+        isHideSvn:false,
         fileTypeBox : [],
         fileCategoryBox : [],
         upLoadUrl: baseUrl + "/portal/fileManage/upload",
@@ -148,6 +157,9 @@
           ],
           fileDesc: [
             { required: true, message: "请输入文件描述 ", trigger: "blur" }
+          ],
+          svnDir: [
+            { required: !this.isHideSvn, message: "请输入文件名称 ", trigger: "blur" }
           ]
         }
       };
@@ -232,6 +244,20 @@
         getDictDataByType(selectFileType).then(res => {
           this.fileCategoryBox = res.data;
         });
+        if(selectFileType == 'portal_manual_file'){
+          this.isHideAdd = false;
+          this.isHide = true;
+          this.isHideSvn = true;
+        }else{
+          this.isHideSvn = false;
+          if(this.isDisabled){
+            this.isHideAdd = false;
+            this.isHide = true;
+          }else{
+            this.isHideAdd = true;
+            this.isHide = false;
+          }
+        }
       },
       fileCategoryChange(selectFileCategory){
 
