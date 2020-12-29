@@ -67,7 +67,7 @@ public class AuzFactory {
 
     public static void insertTableSql(TableVo tableVo, ResultT<String> resultT) {
         try {
-            String template = StringUtils.isNotEmpty(tableVo.getTemplate()) ? tableVo.getTemplate() : SqlTemplate.INSERT_TABLE_DISTRIBUTED;
+            String template = SqlTemplate.INSERT_TABLE_DISTRIBUTED;
             String sql = TemplateUtil.rendering(template, tableVo);
             resultT.setData(sql);
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class AuzFactory {
 
     public static void queryTableSql(TableVo tableVo, ResultT<String> resultT) {
         try {
-            String template = StringUtils.isNotEmpty(tableVo.getTemplate()) ? tableVo.getTemplate() : SqlTemplate.QUERY_TABLE_DISTRIBUTED;
+            String template = SqlTemplate.QUERY_TABLE_DISTRIBUTED;
             String sql = TemplateUtil.rendering(template, tableVo);
             resultT.setData(sql);
         } catch (Exception e) {

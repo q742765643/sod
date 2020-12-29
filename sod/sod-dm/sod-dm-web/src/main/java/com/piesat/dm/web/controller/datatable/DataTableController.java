@@ -8,12 +8,10 @@ import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.*;
-import com.piesat.dm.rpc.dto.datatable.vo.TableInfoVo;
+import com.piesat.dm.rpc.vo.TableInfoVo;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
-import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
@@ -373,7 +371,7 @@ public class DataTableController {
     @GetMapping(value = "/getSql")
     public ResultT getSql(String tableId) {
         try {
-            return this.dataTableService.getSql(tableId);
+            return this.grpcService.getSql(tableId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

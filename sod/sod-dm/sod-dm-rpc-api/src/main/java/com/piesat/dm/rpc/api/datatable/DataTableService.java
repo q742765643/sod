@@ -99,15 +99,9 @@ public interface DataTableService {
     long countTable(TableSqlDto tableSqlDto);
 
     /**
-     * 获取dbl sql语句
-     * @param tableId
-     * @return
-     */
-    ResultT getSql(String tableId);
-
-    /**
      * 根据子表类型查询
-     * @param type
+     * @param tableType
+     * @param storageType
      * @return
      */
     List<Map<String, Object>> findBySubType(String tableType,String storageType);

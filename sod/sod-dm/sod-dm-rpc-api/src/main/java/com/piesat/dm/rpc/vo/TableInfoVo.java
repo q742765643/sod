@@ -1,4 +1,4 @@
-package com.piesat.dm.rpc.dto.datatable.vo;
+package com.piesat.dm.rpc.vo;
 
 import lombok.Data;
 import org.springframework.cglib.beans.BeanMap;

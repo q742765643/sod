@@ -1,11 +1,12 @@
 package com.piesat.dm.rpc.service.datatable;
 
 import com.piesat.dm.core.enums.ColumnEnum;
-import com.piesat.dm.core.parser.ColumnSet;
-import com.piesat.dm.rpc.dto.datatable.*;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
+import com.piesat.dm.rpc.dto.datatable.PartingDto;
+import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
+import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,8 +21,7 @@ import java.util.List;
  */
 @Service
 public class DatabaseSqlService {
-    @Autowired
-    private ColumnSet columnSet;
+
     private final String[] indexTypes = {"BTREE", "INDEX", "RTREE", "IDX", "TREE"};
     private final String[] uniqueType = {"UNIQUE", "UK", "PK", "唯一索引"};
 
@@ -34,10 +34,7 @@ public class DatabaseSqlService {
             eleCodes.add(ds.getDbEleCode());
             StringBuffer column = new StringBuffer();
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getXugu().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("虚谷不支持字段：" + type);
-            }
+
             String accuracy = ds.getAccuracy();
 
             int length = ColumnEnum.getLength(type.toUpperCase());
@@ -53,7 +50,7 @@ public class DatabaseSqlService {
                 accuracy = "";
             }
             String isNull = (ds.getIsNull() == null || ds.getIsNull()) ? " " : " NOT NULL";
-            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
+//            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
@@ -124,10 +121,10 @@ public class DatabaseSqlService {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getXugu().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("虚谷不支持字段：" + type);
-            }
+//            String dataType = columnSet.getXugu().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("虚谷不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -141,10 +138,10 @@ public class DatabaseSqlService {
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getXugu().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("虚谷不支持字段：" + type);
-            }
+//            String dataType = columnSet.getXugu().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("虚谷不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }
@@ -165,10 +162,10 @@ public class DatabaseSqlService {
             eleCodes.add(ds.getDbEleCode());
             StringBuffer column = new StringBuffer();
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getGbase8a().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("gbase8a不支持字段：" + type);
-            }
+//            String dataType = columnSet.getGbase8a().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("gbase8a不支持字段：" + type);
+//            }
             String accuracy = ds.getAccuracy();
 
             int length = ColumnEnum.getLength(type.toUpperCase());
@@ -184,7 +181,7 @@ public class DatabaseSqlService {
                 accuracy = "";
             }
             String isNull = (ds.getIsNull() == null || ds.getIsNull()) ? " " : " NOT NULL";
-            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
+//            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
@@ -220,10 +217,10 @@ public class DatabaseSqlService {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getGbase8a().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("gbase8a不支持字段：" + type);
-            }
+//            String dataType = columnSet.getGbase8a().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("gbase8a不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -237,10 +234,10 @@ public class DatabaseSqlService {
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getGbase8a().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("gbase8a不支持字段：" + type);
-            }
+//            String dataType = columnSet.getGbase8a().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("gbase8a不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }
@@ -257,12 +254,12 @@ public class DatabaseSqlService {
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
             Boolean is_kv_k = ds.getIsKvK();
-            String dataType = columnSet.getCassandra().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Cassandra不支持字段：" + type);
-            }
-            String column = ds.getDbEleCode() + " " + dataType + ",\n";
-            columns.append(column);
+//            String dataType = columnSet.getCassandra().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Cassandra不支持字段：" + type);
+//            }
+//            String column = ds.getDbEleCode() + " " + dataType + ",\n";
+//            columns.append(column);
             if (is_kv_k != null && is_kv_k) {
                 key_columns.add(ds.getDbEleCode());
             }
@@ -279,10 +276,10 @@ public class DatabaseSqlService {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getCassandra().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Cassandra不支持字段：" + type);
-            }
+//            String dataType = columnSet.getCassandra().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Cassandra不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -296,10 +293,10 @@ public class DatabaseSqlService {
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getCassandra().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Cassandra不支持字段：" + type);
-            }
+//            String dataType = columnSet.getCassandra().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Cassandra不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }
@@ -322,10 +319,10 @@ public class DatabaseSqlService {
             eleCodes.add(ds.getDbEleCode());
             StringBuffer column = new StringBuffer();
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getPostgresql().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("postgresql不支持字段：" + type);
-            }
+//            String dataType = columnSet.getPostgresql().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("postgresql不支持字段：" + type);
+//            }
             String accuracy = ds.getAccuracy();
             if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy) && type.toUpperCase().indexOf("INT") == -1) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
@@ -333,7 +330,7 @@ public class DatabaseSqlService {
                 accuracy = "";
             }
             String isNull = ds.getIsNull() ? " NULL" : " NOT NULL";
-            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
+//            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
@@ -407,10 +404,10 @@ public class DatabaseSqlService {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getPostgresql().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Postgresql不支持字段：" + type);
-            }
+//            String dataType = columnSet.getPostgresql().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Postgresql不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -427,10 +424,10 @@ public class DatabaseSqlService {
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getPostgresql().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Postgresql不支持字段：" + type);
-            }
+//            String dataType = columnSet.getPostgresql().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Postgresql不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }

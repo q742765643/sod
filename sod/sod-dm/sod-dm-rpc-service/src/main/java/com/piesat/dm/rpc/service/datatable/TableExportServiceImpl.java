@@ -273,7 +273,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             sqlContent = ClobToString(sqlClob);
                         }else {
                             String tableId = sqlMap.get("ID").toString();
-                            ResultT sql = this.dataTableService.getSql(tableId);
+                            ResultT sql = this.grpcService.getSql(tableId);
                             if (sql.getCode() == 200){
                                 Object data = sql.getData();
                                 if (data instanceof HashMap){
@@ -313,7 +313,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             sqlContent = ClobToString(sqlClob);
                         }else {
                             String tableId = sqlMap.get("ID").toString();
-                            ResultT sql = this.dataTableService.getSql(tableId);
+                            ResultT sql = this.grpcService.getSql(tableId);
                             if (sql.getCode() == 200){
                                 Object data = sql.getData();
                                 if (data instanceof HashMap){

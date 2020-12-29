@@ -6,11 +6,15 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.model.ColumnVo;
+import com.piesat.dm.core.model.IndexVo;
+import com.piesat.dm.core.model.TableVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.*;
 import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.database.DatabaseDao;
-import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
 import com.piesat.dm.entity.*;
@@ -22,12 +26,15 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
+import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.dm.rpc.mapper.*;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
 import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
@@ -43,6 +50,7 @@ import com.piesat.schedule.rpc.api.sync.SyncTaskService;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
 import com.piesat.sod.system.rpc.api.SqlTemplateService;
 import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
+import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
@@ -85,7 +93,7 @@ public class GrpcService {
     @Autowired
     private LogicDefineMapper logicDefineMapper;
     @Autowired
-    private DataTableDao dataTableDao;
+    private DataTableService dataTableService;
     @Autowired
     private DataTableMapper dataTableMapper;
     @Autowired
@@ -179,7 +187,7 @@ public class GrpcService {
                 //删除配置信息
                 advancedConfigDao.deleteById(id);
             }
-            this.dataTableDao.deleteById(id);
+            this.dataTableService.delete(id);
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());
         }
@@ -329,6 +337,48 @@ public class GrpcService {
         c_datum_code = c_datum_code.substring(0, 11);
         datumTableEntity.setC_datum_code(c_datum_code);
         return this.mybatisQueryMapper.queryCmccElements(datumTableEntity);
+    }
+
+    public ResultT getSql(String tableId) {
+        DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
+        DatabaseDto databaseDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (databaseDto == null) {
+            return ResultT.failed(String.format(ConstantsMsg.MSG9, dataTableInfoDto.getTableName()));
+        }
+
+        List<ColumnVo> columnVo = dataTableInfoDto.getColumnVo();
+        List<IndexVo> indexVo = dataTableInfoDto.getIndexVo();
+        TableVo t = new TableVo();
+        try {
+            List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(databaseDto.getDatabaseDefine().getDatabaseType());
+            if (sqlTemplate != null && sqlTemplate.size() > 0) {
+                t.setTemplate(sqlTemplate.get(0).getTemplate());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        t.setSchema(databaseDto.getSchemaName());
+        t.setTableName(dataTableInfoDto.getTableName());
+        t.setTableDesc(dataTableInfoDto.getNameCn());
+        t.setColumnVos(columnVo);
+        t.setIndexVos(indexVo);
+        PartingEntity partingEntity = this.shardingDao.findById(tableId).orElse(null);
+        t.setPartColumn(partingEntity.getPartitions());
+        t.setPartDimension(partingEntity.getPartDimension());
+        t.setPartUnit(partingEntity.getPartUnit());
+        TableSqlDto ts = new TableSqlDto();
+        ResultT r = new ResultT();
+        AuzFactory.createTableSql(t, r);
+        String create = String.valueOf(r.getData());
+        ts.setCreateSql(create);
+        AuzFactory.queryTableSql(t, r);
+        String query = String.valueOf(r.getData());
+        ts.setQuerySql(query);
+        AuzFactory.insertTableSql(t, r);
+        String insert = String.valueOf(r.getData());
+        ts.setInsertSql(insert);
+        r.setData(ts);
+        return r;
     }
 }
 

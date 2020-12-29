@@ -439,39 +439,6 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     }
 
     @Override
-    public ResultT getSql(String tableId) {
-        DataTableInfoDto dataTableInfoDto = this.getDotById(tableId);
-        DatabaseDto databaseDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
-        if (databaseDto == null) {
-            return ResultT.failed(String.format(ConstantsMsg.MSG9, dataTableInfoDto.getTableName()));
-        }
-        List<ColumnVo> columnVo = dataTableInfoDto.getColumnVo();
-        List<IndexVo> indexVo = dataTableInfoDto.getIndexVo();
-        TableVo t = new TableVo();
-        t.setSchema(databaseDto.getSchemaName());
-        t.setTableName(dataTableInfoDto.getTableName());
-        t.setColumnVos(columnVo);
-        t.setIndexVos(indexVo);
-        PartingEntity partingEntity = this.shardingDao.findById(tableId).orElse(null);
-        t.setPartColumn(partingEntity.getPartitions());
-        t.setPartDimension(partingEntity.getPartDimension());
-        t.setPartUnit(partingEntity.getPartUnit());
-        TableSqlDto ts = new TableSqlDto();
-        ResultT r = new ResultT();
-        AuzFactory.createTableSql(t, r);
-        String create = String.valueOf(r.getData());
-        ts.setCreateSql(create);
-        AuzFactory.queryTableSql(t, r);
-        String query = String.valueOf(r.getData());
-        ts.setQuerySql(query);
-        AuzFactory.insertTableSql(t, r);
-        String insert = String.valueOf(r.getData());
-        ts.setInsertSql(insert);
-        r.setData(ts);
-        return r;
-    }
-
-    @Override
     public List<Map<String, Object>> findBySubType(String tableType, String storageType) {
         return this.dataTableDao.findBySubType(tableType, storageType);
     }

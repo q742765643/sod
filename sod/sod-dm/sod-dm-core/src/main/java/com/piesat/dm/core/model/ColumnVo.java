@@ -18,6 +18,7 @@ public class ColumnVo {
     private String oldColumnName;
     private String columnName;
     private String type;
+    private Boolean isPrimaryKey;
     /**
      * 精度
      */
