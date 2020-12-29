@@ -1,6 +1,7 @@
 package com.piesat.dm.dao.database;
 
 import com.piesat.common.jpa.BaseDao;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.SchemaEntity;
 import org.springframework.stereotype.Repository;
 
@@ -48,4 +49,6 @@ public interface SchemaDao extends BaseDao<SchemaEntity> {
     List<SchemaEntity> findByDatabase_UserDisplayControl(int use);
 
     void deleteByTdbId(String sdbId);
+
+    List<SchemaEntity> findByDatabaseName(String databaseName);
 }

@@ -25,11 +25,15 @@ import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataTableColumnService;
+import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
+import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
+import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
+import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassBaseInfoMapper;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -93,7 +97,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private NewdataTableColumnService newdataTableColumnService;
     @Autowired
     private AdvancedConfigService advancedConfigService;
-
+    @Autowired
+    private DatabaseSpecialService databaseSpecialService;
+    @Autowired
+    private DatabaseUserService databaseUserService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {

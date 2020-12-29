@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -133,6 +134,12 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
         String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME  from T_SOD_DATABASE t, T_SOD_DATABASE_DEFINE d WHERE t.DATABASE_DEFINE_ID = d.id AND d.user_display_control in(" + ifDisplay + ")";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
+    }
+
+    @Override
+    public List<SchemaDto> findByDatabaseName(String databaseName) {
+        List<SchemaEntity> databaseEntityList = this.schemaDao.findByDatabaseName(databaseName);
+        return this.databaseMapper.toDto(databaseEntityList);
     }
 
     @Override

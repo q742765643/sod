@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.api.database;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
@@ -46,4 +47,6 @@ public interface SchemaService {
     List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
 
     List<Map<String, Object>> getDatabaseList(String ifDisplay);
+
+    List<SchemaDto> findByDatabaseName(String databaseName);
 }

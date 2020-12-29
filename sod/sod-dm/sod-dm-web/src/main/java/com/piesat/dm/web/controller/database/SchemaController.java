@@ -167,4 +167,15 @@ public class SchemaController {
     }
 
 
+    @ApiOperation(value = "根据名称查询")
+    @GetMapping(value = "/findByDatabaseName")
+    public ResultT findByDatabaseName(String databaseName) {
+        try {
+            List<SchemaDto> all = this.schemaService.findByDatabaseName(databaseName);
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 }
