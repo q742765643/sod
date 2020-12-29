@@ -20,10 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 表数据统计
@@ -95,8 +92,14 @@ public class TableDataStatisticsServiceImpl extends BaseService<TableDataStatist
         DataOnlineTimeDto dataOnlineTimeDto = dataOnlineTimeService.findByDataClassId(classDataId);
 
         if (dataOnlineTimeDto!=null && !"0".equals(dataOnlineTimeDto.getUsing())){
-            if ("today".equals(dataOnlineTimeDto.getEndTimeFlag())) {
-                onlineList.get(0).put("END_TIME",new Date());
+            if (dataOnlineTimeDto.getEndTimeFlag() != "") {
+                String today = dataOnlineTimeDto.getEndTimeFlag();
+                int intoday = Integer.parseInt(today);
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, intoday);
+                Date date1 = calendar.getTime();
+//                String date2 = new Date(date1)
+                onlineList.get(0).put("END_TIME",date1);
             }else if (dataOnlineTimeDto.getEndTime()!=null){
                 onlineList.get(0).put("END_TIME", dataOnlineTimeDto.getEndTime());
             }
