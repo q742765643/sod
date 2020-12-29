@@ -2,7 +2,7 @@ package com.piesat.dm.rpc.api.database;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
@@ -17,29 +17,29 @@ import java.util.List;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DatabaseService {
-    DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto);
+    DatabaseDto saveDto(DatabaseDto databaseDto);
 
-    DatabaseDefineDto getDotById(String id);
+    DatabaseDto getDotById(String id);
 
     void delete(String id);
 
     ResultT delByIds(String ids);
 
-    List<DatabaseDefineDto> all();
+    List<DatabaseDto> all();
 
-    List<DatabaseDefineDto> export(String id, String databaseName);
+    List<DatabaseDto> export(String id, String databaseName);
 
-    List<DatabaseDefineDto> findByType(String databaseType);
+    List<DatabaseDto> findByType(String databaseType);
 
-    PageBean getPage(DatabaseDefineDto databaseDefineDto,int pageNum,int pageSize);
+    PageBean getPage(DatabaseDto databaseDto, int pageNum, int pageSize);
 
-    DatabaseDefineDto conStatus(String id);
+    DatabaseDto conStatus(String id);
 
-    ResultT connStatus(DatabaseDefineDto databaseDefineDto);
+    ResultT connStatus(DatabaseDto databaseDto);
 
-    List<DatabaseDefineDto> findByIdIn(List<String> ids);
+    List<DatabaseDto> findByIdIn(List<String> ids);
 
     void exportExcel(String id,String databaseName);
 
-    List<DatabaseDefineDto> getDatabaseDefineList();
+    List<DatabaseDto> getDatabaseDefineList();
 }

@@ -241,7 +241,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getDatabaseClass() {
-        List<SchemaEntity> databaseList = this.schemaDao.findByDatabaseDefine_UserDisplayControl(1);
+        List<SchemaEntity> databaseList = this.schemaDao.findByDatabase_UserDisplayControl(1);
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
         for (SchemaEntity db : databaseList) {
             if (!db.getStopUse()) {
@@ -292,7 +292,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public JSONArray getDatabaseClassPostgresql() {
-        List<SchemaEntity> databaseList = this.schemaDao.findByDatabaseDefine_UserDisplayControl(1);
+        List<SchemaEntity> databaseList = this.schemaDao.findByDatabase_UserDisplayControl(1);
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTreePostgresql();
         for (SchemaEntity db : databaseList) {
             if (!db.getStopUse()) {

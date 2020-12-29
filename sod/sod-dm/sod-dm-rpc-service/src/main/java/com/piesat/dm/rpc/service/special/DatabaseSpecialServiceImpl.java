@@ -32,8 +32,8 @@ import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
@@ -337,24 +337,24 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     /**
      * 数据库授权
      *
-     * @param databaseDto
+     * @param schemaDto
      */
     @Override
     @Transactional
-    public void empowerDatabaseSpecial(DatabaseDto databaseDto) {
-//        System.out.println(databaseDto);
+    public void empowerDatabaseSpecial(SchemaDto schemaDto) {
+//        System.out.println(schemaDto);
         try {
-            String userId = databaseDto.getUserId();
+            String userId = schemaDto.getUserId();
             //判断用户是否申请过数据库账户
             List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
             if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
                 //删除历史授权记录，重新添加
-                String sdbId = databaseDto.getTdbId();
+                String sdbId = schemaDto.getTdbId();
                 databaseSpecialAuthorityDao.deleteBySdbId(sdbId);
                 List<SchemaEntity> schemaEntities = schemaDao.findByTdbId(sdbId);
-                List<String> databaseIds = schemaEntities.stream().map(d -> d.getDatabaseDefine().getId()).collect(Collectors.toList());
+                List<String> databaseIds = schemaEntities.stream().map(d -> d.getDatabase().getId()).collect(Collectors.toList());
                 //需要授权的数据库列表
-                List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList = databaseDto.getDatabaseSpecialAuthorityList();
+                List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList = schemaDto.getDatabaseSpecialAuthorityList();
                 for (int i = 0; i < databaseSpecialAuthorityList.size(); i++) {
                     DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
                     //保存申请列表
@@ -366,11 +366,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     if (databaseEntity != null && !databaseIds.contains(databaseId)) {
                         SchemaEntity schemaEntity = new SchemaEntity();
                         schemaEntity.setDatabaseClassify("专题库");
-                        schemaEntity.setDatabaseName(databaseDto.getDatabaseName());
-                        schemaEntity.setSchemaName(databaseDto.getSchemaName());
+                        schemaEntity.setDatabaseName(schemaDto.getDatabaseName());
+                        schemaEntity.setSchemaName(schemaDto.getSchemaName());
                         schemaEntity.setStopUse(false);
-                        schemaEntity.setTdbId(databaseDto.getTdbId());
-                        schemaEntity.setDatabaseDefine(databaseEntity);
+                        schemaEntity.setTdbId(schemaDto.getTdbId());
+                        schemaEntity.setDatabase(databaseEntity);
                         schemaDao.save(schemaEntity);
                     }
                 }
@@ -379,8 +379,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                     DatabaseSpecialAuthorityDto databaseSpecialAuthorityDto = databaseSpecialAuthorityList.get(i);
                     String databaseId = databaseSpecialAuthorityDto.getDatabaseId();
                     DatabaseEntity databaseEntity = databaseDao.findById(databaseId).get();
-                    DatabaseDefineDto databaseDefineDto = this.databaseDefineMapper.toDto(databaseEntity);
-                    DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                    DatabaseDto databaseDto = this.databaseDefineMapper.toDto(databaseEntity);
+                    DatabaseDcl databaseVO = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
                     try {
                         //申请创建模式
                         Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseEntity.getDatabaseAdministratorList();
@@ -388,7 +388,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                         String url = databaseEntity.getDatabaseUrl();
                         if (databaseAdministratorSet != null) {
                             //获取任意登录账号
-                            String schemaName = databaseDto.getSchemaName();
+                            String schemaName = schemaDto.getSchemaName();
                             DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
                             String databaseUpId = databaseUserEntity.getDatabaseUpId();
 
@@ -676,14 +676,14 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 String[] databaseIdArray = databaseUserEntity.getDatabaseUpId().split(",");
                 //获取申请ID对应的物理库
                 SchemaEntity schemaEntity = schemaDao.findById(databaseId).get();
-                String databaseDefineId = schemaEntity.getDatabaseDefine().getId();
+                String databaseDefineId = schemaEntity.getDatabase().getId();
                 String[] xuguDatabaseArray = {"HADB"};
                 String[] gbaseDatabaseArray = {"STDB", "BFDB", "FIDB"};
                 //判断待授权物理库是否是用户可用
                 if (Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
                         (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)
                                 || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))) {
-                    DatabaseEntity databaseEntity = schemaEntity.getDatabaseDefine();
+                    DatabaseEntity databaseEntity = schemaEntity.getDatabase();
                     Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseEntity.getDatabaseAdministratorList();
                     //访问路径、账号、密码
                     String url = databaseEntity.getDatabaseUrl();
@@ -744,14 +744,14 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 String[] databaseIdArray = databaseUserEntity.getDatabaseUpId().split(",");
                 //获取申请ID对应的物理库
                 SchemaEntity schemaEntity = schemaDao.findById(databaseId).get();
-                String databaseDefineId = schemaEntity.getDatabaseDefine().getId();
+                String databaseDefineId = schemaEntity.getDatabase().getId();
                 String[] xuguDatabaseArray = {"HADB"};
                 String[] gbaseDatabaseArray = {"STDB", "BFDB", "FIDB"};
                 //判断待授权物理库是否是用户可用
                 if (Arrays.asList(databaseIdArray).contains(databaseDefineId) &&
                         (Arrays.asList(xuguDatabaseArray).contains(databaseDefineId)
                                 || Arrays.asList(gbaseDatabaseArray).contains(databaseDefineId))) {
-                    DatabaseEntity databaseEntity = schemaEntity.getDatabaseDefine();
+                    DatabaseEntity databaseEntity = schemaEntity.getDatabase();
                     Set<DatabaseAdministratorEntity> databaseAdministratorSet = databaseEntity.getDatabaseAdministratorList();
                     //访问路径、账号、密码
                     String url = databaseEntity.getDatabaseUrl();
@@ -1293,11 +1293,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             DatabaseEntity dd = new DatabaseEntity();
             dd.setId("www"+i);
             SchemaEntity d = new SchemaEntity();
-                    d.setDatabaseDefine(dd);
+                    d.setDatabase(dd);
             schemaEntities.add(d);
         }
 
-                List<String> databaseIds = schemaEntities.stream().map(d -> d.getDatabaseDefine().getId()).collect(Collectors.toList());
+                List<String> databaseIds = schemaEntities.stream().map(d -> d.getDatabase().getId()).collect(Collectors.toList());
         databaseIds.stream().forEach(System.out::println);
     }
 

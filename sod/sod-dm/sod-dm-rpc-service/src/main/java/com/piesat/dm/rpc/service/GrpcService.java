@@ -27,8 +27,8 @@ import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
@@ -249,7 +249,7 @@ public class GrpcService {
     public List<LogicDefineDto> getAllLogicDefine() {
         List<LogicDefineDto> logicDefineDtos = this.logicDefineService.all();
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseDefineDto> all = this.databaseService.all();
+        List<DatabaseDto> all = this.databaseService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -261,9 +261,9 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDefineDto DatabaseDefineDto : all) {
-                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
+                for (DatabaseDto DatabaseDto : all) {
+                    if (DatabaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDto.getDatabaseName());
                     }
                 }
             }
@@ -286,8 +286,8 @@ public class GrpcService {
         List<LogicDefineEntity> logicDefineEntities = (List<LogicDefineEntity>) pageBean.getPageData();
         List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseDefineDto> all = this.databaseService.all();
-        List<DatabaseDto> databaseList = this.schemaService.all();
+        List<DatabaseDto> all = this.databaseService.all();
+        List<SchemaDto> databaseList = this.schemaService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -299,7 +299,7 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDefineDto databaseDto : all) {
+                for (DatabaseDto databaseDto : all) {
                     if (databaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
                         logicDatabaseDto.setDatabaseName(databaseDto.getDatabaseName());
                     }
@@ -341,8 +341,8 @@ public class GrpcService {
 
     public ResultT getSql(String tableId) {
         DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
-        DatabaseDto databaseDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
-        if (databaseDto == null) {
+        SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (schemaDto == null) {
             return ResultT.failed(String.format(ConstantsMsg.MSG9, dataTableInfoDto.getTableName()));
         }
 
@@ -350,14 +350,14 @@ public class GrpcService {
         List<IndexVo> indexVo = dataTableInfoDto.getIndexVo();
         TableVo t = new TableVo();
         try {
-            List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(databaseDto.getDatabaseDefine().getDatabaseType());
+            List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(schemaDto.getDatabaseDto().getDatabaseType());
             if (sqlTemplate != null && sqlTemplate.size() > 0) {
                 t.setTemplate(sqlTemplate.get(0).getTemplate());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        t.setSchema(databaseDto.getSchemaName());
+        t.setSchema(schemaDto.getSchemaName());
         t.setTableName(dataTableInfoDto.getTableName());
         t.setTableDesc(dataTableInfoDto.getNameCn());
         t.setColumnVos(columnVo);

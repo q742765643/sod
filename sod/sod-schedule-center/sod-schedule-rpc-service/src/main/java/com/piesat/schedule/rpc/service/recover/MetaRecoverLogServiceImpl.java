@@ -7,7 +7,7 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.SchemaService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.dao.recover.MetaRecoverLogDao;
@@ -93,17 +93,17 @@ public class MetaRecoverLogServiceImpl extends BaseService<MetaRecoverLogEntity>
     }
     @Override
     public  List<TreeVo> getFileList(String databaseId, String storageDirectory){
-        DatabaseDto databaseDto= schemaService.getDotById(databaseId);
-        return executorBiz.getFileList(databaseDto.getDatabaseDefine().getId(),storageDirectory);
+        SchemaDto schemaDto = schemaService.getDotById(databaseId);
+        return executorBiz.getFileList(schemaDto.getDatabaseDto().getId(),storageDirectory);
     }
 
     public void getDataBase(MetaRecoverLogEntity metaRecoverLogEntity){
-        DatabaseDto databaseDto= schemaService.getDotById(metaRecoverLogEntity.getDatabaseId());
-        String parentId=databaseDto.getDatabaseDefine().getId();
-        String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
+        SchemaDto schemaDto = schemaService.getDotById(metaRecoverLogEntity.getDatabaseId());
+        String parentId= schemaDto.getDatabaseDto().getId();
+        String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
         metaRecoverLogEntity.setDatabaseName(databaseName);
         metaRecoverLogEntity.setParentId(parentId);
-        metaRecoverLogEntity.setDatabaseType(databaseDto.getDatabaseDefine().getDatabaseType());
+        metaRecoverLogEntity.setDatabaseType(schemaDto.getDatabaseDto().getDatabaseType());
     }
     @Override
     public List<TreeVo> getFileChidren(String childrenPath){

@@ -179,8 +179,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         List<SyncTaskDto> syncTaskDtos = syncTaskMapstruct.toDto(syncTaskEntities);
         //查询物理库名称
        /* for(SyncTaskDto syncTaskDto : syncTaskDtos){
-            DatabaseDto databaseDto = schemaService.getDotById(syncTaskDto.getSourceDatabaseId());
-            syncTaskDto.setSourceDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
+            SchemaDto databaseDto = schemaService.getDotById(syncTaskDto.getSourceDatabaseId());
+            syncTaskDto.setSourceDatabaseName(databaseDto.getDatabase().getDatabaseName()+"_"+databaseDto.getDatabaseName());
         }*/
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), syncTaskDtos);
         return pageBean;

@@ -14,7 +14,7 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.backup.BackupDao;
@@ -197,15 +197,15 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         }
 
         List<Map<String, Object>> databaseDtos = new ArrayList<>();
-        List<DatabaseDto> databaseListAll = dataBaseService.findAllDataBase();
-        for (DatabaseDto databaseDto : databaseListAll) {
-            String databaseName = databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName();
-            String parentId = databaseDto.getDatabaseDefine().getId();
+        List<SchemaDto> databaseListAll = dataBaseService.findAllDataBase();
+        for (SchemaDto schemaDto : databaseListAll) {
+            String databaseName = schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName();
+            String parentId = schemaDto.getDatabaseDto().getId();
             if (dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                map.put("KEY", databaseDto.getId());
+                map.put("KEY", schemaDto.getId());
                 map.put("VALUE", databaseName);
-                map.put("parentId", databaseDto.getDatabaseDefine().getId());
+                map.put("parentId", schemaDto.getDatabaseDto().getId());
                 databaseDtos.add(map);
             }
 

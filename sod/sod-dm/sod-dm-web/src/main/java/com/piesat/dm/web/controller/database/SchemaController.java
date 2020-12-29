@@ -4,8 +4,8 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
@@ -41,11 +41,11 @@ public class SchemaController {
     @RequiresPermissions("dm:database:add")
     @Log(title = "数据库管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save(@RequestBody DatabaseDto databaseDto) {
+    public ResultT save(@RequestBody SchemaDto schemaDto) {
         try {
-            DatabaseDefineDto databaseDefine = databaseService.getDotById(databaseDto.getDatabaseDefine().getId());
-            databaseDto.setDatabaseDefine(databaseDefine);
-            DatabaseDto save = this.schemaService.saveDto(databaseDto);
+            DatabaseDto databaseDefine = databaseService.getDotById(schemaDto.getDatabaseDto().getId());
+            schemaDto.setDatabaseDto(databaseDefine);
+            SchemaDto save = this.schemaService.saveDto(schemaDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,8 +58,8 @@ public class SchemaController {
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            DatabaseDto databaseDto = this.schemaService.getDotById(id);
-            return ResultT.success(databaseDto);
+            SchemaDto schemaDto = this.schemaService.getDotById(id);
+            return ResultT.success(schemaDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -85,7 +85,7 @@ public class SchemaController {
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
-            List<DatabaseDto> all = this.schemaService.all();
+            List<SchemaDto> all = this.schemaService.all();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,7 +111,7 @@ public class SchemaController {
 //    @RequiresPermissions("dm:database:findByLevel")
     @GetMapping(value = "/findByLevel")
     public ResultT findByLevel(int level) {
-        List<DatabaseDto> all = this.schemaService.findByLevel(level);
+        List<SchemaDto> all = this.schemaService.findByLevel(level);
         return ResultT.success(all);
     }
 
@@ -119,7 +119,7 @@ public class SchemaController {
 //    @RequiresPermissions("dm:database:findByDatabaseDefineId")
     @GetMapping(value = "/findByDatabaseDefineId")
     public ResultT findByDatabaseDefineId(String id) {
-        List<DatabaseDto> all = this.schemaService.findByDatabaseDefineId(id);
+        List<SchemaDto> all = this.schemaService.findByDatabaseDefineId(id);
         return ResultT.success(all);
     }
 
@@ -132,8 +132,8 @@ public class SchemaController {
             if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
                 return ResultT.failed("请先创建存储账户！！！");
             }
-            List<DatabaseDto> databaseDtos = this.schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库",Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
-            return ResultT.success(databaseDtos);
+            List<SchemaDto> schemaDtos = this.schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库",Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
+            return ResultT.success(schemaDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -145,8 +145,8 @@ public class SchemaController {
     @GetMapping(value = "/findByDatabaseClassify")
     public ResultT findByDatabaseClassify(String databaseClassify) {
         try {
-            List<DatabaseDto> databaseDtos = this.schemaService.findByDatabaseClassify(databaseClassify);
-            return ResultT.success(databaseDtos);
+            List<SchemaDto> schemaDtos = this.schemaService.findByDatabaseClassify(databaseClassify);
+            return ResultT.success(schemaDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

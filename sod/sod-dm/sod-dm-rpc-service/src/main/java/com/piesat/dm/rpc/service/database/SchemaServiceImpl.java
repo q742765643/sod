@@ -8,7 +8,7 @@ import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.SchemaService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,17 +41,17 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
     }
 
     @Override
-    public DatabaseDto saveDto(DatabaseDto databaseDto) {
-        if ("基础库".equals(databaseDto.getDatabaseName())) {
-            databaseDto.setLevel(1);
+    public SchemaDto saveDto(SchemaDto schemaDto) {
+        if ("基础库".equals(schemaDto.getDatabaseName())) {
+            schemaDto.setLevel(1);
         }
-        SchemaEntity schemaEntity = this.databaseMapper.toEntity(databaseDto);
+        SchemaEntity schemaEntity = this.databaseMapper.toEntity(schemaDto);
         schemaEntity = this.saveNotNull(schemaEntity);
         return this.databaseMapper.toDto(schemaEntity);
     }
 
     @Override
-    public List<DatabaseDto> all() {
+    public List<SchemaDto> all() {
         List<SchemaEntity> all = this.getAll();
         return this.databaseMapper.toDto(all);
     }
@@ -70,42 +70,42 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
     }
 
     @Override
-    public List<DatabaseDto> findByLevel(int level) {
+    public List<SchemaDto> findByLevel(int level) {
         List<SchemaEntity> all = this.schemaDao.findByLevel(level);
         return this.databaseMapper.toDto(all);
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify, List<String> ids) {
+    public List<SchemaDto> findByDatabaseClassifyAndIdIn(String databaseClassify, List<String> ids) {
         List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabaseClassifyAndIdIn(databaseClassify, ids);
         return this.databaseMapper.toDto(schemaEntityList);
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify, List<String> databaseDefineIds) {
-        List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabaseClassifyAndDatabaseDefineIdIn(databaseClassify, databaseDefineIds);
+    public List<SchemaDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify, List<String> databaseDefineIds) {
+        List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabaseClassifyAndDatabaseIdIn(databaseClassify, databaseDefineIds);
         return this.databaseMapper.toDto(schemaEntityList);
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds) {
-        List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabaseDefineIdIn(databaseDefineIds);
+    public List<SchemaDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds) {
+        List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabaseIdIn(databaseDefineIds);
         return this.databaseMapper.toDto(schemaEntityList);
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseDefineId(String id) {
-        List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabaseDefine_Id(id);
+    public List<SchemaDto> findByDatabaseDefineId(String id) {
+        List<SchemaEntity> schemaEntityList = this.schemaDao.findByDatabase_Id(id);
         return this.databaseMapper.toDto(schemaEntityList);
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseClassify(String databaseClassify) {
+    public List<SchemaDto> findByDatabaseClassify(String databaseClassify) {
         List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabaseClassify(databaseClassify);
         //闲时优化
         if (databaseEntities != null && databaseEntities.size() > 0) {
             for (int i = databaseEntities.size() - 1; i > -1; i--) {
-                if (databaseEntities.get(i).getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
+                if (databaseEntities.get(i).getDatabase().getUserDisplayControl().intValue() != 1) {
                     databaseEntities.remove(databaseEntities.get(i));
                 }
             }
@@ -136,7 +136,7 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
     }
 
     @Override
-    public DatabaseDto getDotById(String id) {
+    public SchemaDto getDotById(String id) {
         SchemaEntity schemaEntity = this.getById(id);
         return this.databaseMapper.toDto(schemaEntity);
     }

@@ -1,6 +1,6 @@
 package com.piesat.dm.rpc.dto;
 
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
@@ -78,7 +78,7 @@ public class AdvancedConfigDto {
 
     private DataClassDto dataClassDto;
     private LogicDefineDto logicDefineDto;
-    private DatabaseDto databaseDto;
+    private SchemaDto schemaDto;
     private DataLogicDto dataLogicDto;
     private DataTableInfoDto dataTableInfoDto;
     private TableColumnDto tableColumnDto;

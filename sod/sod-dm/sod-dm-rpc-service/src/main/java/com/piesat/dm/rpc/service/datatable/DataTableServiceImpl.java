@@ -27,7 +27,7 @@ import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.datatable.*;
 import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
@@ -122,10 +122,10 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public DataTableInfoDto getDotById(String id) {
         DataTableInfoDto dataTableInfoDto = this.dataTableMapper.toDto(this.getById(id));
-        DatabaseDto databaseDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
-        if (databaseDto != null) {
-            dataTableInfoDto.setDatabaseType(databaseDto.getDatabaseDefine().getDatabaseType());
-            dataTableInfoDto.setDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName());
+        SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (schemaDto != null) {
+            dataTableInfoDto.setDatabaseType(schemaDto.getDatabaseDto().getDatabaseType());
+            dataTableInfoDto.setDatabaseName(schemaDto.getDatabaseDto().getDatabaseName());
         }
         return dataTableInfoDto;
     }
@@ -215,7 +215,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             return ResultT.failed("没有适应表");
         } else {
             Map<String, Object> map = new HashMap<>();
-            DatabaseDto databaseDto = this.schemaService.getDotById(databaseId);
+            SchemaDto schemaDto = this.schemaService.getDotById(databaseId);
             DataTableInfoEntity keyTable = null;
             DataTableInfoEntity eleTable = null;
             if (tableEntities.size() == 1) {
@@ -239,7 +239,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             if (primaryKey.size() > 0) {
                 map.put("primaryKey", primaryKey.get(0).getDbEleCode());
             }
-            map.put("database", databaseDto);
+            map.put("database", schemaDto);
             List<DataClassAndTableEntity> dataClassTable = this.dataLogicDao.findByTableId(keyTable.getId());
             if (dataClassTable.size() < 1) {
                 return ResultT.failed("没有对应资料");
@@ -253,17 +253,17 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
 
     @Override
     public ResultT getSampleData(SampleData sampleData) {
-        DatabaseDto databaseDto = this.schemaService.getDotById(sampleData.getDatabaseId());
+        SchemaDto schemaDto = this.schemaService.getDotById(sampleData.getDatabaseId());
         ResultT r = new ResultT();
-        if (databaseDto == null) {
+        if (schemaDto == null) {
             r.setErrorMessage(ConstantsMsg.MSG10);
             return r;
         }
-        ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
+        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         CommData actuator = (CommData) af.getActuator(false);
         SelectVo s = new SelectVo();
-        s.setSchema(databaseDto.getSchemaName());
+        s.setSchema(schemaDto.getSchemaName());
         s.setTableName(sampleData.getTableName());
         actuator.sampleData(s, r);
         actuator.close();
@@ -345,9 +345,9 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public ResultT createTable(TableSqlDto tableSqlDto) {
         ResultT r = new ResultT();
-        DatabaseDto databaseDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
-        ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
-        AuthorityVo a = new AuthorityVo(databaseDto.getSchemaName(), tableSqlDto.getTableName(), null, null);
+        SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
+        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName(), null, null);
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         actuator.exe(tableSqlDto.getCreateSql(),r);
@@ -358,9 +358,9 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public ResultT existTable(TableSqlDto tableSqlDto) {
         ResultT r = new ResultT();
-        DatabaseDto databaseDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
-        ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
-        AuthorityVo a = new AuthorityVo(databaseDto.getSchemaName(), tableSqlDto.getTableName(), null, null);
+        SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
+        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName(), null, null);
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         r.setData(actuator.existTable(a, r));
@@ -392,10 +392,10 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             resultT.setErrorMessage(String.format(ConstantsMsg.MSG9, dataTableInfoDto.getTableName()));
             return;
         }
-        DatabaseDto databaseDto = schemaService.getDotById(dataTableInfoDto.getDatabaseId());
-        dataTableInfoDto.setDatabasePid(databaseDto.getDatabaseDefine().getId());
-        ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
-        AuthorityVo a = new AuthorityVo(databaseDto.getSchemaName(), dataTableInfoDto.getTableName(), null, null);
+        SchemaDto schemaDto = schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        dataTableInfoDto.setDatabasePid(schemaDto.getDatabaseDto().getId());
+        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName(), null, null);
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), resultT);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         List<Map<String, Object>> c = null;
@@ -426,12 +426,12 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public long countTable(TableSqlDto tableSqlDto) {
         ResultT<Map<CountEnum, String>> r = new ResultT();
-        DatabaseDto databaseDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
-        ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
+        SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
+        ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         CommData actuator = (CommData) af.getActuator(false);
         SelectVo s = new SelectVo();
-        s.setSchema(databaseDto.getSchemaName());
+        s.setSchema(schemaDto.getSchemaName());
         s.setTableName(tableSqlDto.getTableName());
         actuator.countData(s, true, r);
         actuator.close();

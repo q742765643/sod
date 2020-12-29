@@ -13,7 +13,7 @@ public interface SchemaDao extends BaseDao<SchemaEntity> {
      * @param databaseId
      * @return
      */
-    SchemaEntity findByDatabaseDefine(String databaseId);
+    SchemaEntity findByDatabase(String databaseId);
 
     /**
      * 根据专题库ID查询
@@ -28,24 +28,24 @@ public interface SchemaDao extends BaseDao<SchemaEntity> {
 
     List<SchemaEntity> findByIdIn(List<String> ids);
 
-    List<SchemaEntity> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify, List<String> databaseDefineIds);
+    List<SchemaEntity> findByDatabaseClassifyAndDatabaseIdIn(String databaseClassify, List<String> databaseDefineIds);
 
-    List<SchemaEntity> findByDatabaseDefineIdIn(List<String> databaseDefineIds);
+    List<SchemaEntity> findByDatabaseIdIn(List<String> databaseDefineIds);
 
     List<SchemaEntity> findByDatabaseClassify(String databaseClassify);
 
-    List<SchemaEntity> findByDatabaseDefine_Id(String id);
+    List<SchemaEntity> findByDatabase_Id(String id);
 
-    List<SchemaEntity> findByDatabaseClassifyAndDatabaseDefineId(String databaseClassify, String databaseDefineId);
+    List<SchemaEntity> findByDatabaseClassifyAndDatabaseId(String databaseClassify, String databaseDefineId);
 
-    List<SchemaEntity> findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseDefineId(String databaseClassify, String databaseName, String schemaName, String databaseDefineId);
+    List<SchemaEntity> findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseId(String databaseClassify, String databaseName, String schemaName, String databaseDefineId);
 
-    void deleteByDatabaseDefine_Id(String id);
+    void deleteByDatabase_Id(String id);
 
-    List<SchemaEntity> findByDatabaseDefine_IdAndDatabaseName(String id, String databaseName);
+    List<SchemaEntity> findByDatabase_IdAndDatabaseName(String id, String databaseName);
 
 
-    List<SchemaEntity> findByDatabaseDefine_UserDisplayControl(int use);
+    List<SchemaEntity> findByDatabase_UserDisplayControl(int use);
 
     void deleteByTdbId(String sdbId);
 }

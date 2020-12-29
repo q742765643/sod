@@ -25,8 +25,8 @@ import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.sso.client.util.Base64Util;
@@ -81,10 +81,10 @@ public class DatabaseVisibleService {
             dbIds = databaseUserEntityList.get(0).getExamineDatabaseId();
         }
         String[] split = dbIds.split(",");
-        List<DatabaseDto> list = new ArrayList<>();
+        List<SchemaDto> list = new ArrayList<>();
         JSONArray arr = new JSONArray();
         for (String id : split) {
-            DatabaseDefineDto dotById = this.databaseService.getDotById(id);
+            DatabaseDto dotById = this.databaseService.getDotById(id);
             if (dotById != null) {
                 JSONObject jo = new JSONObject();
                 jo.put("DATABASE_IP", dotById.getDatabaseIp());
@@ -122,7 +122,7 @@ public class DatabaseVisibleService {
             if (!databaseId.equals(id)) {
                 continue;
             }
-            DatabaseDefineDto dotById = this.databaseService.getDotById(id);
+            DatabaseDto dotById = this.databaseService.getDotById(id);
             if (dotById != null) {
                 jo.put("DATABASE_IP", dotById.getDatabaseIp());
                 jo.put("MAINBAK_TYPE", dotById.getMainBakType());
@@ -208,7 +208,7 @@ public class DatabaseVisibleService {
         for (DataAuthorityRecordDto d : dataAuthorityRecordList) {
             if (d.getDataClassId().equals(dataclassId)) {
                 String databaseId = d.getDatabaseId();
-                DatabaseDto dotById = schemaService.getDotById(databaseId);
+                SchemaDto dotById = schemaService.getDotById(databaseId);
                 List<DataClassAndTableEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
                 for (DataClassAndTableEntity dl : byDatabaseIdAndDataClassId) {
                     DataTableInfoDto dt = dataTableService.getDotById(dl.getTableId());
@@ -220,8 +220,8 @@ public class DatabaseVisibleService {
                     JSONArray aaa = new JSONArray();
                     JSONObject bbb = new JSONObject();
                     bbb.put("SCHEMA_NAME", dotById.getSchemaName());
-                    bbb.put("DATABASE_ID", dotById.getDatabaseDefine().getId());
-                    bbb.put("DATABASE_NAME", dotById.getDatabaseDefine().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
+                    bbb.put("DATABASE_ID", dotById.getDatabaseDto().getId());
+                    bbb.put("DATABASE_NAME", dotById.getDatabaseDto().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
                     aaa.add(bbb);
                     jo.put("DATABASE", aaa);
                     arr.add(jo);
@@ -348,8 +348,8 @@ public class DatabaseVisibleService {
                 tt.put("DATA_SERVICE_NAME", dataClassDto.getClassName());
                 tt.put("D_DATA_ID", dataClassDto.getDDataId());
                 tt.put("CLASS_NAME", dataClassDto.getClassName());
-                tt.put("PHYSICAL", de.getDatabaseDefine().getId());
-                tt.put("DATABASE_NAME", de.getDatabaseDefine().getDatabaseName() + "(" + de.getDatabaseName() + ")");
+                tt.put("PHYSICAL", de.getDatabase().getId());
+                tt.put("DATABASE_NAME", de.getDatabase().getDatabaseName() + "(" + de.getDatabaseName() + ")");
                 tt.put("DATA_CLASS_ID", dataClassDto.getDataClassId());
                 jrr.add(tt);
             }

@@ -7,7 +7,7 @@ import com.piesat.dm.rpc.api.ConsistencyCheckService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.dto.ConsistencyCheckDto;
 import com.piesat.dm.rpc.dto.ConsistencyCheckHistoryDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -152,14 +152,14 @@ public class ConsistencyCheckController {
 
     @PostMapping(value = "/downloadDfcheckFile")
     @ApiOperation(value = "生成差异报告", notes = "生成差异报告")
-    public void downloadDfcheckFile(@RequestBody DatabaseDto databaseDto, HttpServletResponse response){
-         databaseDto = schemaService.getDotById(databaseDto.getId());
+    public void downloadDfcheckFile(@RequestBody SchemaDto schemaDto, HttpServletResponse response){
+         schemaDto = schemaService.getDotById(schemaDto.getId());
 
-        String fileName = databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName()+"_"+databaseDto.getSchemaName()+"_"
+        String fileName = schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName()+"_"+ schemaDto.getSchemaName()+"_"
                 +"元数据差异"+"_"+ DateUtils.dateTimeNow("yyyyMMddhhMMss")+".xls";
 
 
-        Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(databaseDto.getId());
+        Map<String, List<List<String>>> compileResults = this.consistencyCheckService.downloadDfcheckFile(schemaDto.getId());
 
         // 创建一个webbook，对应一个Excel文件
         HSSFWorkbook wb = new HSSFWorkbook();
@@ -181,14 +181,14 @@ public class ConsistencyCheckController {
 
         //保存差异检查历史表
         //判断同一时刻的文件是否存在
-        List<ConsistencyCheckHistoryDto> historys = consistencyCheckHistoryService.findHistoryByDatabaseIdAndFileName(databaseDto.getId(), fileName);
+        List<ConsistencyCheckHistoryDto> historys = consistencyCheckHistoryService.findHistoryByDatabaseIdAndFileName(schemaDto.getId(), fileName);
         if(historys != null && historys.size()>0){
             ConsistencyCheckHistoryDto consistencyCheckHistoryDto = historys.get(0);
             //更新时间
             consistencyCheckHistoryService.saveDto(consistencyCheckHistoryDto);
         }else{
             ConsistencyCheckHistoryDto consistencyCheckHistoryDto = new ConsistencyCheckHistoryDto();
-            consistencyCheckHistoryDto.setDatabaseId(databaseDto.getId());
+            consistencyCheckHistoryDto.setDatabaseId(schemaDto.getId());
             consistencyCheckHistoryDto.setFileName(fileName);
             consistencyCheckHistoryDto.setFileDirectory(fileAddress);
             consistencyCheckHistoryService.saveDto(consistencyCheckHistoryDto);
@@ -408,9 +408,9 @@ public class ConsistencyCheckController {
 
     @PostMapping(value = "/updateEleInfo")
     @ApiOperation(value = "同步字段信息", notes = "同步字段信息")
-    public ResultT updateEleInfo(@RequestBody DatabaseDto databaseDto){
+    public ResultT updateEleInfo(@RequestBody SchemaDto schemaDto){
         try {
-            this.consistencyCheckService.updateEleInfo(databaseDto.getId());
+            this.consistencyCheckService.updateEleInfo(schemaDto.getId());
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

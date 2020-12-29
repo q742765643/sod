@@ -2,7 +2,7 @@ package com.piesat.dm.rpc.api.database;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 
@@ -17,31 +17,31 @@ import java.util.Map;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface SchemaService {
-    DatabaseDto saveDto(DatabaseDto databaseDto);
+    SchemaDto saveDto(SchemaDto schemaDto);
 
-    DatabaseDto getDotById(String id);
+    SchemaDto getDotById(String id);
 
     void delete(String id);
 
     ResultT deleteById(String id);
 
-    List<DatabaseDto> all();
+    List<SchemaDto> all();
 
     List<Map<String,Object>> getDatabaseName();
 
     List<Map<String,Object>> getByDatabaseDefineId(String id);
 
-    List<DatabaseDto> findByLevel(int level);
+    List<SchemaDto> findByLevel(int level);
 
-    List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify,List<String> ids);
+    List<SchemaDto> findByDatabaseClassifyAndIdIn(String databaseClassify, List<String> ids);
 
-    List<DatabaseDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify,List<String> databaseDefineIds);
+    List<SchemaDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify, List<String> databaseDefineIds);
 
-    List<DatabaseDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds);
+    List<SchemaDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds);
 
-    List<DatabaseDto> findByDatabaseDefineId(String id);
+    List<SchemaDto> findByDatabaseDefineId(String id);
 
-    List<DatabaseDto> findByDatabaseClassify(String databaseClassify);
+    List<SchemaDto> findByDatabaseClassify(String databaseClassify);
 
     List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
 

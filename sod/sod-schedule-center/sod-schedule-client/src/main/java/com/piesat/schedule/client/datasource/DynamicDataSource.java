@@ -4,7 +4,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.client.vo.ConnectVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
@@ -155,14 +155,14 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     private synchronized DataSource getDataSource(String dataSourceName) {
         DataSource dataSource=null;
         SchemaService schemaService = SpringUtil.getBean(SchemaService.class);
-        List<DatabaseDto> databaseDtos= schemaService.findByLevel(1);
+        List<SchemaDto> schemaDtos = schemaService.findByLevel(1);
         boolean flag=false;
-        for(DatabaseDto databaseDto:databaseDtos){
-               String parentId=databaseDto.getDatabaseDefine().getId();
+        for(SchemaDto schemaDto : schemaDtos){
+               String parentId= schemaDto.getDatabaseDto().getId();
                if(parentId.toUpperCase().equals(dataSourceName.toUpperCase())){
                    flag=true;
                    ConnectVo connectVo =new ConnectVo();
-                   Set<DatabaseAdministratorDto> databaseAdministratorDtos=databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
+                   Set<DatabaseAdministratorDto> databaseAdministratorDtos= schemaDto.getDatabaseDto().getDatabaseAdministratorList();
                    String userName="";
                    String password="";
                    try {
@@ -176,11 +176,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
-                   connectVo.setIp(databaseDto.getDatabaseDefine().getDatabaseIp());
-                   connectVo.setPort(Integer.parseInt(databaseDto.getDatabaseDefine().getDatabasePort()));
+                   connectVo.setIp(schemaDto.getDatabaseDto().getDatabaseIp());
+                   connectVo.setPort(Integer.parseInt(schemaDto.getDatabaseDto().getDatabasePort()));
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
-                   connectVo.setUrl(databaseDto.getDatabaseDefine().getDatabaseUrl());
+                   connectVo.setUrl(schemaDto.getDatabaseDto().getDatabaseUrl());
                    if(null!=connectVoMap.get(parentId)&&null!=_targetDataSources.get(parentId)){
                      ConnectVo yConnectVo=connectVoMap.get(parentId);
                      if(connectVo.getUrl().equals(yConnectVo.getUrl())
@@ -190,13 +190,13 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                          return null;
                      }
                    }
-                   type.put(parentId,databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase());
+                   type.put(parentId, schemaDto.getDatabaseDto().getDatabaseType().toUpperCase());
                    connectVoMap.put(parentId, connectVo);
-                   if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
+                   if(!"CASSANDRA".equals(schemaDto.getDatabaseDto().getDatabaseType().toUpperCase())){
                        if(!"".equals(userName)&&!"".equals(password)){
                            log.info("========={}创建连接池===========",parentId);
-                           String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
-                           String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();
+                           String url= schemaDto.getDatabaseDto().getDatabaseUrl();
+                           String driverClassName= schemaDto.getDatabaseDto().getDriverClassName();
                            dataSource = this.createDataSource(
                                    driverClassName, url, userName, password);
                        }

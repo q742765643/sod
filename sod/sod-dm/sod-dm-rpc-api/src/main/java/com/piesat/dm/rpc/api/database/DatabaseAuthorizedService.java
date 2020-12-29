@@ -1,8 +1,6 @@
 package com.piesat.dm.rpc.api.database;
 
 import com.piesat.dm.rpc.dto.database.DatabaseAuthorizedDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.util.ResultT;
 
 import java.util.List;
 

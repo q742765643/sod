@@ -5,7 +5,7 @@ import com.piesat.dm.common.util.ExportTableUtil;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
@@ -46,9 +46,9 @@ public class DatabaseController {
     @RequiresPermissions("dm:databaseDefine:add")
     @Log(title = "数据库类型管理", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save(@RequestBody DatabaseDefineDto databaseDefineDto) {
+    public ResultT save(@RequestBody DatabaseDto databaseDto) {
         try {
-            DatabaseDefineDto save = this.databaseService.saveDto(databaseDefineDto);
+            DatabaseDto save = this.databaseService.saveDto(databaseDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,8 +61,8 @@ public class DatabaseController {
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            DatabaseDefineDto DatabaseDefineDto = this.databaseService.getDotById(id);
-            return ResultT.success(DatabaseDefineDto);
+            DatabaseDto DatabaseDto = this.databaseService.getDotById(id);
+            return ResultT.success(DatabaseDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -101,7 +101,7 @@ public class DatabaseController {
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
-            List<DatabaseDefineDto> all = this.databaseService.all();
+            List<DatabaseDto> all = this.databaseService.all();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,7 +114,7 @@ public class DatabaseController {
     @GetMapping(value = "/getCanShowDatabaseDefineList")
     public ResultT getCanShowDatabaseDefineList() {
         try {
-            List<DatabaseDefineDto> all = this.databaseService.getDatabaseDefineList();
+            List<DatabaseDto> all = this.databaseService.getDatabaseDefineList();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +127,7 @@ public class DatabaseController {
 //    @GetMapping(value = "/export")
     public void export(String id, String databaseName, HttpServletRequest request, HttpServletResponse response) {
 
-        List<DatabaseDefineDto> all = this.databaseService.export(id, databaseName);
+        List<DatabaseDto> all = this.databaseService.export(id, databaseName);
         ArrayList<String> headList = new ArrayList<>();
         headList.add("物理库ID");
         headList.add("物理库名称");
@@ -140,7 +140,7 @@ public class DatabaseController {
         headList.add("运行状态");
 
         List<List<String>> lists = new ArrayList<>();
-        for (DatabaseDefineDto ddd : all) {
+        for (DatabaseDto ddd : all) {
             ArrayList<String> strings = new ArrayList<>();
             strings.add(ddd.getId());
             strings.add(ddd.getDatabaseName());
@@ -176,11 +176,11 @@ public class DatabaseController {
     @ApiOperation(value = "分页查询(支持id和databaseName查询)")
     @RequiresPermissions("dm:databaseDefine:page")
     @GetMapping(value = "/page")
-    public ResultT<PageBean> getPage(DatabaseDefineDto databaseDefineDto,
+    public ResultT<PageBean> getPage(DatabaseDto databaseDto,
                                      @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                                      @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         try {
-            PageBean page = this.databaseService.getPage(databaseDefineDto, pageNum, pageSize);
+            PageBean page = this.databaseService.getPage(databaseDto, pageNum, pageSize);
             return ResultT.success(page);
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());
@@ -192,7 +192,7 @@ public class DatabaseController {
     @GetMapping(value = "/conStatus")
     public ResultT conStatus(String id) {
         try {
-            DatabaseDefineDto all = this.databaseService.conStatus(id);
+            DatabaseDto all = this.databaseService.conStatus(id);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -203,9 +203,9 @@ public class DatabaseController {
     @ApiOperation(value = "查询数据库连接(新增)")
     @RequiresPermissions("dm:databaseDefine:connStatus")
     @PostMapping(value = "/connStatus")
-    public ResultT connStatus(DatabaseDefineDto databaseDefineDto) {
+    public ResultT connStatus(DatabaseDto databaseDto) {
         try {
-            return this.databaseService.connStatus(databaseDefineDto);
+            return this.databaseService.connStatus(databaseDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -236,8 +236,8 @@ public class DatabaseController {
                     }
                 }
             }
-            List<DatabaseDefineDto> databaseDefineDtos = this.databaseService.findByIdIn(targetDatabaseIdList);
-            return ResultT.success(databaseDefineDtos);
+            List<DatabaseDto> databaseDtos = this.databaseService.findByIdIn(targetDatabaseIdList);
+            return ResultT.success(databaseDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

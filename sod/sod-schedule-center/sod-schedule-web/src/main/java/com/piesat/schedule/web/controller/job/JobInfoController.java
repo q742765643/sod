@@ -1,12 +1,9 @@
 package com.piesat.schedule.web.controller.job;
 
-import com.alibaba.fastjson.JSON;
-import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.grpc.config.ChannelUtil;
-import com.piesat.common.grpc.config.GrpcAutoConfiguration;
 import com.piesat.common.grpc.config.SpringUtil;
 import com.piesat.common.utils.OwnException;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.dao.clear.ClearDao;
 import com.piesat.schedule.dao.move.MoveDao;
@@ -18,17 +15,12 @@ import com.piesat.schedule.rpc.api.backup.BackupService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.dto.JobInfoDto;
-import com.piesat.schedule.rpc.dto.backup.BackUpDto;
-import com.piesat.schedule.rpc.dto.clear.ClearDto;
-import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.mapstruct.backup.BackupMapstruct;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
 import com.piesat.schedule.rpc.mapstruct.move.MoveMapstruct;
-import com.piesat.schedule.rpc.proxy.GrpcServiceProxy;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.service.DiSendService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
-import com.piesat.schedule.util.CronExpression;
 import com.piesat.sso.client.util.RedisUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.ReturnCodeEnum;
@@ -47,7 +39,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -93,8 +84,8 @@ public class JobInfoController {
     @ApiOperation(value = "查询所有物理库接口", notes = "查询所有物理库接口")
     public ResultT findAllDataBase(){
         ResultT resultT=new ResultT();
-        List<DatabaseDto> databaseDtos= (List<DatabaseDto>) dataBaseService.findAllDataBase();
-        resultT.setData(databaseDtos);
+        List<SchemaDto> schemaDtos = (List<SchemaDto>) dataBaseService.findAllDataBase();
+        resultT.setData(schemaDtos);
         return resultT;
     }
     @GetMapping(value = "/getByDatabaseId/{databaseId}")
@@ -106,10 +97,10 @@ public class JobInfoController {
     }
     @ApiOperation(value = "查询所有物理库详情接口", notes = "查询所有物理库详情接口")
     @GetMapping(value = "/findDataBaseById/{databaseId}")
-    public  ResultT<DatabaseDto> findDataBaseById(@PathVariable String databaseId){
-        ResultT<DatabaseDto> resultT=new ResultT();
-        DatabaseDto databaseDto=dataBaseService.findDataBaseById(databaseId);
-        resultT.setData(databaseDto);
+    public  ResultT<SchemaDto> findDataBaseById(@PathVariable String databaseId){
+        ResultT<SchemaDto> resultT=new ResultT();
+        SchemaDto schemaDto =dataBaseService.findDataBaseById(databaseId);
+        resultT.setData(schemaDto);
         return resultT;
     }
     @GetMapping(value = "/getByDatabaseIdAndClassId")

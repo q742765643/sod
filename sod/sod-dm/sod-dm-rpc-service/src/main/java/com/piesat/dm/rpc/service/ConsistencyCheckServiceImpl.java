@@ -17,7 +17,7 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.dto.*;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
@@ -77,8 +77,8 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         List<ConsistencyCheckDto> consistencyCheckDtos = consistencyCheckMapper.toDto(consistencyCheckEntities);
         if (consistencyCheckDtos != null && consistencyCheckDtos.size() > 0) {
             for (ConsistencyCheckDto consistencyCheckDto : consistencyCheckDtos) {
-                DatabaseDto databaseDto = schemaService.getDotById(consistencyCheckDto.getDatabaseId());
-                consistencyCheckDto.setDatabaseDto(databaseDto);
+                SchemaDto schemaDto = schemaService.getDotById(consistencyCheckDto.getDatabaseId());
+                consistencyCheckDto.setSchemaDto(schemaDto);
             }
         }
         pageBean.setPageData(consistencyCheckDtos);
@@ -106,7 +106,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     @Override
     public Map<String, List<List<String>>> downloadDfcheckFile(String databaseId) {
         //获取数据库详细信息
-        DatabaseDto databaseDto = schemaService.getDotById(databaseId);
+        SchemaDto schemaDto = schemaService.getDotById(databaseId);
         List<String> tableList = null;
         Map<String, List<List<String>>> compileResult = new HashMap<String, List<List<String>>>();
         compileResult.put("columnResult", new ArrayList<List<String>>());
@@ -115,17 +115,17 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
 
         DatabaseDcl database = null;
         try {
-            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            database = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            tableList = (List<String>) database.queryAllTableName(databaseDto.getSchemaName()).getData();
+            tableList = (List<String>) database.queryAllTableName(schemaDto.getSchemaName()).getData();
             for (String tableName : tableList) {
                 //物理库表字段信息
-                Map<String, Map<String, Object>> columnInfos = (Map<String, Map<String, Object>>) database.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
+                Map<String, Map<String, Object>> columnInfos = (Map<String, Map<String, Object>>) database.queryAllColumnInfo(schemaDto.getSchemaName(), tableName).getData();
                 //物理库表索引和分库分表信息
-                Map<String, Map<String, String>> indexAndShardings = (Map<String, Map<String, String>>) database.queryAllIndexAndShardingInfo(databaseDto.getSchemaName(), tableName).getData();
+                Map<String, Map<String, String>> indexAndShardings = (Map<String, Map<String, String>>) database.queryAllIndexAndShardingInfo(schemaDto.getSchemaName(), tableName).getData();
                 compareDifferences(databaseId, tableName.toUpperCase(), columnInfos, indexAndShardings, compileResult);
             }
         } catch (Exception e) {
@@ -359,19 +359,19 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     @Override
     public void updateEleInfo(String databaseId) {
         //获取数据库详细信息
-        DatabaseDto databaseDto = schemaService.getDotById(databaseId);
+        SchemaDto schemaDto = schemaService.getDotById(databaseId);
         List<String> tableList = null;
         DatabaseDcl database = null;
         try {
-            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            database = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            tableList = (List<String>) database.queryAllTableName(databaseDto.getSchemaName()).getData();
+            tableList = (List<String>) database.queryAllTableName(schemaDto.getSchemaName()).getData();
             for (String tableName : tableList) {
                 //物理库表字段信息
-                Map<String, Map<String, Object>> columnInfos = (Map<String, Map<String, Object>>) database.queryAllColumnInfo(databaseDto.getSchemaName(), tableName).getData();
+                Map<String, Map<String, Object>> columnInfos = (Map<String, Map<String, Object>>) database.queryAllColumnInfo(schemaDto.getSchemaName(), tableName).getData();
                 updateEleSubInfo(databaseId, tableName.toUpperCase(), columnInfos);
             }
         } catch (Exception e) {

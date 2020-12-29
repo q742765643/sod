@@ -37,7 +37,7 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.ReadAuthorityDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -260,17 +260,17 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         List<String> databaseIds = Arrays.asList(examineDatabaseId.split(Constants.COMMA));
         //为每个数据表进行授权
         for (DataAuthorityRecordDto dataAuthorityRecordDto : dataAuthorityRecordList) {
-            DatabaseDto databaseDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
-            if (!databaseIds.contains(databaseDto.getDatabaseDefine().getId())) {
-                r.setErrorMessage(String.format(ConstantsMsg.MSG3, databaseDto.getDatabaseDefine().getDatabaseName()));
+            SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+            if (!databaseIds.contains(schemaDto.getDatabaseDto().getId())) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG3, schemaDto.getDatabaseDto().getDatabaseName()));
                 continue;
             }
             if (StringUtils.isEmpty(dataAuthorityRecordDto.getTableName())) {
                 continue;
             }
-            ConnectVo coreInfo = databaseDto.getDatabaseDefine().getCoreInfo();
+            ConnectVo coreInfo = schemaDto.getDatabaseDto().getCoreInfo();
             DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.CREATE;
-            AuthorityVo a = new AuthorityVo(databaseDto.getSchemaName(),dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+            AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(),dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
             AuzFactory af = new AuzFactory(coreInfo.getPid(),coreInfo,coreInfo.getDatabaseType(),r);
             AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
             actuator.grantTable(a,r);
@@ -293,10 +293,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //用户up账户对应的可用物理库
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
 
-        DatabaseDto databaseDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+        SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
-        if (!databaseIds.contains(databaseDto.getDatabaseDefine().getId())) {
-            return ResultT.failed("不具备对物理库：" + databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName() + "的访问权限" + "<br/>");
+        if (!databaseIds.contains(schemaDto.getDatabaseDto().getId())) {
+            return ResultT.failed("不具备对物理库：" + schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "的访问权限" + "<br/>");
         }
 
         //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
@@ -305,19 +305,19 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
         DatabaseDcl databaseDcl = null;
         try {
-            databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+            databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
         } catch (Exception e) {
             if (e.getMessage().contains("用户不存在")) {
                 Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
-                return ResultT.failed("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName() + "没有管理员账户" + "<br/>");
+                return ResultT.failed("物理库：" + schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
             }
         }
 
         try {
             if (dataAuthorityRecordDto.getApplyAuthority() == 1) {//授权读
-                databaseDcl.addPermissions(true, databaseDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
+                databaseDcl.addPermissions(true, schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
             } else if (dataAuthorityRecordDto.getApplyAuthority() == 2) {//授权写
-                databaseDcl.addPermissions(false, databaseDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
+                databaseDcl.addPermissions(false, schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
             }
             dataAuthorityRecordDto.setAuthorize(1);
         } catch (Exception e) {
@@ -346,13 +346,13 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
             if (dataAuthorityRecordDto.getAuthorize() != null && dataAuthorityRecordDto.getAuthorize().intValue() == 1) {//已授权资料，撤销授权
                 //获取物理库信息
-                DatabaseDto databaseDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+                SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
                 DatabaseDcl databaseDcl = null;
                 try {
-                    databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+                    databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
                 } catch (Exception e) {
                     if (e.getMessage().contains("用户不存在")) {
-                        buffer.append("物理库：" + databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName() + "没有管理员账户" + "<br/>");
+                        buffer.append("物理库：" + schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
                         flag = false;
                         Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
                         continue;
@@ -360,9 +360,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }
                 try {
                     if (dataAuthorityRecordDto.getApplyAuthority() == 1) {//撤销读权限
-                        databaseDcl.deletePermissions("SELECT".split(","), databaseDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
+                        databaseDcl.deletePermissions("SELECT".split(","), schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
                     } else if (dataAuthorityRecordDto.getApplyAuthority() == 2) {//撤销写权限
-                        databaseDcl.deletePermissions("SELECT,UPDATE,INSERT,DELETE".split(","), databaseDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
+                        databaseDcl.deletePermissions("SELECT,UPDATE,INSERT,DELETE".split(","), schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
                     }
                 } catch (Exception e) {
                     buffer.append("表" + dataAuthorityRecordDto.getTableName() + "授权失败" + e.getMessage() + "<br/>");

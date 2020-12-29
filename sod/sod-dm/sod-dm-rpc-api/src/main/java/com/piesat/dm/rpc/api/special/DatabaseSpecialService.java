@@ -2,8 +2,7 @@ package com.piesat.dm.rpc.api.special;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -54,9 +53,9 @@ public interface DatabaseSpecialService {
 
     /**
      * 数据库授权
-     * @param databaseDto
+     * @param schemaDto
      */
-    void empowerDatabaseSpecial(DatabaseDto databaseDto);
+    void empowerDatabaseSpecial(SchemaDto schemaDto);
 
     /**
      * 单独资料授权

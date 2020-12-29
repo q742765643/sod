@@ -30,7 +30,7 @@ public class SchemaEntity extends BaseEntity {
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "database_define_id")
-    private DatabaseEntity databaseDefine;
+    private DatabaseEntity database;
 
     /**
      * 数据库模式

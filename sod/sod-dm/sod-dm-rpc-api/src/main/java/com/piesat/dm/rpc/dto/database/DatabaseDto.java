@@ -1,22 +1,26 @@
 package com.piesat.dm.rpc.dto.database;
 
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
+import com.piesat.dm.core.model.ConnectVo;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * 数据库基础库专题库
+ * 数据库类型定义
  *
  * @author cwh
- * @date 2019年 11月21日 18:03:14
+ * @date 2019年 11月21日 17:28:05
  */
 @Data
 public class DatabaseDto {
     private static final long serialVersionUID = 1L;
 
     private String id;
+
     /**
      * 数据库名称
      * database_name
@@ -24,30 +28,83 @@ public class DatabaseDto {
     private String databaseName;
 
     /**
-     * 与数据库定义关联id
-     * database_id
+     * 排序
+     * serial_number
      */
-    private DatabaseDefineDto databaseDefine;
+    private Integer serialNumber;
+
 
     /**
-     * 数据库模式
-     * schema_name
+     * 连接测试（1成功，2失败）
+     * check_conn
      */
-    private String schemaName;
+    private Integer checkConn;
 
     /**
-     * 数据库分类（物理库，专题库）
-     * database_classify
+     * 数据库实例
+     * database_instance
      */
-    private String databaseClassify;
+    private String databaseInstance;
 
     /**
-     * 与申请表关联id
-     * tdb_id
+     * 数据库类型
+     * database_type
      */
-    private String tdbId;
+    private String databaseType;
 
-    private Boolean stopUse;
+    /**
+     * 主备类型
+     * main_bak_type
+     */
+    private Integer mainBakType;
+
+    /**
+     * 存储容量
+     * database_capacity
+     */
+    private Integer databaseCapacity;
+
+    /**
+     * 数据库描述
+     * database_desc
+     */
+    private String databaseDesc;
+
+    /**
+     * 数据库驱动
+     * driver_class_name
+     */
+    private String driverClassName;
+
+    /**
+     * portal显示控制
+     * user_display_control
+     */
+    private Integer userDisplayControl;
+
+    /**
+     * 数据库ip
+     * database_ip
+     */
+    private String databaseIp;
+
+    /**
+     * 数据库端口
+     * database_port
+     */
+    private String databasePort;
+
+    /**
+     * 数据库连接url
+     * database_url
+     */
+    private String databaseUrl;
+
+    /**
+     * up层访问路径
+     * up_url
+     */
+    private String upUrl;
 
     private Date createTime;
 
@@ -60,12 +117,30 @@ public class DatabaseDto {
 
     private Integer version;
 
-    /**
-     * 用户ID
-     */
-    private String userId;
+    private Set<DatabaseAdministratorDto> databaseAdministratorList;
 
-    private Integer level;
+    private Set<DatabaseNodesDto> databaseNodesList;
 
-    private List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList;
+    private SchemaDto schemaDto;
+
+    public ConnectVo getCoreInfo() {
+        List<DatabaseAdministratorDto> managerUsers =
+                this.databaseAdministratorList.stream()
+                        .filter(DatabaseAdministratorDto::getIsManager)
+                        .collect(Collectors.toList());
+        if (managerUsers.size() == 0) {
+            return null;
+        }
+        DatabaseAdministratorDto d = managerUsers.get(0);
+        ConnectVo u = new ConnectVo();
+        u.setPid(this.id);
+        u.setDatabaseType(DatabaseTypesEnum.match(this.databaseType));
+        u.setUrl(this.databaseUrl);
+        u.setClassName(this.driverClassName);
+        u.setPort(Integer.valueOf(this.databasePort));
+        u.setIp(this.databaseIp);
+        u.setUserName(d.getUserName());
+        u.setPassWord(d.getPassWord());
+        return u;
+    }
 }

@@ -7,7 +7,9 @@ package com.piesat.dm.core.constants;
 public class Constants {
 
     public static final String POINT = ".";
+    public static final String EMPTY = "";
     public static final String APOSTROPHE = "'";
+    public static final String DOUBLE_QUOTES = "\"";
     public static final String SPACE = " ";
     public static final String COMMA = ",";
     public static final String SEMICOLON = ";";

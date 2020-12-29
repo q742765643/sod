@@ -11,7 +11,7 @@ import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.clear.ClearDao;
@@ -172,13 +172,13 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         }
 
         List<Map<String,Object>> databaseDtos=new ArrayList<>();
-        List<DatabaseDto> databaseListAll= dataBaseService.findAllDataBase();
-        for(DatabaseDto databaseDto:databaseListAll){
-            String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
-            String parentId=databaseDto.getDatabaseDefine().getId();
+        List<SchemaDto> databaseListAll= dataBaseService.findAllDataBase();
+        for(SchemaDto schemaDto :databaseListAll){
+            String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+            String parentId= schemaDto.getDatabaseDto().getId();
             if(dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String,Object> map=new LinkedHashMap<>();
-                map.put("KEY",databaseDto.getId());
+                map.put("KEY", schemaDto.getId());
                 map.put("VALUE",databaseName);
                 databaseDtos.add(map);
             }

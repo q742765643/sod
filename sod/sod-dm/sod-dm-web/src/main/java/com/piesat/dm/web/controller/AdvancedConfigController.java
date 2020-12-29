@@ -132,14 +132,14 @@ public class AdvancedConfigController {
     @ResponseBody
     public byte[] exportTable_1(AdvancedConfigDto advancedConfigDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();
-        if (advancedConfigDto.getDatabaseDto() != null) {
-            if (advancedConfigDto.getDatabaseDto().getDatabaseDefine() != null) {
-                if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
-                    map.put("database_name", advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+        if (advancedConfigDto.getSchemaDto() != null) {
+            if (advancedConfigDto.getSchemaDto().getDatabaseDto() != null) {
+                if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName())) {
+                    map.put("database_name", advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName());
                 }
             }
-            if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseName())) {
-                map.put("special_database_name", advancedConfigDto.getDatabaseDto().getDatabaseName());
+            if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseName())) {
+                map.put("special_database_name", advancedConfigDto.getSchemaDto().getDatabaseName());
             }
         }
         if (advancedConfigDto.getDataClassDto() != null) {
@@ -180,14 +180,14 @@ public class AdvancedConfigController {
     @ApiOperation(value = "导出", notes = "导出")
     public void exportTable(AdvancedConfigDto advancedConfigDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();
-        if (advancedConfigDto.getDatabaseDto() != null) {
-            if (advancedConfigDto.getDatabaseDto().getDatabaseDefine() != null) {
-                if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName())) {
-                    map.put("database_name", advancedConfigDto.getDatabaseDto().getDatabaseDefine().getDatabaseName());
+        if (advancedConfigDto.getSchemaDto() != null) {
+            if (advancedConfigDto.getSchemaDto().getDatabaseDto() != null) {
+                if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName())) {
+                    map.put("database_name", advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName());
                 }
             }
-            if (StringUtils.isNotNullString(advancedConfigDto.getDatabaseDto().getDatabaseName())) {
-                map.put("special_database_name", advancedConfigDto.getDatabaseDto().getDatabaseName());
+            if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseName())) {
+                map.put("special_database_name", advancedConfigDto.getSchemaDto().getDatabaseName());
             }
         }
         if (advancedConfigDto.getDataClassDto() != null) {

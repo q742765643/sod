@@ -72,14 +72,14 @@ public class TableCollectHandler  implements BaseHandler {
             for(SchemaEntity schemaEntity : databaseEntities) {
                 DatabaseDcl databaseDcl = null;
                 try {
-                    /*if (schemaEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
+                    /*if (schemaEntity.getDatabase().getUserDisplayControl().intValue() != 1) {
                         continue;
                     }*/
-                    String databaseType = schemaEntity.getDatabaseDefine().getDatabaseType();
-                    String driverClassName = schemaEntity.getDatabaseDefine().getDriverClassName();
-                    String databaseUrl = schemaEntity.getDatabaseDefine().getDatabaseUrl();
-                    String databasePort = schemaEntity.getDatabaseDefine().getDatabasePort();
-                    String databaseInstance = schemaEntity.getDatabaseDefine().getDatabaseInstance();
+                    String databaseType = schemaEntity.getDatabase().getDatabaseType();
+                    String driverClassName = schemaEntity.getDatabase().getDriverClassName();
+                    String databaseUrl = schemaEntity.getDatabase().getDatabaseUrl();
+                    String databasePort = schemaEntity.getDatabase().getDatabasePort();
+                    String databaseInstance = schemaEntity.getDatabase().getDatabaseInstance();
                     String schemaName = schemaEntity.getSchemaName();
 
                     List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(schemaEntity.getId());
@@ -89,7 +89,7 @@ public class TableCollectHandler  implements BaseHandler {
 
                     //获取数据库管理账户
                     DatabaseAdministratorEntity databaseAdministratorEntity = null;
-                    Set<DatabaseAdministratorEntity> databaseAdministratorList = schemaEntity.getDatabaseDefine().getDatabaseAdministratorList();
+                    Set<DatabaseAdministratorEntity> databaseAdministratorList = schemaEntity.getDatabase().getDatabaseAdministratorList();
                     for (DatabaseAdministratorEntity databaseAdministratorEntity1 : databaseAdministratorList) {
                         if (databaseAdministratorEntity1.getIsManager()) {
                             databaseAdministratorEntity = databaseAdministratorEntity1;
@@ -115,7 +115,7 @@ public class TableCollectHandler  implements BaseHandler {
                         String sql = "";
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
-                        msg.append("定时统计：").append(schemaEntity.getDatabaseDefine().getDatabaseName() + "_" + schemaEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
+                        msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
                         //判断昨天数据是否已经统计入库
                         //List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(schemaEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);

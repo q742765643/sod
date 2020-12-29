@@ -19,7 +19,7 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
@@ -131,9 +131,9 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
             dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
                 String tableId = e.getTableId();
                 String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();
-                DatabaseDto dotById = this.schemaService.getDotById(databaseId);
+                SchemaDto dotById = this.schemaService.getDotById(databaseId);
                 e.setDatabaseId(databaseId);
-                e.setDatabasePid(dotById.getDatabaseDefine().getId());
+                e.setDatabasePid(dotById.getDatabaseDto().getId());
                 return e;
             }).collect(Collectors.toList());
         }
@@ -307,12 +307,12 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     public Map<String, List<String>> getDatabaseTables(String logics) {
         HashMap<String, List<String>> map = new HashMap<>();
         if (StringUtils.isNotEmpty(logics)) {
-            //List<DatabaseDto> databaseDtos = schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
-            List<DatabaseDto> databaseDtos = schemaService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
-            for (int i = 0; i < databaseDtos.size(); i++) {
+            //List<SchemaDto> schemaDtos = schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
+            List<SchemaDto> schemaDtos = schemaService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
+            for (int i = 0; i < schemaDtos.size(); i++) {
                 DatabaseDcl databaseDcl = null;
                 try {
-                    databaseDcl = DatabaseUtil.getDatabase(databaseDtos.get(i), databaseInfo);
+                    databaseDcl = DatabaseUtil.getDatabase(schemaDtos.get(i), databaseInfo);
                 } catch (Exception e) {
                     if (e.getMessage().contains("用户不存在")) {
                         if (databaseDcl != null) databaseDcl.closeConnect();
@@ -321,14 +321,14 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
                 }
 
                 try {
-                    ResultT resultT = databaseDcl.queryAllTableName(databaseDtos.get(i).getSchemaName());
+                    ResultT resultT = databaseDcl.queryAllTableName(schemaDtos.get(i).getSchemaName());
                     if (resultT.isSuccess() && resultT.getData() != null) {
-                        List<String> tableList = map.get(databaseDtos.get(i).getDatabaseDefine().getId());
+                        List<String> tableList = map.get(schemaDtos.get(i).getDatabaseDto().getId());
                         if (tableList != null) {
                             tableList.addAll((List<String>) resultT.getData());
-                            map.put(databaseDtos.get(i).getDatabaseDefine().getId(), tableList);
+                            map.put(schemaDtos.get(i).getDatabaseDto().getId(), tableList);
                         } else {
-                            map.put(databaseDtos.get(i).getDatabaseDefine().getId(), (List<String>) resultT.getData());
+                            map.put(schemaDtos.get(i).getDatabaseDto().getId(), (List<String>) resultT.getData());
                         }
                     }
                     databaseDcl.closeConnect();

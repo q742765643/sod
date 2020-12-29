@@ -15,8 +15,8 @@ import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.rpc.api.database.DatabaseService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
@@ -63,33 +63,33 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
 
     @Override
     @Transactional
-    public DatabaseDefineDto saveDto(DatabaseDefineDto databaseDefineDto) {
-        DatabaseDto databaseDto = databaseDefineDto.getDatabaseDto();
+    public DatabaseDto saveDto(DatabaseDto databaseDto) {
+        SchemaDto schemaDto = databaseDto.getSchemaDto();
+        if (StringUtils.isEmpty(schemaDto.getId())) {
+            schemaDto.setCreateTime(new Date());
+            schemaDto.setStopUse(false);
+        }
         if (StringUtils.isEmpty(databaseDto.getId())) {
             databaseDto.setCreateTime(new Date());
-            databaseDto.setStopUse(false);
         }
-        if (StringUtils.isEmpty(databaseDefineDto.getId())) {
-            databaseDefineDto.setCreateTime(new Date());
-        }
-        DatabaseEntity databaseEntity = this.databaseDefineMapper.toEntity(databaseDefineDto);
+        DatabaseEntity databaseEntity = this.databaseDefineMapper.toEntity(databaseDto);
         DatabaseEntity save = this.saveNotNull(databaseEntity);
-        SchemaEntity schemaEntity = this.databaseMapper.toEntity(databaseDto);
-        schemaEntity.setDatabaseDefine(save);
+        SchemaEntity schemaEntity = this.databaseMapper.toEntity(schemaDto);
+        schemaEntity.setDatabase(save);
         schemaEntity = this.schemaDao.saveNotNull(schemaEntity);
-        DatabaseDefineDto databaseDefineDto1 = this.databaseDefineMapper.toDto(save);
-        databaseDefineDto1.setDatabaseDto(this.databaseMapper.toDto(schemaEntity));
-        return databaseDefineDto1;
+        DatabaseDto databaseDto1 = this.databaseDefineMapper.toDto(save);
+        databaseDto1.setSchemaDto(this.databaseMapper.toDto(schemaEntity));
+        return databaseDto1;
     }
 
     @Override
-    public List<DatabaseDefineDto> all() {
+    public List<DatabaseDto> all() {
         List<DatabaseEntity> all = this.getAll();
         return this.databaseDefineMapper.toDto(all);
     }
 
     @Override
-    public List<DatabaseDefineDto> export(String id, String databaseName) {
+    public List<DatabaseDto> export(String id, String databaseName) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
         if (StringUtils.isNotBlank(id)) {
             ssb.add("id", SpecificationOperator.Operator.likeAll.name(), id);
@@ -103,18 +103,18 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public List<DatabaseDefineDto> findByType(String databaseType) {
+    public List<DatabaseDto> findByType(String databaseType) {
         return this.databaseDefineMapper.toDto(this.databaseDao.findByDatabaseType(databaseType));
     }
 
     @Override
-    public PageBean getPage(DatabaseDefineDto databaseDefineDto, int pageNum, int pageSize) {
+    public PageBean getPage(DatabaseDto databaseDto, int pageNum, int pageSize) {
         SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
-        if (StringUtils.isNotBlank(databaseDefineDto.getId())) {
-            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getId());
+        if (StringUtils.isNotBlank(databaseDto.getId())) {
+            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), databaseDto.getId());
         }
-        if (StringUtils.isNotBlank(databaseDefineDto.getDatabaseName())) {
-            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDefineDto.getDatabaseName());
+        if (StringUtils.isNotBlank(databaseDto.getDatabaseName())) {
+            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDto.getDatabaseName());
         }
         Sort sort = Sort.by(Sort.Direction.ASC, "serialNumber");
         PageBean page = this.getPage(ssb.generateSpecification(), new PageForm(pageNum, pageSize), sort);
@@ -124,10 +124,10 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public DatabaseDefineDto conStatus(String id) {
-        DatabaseDefineDto dotById = this.getDotById(id);
-        DatabaseDto database = new DatabaseDto();
-        database.setDatabaseDefine(dotById);
+    public DatabaseDto conStatus(String id) {
+        DatabaseDto dotById = this.getDotById(id);
+        SchemaDto database = new SchemaDto();
+        database.setDatabaseDto(dotById);
         DatabaseDcl db = null;
         try {
             db = DatabaseUtil.getPubDatabase(database, databaseInfo);
@@ -150,10 +150,10 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public ResultT connStatus(DatabaseDefineDto databaseDefineDto) {
+    public ResultT connStatus(DatabaseDto databaseDto) {
         DatabaseDcl db = null;
         try {
-            db = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+            db = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
             if (db != null) {
                 db.closeConnect();
                 return ResultT.success();
@@ -171,35 +171,35 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    public List<DatabaseDefineDto> findByIdIn(List<String> ids) {
+    public List<DatabaseDto> findByIdIn(List<String> ids) {
         List<DatabaseEntity> databaseDefineEntities = this.databaseDao.findByIdIn(ids);
         return this.databaseDefineMapper.toDto(databaseDefineEntities);
     }
 
     @Override
     public void exportExcel(String id, String databaseName) {
-        List<DatabaseDefineDto> dtoList = this.export(id, databaseName);
+        List<DatabaseDto> dtoList = this.export(id, databaseName);
         List<DatabaseEntity> entities = databaseDefineMapper.toEntity(dtoList);
         ExcelUtil<DatabaseEntity> util = new ExcelUtil(DatabaseEntity.class);
         util.exportExcel(entities, "数据库");
     }
 
     @Override
-    public List<DatabaseDefineDto> getDatabaseDefineList() {
+    public List<DatabaseDto> getDatabaseDefineList() {
         List<DatabaseEntity> list = databaseDao.findByUserDisplayControlNot(2);
         return databaseDefineMapper.toDto(list);
     }
 
     @Override
-    public DatabaseDefineDto getDotById(String id) {
+    public DatabaseDto getDotById(String id) {
         DatabaseEntity databaseEntity = this.getById(id);
-        DatabaseDefineDto databaseDefineDto = this.databaseDefineMapper.toDto(databaseEntity);
-        List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabaseDefine_IdAndDatabaseName(id, "基础库");
+        DatabaseDto databaseDto = this.databaseDefineMapper.toDto(databaseEntity);
+        List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabase_IdAndDatabaseName(id, "基础库");
         if (databaseEntities.size() > 0) {
-            DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntities).get(0);
-            databaseDefineDto.setDatabaseDto(databaseDto);
+            SchemaDto schemaDto = this.databaseMapper.toDto(databaseEntities).get(0);
+            databaseDto.setSchemaDto(schemaDto);
         }
-        return databaseDefineDto;
+        return databaseDto;
     }
 
     @Transactional
@@ -208,7 +208,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
         String[] split = ids.split(",");
         for (int i = 0; i < split.length; i++) {
             String id = split[i];
-            List<SchemaEntity> databases = this.schemaDao.findByDatabaseDefine_Id(id);
+            List<SchemaEntity> databases = this.schemaDao.findByDatabase_Id(id);
             for (int j = 0; j < databases.size(); j++) {
                 SchemaEntity database = databases.get(j);
                 List<DataTableInfoEntity> logicList = this.dataTableDao.findByDatabaseId(database.getId());
@@ -219,7 +219,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
         }
 
         for (String id : split) {
-            this.schemaDao.deleteByDatabaseDefine_Id(id);
+            this.schemaDao.deleteByDatabase_Id(id);
             this.logicDatabaseDao.deleteByDatabaseId(id);
         }
         this.deleteByIds(Arrays.asList(split));

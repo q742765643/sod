@@ -7,7 +7,7 @@ import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.DatumTypeInfoService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.schedule.dao.sync.SyncMappingDao;
@@ -96,15 +96,15 @@ public class StrategyPolicyService {
                 StrategyPolicyDto strategyPolicyDto=new StrategyPolicyDto();
                 strategyPolicyDto.setDataClassId(dataClassId);
                 List<PolicyDto> policyDtos=new ArrayList<>();
-                DatabaseDto databaseDto= schemaService.getDotById(dotById.getDatabaseId());
-                strategyPolicyDto.setDatabaseId(databaseDto.getId());
-                String parentId=databaseDto.getDatabaseDefine().getId();
-                String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
+                SchemaDto schemaDto = schemaService.getDotById(dotById.getDatabaseId());
+                strategyPolicyDto.setDatabaseId(schemaDto.getId());
+                String parentId= schemaDto.getDatabaseDto().getId();
+                String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
                 strategyPolicyDto.setDatabaseName(databaseName);
-                this.findBackup(databaseDto.getId(),dataClassId,parentId,policyDtos);
-                this.findClear(databaseDto.getId(),dataClassId,parentId,policyDtos);
-                this.findMove(databaseDto.getId(),dataClassId,parentId,policyDtos);
-                this.findSync(databaseDto.getId(),dataClassId,parentId,policyDtos);
+                this.findBackup(schemaDto.getId(),dataClassId,parentId,policyDtos);
+                this.findClear(schemaDto.getId(),dataClassId,parentId,policyDtos);
+                this.findMove(schemaDto.getId(),dataClassId,parentId,policyDtos);
+                this.findSync(schemaDto.getId(),dataClassId,parentId,policyDtos);
                 strategyPolicyDto.setPolicyDtos(policyDtos);
                 strategyPolicyDtos.add(strategyPolicyDto);
             } catch (Exception e) {
@@ -286,9 +286,9 @@ public class StrategyPolicyService {
                 return;
             }
             SyncTaskEntity syncTaskEntity=syncTaskEntities.get(0);
-            DatabaseDto databaseDto= schemaService.getDotById(syncTaskEntity.getSourceDatabaseId());
+            SchemaDto schemaDto = schemaService.getDotById(syncTaskEntity.getSourceDatabaseId());
             policyDto.setSourceTable(soourceTableName);
-            policyDto.setSourceRepository(databaseDto.getDatabaseDefine().getDatabaseName());
+            policyDto.setSourceRepository(schemaDto.getDatabaseDto().getDatabaseName());
             String result=this.getStatusById(syncTaskEntity,"getallstatus");
             if("true".equals(result)){
                 policyDto.setTriggerStatus("已启动");

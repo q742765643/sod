@@ -76,7 +76,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
 //            DataTableInfoDto datatable = dataTableService.getDotById(tableColumnDto.getTableId());
 //            String databaseId = datatable.getDatabaseId();
 //            SchemaEntity databaseEntity = this.databaseDao.findById(databaseId).get();
-//            DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
+//            SchemaDto databaseDto = this.databaseMapper.toDto(databaseEntity);
 //            DatabaseDcl database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
 //            try {
 //                database.updateColumn(databaseDto.getSchemaName(), datatable.getTableName(), oldColumn, newColumn);

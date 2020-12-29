@@ -248,7 +248,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
         String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
         return Optional.ofNullable(needEmpowerIdArr).map(id -> Arrays.stream(id).filter(e -> !StringUtils.isEmpty(e)).anyMatch(d -> {
-            DatabaseDefineDto dotById = this.databaseService.getDotById(d);
+            DatabaseDto dotById = this.databaseService.getDotById(d);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -342,8 +342,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             e += "," + mngIp;
             return e.split(",");
         }).orElse(mngIp.split(","));
-        List<DatabaseDefineDto> DatabaseDefineList = needEmpowerList.stream().map(this.databaseService::getDotById).collect(Collectors.toList());
-        for (DatabaseDefineDto d : DatabaseDefineList) {
+        List<DatabaseDto> DatabaseDefineList = needEmpowerList.stream().map(this.databaseService::getDotById).collect(Collectors.toList());
+        for (DatabaseDto d : DatabaseDefineList) {
             Set<DatabaseAdministratorDto> databaseAdministratorList = d.getDatabaseAdministratorList();
             boolean b = databaseAdministratorList.stream().anyMatch(DatabaseAdministratorDto::getIsManager);
             if (!b) {
@@ -383,7 +383,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             List<String> stringList = Arrays.stream(needEmpowerIds).collect(Collectors.toList());
             return !stringList.contains(e);
         }).filter(StringUtils::isNotEmpty).forEach(s -> {
-            DatabaseDefineDto dotById = this.databaseService.getDotById(s);
+            DatabaseDto dotById = this.databaseService.getDotById(s);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -404,7 +404,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
 
         Arrays.stream(needEmpowerIds).filter(StringUtils::isNotEmpty).forEach(s -> {
-            DatabaseDefineDto dotById = this.databaseService.getDotById(s);
+            DatabaseDto dotById = this.databaseService.getDotById(s);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -427,7 +427,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
         //修改绑定ip
         thisHaveIds.forEach(s -> {
-            DatabaseDefineDto dotById = this.databaseService.getDotById(s);
+            DatabaseDto dotById = this.databaseService.getDotById(s);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -556,7 +556,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 Boolean Flag = false;
                 //下面取得database_id对应的父物理库ID。
                 SchemaEntity schemaEntity = schemaDao.findById(database_id).get();
-                DatabaseDto databaseDto = this.databaseMapper.toDto(schemaEntity);
+                SchemaDto schemaDto = this.databaseMapper.toDto(schemaEntity);
 
                 //下面取得资料信息。
                 List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(data_class_id, database_id);
@@ -564,7 +564,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 //DataBasePhysics databasephysics = dataBasePhysicsDao.queryDataBasePhysicsByDbIds(database_id);
                 //获取数据库管理账户
                 DatabaseAdministratorEntity databaseAdministratorEntity = null;
-                Set<DatabaseAdministratorEntity> databaseAdministratorList = schemaEntity.getDatabaseDefine().getDatabaseAdministratorList();
+                Set<DatabaseAdministratorEntity> databaseAdministratorList = schemaEntity.getDatabase().getDatabaseAdministratorList();
                 for (DatabaseAdministratorEntity databasephysics : databaseAdministratorList) {
                     if (databasephysics.getIsManager()) {
                         databaseAdministratorEntity = databasephysics;
@@ -577,11 +577,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     String table_name = dataTableEntity.getTableName();
                     DatabaseDcl databaseDcl = null;
                     try {
-                        databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+                        databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
                     } catch (Exception e) {
                         if (e.getMessage().contains("用户不存在")) {
                             map.put("returnCode", 1);
-                            map.put("returnMessage", databaseDto.getDatabaseDefine().getDatabaseName() + "用户不存在！");
+                            map.put("returnMessage", schemaDto.getDatabaseDto().getDatabaseName() + "用户不存在！");
                             Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
                             continue;
                         }
@@ -745,24 +745,24 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         boolean flag = true;
         String[] databaseIds = databaseUserDto.getExamineDatabaseId().split(",");
         for (String databaseId : databaseIds) {
-            DatabaseDefineDto databaseDefineDto = databaseService.getDotById(databaseId);
+            DatabaseDto databaseDto = databaseService.getDotById(databaseId);
 
             DatabaseDcl databaseDefine = null;
             try {
-                databaseDefine = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                databaseDefine = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
             } catch (Exception e) {
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
+                buffer.append("物理库：" + databaseDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
             }
             try {
                 databaseDefine.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
             } catch (Exception e) {
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",密码修改失败" + "<br/>");
+                buffer.append("物理库：" + databaseDto.getDatabaseName() + ",密码修改失败" + "<br/>");
             }
             Optional.ofNullable(databaseDefine).ifPresent(DatabaseDcl::closeConnect);
             //获取数据库管理账户
             DatabaseAdministratorDto databaseAdministratorDto = null;
-            Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDefineDto.getDatabaseAdministratorList();
+            Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseAdministratorList();
             for (DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList) {
                 if (databaseAdministratorDto1.getIsManager()) {
                     databaseAdministratorDto = databaseAdministratorDto1;
@@ -770,7 +770,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 }
             }
             if (databaseAdministratorDto == null) {
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
+                buffer.append("物理库：" + databaseDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
             }
 
@@ -785,10 +785,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public ResultT updateBizPwd(String bizUserId, String ids, String newPwd) {
         for (String id : ids.split(",")) {
-            DatabaseDefineDto databaseDefineDto = databaseService.getDotById(id);
+            DatabaseDto databaseDto = databaseService.getDotById(id);
             DatabaseDcl databaseDcl = null;
             try {
-                databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
                 databaseDcl.updateAccount(bizUserId, newPwd);
                 databaseDcl.closeConnect();
             } catch (Exception e) {
@@ -1110,7 +1110,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public Map<String, ConnectVo> getConnectInfo(String[] databaseIds) {
         return Arrays.stream(databaseIds)
                 .map(this.databaseService::getDotById)
-                .map(DatabaseDefineDto::getCoreInfo)
+                .map(DatabaseDto::getCoreInfo)
                 .collect(Collectors.toMap(ConnectVo::getPid, t -> t));
     }
 }

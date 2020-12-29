@@ -7,8 +7,8 @@ import com.piesat.dm.core.api.impl.PostgreSql;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 
 import java.util.List;
 import java.util.Set;
@@ -23,13 +23,13 @@ import java.util.Set;
 public class DatabaseUtil {
 
 
-    public static DatabaseDcl getDatabase(DatabaseDto database, DatabaseInfo databaseInfo) throws Exception {
+    public static DatabaseDcl getDatabase(SchemaDto database, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = database.getDatabaseDefine().getDatabaseType().toLowerCase();
-        String databaseUrl = database.getDatabaseDefine().getDatabaseUrl();
-        String databaseIp = database.getDatabaseDefine().getDatabaseIp();
-        int port = Integer.parseInt(database.getDatabaseDefine().getDatabasePort());
-        Set<DatabaseAdministratorDto> dal = database.getDatabaseDefine().getDatabaseAdministratorList();
+        String databaseType = database.getDatabaseDto().getDatabaseType().toLowerCase();
+        String databaseUrl = database.getDatabaseDto().getDatabaseUrl();
+        String databaseIp = database.getDatabaseDto().getDatabaseIp();
+        int port = Integer.parseInt(database.getDatabaseDto().getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = database.getDatabaseDto().getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
         for (DatabaseAdministratorDto da : dal) {
             if (da.getIsManager()) {
@@ -51,13 +51,13 @@ public class DatabaseUtil {
         return db;
     }
 
-    public static DatabaseDcl getPubDatabase(DatabaseDto database, DatabaseInfo databaseInfo) throws Exception {
+    public static DatabaseDcl getPubDatabase(SchemaDto database, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = database.getDatabaseDefine().getDatabaseType().toLowerCase();
-        String databaseUrl = database.getDatabaseDefine().getDatabaseUrl();
-        String databaseIp = database.getDatabaseDefine().getDatabaseIp();
-        int port = Integer.parseInt(database.getDatabaseDefine().getDatabasePort());
-        Set<DatabaseAdministratorDto> dal = database.getDatabaseDefine().getDatabaseAdministratorList();
+        String databaseType = database.getDatabaseDto().getDatabaseType().toLowerCase();
+        String databaseUrl = database.getDatabaseDto().getDatabaseUrl();
+        String databaseIp = database.getDatabaseDto().getDatabaseIp();
+        int port = Integer.parseInt(database.getDatabaseDto().getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = database.getDatabaseDto().getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
         if (dal.size()>0){
             dad = dal.iterator().next();
@@ -77,13 +77,13 @@ public class DatabaseUtil {
         return db;
     }
 
-    public static DatabaseDcl getDatabaseDefine(DatabaseDefineDto databaseDefineDto, DatabaseInfo databaseInfo) throws Exception {
+    public static DatabaseDcl getDatabaseDefine(DatabaseDto databaseDto, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = databaseDefineDto.getDatabaseType().toLowerCase();
-        String databaseUrl = databaseDefineDto.getDatabaseUrl();
-        String databaseIp = databaseDefineDto.getDatabaseIp();
-        int port = Integer.parseInt(databaseDefineDto.getDatabasePort());
-        Set<DatabaseAdministratorDto> dal = databaseDefineDto.getDatabaseAdministratorList();
+        String databaseType = databaseDto.getDatabaseType().toLowerCase();
+        String databaseUrl = databaseDto.getDatabaseUrl();
+        String databaseIp = databaseDto.getDatabaseIp();
+        int port = Integer.parseInt(databaseDto.getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = databaseDto.getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
         boolean b = dal.stream().anyMatch(DatabaseAdministratorDto::getIsManager);
         if (!b) {

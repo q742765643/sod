@@ -97,10 +97,14 @@ public class DataTableInfoDto extends BaseDto {
             c.setLength(e.getLength());
             c.setPrecision(e.getAccuracy());
             c.setIsNull(e.getIsNull());
-            String eleName = StringUtils.isNotEmpty(e.getEleName()) ? e.getEleName().replace("'", "\"") : "";
-            String nameCn = StringUtils.isNotEmpty(e.getNameCn()) ? e.getNameCn().replace("'", "\"") : "";
+            String eleName = StringUtils.isNotEmpty(e.getEleName())
+                    ? e.getEleName().replace(Constants.APOSTROPHE, Constants.DOUBLE_QUOTES)
+                    : Constants.EMPTY;
+            String nameCn = StringUtils.isNotEmpty(e.getNameCn())
+                    ? e.getNameCn().replace(Constants.APOSTROPHE, Constants.DOUBLE_QUOTES)
+                    : Constants.EMPTY;
             nameCn = Constants.N.equals(nameCn)
-                    ? ""
+                    ? Constants.EMPTY
                     : Constants.LEFT_BRACKET + nameCn + Constants.RIGHT_BRACKET;
             c.setComment(eleName + nameCn);
             c.setDef(e.getDefaultValue());

@@ -15,7 +15,7 @@ import com.piesat.dm.entity.dataclass.LogicStorageTypesEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
@@ -82,14 +82,14 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
             specificationBuilder.add("logicName", SpecificationOperator.Operator.likeAll.name(),logicDefineDto.getLogicName());
         }
         List<LogicDefineEntity> logicDefineEntities = this.getAll(specificationBuilder.generateSpecification());
-        List<DatabaseDefineDto> all = this.databaseService.all();
+        List<DatabaseDto> all = this.databaseService.all();
         List<LogicDefineDto> logicDefineDtos = this.logicDefineMapper.toDto(logicDefineEntities);
         for (LogicDefineDto logicDefineDto1 : logicDefineDtos) {
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto1.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (com.piesat.dm.rpc.dto.database.DatabaseDefineDto DatabaseDefineDto : all) {
-                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
+                for (DatabaseDto DatabaseDto : all) {
+                    if (DatabaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDto.getDatabaseName());
                     }
                 }
             }
@@ -150,7 +150,7 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
         Map<String,String> dataMap=new HashMap<>();
         Map<String,String> tableMap=new HashMap<>();
 
-        List<DatabaseDefineDto> all = this.databaseService.all();
+        List<DatabaseDto> all = this.databaseService.all();
         for(int i=0;i<all.size();i++){
             dataMap.put(all.get(i).getId(),all.get(i).getDatabaseName());
         }
