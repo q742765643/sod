@@ -804,6 +804,8 @@ export default {
     // 关闭弹窗
     handleClose() {
       this.handleMsgObj = {};
+      this.rowData = {};
+      this.tableBaseInfo = {};
       this.dialogSetting = false;
       this.handleDSDialog = false;
       this.handleCLeadupDialog = false;

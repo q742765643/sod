@@ -265,27 +265,8 @@ export default {
       this.tipsFlag = val;
     },
     async getTableInfo(val) {
-      if (val == "init" && !this.rowData) {
-        //新增
-        if (
-          this.tableBaseInfo.storageType == "F_table" ||
-          this.tableBaseInfo.storageType == "G_table" ||
-          this.tableBaseInfo.storageType == "S_table"
-        ) {
-          this.tabs = {
-            table: { common: false, ka: true },
-          };
-        }
-        return;
-      } else {
-        //详情 获取表信息
-        let tableId = "";
-        if (val && val != "init") {
-          tableId = val;
-        } else {
-          tableId = this.rowData.ID;
-        }
-        await dataTableGet({ id: tableId }).then((res) => {
+      if (this.rowData && this.rowData.ID) {
+        await dataTableGet({ id: this.rowData.ID }).then((res) => {
           if (
             this.rowData.STORAGE_TYPE == "F_table" ||
             this.rowData.STORAGE_TYPE == "G_table" ||
@@ -385,6 +366,18 @@ export default {
             //this.commonTableObj.ColumnData = res.data.columns;
           }
         });
+      } else {
+        //新增
+        if (
+          this.tableBaseInfo.storageType == "F_table" ||
+          this.tableBaseInfo.storageType == "G_table" ||
+          this.tableBaseInfo.storageType == "S_table"
+        ) {
+          this.tabs = {
+            table: { common: false, ka: true },
+          };
+        }
+        return;
       }
     },
 

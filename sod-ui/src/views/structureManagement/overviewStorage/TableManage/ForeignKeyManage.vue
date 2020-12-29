@@ -205,7 +205,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.tableInfo);
     //关联表下拉框
     findBySubType({
       storageType: this.rowData.STORAGE_TYPE,

@@ -1,7 +1,7 @@
 <template>
   <el-main class="TableInfoManage">
     <el-form
-      v-model="tableBaseInfo"
+      v-model="tableBaseForm"
       label-width="100px"
       class="elementTableCon"
       style="border-bottom: none"
@@ -12,7 +12,7 @@
             <el-select
               size="small"
               disabled
-              v-model="tableBaseInfo.databasePid"
+              v-model="tableBaseForm.databasePid"
               @change="handleFindSpec"
             >
               <el-option
@@ -29,7 +29,7 @@
             <el-select
               size="small"
               disabled
-              v-model="tableBaseInfo.databaseId"
+              v-model="tableBaseForm.databaseId"
               placeholder="请选择"
             >
               <el-option
@@ -46,7 +46,7 @@
             <el-select
               size="small"
               disabled
-              v-model="tableBaseInfo.storageType"
+              v-model="tableBaseForm.storageType"
               placeholder="请选择"
             >
               <el-option
@@ -70,7 +70,14 @@
               placeholder="请选择"
             >
               <el-option label="要素表" value="E"></el-option>
-              <el-option label="键表" value="K"></el-option>
+              <el-option
+                label="键表"
+                value="K"
+                v-if="
+                  this.rowData.STORAGE_TYPE == 'MK_table' ||
+                  this.rowData.STORAGE_TYPE == 'K_E_table'
+                "
+              ></el-option>
             </el-select>
           </el-form-item>
         </div>
@@ -223,12 +230,12 @@ export default {
     rowData: Object,
     tableInfo: Object,
     tableType: String,
-    TBInfo: Object,
+    tableBaseInfo: Object,
   },
   data() {
     return {
       linkMateriaTableData: [],
-      tableBaseInfo: {},
+      tableBaseForm: this.tableBaseInfo,
       storageTypeList: [],
       DatabaseDefineList: [],
       specialList: [],
@@ -335,9 +342,9 @@ export default {
     await getCanShowDatabaseDefineList().then((res) => {
       this.DatabaseDefineList = res.data;
     });
-    if (this.TBInfo) {
-      this.tableBaseInfo = this.TBInfo;
-      this.handleFindSpec(this.tableBaseInfo.databasePid);
+    if (this.tableBaseInfo) {
+      this.tableBaseForm = this.tableBaseInfo;
+      this.handleFindSpec(this.tableBaseForm.databasePid);
     }
   },
   mounted() {
@@ -376,9 +383,9 @@ export default {
         return;
       }
       let saveObj = {
-        databasePid: this.tableBaseInfo.databasePid,
-        databaseId: this.tableBaseInfo.databaseId,
-        storageType: this.tableBaseInfo.storageType,
+        databasePid: this.tableBaseForm.databasePid,
+        databaseId: this.tableBaseForm.databaseId,
+        storageType: this.tableBaseForm.storageType,
         tableName: this.Info.tableName,
         nameCn: this.Info.nameCn,
         tableDesc: this.Info.tableDesc,
@@ -418,14 +425,14 @@ export default {
     tableInfo(val) {
       this.Info = JSON.parse(JSON.stringify(val));
       console.log(this.Info);
-      if (!this.tableBaseInfo.databasePid) {
-        this.tableBaseInfo = {
+      if (!this.tableBaseForm.databasePid) {
+        this.tableBaseForm = {
           databasePid: this.Info.databasePid,
           databaseId: this.Info.databaseId,
           storageType: this.Info.storageType,
         };
-        this.handleFindSpec(this.tableBaseInfo.databasePid);
-        console.log(this.tableBaseInfo);
+        this.handleFindSpec(this.tableBaseForm.databasePid);
+        console.log(this.tableBaseForm);
       }
       existTable({
         databaseId: this.Info.databaseId,
