@@ -44,6 +44,9 @@ public interface SyncUdToPcService {
      */
     void deleteSyncUdToPcIds(String[] syncUdToPcIds);
 
+    public List<Map<String,Object>> findDatabase();
     List<Map<String,Object>> findDataClassId(String dataBaseId, String dataClassId);
+    //    导出
+    public void exportExcel(SyncUdToPcDto syncUdToPcDto);
 
 }

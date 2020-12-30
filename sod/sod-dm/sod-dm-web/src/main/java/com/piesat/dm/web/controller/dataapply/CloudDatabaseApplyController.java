@@ -235,12 +235,16 @@ public class CloudDatabaseApplyController {
     }
 
     @DeleteMapping("/deleteByIdPortal")
-    @RequiresPermissions("dm:cloudDatabaseApply:deleteByIdPortal")
+    //@RequiresPermissions("dm:cloudDatabaseApply:deleteByIdPortal")
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> deleteByIdPortal(@RequestBody CloudDatabaseApplyDto cloudDatabaseApplyDto) {
-        ResultT<String> resultT = new ResultT<>();
-        this.cloudDatabaseApplyService.deleteById(cloudDatabaseApplyDto.getId());
-        return resultT;
+        try {
+            this.cloudDatabaseApplyService.deleteById(cloudDatabaseApplyDto.getId());
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "根据字典类型查询")

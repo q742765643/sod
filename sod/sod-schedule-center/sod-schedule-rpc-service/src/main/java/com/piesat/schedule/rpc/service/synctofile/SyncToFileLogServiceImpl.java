@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.schedule.dao.synctofile.SyncToFileLogDao;
 import com.piesat.schedule.entity.synctofile.SyncToFileLogEntity;
 import com.piesat.schedule.rpc.api.synctofile.SyncToFileLogService;
@@ -97,4 +98,44 @@ public class SyncToFileLogServiceImpl extends BaseService<SyncToFileLogEntity> i
     public void deleteSyncToFileLogByIds(String[] syncToFileLogIds) {
         this.deleteByIds(Arrays.asList(syncToFileLogIds));
     }
+
+    public List<SyncToFileLogEntity> selectSynctofileLogList(SyncToFileLogDto synctofileLogDto){
+        SyncToFileLogEntity synctofileLogEntity=syncToFileLogMapstruct.toEntity(synctofileLogDto);
+        SimpleSpecificationBuilder specificationBuilder=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(synctofileLogEntity.getDatabaseId())){
+            specificationBuilder.add("databaseId", SpecificationOperator.Operator.eq.name(),synctofileLogEntity.getDatabaseId());
+        }
+        SimpleSpecificationBuilder specificationBuilderOr=new SimpleSpecificationBuilder();
+        if(StringUtils.isNotNullString(synctofileLogEntity.getDataClassId())){
+            specificationBuilderOr.add("dataClassId", SpecificationOperator.Operator.likeAll.name(),synctofileLogEntity.getDataClassId());
+            specificationBuilderOr.addOr("ddataId", SpecificationOperator.Operator.likeAll.name(),synctofileLogEntity.getDataClassId());
+        }
+        if(StringUtils.isNotNullString(synctofileLogEntity.getProfileName())){
+            specificationBuilder.add("profileName", SpecificationOperator.Operator.likeAll.name(),synctofileLogEntity.getProfileName());
+        }
+        if(null!=synctofileLogEntity.getHandleCode()){
+            specificationBuilder.add("handleCode",SpecificationOperator.Operator.eq.name(),synctofileLogEntity.getHandleCode());
+        }
+        if(StringUtils.isNotNullString(synctofileLogEntity.getTableName())){
+            specificationBuilder.add("tableName", SpecificationOperator.Operator.likeAll.name(),synctofileLogEntity.getTableName());
+        }
+        if(StringUtils.isNotNullString((String) synctofileLogEntity.getParamt().get("beginTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.ges.name(),(String) synctofileLogEntity.getParamt().get("beginTime"));
+        }
+        if(StringUtils.isNotNullString((String) synctofileLogEntity.getParamt().get("endTime"))){
+            specificationBuilder.add("createTime",SpecificationOperator.Operator.les.name(),(String) synctofileLogEntity.getParamt().get("endTime"));
+        }
+        Specification specification=specificationBuilder.generateSpecification().and(specificationBuilderOr.generateSpecification());
+        Sort sort=Sort.by(Sort.Direction.DESC,"createTime");
+        List<SyncToFileLogEntity> synctofileLogEntities=this.getAll(specification,sort);
+        return synctofileLogEntities;
+
+    }
+    @Override
+    public void exportExcel(SyncToFileLogDto synctofileLogDto){
+        List<SyncToFileLogEntity> entities=this.selectSynctofileLogList(synctofileLogDto);
+        ExcelUtil<SyncToFileLogEntity> util=new ExcelUtil(SyncToFileLogEntity.class);
+        util.exportExcel(entities,"数据同步日志");
+    }
+
 }

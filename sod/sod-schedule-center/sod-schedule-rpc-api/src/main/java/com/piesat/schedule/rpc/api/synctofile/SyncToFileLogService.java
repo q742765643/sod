@@ -35,4 +35,6 @@ public interface SyncToFileLogService {
      * @param syncToFileLogIds
      */
     void deleteSyncToFileLogByIds(String[] syncToFileLogIds);
+
+    public void exportExcel(SyncToFileLogDto synctofileLogDto);
 }
