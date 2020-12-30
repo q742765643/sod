@@ -126,6 +126,7 @@ serverfile:
   special: /home/sod/file/upload/special
   cloud: /home/sod/file/upload/cloud
   user: /home/sod/file/upload/user
+  yun: D:\yun
   sdkfile: /space/cmadaas/sod/src/sod/file/upload/sdkfile
   portalfile: /space/cmadaas/sod/src/sod/file/upload/portalfile
 #  dbfile: D:/file

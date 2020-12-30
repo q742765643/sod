@@ -42,11 +42,11 @@ spring:
   datasource:
     driver-class-name: com.xugu.cloudjdbc.Driver
     #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
-    #username: ENC(YxpGRv4xpm1043WVImWDSw==)
+    #username: ENC(YxpGRv4xpm1043WVImWDSw==) ——ENC(46qN2DLTqLKK4xJwOsx+/gyBepEF0Pf6)——
     #password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
-    url: jdbc:xugu://10.20.64.167:5138/BABJ_SMDB?ips=10.20.64.168,10.20.64.169&recv_mode=0&char_set=utf8
+    url: jdbc:xugu://10.20.64.167:31380/BABJ_SMDB?ips=10.20.64.168,10.20.64.169&recv_mode=0&char_set=utf8
     username: USR_SOD
-    password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
+    password: ENC(46qN2DLTqLKK4xJwOsx+/gyBepEF0Pf6)
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       # 下面为连接池的补充设置，应用到上面所有数据源中
@@ -106,7 +106,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://10.40.17.44:28328/eureka/
+      defaultZone: http://10.40.17.44:58328/eureka/
 
 DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
 DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
@@ -136,6 +136,7 @@ serverfile:
   special: /space/cmadaas/sod/src/sod/file/upload/special
   cloud: /space/cmadaas/sod/src/sod/file/upload/cloud
   user: /space/cmadaas/sod/src/sod/file/upload/user
+  yun: D:/yun
   sdkfile: /CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile
   portalfile: /CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/portalfile
   #  dbfile: D:/file

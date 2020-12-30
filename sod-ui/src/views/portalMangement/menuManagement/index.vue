@@ -467,7 +467,7 @@ export default {
         }
       )
         .then(function () {
-          return delMenu(row.id);
+          return delMenu({menuId:row.id});
         })
         .then(() => {
           this.getList();

@@ -7,11 +7,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface FeedbackManageDao extends BaseDao<FeedbackManageEntity> {
 
     @Query(value="update T_SOD_PORTAL_FEEDBACK_MANAGE set update_by=?2, reply=?3 where id = ?1", nativeQuery=true)
     @Modifying
     void update(String id, String updateBy, String reply);
-
+    List<FeedbackManageEntity> findByUserNameAndIsShowLikeAndStatusLike(String userName, String isShow, String status);
+    List<FeedbackManageEntity> findByIsShow( String isShow);
 }

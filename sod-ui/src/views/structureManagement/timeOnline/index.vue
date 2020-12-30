@@ -43,7 +43,7 @@
       </el-table-column>
       <el-table-column label="操作" width="120">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" icon="el-icon-edit" @click="handleCell(scope.row)">编辑</el-button>
+          <el-button type="text" size="mini" icon="el-icon-view" @click="handleCell(scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,9 +59,9 @@
     <el-dialog
       :close-on-click-modal="false"
       v-dialogDrag
-      title="权限配置"
+      title="在线时间查看"
       :visible.sync="handleDialog"
-      width="650px"
+      width="1100px"
     >
       <handleTime
         v-if="handleDialog"

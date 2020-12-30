@@ -87,6 +87,20 @@ public class SyncToFileController {
         return resultT;
     }
 
+    @ApiOperation(value = "数据配置导出", notes = "数据配置导出")
+    @RequiresPermissions("schedule:synctofile:export")
+    @GetMapping("/export")
+    public void exportExcel(SyncToFileDto syncToFileDto){
+        syncToFileService.exportExcel(syncToFileDto);
+    }
+    @ApiOperation(value = "查询同步任务物理库", notes = "查询同步任务物理库")
+    @GetMapping("/findDatabase")
+    public ResultT findDatabase(){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=syncToFileService.findDatabase();
+        resultT.setData(mapList);
+        return resultT;
+    }
     @ApiOperation(value = "查询需要同步资料列表", notes = "查询需要同步资料列表")
     @GetMapping("/findDataClassId")
     public ResultT findDataClassId(String databaseId,String dataClassId){
