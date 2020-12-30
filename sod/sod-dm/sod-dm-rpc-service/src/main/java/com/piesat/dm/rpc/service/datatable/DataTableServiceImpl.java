@@ -256,7 +256,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         SchemaDto schemaDto = this.schemaService.getDotById(sampleData.getDatabaseId());
         ResultT r = new ResultT();
         if (schemaDto == null) {
-            r.setErrorMessage(ConstantsMsg.MSG10);
+            r.setErrorMessage(ConstantsMsg.MSG10, sampleData.getTableName());
             return r;
         }
         ConnectVo coreInfo = schemaDto.getConnectVo();
@@ -350,7 +350,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-        actuator.exe(tableSqlDto.getCreateSql(),r);
+        actuator.exe(tableSqlDto.getCreateSql(), r);
         actuator.close();
         return r;
     }
@@ -393,6 +393,10 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             return;
         }
         SchemaDto schemaDto = schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (schemaDto == null) {
+            resultT.setErrorMessage(String.format(ConstantsMsg.MSG10, dataTableInfoDto.getTableName()));
+            return;
+        }
         dataTableInfoDto.setDatabasePid(schemaDto.getDatabase().getId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());

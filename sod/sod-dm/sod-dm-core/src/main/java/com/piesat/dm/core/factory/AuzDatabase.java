@@ -115,8 +115,12 @@ public class AuzDatabase extends AuzBase {
     @Override
     public void grantAnyTable(AuthorityVo authorityVo, ResultT<String> resultT) {
         authorityVo.format(this.databaseType);
-        String sql = TemplateUtil.rendering(GRANT_ANY_TABLE, authorityVo);
-        this.exe(sql, resultT);
+        String[] grantArr = authorityVo.getGrantArr();
+        for (int i = 0; i < grantArr.length; i++) {
+            authorityVo.setGrantStr(grantArr[i]);
+            String sql = TemplateUtil.rendering(GRANT_ANY_TABLE, authorityVo);
+            this.exe(sql, resultT);
+        }
     }
 
 

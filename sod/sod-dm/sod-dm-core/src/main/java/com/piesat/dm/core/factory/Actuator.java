@@ -39,7 +39,7 @@ public class Actuator {
     public String REVOKE_TABLE = "REVOKE ${grantStr} ON ${schema}.${tableName} FROM ${userName} ";
     public String QUERY_SCHEMA = "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '${schema}'";
     public String CREATE_SCHEMA = "CREATE SCHEMA ${schema} AUTHORIZATION ${userName} ";
-    public String GRANT_ANY_TABLE = "GRANT ${grantStr}  ANY TABLE IN SCHEMA ${schema} To ${userName} ";
+    public String GRANT_ANY_TABLE = "GRANT ${grantStr} ANY TABLE IN SCHEMA ${schema} To ${userName} ";
     public String DROP_SCHEMA = "DROP SCHEMA ${schema} ";
     public String DROP_TABLE = "DROP TABLE ${schema}.${tableName}";
     public String ALTER_ADD_COLUMN = "ALTER TABLE ${schema}.${tableName} ADD COLUMN ${columnName} ${type}(${precision}) ${isNull} ${def}";

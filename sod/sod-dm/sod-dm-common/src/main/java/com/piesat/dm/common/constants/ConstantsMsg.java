@@ -18,7 +18,7 @@ public class ConstantsMsg {
 
     public static final String MSG8 = "获取数据库【%s】连接出错，ERROR:[%s];\n";
     public static final String MSG9 = "表【%s】未配置数据库信息！\n";
-    public static final String MSG10 = "未配置数据库信息或配置错误！\n";
+    public static final String MSG10 = "表【%s】未配置数据库信息或配置错误！\n";
 
     public static final String SUCCESS = "【成功】";
     public static final String FAIL = "【失败】[ERROR:%s]";

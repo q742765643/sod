@@ -143,6 +143,7 @@ serverfile:
   special: /space/cmadaas/sod/src/sod/file/upload/special
   cloud: /space/cmadaas/sod/src/sod/file/upload/cloud
   user: /space/cmadaas/sod/src/sod/file/upload/user
+  yun: /a
   sdkfile: /space/cmadaas/sod/src/sod/file/upload/sdkfile
   portalfile: /space/cmadaas/sod/src/sod/file/upload/portalfile
   #  dbfile: D:/file

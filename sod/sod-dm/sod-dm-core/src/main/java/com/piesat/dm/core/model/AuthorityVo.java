@@ -1,5 +1,6 @@
 package com.piesat.dm.core.model;
 
+import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.enums.DbaEnum;
 import lombok.Data;
@@ -42,7 +43,7 @@ public class AuthorityVo {
 
     public void setDbaEnum(DbaEnum dbaEnum) {
         this.dbaEnum = dbaEnum;
-        this.grantStr = dbaEnum.getDba();
+        this.grantArr = dbaEnum.getDba().split(Constants.COMMA);
     }
 
     public void format(DatabaseTypesEnum databaseType){
@@ -54,6 +55,8 @@ public class AuthorityVo {
             this.tableName = tableName.toUpperCase();
         }
     }
+
+    private String[] grantArr;
 
     private String grantStr;
 
