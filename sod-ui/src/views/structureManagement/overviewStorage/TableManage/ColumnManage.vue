@@ -132,6 +132,11 @@
         width="100px"
       ></el-table-column>
       <el-table-column
+        label="数据长度"
+        prop="length"
+        width="100px"
+      ></el-table-column>
+      <el-table-column
         label="要素单位"
         prop="unit"
         width="100px"
@@ -513,10 +518,19 @@
             ></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="24">
+        <el-col :span="12">
           <el-form-item label="数据精度">
             <el-input-number
               v-model.trim="columnEditData.accuracy"
+              :min="0"
+              size="small"
+            ></el-input-number>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="数据长度">
+            <el-input-number
+              v-model.trim="columnEditData.length"
               :min="0"
               size="small"
             ></el-input-number>
