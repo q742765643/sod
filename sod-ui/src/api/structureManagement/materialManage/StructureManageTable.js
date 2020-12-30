@@ -151,7 +151,7 @@ export function sampleList(data) {
   return request({
     url: baseUrl + '/dm/dataTable/sample',
     method: 'post',
-    data: data
+    params: data
   })
 }
 
