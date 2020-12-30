@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { sampleList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { sampleList } from "@/api/structureManagement/materialManage/StructureManageTable";
 export default {
   name: "SampleData",
   props: { rowData: Object, tableInfo: Object },
@@ -61,7 +61,7 @@ export default {
   watch: {
     tableInfo(val) {
       this.columnData = this.tableInfo.columns;
-      //this.getSampleData();
+      this.getSampleData();
     },
   },
 };

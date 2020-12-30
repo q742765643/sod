@@ -436,7 +436,7 @@ export default {
   right: 20px;
   overflow: auto;
   .el-scrollbar {
-    height: calc(100% - 34px);
+    height: calc(100% - 38px);
     overflow-x: hidden;
     .el-scrollbar__wrap {
       overflow-x: hidden;
@@ -540,6 +540,9 @@ export default {
     .el-form-item__content {
       margin-left: 20px !important;
     }
+  }
+  .el-alert {
+    margin-bottom: 3px;
   }
 }
 </style>
