@@ -127,7 +127,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public DatabaseDto conStatus(String id) {
         DatabaseDto dotById = this.getDotById(id);
         SchemaDto database = new SchemaDto();
-        database.setDatabaseDto(dotById);
+        database.setDatabase(dotById);
         DatabaseDcl db = null;
         try {
             db = DatabaseUtil.getPubDatabase(database, databaseInfo);

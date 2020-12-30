@@ -77,7 +77,7 @@ public class TableExportController {
             if(databaseDtoList !=null&& schemaDtoList !=null){
                 for(DatabaseDto databaseDefine : databaseDtoList){
                     for(SchemaDto schemaDto : schemaDtoList){
-                        if(schemaDto.getDatabaseDto().getId().equals(databaseDefine.getId())){
+                        if(schemaDto.getDatabase().getId().equals(databaseDefine.getId())){
                             resultList.add(schemaDto);
                         }
                     }

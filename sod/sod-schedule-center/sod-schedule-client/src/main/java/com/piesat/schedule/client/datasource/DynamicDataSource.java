@@ -158,11 +158,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         List<SchemaDto> schemaDtos = schemaService.findByLevel(1);
         boolean flag=false;
         for(SchemaDto schemaDto : schemaDtos){
-               String parentId= schemaDto.getDatabaseDto().getId();
+               String parentId= schemaDto.getDatabase().getId();
                if(parentId.toUpperCase().equals(dataSourceName.toUpperCase())){
                    flag=true;
                    ConnectVo connectVo =new ConnectVo();
-                   Set<DatabaseAdministratorDto> databaseAdministratorDtos= schemaDto.getDatabaseDto().getDatabaseAdministratorList();
+                   Set<DatabaseAdministratorDto> databaseAdministratorDtos= schemaDto.getDatabase().getDatabaseAdministratorList();
                    String userName="";
                    String password="";
                    try {
@@ -176,11 +176,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
-                   connectVo.setIp(schemaDto.getDatabaseDto().getDatabaseIp());
-                   connectVo.setPort(Integer.parseInt(schemaDto.getDatabaseDto().getDatabasePort()));
+                   connectVo.setIp(schemaDto.getDatabase().getDatabaseIp());
+                   connectVo.setPort(Integer.parseInt(schemaDto.getDatabase().getDatabasePort()));
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
-                   connectVo.setUrl(schemaDto.getDatabaseDto().getDatabaseUrl());
+                   connectVo.setUrl(schemaDto.getDatabase().getDatabaseUrl());
                    if(null!=connectVoMap.get(parentId)&&null!=_targetDataSources.get(parentId)){
                      ConnectVo yConnectVo=connectVoMap.get(parentId);
                      if(connectVo.getUrl().equals(yConnectVo.getUrl())
@@ -190,13 +190,13 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                          return null;
                      }
                    }
-                   type.put(parentId, schemaDto.getDatabaseDto().getDatabaseType().toUpperCase());
+                   type.put(parentId, schemaDto.getDatabase().getDatabaseType().toUpperCase());
                    connectVoMap.put(parentId, connectVo);
-                   if(!"CASSANDRA".equals(schemaDto.getDatabaseDto().getDatabaseType().toUpperCase())){
+                   if(!"CASSANDRA".equals(schemaDto.getDatabase().getDatabaseType().toUpperCase())){
                        if(!"".equals(userName)&&!"".equals(password)){
                            log.info("========={}创建连接池===========",parentId);
-                           String url= schemaDto.getDatabaseDto().getDatabaseUrl();
-                           String driverClassName= schemaDto.getDatabaseDto().getDriverClassName();
+                           String url= schemaDto.getDatabase().getDatabaseUrl();
+                           String driverClassName= schemaDto.getDatabase().getDriverClassName();
                            dataSource = this.createDataSource(
                                    driverClassName, url, userName, password);
                        }

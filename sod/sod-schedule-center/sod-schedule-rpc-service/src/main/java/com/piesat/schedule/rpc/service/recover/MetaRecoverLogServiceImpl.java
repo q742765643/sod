@@ -94,16 +94,16 @@ public class MetaRecoverLogServiceImpl extends BaseService<MetaRecoverLogEntity>
     @Override
     public  List<TreeVo> getFileList(String databaseId, String storageDirectory){
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
-        return executorBiz.getFileList(schemaDto.getDatabaseDto().getId(),storageDirectory);
+        return executorBiz.getFileList(schemaDto.getDatabase().getId(),storageDirectory);
     }
 
     public void getDataBase(MetaRecoverLogEntity metaRecoverLogEntity){
         SchemaDto schemaDto = schemaService.getDotById(metaRecoverLogEntity.getDatabaseId());
-        String parentId= schemaDto.getDatabaseDto().getId();
-        String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String parentId= schemaDto.getDatabase().getId();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
         metaRecoverLogEntity.setDatabaseName(databaseName);
         metaRecoverLogEntity.setParentId(parentId);
-        metaRecoverLogEntity.setDatabaseType(schemaDto.getDatabaseDto().getDatabaseType());
+        metaRecoverLogEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
     }
     @Override
     public List<TreeVo> getFileChidren(String childrenPath){

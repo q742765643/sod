@@ -74,11 +74,11 @@ public class DataBaseService
         Map<String,Object> mapResultT= (Map<String, Object>) resultT.getData();
         SchemaDto schemaDto = (SchemaDto) mapResultT.get("database");
         String schemaName= schemaDto.getSchemaName();
-        String parentId= schemaDto.getDatabaseDto().getId();
-        String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String parentId= schemaDto.getDatabase().getId();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
         String tableName= (String) mapResultT.get("K");
         String vTableName= (String)mapResultT.get("E");
-        String databaseType= schemaDto.getDatabaseDto().getDatabaseType();
+        String databaseType= schemaDto.getDatabase().getDatabaseType();
         String ddataId= (String) mapResultT.get("D_DATA_ID");
         String primaryKey= (String) mapResultT.get("primaryKey");
         String dataName= (String) mapResultT.get("CLASSNAME");

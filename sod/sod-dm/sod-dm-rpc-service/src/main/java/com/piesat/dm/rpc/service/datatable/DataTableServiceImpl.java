@@ -124,8 +124,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         DataTableInfoDto dataTableInfoDto = this.dataTableMapper.toDto(this.getById(id));
         SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
         if (schemaDto != null) {
-            dataTableInfoDto.setDatabaseType(schemaDto.getDatabaseDto().getDatabaseType());
-            dataTableInfoDto.setDatabaseName(schemaDto.getDatabaseDto().getDatabaseName());
+            dataTableInfoDto.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
+            dataTableInfoDto.setDatabaseName(schemaDto.getDatabase().getDatabaseName());
         }
         return dataTableInfoDto;
     }
@@ -393,7 +393,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             return;
         }
         SchemaDto schemaDto = schemaService.getDotById(dataTableInfoDto.getDatabaseId());
-        dataTableInfoDto.setDatabasePid(schemaDto.getDatabaseDto().getId());
+        dataTableInfoDto.setDatabasePid(schemaDto.getDatabase().getId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), resultT);

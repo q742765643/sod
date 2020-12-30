@@ -28,7 +28,7 @@ public class SchemaDto {
      * 与数据库定义关联id
      * database_id
      */
-    private DatabaseDto databaseDto;
+    private DatabaseDto database;
 
     /**
      * 数据库模式
@@ -71,6 +71,6 @@ public class SchemaDto {
     private List<DatabaseSpecialAuthorityDto> databaseSpecialAuthorityList;
 
     public ConnectVo getConnectVo(){
-        return this.databaseDto.getCoreInfo();
+        return this.database.getCoreInfo();
     }
 }

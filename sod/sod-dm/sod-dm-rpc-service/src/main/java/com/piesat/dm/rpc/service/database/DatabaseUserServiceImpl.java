@@ -581,7 +581,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     } catch (Exception e) {
                         if (e.getMessage().contains("用户不存在")) {
                             map.put("returnCode", 1);
-                            map.put("returnMessage", schemaDto.getDatabaseDto().getDatabaseName() + "用户不存在！");
+                            map.put("returnMessage", schemaDto.getDatabase().getDatabaseName() + "用户不存在！");
                             Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
                             continue;
                         }

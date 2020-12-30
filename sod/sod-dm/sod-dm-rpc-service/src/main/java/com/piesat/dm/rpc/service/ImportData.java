@@ -2007,9 +2007,9 @@ public class ImportData {
                 metaBackupEntity.setDatabaseId(newDatabaseId);
                 Optional<SchemaEntity> databaseEntity = schemaDao.findById(newDatabaseId);
                 SchemaDto schemaDto = schemaService.getDotById(newDatabaseId);
-                metaBackupEntity.setDatabaseName(schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName());
-                metaBackupEntity.setDatabaseType(schemaDto.getDatabaseDto().getDatabaseType());
-                metaBackupEntity.setParentId(schemaDto.getDatabaseDto().getId());
+                metaBackupEntity.setDatabaseName(schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName());
+                metaBackupEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
+                metaBackupEntity.setParentId(schemaDto.getDatabase().getId());
             }
             metaBackupEntity.setIsStructure(is_structure);
             metaBackupEntity.setStorageDirectory(storage_directory);

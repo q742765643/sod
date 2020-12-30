@@ -220,8 +220,8 @@ public class DatabaseVisibleService {
                     JSONArray aaa = new JSONArray();
                     JSONObject bbb = new JSONObject();
                     bbb.put("SCHEMA_NAME", dotById.getSchemaName());
-                    bbb.put("DATABASE_ID", dotById.getDatabaseDto().getId());
-                    bbb.put("DATABASE_NAME", dotById.getDatabaseDto().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
+                    bbb.put("DATABASE_ID", dotById.getDatabase().getId());
+                    bbb.put("DATABASE_NAME", dotById.getDatabase().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
                     aaa.add(bbb);
                     jo.put("DATABASE", aaa);
                     arr.add(jo);

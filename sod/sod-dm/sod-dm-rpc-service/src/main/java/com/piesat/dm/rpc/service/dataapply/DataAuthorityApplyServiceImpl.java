@@ -1,6 +1,5 @@
 package com.piesat.dm.rpc.service.dataapply;
 
-import com.github.pagehelper.PageInfo;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
@@ -261,8 +260,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //为每个数据表进行授权
         for (DataAuthorityRecordDto dataAuthorityRecordDto : dataAuthorityRecordList) {
             SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
-            if (!databaseIds.contains(schemaDto.getDatabaseDto().getId())) {
-                r.setErrorMessage(String.format(ConstantsMsg.MSG3, schemaDto.getDatabaseDto().getDatabaseName()));
+            if (!databaseIds.contains(schemaDto.getDatabase().getId())) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG3, schemaDto.getDatabase().getDatabaseName()));
                 continue;
             }
             if (StringUtils.isEmpty(dataAuthorityRecordDto.getTableName())) {
@@ -295,8 +294,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
         SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
-        if (!databaseIds.contains(schemaDto.getDatabaseDto().getId())) {
-            return ResultT.failed("不具备对物理库：" + schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "的访问权限" + "<br/>");
+        if (!databaseIds.contains(schemaDto.getDatabase().getId())) {
+            return ResultT.failed("不具备对物理库：" + schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "的访问权限" + "<br/>");
         }
 
         //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
@@ -309,7 +308,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         } catch (Exception e) {
             if (e.getMessage().contains("用户不存在")) {
                 Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
-                return ResultT.failed("物理库：" + schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
+                return ResultT.failed("物理库：" + schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
             }
         }
 
@@ -352,7 +351,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                     databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
                 } catch (Exception e) {
                     if (e.getMessage().contains("用户不存在")) {
-                        buffer.append("物理库：" + schemaDto.getDatabaseDto().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
+                        buffer.append("物理库：" + schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
                         flag = false;
                         Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
                         continue;

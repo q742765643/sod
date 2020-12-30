@@ -133,9 +133,9 @@ public class AdvancedConfigController {
     public byte[] exportTable_1(AdvancedConfigDto advancedConfigDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();
         if (advancedConfigDto.getSchemaDto() != null) {
-            if (advancedConfigDto.getSchemaDto().getDatabaseDto() != null) {
-                if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName())) {
-                    map.put("database_name", advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName());
+            if (advancedConfigDto.getSchemaDto().getDatabase() != null) {
+                if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabase().getDatabaseName())) {
+                    map.put("database_name", advancedConfigDto.getSchemaDto().getDatabase().getDatabaseName());
                 }
             }
             if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseName())) {
@@ -181,9 +181,9 @@ public class AdvancedConfigController {
     public void exportTable(AdvancedConfigDto advancedConfigDto, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = new HashMap<String, String>();
         if (advancedConfigDto.getSchemaDto() != null) {
-            if (advancedConfigDto.getSchemaDto().getDatabaseDto() != null) {
-                if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName())) {
-                    map.put("database_name", advancedConfigDto.getSchemaDto().getDatabaseDto().getDatabaseName());
+            if (advancedConfigDto.getSchemaDto().getDatabase() != null) {
+                if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabase().getDatabaseName())) {
+                    map.put("database_name", advancedConfigDto.getSchemaDto().getDatabase().getDatabaseName());
                 }
             }
             if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseName())) {

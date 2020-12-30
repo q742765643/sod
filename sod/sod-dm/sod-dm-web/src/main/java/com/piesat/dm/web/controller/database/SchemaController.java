@@ -43,8 +43,8 @@ public class SchemaController {
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody SchemaDto schemaDto) {
         try {
-            DatabaseDto databaseDefine = databaseService.getDotById(schemaDto.getDatabaseDto().getId());
-            schemaDto.setDatabaseDto(databaseDefine);
+            DatabaseDto databaseDefine = databaseService.getDotById(schemaDto.getDatabase().getId());
+            schemaDto.setDatabase(databaseDefine);
             SchemaDto save = this.schemaService.saveDto(schemaDto);
             return ResultT.success(save);
         } catch (Exception e) {

@@ -114,8 +114,8 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     @Override
     public List<TreeVo> findMeta(String databaseId){
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
-        String parentId= schemaDto.getDatabaseDto().getId();
-        String databaseType= schemaDto.getDatabaseDto().getDatabaseType();
+        String parentId= schemaDto.getDatabase().getId();
+        String databaseType= schemaDto.getDatabase().getDatabaseType();
         return executorBiz.findMeta(parentId,databaseType);
     }
 
@@ -127,14 +127,14 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
         List<SchemaDto> schemaDtos = schemaService.findByLevel(1);
         for(DictDataDto dictDataDto:dictDataDtos){
             for(SchemaDto schemaDto : schemaDtos){
-                if(schemaDto.getDatabaseDto().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
+                if(schemaDto.getDatabase().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
                     Map<String,String> map=new HashMap<>();
-                    String adress= schemaDto.getDatabaseDto().getDatabaseIp()+":"+ schemaDto.getDatabaseDto().getDatabasePort()+":"+ schemaDto.getDatabaseDto().getDatabaseInstance();
+                    String adress= schemaDto.getDatabase().getDatabaseIp()+":"+ schemaDto.getDatabase().getDatabasePort()+":"+ schemaDto.getDatabase().getDatabaseInstance();
                     if(!vaules.contains(adress)){
                         vaules.add(adress);
                         map.put("KEY", schemaDto.getId());
-                        map.put("VAULE", schemaDto.getDatabaseDto().getDatabaseIp()+":"+ schemaDto.getDatabaseDto().getDatabasePort()+":"+ schemaDto.getDatabaseDto().getDatabaseInstance());
-                        map.put("parentId", schemaDto.getDatabaseDto().getId());
+                        map.put("VAULE", schemaDto.getDatabase().getDatabaseIp()+":"+ schemaDto.getDatabase().getDatabasePort()+":"+ schemaDto.getDatabase().getDatabaseInstance());
+                        map.put("parentId", schemaDto.getDatabase().getId());
                         maps.add(map);
                     }
 
@@ -145,11 +145,11 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     }
     public void getDataBase(MetaBackupEntity metaBackupEntity){
         SchemaDto schemaDto = schemaService.getDotById(metaBackupEntity.getDatabaseId());
-        String parentId= schemaDto.getDatabaseDto().getId();
-        String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String parentId= schemaDto.getDatabase().getId();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
         metaBackupEntity.setDatabaseName(databaseName);
         metaBackupEntity.setParentId(parentId);
-        metaBackupEntity.setDatabaseType(schemaDto.getDatabaseDto().getDatabaseType());
+        metaBackupEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
     }
 
     @Override

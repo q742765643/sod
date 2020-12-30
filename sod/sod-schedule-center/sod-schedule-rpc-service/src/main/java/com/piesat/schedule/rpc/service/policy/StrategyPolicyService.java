@@ -98,8 +98,8 @@ public class StrategyPolicyService {
                 List<PolicyDto> policyDtos=new ArrayList<>();
                 SchemaDto schemaDto = schemaService.getDotById(dotById.getDatabaseId());
                 strategyPolicyDto.setDatabaseId(schemaDto.getId());
-                String parentId= schemaDto.getDatabaseDto().getId();
-                String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+                String parentId= schemaDto.getDatabase().getId();
+                String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
                 strategyPolicyDto.setDatabaseName(databaseName);
                 this.findBackup(schemaDto.getId(),dataClassId,parentId,policyDtos);
                 this.findClear(schemaDto.getId(),dataClassId,parentId,policyDtos);
@@ -288,7 +288,7 @@ public class StrategyPolicyService {
             SyncTaskEntity syncTaskEntity=syncTaskEntities.get(0);
             SchemaDto schemaDto = schemaService.getDotById(syncTaskEntity.getSourceDatabaseId());
             policyDto.setSourceTable(soourceTableName);
-            policyDto.setSourceRepository(schemaDto.getDatabaseDto().getDatabaseName());
+            policyDto.setSourceRepository(schemaDto.getDatabase().getDatabaseName());
             String result=this.getStatusById(syncTaskEntity,"getallstatus");
             if("true".equals(result)){
                 policyDto.setTriggerStatus("已启动");

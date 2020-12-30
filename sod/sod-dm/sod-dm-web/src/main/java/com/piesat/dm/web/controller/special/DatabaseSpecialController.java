@@ -237,7 +237,7 @@ public class DatabaseSpecialController {
             schemaDto.setUserId(specialParamVO.getUserId());
             DatabaseDto databaseDto = new DatabaseDto();
             databaseDto.setDatabaseInstance(specialParamVO.getSimpleName());
-            schemaDto.setDatabaseDto(databaseDto);
+            schemaDto.setDatabase(databaseDto);
             schemaDto.setTdbId(specialParamVO.getSdbId());
             schemaDto.setDatabaseSpecialAuthorityList(specialParamVO.getDatabaseSpecialAuthorityList());
             schemaDto.setSchemaName(specialParamVO.getSimpleName());

@@ -25,11 +25,11 @@ public class DatabaseUtil {
 
     public static DatabaseDcl getDatabase(SchemaDto database, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = database.getDatabaseDto().getDatabaseType().toLowerCase();
-        String databaseUrl = database.getDatabaseDto().getDatabaseUrl();
-        String databaseIp = database.getDatabaseDto().getDatabaseIp();
-        int port = Integer.parseInt(database.getDatabaseDto().getDatabasePort());
-        Set<DatabaseAdministratorDto> dal = database.getDatabaseDto().getDatabaseAdministratorList();
+        String databaseType = database.getDatabase().getDatabaseType().toLowerCase();
+        String databaseUrl = database.getDatabase().getDatabaseUrl();
+        String databaseIp = database.getDatabase().getDatabaseIp();
+        int port = Integer.parseInt(database.getDatabase().getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = database.getDatabase().getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
         for (DatabaseAdministratorDto da : dal) {
             if (da.getIsManager()) {
@@ -53,11 +53,11 @@ public class DatabaseUtil {
 
     public static DatabaseDcl getPubDatabase(SchemaDto database, DatabaseInfo databaseInfo) throws Exception {
         DatabaseDcl db = null;
-        String databaseType = database.getDatabaseDto().getDatabaseType().toLowerCase();
-        String databaseUrl = database.getDatabaseDto().getDatabaseUrl();
-        String databaseIp = database.getDatabaseDto().getDatabaseIp();
-        int port = Integer.parseInt(database.getDatabaseDto().getDatabasePort());
-        Set<DatabaseAdministratorDto> dal = database.getDatabaseDto().getDatabaseAdministratorList();
+        String databaseType = database.getDatabase().getDatabaseType().toLowerCase();
+        String databaseUrl = database.getDatabase().getDatabaseUrl();
+        String databaseIp = database.getDatabase().getDatabaseIp();
+        int port = Integer.parseInt(database.getDatabase().getDatabasePort());
+        Set<DatabaseAdministratorDto> dal = database.getDatabase().getDatabaseAdministratorList();
         DatabaseAdministratorDto dad = null;
         if (dal.size()>0){
             dad = dal.iterator().next();

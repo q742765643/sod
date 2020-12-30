@@ -174,8 +174,8 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         List<Map<String,Object>> databaseDtos=new ArrayList<>();
         List<SchemaDto> databaseListAll= dataBaseService.findAllDataBase();
         for(SchemaDto schemaDto :databaseListAll){
-            String databaseName= schemaDto.getDatabaseDto().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
-            String parentId= schemaDto.getDatabaseDto().getId();
+            String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+            String parentId= schemaDto.getDatabase().getId();
             if(dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String,Object> map=new LinkedHashMap<>();
                 map.put("KEY", schemaDto.getId());

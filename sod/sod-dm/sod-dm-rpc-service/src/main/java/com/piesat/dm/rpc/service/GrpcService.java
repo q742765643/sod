@@ -350,7 +350,7 @@ public class GrpcService {
         List<IndexVo> indexVo = dataTableInfoDto.getIndexVo();
         TableVo t = new TableVo();
         try {
-            List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(schemaDto.getDatabaseDto().getDatabaseType());
+            List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(schemaDto.getDatabase().getDatabaseType());
             if (sqlTemplate != null && sqlTemplate.size() > 0) {
                 t.setTemplate(sqlTemplate.get(0).getTemplate());
             }

@@ -133,7 +133,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
                 String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();
                 SchemaDto dotById = this.schemaService.getDotById(databaseId);
                 e.setDatabaseId(databaseId);
-                e.setDatabasePid(dotById.getDatabaseDto().getId());
+                e.setDatabasePid(dotById.getDatabase().getId());
                 return e;
             }).collect(Collectors.toList());
         }
@@ -323,12 +323,12 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
                 try {
                     ResultT resultT = databaseDcl.queryAllTableName(schemaDtos.get(i).getSchemaName());
                     if (resultT.isSuccess() && resultT.getData() != null) {
-                        List<String> tableList = map.get(schemaDtos.get(i).getDatabaseDto().getId());
+                        List<String> tableList = map.get(schemaDtos.get(i).getDatabase().getId());
                         if (tableList != null) {
                             tableList.addAll((List<String>) resultT.getData());
-                            map.put(schemaDtos.get(i).getDatabaseDto().getId(), tableList);
+                            map.put(schemaDtos.get(i).getDatabase().getId(), tableList);
                         } else {
-                            map.put(schemaDtos.get(i).getDatabaseDto().getId(), (List<String>) resultT.getData());
+                            map.put(schemaDtos.get(i).getDatabase().getId(), (List<String>) resultT.getData());
                         }
                     }
                     databaseDcl.closeConnect();
