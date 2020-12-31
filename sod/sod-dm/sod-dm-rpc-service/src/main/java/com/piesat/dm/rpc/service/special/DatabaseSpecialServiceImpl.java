@@ -182,7 +182,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         return pageBean;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteById(String id) {
         if (StringUtils.isNotEmpty(id)) {
@@ -193,7 +193,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteAccessBySdbIdAndUserId(String sdbId, String userId) {
         this.databaseSpecialAccessDao.deleteBySdbIdAndUserId(sdbId, userId);
@@ -247,7 +247,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DatabaseSpecialDto addOrUpdate(Map<String, String> map, String filePath) {
 
         String tdb_name = map.get("TDB_NAME");
@@ -340,7 +340,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
      * @param schemaDto
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void empowerDatabaseSpecial(SchemaDto schemaDto) {
         try {
             String userId = schemaDto.getUserId();
@@ -443,7 +443,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void empowerDataOne(DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto) {
         try {
             //更新权限

@@ -3,8 +3,8 @@ package com.piesat.dm.dao.datatable;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.TableForeignKeyEntity;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public interface TableForeignKeyDao extends BaseDao<TableForeignKeyEntity> {
      * @param ids
      * @return
      */
-    @Transactional
+    @@Transactional(rollbackFor = Exception.class)
     int deleteByIdIn(List<String> ids);
 
     /**

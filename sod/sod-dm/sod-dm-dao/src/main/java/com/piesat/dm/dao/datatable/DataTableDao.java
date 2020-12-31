@@ -83,8 +83,8 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      * @return
      */
     @Query(value =
-            "SELECT a.*,c.DICT_LABEL,d.DATABASE_NAME,e.DATABASE_NAME DATABASE_NAME_P FROM T_SOD_DATA_TABLE_INFO a " +
-                    "LEFT JOIN T_SOD_DICT_DATA c ON  a.STORAGE_TYPE = c.dict_value " +
+            "SELECT DISTINCT a.*,c.DICT_LABEL,d.DATABASE_NAME,e.DATABASE_NAME DATABASE_NAME_P FROM T_SOD_DATA_TABLE_INFO a " +
+                    "LEFT JOIN T_SOD_DICT_DATA c ON a.STORAGE_TYPE = c.dict_value " +
                     "LEFT JOIN T_SOD_DATACLASS_TABLE b ON a.id=b.TABLE_ID OR a.id=b.SUB_TABLE_ID " +
                     "LEFT JOIN T_SOD_DATABASE d ON a.database_id = d.id " +
                     "LEFT JOIN T_SOD_DATABASE_DEFINE e ON d.DATABASE_DEFINE_ID = e.id " +

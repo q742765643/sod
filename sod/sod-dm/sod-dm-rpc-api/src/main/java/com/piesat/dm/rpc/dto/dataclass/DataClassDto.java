@@ -99,6 +99,8 @@ public class DataClassDto {
     //portal申请id
     private String applyId;
 
+    private String userId;
+
     private String remark;
 
 }

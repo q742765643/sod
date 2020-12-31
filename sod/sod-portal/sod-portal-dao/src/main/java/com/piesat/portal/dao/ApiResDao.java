@@ -12,6 +12,6 @@ public interface ApiResDao extends BaseDao<ApiResEntity> {
 
     List<ApiResEntity> findByApiId(String apiId);
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteByApiId(String apiId);
 }

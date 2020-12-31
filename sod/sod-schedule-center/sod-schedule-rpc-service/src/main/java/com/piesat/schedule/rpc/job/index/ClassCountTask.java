@@ -25,10 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class ClassCountTask extends TimerTask{
-	
+
 	@Autowired
 	private IndexCountTaskMapper indexCountTaskMapper;
-	
+
 	@Autowired
 	private ClassCountDao classCountDao;
 
@@ -36,15 +36,15 @@ public class ClassCountTask extends TimerTask{
 	public void run() {
 		log.info("定时统计资料数量");
 		this.doCountTask();
-		
+
 	}
 	/**
 	 *  执行统计
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年3月30日下午4:30:42
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	private void doCountTask() {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -54,7 +54,7 @@ public class ClassCountTask extends TimerTask{
 			if(null != num ) {
 	            String year = date.split("[-]")[0];
 	            String month = date.split("[-]")[1];
-	            
+
 	            ClassCountEntity cce = new ClassCountEntity();
 	            cce.setYear(year);
 	            cce.setMonth(month);
@@ -62,12 +62,12 @@ public class ClassCountTask extends TimerTask{
 	            Map<String,Object> param = new HashMap<>();
 	            param.put("year", year);
 	            param.put("month", month);
-	            
+
 	            indexCountTaskMapper.delOldClassCount(param);
-	            
+
 	            classCountDao.saveNotNull(cce);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

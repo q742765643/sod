@@ -51,7 +51,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public TableColumnDto saveDto(TableColumnDto tableColumnDto) throws Exception {
         String id = tableColumnDto.getId();
 
@@ -93,7 +93,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
         return tableColumnDtoList.stream().map(e -> {
             TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(e);
@@ -120,7 +120,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public int deleteByIdIn(List<String> ids) {
         return this.tableColumnDao.deleteByIdIn(ids);
     }

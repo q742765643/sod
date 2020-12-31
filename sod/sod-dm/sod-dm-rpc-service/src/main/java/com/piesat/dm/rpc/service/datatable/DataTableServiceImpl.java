@@ -89,7 +89,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DataTableInfoDto saveDto(DataTableInfoDto dataTableDto) {
         if (dataTableDto.getId() != null) {
             DataTableInfoDto dotById = this.getDotById(dataTableDto.getId());
@@ -276,7 +276,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT paste(String copyId, String pasteId) {
         List<DataTableInfoEntity> copys = this.dataTableDao.getByClassLogicId(copyId);
         DataClassAndTableEntity paste = this.dataLogicDao.getOne(pasteId);

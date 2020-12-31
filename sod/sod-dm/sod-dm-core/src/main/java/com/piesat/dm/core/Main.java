@@ -67,7 +67,7 @@ public class Main {
         i.setIndexComment("D_IYMDHM,D_DATETIME");
         l1.add(i);
         t.setColumnVos(l);
-        t.setIndexVos(l1);
+        t.setIndexVos(null);
         AuzFactory.createTableSql(t,r);
         System.out.println(r.getData());
 

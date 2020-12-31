@@ -12,7 +12,7 @@ public interface ApiCodeDao extends BaseDao<ApiCodeEntity> {
 
     List<ApiCodeEntity> findByApiId(String apiId);
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteByApiId(String apiId);
 
 }

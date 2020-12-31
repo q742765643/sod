@@ -128,7 +128,7 @@ public class GrpcService {
     @GrpcHthtClient
     private ServiceCodeService serviceCodeService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT updateColumnValue(String id, String column, String value) {
         //删除配置
         if ("3".equals(value)) {
@@ -166,7 +166,7 @@ public class GrpcService {
         return ResultT.success();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT deleteById(String id) {
         try {
             List<AdvancedConfigEntity> acs = this.advancedConfigDao.findByTableId(id);

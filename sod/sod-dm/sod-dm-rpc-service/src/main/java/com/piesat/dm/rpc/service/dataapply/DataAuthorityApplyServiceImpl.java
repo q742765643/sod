@@ -186,7 +186,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto) {
         DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
         //新增申请设置成待审
@@ -242,7 +242,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT updateRecordCheck(DataAuthorityApplyDto dataAuthorityApplyDto) {
         List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
         ResultT r = new ResultT();
@@ -280,7 +280,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT updateOneRecordCheck(String userId, DataAuthorityRecordDto dataAuthorityRecordDto) {
 
         //获取用户up账户
@@ -391,7 +391,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateRecordByApplyIdAndClassId(String apply_id, String data_class_id, Integer authorize, String
             cause) {
         List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
@@ -432,7 +432,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id, String data_class_id, String
             database_id, Integer authorize, String cause) {
         List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassIdAndDatabaseId(apply_id, data_class_id, database_id);
@@ -498,7 +498,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId) {
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> paraMap = new HashMap<String, Object>();

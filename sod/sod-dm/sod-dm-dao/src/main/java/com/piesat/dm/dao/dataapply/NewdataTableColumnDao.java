@@ -3,8 +3,8 @@ package com.piesat.dm.dao.dataapply;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataapply.NewdataTableColumnEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface NewdataTableColumnDao extends BaseDao<NewdataTableColumnEntity> {
     List<NewdataTableColumnEntity> findByApplyId(String applyId);
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteByApplyId(String applyId);
 
 }

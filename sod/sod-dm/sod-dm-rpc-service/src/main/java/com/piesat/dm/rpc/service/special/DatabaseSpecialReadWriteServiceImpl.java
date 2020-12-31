@@ -155,7 +155,7 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteRecords(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos) {
         if (databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0) {
             for (int i = 0; i < databaseSpecialReadWriteDtos.size(); i++) {

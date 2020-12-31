@@ -99,7 +99,7 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         return  pageBean;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(DataOnlineTimeDto dataOnlineTimeDto) {
         this.deleteByDataClassId(dataOnlineTimeDto.getDataClassId());

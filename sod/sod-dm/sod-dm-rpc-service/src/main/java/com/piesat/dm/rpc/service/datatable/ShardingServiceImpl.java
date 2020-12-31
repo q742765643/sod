@@ -39,7 +39,7 @@ public class ShardingServiceImpl extends BaseService<PartingEntity> implements S
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<PartingDto> saveDto(List<PartingDto> partingDto) {
         List<PartingEntity> partingEntity = this.shardingMapper.toEntity(partingDto);
         partingEntity = this.saveNotNull(partingEntity);

@@ -72,7 +72,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DataClassLogicDto saveDto(DataClassLogicDto dataLogicDto) {
         dataLogicDto.setCreateTime(new Date());
         DataClassAndTableEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
@@ -81,7 +81,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<DataClassLogicDto> saveList(List<DataClassLogicDto> dataLogicList) {
         List<DataClassAndTableEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
         for (DataClassAndTableEntity d : dataLogicEntities) {
@@ -159,25 +159,25 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(String id) {
-        DataClassLogicDto dataClassLogic = this.getDotById(id);
-        if (dataClassLogic != null) {
-            this.dataTableService.delete(dataClassLogic.getTableId());
-            if (StringUtils.isNotEmpty(dataClassLogic.getSubTableId())) {
-                this.dataTableService.delete(dataClassLogic.getSubTableId());
+        DataClassLogicDto d = this.getDotById(id);
+        if (d != null) {
+            this.dataTableService.delete(d.getTableId());
+            if (StringUtils.isNotEmpty(d.getSubTableId())) {
+                this.dataTableService.delete(d.getSubTableId());
             }
         }
         this.delete(id);
-        String dataClassId = dataClassLogic.getDataClassId();
-        List<DataClassLogicDto> byDataClassId = this.findByDataClassId(dataClassId);
-        if (byDataClassId == null || byDataClassId.size() == 0) {
+        String dataClassId = d.getDataClassId();
+        List<DataClassLogicDto> dc = this.findByDataClassId(dataClassId);
+        if (dc == null || dc.size() == 0) {
             this.dataClassDao.deleteByDataClassId(dataClassId);
         }
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void onlyDeleteById(String id) {
         DataClassLogicDto dataClassLogic = this.getDotById(id);
         if (dataClassLogic != null) {

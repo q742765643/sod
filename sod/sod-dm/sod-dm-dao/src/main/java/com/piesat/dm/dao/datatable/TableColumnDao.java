@@ -5,16 +5,16 @@ import com.piesat.dm.entity.datatable.TableColumnEntity;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
 public interface TableColumnDao extends BaseDao<TableColumnEntity> {
     List<TableColumnEntity> findByTableId(String tableId);
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     int deleteByIdIn(List<String> ids);
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     int deleteByTableId(String tableId);
 
     List<TableColumnEntity> findByTableIdAndIsPrimaryKeyTrue(String tableId);

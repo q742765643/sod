@@ -21,7 +21,7 @@ import com.piesat.sod.system.entity.DictionaryEntity;
 public interface DictionaryDao extends BaseDao<DictionaryEntity>{
 	/**
 	 *  根据menu获取数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月15日上午8:48:06
 	 * @param flag
@@ -30,10 +30,10 @@ public interface DictionaryDao extends BaseDao<DictionaryEntity>{
 	 * @throws Exception
 	 */
 	List<DictionaryEntity> findByFlagAndMenuIn(String flag,List<Integer> menus) throws Exception;
-	
+
 	/**
 	 *  根据id删除
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020年1月15日上午11:26:54
 	 * @param ids
@@ -41,7 +41,7 @@ public interface DictionaryDao extends BaseDao<DictionaryEntity>{
 	 */
 	@Query(value="delete from DictionaryEntity where id in :ids")
 	@Modifying
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	void deleteByIds(@Param("ids") List<String> ids) throws Exception;
 
 }

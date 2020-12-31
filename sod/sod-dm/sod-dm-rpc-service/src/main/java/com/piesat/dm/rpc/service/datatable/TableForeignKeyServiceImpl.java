@@ -63,7 +63,7 @@ public class TableForeignKeyServiceImpl extends BaseService<TableForeignKeyEntit
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public int deleteByIdIn(List<String> ids) {
         return this.tableForeignKeyDao.deleteByIdIn(ids);
     }

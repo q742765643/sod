@@ -114,7 +114,7 @@ public class ApiManageServiceImpl extends BaseService<ApiManageEntity> implement
         return result;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteApi(String id) {
         deleteApiInfo(id);
@@ -122,7 +122,7 @@ public class ApiManageServiceImpl extends BaseService<ApiManageEntity> implement
         apiManageDao.deleteById(id);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public void deleteApiInfo(String apiId){
         //删除样例代码
         apiCodeDao.deleteByApiId(apiId);
@@ -132,7 +132,7 @@ public class ApiManageServiceImpl extends BaseService<ApiManageEntity> implement
         apiParamDao.deleteByApiId(apiId);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiManageDto saveDto(ApiManageDto apiManageDto) {
         apiManageDto.setStatus("0");

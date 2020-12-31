@@ -205,7 +205,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public SyncTaskDto saveDto(SyncTaskDto syncTaskDto) {
         List<String> targetTableIds = new ArrayList<String>();
 
@@ -315,7 +315,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
         this.deleteConfigFilter(syncTaskDto.getId());
         this.saveDto(syncTaskDto);
@@ -538,7 +538,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public void deleteSync(String taskId) {
         List<String> targetTableIds = deleteConfigFilter(taskId);
 

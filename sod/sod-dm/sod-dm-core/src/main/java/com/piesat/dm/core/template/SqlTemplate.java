@@ -37,13 +37,13 @@ public class SqlTemplate {
             "CREATE TABLE \"${schema}\".\"${tableName}\"\n" +
             "(\n" +
             "<#list columnVos as columnVo>\n" +
-            "  <#if columnVo_has_next>  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>.${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> IS NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if>,\n<#else>" +
-            "  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>.${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> IS NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if> \n</#if>" +
+            "  <#if columnVo_has_next>  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>,${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if>,\n<#else>" +
+            "  \"${columnVo.columnName}\" ${columnVo.type}<#if columnVo.length??> (${columnVo.length}<#if columnVo.precision??>,${columnVo.precision}</#if>)</#if><#if columnVo.isNull!=true> NOT NULL</#if><#if columnVo.def??> DEFAULT ${columnVo.def}</#if><#if columnVo.comment??> COMMENT '${columnVo.comment}'</#if> \n</#if>" +
             "</#list>\n" +
             " )<#if partColumn?default(\"\")?length gt 1 >partition by range(${partColumn}) interval <#if partDimension??&&partUnit??>${partDimension} ${partUnit}<#else>1 day</#if> partitions(\"PART1\" values less than ('1950-01-01 00:00:00'))</#if>;\n" +
-            "<#list indexVos as indexVo>\n" +
+            "<#if indexVos??><#list indexVos as indexVo>\n" +
             "CREATE<#if indexVo.indexType1?? > UNIQUE</#if> INDEX ${indexVo.indexName} ON \"${schema}\".\"${tableName}\" (${indexVo.indexComment}) <#if indexVo.indexType2?default(\"\")?length gt 1 > INDEXTYPE IS ${indexVo.indexType2}</#if>;\n" +
-            "</#list>";
+            "</#list></#if>";
 
     /**
      * 默认插入模板

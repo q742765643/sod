@@ -127,7 +127,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
 
     }
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
@@ -144,7 +144,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         }
     }
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);

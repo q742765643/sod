@@ -152,7 +152,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
      * @date 2020-02-17 16:16
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addConfig(ComMetadataSyncCfgDto cd) throws Exception {
         ComMetadataSyncCfgEntity ce = comMetadataSyncCfgMapstruct.toEntity(cd);
         this.saveNotNull(ce);
@@ -192,7 +192,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
      * @date 2020-02-17 17:04
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void editConfig(ComMetadataSyncCfgDto cd) throws Exception {
         ComMetadataSyncCfgEntity ce = comMetadataSyncCfgMapstruct.toEntity(cd);
         this.saveNotNull(ce);
@@ -213,7 +213,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
      * @date 2020-02-17 17:13
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delConfig(String ids) throws Exception {
         String[] idArr = ids.split(",");
         for (String id : idArr) {
@@ -261,7 +261,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
      * @date 2020-02-17 17:52
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delRecord(String ids) throws Exception {
         String[] idArr = ids.split(",");
         for (String id : idArr) {
@@ -288,7 +288,7 @@ public class ComMetadataSyncServiceImpl extends BaseService<ComMetadataSyncCfgEn
      * @date 2020-02-18 11:38
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT syncDataNow(String ids, String apiType, Integer oprType) throws Exception {
         try {
             if (StringUtil.isEmpty(ids) && StringUtil.isEmpty(apiType)) return ResultT.failed("参数不能为空");

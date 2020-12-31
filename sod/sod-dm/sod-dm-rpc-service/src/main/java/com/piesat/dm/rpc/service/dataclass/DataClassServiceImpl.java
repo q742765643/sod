@@ -108,7 +108,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DataClassDto saveDto(DataClassDto dataClassDto) {
         NewdataApplyDto newdataApplyDto = null;
         if (StringUtils.isNotBlank(dataClassDto.getApplyId())) {
@@ -393,7 +393,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteByDataClassId(String dataClassId) {
         logger.info("根据dataClassId删除资料:" + dataClassId);
         DataClassDto dataClass = this.findByDataClassId(dataClassId);

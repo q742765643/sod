@@ -109,7 +109,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteRecordByIds(List<String> ids) {
         this.deleteByIds(ids);
     }

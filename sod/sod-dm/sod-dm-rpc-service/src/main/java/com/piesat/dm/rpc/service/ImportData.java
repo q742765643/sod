@@ -303,7 +303,7 @@ public class ImportData {
 //        }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void importTableData(String oldId, DataClassAndTableEntity newId) {
         String sql = "select * from DMIN_DATA_ID_TABLE where CLASS_LOGIC_ID = '" + oldId + "'";
         List<Map> list = CodeDOM.getList(sql);

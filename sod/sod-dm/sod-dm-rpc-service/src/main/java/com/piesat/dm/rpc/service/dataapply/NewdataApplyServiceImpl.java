@@ -136,7 +136,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         return newdataApplyMapper.toDto(newdataApplyEntity);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public NewdataApplyDto updateStatus(NewdataApplyDto newdataApplyDto) {
         NewdataApplyEntity newdataApplyEntity = newdataApplyMapper.toEntity(newdataApplyDto);
@@ -239,7 +239,7 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(String id) {
         NewdataApplyEntity newdataApplyEntity = this.getById(id);
 

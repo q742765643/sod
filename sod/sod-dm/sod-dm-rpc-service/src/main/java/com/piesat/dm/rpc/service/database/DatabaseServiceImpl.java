@@ -27,8 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -62,7 +62,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DatabaseDto saveDto(DatabaseDto databaseDto) {
         SchemaDto schemaDto = databaseDto.getSchemaDto();
         if (StringUtils.isEmpty(schemaDto.getId())) {
@@ -202,7 +202,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
         return databaseDto;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultT delByIds(String ids) {
         String[] split = ids.split(",");

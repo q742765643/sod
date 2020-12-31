@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.datatable;
 
+import com.piesat.common.utils.StringUtils;
 import lombok.Data;
 
 import java.util.Date;
@@ -135,6 +136,6 @@ public class TableColumnDto {
     }
 
     public void setUserEleCode(String userEleCode) {
-        this.userEleCode = userEleCode.trim();
+        this.userEleCode = StringUtils.isNotEmpty(userEleCode) ? userEleCode.trim() : userEleCode;
     }
 }

@@ -104,6 +104,11 @@ public class DataClassEntity extends BaseEntity {
     @Column(name = "use_base_info", columnDefinition="integer DEFAULT 1 ")
     private Integer useBaseInfo;
 
+    @Column(name = "user_id")
+    private String userId;
+
+    @Column(name = "apply_id")
+    private String applyId;
     /**
      * 备注
      */
