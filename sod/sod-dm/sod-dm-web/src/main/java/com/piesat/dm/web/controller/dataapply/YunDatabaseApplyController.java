@@ -193,6 +193,9 @@ public class YunDatabaseApplyController {
                 }
             }
             YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyService.addorUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+            String logId = yunDatabaseApplyDto.getId();
+            String examineMaterial = yunDatabaseApplyDto.getExamineMaterial();
+            yunDatabaseApplyLogService.addLogEdit1(parameterMap,logId,examineMaterial);
             return ResultT.success(yunDatabaseApplyDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -304,7 +307,6 @@ public class YunDatabaseApplyController {
     public ResultT addLogEdit(HttpServletRequest request) {
         try {
             Map<String, String[]> parameterMap = request.getParameterMap();
-
             YunDatabaseApplyLogDto yunDatabaseApplyLogDto = yunDatabaseApplyLogService.addLogEdit(parameterMap);
             return ResultT.success(yunDatabaseApplyLogDto);
         } catch (Exception e) {
