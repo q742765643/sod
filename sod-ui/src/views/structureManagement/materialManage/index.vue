@@ -13,13 +13,17 @@
         @getTreeUrlOfTab="getTreeUrlOfTab"
         @searchFun="searchFun"
       />
-      <div id="resize"></div>
+      <div id="resize">
+        &lt;
+        </br>
+        &gt;
+      </div>
       <!-- 表格 -->
-      <span class="el-icon-rank listAll" title="查看所有" @click="queryListAll">
-      </span>
+     
       <el-main class="elMain" id="right" v-show="otherMain">
+        <span class="el-icon-s-grid listAll" title="查看所有" @click="queryListAll"></span>
         <div class="treeTitle">
-          <i class="el-icon-s-home"></i>
+          <i class="el-icon-s-home" ></i>
           {{ tableName + "数据集信息" }}
         </div>
         <div class="tableCon">
@@ -129,7 +133,7 @@
                       type="text"
                       size="mini"
                       icon="el-icon-edit"
-                      @click="showMaterialSingle('编辑资料')"
+                      @click="showMaterialSingle('编辑资料',scope.row)"
                       >编辑资料</el-button
                     >
                     <el-button
@@ -143,7 +147,7 @@
                       type="text"
                       size="mini"
                       icon="el-icon-delete"
-                      @click="deleteMaterialSingle"
+                      @click="deleteMaterialSingle(scope.row)"
                       >删除</el-button
                     >
                     <!-- 解码配置，区域信息，数据服务存在任意一个，显示服务信息按钮 -->
@@ -192,6 +196,7 @@
         :isSourceTree="isSourceTree"
         :editNodeId="editNodeId"
         :editMaterial="editMaterial"
+        :editTableName="editTableName"
         @addOrEditSuccess="addOrEditSuccess"
         @closeMaterialDialog="closeMaterialDialog"
         ref="myHandleChildren"
@@ -393,6 +398,7 @@ export default {
       materialSingleTitle: "", //资料分类树  资料弹出层标题
       editNodeId: "", //资料树编辑id
       editMaterial: "", //资料编辑id
+      editTableName:'',//资料编辑表名称
       structureManageVisible: false, //表结构管理弹出层
       structureManageTitle: "", //表结构管理弹出层title
       rowData: {},
@@ -472,7 +478,7 @@ export default {
       this.baseMsgEditDialog = true;
     },
     //新增，编辑资料树  或者  资料
-    showMaterialSingle(operateType) {
+    showMaterialSingle(operateType,scopeRow) {
       console.log(operateType);
       if (
         operateType.title === "新增资料树节点" ||
@@ -485,20 +491,16 @@ export default {
       } else if (operateType === "新增资料") {
         this.materialSingleTitle = operateType;
         this.editMaterial = "";
+        this.editTableName="";
         this.isSourceTree = false;
       } else if (operateType === "编辑资料") {
-        if (this.currentRow == null || this.currentRow.length == 0) {
-          this.$message({
-            type: "error",
-            message: "请选择一条数据",
-          });
-          return false;
-        } else {
-          this.materialSingleTitle = operateType;
+        this.currentRow=[];
+        this.currentRow.push(scopeRow);
+        this.materialSingleTitle = operateType;
           this.editMaterial = this.currentRow[0].DATA_CLASS_ID;
+          this.editTableName = this.currentRow[0].TABLE_NAME;
           this.isSourceTree = false;
           // 获取详情
-        }
       }
       this.materialSingleVisible = true;
     },
@@ -542,15 +544,9 @@ export default {
         });
       }
     },
-    deleteMaterialSingle() {
-      if (this.currentRow.length == 0) {
-        this.$message({
-          type: "error",
-          message: "请选择一条数据",
-        });
-      } else {
-        this.$confirm(
-          "是否删除资料" + this.currentRow[0].CLASS_NAME,
+    deleteMaterialSingle(row) {
+      this.$confirm(
+          "是否删除资料" + row.CLASS_NAME,
           "温馨提示",
           {
             confirmButtonText: "确定",
@@ -572,7 +568,6 @@ export default {
             );
           })
           .catch(() => {});
-      }
     },
 
     cancelHandle() {
@@ -646,15 +641,16 @@ export default {
   .listAll {
     position: absolute;
     font-size: 16px;
-    color: #1e9fff;
-    left: 276px;
+    color: #fff;
+    background: #1e9fff;
+    left: 0;
     z-index: 1000;
     cursor: pointer;
     border: 1px solid #1e9fff;
     padding: 2px 4px;
     &:hover {
       color: #fff;
-      background: #1e9fff;
+      opacity: 0.8;
     }
   }
   .elMain {
@@ -674,6 +670,7 @@ export default {
       padding: 10px;
       background: #eee;
       font-size: 14px;
+      padding-left: 34px;
 
       i {
         font-size: 16px;
@@ -755,6 +752,8 @@ export default {
     height: calc(100vh - 170px);
     cursor: w-resize;
     float: left;
+    padding-top: calc(50vh - 100px);
+    background: rgba(223,230,236,0.75);;
   }
 }
 .scrollDialog {

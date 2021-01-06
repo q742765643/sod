@@ -265,8 +265,15 @@ export default {
       this.tipsFlag = val;
     },
     async getTableInfo(val) {
-      if (this.rowData && this.rowData.ID) {
-        await dataTableGet({ id: this.rowData.ID }).then((res) => {
+      if ((this.rowData && this.rowData.ID)||(val&&val!='init')) {
+        let id='';
+        if(this.rowData && this.rowData.ID){
+         id=this.rowData.ID;
+        }else{
+          id= val;
+          
+        }
+        await dataTableGet({ id: id }).then((res) => {
           if (
             this.rowData.STORAGE_TYPE == "F_table" ||
             this.rowData.STORAGE_TYPE == "G_table" ||

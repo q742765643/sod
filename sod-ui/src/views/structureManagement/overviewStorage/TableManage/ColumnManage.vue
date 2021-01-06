@@ -1158,14 +1158,14 @@ export default {
         this.columnData.forEach((element) => {
           tableProp.forEach((item) => {
             if (element[item] === false) {
-              element[item] = "否";
+              element[item] = "N";
             } else if (element[item] === true) {
-              element[item] = "是";
+              element[item] = "Y";
             }
           });
           newArry.push(element);
         });
-        exportExcel(theader, tableProp, newArry);
+        exportExcel(theader, tableProp, newArry,this.tableInfo.tableName+'-'+this.tableInfo.databaseName);
       } else {
         window.location.href = "";
       }
@@ -1545,29 +1545,29 @@ export default {
           flagmsg = "序号不能小于0";
           return;
         }
-        if (element.isNull === "是") {
+        if (element.isNull === "是"||element.isNull === "Y") {
           element.isNull = "true";
-        } else if (element.isNull === "否") {
+        } else if (element.isNull === "否"||element.isNull === "N") {
           element.isNull = "false";
         }
-        if (element.isUpdate === "是") {
+        if (element.isUpdate === "是"||element.isUpdate === "Y") {
           element.isUpdate = "true";
-        } else if (element.isUpdate === "否") {
+        } else if (element.isUpdate === "否"||element.isUpdate === "N") {
           element.isUpdate = "false";
         }
-        if (element.isShow === "是") {
+        if (element.isShow === "是"||element.isShow === "Y") {
           element.isShow = "true";
-        } else if (element.isShow === "否") {
+        } else if (element.isShow === "否"||element.isShow === "N") {
           element.isShow = "false";
         }
-        if (element.isManager === "是") {
+        if (element.isManager === "是"||element.isManager === "Y") {
           element.isManager = "true";
-        } else if (element.isManager === "否") {
+        } else if (element.isManager === "否"||element.isManager === "N") {
           element.isManager = "false";
         }
-        if (element.isPrimaryKey === "是") {
+        if (element.isPrimaryKey === "是"||element.isPrimaryKey === "Y") {
           element.isPrimaryKey = "true";
-        } else if (element.isPrimaryKey === "否") {
+        } else if (element.isPrimaryKey === "否"||element.isPrimaryKey === "N") {
           element.isPrimaryKey = "false";
         }
         if (gettableType == "E-Kshow") {
