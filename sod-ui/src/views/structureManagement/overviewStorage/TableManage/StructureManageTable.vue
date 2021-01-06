@@ -265,8 +265,15 @@ export default {
       this.tipsFlag = val;
     },
     async getTableInfo(val) {
-      if (this.rowData && this.rowData.ID) {
-        await dataTableGet({ id: this.rowData.ID }).then((res) => {
+      if ((this.rowData && this.rowData.ID)||(val&&val!='init')) {
+        let id='';
+        if(this.rowData && this.rowData.ID){
+         id=this.rowData.ID;
+        }else{
+          id= val;
+          
+        }
+        await dataTableGet({ id: id }).then((res) => {
           if (
             this.rowData.STORAGE_TYPE == "F_table" ||
             this.rowData.STORAGE_TYPE == "G_table" ||
@@ -436,7 +443,7 @@ export default {
   right: 20px;
   overflow: auto;
   .el-scrollbar {
-    height: calc(100% - 34px);
+    height: calc(100% - 38px);
     overflow-x: hidden;
     .el-scrollbar__wrap {
       overflow-x: hidden;
@@ -540,6 +547,9 @@ export default {
     .el-form-item__content {
       margin-left: 20px !important;
     }
+  }
+  .el-alert {
+    margin-bottom: 3px;
   }
 }
 </style>

@@ -87,7 +87,7 @@
                 :readonly="true"
               ></el-input>
             </el-form-item>
-            <el-form-item label="访问控制">
+            <el-form-item label="访问控制"  v-if="!isSourceTree">
               <el-select v-model.trim="materialData.isAccess">
                 <el-option :value="1" label="公开"></el-option>
                 <el-option :value="2" label="限制"></el-option>
@@ -100,7 +100,7 @@
               ></el-input-number>
               <!-- <el-input type="number" v-model.trim="materialData.serialNo" :min="0"></el-input> -->
             </el-form-item>
-            <el-form-item label="是否发布" v-if="tableStructureManageContral">
+            <el-form-item label="是否发布" v-if="tableStructureManageContral&&!isSourceTree">
               <el-select v-model.trim="materialData.ifStopUse">
                 <el-option :value="true" label="发布"></el-option>
                 <el-option :value="false" label="不发布"></el-option>
@@ -118,12 +118,12 @@
                 <el-option :value="0" label="停用"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="备注">
+            <el-form-item label="备注"  v-if="!isSourceTree">
               <el-input v-model.trim="materialData.remark"></el-input>
             </el-form-item>
           </div>
         </div>
-        <div class="dictData">
+        <div class="dictData"  v-if="!isSourceTree">
           <div class="dictDataTitle">
             <i class="el-icon-price-tag"></i>数据标签
           </div>
@@ -136,7 +136,9 @@
                       <span
                         v-for="(item, index) in SelectDictdataTypes"
                         :key="index"
-                        >{{ item.dictLabel }}</span
+                        >{{ item.dictLabel }}
+                        <span v-show="index!=SelectDictdataTypes.length-1">,</span>
+                        </span
                       >
                     </p>
                     <span v-show="SelectDictdataTypes.length == 0"
@@ -187,92 +189,49 @@
       <div class="editDataUse" v-if="!isSourceTree">
         <h4>关联表信息</h4>
         <div class="linkInfo">
-          <el-form v-model="materialData.dataLogicList" label-width="90px">
-            <el-row
-              v-for="(item, index) in materialData.dataLogicList"
-              :key="index"
-            >
-              <el-col :span="4">
-                <el-form-item label="数据库">
-                  <el-select
-                    filterable
-                    v-model="item.databasePid"
-                    placeholder="请选择"
-                    @change="handleFindSpec($event, index)"
-                  >
-                    <el-option
-                      v-for="(citem, cindex) in DatabaseDefineList"
-                      :key="cindex"
-                      :label="citem.databaseName"
-                      :value="citem.id"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item label="专题库">
-                  <el-select
-                    filterable
-                    v-model="item.databaseId"
-                    placeholder="请选择"
-                    @change="handleFindTable($event, index)"
-                  >
-                    <el-option
-                      v-for="(citem, cindex) in item.specialList"
-                      :key="cindex"
-                      :label="citem.databaseName"
-                      :value="citem.id"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item label="要素表名称">
-                  <el-select
-                    filterable
-                    v-model="item.tableId"
-                    placeholder="请选择"
-                    @change="handleFindTableType($event, index)"
-                  >
-                    <el-option
-                      v-for="(citem, cindex) in item.tableOptionList"
-                      :key="cindex"
-                      :label="citem.NAME_CN"
-                      :value="citem.ID"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="4" v-show="item.subTableId">
-                <el-form-item label="键表名称">
-                  <el-input
-                    v-model="item.subTableNameCn"
-                    class="elInput"
-                    readonly
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item label="表类型">
-                  <el-input
-                    v-model="item.tabaleType"
-                    class="elInput"
-                    readonly
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item>
-                  <i class="el-icon-plus" @click="addDomain"></i>
-                  <i
-                    class="el-icon-minus"
-                    @click.prevent="removeDomain(index)"
-                  ></i>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
+          <div class="leftBox">
+            <el-select v-model="linTableName" filterable placeholder="请选择" @change="getLinkTable">
+              <el-option
+                v-for="(item,index) in linkOptions"
+                :key="index"
+                :label="item.TABLE_NAME"
+                :value="item.TABLE_NAME">
+              </el-option>
+            </el-select>
+             <el-table
+           ref="multipleTable"
+            :data="tableDataLink"
+            tooltip-effect="dark"
+            style="width: 100%"
+            @selection-change="handleSelectionChange">
+            <el-table-column
+              type="selection"
+              width="55">
+            </el-table-column>
+            <el-table-column
+              prop="DATABASE_NAME"
+              label="数据库"
+             >
+            </el-table-column>
+            <el-table-column
+              prop="SCHEMA_NAME"
+              label="专题库"
+              >
+            </el-table-column>
+            <el-table-column
+              prop="DICT_LABEL"
+              label="表类型"
+              >
+            </el-table-column>
+          </el-table>
+          </div>
+          <div class="rightBox">
+            <p v-for="(item,index) in multipleSelection" :key="index">
+              {{item.DATABASE_NAME}}-{{item.SCHEMA_NAME}}-{{item.TABLE_NAME}}-{{item.DICT_LABEL}}
+            </p>
+          </div>
         </div>
+        
       </div>
     </div>
     <div class="dialog-footer" slot="footer" v-if="!DRegistrationObj">
@@ -325,9 +284,8 @@ import {
   enable,
   getNewDataClassId,
   getCanShowDatabaseDefineList,
-  findByDatabaseDefineId,
-  findETable,
-  findTables,
+ findTablesByTableName,
+ findAllETables
 } from "@/api/structureManagement/materialManage/index";
 import { getDictByType } from "@/api/structureManagement/materialManage/StructureManageTable";
 import { dataClassAll } from "@/api/structureManagement/materialManage/StructureClassify";
@@ -361,9 +319,18 @@ export default {
     DRegistrationObj: {
       type: Object,
     },
+    editTableName: {
+      type: String,
+    },
   },
   data() {
     return {
+      //关联表信息-start
+      tableDataLink:[],
+      multipleSelection: [],
+      linTableName:'',
+      linkOptions:[],
+      //关联表信息-end
       DatabaseDefineList: [], //数据库列表
       ddataIdFlag: false, //公共元数据信息是否必填
       dictshowflag: false,
@@ -397,18 +364,6 @@ export default {
         isAccess: 1,
         useBaseInfo: 0,
         serialNo: 0,
-        dataLogicList: [
-          {
-            tableId: "",
-            dataLogicList: "",
-            databasePid: "",
-            databaseId: "",
-            tabaleType: "",
-            subTableId: "",
-            specialList: [], //专题库列表
-            tableOptionList: [], //表名称列表
-          },
-        ], //数据用途回显的树
         dataLogicListTable: [], //数据用途回显的树
         labelKeyFrom: [],
         dataClassLabelList: [],
@@ -493,6 +448,15 @@ export default {
     await getDictByType({ dictType: "zt_label" }).then((response) => {
       this.dictdataTypes = response.data;
     });
+
+    //查询所有要素表
+    await findAllETables().then((response) => {
+      this.linkOptions = response.data;
+    });
+    
+    if(this.editTableName){
+     await this.getLinkTable(this.editTableName);
+    }
     // 用户列表 todo
     /*   await getBizUserByName().then((response) => {
       var resdata = response.data;
@@ -509,76 +473,15 @@ export default {
     await this.initMaterialForm();
   },
   methods: {
-    forceUpdate() {
-      this.$forceUpdate();
+    getLinkTable(val){
+      this.linTableName = val;
+      //关联表信息
+     findTablesByTableName({ tableName: this.linTableName}).then((response) => {
+      this.tableDataLink = response.data;
+    });
     },
-    //切换数据库查询专题库
-    async handleFindSpec(val, index, type) {
-      this.$forceUpdate();
-      if (!type) {
-        this.materialData.dataLogicList[index].databaseId = "";
-      }
-
-      await findByDatabaseDefineId({ id: val }).then((res) => {
-        this.materialData.dataLogicList[index].specialList = res.data;
-      });
-    },
-    //切换专题库查询
-    async handleFindTable(val, index, type) {
-      this.$forceUpdate();
-      if (!type) {
-        this.materialData.dataLogicList[index].tableId = "";
-      }
-      await findETable({ databaseId: val }).then((res) => {
-        this.materialData.dataLogicList[index].tableOptionList = res.data;
-      });
-    },
-    //根据表名称查询表类型
-    async handleFindTableType(val, index, type) {
-      if (!type) {
-        this.materialData.dataLogicList[index].tabaleType = "";
-        this.materialData.dataLogicList[index].tableId = "";
-        this.materialData.dataLogicList[index].subTableId = "";
-      }
-      await findTables({ tableId: val }).then((res) => {
-        let resData = res.data;
-        if (resData.length == 1) {
-          this.materialData.dataLogicList[index].tableId = resData[0].ID;
-        } else {
-          resData.forEach((element) => {
-            if (element.TABLE_TYPE == "E") {
-              this.materialData.dataLogicList[index].tableId = element.ID;
-            } else {
-              //双表的话键表是subTableId
-              this.materialData.dataLogicList[index].subTableNameCn =
-                element.NAME_CN;
-              this.materialData.dataLogicList[index].subTableId = element.ID;
-            }
-          });
-        }
-        this.materialData.dataLogicList[index].tabaleType =
-          resData[0].DICT_LABEL;
-      });
-      this.$forceUpdate();
-    },
-    //添加移除关联表信息
-    addDomain() {
-      this.materialData.dataLogicList.push({
-        tableId: "",
-        subTableId: "",
-        dataLogicList: "",
-        databasePid: "",
-        databaseId: "",
-        tabaleType: "",
-        specialList: [], //专题库列表
-        tableOptionList: [], //表名称列表
-      });
-    },
-    removeDomain(index) {
-      //  var index = this.superSearchForm.domains.indexOf(item);
-      if (index !== 0) {
-        this.materialData.dataLogicList.splice(index, 1);
-      }
+    handleSelectionChange(val){
+      this.multipleSelection = val;
     },
     setSelectDictdataTypes(val) {
       this.SelectDictdataTypes = [];
@@ -592,6 +495,7 @@ export default {
     },
     resetData(dataArr) {
       for (var i in dataArr) {
+        dataArr[i].className = dataArr[i].name;
         dataArr[i].name = dataArr[i].name + "(" + dataArr[i].id + ")";
         this.resetData(dataArr[i].children);
       }
@@ -680,9 +584,11 @@ export default {
           ) {
             let logcList = response.data.dataLogicList;
             logcList.forEach(async (item, index) => {
-              await this.handleFindSpec(item.databasePid, index, "edit");
-              await this.handleFindTable(item.databaseId, index, "edit");
-              await this.handleFindTableType(item.tableId, index, "edit");
+              this.tableDataLink.forEach((citem,cindex) => {
+                if(item.tableId == citem.ID){
+                   this.$refs.multipleTable.toggleRowSelection(this.tableDataLink[cindex]);
+                }
+              });
             });
           }
           this.materialData = response.data;
@@ -726,7 +632,7 @@ export default {
           });
         }
 
-        this.materialData.className = checkNode.name;
+        this.materialData.className = checkNode.className;
       }
 
       this.materialData.ddataId = checkNode.id;
@@ -762,27 +668,6 @@ export default {
     //关闭存储元数据弹出层
     closeStorageTreeDialog() {
       this.storageTreeVisible = false;
-    },
-    // 显示关联表信息弹出层
-    async showEditDataUse() {
-      await getCanShowDatabaseDefineList().then((res) => {
-        this.DatabaseDefineList = res.data;
-      });
-      if (this.materialData.dataLogicList.length == 0) {
-        this.materialData.dataLogicList = [
-          {
-            tableId: "",
-            dataLogicList: "",
-            databasePid: "",
-            databaseId: "",
-            tabaleType: "",
-            subTableId: "",
-            specialList: [], //专题库列表
-            tableOptionList: [], //表名称列表
-          },
-        ];
-      }
-      this.editDataUseVisible = true;
     },
 
     // 保存数据
@@ -845,11 +730,17 @@ export default {
               this.materialData.dataClassUserList.push(obj);
             });
             console.log(this.materialData);
-            this.materialData.dataLogicList.forEach((element) => {
-              element.dataClassId = this.materialData.dataClassId;
+            this.materialData.dataLogicList = [];
+            this.multipleSelection.forEach((element) => {
+              let obj={
+                databaseId: element.DATABASE_ID,
+                subTableId:element.SUB_TABLE_ID,
+                tableId: element.ID,
+                dataClassId:this.materialData.dataClassId
+              }
+              this.materialData.dataLogicList.push(obj) 
             });
           }
-
           console.log(this.materialData);
           //数据注册审核的数据用途只能选一条
           if (!resForm) {
@@ -974,24 +865,19 @@ export default {
     .el-select {
       width: 100%;
     }
-    .el-icon-plus,
-    .el-icon-minus {
-      width: 16px;
-      height: 16px;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-      text-align: center;
-      line-height: 16px;
-    }
-
-    .el-icon-plus {
-      background: #409eff;
-    }
-
-    .el-icon-minus {
-      background: #f56c6c;
-      margin-left: 8px;
+    .linkInfo{
+      display: flex;
+      justify-content: space-between;
+      .leftBox,.rightBox{
+        width: 49.5%;
+      }
+      .el-table{
+        margin-top: 10px;
+      }
+      .rightBox{
+        border: 1px solid #C0C4CC;
+        padding: 10px;
+      }
     }
     h4 {
       font-size: 15px;

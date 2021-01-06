@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 const baseUrl = process.env.VUE_APP_DM;
 // 查询表格
-export function getRelatedTables(query) {
+export function getTableInfo(query) {
   return request({
-    url: baseUrl + '/dm/dataTable/getRelatedTables',
+    url: baseUrl + '/dm/dataClass/getTableInfo',
     method: 'get',
     params: query
   })

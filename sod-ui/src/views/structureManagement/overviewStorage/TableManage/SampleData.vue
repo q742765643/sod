@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { sampleList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import { sampleList } from "@/api/structureManagement/materialManage/StructureManageTable";
 export default {
   name: "SampleData",
   props: { rowData: Object, tableInfo: Object },
@@ -34,13 +34,14 @@ export default {
       let arr = [];
       this.cols = [];
       for (let i = 0; i < this.columnData.length; i++) {
-        arr.push(this.columnData[i].dbEleCode.toLowerCase());
+        arr.push(this.columnData[i].dbEleCode);
         let obj = {
           label: this.columnData[i].eleName,
-          prop: this.columnData[i].dbEleCode.toLowerCase(),
+          prop: this.columnData[i].dbEleCode,
         };
         this.cols.push(obj);
       }
+      console.log(this.cols);
       let params = {};
       params.column = arr;
       params.databaseId = this.rowData.DATABASE_ID;
@@ -61,7 +62,7 @@ export default {
   watch: {
     tableInfo(val) {
       this.columnData = this.tableInfo.columns;
-      //this.getSampleData();
+      this.getSampleData();
     },
   },
 };

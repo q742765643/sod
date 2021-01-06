@@ -7,14 +7,7 @@
       :inline="true"
       class="searchBox"
     >
-      <el-form-item label="表中文名:" prop="tableNameCn">
-        <el-input
-          clearable
-          size="small"
-          v-model.trim="queryParams.tableNameCn"
-          placeholder="请输入表中文名"
-        />
-      </el-form-item>
+     
       <el-form-item label="表名称:" prop="tableName">
         <el-input
           clearable
@@ -109,12 +102,8 @@
       highlight-current-row
       @current-change="handleCurrentChange"
       class="afTable"
+      :span-method="objectSpanMethod"
     >
-      <af-table-column prop="NAME_CN" label="表中文名">
-        <template slot-scope="scope">
-          <span>{{ scope.row.NAME_CN }}</span>
-        </template>
-      </af-table-column>
       <af-table-column prop="TABLE_NAME" label="表名称">
         <template slot-scope="scope">
           <span>{{ scope.row.TABLE_NAME }}</span>
@@ -462,6 +451,7 @@ export default {
   },
   data() {
     return {
+      
       linkMateriaTableData: [],
       linkMateriaVisible: false,
       tableBaseInfo: {},
@@ -479,7 +469,6 @@ export default {
         databaseId: "",
         databasePid: "",
         tableName: "",
-        tableNameCn: "",
         className: "",
       },
       total: 0,
@@ -510,6 +499,9 @@ export default {
       handleDataRecoveryDialog: false,
       superMsg: {},
       currentRow: null,
+       // 合并单元格
+      spanArr: [],
+      position: 0,
     };
   },
   created() {
@@ -600,6 +592,10 @@ export default {
       storageConfigurationList(queryObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
+          if (this.tableData.length > 0) {
+           
+            this.rowspan();
+          }
         this.loading = false;
         this.$refs.singleTable.setCurrentRow();
         if (this.currentRow) {
@@ -854,6 +850,38 @@ export default {
           this.getList();
         });
       }
+    },
+     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      //表格合并行
+      if (columnIndex === 0) {
+        const _row = this.spanArr[rowIndex];
+        return {
+          rowspan: _row,
+          colspan: 1,
+        };
+      }
+    },
+    // 判断哪些需要合并
+    rowspan() {
+      this.spanArr = [];
+      this.position = 0;
+      this.tableData.forEach((item, index) => {
+        if (index === 0) {
+          this.spanArr.push(1);
+          this.position = 0;
+        } else {
+          if (
+            this.tableData[index].TABLE_NAME ===
+            this.tableData[index - 1].TABLE_NAME
+          ) {
+            this.spanArr[this.position] += 1;
+            this.spanArr.push(0);
+          } else {
+            this.spanArr.push(1);
+            this.position = index;
+          }
+        }
+      });
     },
   },
 };

@@ -244,6 +244,13 @@ export default {
             label: "源库",
           },
         ];
+      } else if (this.superDialogObj.pageName == "中间件审核") {
+        this.superChose = [
+          {
+            value: "userId",
+            label: "申请用户",
+          },
+        ];
       }
     },
 
@@ -261,6 +268,7 @@ export default {
     },
     submitSuperSearch(formName) {
       this.$emit("searchFun", this.superSearchForm);
+
     },
   },
 };

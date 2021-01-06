@@ -165,3 +165,22 @@ export function findTables(query) {
     params: query
   })
 }
+
+// 关联表信息 
+export function findTablesByTableName(query) {
+  return request({
+    url: baseUrl + '/dm/dataTable/findTablesByTableName',
+    method: 'get',
+    params: query
+  })
+}
+
+
+// 查询所有要素表 
+export function findAllETables() {
+  return request({
+    url: baseUrl + '/dm/dataTable/findAllETables',
+    method: 'get'
+  })
+}
+

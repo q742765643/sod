@@ -235,7 +235,7 @@ export default {
   data() {
     return {
       linkMateriaTableData: [],
-      tableBaseForm: this.tableBaseInfo,
+      tableBaseForm: {},
       storageTypeList: [],
       DatabaseDefineList: [],
       specialList: [],
@@ -342,7 +342,7 @@ export default {
     await getCanShowDatabaseDefineList().then((res) => {
       this.DatabaseDefineList = res.data;
     });
-    if (this.tableBaseInfo) {
+    if (this.tableBaseInfo.databasePid) {
       this.tableBaseForm = this.tableBaseInfo;
       this.handleFindSpec(this.tableBaseForm.databasePid);
     }

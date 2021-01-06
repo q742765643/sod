@@ -35,4 +35,6 @@ public interface SyncUdToPcLogService {
      * @param syncUdToPcLogIds
      */
     void deleteSyncUdToPcLogByIds(String[] syncUdToPcLogIds);
+
+    public void exportExcel(SyncUdToPcLogDto syncUdToPcLogDto);
 }

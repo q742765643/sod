@@ -46,4 +46,9 @@ public class DataOnlineTimeDto {
      * 最大阈值
      */
     private Date boundEndTime;
+
+    /**
+     * 日期类型,today和end_time
+     */
+    private String boundEndTimeFlag;
 }

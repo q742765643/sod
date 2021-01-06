@@ -368,7 +368,7 @@ public class UserController {
     /**
      * 根据用户名获取详细信息（外部接口）
      */
-//    @RequiresPermissions("system:user:getUserInfo")
+    @RequiresPermissions("system:user:getUserInfo")
     @GetMapping(value = "/getUserInfo")
     public ResultT<UserDto> getUserInfo(String bizUserid) {
         ResultT<UserDto> resultT = new ResultT<>();
