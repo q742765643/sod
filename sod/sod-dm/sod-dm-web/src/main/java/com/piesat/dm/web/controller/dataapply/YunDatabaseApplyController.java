@@ -56,7 +56,15 @@ import static com.piesat.util.page.CloudHttpUtil.*;
 @RequestMapping("/dm/yunDatabaseApply")
 @Api(value = "中间件",tags = {"中间件"})
 public class YunDatabaseApplyController {
-    String CloudURL = "http://10.20.64.167:8087/api/cloud/usms/v1/middlewares/";
+
+    @Value("${cloudDeploy.url}")
+    String CloudURL;
+    @Value("${cloudDeploy.loginUrl}")
+    String loginUrl;
+    @Value("${cloudDeploy.cloudName}")
+    String cloudName;
+    @Value("${cloudDeploy.cloudPassword}")
+    String cloudPassword;
     @Autowired
     private YunDatabaseApplyService yunDatabaseApplyService;
 
@@ -407,7 +415,14 @@ public class YunDatabaseApplyController {
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> deleteByIdPortal(@RequestBody YunDatabaseApplyDto yunDatabaseApplyDto) {
         ResultT<String> resultT = new ResultT<>();
-        this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
+        YunDatabaseApplyDto yunDatabaseApplyDtos = this.yunDatabaseApplyService.getDotById(yunDatabaseApplyDto.getId());
+//        System.out.println(yunDatabaseApplyDtos.getItserviceId());
+        if(yunDatabaseApplyDtos.getItserviceId() != null){
+            resultT.setCode(400);
+        }else{
+            this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
+        }
+
         return resultT;
     }
 
@@ -480,7 +495,7 @@ System.out.println(requestData+"-------");
 //        String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/deploy/temp";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/getNode")
@@ -493,7 +508,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id+"/nodes";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @GetMapping(value = "/getByIdPortal")
@@ -502,7 +517,7 @@ System.out.println(requestData+"-------");
     public ResultT getByIdPortal(String type,String id) throws UnsupportedEncodingException{
         ResultT resultT = new ResultT<>();
         String url = CloudURL+type+"/"+id+"/nodes";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/getContainers")
@@ -517,7 +532,7 @@ System.out.println(requestData+"-------");
         String nodeId = jsonObject.getStr("nodeId");
         String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/containers";
 //        System.out.println(requestData);
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -531,7 +546,7 @@ System.out.println(requestData+"-------");
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id+"/linkMessage";
 //        System.out.println(requestData);
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -552,7 +567,7 @@ System.out.println(requestData+"-------");
         String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/monitors?step="+step+"&type="+ZZ+"&startDate="+startDate+"&endDate="+endDate;
 //        System.out.println("+++++++++"+zType);
 //        System.out.println("+++++++++"+ZZ);
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/getJournal")
@@ -566,7 +581,7 @@ System.out.println(requestData+"-------");
         String nodeId = jsonObject.getStr("nodeId");
         String container = jsonObject.getStr("container");
         String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/logs?rows=1000&name="+container;
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -581,7 +596,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为""的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id+"/monitors/configurations";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -594,7 +609,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为""的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id;
-        resultT.setData(doDelete(url));
+        resultT.setData(doDelete(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/deployNew")
@@ -605,7 +620,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
         String type = jsonObject.getStr("storageLogic");
         String url = CloudURL+type;
-        resultT.setData(doPost(url,requestData));
+        resultT.setData(doPost(url,requestData,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/editDeployNew")
@@ -617,7 +632,7 @@ System.out.println(requestData+"-------");
         String type = jsonObject.getStr("storageLogic");
         String id = jsonObject.getStr("itserviceId");
         String url = CloudURL+type+"/"+id+"/configurations";
-        resultT.setData(doPut(url,requestData));
+        resultT.setData(doPut(url,requestData,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/editConfigNew")
@@ -632,7 +647,7 @@ System.out.println(requestData+"-------");
 
 //        System.out.println("修改数据"+data);
         String url = CloudURL+type+"/"+id+"/monitors/configurations";
-        resultT.setData(doPut(url,data));
+        resultT.setData(doPut(url,data,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
