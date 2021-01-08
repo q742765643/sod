@@ -87,16 +87,16 @@
       <el-table-column type="selection" width="50"></el-table-column>
       <el-table-column prop="databaseName" label="专题库名称"></el-table-column>
       <el-table-column
-        prop="databaseDto.databaseDefine.databaseType"
+        prop="schemaDto.database.databaseType"
         label="数据库类型"
         width="120"
       ></el-table-column>
       <el-table-column
-        prop="databaseDto.databaseDefine.databaseInstance"
+        prop="schemaDto.database.databaseInstance"
         label="专题库实例"
       ></el-table-column>
       <el-table-column
-        prop="databaseDto.schemaName"
+        prop="schemaDto.schemaName"
         label="专题库模式"
       ></el-table-column>
       <!--<el-table-column prop="database_desc" label="专题库描述"></el-table-column>-->

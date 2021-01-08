@@ -7,7 +7,6 @@
       :inline="true"
       class="searchBox"
     >
-     
       <el-form-item label="表名称:" prop="tableName">
         <el-input
           clearable
@@ -399,9 +398,9 @@
       <el-table :data="linkMateriaTableData" style="width: 100%">
         <el-table-column prop="CLASS_NAME" label="资料名" align="center">
         </el-table-column>
-        <el-table-column prop="DATA_CLASS_ID" label="四级编码" align="center">
+        <el-table-column prop="D_DATA_ID" label="四级编码" align="center">
         </el-table-column>
-        <el-table-column prop="D_DATA_ID" label="存储编码" align="center">
+        <el-table-column prop="DATA_CLASS_ID" label="存储编码" align="center">
         </el-table-column>
       </el-table>
     </el-dialog>
@@ -451,7 +450,6 @@ export default {
   },
   data() {
     return {
-      
       linkMateriaTableData: [],
       linkMateriaVisible: false,
       tableBaseInfo: {},
@@ -499,7 +497,7 @@ export default {
       handleDataRecoveryDialog: false,
       superMsg: {},
       currentRow: null,
-       // 合并单元格
+      // 合并单元格
       spanArr: [],
       position: 0,
     };
@@ -592,10 +590,9 @@ export default {
       storageConfigurationList(queryObj).then((response) => {
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
-          if (this.tableData.length > 0) {
-           
-            this.rowspan();
-          }
+        if (this.tableData.length > 0) {
+          this.rowspan();
+        }
         this.loading = false;
         this.$refs.singleTable.setCurrentRow();
         if (this.currentRow) {
@@ -851,7 +848,7 @@ export default {
         });
       }
     },
-     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       //表格合并行
       if (columnIndex === 0) {
         const _row = this.spanArr[rowIndex];
