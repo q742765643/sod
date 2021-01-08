@@ -118,6 +118,7 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
         return yunDatabaseApplyMapper.toDto(yunDatabaseApplyEntity);
     }
 
+//新增
     @Override
     public YunDatabaseApplyDto addorUpdate(Map<String, String[]> parameterMap, String filePath) {
         YunDatabaseApplyEntity yunDatabaseApplyEntity = new YunDatabaseApplyEntity();
@@ -132,7 +133,6 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
                 if(StringUtils.isNotNullString(id)){
                     yunDatabaseApplyEntity.setId(id);
                 }
-
 //            }
         }
         if (StringUtils.isNotNullString(filePath)) {
@@ -141,7 +141,28 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
         yunDatabaseApplyEntity = this.saveNotNull(yunDatabaseApplyEntity);
         return yunDatabaseApplyMapper.toDto(yunDatabaseApplyEntity);
     }
+    //编辑
+    @Override
+    public YunDatabaseApplyDto addorUpdate2(Map<String, String[]> parameterMap, String filePath) {
+        YunDatabaseApplyEntity yunDatabaseApplyEntity = new YunDatabaseApplyEntity();
+        MyBeanUtils.getObject(yunDatabaseApplyEntity,parameterMap);
+        String[] data = parameterMap.get("data");
+        if (data != null && data.length > 0) {
+            JSONObject object = JSONObject.parseObject(data[0]);
+            String userId = (String) object.get("userId");
+            yunDatabaseApplyEntity.setUserId(userId);
+            String id = (String) object.get("id");
+            if(StringUtils.isNotNullString(id)){
+                yunDatabaseApplyEntity.setId(id);
+            }
 
+        }
+        if (StringUtils.isNotNullString(filePath)) {
+            yunDatabaseApplyEntity.setExamineMaterial(filePath);
+        }
+        yunDatabaseApplyEntity = this.saveNotNull(yunDatabaseApplyEntity);
+        return yunDatabaseApplyMapper.toDto(yunDatabaseApplyEntity);
+    }
     @Override
     public YunDatabaseApplyDto getDotById(String id) {
         YunDatabaseApplyEntity yunDatabaseApplyEntity = this.getById(id);
@@ -155,7 +176,13 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
         }
         return yunDatabaseApplyDto;
     }
-
+    @Override
+    public YunDatabaseApplyDto getById1(String id) {
+        YunDatabaseApplyEntity yunDatabaseApplyEntity = this.getById(id);
+        YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyMapper.toDto(yunDatabaseApplyEntity);
+//        System.out.println("+++++++"+yunDatabaseApplyDto+"--------------------");
+        return yunDatabaseApplyDto;
+    }
     @Override
     public void deleteById(String id) {
         this.delete(id);

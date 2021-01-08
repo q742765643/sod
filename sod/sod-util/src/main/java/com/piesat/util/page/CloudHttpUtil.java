@@ -14,7 +14,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.BasicConfigurator;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -23,12 +22,13 @@ import java.net.URLEncoder;
 
 public class CloudHttpUtil {
 
-    public static String  getToken() {
+    public static String  getToken(String loginUrl,String cloudName,String cloudPassword) {
 
-        String url = "http://10.20.64.167:8081/api/cloud/iams/login";
+//        String url = "http://10.20.64.167:8081/api/cloud/iams/login";
+        String url = loginUrl;
         JSONObject jsonStr = new JSONObject();
-        jsonStr.put("username","multifort");
-        jsonStr.put("password", "Admin#11");
+        jsonStr.put("username",cloudName);
+        jsonStr.put("password", cloudPassword);
         String jsonStr1 = JSON.toJSONString(jsonStr);
         CloseableHttpClient httpclient = HttpClients.createDefault();
         String resultString = "";
@@ -76,7 +76,7 @@ public class CloudHttpUtil {
     }
 
 
-    public static String doGet(String url) throws UnsupportedEncodingException {
+    public static String doGet(String url,String loginUrl,String cloudName,String cloudPassword) throws UnsupportedEncodingException {
 
 //        BasicConfigurator.configure();
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -86,7 +86,7 @@ public class CloudHttpUtil {
         httpGet.setHeader("Accept","application/json,text/plain,*/*");
         httpGet.setHeader("Content-type", "application/json;charset=UTF-8");
         httpGet.setHeader("DataEncoding", "UTF-8");
-        httpGet.setHeader("Authorization", "Bearer "+getToken());
+        httpGet.setHeader("Authorization", "Bearer "+getToken(loginUrl,cloudName,cloudPassword));
 //        httpGet.setHeader("token", token);
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(35000).setConnectionRequestTimeout(35000).setSocketTimeout(60000).build();
         httpGet.setConfig(requestConfig);
@@ -133,7 +133,7 @@ public class CloudHttpUtil {
      * @return
      * @throws IOException
      */
-    public static String doPost(String url, String jsonStr) {
+    public static String doPost(String url, String jsonStr,String loginUrl,String cloudName,String cloudPassword) {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
@@ -142,7 +142,7 @@ public class CloudHttpUtil {
         httpPost.setHeader("Accept","application/json, text/plain,*/*");
         httpPost.setHeader("Content-type", "application/json;charset=UTF-8");
         httpPost.setHeader("DataEncoding", "UTF-8");
-        httpPost.setHeader("Authorization", "Bearer "+getToken());
+        httpPost.setHeader("Authorization", "Bearer "+getToken(loginUrl,cloudName,cloudPassword));
 
         CloseableHttpResponse httpResponse = null;
         try {
@@ -187,7 +187,7 @@ public class CloudHttpUtil {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    public static String doPut(String url, String jsonStr) throws UnsupportedEncodingException {
+    public static String doPut(String url, String jsonStr,String loginUrl,String cloudName,String cloudPassword) throws UnsupportedEncodingException {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPut httpPut = new HttpPut(url);
@@ -199,7 +199,7 @@ public class CloudHttpUtil {
         httpPut.setHeader("Connection", "keep-alive");
         httpPut.setHeader("Content-type", "application/json;charset=UTF-8");
         httpPut.setHeader("DataEncoding", "UTF-8");
-        httpPut.setHeader("Authorization", "Bearer "+getToken());
+        httpPut.setHeader("Authorization", "Bearer "+getToken(loginUrl,cloudName,cloudPassword));
 //        String finalString = null;
         CloseableHttpResponse httpResponse = null;
 //        finalString= EntityUtils.toString(jsonStr, "UTF-8");
@@ -246,7 +246,7 @@ public class CloudHttpUtil {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    public static String doDelete(String url) {
+    public static String doDelete(String url,String loginUrl,String cloudName,String cloudPassword) {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpDelete httpDelete = new HttpDelete(url);
@@ -254,7 +254,7 @@ public class CloudHttpUtil {
         httpDelete.setConfig(requestConfig);
         httpDelete.setHeader("Content-type", "application/json");
         httpDelete.setHeader("DataEncoding", "UTF-8");
-        httpDelete.setHeader("Authorization", "Bearer "+getToken());
+        httpDelete.setHeader("Authorization", "Bearer "+getToken(loginUrl,cloudName,cloudPassword));
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = httpClient.execute(httpDelete);

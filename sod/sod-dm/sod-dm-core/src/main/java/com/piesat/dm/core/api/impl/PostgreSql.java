@@ -6,10 +6,7 @@ import com.piesat.util.ResultT;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @program: sod
@@ -341,41 +338,55 @@ public class PostgreSql extends AbstractDatabaseDcl {
     }
 
     @Override
-    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+    public String queryMinTime(String schema, String tableName, Date newBoundBeginTime, String timeColumnName) throws Exception {
         if(schema.equals(schema.toUpperCase())){
             schema="\""+schema+"\"";
         }
         String minTime = "";
-        String sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
-        try {
-            stmt = connection.createStatement();
-            rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                minTime = rs.getString(1);
+        if(newBoundBeginTime != null){
+            minTime = String.valueOf(newBoundBeginTime.getTime());
+        }else {
+
+            String sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
+            try {
+                stmt = connection.createStatement();
+                rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    minTime = rs.getString(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new Exception("错误：" + e.getMessage());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new Exception("错误：" + e.getMessage());
         }
         return minTime;
     }
 
     @Override
-    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+    public String queryMaxTime(String schema, String tableName, Date newBoundEndTime,String newBoundEndTimeFlag, String timeColumnName) throws Exception {
         if(schema.equals(schema.toUpperCase())){
             schema="\""+schema+"\"";
         }
         String maxTime = "";
         String sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
-        try {
-            stmt = connection.createStatement();
-            rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                maxTime = rs.getString(1);
+        if(newBoundEndTime != null){
+            maxTime = String.valueOf(newBoundEndTime.getTime());
+        }else if(newBoundEndTimeFlag !=null || "".equalsIgnoreCase(newBoundEndTimeFlag)){
+            int num = Integer.parseInt(newBoundEndTimeFlag);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
+            maxTime = String.valueOf(calendar.getTimeInMillis());
+        }else {
+            try {
+                stmt = connection.createStatement();
+                rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    maxTime = rs.getString(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new Exception("错误：" + e.getMessage());
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new Exception("错误：" + e.getMessage());
         }
         return maxTime;
     }

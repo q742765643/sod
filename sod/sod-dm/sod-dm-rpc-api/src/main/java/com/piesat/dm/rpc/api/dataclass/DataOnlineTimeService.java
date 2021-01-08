@@ -25,7 +25,7 @@ public interface DataOnlineTimeService {
     PageBean onLineList(PageForm<Map<String,String>> pageForm);
 
     void update(DataOnlineTimeDto dataOnlineTimeDto);
-
+    void executeNew(DataOnlineTimeDto dataOnlineTimeDto);
     DataOnlineTimeDto findByDataClassId(String dataClassId);
 
     Map<String,Object> getByClassId(String dataClassId);

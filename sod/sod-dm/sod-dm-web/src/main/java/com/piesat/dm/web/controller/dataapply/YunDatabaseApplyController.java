@@ -8,6 +8,7 @@ import com.piesat.common.constant.FileTypesConstant;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.entity.dataapply.YunDatabaseApplyEntity;
 import com.piesat.dm.rpc.api.dataapply.YunDatabaseApplyFeedbackService;
 import com.piesat.dm.rpc.api.dataapply.YunDatabaseApplyLogService;
 import com.piesat.dm.rpc.api.dataapply.YunDatabaseApplyService;
@@ -56,7 +57,15 @@ import static com.piesat.util.page.CloudHttpUtil.*;
 @RequestMapping("/dm/yunDatabaseApply")
 @Api(value = "中间件",tags = {"中间件"})
 public class YunDatabaseApplyController {
-    String CloudURL = "http://10.20.64.167:8087/api/cloud/usms/v1/middlewares/";
+
+    @Value("${cloudDeploy.url}")
+    String CloudURL;
+    @Value("${cloudDeploy.loginUrl}")
+    String loginUrl;
+    @Value("${cloudDeploy.cloudName}")
+    String cloudName;
+    @Value("${cloudDeploy.cloudPassword}")
+    String cloudPassword;
     @Autowired
     private YunDatabaseApplyService yunDatabaseApplyService;
 
@@ -166,7 +175,7 @@ public class YunDatabaseApplyController {
         }
     }
 
-    @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    @ApiOperation(value = "新增(portal调用，form表单类型)")
     @RequiresPermissions("dm:yunDatabaseApply:addorUpdate")
     @PostMapping(value = "/addorUpdate")
     public ResultT addorUpdate(HttpServletRequest request, @RequestParam(value = "examineMaterial", required = false) MultipartFile applyMaterial) {
@@ -202,6 +211,57 @@ public class YunDatabaseApplyController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "编辑(portal调用，form表单类型)")
+    @RequiresPermissions("dm:yunDatabaseApply:addorUpdate2")
+    @PostMapping(value = "/addorUpdate2")
+    public ResultT addorUpdate2(HttpServletRequest request, @RequestParam(value = "examineMaterial", required = false) MultipartFile applyMaterial) {
+//        ResultT<PageBean> resultT = new ResultT<>();
+        try {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            String[] data = parameterMap.get("data");
+//            YunDatabaseApplyEntity yunDatabaseApplyEntity = new YunDatabaseApplyEntity();
+            JSONObject object = new JSONObject(data[0]);
+            String id = (String) object.get("id");
+            YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(id);
+//            System.out.println(id + "--------------------");
+//            System.out.println(yunDatabaseApplyDto1 + "--------------------");/
+            File newFile = null;
+            if (yunDatabaseApplyDto1 == null || yunDatabaseApplyDto1.getExamineStatus() == "04") {
+                return ResultT.failed("变更失败，原因为实例状态改变或实例已删除");
+            } else {
+                if (applyMaterial != null) {
+                    String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                    if (StringUtils.isNotNullString(originalFileName1)) {
+                        //再次进行文件格式判断，防止绕过js上传非法格式文件
+                        String extension = FilenameUtils.getExtension(originalFileName1);
+                        boolean b = Arrays.stream(FileTypesConstant.ALLOW_TYPES).anyMatch(e -> e.equalsIgnoreCase(extension));
+                        if (!b) {
+                            return ResultT.failed("文件格式错误");
+                        }
+                        //新的文件名
+                        String newFileName1 = originalFileName1.substring(0, originalFileName1.lastIndexOf(".")) + "_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS", new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                        newFile = new File(fileAddress + File.separator + newFileName1);
+                        if (!newFile.getParentFile().exists()) {
+                            newFile.getParentFile().mkdirs();
+                        }
+                        //存入
+                        applyMaterial.transferTo(newFile);
+                    }
+                }
+                YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyService.addorUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+                String logId = yunDatabaseApplyDto.getId();
+                String examineMaterial = yunDatabaseApplyDto.getExamineMaterial();
+                yunDatabaseApplyLogService.addLogEdit1(parameterMap, logId, examineMaterial);
+                return ResultT.success(yunDatabaseApplyDto);
+            }
+            } catch(Exception e){
+                e.printStackTrace();
+                return ResultT.failed(e.getMessage());
+            }
+
+    }
+
     @ApiOperation(value = "新增反馈信息")
     @RequiresPermissions("dm:yunDatabaseApply:addFeedback")
     @PostMapping(value = "/addFeedback")
@@ -407,7 +467,14 @@ public class YunDatabaseApplyController {
     @ApiOperation(value = "根据id删除", notes = "根据id删除")
     public ResultT<String> deleteByIdPortal(@RequestBody YunDatabaseApplyDto yunDatabaseApplyDto) {
         ResultT<String> resultT = new ResultT<>();
-        this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
+        YunDatabaseApplyDto yunDatabaseApplyDtos = this.yunDatabaseApplyService.getDotById(yunDatabaseApplyDto.getId());
+//        System.out.println(yunDatabaseApplyDtos.getItserviceId());
+        if(yunDatabaseApplyDtos.getItserviceId() != null){
+            resultT.setCode(400);
+        }else{
+            this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
+        }
+
         return resultT;
     }
 
@@ -465,11 +532,19 @@ public class YunDatabaseApplyController {
     @ApiOperation(value = "编辑", notes = "编辑")
     public ResultT<YunDatabaseApplyDto> edit(@RequestBody YunDatabaseApplyDto yunDatabaseApplyDto) {
         ResultT<YunDatabaseApplyDto> resultT = new ResultT<>();
-        yunDatabaseApplyDto.setExamineTime(new Date());
-        yunDatabaseApplyDto = this.yunDatabaseApplyService.updateDto(yunDatabaseApplyDto);
-        resultT.setData(yunDatabaseApplyDto);
-        return resultT;
+        YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(yunDatabaseApplyDto.getId());
+//        yunDatabaseApplyDto.getId();
+        if(yunDatabaseApplyDto1.getExamineStatus() == "02"){
+            resultT.setCode(202);
+            return resultT;
+        }else {
+            yunDatabaseApplyDto.setExamineTime(new Date());
+            yunDatabaseApplyDto = this.yunDatabaseApplyService.updateDto(yunDatabaseApplyDto);
+            resultT.setData(yunDatabaseApplyDto);
+            return resultT;
+        }
     }
+
     @PostMapping("/getTemp")
     @RequiresPermissions("dm:yunDatabaseApply:getTemp")
     @ApiOperation(value = "模板信息", notes = "模板信息")
@@ -480,7 +555,7 @@ System.out.println(requestData+"-------");
 //        String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/deploy/temp";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/getNode")
@@ -493,7 +568,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id+"/nodes";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @GetMapping(value = "/getByIdPortal")
@@ -502,7 +577,7 @@ System.out.println(requestData+"-------");
     public ResultT getByIdPortal(String type,String id) throws UnsupportedEncodingException{
         ResultT resultT = new ResultT<>();
         String url = CloudURL+type+"/"+id+"/nodes";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/getContainers")
@@ -517,7 +592,7 @@ System.out.println(requestData+"-------");
         String nodeId = jsonObject.getStr("nodeId");
         String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/containers";
 //        System.out.println(requestData);
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -531,7 +606,7 @@ System.out.println(requestData+"-------");
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id+"/linkMessage";
 //        System.out.println(requestData);
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -552,7 +627,7 @@ System.out.println(requestData+"-------");
         String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/monitors?step="+step+"&type="+ZZ+"&startDate="+startDate+"&endDate="+endDate;
 //        System.out.println("+++++++++"+zType);
 //        System.out.println("+++++++++"+ZZ);
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/getJournal")
@@ -566,7 +641,7 @@ System.out.println(requestData+"-------");
         String nodeId = jsonObject.getStr("nodeId");
         String container = jsonObject.getStr("container");
         String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/logs?rows=1000&name="+container;
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -581,7 +656,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为""的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id+"/monitors/configurations";
-        resultT.setData(doGet(url));
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
@@ -594,7 +669,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为""的值
         String type = jsonObject.getStr("type");
         String url = CloudURL+type+"/"+id;
-        resultT.setData(doDelete(url));
+        resultT.setData(doDelete(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/deployNew")
@@ -605,7 +680,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
         String type = jsonObject.getStr("storageLogic");
         String url = CloudURL+type;
-        resultT.setData(doPost(url,requestData));
+        resultT.setData(doPost(url,requestData,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/editDeployNew")
@@ -617,7 +692,7 @@ System.out.println(requestData+"-------");
         String type = jsonObject.getStr("storageLogic");
         String id = jsonObject.getStr("itserviceId");
         String url = CloudURL+type+"/"+id+"/configurations";
-        resultT.setData(doPut(url,requestData));
+        resultT.setData(doPut(url,requestData,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
     @PostMapping("/editConfigNew")
@@ -632,7 +707,7 @@ System.out.println(requestData+"-------");
 
 //        System.out.println("修改数据"+data);
         String url = CloudURL+type+"/"+id+"/monitors/configurations";
-        resultT.setData(doPut(url,data));
+        resultT.setData(doPut(url,data,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
 
