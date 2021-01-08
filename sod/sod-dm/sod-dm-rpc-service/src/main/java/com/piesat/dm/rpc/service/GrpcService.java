@@ -187,7 +187,7 @@ public class GrpcService {
                 //删除配置信息
                 advancedConfigDao.deleteById(id);
             }
-            this.dataTableService.delete(id);
+            this.dataTableService.deleteById(id);
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());
         }

@@ -27,6 +27,12 @@ public interface DataTableService {
 
     void delete(String id);
 
+    /**
+     * 根据id删除
+     * @param id
+     */
+    void deleteById(String id);
+
     List<DataTableInfoDto> all();
 
     List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId);

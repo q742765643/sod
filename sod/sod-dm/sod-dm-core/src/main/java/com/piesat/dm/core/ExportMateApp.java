@@ -2,6 +2,7 @@ package com.piesat.dm.core;
 
 import com.alibaba.fastjson.JSON;
 import com.piesat.common.utils.DateUtils;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.datasource.CommDataSource;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.factory.AuzDatabase;
@@ -70,9 +71,13 @@ public class ExportMateApp {
             + "DELETE FROM USR_SOD.T_SOD_DATA_CLASS WHERE D_DATA_ID = '%s';\n";
 
 
-    private static String[] arr = {"A.0042.0009.S001"};
+    private static String[] arr;
+
+    private static String input = "D:\\file\\input.txt";
 
     public static void main(String[] args) throws SQLException, IOException {
+
+        arr = toArrayByFileReader();
         ConnectVo c = new ConnectVo();
         c.setUrl("jdbc:xugu://10.20.64.168:5138/BABJ_SMDB?ips=10.20.64.167,10.20.64.169&recv_mode=0");
         c.setPort(5138);
@@ -85,8 +90,9 @@ public class ExportMateApp {
         ResultT r = new ResultT();
         List<String> sqlList = new ArrayList<>();
         for (int i = 0; i < arr.length; i++) {
-
-
+            if (StringUtils.isEmpty(arr[i])) {
+                continue;
+            }
             sqlList.add(DEL_SQL.replaceAll("%s", arr[i]));
 
             List<Map<String, Object>> m1 = a.exeQuery(String.format(T_SOD_DATA_CLASS, arr[i]), r);
@@ -124,6 +130,7 @@ public class ExportMateApp {
             sqlList.addAll(getSql(m12, "USR_SOD.T_SOD_DATASERVICE_CONFIG"));
 
             toFile(sqlList, arr[i]);
+            sqlList.clear();
         }
         a.close();
     }
@@ -222,5 +229,29 @@ public class ExportMateApp {
             s = "";
         }
         return s;
+    }
+
+
+    public static String[] toArrayByFileReader() {
+        // 使用ArrayList来存储每行读取到的字符串
+        List<String> arrayList = new ArrayList<>();
+        try {
+            FileReader fr = new FileReader(input);
+            BufferedReader bf = new BufferedReader(fr);
+            String str;
+            // 按行读取字符串
+            while ((str = bf.readLine()) != null) {
+                arrayList.add(str);
+            }
+            bf.close();
+            fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] objects = (String[]) arrayList.stream()
+                .distinct()
+                .map(String::trim)
+                .toArray(String[]::new);
+        return objects;
     }
 }

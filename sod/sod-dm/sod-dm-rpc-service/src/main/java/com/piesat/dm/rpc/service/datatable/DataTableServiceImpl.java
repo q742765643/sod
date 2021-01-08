@@ -134,6 +134,14 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     }
 
     @Override
+    public void deleteById(String id) {
+        this.shardingDao.deleteById(id);
+        this.tableColumnDao.deleteByTableId(id);
+        this.tableIndexDao.deleteByTableId(id);
+        this.delete(id);
+    }
+
+    @Override
     public List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         List<DataTableInfoEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         return this.dataTableMapper.toDto(tableEntities);
