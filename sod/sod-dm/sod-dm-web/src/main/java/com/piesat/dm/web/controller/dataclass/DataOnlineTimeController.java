@@ -55,6 +55,14 @@ public class DataOnlineTimeController {
         dataOnlineTimeService.update(dataOnlineTimeDto);
         return resultT;
     }
+    @PutMapping("/executeNew")
+    @ApiOperation(value = "执行", notes = "执行")
+    public ResultT<String> executeNew(@RequestBody DataOnlineTimeDto dataOnlineTimeDto)
+    {
+        ResultT<String> resultT=new ResultT<>();
+        dataOnlineTimeService.executeNew(dataOnlineTimeDto);
+        return resultT;
+    }
 
     @ApiOperation(value = "根据DATA_CLASS_ID查询不同库里的最新数据")
     @GetMapping(value = "/getByClassId")

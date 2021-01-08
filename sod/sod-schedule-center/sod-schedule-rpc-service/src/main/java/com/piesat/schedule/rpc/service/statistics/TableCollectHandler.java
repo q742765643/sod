@@ -68,6 +68,9 @@ public class TableCollectHandler  implements BaseHandler {
 
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
+        String newBoundEndTimeFlag = "";
+        Date newBoundEndTime = new Date();
+        Date newBoundBeginTime = new Date();
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<DatabaseEntity> databaseEntities = databaseDao.findAll();
@@ -118,6 +121,7 @@ public class TableCollectHandler  implements BaseHandler {
                         String sql = "";
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
+                        String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
                         msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName() + "_" + databaseEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
                         //判断昨天数据是否已经统计入库
@@ -154,9 +158,9 @@ public class TableCollectHandler  implements BaseHandler {
                                 //获取总记录数
                                 record_count = databaseDcl.queryRecordNum(databaseEntity.getSchemaName(), table_name);
                                 //最早记录的时间
-                                begin_time = databaseDcl.queryMinTime(databaseEntity.getSchemaName(), table_name, "D_DATETIME");
+                                begin_time = databaseDcl.queryMinTime(databaseEntity.getSchemaName(), table_name, newBoundBeginTime,"D_DATETIME");
                                 //最近记录的时间
-                                end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(), table_name, "D_DATETIME");
+                                end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(), table_name, newBoundEndTime,newBoundEndTimeFlag,"D_DATETIME");
                                 //获取日增量
                                 day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(), table_name, "D_DATETIME", yesterdayZero, todayZero);
                                 tableCollectInfo.put(table_name, begin_time + "," + end_time + "," + record_count + "," + day_total);
@@ -202,6 +206,148 @@ public class TableCollectHandler  implements BaseHandler {
 
     }
 
+    @Override
+    public void executeNew(String newTableName,String newDatabaseId,Date newBoundEndTime,Date newBoundBeginTime,String newBoundEndTimeFlag) {
+        getTimeRange();
+        StringBuffer msg = new StringBuffer();
+        List<DatabaseEntity> databaseEntities = databaseDao.findAll();
+        if(databaseEntities != null && databaseEntities.size()>0){
+            for(DatabaseEntity databaseEntity : databaseEntities) {
+                DatabaseDcl databaseDcl = null;
+                if(!databaseEntity.getId().equalsIgnoreCase(newDatabaseId)){
+                    continue;
+                }
+                try {
+                    /*if (databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
+                        continue;
+                    }*/
+                    String databaseType = databaseEntity.getDatabaseDefine().getDatabaseType();
+                    String driverClassName = databaseEntity.getDatabaseDefine().getDriverClassName();
+                    String databaseUrl = databaseEntity.getDatabaseDefine().getDatabaseUrl();
+                    String databasePort = databaseEntity.getDatabaseDefine().getDatabasePort();
+                    String databaseInstance = databaseEntity.getDatabaseDefine().getDatabaseInstance();
+                    String schemaName = databaseEntity.getSchemaName();
+
+                    List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(databaseEntity.getId());
+                    if (dataTableList == null || dataTableList.size() == 0) {
+                        continue;
+                    }
+
+                    //获取数据库管理账户
+                    DatabaseAdministratorEntity databaseAdministratorEntity = null;
+                    Set<DatabaseAdministratorEntity> databaseAdministratorList = databaseEntity.getDatabaseDefine().getDatabaseAdministratorList();
+                    for (DatabaseAdministratorEntity databaseAdministratorEntity1 : databaseAdministratorList) {
+                        if (databaseAdministratorEntity1.getIsManager()) {
+                            databaseAdministratorEntity = databaseAdministratorEntity1;
+                            break;
+                        }
+                    }
+
+                    //获取链接
+                    if ("xugu".equalsIgnoreCase(databaseType)) {
+                        Xugu xugu = new Xugu(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
+                        databaseDcl = xugu;
+                    } else if ("gbase8a".equalsIgnoreCase(databaseType)) {
+                        Gbase8a gbase8a = new Gbase8a(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
+                        databaseDcl = gbase8a;
+                    }
+
+                    Map<String, String> tableCollectInfo = new HashMap<String, String>();
+                    for (int i = 0; i < dataTableList.size(); i++) {
+                        String begin_time = "";
+                        String end_time = "";
+                        String record_count = "";
+                        String day_total = "";
+                        String sql = "";
+                        Map<String, Object> tableInfo = dataTableList.get(i);
+                        String table_name = String.valueOf(tableInfo.get("table_name"));
+                        if(!table_name.equalsIgnoreCase(newTableName)){
+                            continue;
+                        }
+//                        String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
+                        msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName() + "_" + databaseEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
+
+                        //判断昨天数据是否已经统计入库
+                        /*List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);
+                        TableDataStatisticsDto tableDataStatisticsDto = new TableDataStatisticsDto();
+                        tableDataStatisticsDto.setDatabaseId(databaseEntity.getId());
+                        tableDataStatisticsDto.setTableId(String.valueOf(tableInfo.get("id")));
+                        tableDataStatisticsDto.setStatisticDate(yesterdayZeroDate);
+                        List<TableDataStatisticsDto> tableDataStatisticsDtos = tableDataStatisticsService.findByParam(tableDataStatisticsDto);
+                        if (tableDataStatisticsDtos != null && tableDataStatisticsDtos.size() > 0) {
+                            continue;
+                        }*/
+
+                        //不统计值表数据
+                        if ("E".equals(String.valueOf(tableInfo.get("db_table_type"))) && String.valueOf(tableInfo.get("storage_type")).contains("K")) {
+                            continue;
+                        }
+                        String value = tableCollectInfo.get("table_name");
+
+                        //日候旬月年  手动赋值
+                        if (String.valueOf(table_name).contains("1981_2010")) {
+                            //tableCollectInfo.put(String.valueOf(tableInfo.get("TABLE_NAME")),"1981-01-01 00:00:00"+","+"2010-01-01 00:00:00"+","+"10000"+","+"10000");
+                            begin_time = "1981-01-01 00:00:00";
+                            end_time = "2010-01-01 00:00:00";
+                            record_count = "10000";
+                            day_total = "10000";
+                        } else if (value != null) {
+                            begin_time = value.split(",")[0];
+                            end_time = value.split(",")[1];
+                            record_count = value.split(",")[2];
+                            day_total = value.split(",")[3];
+                        } else {
+                            try {
+                                //获取总记录数
+                                record_count = databaseDcl.queryRecordNum(databaseEntity.getSchemaName(), table_name);
+                                //最早记录的时间
+                                begin_time = databaseDcl.queryMinTime(databaseEntity.getSchemaName(), table_name, newBoundBeginTime,"D_DATETIME");
+                                //最近记录的时间
+                                end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(), table_name, newBoundEndTime,newBoundEndTimeFlag,"D_DATETIME");
+                                //获取日增量
+                                day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(), table_name, "D_DATETIME", yesterdayZero, todayZero);
+                                tableCollectInfo.put(table_name, begin_time + "," + end_time + "," + record_count + "," + day_total);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        //入库
+                        TableDataStatisticsEntity tableDataStatisticsEntity = new TableDataStatisticsEntity();
+                        tableDataStatisticsEntity.setTableId(String.valueOf(tableInfo.get("id")));
+                        tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
+                        tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
+                        tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", yesterdayZero));
+                        //tableDataStatisticsEntity.setStatisticDate(yesterdayZero);
+                        if (StringUtils.isNotNullString(begin_time)) {
+                            tableDataStatisticsEntity.setBeginTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", begin_time));
+                        }
+                        if (StringUtils.isNotNullString(end_time)) {
+                            tableDataStatisticsEntity.setEndTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", end_time));
+                        }
+                        if (StringUtils.isNotNullString(record_count)) {
+                            tableDataStatisticsEntity.setRecordCount(Double.valueOf(record_count));
+                        }
+                        if (StringUtils.isNotNullString(day_total)) {
+                            tableDataStatisticsEntity.setDayTotal(Integer.valueOf(day_total));
+                        }
+                        tableDataStatisticsDao.saveNotNull(tableDataStatisticsEntity);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    if (databaseDcl != null) {
+                        databaseDcl.closeConnect();
+                    }
+                }
+            }
+        }
+
+    }
 
     //昨天0点
     String yesterdayZero = "";

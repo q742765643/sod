@@ -424,7 +424,7 @@ public class Xugu extends AbstractDatabaseDcl {
     }
 
     @Override
-    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+    public String queryMinTime(String schema, String tableName,Date newBoundBeginTime, String timeColumnName) throws Exception {
         String minTime = "";
         // 获取所有分区号
         String sql = "SELECT PARTI_VAL FROM DBA_PARTIS WHERE TABLE_ID=(SELECT TABLE_ID FROM DBA_TABLES A INNER JOIN DBA_SCHEMAS B ON A.SCHEMA_ID=B.SCHEMA_ID WHERE TABLE_NAME='"
@@ -439,21 +439,37 @@ public class Xugu extends AbstractDatabaseDcl {
             rs.close();
             //表没有分区，不是分区表
             if (parti_val.size() == 0) {
-                sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
+                if(newBoundBeginTime != null){
+                    String minData = String.valueOf(newBoundBeginTime.getTime());
+                    sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">" + minData;
+                }else {
+                    sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
+                }
                 rs = stmt.executeQuery(sql);
                 if (rs.next()) {
                     minTime = rs.getString(1);
                 }
             } else {
                 // 获取首分区键值，判断是否存在数据，否则偏移至第二个分区
-                sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + "<" + parti_val.get(0) + "";
+                if(newBoundBeginTime != null){
+                    String minData = String.valueOf(newBoundBeginTime.getTime());
+                    sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + "<" + parti_val.get(0) + " AND " + timeColumnName + ">" +minData;
+                }else {
+                    sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + "<" + parti_val.get(0) + "";
+                }
                 rs = stmt.executeQuery(sql);
                 if (rs.next() && rs.getString(1) != null) {
                     minTime = rs.getString(1);
+
                 } else {
                     for (int i = 0; i < parti_val.size() - 1; i++) {
                         //获取偏移分区间的最小值
-                        sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i) + " AND " + timeColumnName + "<" + parti_val.get(i + 1);
+                        if(newBoundBeginTime != null){
+                            String minData = String.valueOf(newBoundBeginTime.getTime());
+                            sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + minData + " AND " + timeColumnName + "<" + parti_val.get(i + 1);
+                        }else {
+                            sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i) + " AND " + timeColumnName + "<" + parti_val.get(i + 1);
+                        }
                         rs = stmt.executeQuery(sql);
                         if (!rs.next()) {
                             rs.close();
@@ -469,6 +485,7 @@ public class Xugu extends AbstractDatabaseDcl {
                     }
                 }
             }
+//            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -486,7 +503,7 @@ public class Xugu extends AbstractDatabaseDcl {
     }
 
     @Override
-    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+    public String queryMaxTime(String schema, String tableName,Date newBoundEndTime,String newBoundEndTimeFlag, String timeColumnName) throws Exception {
         String maxTime = "";
         // 获取所有分区号
         String sql = "SELECT PARTI_VAL FROM DBA_PARTIS WHERE TABLE_ID=(SELECT TABLE_ID FROM DBA_TABLES A INNER JOIN DBA_SCHEMAS B ON A.SCHEMA_ID=B.SCHEMA_ID WHERE UPPER(TABLE_NAME)='"
@@ -499,31 +516,55 @@ public class Xugu extends AbstractDatabaseDcl {
                 parti_val.add(rs.getString(1));
             }
             rs.close();
-            //表没有分区，不是分区表
-            if (parti_val.size() == 0) {
-                sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
-                rs = stmt.executeQuery(sql);
-                if (rs.next() && rs.getString(1) != null) {
-                    maxTime = rs.getString(1);
-                }
-            } else {
-                for (int i = 0; i < parti_val.size() - 1; i++) {
-                    //获取偏移分区间的最小值
-                    sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + parti_val.get(i);
+                //表没有分区，不是分区表
+                if (parti_val.size() == 0) {
+                    if(newBoundEndTime != null){
+                        String maxData = String.valueOf(newBoundEndTime.getTime());
+                        sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" + maxData;
+                    }else if(newBoundEndTimeFlag != null || "".equalsIgnoreCase(newBoundEndTimeFlag)){
+                        int num = Integer.parseInt(newBoundEndTimeFlag);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
+                        String masFlog = String.valueOf(calendar.getTimeInMillis());
+                        sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" + masFlog;;
+                    }else {
+                        sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
+                    }
                     rs = stmt.executeQuery(sql);
-                    if (!rs.next()) {
-                        rs.close();
-                        continue;
+                    if (rs.next() && rs.getString(1) != null) {
+                        maxTime = rs.getString(1);
                     }
-                    maxTime = rs.getString(1);
-                    if (maxTime == null) {
-                        rs.close();
-                        continue;
-                    } else {
-                        break;
+                } else {
+                    for (int i = 0; i < parti_val.size() - 1; i++) {
+                        //获取偏移分区间的最小值
+//                        sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + parti_val.get(i);
+                        if(newBoundEndTime != null){
+                            String maxData = String.valueOf(newBoundEndTime.getTime());
+                            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + maxData;
+                        }else if(newBoundEndTimeFlag != null || "".equalsIgnoreCase(newBoundEndTimeFlag)){
+                            int num = Integer.parseInt(newBoundEndTimeFlag);
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
+                            String masFlog = String.valueOf(calendar.getTimeInMillis());
+                            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + masFlog;
+                        }else {
+                            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + parti_val.get(i);
+                        }
+                        rs = stmt.executeQuery(sql);
+                        if (!rs.next()) {
+                            rs.close();
+                            continue;
+                        }
+                        maxTime = rs.getString(1);
+                        if (maxTime == null) {
+                            rs.close();
+                            continue;
+                        } else {
+                            break;
+                        }
                     }
                 }
-            }
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();

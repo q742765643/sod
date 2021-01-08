@@ -5,6 +5,7 @@ import com.piesat.util.ResultT;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
+import java.util.Date;
 
 /**
  * @program: sod
@@ -15,4 +16,6 @@ import java.sql.ResultSet;
 
 public interface BaseHandler {
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT);
+
+    void executeNew(String newTableName, String newDatabaseId, Date newBoundEndTime, Date newBoundBeginTime, String newBoundEndTimeFlag);
 }

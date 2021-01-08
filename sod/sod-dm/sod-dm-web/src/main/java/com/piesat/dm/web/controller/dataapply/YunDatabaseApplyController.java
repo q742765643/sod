@@ -8,6 +8,7 @@ import com.piesat.common.constant.FileTypesConstant;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.entity.dataapply.YunDatabaseApplyEntity;
 import com.piesat.dm.rpc.api.dataapply.YunDatabaseApplyFeedbackService;
 import com.piesat.dm.rpc.api.dataapply.YunDatabaseApplyLogService;
 import com.piesat.dm.rpc.api.dataapply.YunDatabaseApplyService;
@@ -174,7 +175,7 @@ public class YunDatabaseApplyController {
         }
     }
 
-    @ApiOperation(value = "新增/编辑(portal调用，form表单类型)")
+    @ApiOperation(value = "新增(portal调用，form表单类型)")
     @RequiresPermissions("dm:yunDatabaseApply:addorUpdate")
     @PostMapping(value = "/addorUpdate")
     public ResultT addorUpdate(HttpServletRequest request, @RequestParam(value = "examineMaterial", required = false) MultipartFile applyMaterial) {
@@ -210,6 +211,57 @@ public class YunDatabaseApplyController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "编辑(portal调用，form表单类型)")
+    @RequiresPermissions("dm:yunDatabaseApply:addorUpdate2")
+    @PostMapping(value = "/addorUpdate2")
+    public ResultT addorUpdate2(HttpServletRequest request, @RequestParam(value = "examineMaterial", required = false) MultipartFile applyMaterial) {
+//        ResultT<PageBean> resultT = new ResultT<>();
+        try {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            String[] data = parameterMap.get("data");
+//            YunDatabaseApplyEntity yunDatabaseApplyEntity = new YunDatabaseApplyEntity();
+            JSONObject object = new JSONObject(data[0]);
+            String id = (String) object.get("id");
+            YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(id);
+//            System.out.println(id + "--------------------");
+//            System.out.println(yunDatabaseApplyDto1 + "--------------------");/
+            File newFile = null;
+            if (yunDatabaseApplyDto1 == null || yunDatabaseApplyDto1.getExamineStatus() == "04") {
+                return ResultT.failed("变更失败，原因为实例状态改变或实例已删除");
+            } else {
+                if (applyMaterial != null) {
+                    String originalFileName1 = applyMaterial.getOriginalFilename();//旧的文件名(用户上传的文件名称)
+                    if (StringUtils.isNotNullString(originalFileName1)) {
+                        //再次进行文件格式判断，防止绕过js上传非法格式文件
+                        String extension = FilenameUtils.getExtension(originalFileName1);
+                        boolean b = Arrays.stream(FileTypesConstant.ALLOW_TYPES).anyMatch(e -> e.equalsIgnoreCase(extension));
+                        if (!b) {
+                            return ResultT.failed("文件格式错误");
+                        }
+                        //新的文件名
+                        String newFileName1 = originalFileName1.substring(0, originalFileName1.lastIndexOf(".")) + "_" + DateUtils.parseDateToStr("YYYYMMDDHHMMSS", new Date()) + originalFileName1.substring(originalFileName1.lastIndexOf("."));
+                        newFile = new File(fileAddress + File.separator + newFileName1);
+                        if (!newFile.getParentFile().exists()) {
+                            newFile.getParentFile().mkdirs();
+                        }
+                        //存入
+                        applyMaterial.transferTo(newFile);
+                    }
+                }
+                YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyService.addorUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
+                String logId = yunDatabaseApplyDto.getId();
+                String examineMaterial = yunDatabaseApplyDto.getExamineMaterial();
+                yunDatabaseApplyLogService.addLogEdit1(parameterMap, logId, examineMaterial);
+                return ResultT.success(yunDatabaseApplyDto);
+            }
+            } catch(Exception e){
+                e.printStackTrace();
+                return ResultT.failed(e.getMessage());
+            }
+
+    }
+
     @ApiOperation(value = "新增反馈信息")
     @RequiresPermissions("dm:yunDatabaseApply:addFeedback")
     @PostMapping(value = "/addFeedback")
@@ -480,11 +532,19 @@ public class YunDatabaseApplyController {
     @ApiOperation(value = "编辑", notes = "编辑")
     public ResultT<YunDatabaseApplyDto> edit(@RequestBody YunDatabaseApplyDto yunDatabaseApplyDto) {
         ResultT<YunDatabaseApplyDto> resultT = new ResultT<>();
-        yunDatabaseApplyDto.setExamineTime(new Date());
-        yunDatabaseApplyDto = this.yunDatabaseApplyService.updateDto(yunDatabaseApplyDto);
-        resultT.setData(yunDatabaseApplyDto);
-        return resultT;
+        YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(yunDatabaseApplyDto.getId());
+//        yunDatabaseApplyDto.getId();
+        if(yunDatabaseApplyDto1.getExamineStatus() == "02"){
+            resultT.setCode(202);
+            return resultT;
+        }else {
+            yunDatabaseApplyDto.setExamineTime(new Date());
+            yunDatabaseApplyDto = this.yunDatabaseApplyService.updateDto(yunDatabaseApplyDto);
+            resultT.setData(yunDatabaseApplyDto);
+            return resultT;
+        }
     }
+
     @PostMapping("/getTemp")
     @RequiresPermissions("dm:yunDatabaseApply:getTemp")
     @ApiOperation(value = "模板信息", notes = "模板信息")

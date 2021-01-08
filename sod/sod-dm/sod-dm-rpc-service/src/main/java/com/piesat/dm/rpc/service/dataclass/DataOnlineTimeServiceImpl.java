@@ -6,11 +6,14 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataclass.DataOnlineTimeDao;
+import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
+import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataOnlineTimeService;
 import com.piesat.dm.rpc.dto.dataclass.DataOnlineTimeDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataOnlineTimeMapper;
+import com.piesat.schedule.rpc.service.statistics.TableCollectHandler;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,14 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
 
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+
+    @Autowired
+    private DataTableDao dataTableDao;
+
+    @Autowired
+    private TableCollectHandler tableCollectHandler;
+
+
 
     @Override
     public BaseDao<DataOnlineTimeEntity> getBaseDao() {
@@ -104,6 +115,26 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
     public void update(DataOnlineTimeDto dataOnlineTimeDto) {
         this.deleteByDataClassId(dataOnlineTimeDto.getDataClassId());
         this.saveDto(dataOnlineTimeDto);
+    }
+    @Override
+    public void executeNew(DataOnlineTimeDto dataOnlineTimeDto){
+        String dataClassId = dataOnlineTimeDto.getDataClassId();
+        SimpleDateFormat formater = new SimpleDateFormat();
+//        formater.applyPattern(formaterString);
+//        time = formater.format(date);
+//        String newBoundEndTime = String.valueOf(dataOnlineTimeDto.getBoundEndTime().getTime());
+        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundEndTime());
+        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundBeginTime());
+        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundEndTimeFlag());
+        List<Map<String, Object>> dataTableEntities = dataTableDao.getByClassId(dataClassId);
+        if(dataTableEntities != null && dataTableEntities.size()>0){
+            for(int i=0;i<dataTableEntities.size();i++){
+                Map<String, Object> dataTableEntity = dataTableEntities.get(i);
+                String tableName = (String) dataTableEntity.get("TABLE_NAME");
+                String databaseId = (String) dataTableEntity.get("DATABASE_ID");
+                tableCollectHandler.executeNew(tableName,databaseId,dataOnlineTimeDto.getBoundEndTime(),dataOnlineTimeDto.getBoundBeginTime(),dataOnlineTimeDto.getBoundEndTimeFlag());
+            }
+        }
     }
 
     @Override

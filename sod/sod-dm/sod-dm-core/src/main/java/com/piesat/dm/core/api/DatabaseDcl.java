@@ -3,6 +3,7 @@ package com.piesat.dm.core.api;
 import com.piesat.dm.core.model.Column;
 import com.piesat.util.ResultT;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -180,7 +181,7 @@ public interface DatabaseDcl {
      * @return
      * @throws Exception
      */
-    String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception;
+    String queryMinTime(String schema, String tableName, Date newBoundBeginTime, String timeColumnName) throws Exception;
 
     /**
      * 获取最大时间
@@ -190,7 +191,7 @@ public interface DatabaseDcl {
      * @return
      * @throws Exception
      */
-    String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception;
+    String queryMaxTime(String schema, String tableName, Date newBoundEndTime,String newBoundEndTimeFlag,String timeColumnName) throws Exception;
 
 
     /**
