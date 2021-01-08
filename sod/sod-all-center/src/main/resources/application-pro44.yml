@@ -164,7 +164,11 @@ fileUpload:
   savaPath: /space/cmadaas/sod/src/sod/file/upload
   httpPath: /upload
   portal_file: /upload
-
+cloudDeploy:
+  loginUrl: http://10.20.64.167:8081/api/cloud/iams/login
+  url: http://10.20.64.167:8087/api/cloud/usms/v1/middlewares/
+  cloudName: multifort
+  cloudPassword: Admin#11
 
 businessParameters:
   databaseUserDefaultPassword: Asd123

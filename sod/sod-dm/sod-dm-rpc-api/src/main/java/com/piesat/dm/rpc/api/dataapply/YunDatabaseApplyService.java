@@ -15,7 +15,9 @@ public interface YunDatabaseApplyService {
     YunDatabaseApplyDto saveDto(YunDatabaseApplyDto yunDatabaseApplyDto);
     YunDatabaseApplyDto updateDto(YunDatabaseApplyDto yunDatabaseApplyDto);
     YunDatabaseApplyDto addorUpdate(Map<String, String[]> parameterMap, String filePath);
+    YunDatabaseApplyDto addorUpdate2(Map<String, String[]> parameterMap, String filePath);
     YunDatabaseApplyDto getDotById(String id);
+    YunDatabaseApplyDto getById1(String id);
 
     public void deleteById(String id);
 

@@ -293,12 +293,12 @@ public class Cassandra implements DatabaseDcl {
     }
 
     @Override
-    public String queryMinTime(String schema, String tableName, String timeColumnName) throws Exception {
+    public String queryMinTime(String schema, String tableName, Date newBoundBeginTime, String timeColumnName) throws Exception {
         return null;
     }
 
     @Override
-    public String queryMaxTime(String schema, String tableName, String timeColumnName) throws Exception {
+    public String queryMaxTime(String schema, String tableName, Date newBoundEndTime,String newBoundEndTimeFlag, String timeColumnName) throws Exception {
         return null;
     }
 

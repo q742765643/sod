@@ -7,13 +7,13 @@
         prop="TABLE_NAME"
         :show-overflow-tooltip="true"
       ></el-table-column>
-      <el-table-column label="表中文名" prop="NAME_CN"></el-table-column>
-      <el-table-column label="数据库" prop="DATABASE_NAME" width="200">
+     
+      <el-table-column label="数据库" prop="DATABASE_NAME" >
         <template slot-scope="scope">
-          <span v-if="scope.row.DATABASE_NAME_P">{{
-            scope.row.DATABASE_NAME_P
+          <span v-if="scope.row.DATABASE_NAME_F">{{
+            scope.row.DATABASE_NAME_F
           }}</span>
-          <span v-if="scope.row.DATABASE_NAME && scope.row.DATABASE_NAME_P"
+          <span v-if="scope.row.DATABASE_NAME && scope.row.DATABASE_NAME_F"
             >-</span
           >
           <span v-if="scope.row.DATABASE_NAME">{{
@@ -26,7 +26,7 @@
   </section>
 </template>
 <script>
-import { getRelatedTables } from "@/api/structureManagement/materialManage/linkTableInfo";
+import { getTableInfo } from "@/api/structureManagement/materialManage/linkTableInfo";
 
 //分页组件
 export default {
@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     searchFun() {
-      getRelatedTables({ tableId: this.linkTableObj.TABLE_ID }).then((res) => {
+      getTableInfo({ dataclassId: this.linkTableObj.DATA_CLASS_ID }).then((res) => {
         this.tableData = res.data;
       });
     },

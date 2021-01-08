@@ -221,13 +221,14 @@ export default {
           this.treeData = response.data;
         });
       }
-      if (this.defaultExpandedKeys) {
+      /* if (this.defaultExpandedKeys) {
         this.$refs.elTree.setCurrentKey(this.defaultExpandedKeys.id);
         this.expandedKeys = [];
         this.expandedKeys.push(this.defaultExpandedKeys.id);
       } else {
         this.defaultStyle();
-      }
+      } */
+      this.defaultStyle();
     },
 
     //左侧分类点击

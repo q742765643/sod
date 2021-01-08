@@ -90,8 +90,12 @@ export default {
   methods: {
     // 获取分库分表键的值
     async getShared() {
-      await shardingGet({ id: this.rowData.ID }).then((response) => {
-        this.editData = response.data;
+        let id=this.rowData.ID == undefined?this.tableInfo.id:this.rowData.ID
+      await shardingGet({ id: id }).then((response) => {
+        if(response.data){
+this.editData = response.data;
+        }
+        
       });
     },
     // 取消

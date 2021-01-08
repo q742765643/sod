@@ -17,11 +17,29 @@ export function update(data) {
     data: data
   })
 }
+// 执行
+export function executeNew(data) {
+  return request({
+    url: baseUrl + '/dm/onlineTime/executeNew',
+    method: 'put',
+    data: data
+  })
+}
 
 export function getByClassId(query) {
   return request({
     url: baseUrl + '/dm/onlineTime/getByClassId',
     method: 'get',
     params: query
+  })
+}
+// 立即执行
+export function execute(id) {
+  return request({
+    url: baseUrl + '/schedule/job/execute',
+    method: 'get',
+    params: {
+      "id": id
+    }
   })
 }

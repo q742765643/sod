@@ -622,10 +622,12 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Transactional
     public void delBizUser(String bizUserid) {
         UserEntity userEntity = userDao.findByUserName(bizUserid);
-        userRoleDao.deleteByUserId(userEntity.getId());
-        this.delete(userEntity.getId());
+        if(userEntity != null){
+            userRoleDao.deleteByUserId(userEntity.getId());
+            this.delete(userEntity.getId());
 
-        //删除业务用户所关联的数据
-        dataClassService.deleteByBizUserId(bizUserid);
+            //删除业务用户所关联的数据
+            dataClassService.deleteByBizUserId(bizUserid);
+        }
     }
 }

@@ -60,6 +60,25 @@ public  class YunDatabaseApplyLogServiceImpl extends BaseService<YunDatabaseAppl
                 yunDatabaseApplyLogEntity.setUserId(userId);
 //            }
         }
+//        yunDatabaseApplyLogEntity.setLogId(logId);
+//        yunDatabaseApplyLogEntity.setExamineMaterial(examineMaterial);
+        yunDatabaseApplyLogEntity = this.saveNotNull(yunDatabaseApplyLogEntity);
+        return yunDatabaseApplyLogMapper.toDto(yunDatabaseApplyLogEntity);
+    }
+    @Override
+    public YunDatabaseApplyLogDto addLogEdit1(Map<String, String[]> parameterMap,String logId,String examineMaterial) {
+        YunDatabaseApplyLogEntity yunDatabaseApplyLogEntity = new YunDatabaseApplyLogEntity();
+        MyBeanUtils.getObject(yunDatabaseApplyLogEntity,parameterMap);
+        String[] data = parameterMap.get("data");
+        if (data != null && data.length > 0) {
+//            if (StringUtils.isNotEmpty(data[0])) {
+            JSONObject object = JSONObject.parseObject(data[0]);
+            String userId = (String) object.get("userId");
+            yunDatabaseApplyLogEntity.setUserId(userId);
+//            }
+        }
+        yunDatabaseApplyLogEntity.setLogId(logId);
+        yunDatabaseApplyLogEntity.setExamineMaterial(examineMaterial);
         yunDatabaseApplyLogEntity = this.saveNotNull(yunDatabaseApplyLogEntity);
         return yunDatabaseApplyLogMapper.toDto(yunDatabaseApplyLogEntity);
     }
