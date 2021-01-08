@@ -69,8 +69,8 @@ public class TableCollectHandler  implements BaseHandler {
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
         String newBoundEndTimeFlag = "";
-        Date newBoundEndTime = new Date();
-        Date newBoundBeginTime = new Date();
+        Date newBoundEndTime = null;
+        Date newBoundBeginTime = null;
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<DatabaseEntity> databaseEntities = databaseDao.findAll();
