@@ -44,7 +44,7 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="4">
+        <el-col :span="5">
           <el-form-item>
             <el-button
               v-if="!isEdit"
@@ -90,12 +90,12 @@ export default {
   methods: {
     // 获取分库分表键的值
     async getShared() {
-        let id=this.rowData.ID == undefined?this.tableInfo.id:this.rowData.ID
+      let id =
+        this.rowData.ID == undefined ? this.tableInfo.id : this.rowData.ID;
       await shardingGet({ id: id }).then((response) => {
-        if(response.data){
-this.editData = response.data;
+        if (response.data) {
+          this.editData = response.data;
         }
-        
       });
     },
     // 取消
