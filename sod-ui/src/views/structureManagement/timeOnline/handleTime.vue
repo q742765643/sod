@@ -109,7 +109,6 @@
     </el-card>
     </el-form>
     <div class="dialog-footer" slot="footer" style="padding-top: 20px">
-      <el-button type="primary" @click="handleExecute()">执行</el-button>
       <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
@@ -431,6 +430,20 @@ export default {
           console.log(this.msgFormDialog);
           update(this.msgFormDialog).then(res => {
             if (res.code == 200) {
+              executeNew(this.msgFormDialog).then(res => {
+                // if (res.code == 200) {
+                //   this.$message({
+                //     message: "操作成功",
+                //     type: "success"
+                //   });
+                //   this.$emit("cancelHandle");
+                // } else {
+                //   this.$message({
+                //     message: res.msg,
+                //     type: "error"
+                //   });
+                // }
+              });
               this.$message({
                 message: "操作成功",
                 type: "success"
