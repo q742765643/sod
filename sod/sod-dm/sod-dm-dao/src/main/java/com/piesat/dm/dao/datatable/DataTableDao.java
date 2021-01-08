@@ -120,4 +120,14 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      */
     @Query(value = "SELECT DISTINCT TABLE_NAME FROM T_SOD_DATA_TABLE_INFO WHERE TABLE_TYPE = 'E' ", nativeQuery = true)
     List<Map<String, Object>> findAllETables();
+
+
+    /**
+     * 根据存储编码查询表及数据库信息
+     * @param dataClassId
+     * @return
+     */
+    @Query(value = "SELECT DISTINCT TABLE_NAME,DATABASE_ID FROM T_SOD_DATA_TABLE_INFO a" +
+            "LEFT JOIN T_SOD_DATACLASS_TABLE b ON a.id=b.TABLE_ID OR a.id=b.SUB_TABLE_ID  WHERE b.data_class_id = ?1 ", nativeQuery = true)
+    List<Map<String, Object>> getByClassId(String dataClassId);
 }

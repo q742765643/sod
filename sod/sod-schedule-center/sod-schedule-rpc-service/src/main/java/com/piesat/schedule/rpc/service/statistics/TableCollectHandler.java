@@ -6,9 +6,11 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.TableDataStatisticsDao;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
+import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.TableDataStatisticsEntity;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
@@ -65,6 +67,9 @@ public class TableCollectHandler  implements BaseHandler {
 
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
+        String newBoundEndTimeFlag = "";
+        Date newBoundEndTime = new Date();
+        Date newBoundBeginTime = new Date();
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<SchemaEntity> databaseEntities = schemaDao.findAll();
@@ -150,13 +155,13 @@ public class TableCollectHandler  implements BaseHandler {
                         } else {
                             try {
                                 //获取总记录数
-                                record_count = databaseDcl.queryRecordNum(databaseEntity.getSchemaName(), table_name);
+                                record_count = databaseDcl.queryRecordNum(schemaEntity.getSchemaName(), table_name);
                                 //最早记录的时间
-                                begin_time = databaseDcl.queryMinTime(databaseEntity.getSchemaName(), table_name, newBoundBeginTime,"D_DATETIME");
+                                begin_time = databaseDcl.queryMinTime(schemaEntity.getSchemaName(), table_name, newBoundBeginTime,"D_DATETIME");
                                 //最近记录的时间
-                                end_time = databaseDcl.queryMaxTime(databaseEntity.getSchemaName(), table_name, newBoundEndTime,newBoundEndTimeFlag,"D_DATETIME");
+                                end_time = databaseDcl.queryMaxTime(schemaEntity.getSchemaName(), table_name, newBoundEndTime,newBoundEndTimeFlag,"D_DATETIME");
                                 //获取日增量
-                                day_total = databaseDcl.queryIncreCount(databaseEntity.getSchemaName(), table_name, "D_DATETIME", yesterdayZero, todayZero);
+                                day_total = databaseDcl.queryIncreCount(schemaEntity.getSchemaName(), table_name, "D_DATETIME", yesterdayZero, todayZero);
                                 tableCollectInfo.put(table_name, begin_time + "," + end_time + "," + record_count + "," + day_total);
 
                             } catch (Exception e) {
@@ -168,7 +173,7 @@ public class TableCollectHandler  implements BaseHandler {
                         //入库
                         TableDataStatisticsEntity tableDataStatisticsEntity = new TableDataStatisticsEntity();
                         tableDataStatisticsEntity.setTableId(String.valueOf(tableInfo.get("id")));
-                        tableDataStatisticsEntity.setDatabaseId(databaseEntity.getId());
+                        tableDataStatisticsEntity.setDatabaseId(schemaEntity.getId());
                         tableDataStatisticsEntity.setStatisticTime(sdf.format(new Date()));
                         tableDataStatisticsEntity.setStatisticDate(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", yesterdayZero));
                         //tableDataStatisticsEntity.setStatisticDate(yesterdayZero);
@@ -204,32 +209,32 @@ public class TableCollectHandler  implements BaseHandler {
     public void executeNew(String newTableName,String newDatabaseId,Date newBoundEndTime,Date newBoundBeginTime,String newBoundEndTimeFlag) {
         getTimeRange();
         StringBuffer msg = new StringBuffer();
-        List<DatabaseEntity> databaseEntities = databaseDao.findAll();
-        if(databaseEntities != null && databaseEntities.size()>0){
-            for(DatabaseEntity databaseEntity : databaseEntities) {
+        List<SchemaEntity> schemaEntities = schemaDao.findAll();
+        if(schemaEntities != null && schemaEntities.size()>0){
+            for(SchemaEntity schemaEntity : schemaEntities) {
                 DatabaseDcl databaseDcl = null;
-                if(!databaseEntity.getId().equalsIgnoreCase(newDatabaseId)){
+                if(!schemaEntity.getId().equalsIgnoreCase(newDatabaseId)){
                     continue;
                 }
                 try {
-                    /*if (databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
+                    /*if (schemaEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
                         continue;
                     }*/
-                    String databaseType = databaseEntity.getDatabaseDefine().getDatabaseType();
-                    String driverClassName = databaseEntity.getDatabaseDefine().getDriverClassName();
-                    String databaseUrl = databaseEntity.getDatabaseDefine().getDatabaseUrl();
-                    String databasePort = databaseEntity.getDatabaseDefine().getDatabasePort();
-                    String databaseInstance = databaseEntity.getDatabaseDefine().getDatabaseInstance();
-                    String schemaName = databaseEntity.getSchemaName();
+                    String databaseType = schemaEntity.getDatabase().getDatabaseType();
+                    String driverClassName = schemaEntity.getDatabase().getDriverClassName();
+                    String databaseUrl = schemaEntity.getDatabase().getDatabaseUrl();
+                    String databasePort = schemaEntity.getDatabase().getDatabasePort();
+                    String databaseInstance = schemaEntity.getDatabase().getDatabaseInstance();
+                    String schemaName = schemaEntity.getSchemaName();
 
-                    List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(databaseEntity.getId());
+                    List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(schemaEntity.getId());
                     if (dataTableList == null || dataTableList.size() == 0) {
                         continue;
                     }
 
                     //获取数据库管理账户
                     DatabaseAdministratorEntity databaseAdministratorEntity = null;
-                    Set<DatabaseAdministratorEntity> databaseAdministratorList = databaseEntity.getDatabaseDefine().getDatabaseAdministratorList();
+                    Set<DatabaseAdministratorEntity> databaseAdministratorList = schemaEntity.getDatabase().getDatabaseAdministratorList();
                     for (DatabaseAdministratorEntity databaseAdministratorEntity1 : databaseAdministratorList) {
                         if (databaseAdministratorEntity1.getIsManager()) {
                             databaseAdministratorEntity = databaseAdministratorEntity1;
@@ -259,12 +264,12 @@ public class TableCollectHandler  implements BaseHandler {
                             continue;
                         }
 //                        String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
-                        msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName() + "_" + databaseEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
+                        msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
                         //判断昨天数据是否已经统计入库
-                        /*List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(databaseEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);
+                        /*List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(schemaEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);
                         TableDataStatisticsDto tableDataStatisticsDto = new TableDataStatisticsDto();
-                        tableDataStatisticsDto.setDatabaseId(databaseEntity.getId());
+                        tableDataStatisticsDto.setDatabaseId(schemaEntity.getId());
                         tableDataStatisticsDto.setTableId(String.valueOf(tableInfo.get("id")));
                         tableDataStatisticsDto.setStatisticDate(yesterdayZeroDate);
                         List<TableDataStatisticsDto> tableDataStatisticsDtos = tableDataStatisticsService.findByParam(tableDataStatisticsDto);
@@ -295,9 +300,9 @@ public class TableCollectHandler  implements BaseHandler {
                                 //获取总记录数
                                 record_count = databaseDcl.queryRecordNum(schemaEntity.getSchemaName(), table_name);
                                 //最早记录的时间
-                                begin_time = databaseDcl.queryMinTime(schemaEntity.getSchemaName(), table_name, "D_DATETIME");
+                                begin_time = databaseDcl.queryMinTime(schemaEntity.getSchemaName(), table_name, newBoundBeginTime, "D_DATETIME");
                                 //最近记录的时间
-                                end_time = databaseDcl.queryMaxTime(schemaEntity.getSchemaName(), table_name, "D_DATETIME");
+                                end_time = databaseDcl.queryMaxTime(schemaEntity.getSchemaName(), table_name, newBoundEndTime,newBoundEndTimeFlag, "D_DATETIME");
                                 //获取日增量
                                 day_total = databaseDcl.queryIncreCount(schemaEntity.getSchemaName(), table_name, "D_DATETIME", yesterdayZero, todayZero);
                                 tableCollectInfo.put(table_name, begin_time + "," + end_time + "," + record_count + "," + day_total);
