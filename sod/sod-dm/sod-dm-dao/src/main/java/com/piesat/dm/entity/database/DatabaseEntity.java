@@ -47,6 +47,9 @@ public class DatabaseEntity extends BaseEntity {
     @Column(name = "check_conn")
     private Integer checkConn;
 
+    @Column(name = "conn_msg", columnDefinition = "TEXT")
+    private String connMsg;
+
     /**
      * 数据库实例
      * database_instance
@@ -136,11 +139,11 @@ public class DatabaseEntity extends BaseEntity {
     @Column(name = "up_url", length = 255)
     private String upUrl;
 
-    @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
-    @JoinColumn(name="database_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "database_id")
     private Set<DatabaseAdministratorEntity> databaseAdministratorList = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
-    @JoinColumn(name="database_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "database_id")
     private Set<DatabaseNodesEntity> databaseNodesList = new HashSet<>();
 }

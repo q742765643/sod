@@ -14,8 +14,6 @@ public class Test {
         //加密所需的salt(盐)
         textEncryptor.setPassword("HT95279527");
 
-        String are1 = textEncryptor.decrypt("6sVSKLEVmdpOe0JiU9UMQg==");
-        System.out.println("are1:"+are1);
 
 
 
@@ -37,6 +35,10 @@ public class Test {
 
         String pp = textEncryptor.encrypt("Pnmicxg2019");
         System.out.println("pp:"+pp);
-        System.out.println("ddddd");
+
+
+        String are1 = textEncryptor.decrypt("96VzbNLBrPV6SDylYpAJZA==");
+        System.out.println("are1:"+are1);
+
     }
 }

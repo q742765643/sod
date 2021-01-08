@@ -13,6 +13,7 @@ server:
     #key-store-password: qwe123
     #keyStoreType: PKCS12
     #keyAlias: htht
+  max-http-header-size: 102400
 jasypt:
   encryptor:
     password: HT95279527
@@ -180,4 +181,4 @@ session:
 #数据库系统用户
 database:
   sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase
-
+  

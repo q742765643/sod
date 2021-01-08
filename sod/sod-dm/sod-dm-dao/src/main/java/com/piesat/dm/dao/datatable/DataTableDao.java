@@ -99,4 +99,25 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      */
     @Query(value = "SELECT * FROM T_SOD_DATA_TABLE_INFO WHERE TABLE_TYPE = ?1 AND STORAGE_TYPE = ?2 ", nativeQuery = true)
     List<Map<String, Object>> findBySubType(String tableType,String storageType);
+
+    /**
+     * 根据表名查询相关表信息
+     * @param tableName
+     * @return
+     */
+    @Query(value =
+            "SELECT DISTINCT A.*,C.DATABASE_NAME,B.DATABASE_NAME SCHEMA_NAME,D.DICT_LABEL,E.SUB_TABLE_ID " +
+            "FROM T_SOD_DATA_TABLE_INFO A " +
+            "LEFT JOIN T_SOD_DATA_TABLE_FOREIGNKEY E ON E.TABLE_ID = A.ID " +
+            "LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID " +
+            "LEFT JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID " +
+            "LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE WHERE A.TABLE_NAME = ?1 ", nativeQuery = true)
+    List<Map<String, Object>> findTables(String tableName);
+
+    /**
+     * 查询所有要素表
+     * @return
+     */
+    @Query(value = "SELECT DISTINCT TABLE_NAME FROM T_SOD_DATA_TABLE_INFO WHERE TABLE_TYPE = 'E' ", nativeQuery = true)
+    List<Map<String, Object>> findAllETables();
 }

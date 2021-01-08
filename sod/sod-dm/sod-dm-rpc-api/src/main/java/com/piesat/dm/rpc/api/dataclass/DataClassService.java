@@ -97,4 +97,11 @@ public interface DataClassService {
     ResultT<List<Map<String,Object>>> getClassByTableId(String tableId);
 
     void deleteByBizUserId(String bizUserid);
+
+    /**
+     * 根据存储编码查询关联表
+     * @param dataclassId
+     * @return
+     */
+    List<Map<String, Object>> getTableInfo(String dataclassId);
 }

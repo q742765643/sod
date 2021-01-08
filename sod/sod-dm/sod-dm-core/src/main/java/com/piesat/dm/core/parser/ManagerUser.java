@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @PropertySource(value = {"classpath:config.yml"}, factory = YamlConfigFactory.class)
 @ConfigurationProperties(prefix = "database")
 public class ManagerUser {
-    public static String sysUser;
+    public static String sysUser = "";
 
     /**
      * 注入

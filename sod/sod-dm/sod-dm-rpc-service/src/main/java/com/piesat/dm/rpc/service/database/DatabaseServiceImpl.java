@@ -5,10 +5,12 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.factory.Actuator;
+import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.dataclass.LogicDatabaseDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
@@ -19,7 +21,6 @@ import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
-import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -125,49 +126,30 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
 
     @Override
     public DatabaseDto conStatus(String id) {
-        DatabaseDto dotById = this.getDotById(id);
-        SchemaDto database = new SchemaDto();
-        database.setDatabase(dotById);
-        DatabaseDcl db = null;
-        try {
-            db = DatabaseUtil.getPubDatabase(database, databaseInfo);
-            if (db != null) {
-                db.closeConnect();
-                dotById.setCheckConn(1);
-            } else {
-                dotById.setCheckConn(2);
-            }
-        } catch (Exception e) {
-            dotById.setCheckConn(2);
-//            e.printStackTrace();
-        } finally {
-            if (db != null) {
-                db.closeConnect();
-            }
+        DatabaseDto database = this.getDotById(id);
+        ConnectVo coreInfo = database.getCoreInfo();
+        ResultT r = new ResultT();
+        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        Actuator actuator = af.getActuator(false);
+        actuator.close();
+        if (r.isSuccess()) {
+            database.setCheckConn(1);
+        } else {
+            database.setCheckConn(2);
+            database.setConnMsg(r.getProcessMsg().toString());
         }
-        this.saveDto(dotById);
-        return dotById;
+        this.saveDto(database);
+        return database;
     }
 
     @Override
-    public ResultT connStatus(DatabaseDto databaseDto) {
-        DatabaseDcl db = null;
-        try {
-            db = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
-            if (db != null) {
-                db.closeConnect();
-                return ResultT.success();
-            } else {
-                return ResultT.failed();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        } finally {
-            if (db != null) {
-                db.closeConnect();
-            }
-        }
+    public ResultT connStatus(DatabaseDto database) {
+        ConnectVo coreInfo = database.getCoreInfo();
+        ResultT r = new ResultT();
+        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        Actuator actuator = af.getActuator(false);
+        actuator.close();
+        return r;
     }
 
     @Override

@@ -40,6 +40,8 @@ public class DatabaseDto {
      */
     private Integer checkConn;
 
+    private String connMsg;
+
     /**
      * 数据库实例
      * database_instance
@@ -122,6 +124,8 @@ public class DatabaseDto {
     private Set<DatabaseNodesDto> databaseNodesList;
 
     private SchemaDto schemaDto;
+
+
 
     public ConnectVo getCoreInfo() {
         List<DatabaseAdministratorDto> managerUsers =

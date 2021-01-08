@@ -8,7 +8,6 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DbaEnum;
 import com.piesat.dm.core.factory.AuzDatabase;
@@ -26,8 +25,8 @@ import com.piesat.dm.entity.dataapply.DataAuthorityRecordEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
-import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
@@ -36,14 +35,13 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.ReadAuthorityDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
-import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.ReadAuthorityMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityApplyMapper;
 import com.piesat.dm.rpc.mapper.dataapply.DataAuthorityRecordMapper;
-import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
@@ -268,11 +266,11 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 continue;
             }
             ConnectVo coreInfo = schemaDto.getConnectVo();
-            DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.CREATE;
-            AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(),dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
-            AuzFactory af = new AuzFactory(coreInfo.getPid(),coreInfo,coreInfo.getDatabaseType(),r);
+            DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
+            AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+            AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
             AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-            actuator.grantTable(a,r);
+            actuator.grantTable(a, r);
             actuator.close();
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
         }
@@ -282,60 +280,43 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultT updateOneRecordCheck(String userId, DataAuthorityRecordDto dataAuthorityRecordDto) {
-
+        ResultT r = new ResultT();
         //获取用户up账户
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(userId, "1");
         if (databaseUserDto == null) {
-            return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
+            return ResultT.failed(ConstantsMsg.MSG2);
         }
 
-        //用户up账户对应的可用物理库
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
 
         SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
 
         if (!databaseIds.contains(schemaDto.getDatabase().getId())) {
-            return ResultT.failed("不具备对物理库：" + schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "的访问权限" + "<br/>");
+            return ResultT.failed(String.format(ConstantsMsg.MSG3, schemaDto.getDatabase().getDatabaseName()));
         }
 
-        //1 根据编码获取表(可能有多个表，需要遍历对每个表授权)，前端传来多个相同编码记录时不要重复操作   2 前端传表
-        //获取资料对应的表信息
-        //List<DataTableDto> dataTableDtos = dataTableService.getByDatabaseIdAndClassId(dataAuthorityRecordDto.getDatabaseId(), dataAuthorityRecordDto.getDataClassId());
-
-        DatabaseDcl databaseDcl = null;
-        try {
-            databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
-        } catch (Exception e) {
-            if (e.getMessage().contains("用户不存在")) {
-                Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
-                return ResultT.failed("物理库：" + schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
-            }
+        if (!databaseIds.contains(schemaDto.getDatabase().getId())) {
+            r.setErrorMessage(String.format(ConstantsMsg.MSG3, schemaDto.getDatabase().getDatabaseName()));
         }
-
-        try {
-            if (dataAuthorityRecordDto.getApplyAuthority() == 1) {//授权读
-                databaseDcl.addPermissions(true, schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
-            } else if (dataAuthorityRecordDto.getApplyAuthority() == 2) {//授权写
-                databaseDcl.addPermissions(false, schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
-            }
-            dataAuthorityRecordDto.setAuthorize(1);
-        } catch (Exception e) {
-            Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
-            return ResultT.failed("表" + dataAuthorityRecordDto.getTableName() + "授权失败" + e.getMessage() + "<br/>");
-        }
-        Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
+        actuator.grantTable(a, r);
+        actuator.close();
         mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
-        return ResultT.success("授权成功");
+        return r;
     }
 
     @Override
     public ResultT updateRecordCheckCancel(DataAuthorityApplyDto dataAuthorityApplyDto) {
+        ResultT r = new ResultT();
         List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
-
         //获取用户up账户
         DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(dataAuthorityApplyDto.getUserId(), "1");
         if (databaseUserDto == null) {
-            return ResultT.failed("授权失败,未找到用户对应数据库账户信息");
+            return ResultT.failed(ConstantsMsg.MSG2);
         }
 
         StringBuffer buffer = new StringBuffer();
@@ -346,32 +327,17 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             if (dataAuthorityRecordDto.getAuthorize() != null && dataAuthorityRecordDto.getAuthorize().intValue() == 1) {//已授权资料，撤销授权
                 //获取物理库信息
                 SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
-                DatabaseDcl databaseDcl = null;
-                try {
-                    databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
-                } catch (Exception e) {
-                    if (e.getMessage().contains("用户不存在")) {
-                        buffer.append("物理库：" + schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName() + "没有管理员账户" + "<br/>");
-                        flag = false;
-                        Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
-                        continue;
-                    }
-                }
-                try {
-                    if (dataAuthorityRecordDto.getApplyAuthority() == 1) {//撤销读权限
-                        databaseDcl.deletePermissions("SELECT".split(","), schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
-                    } else if (dataAuthorityRecordDto.getApplyAuthority() == 2) {//撤销写权限
-                        databaseDcl.deletePermissions("SELECT,UPDATE,INSERT,DELETE".split(","), schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), "", null);
-                    }
-                } catch (Exception e) {
-                    buffer.append("表" + dataAuthorityRecordDto.getTableName() + "授权失败" + e.getMessage() + "<br/>");
-                    flag = false;
-                    Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
+                if (StringUtils.isEmpty(dataAuthorityRecordDto.getTableName())) {
                     continue;
                 }
-                Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
+                ConnectVo coreInfo = schemaDto.getConnectVo();
+                DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
+                AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+                AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+                AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
+                actuator.revokeTable(a, r);
+                actuator.close();
             }
-
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
         }
         if (flag) {
@@ -392,10 +358,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateRecordByApplyIdAndClassId(String apply_id, String data_class_id, Integer authorize, String
-            cause) {
-        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
-
+    public void updateRecordByApplyIdAndClassId(String apply_id, String data_class_id, Integer authorize, String cause) {
+        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities =
+                dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
         if (dataAuthorityRecordEntities != null && dataAuthorityRecordEntities.size() > 0) {
             for (DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordEntities) {
                 //如果资料是专题库引用资料，审核专题库引用资料
@@ -608,18 +573,18 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         List<Map<String, Object>> arrayList = new ArrayList<Map<String, Object>>();
         List<Map<String, Object>> recodeFileDataInfo = mybatisQueryMapper.getApplyedRecodeFileDataInfo(userId);
         List<Map<String, Object>> specialReadWriteFileDataInfo = mybatisQueryMapper.getSpecialReadWriteFileDataInfo(userId);
-        if(recodeFileDataInfo != null && recodeFileDataInfo.size()>0){
+        if (recodeFileDataInfo != null && recodeFileDataInfo.size() > 0) {
             arrayList.addAll(recodeFileDataInfo);
         }
-        for(int i=0;i<arrayList.size();i++){
+        for (int i = 0; i < arrayList.size(); i++) {
             Map<String, Object> recordOne = arrayList.get(i);
-            if(specialReadWriteFileDataInfo != null && specialReadWriteFileDataInfo.size()>0){
-                for(int j=specialReadWriteFileDataInfo.size()-1;j>-1;j--){
+            if (specialReadWriteFileDataInfo != null && specialReadWriteFileDataInfo.size() > 0) {
+                for (int j = specialReadWriteFileDataInfo.size() - 1; j > -1; j--) {
                     Map<String, Object> readWriteOne = specialReadWriteFileDataInfo.get(j);
-                    if(recordOne.get("DATABASE_ID").equals(readWriteOne.get("DATABASE_ID")) &&
+                    if (recordOne.get("DATABASE_ID").equals(readWriteOne.get("DATABASE_ID")) &&
                             recordOne.get("DATA_CLASS_ID").equals(readWriteOne.get("DATA_CLASS_ID")) &&
                             recordOne.get("TABLE_NAME").equals(readWriteOne.get("TABLE_NAME"))
-                    ){
+                    ) {
                         specialReadWriteFileDataInfo.remove(readWriteOne);
                         break;
                     }
@@ -671,12 +636,12 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     public void deleteByUserId(String userId) {
         List<DataAuthorityApplyEntity> dalList = this.dataAuthorityApplyDao.findByUserId(userId);
-        if(dalList != null && dalList.size()>0){
-            for(int i=0;i<dalList.size();i++){
+        if (dalList != null && dalList.size() > 0) {
+            for (int i = 0; i < dalList.size(); i++) {
                 DataAuthorityApplyEntity dataAuthorityApplyEntity = dalList.get(i);
                 Set<DataAuthorityRecordEntity> dataAuthorityRecordList = dataAuthorityApplyEntity.getDataAuthorityRecordList();
-                if(dataAuthorityRecordList != null){
-                    for(Iterator<DataAuthorityRecordEntity> iterator = dataAuthorityRecordList.iterator();iterator.hasNext();){
+                if (dataAuthorityRecordList != null) {
+                    for (Iterator<DataAuthorityRecordEntity> iterator = dataAuthorityRecordList.iterator(); iterator.hasNext(); ) {
                         DataAuthorityRecordEntity t = (DataAuthorityRecordEntity) iterator.next();
                         this.dataAuthorityRecordDao.delete(t);
                     }

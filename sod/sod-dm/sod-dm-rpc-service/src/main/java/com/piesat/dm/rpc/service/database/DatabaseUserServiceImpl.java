@@ -10,6 +10,7 @@ import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.constants.Constants;
+import com.piesat.dm.core.factory.Actuator;
 import com.piesat.dm.core.factory.AuzDatabase;
 import com.piesat.dm.core.factory.AuzFactory;
 import com.piesat.dm.core.model.ConnectVo;
@@ -246,28 +247,19 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
-        String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
-        return Optional.ofNullable(needEmpowerIdArr).map(id -> Arrays.stream(id).filter(e -> !StringUtils.isEmpty(e)).anyMatch(d -> {
-            DatabaseDto dotById = this.databaseService.getDotById(d);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Optional.ofNullable(databaseVO).ifPresent(DatabaseDcl::closeConnect);
-            }
-            return Optional.ofNullable(databaseVO).map(o -> {
-                try {
-                    return o.getUserNum(databaseUserDto.getDatabaseUpId());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    o.closeConnect();
-                } finally {
-                    o.closeConnect();
-                }
-                return 1;
-            }).equals(0);
-        })).orElse(false);
+        String[] ids = databaseUserDto.getApplyDatabaseId().split(Constants.COMMA);
+        ResultT r = new ResultT();
+        return Arrays.stream(ids).anyMatch(e -> {
+            DatabaseDto database = this.databaseService.getDotById(e);
+            ConnectVo coreInfo = database.getCoreInfo();
+            AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+            AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
+            UserInfo u = new UserInfo();
+            u.setUserName(databaseUserDto.getDatabaseUpId());
+            boolean b = actuator.existUser(u, r);
+            actuator.close();
+            return b;
+        });
     }
 
     @Override
@@ -306,17 +298,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
-    public static void main(String[] args) {
-
-    }
-
     @Override
     public ResultT empower(DatabaseUserDto databaseUserDto) {
         String[] sysIds = this.sysUsers.toLowerCase().split(",");
         List<String> sysIdList = Arrays.asList(sysIds);
         String upId = databaseUserDto.getDatabaseUpId().toLowerCase();
         if (sysIdList.contains(upId)) {
-            return ResultT.failed(databaseUserDto.getDatabaseUpId() + "为数据库内部用户，禁止创建！");
+            return ResultT.failed(String.format(ConstantsMsg.MSG1, databaseUserDto.getDatabaseUpId()));
         }
         //根据ID获取旧的申请信息
         DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
@@ -342,15 +330,15 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             e += "," + mngIp;
             return e.split(",");
         }).orElse(mngIp.split(","));
-        List<DatabaseDto> DatabaseDefineList = needEmpowerList.stream().map(this.databaseService::getDotById).collect(Collectors.toList());
-        for (DatabaseDto d : DatabaseDefineList) {
+        List<DatabaseDto> databaseDtoList = needEmpowerList.stream().map(this.databaseService::getDotById).collect(Collectors.toList());
+        for (DatabaseDto d : databaseDtoList) {
             Set<DatabaseAdministratorDto> databaseAdministratorList = d.getDatabaseAdministratorList();
             boolean b = databaseAdministratorList.stream().anyMatch(DatabaseAdministratorDto::getIsManager);
             if (!b) {
                 return ResultT.failed(String.format("%s 数据库管理账户缺失!", d.getDatabaseName()));
             }
         }
-        DatabaseDefineList.forEach(d -> {
+        databaseDtoList.forEach(d -> {
             DatabaseDcl databaseVO = null;
             String databaseId = d.getId();
             try {
@@ -925,6 +913,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         }
 
     }
+
     @Override
     public List<DatabaseUserDto> getByUserId(String userId) {
         List<DatabaseUserEntity> databaseUserEntities = this.databaseUserDao.findByUserId(userId);

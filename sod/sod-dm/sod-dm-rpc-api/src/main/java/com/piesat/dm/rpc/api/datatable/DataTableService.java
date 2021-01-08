@@ -105,4 +105,17 @@ public interface DataTableService {
      * @return
      */
     List<Map<String, Object>> findBySubType(String tableType,String storageType);
+
+    /**
+     * 根据表名查询相关表信息
+     * @param tableName
+     * @return
+     */
+    List<Map<String, Object>> findTablesByTableName(String tableName);
+
+    /**
+     * 查询所有要素表
+     * @return
+     */
+    List<Map<String, Object>> findAllETables();
 }

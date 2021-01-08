@@ -1,5 +1,6 @@
 package com.piesat.dm.core.factory;
 
+import com.piesat.common.constant.Constants;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
@@ -41,6 +42,9 @@ public class AuzFactory {
                 throwables.printStackTrace();
                 resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid, OwnException.get(throwables)));
             }
+        }
+        if (con == null) {
+            resultT.setErrorMessage(String.format(ConstantsMsg.MSG11, pid));
         }
         actuator = new AuzDatabase(databaseType, con);
         commData = new CommData(databaseType, con);

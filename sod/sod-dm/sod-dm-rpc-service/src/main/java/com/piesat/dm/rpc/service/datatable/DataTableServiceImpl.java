@@ -122,6 +122,9 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public DataTableInfoDto getDotById(String id) {
         DataTableInfoDto dataTableInfoDto = this.dataTableMapper.toDto(this.getById(id));
+        if (dataTableInfoDto==null){
+            return null;
+        }
         SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
         if (schemaDto != null) {
             dataTableInfoDto.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
@@ -445,6 +448,16 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public List<Map<String, Object>> findBySubType(String tableType, String storageType) {
         return this.dataTableDao.findBySubType(tableType, storageType);
+    }
+
+    @Override
+    public List<Map<String, Object>> findTablesByTableName(String tableName) {
+        return this.dataTableDao.findTables(tableName);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllETables() {
+        return this.dataTableDao.findAllETables();
     }
 
 }

@@ -348,6 +348,7 @@ public class GrpcService {
 
         List<ColumnVo> columnVo = dataTableInfoDto.getColumnVo();
         List<IndexVo> indexVo = dataTableInfoDto.getIndexVo();
+
         TableVo t = new TableVo();
         try {
             List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(schemaDto.getDatabase().getDatabaseType());
@@ -357,26 +358,26 @@ public class GrpcService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         t.setSchema(schemaDto.getSchemaName());
         t.setTableName(dataTableInfoDto.getTableName());
         t.setTableDesc(dataTableInfoDto.getNameCn());
         t.setColumnVos(columnVo);
         t.setIndexVos(indexVo);
         PartingEntity partingEntity = this.shardingDao.findById(tableId).orElse(null);
-        t.setPartColumn(partingEntity.getPartitions());
-        t.setPartDimension(partingEntity.getPartDimension());
-        t.setPartUnit(partingEntity.getPartUnit());
+        if (partingEntity != null) {
+            t.setPartColumn(partingEntity.getPartitions());
+            t.setPartDimension(partingEntity.getPartDimension());
+            t.setPartUnit(partingEntity.getPartUnit());
+        }
         TableSqlDto ts = new TableSqlDto();
         ResultT r = new ResultT();
         AuzFactory.createTableSql(t, r);
-        String create = String.valueOf(r.getData());
-        ts.setCreateSql(create);
+        ts.setCreateSql(String.valueOf(r.getData()));
         AuzFactory.queryTableSql(t, r);
-        String query = String.valueOf(r.getData());
-        ts.setQuerySql(query);
+        ts.setQuerySql(String.valueOf(r.getData()));
         AuzFactory.insertTableSql(t, r);
-        String insert = String.valueOf(r.getData());
-        ts.setInsertSql(insert);
+        ts.setInsertSql(String.valueOf(r.getData()));
         r.setData(ts);
         return r;
     }

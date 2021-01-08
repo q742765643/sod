@@ -12,7 +12,8 @@ server:
     #key-store: classpath:keystore.https
     #key-store-password: qwe123
     #keyStoreType: PKCS12
-    #keyAlias: htht
+    #keyAlias: hthta
+  max-http-header-size: 102400
 jasypt:
   encryptor:
     password: HT95279527

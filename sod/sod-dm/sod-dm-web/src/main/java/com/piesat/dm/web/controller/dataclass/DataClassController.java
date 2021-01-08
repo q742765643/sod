@@ -342,4 +342,12 @@ public class DataClassController {
         return this.dataClassService.getClassByTableId(tableId);
     }
 
+    @GetMapping("/getTableInfo")
+    @ApiOperation(value = "根据存储编码查询关联表", notes = "根据存储编码查询关联表")
+    public ResultT getTableInfo(String dataclassId) {
+        ResultT resultT = new ResultT<>();
+        List<Map<String, Object>> tableInfo = this.dataClassService.getTableInfo(dataclassId);
+        resultT.setData(tableInfo);
+        return resultT;
+    }
 }

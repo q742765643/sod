@@ -126,7 +126,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     @Override
     public List<DataClassLogicDto> findByDataClassId(String dataClassId) {
         List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
-        List<DataClassLogicDto> dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
+        List<DataClassLogicDto > dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
         if (dataClassLogicDtos != null && dataClassLogicDtos.size() > 0) {
             dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
                 String tableId = e.getTableId();
@@ -179,13 +179,6 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void onlyDeleteById(String id) {
-        DataClassLogicDto dataClassLogic = this.getDotById(id);
-        if (dataClassLogic != null) {
-            this.dataTableService.delete(dataClassLogic.getTableId());
-            if (StringUtils.isNotEmpty(dataClassLogic.getSubTableId())) {
-                this.dataTableService.delete(dataClassLogic.getSubTableId());
-            }
-        }
         this.delete(id);
     }
 
@@ -307,7 +300,6 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     public Map<String, List<String>> getDatabaseTables(String logics) {
         HashMap<String, List<String>> map = new HashMap<>();
         if (StringUtils.isNotEmpty(logics)) {
-            //List<SchemaDto> schemaDtos = schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
             List<SchemaDto> schemaDtos = schemaService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
             for (int i = 0; i < schemaDtos.size(); i++) {
                 DatabaseDcl databaseDcl = null;

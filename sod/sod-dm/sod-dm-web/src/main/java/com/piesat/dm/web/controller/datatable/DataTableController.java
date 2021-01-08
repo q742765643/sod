@@ -339,7 +339,6 @@ public class DataTableController {
         }
     }
 
-
     @GetMapping("/getPageTableInfo")
     @ApiOperation(value = "条件分页查询")
     @RequiresPermissions("dm:dataTable:getPageTableInfo")
@@ -351,7 +350,6 @@ public class DataTableController {
         PageBean pageBean = this.dataTableService.getPageTableInfo(pageForm);
         return ResultT.success(pageBean);
     }
-
 
     @ApiOperation(value = "查询表数据量")
     @RequiresPermissions("dm:dataTable:countTable")
@@ -384,6 +382,31 @@ public class DataTableController {
     public ResultT findBySubType(String tableType, String storageType) {
         try {
             return ResultT.success(this.dataTableService.findBySubType(tableType, storageType));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据表名查询相关表信息")
+    @RequiresPermissions("dm:dataTable:findTablesByTableName")
+    @GetMapping(value = "/findTablesByTableName")
+    public ResultT findTablesByTableName(String tableName) {
+        try {
+            return ResultT.success(this.dataTableService.findTablesByTableName(tableName));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "查询所有要素表")
+    @RequiresPermissions("dm:dataTable:findAllETables")
+    @GetMapping(value = "/findAllETables")
+    public ResultT findAllETables() {
+        try {
+            return ResultT.success(this.dataTableService.findAllETables());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

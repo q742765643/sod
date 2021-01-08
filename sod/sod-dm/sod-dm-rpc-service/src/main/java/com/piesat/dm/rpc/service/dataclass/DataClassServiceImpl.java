@@ -141,7 +141,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
         List<String> all = byDataClassId.stream().map(DataClassLogicDto::getId).collect(Collectors.toList());
         List<String> nnn = new ArrayList<>();
-        boolean isNotNull = dataLogicList != null;
+        boolean isNotNull = dataLogicList != null && StringUtils.isNotEmpty(dataLogicList.get(0).getDataClassId());
         if (isNotNull) {
             nnn = dataLogicList.stream().map(DataClassLogicDto::getId).collect(Collectors.toList());
         }
@@ -714,5 +714,10 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         }
         //资料访问权限
         dataAuthorityApplyService.deleteByUserId(bizUserid);
+    }
+
+    @Override
+    public List<Map<String, Object>> getTableInfo(String dataclassId) {
+        return this.dataClassDao.getTableInfo(dataclassId);
     }
 }

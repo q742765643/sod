@@ -4,16 +4,12 @@
 
     <!--根据目录查询资料-->
     <select id="getDataClassListBYIn" resultType="java.util.Map">
-        select
-        A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO,
-        E.STORAGE_TYPE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME
-        DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,F.DICT_LABEL,B.table_Id,B.sub_Table_Id,E.table_name,A.REMARK TABLE_DESC
+        select DISTINCT
+        A.DATA_CLASS_ID,A.CLASS_NAME,A.PARENT_ID,A.TYPE,A.D_DATA_ID,A.META_DATA_NAME,A.IS_ALL_LINE,A.USE_BASE_INFO
+        ,E.table_name,A.REMARK TABLE_DESC
         from T_SOD_DATA_CLASS A
         left join T_SOD_DATACLASS_TABLE B on A.data_class_id = B.data_class_id
         left join T_SOD_DATA_TABLE_INFO E on B.table_Id = E.id
-        left join T_SOD_DATABASE C on E.database_id=C.id
-        left join T_SOD_DATABASE_DEFINE D on C.database_define_id = D.id
-        left join T_SOD_DICT_DATA F ON E.STORAGE_TYPE = F.dict_value AND F.dict_type = 'sys_storage_type'
         WHERE
         A.TYPE = 2
         <if test="classIds!=null and classIds.size()>0">
@@ -176,7 +172,7 @@
         (SELECT C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM
         usr_sod.T_SOD_TABLEDATA_STATISTICS A
         LEFT JOIN usr_sod.T_SOD_DATA_TABLE_INFO B ON A.TABLE_ID = B.ID
-        LEFT JOIN usr_sod.T_SOD_DATACLASS_TABLE C ON (B.ID = C.TABLE_ID OR B.ID = C.SUB_TABLE_ID)
+        LEFT JOIN usr_sod.T_SOD_DATACLASS_TABLE C ON B.ID = C.TABLE_ID
         WHERE C.DATA_CLASS_ID IS NOT NULL
         GROUP BY C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID order by C.DATA_CLASS_ID) BB
         on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
@@ -215,7 +211,7 @@
              (SELECT DATA_CLASS_ID, B.database_id, A.TABLE_ID, MAX(STATISTIC_TIME) STATISTIC_TIME
               FROM T_SOD_TABLEDATA_STATISTICS A
                        LEFT JOIN T_SOD_DATA_TABLE_INFO B ON A.TABLE_ID = B.ID
-                       LEFT JOIN T_SOD_DATACLASS_TABLE C ON (B.ID = C.TABLE_ID OR B.ID = C.SUB_TABLE_ID)
+                       LEFT JOIN T_SOD_DATACLASS_TABLE C ON B.ID = C.TABLE_ID
               WHERE C.DATA_CLASS_ID IS NOT NULL
                 and C.DATA_CLASS_ID = #{dataClassId}
               GROUP BY C.DATA_CLASS_ID, B.DATABASE_ID, A.TABLE_ID

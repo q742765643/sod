@@ -6,6 +6,7 @@ import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -55,7 +56,7 @@ public interface DatabaseSpecialService {
      * 数据库授权
      * @param schemaDto
      */
-    void empowerDatabaseSpecial(SchemaDto schemaDto);
+    ResultT empowerDatabaseSpecial(SchemaDto schemaDto);
 
     /**
      * 单独资料授权
