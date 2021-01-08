@@ -31,7 +31,7 @@ export function getById(query) {
 // 修改审核状态
 export function editById(data) {
   return request({
-    url: baseUrl + '/portal/userManage/updateCheck',
+    url: baseUrl + '/portal/userManage/editById',
     method: 'put',
     data: data
   })

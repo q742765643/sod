@@ -406,26 +406,15 @@ export default {
     trueDialog(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // if (this.msgFormDialog.checkFlag) {
-          //   this.msgFormDialog.endTimeFlag = "today";
-          // }
+
           if(this.endFlag2){
             if(this.msgFormDialog.thresholdDate == '今'){
               this.msgFormDialog.boundEndTimeFlag = 0;
             }
             this.msgFormDialog.boundEndTime = ''
           }else{
-            this.msgFormDialog.boundEndTimeFlag = ''
+            this.msgFormDialog.boundEndTimeFlag = null;
           }
-          // if(this.endFlag1){
-          //   if(this.msgFormDialog.handDate == '今'){
-          //     this.msgFormDialog.endTimeFlag = 0;
-          //   }
-          //   this.msgFormDialog.endTime = ''
-          // }else{
-          //   this.msgFormDialog.endTimeFlag = ''
-          // }
-
 
           console.log(this.msgFormDialog);
           update(this.msgFormDialog).then(res => {
