@@ -224,10 +224,8 @@ public class YunDatabaseApplyController {
             JSONObject object = new JSONObject(data[0]);
             String id = (String) object.get("id");
             YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(id);
-//            System.out.println(id + "--------------------");
-//            System.out.println(yunDatabaseApplyDto1 + "--------------------");/
             File newFile = null;
-            if (yunDatabaseApplyDto1 == null || yunDatabaseApplyDto1.getExamineStatus() == "04") {
+            if (yunDatabaseApplyDto1 == null || yunDatabaseApplyDto1.getExamineStatus() == "04" || yunDatabaseApplyDto1.getExamineStatus() == "01") {
                 return ResultT.failed("变更失败，原因为实例状态改变或实例已删除");
             } else {
                 if (applyMaterial != null) {
@@ -457,9 +455,16 @@ public class YunDatabaseApplyController {
     @ApiOperation(value = "根据id查询", notes = "根据id查询")
     public ResultT<YunDatabaseApplyDto> getById(String id) {
         ResultT<YunDatabaseApplyDto> resultT = new ResultT<>();
-        YunDatabaseApplyDto yunDatabaseApplyDto = this.yunDatabaseApplyService.getDotById(id);
-        resultT.setData(yunDatabaseApplyDto);
-        return resultT;
+        try {
+            YunDatabaseApplyDto yunDatabaseApplyDto = this.yunDatabaseApplyService.getDotById(id);
+            resultT.setData(yunDatabaseApplyDto);
+            return resultT;
+        }catch (Exception e){
+            resultT.setCode(202);
+            resultT.setMsg("未找到该实例");
+            return resultT;
+        }
+
     }
 
     @DeleteMapping("/deleteByIdPortal")
@@ -532,17 +537,17 @@ public class YunDatabaseApplyController {
     @ApiOperation(value = "编辑", notes = "编辑")
     public ResultT<YunDatabaseApplyDto> edit(@RequestBody YunDatabaseApplyDto yunDatabaseApplyDto) {
         ResultT<YunDatabaseApplyDto> resultT = new ResultT<>();
-        YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(yunDatabaseApplyDto.getId());
-//        yunDatabaseApplyDto.getId();
-        if(yunDatabaseApplyDto1.getExamineStatus() == "02"){
-            resultT.setCode(202);
-            return resultT;
-        }else {
+        try {
+            YunDatabaseApplyDto yunDatabaseApplyDto1 = yunDatabaseApplyService.getById1(yunDatabaseApplyDto.getId());
             yunDatabaseApplyDto.setExamineTime(new Date());
             yunDatabaseApplyDto = this.yunDatabaseApplyService.updateDto(yunDatabaseApplyDto);
             resultT.setData(yunDatabaseApplyDto);
             return resultT;
+        }catch (Exception e){
+            resultT.setCode(202);
+            return resultT;
         }
+//        yunDatabaseApplyDto.getId();
     }
 
     @PostMapping("/getTemp")
