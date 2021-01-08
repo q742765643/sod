@@ -521,7 +521,7 @@ public class Xugu extends AbstractDatabaseDcl {
                     if(newBoundEndTime != null){
                         String maxData = String.valueOf(newBoundEndTime.getTime());
                         sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" + maxData;
-                    }else if(newBoundEndTimeFlag != null || "".equalsIgnoreCase(newBoundEndTimeFlag)){
+                    }else if(newBoundEndTimeFlag != null || !"".equalsIgnoreCase(newBoundEndTimeFlag)){
                         int num = Integer.parseInt(newBoundEndTimeFlag);
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
