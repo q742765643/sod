@@ -456,11 +456,11 @@ export default {
       url:"",
 
       note:{
-        backgroundImage:"url("+require('@/assets/image/status_running.png')+")",
+        // backgroundImage:"url("+require('@/assets/image/status_running.png')+")",
       },
       monitorDialog:false,
       journalData:"",
-      statusImg: require('@/assets/image/status_running.png'),
+      // statusImg: require('@/assets/image/status_running.png'),
       activeName:"first",
       activeNameSec:"first",
       newToken:"",
