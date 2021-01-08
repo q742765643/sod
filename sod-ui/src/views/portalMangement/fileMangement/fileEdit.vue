@@ -159,7 +159,7 @@
             { required: true, message: "请输入文件描述 ", trigger: "blur" }
           ],
           svnDir: [
-            { required: !this.isHideSvn, message: "请输入文件名称 ", trigger: "blur" }
+            { required: this.isHideSvn, message: "请输入文件名称 ", trigger: "blur" }
           ]
         }
       };
@@ -286,6 +286,8 @@
           this.msgFormDialog.fileName = response.data.fileName;
           this.msgFormDialog.filePath = response.data.filePath;
           this.msgFormDialog.fileSuffix = response.data.fileSuffix;
+        }else{
+          this.$message.error("文件上传失败");
         }
       },
       errorUpload:function (err, file, fileList) {
