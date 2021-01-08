@@ -876,8 +876,9 @@ export default {
     viewCell(row, type) {
 
       getById({ id: row.id }).then((response) => {
-        if(response.data.examineStatus == "02"){
-          this.msgError("已审核");
+        if(response.code == 202 || response.data.examineStatus == "02"){
+          this.msgError("实例已删除或者状态已改变");
+          this.handleQuery();
         }else{
         this.handleObj = response.data;
         this.handleObj.editCpu = this.handleObj.cpu;
@@ -886,6 +887,8 @@ export default {
         this.handleObj.editStorage = this.handleObj.storage;
         this.handleDialog = true;
         }
+      }).catch(()=>{
+        this.handleQuery();
       });
     },
 
