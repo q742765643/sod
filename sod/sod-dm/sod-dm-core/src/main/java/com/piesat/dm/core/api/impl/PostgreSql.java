@@ -434,6 +434,12 @@ public class PostgreSql extends AbstractDatabaseDcl {
         }
         return ResultT.success(list);
     }
+    @Override
+    public List<String> queryTableName(String schemaName) throws Exception {
 
+        List<String> tableName = new ArrayList<String>();
+
+        return tableName;
+    }
 }
 

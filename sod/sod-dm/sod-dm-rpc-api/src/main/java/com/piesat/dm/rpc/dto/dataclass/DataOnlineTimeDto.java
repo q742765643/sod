@@ -51,4 +51,9 @@ public class DataOnlineTimeDto {
      * 日期类型,today和end_time
      */
     private String boundEndTimeFlag;
+
+    /**
+     * 最新执行时间
+     */
+    private Date executeTime;
 }

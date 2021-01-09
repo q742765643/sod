@@ -15,6 +15,6 @@ import javax.transaction.Transactional;
 public interface DataOnlineTimeDao extends BaseDao<DataOnlineTimeEntity> {
     @Transactional
     void deleteByDataClassId(String dataClassId);
-
+//    DataOnlineTimeEntity findAll()
     DataOnlineTimeEntity findByDataClassId(String dataClassId);
 }

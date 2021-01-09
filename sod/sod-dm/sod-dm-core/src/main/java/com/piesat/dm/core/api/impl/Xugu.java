@@ -4,13 +4,11 @@ import cn.hutool.core.date.DateTime;
 import com.piesat.dm.common.util.TemplateUtil;
 import com.piesat.dm.core.api.AbstractDatabaseDcl;
 import com.piesat.util.ResultT;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -547,7 +545,7 @@ public class Xugu extends AbstractDatabaseDcl {
 //                            String maxData = String.valueOf(newBoundEndTime);
                             DateTime maxData = new DateTime(newBoundEndTime.getTime());
                             sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" +  "'"+maxData+ "'";
-                        }else if(newBoundEndTimeFlag != null || "".equalsIgnoreCase(newBoundEndTimeFlag)){
+                        }else if(newBoundEndTimeFlag != null || !"".equalsIgnoreCase(newBoundEndTimeFlag)){
                             int num = Integer.parseInt(newBoundEndTimeFlag);
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
@@ -611,6 +609,37 @@ public class Xugu extends AbstractDatabaseDcl {
 
         }
         return num;
+    }
+
+    @Override
+    public List<String> queryTableName(String schemaName) throws Exception {
+        String maxTime = "";
+        // 获取所有分区号
+        String sql = "select b.table_name from dba_schemas a,dba_tables b where a.schema_id=b.schema_id and a.schema_name=upper("+"'"+schemaName+"'"+")";
+        List<String> tableName = new ArrayList<String>();
+        try {
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                tableName.add(rs.getString(1));
+            }
+            rs.close();
+            //表没有分区，不是分区表
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("错误：" + e.getMessage());
+        } finally {
+            if (rs != null && !rs.isClosed()) {
+                rs.close();
+            }
+            if (stmt != null && !stmt.isClosed()) {
+                stmt.close();
+            }
+
+        }
+        return tableName;
     }
 
 }

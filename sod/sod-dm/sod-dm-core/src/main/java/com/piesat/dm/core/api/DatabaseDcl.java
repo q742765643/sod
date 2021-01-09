@@ -193,6 +193,15 @@ public interface DatabaseDcl {
      */
     String queryMaxTime(String schema, String tableName, Date newBoundEndTime,String newBoundEndTimeFlag,String timeColumnName) throws Exception;
 
+    /**
+     * 获取
+     * @param schema
+     * @param tableName
+     * @param timeColumnName
+     * @return
+     * @throws Exception
+     */
+    List<String> queryTableName(String schemaName) throws Exception;
 
     /**
      *

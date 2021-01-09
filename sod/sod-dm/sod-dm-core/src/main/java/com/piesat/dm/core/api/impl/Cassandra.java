@@ -316,5 +316,12 @@ public class Cassandra implements DatabaseDcl {
     public String queryIncreCount(String schema, String tableName, String timeColumnName, String beginTime, String endTime) throws Exception {
         return null;
     }
+    @Override
+    public List<String> queryTableName(String schemaName) throws Exception {
+
+        List<String> tableName = new ArrayList<String>();
+
+        return tableName;
+    }
 
 }

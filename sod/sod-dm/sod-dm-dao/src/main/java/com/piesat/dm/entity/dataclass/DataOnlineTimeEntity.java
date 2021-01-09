@@ -67,4 +67,10 @@ public class DataOnlineTimeEntity extends BaseEntity {
     @Column(name = "bound_end_time_flag", length = 50)
     private String boundEndTimeFlag;
 
+    /**
+     * 最新执行时间
+     */
+    @Column(name = "execute_time")
+    private Date executeTime;
+
 }

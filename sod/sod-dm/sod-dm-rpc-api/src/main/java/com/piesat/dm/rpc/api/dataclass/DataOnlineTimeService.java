@@ -27,7 +27,7 @@ public interface DataOnlineTimeService {
     void update(DataOnlineTimeDto dataOnlineTimeDto);
     void executeNew(DataOnlineTimeDto dataOnlineTimeDto);
     DataOnlineTimeDto findByDataClassId(String dataClassId);
-
+    DataOnlineTimeDto updateTime(String dataClassId);
     Map<String,Object> getByClassId(String dataClassId);
 
 }

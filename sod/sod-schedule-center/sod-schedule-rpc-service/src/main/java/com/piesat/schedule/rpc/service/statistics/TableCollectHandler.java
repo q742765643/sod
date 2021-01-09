@@ -7,9 +7,12 @@ import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.dataclass.DataOnlineTimeDao;
+import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.datatable.TableDataStatisticsDao;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
 import com.piesat.dm.entity.datatable.TableDataStatisticsEntity;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableDataStatisticsService;
@@ -43,6 +46,12 @@ public class TableCollectHandler  implements BaseHandler {
     private JobInfoMapstruct jobInfoMapstruct;
     @Autowired
     private DatabaseDao databaseDao;
+    @Autowired
+    private DataOnlineTimeDao dataOnlineTimeDao;
+
+    @Autowired
+    private DataTableDao dataTableDao;
+
     @GrpcHthtClient
     private DataTableService dataTableService;
     @GrpcHthtClient
@@ -71,9 +80,24 @@ public class TableCollectHandler  implements BaseHandler {
         String newBoundEndTimeFlag = "";
         Date newBoundEndTime = null;
         Date newBoundBeginTime = null;
+        List<Object> onlineTimeList;
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<DatabaseEntity> databaseEntities = databaseDao.findAll();
+        List<DataOnlineTimeEntity> dataOnlineTimeEntitys = dataOnlineTimeDao.findAll();
+        if(dataOnlineTimeEntitys != null && dataOnlineTimeEntitys.size()>0){
+            for (DataOnlineTimeEntity dataOnlineTimeEntity : dataOnlineTimeEntitys){
+                String dataClassId = dataOnlineTimeEntity.getDataClassId();
+                List<Map<String, Object>> dataTableEntities = dataTableDao.getByClassId(dataClassId);
+                if(dataTableEntities != null && dataTableEntities.size()>0){
+                    for(int i=0;i<dataTableEntities.size();i++){
+                        Map<String, Object> dataTableEntity = dataTableEntities.get(i);
+                        String tableName = (String) dataTableEntity.get("TABLE_NAME");
+                        String databaseId = (String) dataTableEntity.get("DATABASE_ID");
+                    }
+                }
+            }
+        }
         if(databaseEntities != null && databaseEntities.size()>0){
             for(DatabaseEntity databaseEntity : databaseEntities) {
                 DatabaseDcl databaseDcl = null;
@@ -252,6 +276,8 @@ public class TableCollectHandler  implements BaseHandler {
                         databaseDcl = gbase8a;
                     }
 
+                    List<String> arr = databaseDcl.queryTableName(schemaName);
+
                     Map<String, String> tableCollectInfo = new HashMap<String, String>();
                     for (int i = 0; i < dataTableList.size(); i++) {
                         String begin_time = "";
@@ -261,6 +287,10 @@ public class TableCollectHandler  implements BaseHandler {
                         String sql = "";
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
+
+                        if(!Arrays.asList(arr).contains(table_name)){
+                            continue;
+                        }
                         if(!table_name.equalsIgnoreCase(newTableName)){
                             continue;
                         }
