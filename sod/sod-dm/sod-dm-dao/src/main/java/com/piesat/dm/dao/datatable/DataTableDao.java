@@ -127,7 +127,7 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      * @param dataClassId
      * @return
      */
-    @Query(value = "SELECT DISTINCT TABLE_NAME,DATABASE_ID FROM T_SOD_DATA_TABLE_INFO a" +
-            "LEFT JOIN T_SOD_DATACLASS_TABLE b ON a.id=b.TABLE_ID OR a.id=b.SUB_TABLE_ID  WHERE b.data_class_id = ?1 ", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT TABLE_NAME,DATABASE_ID FROM T_SOD_DATA_TABLE_INFO a " +
+            " LEFT JOIN T_SOD_DATACLASS_TABLE b ON a.id=b.TABLE_ID OR a.id=b.SUB_TABLE_ID  WHERE b.data_class_id = ?1 ", nativeQuery = true)
     List<Map<String, Object>> getByClassId(String dataClassId);
 }

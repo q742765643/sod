@@ -33,42 +33,45 @@ public class ExportMateApp {
      * Description
      */
 
-    private static String des = "-- 执行此sql文件会删除现有四级编码[%s]下的存储表结构相关信息，确认后操作 --";
+    private static String des = "-- 执行此sql文件会删除现有四级编码[%s]下的[%s]表的存储表结构相关信息，确认后操作 --";
     /**
      * INSERT
      */
-    private static String T_SOD_DATA_CLASS = "select * from USR_SOD.T_SOD_DATA_CLASS where D_DATA_ID = '%s'";
-    private static String T_SOD_DATA_LOGIC = "select * from USR_SOD.T_SOD_DATA_LOGIC where DATA_CLASS_ID in (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID = '%s')";
+    private static String T_SOD_DATA_CLASS = "SELECT * FROM USR_SOD.T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
+    private static String T_SOD_DATA_LOGIC = "SELECT * FROM USR_SOD.T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
 
-    private static String T_SOD_DATA_TABLE = "select * from USR_SOD.T_SOD_DATA_TABLE where CLASS_LOGIC_ID in ( select id from T_SOD_DATA_LOGIC where DATA_CLASS_ID in (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s'))";
-    private static String T_SOD_DATA_TABLE_FOREIGN_KEY = "select * from USR_SOD.T_SOD_DATA_TABLE_FOREIGN_KEY where CLASS_LOGIC_ID in ( select id from T_SOD_DATA_LOGIC where DATA_CLASS_ID in (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s'))";
-    private static String T_SOD_DATA_TABLE_COLUMN = "select * from USR_SOD.T_SOD_DATA_TABLE_COLUMN where TABLE_ID in (select id from T_SOD_DATA_TABLE where CLASS_LOGIC_ID in ( select id from T_SOD_DATA_LOGIC where DATA_CLASS_ID in (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')))";
-    private static String T_SOD_DATA_TABLE_INDEX = "select * from USR_SOD.T_SOD_DATA_TABLE_INDEX where TABLE_ID in (select id from T_SOD_DATA_TABLE where CLASS_LOGIC_ID in ( select id from T_SOD_DATA_LOGIC where DATA_CLASS_ID in (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')))";
-    private static String T_SOD_DATA_TABLE_SHARDING = "select * from USR_SOD.T_SOD_DATA_TABLE_SHARDING where TABLE_ID in (select id from T_SOD_DATA_TABLE where CLASS_LOGIC_ID in ( select id from T_SOD_DATA_LOGIC where DATA_CLASS_ID in (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')))";
+    private static String T_SOD_DATA_TABLE = "SELECT * FROM USR_SOD.T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
+    private static String T_SOD_STORAGE_CONFIGURATION = "SELECT * FROM USR_SOD.T_SOD_STORAGE_CONFIGURATION WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
+    private static String T_SOD_DATA_TABLE_FOREIGN_KEY = "SELECT * FROM USR_SOD.T_SOD_DATA_TABLE_FOREIGN_KEY WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
+    private static String T_SOD_DATA_TABLE_COLUMN = "SELECT * FROM USR_SOD.T_SOD_DATA_TABLE_COLUMN WHERE TABLE_ID IN (SELECT C.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
+    private static String T_SOD_DATA_TABLE_INDEX = "SELECT * FROM USR_SOD.T_SOD_DATA_TABLE_INDEX WHERE TABLE_ID IN (SELECT C.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
+    private static String T_SOD_DATA_TABLE_SHARDING = "SELECT * FROM USR_SOD.T_SOD_DATA_TABLE_SHARDING WHERE TABLE_ID IN (SELECT C.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
 
 
-    private static String T_SOD_DATACLASS_NORM = "select * from USR_SOD.T_SOD_DATACLASS_NORM where id in  (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')";
-    private static String T_SOD_GRID_DECODING = "select * from USR_SOD.T_SOD_GRID_DECODING where data_service_id in  (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')";
-    private static String T_SOD_GRID_AREA = "select * from USR_SOD.T_SOD_GRID_AREA where data_service_id in  (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')";
-    private static String T_SOD_DATASERVICE_BASEINFOR = "select * from USR_SOD.T_SOD_DATASERVICE_BASEINFOR where data_class_id in  (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')";
-    private static String T_SOD_DATASERVICE_CONFIG = "select * from USR_SOD.T_SOD_DATASERVICE_CONFIG where data_service_id in  (select DATA_CLASS_ID from T_SOD_DATA_CLASS where D_DATA_ID  = '%s')";
+    private static String T_SOD_DATACLASS_NORM = "SELECT * FROM USR_SOD.T_SOD_DATACLASS_NORM WHERE ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
+    private static String T_SOD_GRID_DECODING = "SELECT * FROM USR_SOD.T_SOD_GRID_DECODING WHERE DATA_SERVICE_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
+    private static String T_SOD_GRID_AREA = "SELECT * FROM USR_SOD.T_SOD_GRID_AREA WHERE DATA_SERVICE_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
+    private static String T_SOD_DATASERVICE_BASEINFOR = "SELECT * FROM USR_SOD.T_SOD_DATASERVICE_BASEINFOR WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
+    private static String T_SOD_DATASERVICE_CONFIG = "SELECT * FROM USR_SOD.T_SOD_DATASERVICE_CONFIG WHERE DATA_SERVICE_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
 
 
     /**
      * DELETE
      */
-    private static String DEL_SQL = "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_COLUMN WHERE TABLE_ID IN (SELECT ID FROM T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN ( SELECT ID FROM T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s')));\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_INDEX WHERE TABLE_ID IN (SELECT ID FROM T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN ( SELECT ID FROM T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s')));\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_SHARDING WHERE TABLE_ID IN (SELECT ID FROM T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN ( SELECT ID FROM T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s')));\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN ( SELECT ID FROM T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s'));\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_FOREIGN_KEY WHERE CLASS_LOGIC_ID IN ( SELECT ID FROM T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s'));\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATACLASS_NORM WHERE ID IN  (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s');\n"
-            + "DELETE FROM USR_SOD.T_SOD_GRID_DECODING WHERE DATA_SERVICE_ID IN  (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s');\n"
-            + "DELETE FROM USR_SOD.T_SOD_GRID_AREA WHERE DATA_SERVICE_ID IN  (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s');\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATASERVICE_BASEINFOR WHERE DATA_CLASS_ID IN  (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s');\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATASERVICE_CONFIG WHERE DATA_SERVICE_ID IN  (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID  = '%s');\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT DATA_CLASS_ID FROM T_SOD_DATA_CLASS WHERE D_DATA_ID = '%s');\n"
-            + "DELETE FROM USR_SOD.T_SOD_DATA_CLASS WHERE D_DATA_ID = '%s';\n";
+    private static String DEL_ONE_SQL = "DELETE FROM %s WHERE ID = '%s';\n";
+
+    private static String DEL_SQL = "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_COLUMN WHERE TABLE_ID IN (SELECT C.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_INDEX WHERE TABLE_ID IN (SELECT C.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_SHARDING WHERE TABLE_ID IN (SELECT C.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATA_TABLE_FOREIGN_KEY WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATACLASS_NORM WHERE ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_GRID_DECODING WHERE DATA_SERVICE_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_GRID_AREA WHERE DATA_SERVICE_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATASERVICE_BASEINFOR WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATASERVICE_CONFIG WHERE DATA_SERVICE_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n"
+            + "DELETE FROM USR_SOD.T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s1');\n";
 
 
     private static String[] arr;
@@ -93,49 +96,61 @@ public class ExportMateApp {
             if (StringUtils.isEmpty(arr[i])) {
                 continue;
             }
-            sqlList.add(DEL_SQL.replaceAll("%s", arr[i]));
+            String ss = arr[i];
+            String[] split = ss.split(",");
+            if (split.length != 2) {
+                continue;
+            }
+            String s1 = split[0];
+            String s2 = split[1];
+//            String DEL = DEL_SQL.replaceAll("%s1", s2);
+//            sqlList.add(DEL.replaceAll("%s", s1));
+            List<Map<String, Object>> m1 = a.exeQuery(String.format(T_SOD_DATA_CLASS, s1, s2), r);
 
-            List<Map<String, Object>> m1 = a.exeQuery(String.format(T_SOD_DATA_CLASS, arr[i]), r);
             sqlList.addAll(getSql(m1, "USR_SOD.T_SOD_DATA_CLASS"));
-            List<Map<String, Object>> m2 = a.exeQuery(String.format(T_SOD_DATA_LOGIC, arr[i]), r);
+            List<Map<String, Object>> m2 = a.exeQuery(String.format(T_SOD_DATA_LOGIC, s1, s2), r);
             sqlList.addAll(getSql(m2, "USR_SOD.T_SOD_DATA_LOGIC"));
 
-            List<Map<String, Object>> m3 = a.exeQuery(String.format(T_SOD_DATA_TABLE, arr[i]), r);
+            List<Map<String, Object>> m3 = a.exeQuery(String.format(T_SOD_DATA_TABLE, s1, s2), r);
             sqlList.addAll(getSql(m3, "USR_SOD.T_SOD_DATA_TABLE"));
-            List<Map<String, Object>> m4 = a.exeQuery(String.format(T_SOD_DATA_TABLE_FOREIGN_KEY, arr[i]), r);
+
+            List<Map<String, Object>> m31 = a.exeQuery(String.format(T_SOD_STORAGE_CONFIGURATION, s1, s2), r);
+            sqlList.addAll(getSql(m31, "USR_SOD.T_SOD_STORAGE_CONFIGURATION"));
+
+            List<Map<String, Object>> m4 = a.exeQuery(String.format(T_SOD_DATA_TABLE_FOREIGN_KEY, s1, s2), r);
             sqlList.addAll(getSql(m4, "USR_SOD.T_SOD_DATA_TABLE_FOREIGN_KEY"));
 
-            List<Map<String, Object>> m5 = a.exeQuery(String.format(T_SOD_DATA_TABLE_COLUMN, arr[i]), r);
+            List<Map<String, Object>> m5 = a.exeQuery(String.format(T_SOD_DATA_TABLE_COLUMN, s1, s2), r);
             sqlList.addAll(getSql(m5, "USR_SOD.T_SOD_DATA_TABLE_COLUMN"));
 
-            List<Map<String, Object>> m6 = a.exeQuery(String.format(T_SOD_DATA_TABLE_INDEX, arr[i]), r);
+            List<Map<String, Object>> m6 = a.exeQuery(String.format(T_SOD_DATA_TABLE_INDEX, s1, s2), r);
             sqlList.addAll(getSql(m6, "USR_SOD.T_SOD_DATA_TABLE_INDEX"));
 
-            List<Map<String, Object>> m7 = a.exeQuery(String.format(T_SOD_DATA_TABLE_SHARDING, arr[i]), r);
+            List<Map<String, Object>> m7 = a.exeQuery(String.format(T_SOD_DATA_TABLE_SHARDING, s1, s2), r);
             sqlList.addAll(getSql(m7, "USR_SOD.T_SOD_DATA_TABLE_SHARDING"));
 
-            List<Map<String, Object>> m8 = a.exeQuery(String.format(T_SOD_DATACLASS_NORM, arr[i]), r);
+            List<Map<String, Object>> m8 = a.exeQuery(String.format(T_SOD_DATACLASS_NORM, s1, s2), r);
             sqlList.addAll(getSql(m8, "USR_SOD.T_SOD_DATACLASS_NORM"));
 
-            List<Map<String, Object>> m9 = a.exeQuery(String.format(T_SOD_GRID_DECODING, arr[i]), r);
+            List<Map<String, Object>> m9 = a.exeQuery(String.format(T_SOD_GRID_DECODING, s1, s2), r);
             sqlList.addAll(getSql(m9, "USR_SOD.T_SOD_GRID_DECODING"));
 
-            List<Map<String, Object>> m10 = a.exeQuery(String.format(T_SOD_GRID_AREA, arr[i]), r);
+            List<Map<String, Object>> m10 = a.exeQuery(String.format(T_SOD_GRID_AREA, s1, s2), r);
             sqlList.addAll(getSql(m10, "USR_SOD.T_SOD_GRID_AREA"));
 
-            List<Map<String, Object>> m11 = a.exeQuery(String.format(T_SOD_DATASERVICE_BASEINFOR, arr[i]), r);
+            List<Map<String, Object>> m11 = a.exeQuery(String.format(T_SOD_DATASERVICE_BASEINFOR, s1, s2), r);
             sqlList.addAll(getSql(m11, "USR_SOD.T_SOD_DATASERVICE_BASEINFOR"));
 
-            List<Map<String, Object>> m12 = a.exeQuery(String.format(T_SOD_DATASERVICE_CONFIG, arr[i]), r);
+            List<Map<String, Object>> m12 = a.exeQuery(String.format(T_SOD_DATASERVICE_CONFIG, s1, s2), r);
             sqlList.addAll(getSql(m12, "USR_SOD.T_SOD_DATASERVICE_CONFIG"));
 
-            toFile(sqlList, arr[i]);
+            toFile(sqlList, s1, s2);
             sqlList.clear();
         }
         a.close();
     }
 
-    public static void toFile(List<String> sqlList, String dated) throws IOException {
+    public static void toFile(List<String> sqlList, String dated, String tableName) throws IOException {
         String date = DateUtils.dateTime();
         String path = "D:\\file\\存储元数据导出\\" + date;
         File file = new File(path);
@@ -144,14 +159,14 @@ public class ExportMateApp {
             file.mkdirs();
         }
         // 脚本名称
-        file = new File(path + "\\" + dated + "_" + date + ".sql");
+        file = new File(path + "\\" + dated + "_" + tableName + ".sql");
         if (file.exists()) {
             file.delete();
         }
         file.createNewFile();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
         BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-        bufferedWriter.write(String.format(des, dated));
+        bufferedWriter.write(String.format(des, dated, tableName));
         bufferedWriter.newLine();
         bufferedWriter.newLine();
         bufferedWriter.newLine();
@@ -188,7 +203,8 @@ public class ExportMateApp {
         StringBuffer sbField = new StringBuffer();
         //生成VALUES('value1','value2') 部分
         StringBuffer sbValue = new StringBuffer();
-
+        String delete = String.format(DEL_ONE_SQL, tableName, dataMap.get("ID"));
+        sbField.append(delete);
         sbField.append("INSERT INTO " + tableName.toUpperCase() + "(");
 
         List<String> s = new ArrayList<>();
