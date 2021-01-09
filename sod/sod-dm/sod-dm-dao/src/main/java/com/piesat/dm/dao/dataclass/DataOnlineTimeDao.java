@@ -14,6 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface DataOnlineTimeDao extends BaseDao<DataOnlineTimeEntity> {
     @Transactional(rollbackFor = Exception.class)
     void deleteByDataClassId(String dataClassId);
-
+//    DataOnlineTimeEntity findAll()
     DataOnlineTimeEntity findByDataClassId(String dataClassId);
 }

@@ -402,4 +402,34 @@ public class Gbase8a extends AbstractDatabaseDcl {
         }
         return num;
     }
+    @Override
+    public List<String> queryTableName(String schemaName) throws Exception {
+//        String maxTime = "";
+//        // 获取所有分区号
+//        String sql = "select b.table_name from dba_schemas a,dba_tables b where a.schema_id=b.schema_id and a.schema_name=upper("+"'USR_SOD'"+")";
+        List<String> tableName = new ArrayList<String>();
+//        try {
+//            stmt = connection.createStatement();
+//            rs = stmt.executeQuery(sql);
+//            while (rs.next()) {
+//                tableName.add(rs.getString(1));
+//            }
+//            rs.close();
+//            //表没有分区，不是分区表
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new Exception("错误：" + e.getMessage());
+//        } finally {
+//            if (rs != null && !rs.isClosed()) {
+//                rs.close();
+//            }
+//            if (stmt != null && !stmt.isClosed()) {
+//                stmt.close();
+//            }
+//
+//        }
+        return tableName;
+    }
 }

@@ -63,7 +63,14 @@ public class DataOnlineTimeController {
         dataOnlineTimeService.executeNew(dataOnlineTimeDto);
         return resultT;
     }
-
+    @GetMapping("/updateTime")
+    @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
+    public ResultT<DataOnlineTimeDto> updateTime(String dataClassId) {
+        ResultT<DataOnlineTimeDto> resultT = new ResultT<>();
+        DataOnlineTimeDto dataOnlineTimeDto = dataOnlineTimeService.updateTime(dataClassId);
+        resultT.setData(dataOnlineTimeDto);
+        return resultT;
+    }
     @ApiOperation(value = "根据DATA_CLASS_ID查询不同库里的最新数据")
     @GetMapping(value = "/getByClassId")
     public ResultT getByClassId(String data_class_id) {

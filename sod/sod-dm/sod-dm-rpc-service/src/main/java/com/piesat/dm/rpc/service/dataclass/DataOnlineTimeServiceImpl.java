@@ -115,16 +115,22 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         this.deleteByDataClassId(dataOnlineTimeDto.getDataClassId());
         this.saveDto(dataOnlineTimeDto);
     }
+
+    @Override
+    public DataOnlineTimeDto updateTime(String dataClassId) {
+        DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeDao.findByDataClassId(dataClassId);
+//        dataOnlineTimeEntity.setExamineStatus(examineStatus);
+        dataOnlineTimeEntity.setExecuteTime(new Date());
+        dataOnlineTimeEntity = this.saveNotNull(dataOnlineTimeEntity);
+        return dataOnlineTimeMapper.toDto(dataOnlineTimeEntity);
+    }
     @Override
     public void executeNew(DataOnlineTimeDto dataOnlineTimeDto){
         String dataClassId = dataOnlineTimeDto.getDataClassId();
-        SimpleDateFormat formater = new SimpleDateFormat();
-//        formater.applyPattern(formaterString);
-//        time = formater.format(date);
-//        String newBoundEndTime = String.valueOf(dataOnlineTimeDto.getBoundEndTime().getTime());
-        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundEndTime());
-        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundBeginTime());
-        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundEndTimeFlag());
+//        SimpleDateFormat formater = new SimpleDateFormat();
+//        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundEndTime());
+//        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundBeginTime());
+//        System.out.println("+++++++++++++++++"+dataOnlineTimeDto.getBoundEndTimeFlag());
         List<Map<String, Object>> dataTableEntities = dataTableDao.getByClassId(dataClassId);
         if(dataTableEntities != null && dataTableEntities.size()>0){
             for(int i=0;i<dataTableEntities.size();i++){
