@@ -77,7 +77,7 @@ public class TableCollectHandler  implements BaseHandler {
 
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
-        String newBoundEndTimeFlag = "";
+        String newBoundEndTimeFlag = null;
         Date newBoundEndTime = null;
         Date newBoundBeginTime = null;
         List<Object> onlineTimeList;
@@ -135,7 +135,7 @@ public class TableCollectHandler  implements BaseHandler {
                         Gbase8a gbase8a = new Gbase8a(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = gbase8a;
                     }
-
+                    List<String> arr = databaseDcl.queryTableName(schemaName);
                     Map<String, String> tableCollectInfo = new HashMap<String, String>();
                     for (int i = 0; i < dataTableList.size(); i++) {
                         String begin_time = "";
@@ -145,6 +145,9 @@ public class TableCollectHandler  implements BaseHandler {
                         String sql = "";
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
+                        if(!Arrays.asList(arr).contains(table_name)){
+                            continue;
+                        }
                         String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
                         msg.append("定时统计：").append(databaseEntity.getDatabaseDefine().getDatabaseName() + "_" + databaseEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
