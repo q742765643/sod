@@ -362,7 +362,7 @@ public class Gbase8a extends AbstractDatabaseDcl {
 //            String maxData = String.valueOf(newBoundEndTime);
             DateTime maxData = new DateTime(newBoundEndTime.getTime());
             sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" +  "'"+maxData+ "'";
-        }else if(newBoundEndTimeFlag != null){
+        }else if(StringUtils.isNotEmpty(newBoundEndTimeFlag)){
             int num = Integer.parseInt(newBoundEndTimeFlag);
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
