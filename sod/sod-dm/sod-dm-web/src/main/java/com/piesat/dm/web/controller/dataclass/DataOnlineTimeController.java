@@ -64,7 +64,7 @@ public class DataOnlineTimeController {
         return resultT;
     }
     @GetMapping("/updateTime")
-    @ApiOperation(value = "根据申请id修改审核状态", notes = "根据申请id修改审核状态")
+    @ApiOperation(value = "根据申请dataClassId修改", notes = "根据申请dataClassId修改")
     public ResultT<DataOnlineTimeDto> updateTime(String dataClassId) {
         ResultT<DataOnlineTimeDto> resultT = new ResultT<>();
         DataOnlineTimeDto dataOnlineTimeDto = dataOnlineTimeService.updateTime(dataClassId);
