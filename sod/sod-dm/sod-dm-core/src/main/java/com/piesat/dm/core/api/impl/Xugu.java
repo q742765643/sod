@@ -441,7 +441,7 @@ public class Xugu extends AbstractDatabaseDcl {
                 if(newBoundBeginTime != null){
 //                    String minData = String.valueOf(newBoundBeginTime);
                     DateTime minData = new DateTime(newBoundBeginTime.getTime());
-                    sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">" + "'"+minData+ "'";
+                    sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + "'"+minData+ "'";
                 }else {
                     sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
                 }

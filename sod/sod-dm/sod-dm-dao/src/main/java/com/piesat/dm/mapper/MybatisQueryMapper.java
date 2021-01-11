@@ -228,7 +228,11 @@ public interface MybatisQueryMapper {
 
     List<Map<String,Object>>  getApplyedRecodeFileDataInfo(@Param("userId") String userId);
 
+    List<Map<String,Object>> findAllOnlineInfo();
+
     List<Map<String,Object>>  getSpecialReadWriteFileDataInfo(@Param("userId") String userId);
 
     List<Map<String,Object>> onLineTimeByClassId(@Param("dataClassId")String dataClassId);
+
+
 }

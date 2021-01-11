@@ -254,6 +254,11 @@
              INNER JOIN T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
     </select>
 
+    <select id="findAllOnlineInfo" resultType="java.util.Map">
+        select a.*,b.DATABASE_ID,c.table_name from T_SOD_DATA_ONLINE_TIME a
+                                                       left join T_SOD_DATA_LOGIC b on a.data_class_id = b.DATA_CLASS_ID
+                                                       left join T_SOD_DATA_TABLE c on b.id = c.CLASS_LOGIC_ID;
+    </select>
 
     <select id="getTableInfoByClassId" resultType="java.util.Map">
         select a.*,c.logic_name,b.database_id from T_SOD_DATA_TABLE a left join T_SOD_DATA_LOGIC b on  a.class_logic_id = b.id
