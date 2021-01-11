@@ -264,7 +264,7 @@ public class ExportMateApp {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String[] objects = (String[]) arrayList.stream()
+        String[] objects = arrayList.stream()
                 .distinct()
                 .map(String::trim)
                 .toArray(String[]::new);
