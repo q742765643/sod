@@ -527,7 +527,6 @@ public class Xugu extends AbstractDatabaseDcl {
                         int num = Integer.parseInt(newBoundEndTimeFlag);
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
-//                        String masFlog = String.valueOf(calendar);
                         DateTime masFlog = new DateTime(calendar.getTime());
                         sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" +  "'"+masFlog+ "'";
                     }else {
@@ -549,7 +548,6 @@ public class Xugu extends AbstractDatabaseDcl {
                             int num = Integer.parseInt(newBoundEndTimeFlag);
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
-//                            String masFlog = String.valueOf(calendar);
                             DateTime masFlog = new DateTime(calendar.getTime());
                             sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + parti_val.get(i + 1) + " AND " + timeColumnName + "<" + "'"+masFlog+ "'";
                         }else {
