@@ -66,6 +66,6 @@ public class DepartManageEntity extends BaseEntity {
     /**
      * 部门描述职责
      */
-    @Column(name="DEPT_DSCR")
+    @Column(name="DEPT_DSCR", length = 4001)
     String deptDscr;
 }

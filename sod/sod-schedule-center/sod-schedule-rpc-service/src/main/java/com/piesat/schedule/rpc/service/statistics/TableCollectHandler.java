@@ -162,7 +162,7 @@ public class TableCollectHandler  implements BaseHandler {
                                         newBoundBeginTime = (Date) map.get("BOUND_BEGIN_TIME");
                                     }
                                     if(map.get("BOUND_END_TIME") != null){
-                                        newBoundEndTimeFlag = (String) map.get("BOUND_END_TIME");
+                                        newBoundEndTime = (Date) map.get("BOUND_END_TIME");
                                     }
                                     if(map.get("BOUND_END_TIME_FLAG") != null){
                                         newBoundEndTimeFlag = (String) map.get("BOUND_END_TIME_FLAG");
