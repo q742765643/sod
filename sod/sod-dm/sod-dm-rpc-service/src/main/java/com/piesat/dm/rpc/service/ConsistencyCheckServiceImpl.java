@@ -119,10 +119,10 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         ResultT<List<Map<String, Object>>> r = new ResultT();
         //获取数据库详细信息
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
-        Map<String, List<List<String>>> compileResult = new HashMap<String, List<List<String>>>();
-        compileResult.put("columnResult", new ArrayList<List<String>>());
-        compileResult.put("indexResult", new ArrayList<List<String>>());
-        compileResult.put("shardingResult", new ArrayList<List<String>>());
+        Map<String, List<List<String>>> compileResult = new HashMap<>();
+        compileResult.put("columnResult", new ArrayList<>());
+        compileResult.put("indexResult", new ArrayList<>());
+        compileResult.put("shardingResult", new ArrayList<>());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);

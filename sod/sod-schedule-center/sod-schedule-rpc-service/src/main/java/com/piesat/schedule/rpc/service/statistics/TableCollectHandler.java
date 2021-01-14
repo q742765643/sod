@@ -6,6 +6,10 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.core.factory.AuzDatabase;
+import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.model.AuthorityVo;
+import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.dataclass.DataOnlineTimeDao;
@@ -45,6 +49,7 @@ public class TableCollectHandler  implements BaseHandler {
     private JobInfoMapstruct jobInfoMapstruct;
     @Autowired
     private SchemaDao schemaDao;
+
     private DatabaseDao databaseDao;
     @Autowired
     private DataOnlineTimeDao dataOnlineTimeDao;
@@ -80,37 +85,31 @@ public class TableCollectHandler  implements BaseHandler {
         String newBoundEndTimeFlag = "";
         Date newBoundEndTime = null;
         Date newBoundBeginTime = null;
-        List<Object> onlineTimeList;
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<SchemaEntity> databaseEntities = schemaDao.findAll();
-        List<DataOnlineTimeEntity> dataOnlineTimeEntitys = dataOnlineTimeDao.findAll();
-        if(dataOnlineTimeEntitys != null && dataOnlineTimeEntitys.size()>0){
-            for (DataOnlineTimeEntity dataOnlineTimeEntity : dataOnlineTimeEntitys){
-                String dataClassId = dataOnlineTimeEntity.getDataClassId();
-                List<Map<String, Object>> dataTableEntities = dataTableDao.getByClassId(dataClassId);
-                if(dataTableEntities != null && dataTableEntities.size()>0){
-                    for(int i=0;i<dataTableEntities.size();i++){
-                        Map<String, Object> dataTableEntity = dataTableEntities.get(i);
-                        String tableName = (String) dataTableEntity.get("TABLE_NAME");
-                        String databaseId = (String) dataTableEntity.get("DATABASE_ID");
-                    }
-                }
-            }
-        }
+
+
+
+
+//        ConnectVo coreInfo = schemaDto.getConnectVo();
+//        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
+//        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+//        AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
+
+
+
         if(databaseEntities != null && databaseEntities.size()>0){
             for(SchemaEntity schemaEntity : databaseEntities) {
+
+
+
+
+
                 DatabaseDcl databaseDcl = null;
                 try {
-                    /*if (schemaEntity.getDatabase().getUserDisplayControl().intValue() != 1) {
-                        continue;
-                    }*/
                     String databaseType = schemaEntity.getDatabase().getDatabaseType();
-                    String driverClassName = schemaEntity.getDatabase().getDriverClassName();
                     String databaseUrl = schemaEntity.getDatabase().getDatabaseUrl();
-                    String databasePort = schemaEntity.getDatabase().getDatabasePort();
-                    String databaseInstance = schemaEntity.getDatabase().getDatabaseInstance();
-                    String schemaName = schemaEntity.getSchemaName();
 
                     List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(schemaEntity.getId());
                     if (dataTableList == null || dataTableList.size() == 0) {
@@ -246,10 +245,7 @@ public class TableCollectHandler  implements BaseHandler {
                         continue;
                     }*/
                     String databaseType = schemaEntity.getDatabase().getDatabaseType();
-                    String driverClassName = schemaEntity.getDatabase().getDriverClassName();
                     String databaseUrl = schemaEntity.getDatabase().getDatabaseUrl();
-                    String databasePort = schemaEntity.getDatabase().getDatabasePort();
-                    String databaseInstance = schemaEntity.getDatabase().getDatabaseInstance();
                     String schemaName = schemaEntity.getSchemaName();
 
                     List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(schemaEntity.getId());

@@ -83,8 +83,13 @@ public interface DatabaseDcl {
 
     /**
      * 删除权限
-     *
-     * @param select 读权限
+     * @param permissions
+     * @param resource
+     * @param tableName
+     * @param identifier
+     * @param password
+     * @param ips
+     * @throws Exception
      */
     void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception;
 
@@ -195,9 +200,7 @@ public interface DatabaseDcl {
 
     /**
      * 获取
-     * @param schema
-     * @param tableName
-     * @param timeColumnName
+     * @param schemaName
      * @return
      * @throws Exception
      */
