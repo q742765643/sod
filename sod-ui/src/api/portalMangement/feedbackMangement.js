@@ -29,11 +29,11 @@ export function editById(data) {
   })
 }
 //删除
-export function deleteId(data) {
+export function deleteId(query) {
   return request({
-    url: baseUrl + '/portal/feedbackManage/del',
-    method: 'delete',
-    params: data
+    url: baseUrl + '/portal/feedbackManage/deleteById',
+    method: 'DELETE',
+    params: query
   })
 }
 export function getDictDataByType(query) {
