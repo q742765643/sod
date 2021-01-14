@@ -77,9 +77,9 @@
 <!--    <update id="clearTable" parameterType="java.lang.String">
     	delete from ${tableName}
     </update>-->
-    <delete id="clearTable" parameterType="java.lang.String">
+    <update id="clearTable" parameterType="java.lang.String">
     	TRUNCATE TABLE ${tableName}
-    </delete>
+    </update>
 
     <!-- 插入一行数据 -->
     <insert id="insert1Row" parameterType="java.util.Map">
