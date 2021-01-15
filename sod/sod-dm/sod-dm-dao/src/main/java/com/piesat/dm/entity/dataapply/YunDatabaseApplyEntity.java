@@ -55,6 +55,11 @@ public class YunDatabaseApplyEntity extends BaseEntity {
     @Column(name="restapiport" ,length=10)
     private Integer restApiport;
     /**
+     * externalIP
+     */
+    @Column(name="externalIP" ,length=100)
+    private String externalIP;
+    /**
      * 集群规模
      */
     @Column(name="cluster_size" ,length=10)
